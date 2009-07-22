@@ -1,0 +1,41 @@
+{M}assive {O}nline {A}nalysis
+Version: JUN09
+Copyright: (C) 2009 University of Waikato, Hamilton, New Zealand
+Webs: http://www.cs.waikato.ac.nz/~abifet/MOA/
+http://sourceforge.net/projects/moa-datastream/
+
+Author: Richard Kirkby (rkirkby at cs.waikato.ac.nz)
+
+This is the second public release of the MOA framework. Be aware that
+in its present form, the software lacks documentation and is pretty rough 
+around the edges. The intention for now is just to make the source 
+code public, with the hope that future releases will improve 
+usability.
+
+The compiled class files and java source code are all included in 
+the .jar file for download.
+
+Besides the MOA jar file, running the code requires three elements:
+1) Java version 5 (or greater) runtime environment
+   available from: http://java.com/
+2) A recent version of WEKA (version 3-5-6 latest at time of release)
+   available from: http://www.cs.waikato.ac.nz/ml/weka/
+3) Sizeof agent jar file, used to measure object sizes in memory
+   from: http://www.jroller.org/maxim/entry/again_about_determining_size_of
+   direct link to file: http://www.jroller.com/resources/m/maxim/sizeofag.jar
+
+To start a GUI for launching MOA tasks, assuming Java is installed
+and all of the jar files are in the current directory:
+
+> java -cp moa.jar:weka.jar -javaagent:sizeofag.jar moa.gui.TaskLauncher
+
+To run tasks on the command line, use the DoTask class, for example
+to train a HoeffdingTree on synthetic waveform data with noisy 
+attributes added:
+
+> java -cp moa.jar:weka.jar -javaagent:sizeofag.jar moa.DoTask \
+  "LearnModel -l HoeffdingTree -s (generators.WaveformGenerator -n)"
+
+Released under GNU GENERAL PUBLIC LICENSE, see file COPYING for more
+information.
+
