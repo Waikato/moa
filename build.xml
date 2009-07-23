@@ -165,13 +165,12 @@
 
    <!-- tutorial -->
    <target name="tutorial" description="Generates the tutorial PDF from the LaTeX sources.">
-     <!-- LaTeX sources not yet available -->
-     <!--exec executable="pdflatex" dir="${tutorial}/src">
+     <exec executable="pdflatex" dir="${tutorial}/src">
         <arg value="tutorial.tex"/>
-     </exec-->
-     <!--copy todir="${tutorial}">
-        <fileset dir="${tutorial}/src" includes="*.pdf"/>
-     </copy-->
+     </exec>
+     <copy todir="${tutorial}">
+        <fileset dir="${tutorial}/src" includes="tutorial.pdf"/>
+     </copy>
    </target>
 
    <!-- javadoc -->
