@@ -1,0 +1,18 @@
+# Mappings for MOA classes to be handled in the GenericObjectEditor
+# in addition to WEKA's definitions.
+# Just place this file in your home directory, i.e., $HOME in Unix/Linux
+# and %USERPROFILE% in Windows. If the file "GUIEditors.props" already exists, 
+# then just add the content of this file.
+#
+# Format:
+#   <class to be handled>=<class to handle it>
+#
+# Notes: 
+# - array classes have to be suffixed with "[]"
+# - full classname has to be provided
+#
+# author:  FracPete (fracpete at waikato dot ac dot nz)
+# version: $Revision$
+
+# classifiers
+moa.options.ClassOption=weka.gui.MOAClassOptionEditor

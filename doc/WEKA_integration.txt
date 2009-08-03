@@ -1,0 +1,31 @@
+How to integrate MOA into WEKA
+==============================
+
+You can use MOA classifiers quite easily as incremental classifiers within the
+WEKA framework, using the weka.classifiers.meta.MOA meta-classifier.
+This meta-classifier is just a wrapper for MOA classifiers, translating the
+WEKA method calls into MOA ones.
+
+In order to manipulate the MOA classifiers in the GUI, like Explorer or
+Experimenter, you need to register a new editor for the GenericObjectEditor.
+
+The following steps are necessary to integrate the MOA classifiers:
+1. Determine the location of your home directory:
+   - Windows
+     in a command prompt, run the following command:
+       echo %USERPROFILE%
+   - Linux/Unix
+     in a terminal (bash), run the following command:
+       echo $HOME
+
+2. Copy the "GUIEdtitors.props.addon" file, contained in the MOA project in the 
+   source directory "src/main/java/weka/gui" or in the moa.jar in "weka/gui",
+   into your home directory. Rename the extension from ".props.addon" to 
+   ".props". If the home directory already contains such a file, then just 
+   append the content of the version in MOA file to the already existing one.
+
+3. Restart WEKA from the MOA project, e.g., using the "run-explorer" target of
+   the ANT build file.
+   
+
+$Revision$
