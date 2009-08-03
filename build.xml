@@ -213,9 +213,37 @@
      </tar>
    </target>
 
-   <!-- run -->
-   <target name="run" depends="dist" description="Starts the GUI.">
+   <!-- run-moa -->
+   <target name="run-moa" depends="dist" description="Starts the MOA GUI.">
       <java classname="${main_class}" fork="yes" maxmemory="${memory}">
+         <classpath>
+            <pathelement path="${java.class.path}" />
+            <fileset dir="${dist}">
+               <include name="*.jar"/>
+               <include name="*.zip"/>
+            </fileset>
+         </classpath>
+         <jvmarg line="${jvm_options}"/>
+      </java>
+   </target>
+
+   <!-- run-weka -->
+   <target name="run-explorer" depends="dist" description="Starts the WEKA Explorer.">
+      <java classname="weka.gui.explorer.Explorer" fork="yes" maxmemory="${memory}">
+         <classpath>
+            <pathelement path="${java.class.path}" />
+            <fileset dir="${dist}">
+               <include name="*.jar"/>
+               <include name="*.zip"/>
+            </fileset>
+         </classpath>
+         <jvmarg line="${jvm_options}"/>
+      </java>
+   </target>
+
+   <!-- run-guichooser -->
+   <target name="run-guichooser" depends="dist" description="Starts the WEKA GUIChooser.">
+      <java classname="weka.gui.GUIChooser" fork="yes" maxmemory="${memory}">
          <classpath>
             <pathelement path="${java.class.path}" />
             <fileset dir="${dist}">
