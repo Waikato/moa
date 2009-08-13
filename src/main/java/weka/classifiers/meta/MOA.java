@@ -207,6 +207,7 @@ public class MOA
     // attributes
     result.enable(Capability.NOMINAL_ATTRIBUTES);
     result.enable(Capability.NUMERIC_ATTRIBUTES);
+    result.enable(Capability.MISSING_VALUES);
     
     // class
     result.enable(Capability.NOMINAL_CLASS);
