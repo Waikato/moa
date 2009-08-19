@@ -19,19 +19,14 @@
  */
 package moa.classifiers;
 
-import sizeof.agent.SizeOfAgent;
-import moa.AbstractMOAObject;
-import moa.core.DoubleVector;
 import moa.core.Measurement;
-import moa.core.MiscUtils;
-import moa.options.StringOption;
 import moa.options.IntOption;
-import moa.options.MultiChoiceOption;
+import moa.options.StringOption;
+import sizeof.agent.SizeOfAgent;
 import weka.classifiers.Classifier;
 import weka.classifiers.UpdateableClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.core.Utils;
 
 
 public class WEKAClassifier extends AbstractClassifier {
@@ -43,6 +38,9 @@ public class WEKAClassifier extends AbstractClassifier {
 			
 	public IntOption widthOption = new IntOption("width",
 			'w', "Size of Window for training learner.", 0, 0, Integer.MAX_VALUE);
+			
+	public IntOption widthInitOption = new IntOption("widthInit",
+			'i', "Size of first Window for training learner.", 1000, 0, Integer.MAX_VALUE);
 
 	public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
 			'f',
@@ -112,7 +110,12 @@ public class WEKAClassifier extends AbstractClassifier {
 					if (sampleFrequencyOption.getValue() != 0 && (numberInstances % sampleFrequencyOption.getValue() == 0)) {
 						isRelearnEnabled = true;
 					}
-					if (numberInstances == widthOption.getValue() ){ //|| numberInstances == 30 ||numberInstances == 5 ) {
+					if (numberInstances == widthInitOption.getValue() ){ //|| numberInstances == 30 ||numberInstances == 5 ) {
+						buildClassifier();
+						isClassificationEnabled = true;
+					}
+					
+					if (numberInstances == widthOption.getValue() ){ 
 						buildClassifier();
 						isClassificationEnabled = true;
 						this.instancesBuffer = new Instances(inst.dataset());
@@ -172,11 +175,8 @@ public class WEKAClassifier extends AbstractClassifier {
   public void createWekaClassifier(String[] options) throws Exception {
 
     String classifierName = options[0];
-
-	String[] newoptions = new String[options.length-1];
-	for (int i = 0; i< options.length-1;i++) {
-		newoptions[i]=options[i+1];
-	}
+    String[] newoptions = options.clone();
+    newoptions[0] = "";
 	
    this.classifier = Classifier.forName(classifierName, newoptions);
 				   
