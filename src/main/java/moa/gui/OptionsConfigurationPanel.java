@@ -76,6 +76,7 @@ public class OptionsConfigurationPanel extends JPanel {
 			purposeTextArea.setEnabled(false);
 			purposeTextArea.setBorder(BorderFactory
 					.createTitledBorder("Purpose"));
+			purposeTextArea.setBackground(getBackground());
 			add(purposeTextArea, BorderLayout.NORTH);
 		}
 		JPanel optionsPanel = createLabelledOptionComponentListPanel(options

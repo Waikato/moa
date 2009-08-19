@@ -1,7 +1,8 @@
 /*
  *    WEKAClassifier.java
- *    Copyright (C) 2008 University of Waikato, Hamilton, New Zealand
- *    @author 
+ *    Copyright (C) 2009 University of Waikato, Hamilton, New Zealand
+ *    @author Albert Bifet
+ *    @author FracPete (fracpete at waikato dot ac dot nz)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -19,26 +20,28 @@
  */
 package moa.classifiers;
 
-import moa.core.Measurement;
-import moa.options.IntOption;
-import moa.options.StringOption;
 import sizeof.agent.SizeOfAgent;
+
 import weka.classifiers.Classifier;
 import weka.classifiers.UpdateableClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
 
+import moa.core.Measurement;
+import moa.options.IntOption;
+import moa.options.WEKAClassOption;
 
-public class WEKAClassifier extends AbstractClassifier {
-	
+public class WEKAClassifier
+  extends AbstractClassifier {
+
 	private static final long serialVersionUID = 1L;
 
-	public StringOption baseLearnerOption = new StringOption("baseLearner", 'l',
-			"Classifier to train.", "weka.classifiers.bayes.NaiveBayesUpdateable");
-			
+	public WEKAClassOption baseLearnerOption = new WEKAClassOption("baseLearner", 'l',
+			"Classifier to train.", weka.classifiers.Classifier.class, "weka.classifiers.bayes.NaiveBayesUpdateable");
+
 	public IntOption widthOption = new IntOption("width",
 			'w', "Size of Window for training learner.", 0, 0, Integer.MAX_VALUE);
-			
+
 	public IntOption widthInitOption = new IntOption("widthInit",
 			'i', "Size of first Window for training learner.", 1000, 0, Integer.MAX_VALUE);
 
@@ -48,13 +51,13 @@ public class WEKAClassifier extends AbstractClassifier {
 			0, 0, Integer.MAX_VALUE);
 
 	protected Classifier classifier; 
-	
+
 	protected int numberInstances;
-	
+
 	protected Instances instancesBuffer;
-	
+
 	protected boolean isClassificationEnabled;
-	
+
 	protected boolean isRelearnEnabled;
 
 	@Override
@@ -69,11 +72,11 @@ public class WEKAClassifier extends AbstractClassifier {
 
 		try{
 			//System.out.println(baseLearnerOption.getValue());
-			String[] options = weka.core.Utils.splitOptions(baseLearnerOption.getValue());
+			String[] options = weka.core.Utils.splitOptions(baseLearnerOption.getValueAsCLIString());
 			createWekaClassifier(options);
 		}  catch (Exception e) {
- 			   System.err.println("Creating a new classifier: "+e.getMessage());
-  		}
+			System.err.println("Creating a new classifier: "+e.getMessage());
+		}
 		numberInstances = 0;
 		isClassificationEnabled = false;
 		this.isRelearnEnabled = true;
@@ -96,7 +99,7 @@ public class WEKAClassifier extends AbstractClassifier {
 			if (classifier instanceof UpdateableClassifier) {
 				if (numberInstances > 0 ) {
 					((UpdateableClassifier) classifier).updateClassifier(inst);
-					}
+				}
 			} else {
 				if (widthOption.getValue() == 0 ){
 					if (isRelearnEnabled == true) {
@@ -106,7 +109,7 @@ public class WEKAClassifier extends AbstractClassifier {
 					if (isRelearnEnabled == true && (numberInstances % sampleFrequencyOption.getValue()) <= widthOption.getValue()) {
 						instancesBuffer.add(inst);
 					}
-					
+
 					if (sampleFrequencyOption.getValue() != 0 && (numberInstances % sampleFrequencyOption.getValue() == 0)) {
 						isRelearnEnabled = true;
 					}
@@ -114,7 +117,7 @@ public class WEKAClassifier extends AbstractClassifier {
 						buildClassifier();
 						isClassificationEnabled = true;
 					}
-					
+
 					if (numberInstances == widthOption.getValue() ){ 
 						buildClassifier();
 						isClassificationEnabled = true;
@@ -123,8 +126,8 @@ public class WEKAClassifier extends AbstractClassifier {
 				}
 			}
 		} catch (Exception e) {
- 			   System.err.println("Training: "+e.getMessage());
-  		}
+			System.err.println("Training: "+e.getMessage());
+		}
 	}
 
 	public void buildClassifier() {
@@ -136,24 +139,24 @@ public class WEKAClassifier extends AbstractClassifier {
 				isRelearnEnabled = false;	
 			}
 		} catch (Exception e) {
- 			   System.err.println("Building WEKA Classifier: "+e.getMessage());
-  		}
+			System.err.println("Building WEKA Classifier: "+e.getMessage());
+		}
 	}
-	
+
 	public double[] getVotesForInstance(Instance inst) {
-		 double[] votes= new double[inst.numClasses()];
-		 if (isClassificationEnabled == false ) {
-		 	for ( int i=0;  i<inst.numClasses(); i++) {
-		 		votes[i] = 1.0/inst.numClasses();
+		double[] votes= new double[inst.numClasses()];
+		if (isClassificationEnabled == false ) {
+			for ( int i=0;  i<inst.numClasses(); i++) {
+				votes[i] = 1.0/inst.numClasses();
 			}
-		 } else {
-			 try {
-				  votes = this.classifier.distributionForInstance(inst);
-			 } catch (Exception e) {
-				   System.err.println(e.getMessage());
+		} else {
+			try {
+				votes = this.classifier.distributionForInstance(inst);
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
 			}
 		}
-  		return votes;
+		return votes;
 	}
 
 	public boolean isRandomizable() {
@@ -162,7 +165,9 @@ public class WEKAClassifier extends AbstractClassifier {
 
 	@Override
 	public void getModelDescription(StringBuilder out, int indent) {
-
+		if (classifier != null) {
+			out.append(classifier.toString());
+		}
 	}
 
 	@Override
@@ -170,15 +175,11 @@ public class WEKAClassifier extends AbstractClassifier {
 		Measurement[] m = new Measurement[0];
 		return m;
 	}
-	
 
-  public void createWekaClassifier(String[] options) throws Exception {
-
-    String classifierName = options[0];
-    String[] newoptions = options.clone();
-    newoptions[0] = "";
-	
-   this.classifier = Classifier.forName(classifierName, newoptions);
-				   
-  }
+	public void createWekaClassifier(String[] options) throws Exception {
+		String classifierName = options[0];
+		String[] newoptions = options.clone();
+		newoptions[0] = "";
+		this.classifier = Classifier.forName(classifierName, newoptions);
+	}
 }
