@@ -113,12 +113,13 @@ public class WEKAClassifier
 					if (sampleFrequencyOption.getValue() != 0 && (numberInstances % sampleFrequencyOption.getValue() == 0)) {
 						isRelearnEnabled = true;
 					}
-					if (numberInstances == widthInitOption.getValue() ){ //|| numberInstances == 30 ||numberInstances == 5 ) {
+					if (numberInstances == widthInitOption.getValue() ){ 
 						buildClassifier();
 						isClassificationEnabled = true;
+						isRelearnEnabled = true; 
 					}
-
-					if (numberInstances == widthOption.getValue() ){ 
+					
+					if ((numberInstances % sampleFrequencyOption.getValue())== widthOption.getValue() ){ 
 						buildClassifier();
 						isClassificationEnabled = true;
 						this.instancesBuffer = new Instances(inst.dataset());
