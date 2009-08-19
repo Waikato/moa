@@ -58,7 +58,7 @@ public class WEKAClassifier
 
 	protected boolean isClassificationEnabled;
 
-	protected boolean isRelearnEnabled;
+	protected boolean isBufferStoring;
 
 	@Override
 	public int measureByteSize() {
@@ -79,7 +79,7 @@ public class WEKAClassifier
 		}
 		numberInstances = 0;
 		isClassificationEnabled = false;
-		this.isRelearnEnabled = true;
+		this.isBufferStoring = true;
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public class WEKAClassifier
 					classifier.buildClassifier(instancesBuffer);
 					this.isClassificationEnabled = true;
 				} else {
-					this.isRelearnEnabled = true;
+					this.isBufferStoring = true;
 				}
 			}
 			numberInstances++;
@@ -101,26 +101,38 @@ public class WEKAClassifier
 					((UpdateableClassifier) classifier).updateClassifier(inst);
 				}
 			} else {
+				if (numberInstances == widthInitOption.getValue()) { 
+					//Build first time Classifier
+					buildClassifier();
+					isClassificationEnabled = true;
+				  //Continue to store instances
+					if (sampleFrequencyOption.getValue() != 0) {
+						isBufferStoring = true;
+					}
+				}
 				if (widthOption.getValue() == 0 ){
-					if (isRelearnEnabled == true) {
+					//Used from SingleClassifierDrift
+					if (isBufferStoring == true) {
 						instancesBuffer.add(inst);
 					}
 				} else {
-					if (isRelearnEnabled == true && (numberInstances % sampleFrequencyOption.getValue()) <= widthOption.getValue()) {
+					//Used form WekaClassifier without using SingleClassifierDrift
+					int numInstances = numberInstances % sampleFrequencyOption.getValue();
+					if (sampleFrequencyOption.getValue() == 0) {
+						  numInstances = numberInstances;
+					} 
+					if (numInstances == 0) {
+							//Begin to store instances
+							isBufferStoring = true;
+					}
+					if (isBufferStoring == true && numInstances<= widthOption.getValue()) {
+						//Store instances
 						instancesBuffer.add(inst);
-					}
-
-					if (sampleFrequencyOption.getValue() != 0 && (numberInstances % sampleFrequencyOption.getValue() == 0)) {
-						isRelearnEnabled = true;
-					}
-					if (numberInstances == widthInitOption.getValue() ){ 
+					}	
+					if (numInstances == widthOption.getValue() ){ 
+						//Build Classifier
 						buildClassifier();
-						isClassificationEnabled = true;
-						isRelearnEnabled = true; 
-					}
-					
-					if ((numberInstances % sampleFrequencyOption.getValue())== widthOption.getValue() ){ 
-						buildClassifier();
+						System.out.println("Build");
 						isClassificationEnabled = true;
 						this.instancesBuffer = new Instances(inst.dataset());
 					}
@@ -137,7 +149,7 @@ public class WEKAClassifier
 				Classifier auxclassifier= Classifier.makeCopy(classifier);
 				auxclassifier.buildClassifier(instancesBuffer);
 				classifier = auxclassifier;
-				isRelearnEnabled = false;	
+				isBufferStoring = false;	
 			}
 		} catch (Exception e) {
 			System.err.println("Building WEKA Classifier: "+e.getMessage());
