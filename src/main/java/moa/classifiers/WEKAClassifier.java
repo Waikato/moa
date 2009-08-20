@@ -132,7 +132,7 @@ public class WEKAClassifier
 					if (numInstances == widthOption.getValue() ){ 
 						//Build Classifier
 						buildClassifier();
-						System.out.println("Build");
+						//System.out.println("Build");
 						isClassificationEnabled = true;
 						this.instancesBuffer = new Instances(inst.dataset());
 					}

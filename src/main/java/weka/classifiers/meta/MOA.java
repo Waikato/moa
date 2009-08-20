@@ -213,6 +213,8 @@ public class MOA
     result.enable(Capability.NOMINAL_CLASS);
     result.enable(Capability.MISSING_CLASS_VALUES);
     
+    result.setMinimumNumberInstances(0);
+    
     return result;
   }
 
@@ -263,7 +265,12 @@ public class MOA
   	double[]	result;
   	
   	result = m_ActualClassifier.getVotesForInstance(instance);
-  	Utils.normalize(result);
+  	try {
+  		Utils.normalize(result);
+  	}
+  	catch (Exception e) {
+  		result = new double[instance.numClasses()];
+  	}
   	
   	return result;
   }
