@@ -1,7 +1,7 @@
 /*
  *    WEKAClassifier.java
  *    Copyright (C) 2009 University of Waikato, Hamilton, New Zealand
- *    @author Albert Bifet
+ *    @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  *    @author FracPete (fracpete at waikato dot ac dot nz)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -132,7 +132,6 @@ public class WEKAClassifier
 					if (numInstances == widthOption.getValue() ){ 
 						//Build Classifier
 						buildClassifier();
-						//System.out.println("Build");
 						isClassificationEnabled = true;
 						this.instancesBuffer = new Instances(inst.dataset());
 					}
