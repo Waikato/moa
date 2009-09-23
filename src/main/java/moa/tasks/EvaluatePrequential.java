@@ -31,6 +31,7 @@ import moa.core.TimingUtils;
 import moa.evaluation.ClassificationPerformanceEvaluator;
 import moa.evaluation.WindowClassificationPerformanceEvaluator;
 import moa.evaluation.EWMAClassificationPerformanceEvaluator;
+import moa.evaluation.FadingFactorClassificationPerformanceEvaluator;
 import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
 import moa.options.ClassOption;
@@ -92,7 +93,7 @@ public class EvaluatePrequential extends MainTask {
 			'w', "Size of Window", 1000);
 			
 	public FloatOption alphaOption = new FloatOption("alpha",
-			'a', "Exponential smoothing factor", .01);
+			'a', "Fading factor or exponential smoothing factor", .01);
 	//End New for prequential methods
 
 	public Class<?> getTaskResultType() {
@@ -110,6 +111,9 @@ public class EvaluatePrequential extends MainTask {
 		}
 		if (evaluator instanceof EWMAClassificationPerformanceEvaluator) {
 			((EWMAClassificationPerformanceEvaluator) evaluator).setalpha(alphaOption.getValue());
+		}
+		if (evaluator instanceof FadingFactorClassificationPerformanceEvaluator) {
+			((FadingFactorClassificationPerformanceEvaluator) evaluator).setalpha(alphaOption.getValue());
 		}
 		//End New for prequential methods
 		
