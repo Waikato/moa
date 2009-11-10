@@ -21,6 +21,7 @@ package moa;
 
 import sizeof.agent.SizeOfAgent;
 import moa.core.SerializeUtils;
+import moa.core.SizeOf;
 
 public abstract class AbstractMOAObject implements MOAObject {
 
@@ -48,7 +49,7 @@ public abstract class AbstractMOAObject implements MOAObject {
 	}
 
 	public static int measureByteSize(MOAObject obj) {
-		return (int) SizeOfAgent.fullSizeOf(obj);
+		return (int) SizeOf.sizeOf(obj);
 	}
 
 }

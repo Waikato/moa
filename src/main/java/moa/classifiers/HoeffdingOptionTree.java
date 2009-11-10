@@ -19,6 +19,11 @@
  */
 package moa.classifiers;
 
+import sizeof.agent.SizeOfAgent;
+
+import weka.core.Instance;
+import weka.core.Utils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -33,6 +38,7 @@ import moa.AbstractMOAObject;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+import moa.core.SizeOf;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
 import moa.options.FileOption;
@@ -40,9 +46,6 @@ import moa.options.FlagOption;
 import moa.options.FloatOption;
 import moa.options.IntOption;
 import moa.options.MultiChoiceOption;
-import sizeof.agent.SizeOfAgent;
-import weka.core.Instance;
-import weka.core.Utils;
 
 public class HoeffdingOptionTree extends AbstractClassifier {
 
@@ -141,8 +144,7 @@ public class HoeffdingOptionTree extends AbstractClassifier {
 		}
 
 		public int calcByteSize() {
-			return (int) (SizeOfAgent.sizeOf(this) + SizeOfAgent
-					.fullSizeOf(this.observedClassDistribution));
+			return (int) (SizeOfAgent.sizeOf(this) + SizeOf.sizeOf(this.observedClassDistribution));
 		}
 
 		public int calcByteSizeIncludingSubtree() {
@@ -231,8 +233,7 @@ public class HoeffdingOptionTree extends AbstractClassifier {
 		@Override
 		public int calcByteSize() {
 			return super.calcByteSize()
-					+ (int) (SizeOfAgent.sizeOf(this.children) + SizeOfAgent
-							.fullSizeOf(this.splitTest));
+					+ (int) (SizeOfAgent.sizeOf(this.children) + SizeOf.sizeOf(this.splitTest));
 		}
 
 		@Override
@@ -487,7 +488,7 @@ public class HoeffdingOptionTree extends AbstractClassifier {
 		@Override
 		public int calcByteSize() {
 			return super.calcByteSize()
-					+ (int) (SizeOfAgent.fullSizeOf(this.attributeObservers));
+					+ (int) (SizeOf.sizeOf(this.attributeObservers));
 		}
 
 		@Override
@@ -652,7 +653,7 @@ public class HoeffdingOptionTree extends AbstractClassifier {
 						leafNode = foundNode.parent;
 					}
 					double[] dist = leafNode.getClassVotes(inst, this);
-					//Albert: changed for weights					
+					//Albert: changed for weights
 					//double distSum = Utils.sum(dist);
 					//if (distSum > 0.0) {
 					//	Utils.normalize(dist, distSum);
@@ -1022,9 +1023,9 @@ public class HoeffdingOptionTree extends AbstractClassifier {
 		long totalInactiveSize = 0;
 		for (FoundNode foundNode : learningNodes) {
 			if (foundNode.node instanceof ActiveLearningNode) {
-				totalActiveSize += SizeOfAgent.fullSizeOf(foundNode.node);
+				totalActiveSize += SizeOf.sizeOf(foundNode.node);
 			} else {
-				totalInactiveSize += SizeOfAgent.fullSizeOf(foundNode.node);
+				totalInactiveSize += SizeOf.sizeOf(foundNode.node);
 			}
 		}
 		if (totalActiveSize > 0) {

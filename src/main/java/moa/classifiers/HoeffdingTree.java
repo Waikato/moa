@@ -30,6 +30,7 @@ import moa.AbstractMOAObject;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+import moa.core.SizeOf;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
 import moa.options.FlagOption;
@@ -124,8 +125,7 @@ public class HoeffdingTree extends AbstractClassifier {
 		}
 
 		public int calcByteSize() {
-			return (int) (SizeOfAgent.sizeOf(this) + SizeOfAgent
-					.fullSizeOf(this.observedClassDistribution));
+			return (int) (SizeOfAgent.sizeOf(this) + SizeOf.sizeOf(this.observedClassDistribution));
 		}
 
 		public int calcByteSizeIncludingSubtree() {
@@ -194,8 +194,7 @@ public class HoeffdingTree extends AbstractClassifier {
 		@Override
 		public int calcByteSize() {
 			return super.calcByteSize()
-					+ (int) (SizeOfAgent.sizeOf(this.children) + SizeOfAgent
-							.fullSizeOf(this.splitTest));
+					+ (int) (SizeOfAgent.sizeOf(this.children) + SizeOf.sizeOf(this.splitTest));
 		}
 
 		@Override
@@ -330,7 +329,7 @@ public class HoeffdingTree extends AbstractClassifier {
 		@Override
 		public int calcByteSize() {
 			return super.calcByteSize()
-					+ (int) (SizeOfAgent.fullSizeOf(this.attributeObservers));
+					+ (int) (SizeOf.sizeOf(this.attributeObservers));
 		}
 
 		@Override
@@ -706,9 +705,9 @@ public class HoeffdingTree extends AbstractClassifier {
 		long totalInactiveSize = 0;
 		for (FoundNode foundNode : learningNodes) {
 			if (foundNode.node instanceof ActiveLearningNode) {
-				totalActiveSize += SizeOfAgent.fullSizeOf(foundNode.node);
+				totalActiveSize += SizeOf.sizeOf(foundNode.node);
 			} else {
-				totalInactiveSize += SizeOfAgent.fullSizeOf(foundNode.node);
+				totalInactiveSize += SizeOf.sizeOf(foundNode.node);
 			}
 		}
 		if (totalActiveSize > 0) {
