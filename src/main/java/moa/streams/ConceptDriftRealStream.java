@@ -2,7 +2,7 @@
  *    ConceptDriftRealStream.java
  *    Copyright (C) 2008 University of Waikato, Hamilton, New Zealand
  *    @author Albert Bifet
- 
+
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +19,12 @@
  */
 package moa.streams;
 
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.FastVector;
+import weka.core.Instance;
+import weka.core.Instances;
+
 import java.util.Random;
 
 import moa.core.InstancesHeader;
@@ -27,25 +33,18 @@ import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
 import moa.options.FloatOption;
 import moa.options.IntOption;
-import moa.options.Option;
-import moa.options.OptionHandler;
-import moa.streams.filters.StreamFilter;
 import moa.tasks.TaskMonitor;
-import weka.core.Attribute;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
 
-// Generator that adds concept drift to examples in a stream with 
+// Generator that adds concept drift to examples in a stream with
 // different classes and attributes. Example: real datasets
 //
 // Example:
 //
 // ConceptDriftRealStream -s (ArffFileStream -f covtype.arff) \
 //    -d (ConceptDriftRealStream -s (ArffFileStream -f PokerOrig.arff) \
-//    -d (ArffFileStream -f elec.arff) -w 5000 -p 1000000 ) -w 5000 -p 581012 
+//    -d (ArffFileStream -f elec.arff) -w 5000 -p 1000000 ) -w 5000 -p 581012
 //
-// s : Stream 
+// s : Stream
 // d : Concept drift Stream
 // p : Central position of concept drift change
 // w : Width of concept drift change
@@ -58,7 +57,7 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
 	public String getPurposeString() {
 		return "Adds Concept Drift to examples in a stream.";
 	}
-	
+
 	private static final long serialVersionUID = 1L;
 
 	public ClassOption streamOption = new ClassOption("stream", 's',
@@ -79,26 +78,26 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
 			'w', "Width of concept drift change.", 1000);
 
 	public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
-			"Seed for random noise.", 1);	
+			"Seed for random noise.", 1);
 
 	protected InstanceStream inputStream;
 
 	protected InstanceStream driftStream;
 
 	protected Random random;
-	
+
 	protected int numberInstanceStream;
 
 	protected InstancesHeader streamHeader;
-	
+
 	protected Instance inputInstance;
-	
+
 	protected Instance driftInstance;
 
 	@Override
 	public void prepareForUseImpl(TaskMonitor monitor,
 			ObjectRepository repository) {
-		
+
 		this.inputStream = (InstanceStream) getPreparedClassOption(this.streamOption);
 		this.driftStream = (InstanceStream) getPreparedClassOption(this.driftstreamOption);
 		this.random = new Random(this.randomSeedOption.getValue());
@@ -125,7 +124,7 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
 		} else {
 			classLabels = first.classAttribute();
 		}
-		newAttributes.addElement(classLabels) ; 
+		newAttributes.addElement(classLabels) ;
 
 		this.streamHeader = new InstancesHeader(new Instances(
 				getCLICreationString(InstanceStream.class), newAttributes, 0));
@@ -169,7 +168,7 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
 			this.driftInstance = this.driftStream.nextInstance();
 			numclass = this.driftInstance.classValue();
 		}
-		int m = 0; 	 
+		int m = 0;
 		double [] newVals = new double[this.inputInstance.numAttributes() + this.driftInstance.numAttributes()-1];
 		for (int j = 0; j < this.inputInstance.numAttributes()-1; j++, m++) {
 		  newVals[m] = this.inputInstance.value(j);
@@ -179,11 +178,11 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
 		}
 		newVals[m] = numclass;
    		//return new Instance(1.0, newVals);
-   		Instance inst = new Instance(1.0, newVals);
+   		Instance inst = new DenseInstance(1.0, newVals);
 		inst.setDataset(this.getHeader());
 		inst.setClassValue(numclass);
 		return inst;
-		
+
 	}
 
 	public void restart() {

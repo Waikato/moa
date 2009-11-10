@@ -19,29 +19,30 @@
  */
 package moa.streams.generators;
 
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.FastVector;
+import weka.core.Instance;
+import weka.core.Instances;
+
 import java.util.Random;
 
 import moa.core.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.FlagOption;
-import moa.options.FloatOption;
 import moa.options.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
-import weka.core.Attribute;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
 
 // Generator described in paper:
 //  W. Nick Street and YongSeog Kim
-//    "A streaming ensemble algorithm (SEA) for large-scale classification", 
+//    "A streaming ensemble algorithm (SEA) for large-scale classification",
 //     KDD '01: Proceedings of the seventh ACM SIGKDD international conference on Knowledge discovery and data mining
 //     377-382 2001.
 
 // Notes:
-// The built in functions are based on the paper 
+// The built in functions are based on the paper
 
 public class SEAGenerator extends AbstractOptionHandler implements
 		InstanceStream {
@@ -50,7 +51,7 @@ public class SEAGenerator extends AbstractOptionHandler implements
 	public String getPurposeString() {
 		return "Generates SEA concepts functions.";
 	}
-	
+
 	private static final long serialVersionUID = 1L;
 
 	public IntOption functionOption = new IntOption("function", 'f',
@@ -151,7 +152,7 @@ public class SEAGenerator extends AbstractOptionHandler implements
 			attrib1 = 10 * this.instanceRandom.nextDouble();
 			attrib2 = 10 * this.instanceRandom.nextDouble();
 			attrib3 = 10 * this.instanceRandom.nextDouble();
-		
+
 			// determine class
 			group = classificationFunctions[this.functionOption.getValue() - 1]
 					.determineClass(attrib1, attrib2, attrib3);
@@ -174,7 +175,7 @@ public class SEAGenerator extends AbstractOptionHandler implements
 
 		// construct instance
 		InstancesHeader header = getHeader();
-		Instance inst = new Instance(header.numAttributes());
+		Instance inst = new DenseInstance(header.numAttributes());
 		inst.setValue(0, attrib1);
 		inst.setValue(1, attrib2);
 		inst.setValue(2, attrib3);

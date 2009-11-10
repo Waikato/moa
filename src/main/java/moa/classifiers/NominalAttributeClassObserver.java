@@ -19,10 +19,11 @@
  */
 package moa.classifiers;
 
+import weka.core.Utils;
+
 import moa.AbstractMOAObject;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
-import weka.core.Instance;
 
 public class NominalAttributeClassObserver extends AbstractMOAObject implements
 		AttributeClassObserver {
@@ -36,7 +37,7 @@ public class NominalAttributeClassObserver extends AbstractMOAObject implements
 	protected AutoExpandVector<DoubleVector> attValDistPerClass = new AutoExpandVector<DoubleVector>();
 
 	public void observeAttributeClass(double attVal, int classVal, double weight) {
-		if (Instance.isMissingValue(attVal)) {
+		if (Utils.isMissingValue(attVal)) {
 			this.missingWeightObserved += weight;
 		} else {
 			int attValInt = (int) attVal;

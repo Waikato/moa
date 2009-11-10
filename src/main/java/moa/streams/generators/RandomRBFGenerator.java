@@ -19,6 +19,12 @@
  */
 package moa.streams.generators;
 
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.FastVector;
+import weka.core.Instance;
+import weka.core.Instances;
+
 import java.io.Serializable;
 import java.util.Random;
 
@@ -29,10 +35,6 @@ import moa.options.AbstractOptionHandler;
 import moa.options.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
-import weka.core.Attribute;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
 
 public class RandomRBFGenerator extends AbstractOptionHandler implements
 		InstanceStream {
@@ -41,7 +43,7 @@ public class RandomRBFGenerator extends AbstractOptionHandler implements
 	public String getPurposeString() {
 		return "Generates a random radial basis function stream.";
 	}
-	
+
 	private static final long serialVersionUID = 1L;
 
 	public IntOption modelRandomSeedOption = new IntOption("modelRandomSeed",
@@ -130,7 +132,7 @@ public class RandomRBFGenerator extends AbstractOptionHandler implements
 		for (int i = 0; i < numAtts; i++) {
 			attVals[i] = centroid.centre[i] + attVals[i] * scale;
 		}
-		Instance inst = new Instance(1.0, attVals);
+		Instance inst = new DenseInstance(1.0, attVals);
 		inst.setDataset(getHeader());
 		inst.setClassValue(centroid.classLabel);
 		return inst;

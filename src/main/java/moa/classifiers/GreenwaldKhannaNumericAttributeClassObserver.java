@@ -19,11 +19,12 @@
  */
 package moa.classifiers;
 
+import weka.core.Utils;
+
 import moa.AbstractMOAObject;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.GreenwaldKhannaQuantileSummary;
-import weka.core.Instance;
 
 public class GreenwaldKhannaNumericAttributeClassObserver extends
 		AbstractMOAObject implements AttributeClassObserver {
@@ -39,7 +40,7 @@ public class GreenwaldKhannaNumericAttributeClassObserver extends
 	}
 
 	public void observeAttributeClass(double attVal, int classVal, double weight) {
-		if (Instance.isMissingValue(attVal)) {
+		if (Utils.isMissingValue(attVal)) {
 
 		} else {
 			GreenwaldKhannaQuantileSummary valDist = this.attValDistPerClass

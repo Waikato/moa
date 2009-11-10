@@ -19,6 +19,12 @@
  */
 package moa.streams.generators;
 
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.FastVector;
+import weka.core.Instance;
+import weka.core.Instances;
+
 import java.util.Random;
 
 import moa.core.InstancesHeader;
@@ -28,10 +34,6 @@ import moa.options.FlagOption;
 import moa.options.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
-import weka.core.Attribute;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
 
 public class LEDGenerator extends AbstractOptionHandler implements
 		InstanceStream {
@@ -40,7 +42,7 @@ public class LEDGenerator extends AbstractOptionHandler implements
 	public String getPurposeString() {
 		return "Generates a problem of predicting the digit displayed on a 7-segment LED display.";
 	}
-	
+
 	private static final long serialVersionUID = 1L;
 
 	public static final int NUM_IRRELEVANT_ATTRIBUTES = 17;
@@ -111,7 +113,7 @@ public class LEDGenerator extends AbstractOptionHandler implements
 
 	public Instance nextInstance() {
 		InstancesHeader header = getHeader();
-		Instance inst = new Instance(header.numAttributes());
+		Instance inst = new DenseInstance(header.numAttributes());
 		inst.setDataset(header);
 		int selected = this.instanceRandom.nextInt(10);
 		for (int i = 0; i < 7; i++) {

@@ -19,24 +19,25 @@
  */
 package moa.streams.generators;
 
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.FastVector;
+import weka.core.Instance;
+import weka.core.Instances;
+
 import java.util.Random;
 
 import moa.core.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.FlagOption;
-import moa.options.FloatOption;
 import moa.options.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
-import weka.core.Attribute;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
 
 // Generator described in paper:
 //   Jeffrey C. Schlimmer and Richard H. Granger Jr.
-//    "Incremental Learning from Noisy Data", 
+//    "Incremental Learning from Noisy Data",
 //     Machine Learning 1: 317-354 1986.
 //
 // Notes:
@@ -49,7 +50,7 @@ public class STAGGERGenerator extends AbstractOptionHandler implements
 	public String getPurposeString() {
 		return "Generates STAGGER Concept functions.";
 	}
-	
+
 	private static final long serialVersionUID = 1L;
 
 	public IntOption instanceRandomSeedOption = new IntOption(
@@ -153,7 +154,7 @@ public class STAGGERGenerator extends AbstractOptionHandler implements
 			size = this.instanceRandom.nextInt(3);
 			color = this.instanceRandom.nextInt(3);
 			shape = this.instanceRandom.nextInt(3);
-			
+
 			// determine class
 			group = classificationFunctions[this.functionOption.getValue() - 1]
 					.determineClass( size, color, shape );
@@ -171,7 +172,7 @@ public class STAGGERGenerator extends AbstractOptionHandler implements
 
 		// construct instance
 		InstancesHeader header = getHeader();
-		Instance inst = new Instance(header.numAttributes());
+		Instance inst = new DenseInstance(header.numAttributes());
 		inst.setValue(0, size);
 		inst.setValue(1, color);
 		inst.setValue(2, shape);

@@ -19,11 +19,13 @@
  */
 package moa.streams.generators;
 
+import weka.core.DenseInstance;
+import weka.core.Instance;
+
 import moa.core.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.IntOption;
 import moa.tasks.TaskMonitor;
-import weka.core.Instance;
 
 public class LEDGeneratorDrift extends LEDGenerator {
 
@@ -31,19 +33,19 @@ public class LEDGeneratorDrift extends LEDGenerator {
 	public String getPurposeString() {
 		return "Generates a problem of predicting the digit displayed on a 7-segment LED display with drift.";
 	}
-	
+
 	private static final long serialVersionUID = 1L;
 
 	public IntOption numberAttributesDriftOption = new IntOption("numberAttributesDrift",
 			'd', "Number of attributes with drift.", 1, 0, 7);
 
 	protected int[] numberAttribute;
-	
+
     @Override
 	protected void prepareForUseImpl(TaskMonitor monitor,
 			ObjectRepository repository) {
 		super.prepareForUseImpl(monitor,repository);
-		this.numberAttribute = new int[7+NUM_IRRELEVANT_ATTRIBUTES]; 
+		this.numberAttribute = new int[7+NUM_IRRELEVANT_ATTRIBUTES];
 		for (int i = 0; i < 7+NUM_IRRELEVANT_ATTRIBUTES; i++) {
 			this.numberAttribute[i] = i;
 		}
@@ -59,11 +61,11 @@ public class LEDGeneratorDrift extends LEDGenerator {
 			}
 		}
 	}
-	
+
 	@Override
 	public Instance nextInstance() {
 		InstancesHeader header = getHeader();
-		Instance inst = new Instance(header.numAttributes());
+		Instance inst = new DenseInstance(header.numAttributes());
 		inst.setDataset(header);
 		int selected = this.instanceRandom.nextInt(10);
 		for (int i = 0; i < 7; i++) {

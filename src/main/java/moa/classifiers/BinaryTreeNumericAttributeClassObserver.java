@@ -19,11 +19,12 @@
  */
 package moa.classifiers;
 
+import weka.core.Utils;
+
 import java.io.Serializable;
 
 import moa.AbstractMOAObject;
 import moa.core.DoubleVector;
-import weka.core.Instance;
 
 public class BinaryTreeNumericAttributeClassObserver extends AbstractMOAObject
 		implements AttributeClassObserver {
@@ -73,7 +74,7 @@ public class BinaryTreeNumericAttributeClassObserver extends AbstractMOAObject
 	protected Node root = null;
 
 	public void observeAttributeClass(double attVal, int classVal, double weight) {
-		if (Instance.isMissingValue(attVal)) {
+		if (Utils.isMissingValue(attVal)) {
 
 		} else {
 			if (this.root == null) {

@@ -19,21 +19,21 @@
  */
 package moa.streams.generators;
 
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.FastVector;
+import weka.core.Instance;
+import weka.core.Instances;
+
 import java.util.Random;
 
-import moa.core.DoubleVector;
 import moa.core.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import moa.options.FlagOption;
 import moa.options.FloatOption;
 import moa.options.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
-import weka.core.Attribute;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
 
 public class HyperplaneGenerator extends AbstractOptionHandler implements
 		InstanceStream {
@@ -42,7 +42,7 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
 	public String getPurposeString() {
 		return "Generates a problem of predicting class of a rotating hyperplane.";
 	}
-	
+
 	private static final long serialVersionUID = 1L;
 
 	public IntOption instanceRandomSeedOption = new IntOption(
@@ -54,16 +54,16 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
 
 	public IntOption numAttsOption = new IntOption("numAtts", 'a',
 			"The number of attributes to generate.", 10, 0, Integer.MAX_VALUE);
-			
+
 	public IntOption numDriftAttsOption = new IntOption("numDriftAtts", 'k',
 			"The number of attributes with drift.", 2, 0, Integer.MAX_VALUE);
-	
+
 	public FloatOption magChangeOption = new FloatOption("magChange", 't',
-			"Magnitude of the change for every example", 0.0, 0.0, 1.0);		
+			"Magnitude of the change for every example", 0.0, 0.0, 1.0);
 
 	public IntOption noisePercentageOption = new IntOption("noisePercentage",
 			'n', "Percentage of noise to add to the data.", 5, 0, 100);
-			
+
 	public IntOption sigmaPercentageOption = new IntOption("sigmaPercentage",
 			's', "Percentage of probability that the direction of change is reversed.", 10, 0, 100);
 
@@ -72,9 +72,9 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
 	protected Random instanceRandom;
 
 	protected double[] weights;
-	
-	protected int[] sigma;	
-	
+
+	protected int[] sigma;
+
 	public int numberInstance;
 
 	@Override
@@ -117,7 +117,7 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
 	}
 
 	public Instance nextInstance() {
-     		
+
 		int numAtts = this.numAttsOption.getValue();
 		double[] attVals = new double[numAtts + 1];
 		double sum = 0.0;
@@ -137,9 +137,9 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
 		if ((1 + (this.instanceRandom.nextInt(100))) <= this.noisePercentageOption
 					.getValue()) {
 				classLabel = (classLabel == 0 ? 1 : 0);
-			}		
+			}
 
-		Instance inst = new Instance(1.0, attVals);
+		Instance inst = new DenseInstance(1.0, attVals);
 		inst.setDataset(getHeader());
 		inst.setClassValue(classLabel);
 		addDrift();
@@ -149,10 +149,10 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
 	private void addDrift() {
 		for (int i = 0; i < this.numDriftAttsOption.getValue(); i++) {
 			this.weights[i] += (double) ((double) sigma[i] ) * ((double) this.magChangeOption.getValue());
-			if (//this.weights[i] >= 1.0 || this.weights[i] <= 0.0 || 
-			(1 + (this.instanceRandom.nextInt(100))) <= this.sigmaPercentageOption.getValue()) {			
+			if (//this.weights[i] >= 1.0 || this.weights[i] <= 0.0 ||
+			(1 + (this.instanceRandom.nextInt(100))) <= this.sigmaPercentageOption.getValue()) {
 				this.sigma[i] *= -1;
-			}	
+			}
 		}
 	}
 

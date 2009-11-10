@@ -19,11 +19,13 @@
  */
 package moa.streams.generators;
 
+import weka.core.DenseInstance;
+import weka.core.Instance;
+
 import moa.core.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.IntOption;
 import moa.tasks.TaskMonitor;
-import weka.core.Instance;
 
 public class WaveformGeneratorDrift extends WaveformGenerator {
 
@@ -38,14 +40,14 @@ public class WaveformGeneratorDrift extends WaveformGenerator {
 	public String getPurposeString() {
 		return "Generates a problem of predicting one of three waveform types with drift.";
 	}
-	
+
 	@Override
 	protected void prepareForUseImpl(TaskMonitor monitor,
 			ObjectRepository repository) {
 		super.prepareForUseImpl(monitor,repository);
 		int numAtts = this.addNoiseOption.isSet() ? TOTAL_ATTRIBUTES_INCLUDING_NOISE
 				: NUM_BASE_ATTRIBUTES;
-		this.numberAttribute = new int[numAtts]; 
+		this.numberAttribute = new int[numAtts];
 		for (int i = 0; i < numAtts; i++) {
 			this.numberAttribute[i] = i;
 		}
@@ -61,7 +63,7 @@ public class WaveformGeneratorDrift extends WaveformGenerator {
 	@Override
 	public Instance nextInstance() {
 		InstancesHeader header = getHeader();
-		Instance inst = new Instance(header.numAttributes());
+		Instance inst = new DenseInstance(header.numAttributes());
 		inst.setDataset(header);
 		int waveform = this.instanceRandom.nextInt(NUM_CLASSES);
 		int choiceA = 0, choiceB = 0;

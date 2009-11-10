@@ -48,41 +48,41 @@ import moa.options.ClassOption;
  *
  <!-- options-start -->
  * Valid options are: <p/>
- * 
+ *
  * <pre> -B &lt;classname + options&gt;
  *  The MOA classifier to use.
  *  (default: moa.classifiers.DecisionStump)</pre>
- * 
+ *
  * <pre> -D
  *  If set, classifier is run in debug mode and
  *  may output additional info to the console</pre>
- * 
+ *
  <!-- options-end -->
  *
  * @author  fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
 public class MOA
-  extends weka.classifiers.Classifier
+  extends weka.classifiers.AbstractClassifier
   implements UpdateableClassifier {
-  
+
 	/** for serialization. */
 	private static final long serialVersionUID = 2605797948130310166L;
-	
+
 	/** the actual moa classifier to use for learning. */
 	protected Classifier m_ActualClassifier = new DecisionStump();
-	
+
 	/** the moa classifier option (this object is used in the GenericObjectEditor). */
 	protected ClassOption m_Classifier = new ClassOption("Classifier", 'B', "The MOA classifier to use from within WEKA.", Classifier.class, m_ActualClassifier.getClass().getName());
-	
+
   /**
    * Returns a string describing the classifier.
-   * 
+   *
    * @return a description suitable for
    * displaying in the explorer/experimenter gui
    */
   public String globalInfo() {
-    return 
+    return
         "Wrapper for MOA classifiers.\n\n"
       + "Since MOA doesn't offer a mechanism to query a classifier for the "
       + "types of attributes and classes it can handle, the capabilities of "
@@ -97,16 +97,16 @@ public class MOA
    */
   public Enumeration listOptions() {
     Vector result = new Vector();
-    
+
     result.addElement(new Option(
         "\tThe MOA classifier to use.\n"
         + "\t(default: " + MOAUtils.toCommandLine(new DecisionStump()) + ")",
         "B", 1, "-B <classname + options>"));
-    
+
     Enumeration en = super.listOptions();
     while (en.hasMoreElements())
       result.addElement(en.nextElement());
-      
+
     return result.elements();
   }
 
@@ -115,15 +115,15 @@ public class MOA
    *
    <!-- options-start -->
    * Valid options are: <p/>
-   * 
+   *
    * <pre> -B &lt;classname + options&gt;
    *  The MOA classifier to use.
    *  (default: moa.classifiers.DecisionStump)</pre>
-   * 
+   *
    * <pre> -D
    *  If set, classifier is run in debug mode and
    *  may output additional info to the console</pre>
-   * 
+   *
    <!-- options-end -->
    *
    * @param options the list of options as an array of strings
@@ -140,7 +140,7 @@ public class MOA
     else
     	option.setCurrentObject(MOAUtils.fromCommandLine(m_Classifier, tmpStr));
     setClassifier(option);
-    
+
     super.setOptions(options);
   }
 
@@ -153,50 +153,50 @@ public class MOA
     Vector<String>	result;
     String[]      	options;
     int           	i;
-    
+
     result = new Vector<String>();
 
     result.add("-B");
     result.add(MOAUtils.toCommandLine(m_ActualClassifier));
-    
+
     options = super.getOptions();
     for (i = 0; i < options.length; i++)
       result.add(options[i]);
-    
+
     return result.toArray(new String[result.size()]);
   }
-  
+
   /**
    * Sets the MOA classifier to use.
-   * 
+   *
    * @param value the classifier to use
    */
   public void setClassifier(ClassOption value) {
   	m_Classifier       = value;
   	m_ActualClassifier = (Classifier) MOAUtils.fromOption(m_Classifier);
   }
-  
+
   /**
    * Returns the current MOA classifier in use.
-   * 
+   *
    * @return the classifier in use
    */
   public ClassOption getClassifier() {
   	return m_Classifier;
   }
-  
+
   /**
    * Returns the tooltip displayed in the GUI.
-   * 
+   *
    * @return the tooltip
    */
   public String classifierTipText() {
   	return "The MOA classifier to use.";
   }
 
-  /** 
+  /**
    * Returns the Capabilities of this classifier. Maximally permissive
-   * capabilities are allowed by default. MOA doesn't specify what 
+   * capabilities are allowed by default. MOA doesn't specify what
    *
    * @return            the capabilities of this object
    * @see               Capabilities
@@ -208,29 +208,29 @@ public class MOA
     result.enable(Capability.NOMINAL_ATTRIBUTES);
     result.enable(Capability.NUMERIC_ATTRIBUTES);
     result.enable(Capability.MISSING_VALUES);
-    
+
     // class
     result.enable(Capability.NOMINAL_CLASS);
     result.enable(Capability.MISSING_CLASS_VALUES);
-    
+
     result.setMinimumNumberInstances(0);
-    
+
     return result;
   }
 
   /**
    * Generates a classifier.
    *
-   * @param data set of instances serving as training data 
-   * @throws Exception if the classifier has not been 
+   * @param data set of instances serving as training data
+   * @throws Exception if the classifier has not been
    * generated successfully
    */
   public void buildClassifier(Instances data) throws Exception {
   	getCapabilities().testWithFail(data);
-  	
+
   	data = new Instances(data);
   	data.deleteWithMissingClass();
-  	
+
   	m_ActualClassifier.resetLearning();
   	for (int i = 0; i < data.numInstances(); i++)
   		updateClassifier(data.instance(i));
@@ -255,15 +255,15 @@ public class MOA
    * predicted value.
    *
    * @param instance the instance to be classified
-   * @return an array containing the estimated membership 
-   * probabilities of the test instance in each class 
+   * @return an array containing the estimated membership
+   * probabilities of the test instance in each class
    * or the numeric prediction
-   * @throws Exception if distribution could not be 
+   * @throws Exception if distribution could not be
    * computed successfully
    */
   public double[] distributionForInstance(Instance instance) throws Exception {
   	double[]	result;
-  	
+
   	result = m_ActualClassifier.getVotesForInstance(instance);
   	try {
   		Utils.normalize(result);
@@ -271,30 +271,30 @@ public class MOA
   	catch (Exception e) {
   		result = new double[instance.numClasses()];
   	}
-  	
+
   	return result;
   }
-  
+
   /**
    * Returns the revision string.
-   * 
+   *
    * @return the revision
    */
   public String getRevision() {
     return RevisionUtils.extract("$Revision$");
   }
-  
+
   /**
    * Returns a string representation of the model.
-   * 
+   *
    * @return the string representation
    */
   public String toString() {
   	StringBuilder		result;
-  	
+
   	result = new StringBuilder();
   	m_ActualClassifier.getDescription(result, 0);
-  	
+
   	return result.toString();
   }
 

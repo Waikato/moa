@@ -19,6 +19,12 @@
  */
 package moa.streams.generators;
 
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.FastVector;
+import weka.core.Instance;
+import weka.core.Instances;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
@@ -30,10 +36,6 @@ import moa.options.FloatOption;
 import moa.options.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
-import weka.core.Attribute;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
 
 public class RandomTreeGenerator extends AbstractOptionHandler implements
 		InstanceStream {
@@ -42,7 +44,7 @@ public class RandomTreeGenerator extends AbstractOptionHandler implements
 	public String getPurposeString() {
 		return "Generates a stream based on a randomly generated tree.";
 	}
-	
+
 	private static final long serialVersionUID = 1L;
 
 	public IntOption treeRandomSeedOption = new IntOption("treeRandomSeed",
@@ -136,7 +138,7 @@ public class RandomTreeGenerator extends AbstractOptionHandler implements
 		double[] attVals = new double[this.numNominalsOption.getValue()
 				+ this.numNumericsOption.getValue()];
 		InstancesHeader header = getHeader();
-		Instance inst = new Instance(header.numAttributes());
+		Instance inst = new DenseInstance(header.numAttributes());
 		for (int i = 0; i < attVals.length; i++) {
 			attVals[i] = i < this.numNominalsOption.getValue() ? this.instanceRandom
 					.nextInt(this.numValsPerNominalOption.getValue())

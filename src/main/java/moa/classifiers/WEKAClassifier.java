@@ -50,7 +50,7 @@ public class WEKAClassifier
 			"How many instances between samples of the learning performance.",
 			0, 0, Integer.MAX_VALUE);
 
-	protected Classifier classifier; 
+	protected Classifier classifier;
 
 	protected int numberInstances;
 
@@ -101,7 +101,7 @@ public class WEKAClassifier
 					((UpdateableClassifier) classifier).updateClassifier(inst);
 				}
 			} else {
-				if (numberInstances == widthInitOption.getValue()) { 
+				if (numberInstances == widthInitOption.getValue()) {
 					//Build first time Classifier
 					buildClassifier();
 					isClassificationEnabled = true;
@@ -120,7 +120,7 @@ public class WEKAClassifier
 					int numInstances = numberInstances % sampleFrequencyOption.getValue();
 					if (sampleFrequencyOption.getValue() == 0) {
 						  numInstances = numberInstances;
-					} 
+					}
 					if (numInstances == 0) {
 							//Begin to store instances
 							isBufferStoring = true;
@@ -128,8 +128,8 @@ public class WEKAClassifier
 					if (isBufferStoring == true && numInstances<= widthOption.getValue()) {
 						//Store instances
 						instancesBuffer.add(inst);
-					}	
-					if (numInstances == widthOption.getValue() ){ 
+					}
+					if (numInstances == widthOption.getValue() ){
 						//Build Classifier
 						buildClassifier();
 						isClassificationEnabled = true;
@@ -145,10 +145,10 @@ public class WEKAClassifier
 	public void buildClassifier() {
 		try {
 			if ((classifier instanceof UpdateableClassifier) == false ) {
-				Classifier auxclassifier= Classifier.makeCopy(classifier);
+				Classifier auxclassifier= weka.classifiers.AbstractClassifier.makeCopy(classifier);
 				auxclassifier.buildClassifier(instancesBuffer);
 				classifier = auxclassifier;
-				isBufferStoring = false;	
+				isBufferStoring = false;
 			}
 		} catch (Exception e) {
 			System.err.println("Building WEKA Classifier: "+e.getMessage());
@@ -192,6 +192,6 @@ public class WEKAClassifier
 		String classifierName = options[0];
 		String[] newoptions = options.clone();
 		newoptions[0] = "";
-		this.classifier = Classifier.forName(classifierName, newoptions);
+		this.classifier = weka.classifiers.AbstractClassifier.forName(classifierName, newoptions);
 	}
 }

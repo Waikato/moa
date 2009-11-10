@@ -19,6 +19,12 @@
  */
 package moa.streams.generators;
 
+import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.FastVector;
+import weka.core.Instance;
+import weka.core.Instances;
+
 import java.util.Random;
 
 import moa.core.InstancesHeader;
@@ -29,14 +35,10 @@ import moa.options.FloatOption;
 import moa.options.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
-import weka.core.Attribute;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
 
 // Generator described in paper:
 //   Rakesh Agrawal, Tomasz Imielinksi, and Arun Swami,
-//    "Database Mining: A Performance Perspective", 
+//    "Database Mining: A Performance Perspective",
 //     IEEE Transactions on Knowledge and Data Engineering,
 //      5(6), December 1993.
 // Public C source code available at:
@@ -53,7 +55,7 @@ public class AgrawalGenerator extends AbstractOptionHandler implements
 	public String getPurposeString() {
 		return "Generates one of ten different pre-defined loan functions.";
 	}
-	
+
 	private static final long serialVersionUID = 1L;
 
 	public IntOption functionOption = new IntOption("function", 'f',
@@ -342,7 +344,7 @@ public class AgrawalGenerator extends AbstractOptionHandler implements
 		}
 		// construct instance
 		InstancesHeader header = getHeader();
-		Instance inst = new Instance(header.numAttributes());
+		Instance inst = new DenseInstance(header.numAttributes());
 		inst.setValue(0, salary);
 		inst.setValue(1, commission);
 		inst.setValue(2, age);

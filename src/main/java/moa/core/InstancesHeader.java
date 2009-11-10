@@ -34,7 +34,7 @@ public class InstancesHeader extends Instances {
 	}
 
 	@Override
-	public void add(Instance i) {
+	public boolean add(Instance i) {
 		throw new UnsupportedOperationException();
 	}
 

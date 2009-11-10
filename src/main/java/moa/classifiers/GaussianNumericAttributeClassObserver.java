@@ -19,6 +19,8 @@
  */
 package moa.classifiers;
 
+import weka.core.Utils;
+
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -26,7 +28,6 @@ import moa.AbstractMOAObject;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.GaussianEstimator;
-import weka.core.Instance;
 
 public class GaussianNumericAttributeClassObserver extends AbstractMOAObject
 		implements AttributeClassObserver {
@@ -50,7 +51,7 @@ public class GaussianNumericAttributeClassObserver extends AbstractMOAObject
 	}
 
 	public void observeAttributeClass(double attVal, int classVal, double weight) {
-		if (Instance.isMissingValue(attVal)) {
+		if (Utils.isMissingValue(attVal)) {
 
 		} else {
 			GaussianEstimator valDist = this.attValDistPerClass.get(classVal);

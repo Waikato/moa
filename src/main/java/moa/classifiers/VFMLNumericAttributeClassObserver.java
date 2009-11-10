@@ -19,13 +19,14 @@
  */
 package moa.classifiers;
 
+import weka.core.Utils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import moa.AbstractMOAObject;
 import moa.core.DoubleVector;
-import weka.core.Instance;
 
 public class VFMLNumericAttributeClassObserver extends AbstractMOAObject
 		implements AttributeClassObserver {
@@ -54,7 +55,7 @@ public class VFMLNumericAttributeClassObserver extends AbstractMOAObject
 	}
 
 	public void observeAttributeClass(double attVal, int classVal, double weight) {
-		if (Instance.isMissingValue(attVal)) {
+		if (Utils.isMissingValue(attVal)) {
 
 		} else {
 			if (this.binList.size() < 1) {
