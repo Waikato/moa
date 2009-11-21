@@ -22,10 +22,15 @@ package moa.gui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import moa.options.ClassOption;
 import moa.options.Option;
@@ -41,9 +46,23 @@ public class ClassOptionEditComponent extends JPanel implements
 
 	protected JButton editButton = new JButton("Edit");
 
+	/** listeners that listen to changes to the chosen option. */
+	protected HashSet<ChangeListener> changeListeners = new HashSet<ChangeListener>();
+
 	public ClassOptionEditComponent(ClassOption option) {
 		this.editedOption = option;
 		this.textField.setEditable(false);
+		this.textField.getDocument().addDocumentListener(new DocumentListener() {
+			public void removeUpdate(DocumentEvent e) {
+				notifyChangeListeners();
+			}
+			public void insertUpdate(DocumentEvent e) {
+				notifyChangeListeners();
+			}
+			public void changedUpdate(DocumentEvent e) {
+				notifyChangeListeners();
+			}
+		});
 		setLayout(new BorderLayout());
 		add(this.textField, BorderLayout.CENTER);
 		add(this.editButton, BorderLayout.EAST);
@@ -74,4 +93,31 @@ public class ClassOptionEditComponent extends JPanel implements
 				this.editedOption.getNullString()));
 	}
 
+	/**
+	 * Adds the listener to the internal set of listeners. Gets notified when
+	 * the option string changes.
+	 *
+	 * @param l the listener to add
+	 */
+	public void addChangeListener(ChangeListener l) {
+		changeListeners.add(l);
+	}
+
+	/**
+	 * Removes the listener from the internal set of listeners.
+	 *
+	 * @param l the listener to remove
+	 */
+	public void removeChangeListener(ChangeListener l) {
+		changeListeners.remove(l);
+	}
+
+	/**
+	 * Notifies all registered change listeners that the options have changed.
+	 */
+	protected void notifyChangeListeners() {
+		ChangeEvent e = new ChangeEvent(this);
+		for (ChangeListener l: changeListeners)
+			l.stateChanged(e);
+	}
 }
