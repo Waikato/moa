@@ -73,7 +73,10 @@ public class MOA
 	protected Classifier m_ActualClassifier = new DecisionStump();
 
 	/** the moa classifier option (this object is used in the GenericObjectEditor). */
-	protected ClassOption m_Classifier = new ClassOption("Classifier", 'B', "The MOA classifier to use from within WEKA.", Classifier.class, m_ActualClassifier.getClass().getName());
+	protected ClassOption m_Classifier = new ClassOption(
+			"classifier", 'B', "The MOA classifier to use from within WEKA.",
+			Classifier.class, m_ActualClassifier.getClass().getSimpleName(),
+			m_ActualClassifier.getClass().getName());
 
   /**
    * Returns a string describing the classifier.

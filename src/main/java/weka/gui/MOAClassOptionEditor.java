@@ -9,23 +9,20 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyEditorSupport;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import moa.gui.ClassOptionEditComponent;
 import moa.options.ClassOption;
 
-/** 
+/**
  * An editor for MOA ClassOption objects.
  *
  * @author FracPete (fracpete at waikato dot ac dot nz)
@@ -40,14 +37,14 @@ public class MOAClassOptionEditor
 
 	/** the component for editing. */
 	protected ClassOptionEditComponent m_EditComponent;
-	
+
 	/**
 	 * Returns true since this editor is paintable.
 	 *
 	 * @return 		always true.
 	 */
 	public boolean isPaintable() {
-		return true;
+		return false;
 	}
 
 	/**
@@ -72,46 +69,23 @@ public class MOAClassOptionEditor
 
 	/**
 	 * Creates the custom editor.
-	 * 
+	 *
 	 * @return		the editor
 	 */
 	protected Component createCustomEditor() {
 		JPanel			panel;
-		JPanel			panelButtons;
-		JButton			buttonOK;
-		JButton			buttonCancel;
-		JPanel			panelSpacer;
-		
+
 		panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		m_EditComponent = (ClassOptionEditComponent) ((ClassOption) getValue()).getEditComponent();
-		panel.add(m_EditComponent, BorderLayout.CENTER);
-		
-		panelButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		panel.add(panelButtons, BorderLayout.SOUTH);
-
-		panelSpacer = new JPanel();
-		panelSpacer.setPreferredSize(new Dimension(200, 10));
-		panelButtons.add(panelSpacer);
-		
-		buttonOK = new JButton("OK");
-		buttonOK.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		m_EditComponent.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
 				m_EditComponent.applyState();
 				setValue(m_EditComponent.getEditedOption());
-				closeDialog();
 			}
 		});
-		panelButtons.add(buttonOK);
+		panel.add(m_EditComponent, BorderLayout.CENTER);
 
-		buttonCancel = new JButton("Cancel");
-		buttonCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				closeDialog();
-			}
-		});
-		panelButtons.add(buttonCancel);
-		
 		return panel;
 	}
 
@@ -137,10 +111,10 @@ public class MOAClassOptionEditor
     FontMetrics 	fm;
     int 					vpad;
     String 				val;
-    
+
     fm   = gfx.getFontMetrics();
     vpad = (box.height - fm.getHeight()) / 2 ;
     val  = ((ClassOption) getValue()).getValueAsCLIString();
     gfx.drawString(val, 2, fm.getHeight() + vpad);
-  }  
+  }
 }
