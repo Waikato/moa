@@ -18,7 +18,7 @@
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 package moa.classifiers;
-import sizeof.agent.SizeOfAgent;
+import moa.core.SizeOf;
 
 public class ADWIN { //extends Estimator {
 
@@ -28,7 +28,7 @@ public class ADWIN { //extends Estimator {
 		protected ListItem tail;
 
 		public int measureByteSize() {
-			int size = (int) SizeOfAgent.sizeOf(this);
+			int size = (int) SizeOf.sizeOf(this);
 			size += count * head.measureByteSize();
 			return size;
 		}
@@ -55,7 +55,7 @@ public class ADWIN { //extends Estimator {
 		public boolean isEmpty() {
 			//	 post: returns the true iff store is empty.
 			return (this.size() == 0);
-		} 
+		}
 		public void clear() {
 			//	 post: clears the list so that it contains no elements.
 			this.head = null;
@@ -124,7 +124,7 @@ public class ADWIN { //extends Estimator {
 		protected double bucketVariance[]=new double[MAXBUCKETS+1];
 
 		public int measureByteSize() {
-			int size = (int) SizeOfAgent.sizeOf(this);
+			int size = (int) SizeOf.sizeOf(this);
 			return size;
 		}
 
@@ -135,8 +135,8 @@ public class ADWIN { //extends Estimator {
 		}
 		public void clear(){
 			bucketSizeRow=0;
-			for (int k=0;k<=MAXBUCKETS;k++) 
-				clearBucket(k);	
+			for (int k=0;k<=MAXBUCKETS;k++)
+				clearBucket(k);
 		}
 		private void clearBucket(int k){
 			setTotal(0,k);
@@ -226,7 +226,7 @@ public class ADWIN { //extends Estimator {
 //		post: initializes the node to be a tail node
 //		 containing the given value.
 		this(element, null);
-		} 
+		}
 
 
 		public Object value() {
@@ -238,7 +238,7 @@ public class ADWIN { //extends Estimator {
 //			 object.
 			this.data = anObject;
 			}
-		 */	
+		 */
 	}
 
 	public static final double DELTA=.002; //.1;
@@ -249,11 +249,11 @@ public class ADWIN { //extends Estimator {
 	private double mdblWidth=0; // Mean of Width = mdblWidth/Number of items
 	//BUCKET
 	public static final int MAXBUCKETS=5;
-	private int lastBucketRow=0; 
+	private int lastBucketRow=0;
 	private double TOTAL=0;
 	private double VARIANCE=0;
 	private int WIDTH=0;
-	private int BucketNumber=0; 
+	private int BucketNumber=0;
 
 	private int Detect=0;
 	private int numberDetections=0;
@@ -275,10 +275,10 @@ public class ADWIN { //extends Estimator {
 	public double getTotal(){return TOTAL;}
 	public double getEstimation(){return TOTAL/WIDTH;}
 	public double getVariance(){return VARIANCE /WIDTH;}
-	public double getWidthT(){return mdblWidth;} 
+	public double getWidthT(){return mdblWidth;}
 
 	public int measureByteSize() {
-		int size = (int) SizeOfAgent.sizeOf(this);
+		int size = (int) SizeOf.sizeOf(this);
 		size += listRowBuckets.measureByteSize();
 		return size;
 	}
@@ -287,7 +287,7 @@ public class ADWIN { //extends Estimator {
 	private void initBuckets(){
 		//Init buckets
 		listRowBuckets=new List();
-		lastBucketRow=0; 
+		lastBucketRow=0;
 		TOTAL=0;
 		VARIANCE=0;
 		WIDTH=0;
@@ -307,13 +307,13 @@ public class ADWIN { //extends Estimator {
 	private void insertElementBucket(double Variance, double Value, ListItem Node){
 		//Insert new bucket
 		Node.insertBucket(Value,Variance);
-		BucketNumber++; 
+		BucketNumber++;
 		if (BucketNumber>BucketNumberMAX)BucketNumberMAX=BucketNumber;
 	}
 
 	private int bucketSize(int Row){ return (int) Math.pow(2,Row);}
 
-	public int deleteElement(){  
+	public int deleteElement(){
 		//LIST
 		//Update statistics
 		ListItem Node;
@@ -332,7 +332,7 @@ public class ADWIN { //extends Estimator {
 			listRowBuckets.removeFromTail();
 			lastBucketRow--;
 		}
-		return n1;	
+		return n1;
 	}
 
 	public void compressBuckets(){
@@ -342,7 +342,7 @@ public class ADWIN { //extends Estimator {
 		ListItem nextNode;
 		cursor = listRowBuckets.head();
 		int i=0;
-		do {                  
+		do {
 			//Find the number of buckets in a row
 			int k=cursor.bucketSizeRow;
 			//If the row is full, merge buckets
@@ -353,11 +353,11 @@ public class ADWIN { //extends Estimator {
 					nextNode=cursor.next();
 					lastBucketRow++;
 				}
-				n1=bucketSize(i); 
+				n1=bucketSize(i);
 				n2=bucketSize(i);
 				u1=cursor.Total(0)/n1;
 				u2=cursor.Total(1)/n2;
-				incVariance=n1*n2*(u1-u2)*(u1-u2)/(n1+n2);       
+				incVariance=n1*n2*(u1-u2)*(u1-u2)/(n1+n2);
 
 				nextNode.insertBucket(cursor.Total(0)+cursor.Total(1),cursor.Variance(0)+cursor.Variance(1)+incVariance);
 				BucketNumber++;
@@ -372,7 +372,7 @@ public class ADWIN { //extends Estimator {
 
 	public boolean setInput(double intEntrada) {
 		return setInput(intEntrada,mdbldelta) ;
-	}	   
+	}
 	public boolean setInput(double intEntrada,double delta) {
 		boolean blnChange=false;
 		boolean blnExit=false;
@@ -391,20 +391,20 @@ public class ADWIN { //extends Estimator {
 			blnExit= false;
 			int n0=0;
 			int n1=WIDTH;
-			double u0=0;                 	   
+			double u0=0;
 			double u1=getTotal();
 			double v0=0;
-			double v1=VARIANCE; 
+			double v1=VARIANCE;
 			double n2=0;
 			double u2=0;
 
 			cursor = listRowBuckets.tail();
 			int i=lastBucketRow;
-			do {    
+			do {
 				for (int k=0;k<=(cursor.bucketSizeRow-1);k++) {
 					n2=bucketSize(i);
 					u2=cursor.Total(k);
-					if (n0>0) 
+					if (n0>0)
 						v0+=cursor.Variance(k)+(double) n0*n2*(u0/n0-u2/n2)*(u0/n0-u2/n2)/(n0+n2);
 					if (n1>0)
 						v1-=cursor.Variance(k)+(double) n1*n2*(u1/n1-u2/n2)*(u1/n1-u2/n2)/(n1+n2);
@@ -414,22 +414,22 @@ public class ADWIN { //extends Estimator {
 					u0+=cursor.Total(k);
 					u1-=cursor.Total(k);
 
-					if (i==0 && k==cursor.bucketSizeRow-1) { blnExit=true;break;}	   	 	
+					if (i==0 && k==cursor.bucketSizeRow-1) { blnExit=true;break;}
 					double absvalue=(double) (u0/n0)-(u1/n1);       //n1<WIDTH-mintMinWinLength-1
 					if ((n1>mintMinWinLength+1 && n0>mintMinWinLength+1 )&&  // Diference NEGATIVE
-						//if(	
-								blnCutexpression(n0,n1,u0,u1,v0,v1,absvalue,delta) ){ 
-						blnBucketDeleted=true;	
+						//if(
+								blnCutexpression(n0,n1,u0,u1,v0,v1,absvalue,delta) ){
+						blnBucketDeleted=true;
 						Detect=mintTime;
-						
-						if (Detect==0) {	
+
+						if (Detect==0) {
 							Detect=mintTime;
-							//blnFirst=true;	
+							//blnFirst=true;
 							//blnWarning=true;
 						}
 						else if (DetectTwice==0) {
 							DetectTwice=mintTime;
-							//blnDetect=true; 
+							//blnDetect=true;
 						}
 						blnReduceWidth= true; // Diference
 						blnChange=true;
@@ -439,7 +439,7 @@ public class ADWIN { //extends Estimator {
 						blnExit=true;
 						break;
 						}
-					} //End if                
+					} //End if
 				}//Next k
 				cursor = cursor.previous();i--;
 			} while (((!blnExit && cursor!= null)));
@@ -473,7 +473,7 @@ public class ADWIN { //extends Estimator {
 	}
 	public ADWIN(double d)
 	{
-		mdbldelta=d;    
+		mdbldelta=d;
 		initBuckets();
 		Detect=0;
 		numberDetections=0;
@@ -481,7 +481,7 @@ public class ADWIN { //extends Estimator {
 	}
 	public ADWIN(int cl)
 	{
-		mdbldelta=DELTA;    
+		mdbldelta=DELTA;
 		initBuckets();
 		Detect=0;
 		numberDetections=0;

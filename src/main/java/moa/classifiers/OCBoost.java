@@ -19,16 +19,14 @@
  */
 package moa.classifiers;
 
-import sizeof.agent.SizeOfAgent;
-import moa.core.DoubleVector;
-import moa.core.Measurement;
-import moa.core.MiscUtils;
-import moa.options.ClassOption;
-import moa.options.FlagOption;
-import moa.options.IntOption;
-import moa.options.FloatOption;
 import weka.core.Instance;
 import weka.core.Utils;
+
+import moa.core.Measurement;
+import moa.core.SizeOf;
+import moa.options.ClassOption;
+import moa.options.FloatOption;
+import moa.options.IntOption;
 
 public class OCBoost extends AbstractClassifier {
 
@@ -44,23 +42,23 @@ public class OCBoost extends AbstractClassifier {
 			"Smoothing parameter.", 0.5, 0.0, 100.0);
 
 	protected Classifier[] ensemble;
-	
+
 	protected double[] alpha;
-	
+
 	protected double[] alphainc;
-	
+
 	protected double[] pipos;
-	
+
 	protected double[] pineg;
-	
+
 	protected double[][] wpos;
-	
+
 	protected double[][] wneg;
-	
+
 
 	@Override
 	public int measureByteSize() {
-		int size = (int) SizeOfAgent.sizeOf(this);
+		int size = (int) SizeOf.sizeOf(this);
 		for (Classifier classifier : this.ensemble) {
 			size += classifier.measureByteSize();
 		}
@@ -76,7 +74,7 @@ public class OCBoost extends AbstractClassifier {
 		this.pineg = new double[this.ensemble.length];
 		this.wpos = new double[this.ensemble.length][this.ensemble.length];
 		this.wneg = new double[this.ensemble.length][this.ensemble.length];
-		
+
 		Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
 		baseLearner.resetLearning();
 		for (int i = 0; i < this.ensemble.length; i++) {
@@ -107,18 +105,18 @@ public class OCBoost extends AbstractClassifier {
 				pipos[j] *= wpos[j][k]/wpos[j][j] * Math.exp(-alphainc[k]) +
 							( 1.0 - wpos[j][k]/wpos[j][j]) * Math.exp(alphainc[k]);
 				pineg[j] *= wneg[j][k]/wneg[j][j] * Math.exp(-alphainc[k]) +
-							( 1.0 - wneg[j][k]/wneg[j][j]) * Math.exp(alphainc[k]);				
+							( 1.0 - wneg[j][k]/wneg[j][j]) * Math.exp(alphainc[k]);
 			}
 			for (int k = 0; k <= j; k++) {
 				wpos[j][k] = wpos[j][k] * pipos[j] + d * ( m[k] == 1 ? 1 : 0) * ( m[j] == 1 ? 1 : 0);
-				wneg[j][k] = wneg[j][k] * pineg[j] + d * ( m[k] == -1 ? 1 : 0) * ( m[j] == -1 ? 1 : 0);		
+				wneg[j][k] = wneg[j][k] * pineg[j] + d * ( m[k] == -1 ? 1 : 0) * ( m[j] == -1 ? 1 : 0);
 			}
-			alphainc[j] = -alpha[j]; 
+			alphainc[j] = -alpha[j];
 			alpha[j] = 0.5* Math.log(wpos[j][j]/wneg[j][j]);
-			alphainc[j] += alpha[j]; 
-			
+			alphainc[j] += alpha[j];
+
 			d = d * Math.exp(-alpha[j] * m[j]);
-			
+
 			if (d > 0.0) {
 				Instance weightedInst = (Instance) inst.copy();
 				weightedInst.setWeight(inst.weight() * d);
@@ -132,7 +130,7 @@ public class OCBoost extends AbstractClassifier {
 	}
 
 
-	
+
 	public double[] getVotesForInstance(Instance inst) {
 		double[] output = new double[2];
 		int vote;

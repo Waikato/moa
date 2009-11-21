@@ -19,13 +19,14 @@
  */
 package moa.classifiers;
 
-import sizeof.agent.SizeOfAgent;
+import weka.core.Instance;
+
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
+import moa.core.SizeOf;
 import moa.options.ClassOption;
 import moa.options.IntOption;
-import weka.core.Instance;
 
 public class OzaBagAdwin extends AbstractClassifier {
 
@@ -42,7 +43,7 @@ public class OzaBagAdwin extends AbstractClassifier {
 
 	@Override
 	public int measureByteSize() {
-		int size = (int) SizeOfAgent.sizeOf(this);
+		int size = (int) SizeOf.sizeOf(this);
 		for (Classifier classifier : this.ensemble) {
 			size += classifier.measureByteSize();
 		}
@@ -78,7 +79,7 @@ public class OzaBagAdwin extends AbstractClassifier {
 			}
 			boolean correctlyClassifies=this.ensemble[i].correctlyClassifies(inst);
 			double ErrEstim=this.ADError[i].getEstimation();
-			if (this.ADError[i].setInput(correctlyClassifies ? 0 : 1)) 
+			if (this.ADError[i].setInput(correctlyClassifies ? 0 : 1))
 				if (this.ADError[i].getEstimation()> ErrEstim) Change=true;
 		}
 		if (Change) {

@@ -1,7 +1,7 @@
 /*
  *    SingleClassifierDrift.java
  *    Copyright (C) 2008 University of Waikato, Hamilton, New Zealand
- *    @author Manuel Baena (mbaena@lcc.uma.es) 
+ *    @author Manuel Baena (mbaena@lcc.uma.es)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@
  */
 package moa.classifiers;
 
-import sizeof.agent.SizeOfAgent;
-import moa.AbstractMOAObject;
-import moa.classifiers.Classifier;
-import moa.core.Measurement;
-import moa.options.ClassOption;
-import moa.options.MultiChoiceOption;
 import weka.core.Instance;
 import weka.core.Utils;
+
+import moa.AbstractMOAObject;
+import moa.core.Measurement;
+import moa.core.SizeOf;
+import moa.options.ClassOption;
+import moa.options.MultiChoiceOption;
 
 /**
  * Class for handling concept drift datasets with a wrapper on a
@@ -35,17 +35,17 @@ import weka.core.Utils;
  * Valid options are:<p>
  *
  * -l classname <br>
- * Specify the full class name of a classifier as the basis for 
+ * Specify the full class name of a classifier as the basis for
  * the concept drift classifier.<p>
  *
  *
  * @author Manuel Baena (mbaena@lcc.uma.es)
- * @version 1.1 
+ * @version 1.1
  */
 public class SingleClassifierDrift extends AbstractClassifier {
-	
+
 	public class DriftDetectionMethod extends AbstractMOAObject {
-	    
+
 	    private static final long serialVersionUID = 1L;
 
 		public static final int DDM_INCONTROL_LEVEL = 0;
@@ -55,7 +55,7 @@ public class SingleClassifierDrift extends AbstractClassifier {
 		public int computeNextVal(boolean prediction) {
 			return 0;
 			};
-		
+
 		//@Override
 		public void getModelDescription(StringBuilder out, int indent){
 			};
@@ -64,9 +64,9 @@ public class SingleClassifierDrift extends AbstractClassifier {
         };
 
 	}
-	
+
 	public class JGamaMethod extends DriftDetectionMethod {
-		
+
 
 		private static final int JGAMAMETHOD_MINNUMINST = 30;
 		private int m_n;
@@ -87,23 +87,23 @@ public class SingleClassifierDrift extends AbstractClassifier {
 			m_s = 0;
 			m_psmin = Double.MAX_VALUE;
 			m_pmin = Double.MAX_VALUE;
-			m_smin = Double.MAX_VALUE;    
+			m_smin = Double.MAX_VALUE;
 		}
-		
+
 		@Override
 		public int computeNextVal(boolean prediction) {
 			if (prediction == false) {
-				m_p = m_p + (1.0-m_p)/(double)m_n; 
+				m_p = m_p + (1.0-m_p)/(double)m_n;
 			 } else {
-				 m_p = m_p - (m_p)/(double)m_n; 
+				 m_p = m_p - (m_p)/(double)m_n;
 			 }
 			 m_s = Math.sqrt(m_p*(1-m_p)/(double)m_n);
-			 
-			 
+
+
 			 m_n++;
 
 			 //System.out.print(prediction + " " + m_n + " " +  (m_p+m_s) + " ");
-			 
+
 			 if (m_n < JGAMAMETHOD_MINNUMINST) {
 				 return DDM_INCONTROL_LEVEL;
 			 }
@@ -114,7 +114,7 @@ public class SingleClassifierDrift extends AbstractClassifier {
 				 m_psmin = m_p+m_s;
 			 }
 
-			 
+
 			 if (m_n > JGAMAMETHOD_MINNUMINST && m_p+m_s > m_pmin + 3*m_smin){
 				 initialize();
 				 return DDM_OUTCONTROL_LEVEL;
@@ -124,7 +124,7 @@ public class SingleClassifierDrift extends AbstractClassifier {
 				 return DDM_INCONTROL_LEVEL;
 			 }
 		}
-		
+
 	}
 
 	public class EDDM extends DriftDetectionMethod {
@@ -158,7 +158,7 @@ public class SingleClassifierDrift extends AbstractClassifier {
 			m_m2smax=0.0;
 			m_lastLevel = DDM_INCONTROL_LEVEL;
 		}
-		
+
 		@Override
 		public int computeNextVal(boolean prediction) {
 			//System.out.print(prediction + " " + m_n + " " + probability + " ");
@@ -202,7 +202,7 @@ public class SingleClassifierDrift extends AbstractClassifier {
 			}
 			return m_lastLevel;
 		}
-		
+
 	}
 
 
@@ -218,17 +218,17 @@ public class SingleClassifierDrift extends AbstractClassifier {
 					"DDM: Joao Gama Drift Detection Method",
 					"EDDM: Early Drift Detection Method" }, 0);
 
-	public Classifier classifier; 
-	
+	public Classifier classifier;
+
 	protected Classifier newclassifier;
-	
+
 	protected DriftDetectionMethod driftDetectionMethod;
-	
+
 	protected boolean newClassifierReset;
 
 	@Override
 	public int measureByteSize() {
-		int size = (int) SizeOfAgent.sizeOf(this);
+		int size = (int) SizeOf.sizeOf(this);
 		size += classifier.measureByteSize();
 		size += newclassifier.measureByteSize();
 		return size;
@@ -253,7 +253,7 @@ public class SingleClassifierDrift extends AbstractClassifier {
 			prediction = true;
 		} else {
 			prediction = false;
-		}   
+		}
 		switch (this.driftDetectionMethod.computeNextVal(prediction) ){
 			case DriftDetectionMethod.DDM_WARNING_LEVEL:
 				//System.out.println("1 0 W");
@@ -281,7 +281,7 @@ public class SingleClassifierDrift extends AbstractClassifier {
 				break;
 			default:
 				//System.out.println("ERROR!");
-			  
+
 		}
 
 		this.classifier.trainOnInstance(inst);

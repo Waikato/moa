@@ -19,14 +19,15 @@
  */
 package moa.classifiers;
 
-import sizeof.agent.SizeOfAgent;
+import weka.core.Instance;
+
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
+import moa.core.SizeOf;
 import moa.options.ClassOption;
 import moa.options.FlagOption;
 import moa.options.IntOption;
-import weka.core.Instance;
 
 public class OzaBoost extends AbstractClassifier {
 
@@ -49,7 +50,7 @@ public class OzaBoost extends AbstractClassifier {
 
 	@Override
 	public int measureByteSize() {
-		int size = (int) SizeOfAgent.sizeOf(this);
+		int size = (int) SizeOf.sizeOf(this);
 		for (Classifier classifier : this.ensemble) {
 			size += classifier.measureByteSize();
 		}

@@ -20,14 +20,13 @@
  */
 package moa.classifiers;
 
-import sizeof.agent.SizeOfAgent;
-
 import weka.classifiers.Classifier;
 import weka.classifiers.UpdateableClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
 
 import moa.core.Measurement;
+import moa.core.SizeOf;
 import moa.options.IntOption;
 import moa.options.WEKAClassOption;
 
@@ -62,7 +61,7 @@ public class WEKAClassifier
 
 	@Override
 	public int measureByteSize() {
-		int size = (int) SizeOfAgent.sizeOf(this);
+		int size = (int) SizeOf.sizeOf(this);
 		//size += classifier.measureByteSize();
 		return size;
 	}

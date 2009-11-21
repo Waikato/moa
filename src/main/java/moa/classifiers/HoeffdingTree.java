@@ -19,6 +19,8 @@
  */
 package moa.classifiers;
 
+import weka.core.Instance;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -37,8 +39,6 @@ import moa.options.FlagOption;
 import moa.options.FloatOption;
 import moa.options.IntOption;
 import moa.options.MultiChoiceOption;
-import sizeof.agent.SizeOfAgent;
-import weka.core.Instance;
 
 public class HoeffdingTree extends AbstractClassifier {
 
@@ -125,7 +125,7 @@ public class HoeffdingTree extends AbstractClassifier {
 		}
 
 		public int calcByteSize() {
-			return (int) (SizeOfAgent.sizeOf(this) + SizeOf.sizeOf(this.observedClassDistribution));
+			return (int) (SizeOf.sizeOf(this) + SizeOf.sizeOf(this.observedClassDistribution));
 		}
 
 		public int calcByteSizeIncludingSubtree() {
@@ -194,7 +194,7 @@ public class HoeffdingTree extends AbstractClassifier {
 		@Override
 		public int calcByteSize() {
 			return super.calcByteSize()
-					+ (int) (SizeOfAgent.sizeOf(this.children) + SizeOf.sizeOf(this.splitTest));
+					+ (int) (SizeOf.sizeOf(this.children) + SizeOf.sizeOf(this.splitTest));
 		}
 
 		@Override
@@ -416,7 +416,7 @@ public class HoeffdingTree extends AbstractClassifier {
 	protected boolean growthAllowed;
 
 	public int calcByteSize() {
-		int size = (int) SizeOfAgent.sizeOf(this);
+		int size = (int) SizeOf.sizeOf(this);
 		if (this.treeRoot != null) {
 			size += this.treeRoot.calcByteSizeIncludingSubtree();
 		}

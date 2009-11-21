@@ -19,8 +19,6 @@
  */
 package moa.classifiers;
 
-import sizeof.agent.SizeOfAgent;
-
 import weka.core.Instance;
 import weka.core.Utils;
 
@@ -144,7 +142,7 @@ public class HoeffdingOptionTree extends AbstractClassifier {
 		}
 
 		public int calcByteSize() {
-			return (int) (SizeOfAgent.sizeOf(this) + SizeOf.sizeOf(this.observedClassDistribution));
+			return (int) (SizeOf.sizeOf(this) + SizeOf.sizeOf(this.observedClassDistribution));
 		}
 
 		public int calcByteSizeIncludingSubtree() {
@@ -233,7 +231,7 @@ public class HoeffdingOptionTree extends AbstractClassifier {
 		@Override
 		public int calcByteSize() {
 			return super.calcByteSize()
-					+ (int) (SizeOfAgent.sizeOf(this.children) + SizeOf.sizeOf(this.splitTest));
+					+ (int) (SizeOf.sizeOf(this.children) + SizeOf.sizeOf(this.splitTest));
 		}
 
 		@Override
@@ -575,7 +573,7 @@ public class HoeffdingOptionTree extends AbstractClassifier {
 	protected int maxPredictionPaths;
 
 	public int calcByteSize() {
-		int size = (int) SizeOfAgent.sizeOf(this);
+		int size = (int) SizeOf.sizeOf(this);
 		if (this.treeRoot != null) {
 			size += this.treeRoot.calcByteSizeIncludingSubtree();
 		}
