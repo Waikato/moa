@@ -18,7 +18,7 @@ Besides the MOA jar file, running the code requires three elements:
 1) Java version 6 (or greater) runtime environment
    available from: http://java.com/
 2) A recent version of WEKA (> 3.7.0 or snapshot of developer version newer
-   than 10 Nov 2009) available from: http://www.cs.waikato.ac.nz/ml/weka/
+   than 21 Nov 2009 or r6097) available from: http://www.cs.waikato.ac.nz/ml/weka/
 3) Sizeof agent jar file, used to measure object sizes in memory
    from: http://www.jroller.org/maxim/entry/again_about_determining_size_of
    direct link to file: http://www.jroller.com/resources/m/maxim/sizeofag.jar
