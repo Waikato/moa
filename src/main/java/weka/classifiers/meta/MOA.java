@@ -268,6 +268,14 @@ public class MOA
   	double[]	result;
 
   	result = m_ActualClassifier.getVotesForInstance(instance);
+        // ensure that the array has as many elements as there are
+        // class values!
+        if (result.length < instance.numClasses()) {
+          double[] newResult = new double[instance.numClasses()];
+          System.arraycopy(result, 0, newResult, 0, result.length);
+          result = newResult;
+        }
+
   	try {
   		Utils.normalize(result);
   	}
