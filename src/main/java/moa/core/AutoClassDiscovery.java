@@ -21,6 +21,9 @@ package moa.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -39,14 +42,67 @@ public class AutoClassDiscovery {
 		String[] cached = cachedClassNames.get(packageNameToSearch);
 		if (cached == null) {
 			HashSet<String> classNames = new HashSet<String>();
-			StringTokenizer pathTokens = new StringTokenizer(System
-					.getProperty("java.class.path"), File.pathSeparator);
+			/*StringTokenizer pathTokens = new StringTokenizer(System
+					.getProperty("java.class.path"), File.pathSeparator);*/
 			String packageDirName = packageNameToSearch.replace('.',
 					File.separatorChar);
 			String packageJarName = packageNameToSearch.length() > 0 ? (packageNameToSearch
 					.replace('.', '/') + "/")
 					: "";
-			while (pathTokens.hasMoreElements()) {
+			String part = "";
+			
+			
+			AutoClassDiscovery adc = new AutoClassDiscovery();
+			URLClassLoader sysLoader = (URLClassLoader)adc.getClass().getClassLoader();
+			URL[] cl_urls = sysLoader.getURLs();
+			
+			for (int i = 0; i < cl_urls.length; i++) {
+			  part = cl_urls[i].toString();
+			  if (part.startsWith("file:")) {
+			    part = part.replace(" ", "%20");
+			    try {
+			      File temp = new File(new java.net.URI(part));
+			      part = temp.getAbsolutePath();
+			    } catch (URISyntaxException e) {
+			      e.printStackTrace();
+			    }
+			  }
+
+			  // find classes
+			  ArrayList<File> files = new ArrayList<File>();
+			  File dir = new File(part);
+			  if (dir.isDirectory()) {
+			    File root = new File(dir.toString() + File.separatorChar + packageDirName);
+			    String[] names = findClassesInDirectoryRecursive(root, "");
+			    for (String name : names) {
+			      classNames.add(name);
+			    }
+			  } else {
+			    try {
+			      JarFile jar = new JarFile(part);
+			      Enumeration<JarEntry> jarEntries = jar.entries();
+			      while (jarEntries.hasMoreElements()) {
+			        String jarEntry = jarEntries.nextElement()
+			        .getName();
+			        if (jarEntry.startsWith(packageJarName)) {
+			          String relativeName = jarEntry
+			          .substring(packageJarName.length());
+			          if (relativeName.endsWith(".class")) {
+			            relativeName = relativeName.replace('/',
+			                '.');
+			            classNames.add(relativeName.substring(0,
+			                relativeName.length()
+			                - ".class".length()));
+			          }
+			        }
+			      }
+			    } catch (IOException ignored) {
+			      // ignore unreadable files
+			    }
+			  }
+			}
+
+			/*while (pathTokens.hasMoreElements()) {
 				String pathToSearch = pathTokens.nextElement().toString();
 				if (pathToSearch.endsWith(".jar")) {
 					try {
@@ -78,7 +134,7 @@ public class AutoClassDiscovery {
 						classNames.add(name);
 					}
 				}
-			}
+			} */
 			cached = classNames.toArray(new String[classNames.size()]);
 			Arrays.sort(cached);
 			cachedClassNames.put(packageNameToSearch, cached);
