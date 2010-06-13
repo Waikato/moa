@@ -113,12 +113,12 @@
             <pathelement location="." />
          </classpath>
       </javac>
-      <unzip dest="${build}">
+<!--      <unzip dest="${build}">
          <fileset dir="${lib}">
             <include name="*.jar"/>
             <include name="*.zip"/>
          </fileset>
-      </unzip>
+      </unzip> -->
    </target>
 
    <!-- update -->
@@ -188,7 +188,9 @@
                sourcepath="${src}"
                doctitle="${ant.project.name} API"
                packagenames="*"
-               maxmemory="256m"/>
+               maxmemory="256m">
+        <classpath refid="project.class.path" />
+      </javadoc>
    </target>
 
    <!-- release -->
