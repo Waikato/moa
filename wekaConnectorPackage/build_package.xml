@@ -1,0 +1,224 @@
+<project name="weka" default="compile" basedir=".">
+<!-- 
+  ===========================================================================
+   Ant build file for moa package.
+
+   $Revision$
+  ===========================================================================
+-->
+
+  <!-- set global properties for this build -->
+  <property name="src" value="src/main/java"/>
+  <property name="src-test" value="src/test/java"/>
+  <property name="lib" value="../lib" />
+  <property name="build" value="build"/>
+  <property name="dist"  value="dist"/>
+  <property name="doc"  value="doc"/>
+  <property name="javac_max_memory" value="256m"/>
+  <property name="debug" value="on" />
+  <property name="package" value="massiveOnlineAnalysis" />
+
+  <target name="init_all">
+    <!-- Create the time stamp -->
+    <tstamp/>
+  </target>
+
+   <!-- general classpath definition, incl. CLASSPATH env. variable,
+   // but jars in lib directory have precedence over the CLASSPATH variable -->
+  <path id="project.class.path">
+    <fileset dir="${lib}">
+      <include name="*.jar"/>
+      <include name="*.zip"/>
+    </fileset>
+    <pathelement location="${build}/classes"/>
+    <pathelement location="${build}/testcases"/>
+    <pathelement path="${java.class.path}" />
+  </path>
+
+<!-- 
+ ============================================================================
+ Compilation and documentation making stuff
+ ============================================================================
+-->
+
+<target name="init_compile" depends="init_all">
+<!-- <target name="init_compile" depends="init_all"> -->
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}/classes"/>    
+
+    <copy todir="src">
+      <fileset dir="../src">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- Compile the java code from ${src}/weka into ${build}/classes -->
+  <target name="compile" depends="init_compile" 
+   description="Compile weka and deposit class files in build/classes">
+    <javac srcdir="${src}" 
+      fork="yes" memoryMaximumSize="${javac_max_memory}"
+      destdir="${build}/classes"
+      optimize="${optimization}"
+      debug="${debug}"
+      deprecation="${deprecation}"
+      source="1.6" target="1.6">
+
+      <classpath refid="project.class.path" /> 
+    </javac>
+    <copy todir="${build}/classes" >
+       <fileset dir="${src}">
+         <include name="**/*.gif"/>
+         <include name="**/*.png"/>
+         <include name="**/*.jpeg"/>
+         <include name="**/*.jpg"/>
+         <include name="**/*.props"/>
+         <include name="**/*.txt"/>
+         <include name="**/*.xml"/>
+         <include name="**/*.cup"/>
+         <include name="**/*.flex"/>
+         <include name="**/*.jflex"/>
+         <include name="**/*.properties"/>
+         <include name="**/*.default"/>
+       </fileset>
+    </copy>
+  </target>
+
+  <!-- Make the javadocs -->
+  <target name="docs" 
+          depends="init_all" 
+          description="Make javadocs into ./doc">
+    <delete dir="${src}/moa"/>
+    <mkdir dir="${doc}"/>
+    <javadoc sourcepath="${src}" 
+             classpathref="project.class.path"
+             destdir="${doc}" 
+             Author="yes" 
+             Public="yes" 
+             maxmemory="256m"/>          
+  </target> 
+
+
+<!--
+  ===========================================================================
+  Release making stuff
+  ===========================================================================
+-->
+
+  <target name = "init_dist" depends="init_all">
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}"/>
+  </target>
+
+  <!-- Put everything in ${build}/classes into the massiveOnlineAnalysis.jar file -->
+  <target name="exejar" depends="compile, docs, init_dist"
+   description="Create a binary jar file in ./dist">
+    <!-- make sure that the moa classes are not included (separate download required) -->
+    <delete dir="${build}/classes/moa"/>
+    <jar jarfile="${dist}/${package}.jar" 
+      basedir="${build}/classes">
+    </jar>
+  </target>
+
+  <target name="make_package" depends="exejar" description="Make the moa package zip file">
+    <mkdir dir="${dist}/${package}"/>
+    <copy todir="${dist}/${package}">
+      <fileset dir="${dist}">
+        <include name="*.jar"/>
+      </fileset>
+    </copy>
+    <delete>
+      <fileset dir="${dist}">
+        <include name="*.jar"/>
+      </fileset>
+    </delete>
+    <copy file="Description.props"
+          todir="${dist}/${package}"/>
+    <copy file="GUIEditors.props"
+          todir="${dist}/${package}"/>
+    <mkdir dir="${dist}/${package}/lib"/>
+    <copy todir="${dist}/${package}/lib" >
+       <fileset dir="${lib}">
+         <include name="*.jar"/>
+         <include name="*.zip"/>
+       </fileset>
+    </copy>
+    <mkdir dir="${dist}/${package}/doc"/>
+    <copy todir="${dist}/${package}/doc" >
+       <fileset dir="${doc}">
+         <include name="**/*"/>
+       </fileset>
+    </copy>
+    <mkdir dir="${dist}/${package}/src"/>
+    <copy todir="${dist}/${package}" >
+       <fileset dir=".">
+         <include name="*.xml"/>
+         <include name="src/main/java/weka/**/*.excludes"/>
+         <include name="src/main/java/weka/**/*.gif"/>
+         <include name="src/main/java/weka/**/*.java"/>
+         <include name="src/main/java/weka/**/*.jpeg"/>
+         <include name="src/main/java/weka/**/*.jpg"/>
+         <include name="src/main/java/weka/**/*.props"/>
+         <include name="src/main/java/weka/**/*.txt"/>
+         <include name="src/main/java/weka/**/*.xml"/>
+         <include name="src/main/java/weka/**/*.cup"/>
+         <include name="src/main/java/weka/**/*.flex"/>
+         <include name="src/main/java/weka/**/*.jflex"/>
+         <include name="src/main/java/weka/**/*.properties"/>
+         <include name="src/main/java/weka/**/*.default"/>
+         <include name="src/main/java/weka/**/*.cost"/>
+         <include name="src/main/java/weka/**/*.arff"/>
+         <include name="src/main/java/weka/**/*.matrix"/>
+       </fileset>
+    </copy>
+    <zip destfile="${dist}/${package}.zip" 
+      basedir="${dist}/${package}">
+    </zip>
+  </target>
+
+  <!-- Put all .java, and .props files into ${dist}/${package}-src.jar-->
+  <target name="srcjar" depends="init_dist, init_all"
+   description="Create a jar file containing weka source in ./dist">  
+    <!-- jar up the source -->
+    <jar jarfile="${dist}/${package}-src.jar" 
+      basedir=".">
+      <include name="*.xml"/>
+      <include name="src/**/*.excludes"/>
+      <include name="src/**/*.gif"/>
+      <include name="src/**/*.java"/>
+      <include name="src/**/*.jpeg"/>
+      <include name="src/**/*.jpg"/>
+      <include name="src/**/*.props"/>
+      <include name="src/**/*.txt"/>
+      <include name="src/**/*.xml"/>
+      <include name="src/**/*.cup"/>
+      <include name="src/**/*.flex"/>
+      <include name="src/**/*.jflex"/>
+      <include name="src/**/*.properties"/>
+      <include name="src/**/*.default"/>
+      <include name="src/**/*.cost"/>
+      <include name="src/**/*.arff"/>
+      <include name="src/**/*.matrix"/>
+      <include name="lib/**/*.jar"/>
+    </jar>
+  </target>
+
+<!-- Clean -->
+  <target name="clean" depends="init_all"
+   description="Removes the build, dist and reports directories">
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+    <delete dir="${reports}"/>
+  </target>
+
+  <target name="superclean" depends="clean"
+   description="Clean plus removes source trees! and doc directories">
+  <!-- WARNING, this deletes the source, doc and lib directories -->
+    <delete dir="${src}"/>
+    <delete dir="${doc}"/>
+<!--
+    <delete dir="${lib}/>
+-->
+  </target>
+</project>

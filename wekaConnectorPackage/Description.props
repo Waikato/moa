@@ -1,0 +1,60 @@
+# Template Description file for a Weka package
+#
+# 
+
+# Package name (required)
+PackageName=massiveOnlineAnalysis
+
+# Version (required)
+Version=1.0.0
+
+#Date
+Date=2010-05-25
+
+# Title (required)
+Title=MOA (Massive On-line Analysis).
+
+Category=Data streams
+
+# Author (required)
+Author=Richard Kirkby and Albert Bifet
+
+# Maintainer (required)
+Maintainer=Abert Bifet <abifet@cs.waikato.ac.nz>
+
+# License (required)
+License=GPL 2.0
+
+# Description (required)
+Description=Massive On-line Analysis is an environment for massive data mining. MOA provides a framework for data stream mining and includes tools for evaluation and a collection of machine learning algorithms. Related to the WEKA project, also written in Java, while scaling to more demanding problems. IMPORTANT: This package requires a separate download of the MOA jar file in order to work. After installing the massiveOnlineAnalysis Weka package: 1) download MOA from http://www.cs.waikato.ac.nz/~abifet/MOA, copy the "moa.jar" file from the MOA distribution to $HOME/.weka/packages/massiveOnlineAnalysis/lib, 3) re-start Weka.
+
+# Package URL for obtaining the package archive (required)
+PackageURL=http://prdownloads.sourceforge.net/weka/massiveOnlineAnalysis1.0.0.zip?download
+
+# URL for further information
+URL=http://www.cs.waikato.ac.nz/~abifet/MOA/
+
+# Enhances various other packages ?
+# Enhances=packageName1,packageName2,...
+
+# Related to other packages?
+#Related=
+
+# Dependencies
+Depends=weka (>=3.7.0)
+
+# Special instructions to be displayed on installation of this package
+MessageToDisplayOnInstallation=This package is a connector package only and does\n\
+ not include the MOA libraries. You will need to download MOA from\n\
+ http://www.cs.waikato.ac.nz/~abifet/MOA/ and copy the moa.jar file to\n\
+ ${WEKA_HOME}/packages/massiveOnlineAnalysis/lib
+
+# Files to check. If missing, will prevent this package from being loaded
+# by Weka.
+DoNotLoadIfFileNotPresent=lib/moa.jar
+
+# Log message to display if package can't be loaded due to missing moa.jar file
+DoNotLoadIfFileNotPresentMessage=massiveOnlineAnalysis can't be loaded because \
+ the moa.jar file seems to be missing. Download MOA from \
+ http://www.cs.waikato.ac.nz/~abifet/MOA/ and copy the moa.jar file to \
+ ${WEKA_HOME}/packages/massiveOnlineAnalysis/lib
