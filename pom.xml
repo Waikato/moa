@@ -1,0 +1,80 @@
+<!--
+
+   Maven build script.
+
+   author: Christian Bockermann (christian.bockermann@udo.edu)
+   version: $Revision$
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>nz.ac.waikato</groupId>
+	<artifactId>moa-datastream</artifactId>
+	<name>MOA - Massive Online Analysis</name>
+	<version>0.1-SNAPSHOT</version>
+	<description>
+	    Massive On-line Analysis is an environment for massive data mining.
+
+        MOA is a framework for data stream mining. Includes tools for evaluation and 
+        a collection of machine learning algorithms. Related to the WEKA project, also 
+        written in Java, while scaling to more demanding problems.
+    </description>
+	<url>http://http://moa.cs.waikato.ac.nz/</url>
+	<scm>
+		<url>https://moa-datastream.svn.sourceforge.net/svnroot/moa-datastream</url>
+	</scm>
+	<organization>
+		<name>University of WAIKATO</name>
+		<url>http://www.cs.waikato.ac.nz</url>
+	</organization>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2-beta-4</version>
+				<configuration>
+					<finalName>moa</finalName>
+					<descriptorRefs>
+						<descriptorRef>
+							jar-with-dependencies
+						</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>moa.gui.TaskLauncher</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>weka</groupId>
+			<artifactId>weka</artifactId>
+			<version>3.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>sizeof</groupId>
+			<artifactId>sizeof</artifactId>
+			<version>0.1</version>
+		</dependency>
+	</dependencies>
+</project>
