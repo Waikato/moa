@@ -1,7 +1,7 @@
 /*
  *    BinaryTreeNumericAttributeClassObserver.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
- *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz), Andreas Hapfelmeier (Andreas.Hapfelmeier@in.tum.de)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -16,15 +16,15 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *    
  */
 package moa.classifiers;
-
-import weka.core.Utils;
 
 import java.io.Serializable;
 
 import moa.AbstractMOAObject;
 import moa.core.DoubleVector;
+import weka.core.Instance;
 
 public class BinaryTreeNumericAttributeClassObserver extends AbstractMOAObject
 		implements AttributeClassObserver {
@@ -74,7 +74,7 @@ public class BinaryTreeNumericAttributeClassObserver extends AbstractMOAObject
 	protected Node root = null;
 
 	public void observeAttributeClass(double attVal, int classVal, double weight) {
-		if (Utils.isMissingValue(attVal)) {
+		if (Instance.isMissingValue(attVal)) {
 
 		} else {
 			if (this.root == null) {
@@ -94,12 +94,13 @@ public class BinaryTreeNumericAttributeClassObserver extends AbstractMOAObject
 	public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(
 			SplitCriterion criterion, double[] preSplitDist, int attIndex,
 			boolean binaryOnly) {
-		return searchForBestSplitOption(this.root, null, null, null, false,
+		return searchForBestSplitOption(this.root, null, null, null, null, false,
 				criterion, preSplitDist, attIndex);
 	}
 
 	protected AttributeSplitSuggestion searchForBestSplitOption(
 			Node currentNode, AttributeSplitSuggestion currentBestOption,
+			double[] actualParentLeft,
 			double[] parentLeft, double[] parentRight, boolean leftChild,
 			SplitCriterion criterion, double[] preSplitDist, int attIndex) {
 		if (currentNode == null) {
@@ -114,8 +115,20 @@ public class BinaryTreeNumericAttributeClassObserver extends AbstractMOAObject
 			leftDist.addValues(parentLeft);
 			rightDist.addValues(parentRight);
 			if (leftChild) {
+				//get the exact statistics of the parent value
+				DoubleVector exactParentDist = new DoubleVector();
+				exactParentDist.addValues(actualParentLeft);
+				exactParentDist.subtractValues(currentNode.classCountsLeft);
+				exactParentDist.subtractValues(currentNode.classCountsRight);
+				
+				// move the subtrees
 				leftDist.subtractValues(currentNode.classCountsRight);
 				rightDist.addValues(currentNode.classCountsRight);
+				
+				// move the exact value from the parent
+				rightDist.addValues(exactParentDist);
+				leftDist.subtractValues(exactParentDist);
+				
 			} else {
 				leftDist.addValues(currentNode.classCountsLeft);
 				rightDist.subtractValues(currentNode.classCountsLeft);
@@ -131,10 +144,10 @@ public class BinaryTreeNumericAttributeClassObserver extends AbstractMOAObject
 
 		}
 		currentBestOption = searchForBestSplitOption(currentNode.left,
-				currentBestOption, postSplitDists[0], postSplitDists[1], true,
+				currentBestOption, currentNode.classCountsLeft.getArrayRef(), postSplitDists[0], postSplitDists[1], true,
 				criterion, preSplitDist, attIndex);
 		currentBestOption = searchForBestSplitOption(currentNode.right,
-				currentBestOption, postSplitDists[0], postSplitDists[1], false,
+				currentBestOption, currentNode.classCountsLeft.getArrayRef(), postSplitDists[0], postSplitDists[1], false,
 				criterion, preSplitDist, attIndex);
 		return currentBestOption;
 	}
