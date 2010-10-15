@@ -97,4 +97,11 @@ public class TextViewerPanel extends JPanel {
 		this.exportButton.setEnabled(newText != null);
 	}
 
+	public void addText(String newText) {
+		String text = textArea.getText();
+                text+=(!text.isEmpty())?"\n":"";
+                text+=newText;
+                setText(text);
+	}
+
 }

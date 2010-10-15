@@ -32,7 +32,7 @@
    <!-- max memory for application -->
    <property name="memory"  value="800m"/>
    <!-- the main class -->
-   <property name="main_class" value="moa.gui.TaskLauncher"/>
+   <property name="main_class" value="moa.gui.GUI"/>
    <!-- e.g., "-XX:+UseConcMarkSweepGC" for parallel GC -->
    <property name="jvm_options" value="-javaagent:${dist}/sizeofag.jar"/>
 

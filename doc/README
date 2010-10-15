@@ -1,10 +1,8 @@
 {M}assive {O}nline {A}nalysis
 Version: $Revision$
 Copyright: (C) 2009 University of Waikato, Hamilton, New Zealand
-Webs: http://www.cs.waikato.ac.nz/~abifet/MOA/
+Webs: http://moa.cs.waikato.ac.nz/
 http://sourceforge.net/projects/moa-datastream/
-
-Author: Richard Kirkby (rkirkby at cs.waikato.ac.nz)
 
 This is a public release of the MOA framework. Be aware that in its present
 form, the software lacks documentation and is pretty rough around the edges.

@@ -1,0 +1,55 @@
+How to use MAVEN within MOA
+====================================================
+Christian Bockermann <christian.bockermann@udo.edu>
+====================================================
+
+The basic file is "pom.xml", which needs to be located in the MOA
+root directory (next to build.xml).
+
+The other files are "sizeofag.pom" and "weka.pom", which should be placed into
+the "lib" directory and which are simply helper files since neither weka, nor
+the sizeof stuff is a maven-project and thus cannot be defined as a dependency.
+
+Once you put the "pom.xml" next to build.xml and the other files into the lib,
+you can compile/assemble MOA with maven as follows:
+
+Change to moa source directory:
+
+   # cd /path/to/moa-datastream
+
+Install the sizeof artifact into your local maven repository:
+
+   # mvn install:install-file -DpomFile=lib/sizeofag.pom -Dfile=lib/sizeofag.jar
+
+Install weka as artifact into your local maven repository:
+
+   # mvn install:install-file -DpomFile=lib/weka.pom -Dfile=lib/weka.jar
+
+The install-steps are required only once. Doing so will create your local repository
+(if not already existing) and put weka and sizeofag into the appropriate locations.
+They are defined as dependencies in the moa-pom file and maven will then automatically
+find these.
+
+To build moa, you can then simply run the following command inside /path/to/moa-datastream:
+
+   # mvn install
+
+This will compile the classes, run the tests and install the artifact "moa-datastream-0.1-SNAPSHOT.jar"
+into your local repository (thus, it can then be easily included as a dependency within other
+maven projects).
+
+We have also added the parts required to create a standalone jar-archive. Just run
+
+  # mvn assembly:assembly
+
+inside the moa source directory will leave you with the file "moa-jar-with-dependencies.jar"
+inside the "target/" directory. This file automatically contains all classes from the other
+dependencies, i.e. sizeofag.jar and weka.jar and already provides the MainClass attribute:
+
+  # java -jar target/moa-jar-with-dependencies.jar
+
+All these instructions assume you have maven installed.
+If you run maven for the first time, it will download a lot of plugins/dependencies from the
+net. No need to worry about this.
+
+$Revision: 7 $

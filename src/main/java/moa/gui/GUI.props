@@ -1,0 +1,10 @@
+# This props file contains default values for the MOA GUI.
+#
+# Author  FracPete (fracpete at waikato dot ac dot nz)
+# Version $Revision: 5714 $
+#
+# The tabs to display 
+#
+# The classes listed here must be derived fromm the abstract class moa.gui.AbstractTabPanel
+Tabs=moa.gui.ClassificationTabPanel,moa.gui.clustertab.ClusteringTabPanel
+
