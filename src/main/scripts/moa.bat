@@ -1,4 +1,4 @@
 @echo off
 
-java -cp moa.jar -javaagent:sizeofag.jar moa.gui.TaskLauncher
+java -cp moa.jar;weka.jar -javaagent:sizeofag.jar moa.gui.GUI
 
