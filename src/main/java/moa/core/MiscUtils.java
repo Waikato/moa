@@ -2,6 +2,7 @@
  *    MiscUtils.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ *    @author Bernhard Pfahringer (bernhard@cs.waikato.ac.nz)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -39,17 +40,26 @@ public class MiscUtils {
 		return index - 1;
 	}
 
-	public static int poisson(double c, Random random) {
-		int x = 0;
-		double t = 0.0;
-		while (true) {
-			t -= Math.log(random.nextDouble()) / c;
-			if (t > 1.0) {
-				return x;
-			}
-			x++;
-		}
-	}
+	public static int poisson(double lambda, Random r) {
+		 if (lambda < 100.0) {
+		      double product = 1.0;
+		      double sum = 1.0;
+		      double threshold = r.nextDouble() * Math.exp(lambda);
+		      int i = 1;
+		      int max = Math.max(100, 10*(int)Math.ceil(lambda));
+		      while ((i < max) && (sum <= threshold)) {
+			      product *= (lambda / i);
+			      sum += product;
+			      i++;
+		      }
+		      return i-1;
+		 }
+		 double x = lambda + Math.sqrt(lambda) * r.nextGaussian();
+		 if (x < 0.0) {
+		   return 0;
+		 }
+		 return (int) Math.floor(x);
+	 }
 
 	public static String getStackTraceString(Exception ex) {
 		StringWriter stackTraceWriter = new StringWriter();
