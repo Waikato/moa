@@ -40,6 +40,8 @@ import moa.options.FloatOption;
 import moa.options.IntOption;
 import moa.streams.InstanceStream;
 import weka.core.Instance;
+import weka.core.Utils;
+
 
 public class EvaluatePrequential extends MainTask {
 
@@ -86,6 +88,9 @@ public class EvaluatePrequential extends MainTask {
 
 	public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
 			"File to append intermediate csv results to.", null, "csv", true);
+
+	public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
+			"File to append output predictions to.", null, "pred", true);
 
 
         //New for prequential method
@@ -141,6 +146,23 @@ public class EvaluatePrequential extends MainTask {
 						"Unable to open immediate result file: " + dumpFile, ex);
 			}
 		}
+		//File for output predictions
+		File outputPredictionFile = this.outputPredictionFileOption.getFile();
+		PrintStream outputPredictionResultStream = null;
+		if (outputPredictionFile != null) {
+			try {
+				if (outputPredictionFile.exists()) {
+					outputPredictionResultStream = new PrintStream(
+							new FileOutputStream(outputPredictionFile, true), true);
+				} else {
+					outputPredictionResultStream = new PrintStream(
+							new FileOutputStream(outputPredictionFile), true);
+				}
+			} catch (Exception ex) {
+				throw new RuntimeException(
+						"Unable to open prediction result file: " + outputPredictionFile, ex);
+			}
+		}
 		boolean firstDump = true;
 		boolean preciseCPUTiming = TimingUtils.enablePreciseTiming();
 		long evaluateStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
@@ -152,6 +174,11 @@ public class EvaluatePrequential extends MainTask {
 			int trueClass = (int) trainInst.classValue();
 			testInst.setClassMissing();
 			double[] prediction = learner.getVotesForInstance(testInst);
+			// Output prediction
+			if (outputPredictionFile != null) {
+					outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," + trueClass);					
+			}
+
 			evaluator.addClassificationAttempt(trueClass, prediction, testInst
 					.weight());
 			learner.trainOnInstance(trainInst);
@@ -211,6 +238,9 @@ public class EvaluatePrequential extends MainTask {
 		}
 		if (immediateResultStream != null) {
 			immediateResultStream.close();
+		}
+		if (outputPredictionResultStream != null) {
+			outputPredictionResultStream.close();
 		}
 		return learningCurve;
 	}

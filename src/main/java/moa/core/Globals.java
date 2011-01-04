@@ -23,11 +23,11 @@ public class Globals {
 
 	public static final String workbenchTitle = "{M}assive {O}nline {A}nalysis";
 
-	public static final String versionString = "June 09";
+	public static final String versionString = "11.1 January 2011";
 
-	public static final String copyrightNotice = "(C) 2009 University of Waikato, Hamilton, New Zealand";
+	public static final String copyrightNotice = "(C) 2007-2011 University of Waikato, Hamilton, New Zealand";
 
-	public static final String webAddress = "http://sourceforge.net/projects/moa-datastream/";
+	public static final String webAddress = "http://moa.cs.waikato.ac.nz/";
 
 	public static String getWorkbenchInfoString() {
 		StringBuilder result = new StringBuilder();

@@ -43,14 +43,14 @@ public class FadingFactorClassificationPerformanceEvaluator extends AbstractMOAO
 		public Estimator(double a) {
 			alpha = a;
 			estimation = 0.0;
-			b = 1.0;
+			b = 0.0;
 		}
 		public void add(double value) {
 			estimation = alpha * estimation + value;
 			b = alpha * b + 1.0;
 		}
 		public double estimation() {
-			return estimation/b;
+			return b > 0.0 ? estimation/b : 0;
 		}
 	}
 	
