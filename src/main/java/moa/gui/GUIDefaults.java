@@ -21,6 +21,7 @@
 
 package moa.gui;
 
+import moa.core.PropertiesReader;
 import weka.core.Utils;
 
 import java.io.Serializable;
@@ -50,7 +51,7 @@ public class GUIDefaults
   protected static Properties PROPERTIES;
   static {
     try {
-      PROPERTIES = Utils.readProperties(PROPERTY_FILE);
+      PROPERTIES = PropertiesReader.readProperties(PROPERTY_FILE);
     }
     catch (Exception e) {
       System.err.println("Problem reading properties. Fix before continuing.");

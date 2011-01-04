@@ -113,12 +113,15 @@
             <pathelement location="." />
          </classpath>
       </javac>
-<!--      <unzip dest="${build}">
+
+      <unzip dest="${build}">
          <fileset dir="${lib}">
-            <include name="*.jar"/>
+            <!-- include name="*.jar"/ -->
             <include name="*.zip"/>
+            <exclude name="sizeofag.jar"/>
          </fileset>
-      </unzip> -->
+      </unzip>
+
    </target>
 
    <!-- update -->
