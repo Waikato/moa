@@ -1,7 +1,8 @@
 /*
  *    GUI.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
- *    @author Albert Bifet (abifet@cs.waikato.ac.nz)
+ *    @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
+ *    @author: fracpete (fracpete at waikato dot ac dot nz)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -18,59 +19,43 @@
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 package moa.gui;
-import java.util.HashSet;
-import java.util.Hashtable;
+import java.awt.BorderLayout;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
 
 public class GUI extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-    	private javax.swing.JTabbedPane panel;
+	private javax.swing.JTabbedPane panel;
 
 	public GUI() {
-		try {
-		    //javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-		} catch (Exception e) {}
-		createAndShowGUI();
+		initGUI();
 	}
 
-	private void createAndShowGUI() {
+	private void initGUI() {
+		setLayout(new BorderLayout());
 
-		// Create and set up the window.
-		JFrame frame = new JFrame("MOA Graphical User Interface");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-                try {
-                    javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-                } catch (Exception e) {}
-
-                // Create and set up tabs
+		// Create and set up tabs
 		panel = new javax.swing.JTabbedPane();
-		frame.setContentPane(panel);
+		add(panel, BorderLayout.CENTER);
 
 		// initialize additional panels
-    		String[] tabs = GUIDefaults.getTabs();
-    		Hashtable<String, HashSet> tabOptions = new Hashtable<String, HashSet>();
-    		for (int i = 0; i < tabs.length; i++) {
-      			try {
-				// determine classname 
+		String[] tabs = GUIDefaults.getTabs();
+		for (int i = 0; i < tabs.length; i++) {
+			try {
+				// determine classname
 				String[] optionsStr = tabs[i].split(":");
 				String classname = optionsStr[0];
 				// setup panel
 				AbstractTabPanel tabPanel = (AbstractTabPanel) Class.forName(classname).newInstance();
 				panel.addTab(tabPanel.getTabTitle(), null, (JPanel) tabPanel, tabPanel.getDescription());
-      			}
-      			catch (Exception e) {
+			}
+			catch (Exception e) {
 				e.printStackTrace();
-      			}
-    		}
-
-		// Display the window.
-		frame.pack();
-		frame.setVisible(true);	
+			}
+		}
 
 	}
 
@@ -78,8 +63,21 @@ public class GUI extends JPanel {
 		try {
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
+					// Create and set up the window.
+					JFrame frame = new JFrame("MOA Graphical User Interface");
+					frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+					try {
+						javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+					} catch (Exception e) {}
+
 					GUI gui = new GUI();
-                			gui.setVisible(true);
+					frame.getContentPane().setLayout(new BorderLayout());
+					frame.getContentPane().add(gui);
+
+					// Display the window.
+					frame.pack();
+					frame.setVisible(true);
 				}
 			});
 		} catch (Exception e) {

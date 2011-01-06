@@ -9,7 +9,7 @@
 
 -->
 
-<project name="moa" default="dist" basedir=".">
+<project name="moa" default="dist-standalone" basedir=".">
    <!-- compile options -->
    <property name="build.sysclasspath" value="ignore" />
    <property name="build.compiler"     value="modern" />
@@ -96,6 +96,39 @@
       </delete>
    </target>
 
+   <!-- update -->
+   <target name="update" depends="init" description="Updates the weka.jar.">
+     <condition property="weka_ok">
+       <isset property="weka"/>
+     </condition>
+     <fail message="Property 'weka' not set! Use '-Dweka=...' to set the WEKA project directory." unless="weka_ok"/>
+
+     <ant inheritAll="false" dir="${weka}" target="clean"/>
+     <ant inheritAll="false" dir="${weka}" target="exejar"/>
+     <copy todir="${lib}">
+       <fileset dir="${weka}/dist" includes="weka.jar"/>
+     </copy>
+   </target>
+
+   <!-- unzip-full -->
+   <target name="unzip-full" depends="init">
+      <unzip dest="${build}">
+         <fileset dir="${lib}">
+            <include name="*.jar"/>
+            <exclude name="sizeofag.jar"/>
+         </fileset>
+      </unzip>
+   </target>
+
+   <!-- unzip-standalone -->
+   <target name="unzip-standalone" depends="init">
+      <unzip dest="${build}">
+         <fileset dir="${lib}">
+            <include name="*.zip"/>
+         </fileset>
+      </unzip>
+   </target>
+
    <!-- compile -->
    <target name="compile" depends="init" description="Compiles the classes.">
       <echo message="Compiling classes for ${ant.project.name}." />
@@ -113,33 +146,42 @@
             <pathelement location="." />
          </classpath>
       </javac>
+   </target>
 
-      <unzip dest="${build}">
-         <fileset dir="${lib}">
-            <!-- include name="*.jar"/ -->
-            <include name="*.zip"/>
-            <exclude name="sizeofag.jar"/>
+   <!-- dist-full -->
+   <target name="dist-full" depends="init, removeJar, unzip-full, compile" description="Generates the jar archive, includes all jars in the 'lib' directory.">
+      <!-- classes -->
+      <jar jarfile="${dist}/${ant.project.name}.jar">
+         <fileset dir="${build}">
+            <include name="*" />
+            <include name="**/*" />
          </fileset>
-      </unzip>
 
+         <manifest>
+            <attribute name="Built-By"   value="${user.name}"/>
+            <attribute name="Main-Class" value="${main_class}"/>
+         </manifest>
+      </jar>
    </target>
 
-   <!-- update -->
-   <target name="update" depends="init" description="Updates the weka.jar.">
-     <condition property="weka_ok">
-       <isset property="weka"/>
-     </condition>
-     <fail message="Property 'weka' not set! Use '-Dweka=...' to set the WEKA project directory." unless="weka_ok"/>
+   <!-- dist-standalone -->
+   <target name="dist-standalone" depends="init, removeJar, unzip-standalone, compile" description="Generates the jar archive, includes all zip files in the 'lib' directory.">
+      <!-- classes -->
+      <jar jarfile="${dist}/${ant.project.name}.jar">
+         <fileset dir="${build}">
+            <include name="*" />
+            <include name="**/*" />
+         </fileset>
 
-     <ant inheritAll="false" dir="${weka}" target="clean"/>
-     <ant inheritAll="false" dir="${weka}" target="exejar"/>
-     <copy todir="${lib}">
-       <fileset dir="${weka}/dist" includes="weka.jar"/>
-     </copy>
+         <manifest>
+            <attribute name="Built-By"   value="${user.name}"/>
+            <attribute name="Main-Class" value="${main_class}"/>
+         </manifest>
+      </jar>
    </target>
 
-   <!-- dist -->
-   <target name="dist" depends="init, removeJar, compile" description="Generates the jar archive.">
+   <!-- dist-minimal -->
+   <target name="dist-minimal" depends="init, removeJar, compile" description="Generates the jar archive, does not include any jar/zip files in the 'lib' directory.">
       <!-- classes -->
       <jar jarfile="${dist}/${ant.project.name}.jar">
          <fileset dir="${build}">
@@ -197,7 +239,7 @@
    </target>
 
    <!-- release -->
-   <target name="release" depends="clean, dist, src, documentation" description="Generates a release archive.">
+   <target name="release" depends="clean, dist-standalone, src, documentation" description="Generates a release archive.">
      <tstamp/>
      <tar destfile="${dist}/${ant.project.name}-release-${DSTAMP}.tar.gz"
           compression="gzip">
@@ -218,7 +260,7 @@
    </target>
 
    <!-- run-moa -->
-   <target name="run-moa" depends="dist" description="Starts the MOA GUI.">
+   <target name="run-moa" depends="dist-minimal" description="Starts the MOA GUI.">
       <java classname="${main_class}" fork="yes" maxmemory="${memory}">
          <classpath>
             <pathelement path="${java.class.path}" />
@@ -232,7 +274,7 @@
    </target>
 
    <!-- run-weka -->
-   <target name="run-explorer" depends="dist" description="Starts the WEKA Explorer.">
+   <target name="run-explorer" depends="dist-minimal" description="Starts the WEKA Explorer.">
       <java classname="weka.gui.explorer.Explorer" fork="yes" maxmemory="${memory}">
          <classpath>
             <pathelement path="${java.class.path}" />
@@ -246,7 +288,7 @@
    </target>
 
    <!-- run-guichooser -->
-   <target name="run-guichooser" depends="dist" description="Starts the WEKA GUIChooser.">
+   <target name="run-guichooser" depends="dist-minimal" description="Starts the WEKA GUIChooser.">
       <java classname="weka.gui.GUIChooser" fork="yes" maxmemory="${memory}">
          <classpath>
             <pathelement path="${java.class.path}" />
