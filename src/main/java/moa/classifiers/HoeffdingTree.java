@@ -19,8 +19,6 @@
  */
 package moa.classifiers;
 
-import weka.core.Instance;
-
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -32,13 +30,14 @@ import moa.AbstractMOAObject;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
-import moa.core.SizeOf;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
 import moa.options.FlagOption;
 import moa.options.FloatOption;
 import moa.options.IntOption;
 import moa.options.MultiChoiceOption;
+import sizeof.agent.SizeOfAgent;
+import weka.core.Instance;
 
 public class HoeffdingTree extends AbstractClassifier {
 
@@ -125,7 +124,8 @@ public class HoeffdingTree extends AbstractClassifier {
 		}
 
 		public int calcByteSize() {
-			return (int) (SizeOf.sizeOf(this) + SizeOf.sizeOf(this.observedClassDistribution));
+			return (int) (SizeOfAgent.sizeOf(this) + SizeOfAgent
+					.fullSizeOf(this.observedClassDistribution));
 		}
 
 		public int calcByteSizeIncludingSubtree() {
@@ -194,7 +194,8 @@ public class HoeffdingTree extends AbstractClassifier {
 		@Override
 		public int calcByteSize() {
 			return super.calcByteSize()
-					+ (int) (SizeOf.sizeOf(this.children) + SizeOf.sizeOf(this.splitTest));
+					+ (int) (SizeOfAgent.sizeOf(this.children) + SizeOfAgent
+							.fullSizeOf(this.splitTest));
 		}
 
 		@Override
@@ -329,7 +330,7 @@ public class HoeffdingTree extends AbstractClassifier {
 		@Override
 		public int calcByteSize() {
 			return super.calcByteSize()
-					+ (int) (SizeOf.sizeOf(this.attributeObservers));
+					+ (int) (SizeOfAgent.fullSizeOf(this.attributeObservers));
 		}
 
 		@Override
@@ -416,7 +417,7 @@ public class HoeffdingTree extends AbstractClassifier {
 	protected boolean growthAllowed;
 
 	public int calcByteSize() {
-		int size = (int) SizeOf.sizeOf(this);
+		int size = (int) SizeOfAgent.sizeOf(this);
 		if (this.treeRoot != null) {
 			size += this.treeRoot.calcByteSizeIncludingSubtree();
 		}
@@ -539,6 +540,12 @@ public class HoeffdingTree extends AbstractClassifier {
 		return new ActiveLearningNode(initialClassObservations);
 	}
 
+	//Procedure added for Hoeffding Adaptive Trees (ADWIN)
+	protected SplitNode newSplitNode(InstanceConditionalTest splitTest,
+				double[] classObservations) {
+		return new SplitNode(splitTest, classObservations);
+	}
+
 	protected AttributeClassObserver newNominalClassObserver() {
 		return new NominalAttributeClassObserver();
 	}
@@ -629,7 +636,7 @@ public class HoeffdingTree extends AbstractClassifier {
 					// preprune - null wins
 					deactivateLearningNode(node, parent, parentIndex);
 				} else {
-					SplitNode newSplit = new SplitNode(splitDecision.splitTest,
+					SplitNode newSplit = newSplitNode(splitDecision.splitTest,
 							node.getObservedClassDistribution());
 					for (int i = 0; i < splitDecision.numSplits(); i++) {
 						Node newChild = newLearningNode(splitDecision
@@ -705,9 +712,9 @@ public class HoeffdingTree extends AbstractClassifier {
 		long totalInactiveSize = 0;
 		for (FoundNode foundNode : learningNodes) {
 			if (foundNode.node instanceof ActiveLearningNode) {
-				totalActiveSize += SizeOf.sizeOf(foundNode.node);
+				totalActiveSize += SizeOfAgent.fullSizeOf(foundNode.node);
 			} else {
-				totalInactiveSize += SizeOf.sizeOf(foundNode.node);
+				totalInactiveSize += SizeOfAgent.fullSizeOf(foundNode.node);
 			}
 		}
 		if (totalActiveSize > 0) {
