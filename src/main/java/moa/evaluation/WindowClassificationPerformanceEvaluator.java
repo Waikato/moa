@@ -1,7 +1,7 @@
 /*
  *    WindowClassificationPerformanceEvaluator.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
- *    @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
+ *    Copyright (C) 2009 University of Waikato, Hamilton, New Zealand
+ *    @author Albert Bifet (abifet@cs.waikato.ac.nz)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -29,6 +29,9 @@ public class WindowClassificationPerformanceEvaluator extends AbstractMOAObject
 
 	private static final long serialVersionUID = 1L;
 
+//	public IntOption widthOption = new IntOption("width",
+//			'w', "Size of Window", 1000);
+
 	protected double TotalweightObserved = 0;
 	
 	protected int width;
@@ -37,6 +40,12 @@ public class WindowClassificationPerformanceEvaluator extends AbstractMOAObject
 
 	protected Estimator weightCorrect;
 	
+	protected Estimator[] columnKappa;
+
+	protected Estimator[] rowKappa;
+
+	protected int numClasses;
+
 	public class Estimator {
 		protected double[] window;
 		protected int posWindow;
@@ -68,6 +77,16 @@ public class WindowClassificationPerformanceEvaluator extends AbstractMOAObject
 	}
 	
 	public void reset() {
+		reset(this.numClasses);
+	};
+	public void reset(int numClasses) {
+		this.numClasses = numClasses;
+		this.rowKappa = new Estimator[numClasses];
+		this.columnKappa = new Estimator[numClasses];
+		for (int i = 0; i < this.numClasses; i++) {
+			this.rowKappa[i] = new Estimator(this.width);
+			this.columnKappa[i] = new Estimator(this.width);
+		}
 		this.weightCorrect = new Estimator(this.width);
 		this.weightObserved = new Estimator(this.width);
 		this.TotalweightObserved  = 0;
@@ -75,14 +94,22 @@ public class WindowClassificationPerformanceEvaluator extends AbstractMOAObject
 
 	public void addClassificationAttempt(int trueClass, double[] classVotes,
 			double weight) {
-		if (TotalweightObserved == 0) reset();
 		if (weight > 0.0) {
+			if (TotalweightObserved == 0) {
+				reset(classVotes.length>1?classVotes.length:2);
+			}
 			this.TotalweightObserved += weight;
 			this.weightObserved.add(weight);
-			if (Utils.maxIndex(classVotes) == trueClass) {
+			int predictedClass = Utils.maxIndex(classVotes);
+			if (predictedClass == trueClass) {
 				this.weightCorrect.add(weight);
 			} else {
 				this.weightCorrect.add(0);
+			}
+			//Add Kappa statistic information
+			for (int i = 0; i < this.numClasses; i++) {
+				this.rowKappa[i].add( i == predictedClass ? weight : 0);
+				this.columnKappa[i].add( i == trueClass ? weight : 0);
 			}
 			
 		}
@@ -93,7 +120,10 @@ public class WindowClassificationPerformanceEvaluator extends AbstractMOAObject
 				new Measurement("classified instances",
 						this.TotalweightObserved),
 				new Measurement("classifications correct (percent)",
-						getFractionCorrectlyClassified() * 100.0) };
+						getFractionCorrectlyClassified() * 100.0) ,
+				new Measurement("Kappa Statistic (percent)",
+						getKappaStatistic() * 100.0) };
+
 	}
 
 	public double getTotalWeightObserved() {
@@ -103,6 +133,19 @@ public class WindowClassificationPerformanceEvaluator extends AbstractMOAObject
 	public double getFractionCorrectlyClassified() {
 		return this.weightObserved.total() > 0.0 ? (double) this.weightCorrect.total()
 				/ this.weightObserved.total() : 0.0;
+	}
+	public double getKappaStatistic() {
+		if (this.weightObserved.total() > 0.0 ) {
+			double p0 = this.weightCorrect.total()/ this.weightObserved.total(); 	
+			double pc = 0;
+			for (int i = 0; i < this.numClasses; i++) {
+				pc += (this.rowKappa[i].total()/this.weightObserved.total()) * 
+					(this.columnKappa[i].total()/ this.weightObserved.total());
+			}
+			return (p0-pc)/(1-pc);
+		} else {
+			return 0;
+		}
 	}
 
 	public double getFractionIncorrectlyClassified() {

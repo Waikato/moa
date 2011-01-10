@@ -166,6 +166,8 @@ public class EvaluatePrequential extends MainTask {
 		boolean firstDump = true;
 		boolean preciseCPUTiming = TimingUtils.enablePreciseTiming();
 		long evaluateStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
+		long lastEvaluateStartTime = evaluateStartTime;
+		double RAMHours = 0.0;
 		while (stream.hasMoreInstances()
 				&& ((maxInstances < 0) || (instancesProcessed < maxInstances))
 				&& ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
@@ -184,6 +186,13 @@ public class EvaluatePrequential extends MainTask {
 			learner.trainOnInstance(trainInst);
 			instancesProcessed++;
 			if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0) {
+				long evaluateTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
+				double time = TimingUtils.nanoTimeToSeconds(evaluateTime - evaluateStartTime);
+				double timeIncrement = TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);
+				double RAMHoursIncrement = learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); //GBs
+				RAMHoursIncrement *= (timeIncrement / 3600.0); //Hours
+				RAMHours += RAMHoursIncrement;
+				lastEvaluateStartTime = evaluateTime;
 				learningCurve
 						.insertEntry(new LearningEvaluation(
 								new Measurement[] {
@@ -191,14 +200,16 @@ public class EvaluatePrequential extends MainTask {
 												"learning evaluation instances",
 												instancesProcessed),
 										new Measurement(
-												("evaluation time ("
+												"evaluation time ("
 														+ (preciseCPUTiming ? "cpu "
-																: "") + "seconds)"),
-												TimingUtils
-														.nanoTimeToSeconds(TimingUtils
-																.getNanoCPUTimeOfCurrentThread()
-																- evaluateStartTime)) },
+																: "") + "seconds)",
+												time),
+										new Measurement(
+												"model cost (RAM-Hours)",
+											RAMHours)
+										},
 								evaluator, learner));
+
 				if (immediateResultStream != null) {
 					if (firstDump) {
 						immediateResultStream.println(learningCurve

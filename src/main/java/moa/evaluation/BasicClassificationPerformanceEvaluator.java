@@ -2,6 +2,7 @@
  *    BasicClassificationPerformanceEvaluator.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ *    @author Albert Bifet (abifet@cs.waikato.ac.nz)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -32,18 +33,40 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
 
 	protected double weightCorrect;
 
+	protected double[] columnKappa;
+
+	protected double[] rowKappa;
+
+	protected int numClasses;
+
 	public void reset() {
+		reset(this.numClasses);
+	};
+
+	public void reset(int numClasses) {
+		this.numClasses = numClasses;
+		this.rowKappa = new double[numClasses];
+		this.columnKappa = new double[numClasses];
+		for (int i = 0; i < this.numClasses; i++) {
+			this.rowKappa[i] = 0;
+			this.columnKappa[i] = 0;
+		}
 		this.weightObserved = 0.0;
 		this.weightCorrect = 0.0;
 	}
-
 	public void addClassificationAttempt(int trueClass, double[] classVotes,
 			double weight) {
 		if (weight > 0.0) {
+			if (this.weightObserved == 0) {
+				reset(classVotes.length>1?classVotes.length:2);
+			}
 			this.weightObserved += weight;
-			if (Utils.maxIndex(classVotes) == trueClass) {
+			int predictedClass = Utils.maxIndex(classVotes);
+			if (predictedClass == trueClass) {
 				this.weightCorrect += weight;
 			}
+			this.rowKappa[predictedClass] += weight;
+			this.columnKappa[trueClass] += weight;
 		}
 	}
 
@@ -52,7 +75,10 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
 				new Measurement("classified instances",
 						getTotalWeightObserved()),
 				new Measurement("classifications correct (percent)",
-						getFractionCorrectlyClassified() * 100.0) };
+						getFractionCorrectlyClassified() * 100.0) ,
+				new Measurement("Kappa Statistic (percent)",
+						getKappaStatistic() * 100.0) };
+
 	}
 
 	public double getTotalWeightObserved() {
@@ -68,6 +94,19 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
 		return 1.0 - getFractionCorrectlyClassified();
 	}
 
+	public double getKappaStatistic() {
+		if (this.weightObserved > 0.0 ) {
+			double p0 = getFractionCorrectlyClassified(); 	
+			double pc = 0.0;
+			for (int i = 0; i < this.numClasses; i++) {
+				pc += (this.rowKappa[i]/this.weightObserved) * 
+					(this.columnKappa[i]/ this.weightObserved);
+			}
+			return (p0-pc)/(1.0-pc);
+		} else {
+			return 0;
+		}
+	}
 	public void getDescription(StringBuilder sb, int indent) {
 		Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
 				sb, indent);
