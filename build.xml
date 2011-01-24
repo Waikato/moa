@@ -200,7 +200,7 @@
    <target name="src" depends="cleanTmp" description="Generates are gzipped tar from the source code.">
      <tar destfile="${dist}/${ant.project.name}-src.tar.gz"
           basedir="."
-          includes="*.xml .classpath.default .project.default ${src}/**/* ${tutorial}/**/* ${doc}/* ${lib}/*.jar"
+          includes="*.xml .classpath.default .project.default ${src}/**/* ${scripts}/**/* ${tutorial}/**/* ${doc}/* ${lib}/*.jar ${lib}/*.zip"
           compression="gzip"/>
    </target>
 
