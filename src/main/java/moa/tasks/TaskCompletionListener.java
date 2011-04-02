@@ -19,8 +19,20 @@
  */
 package moa.tasks;
 
+/**
+ * Interface representing a listener for the task in TaskThread to be completed. 
+ * TaskThread fires that the task is completed
+ * to all its listeners when it finishes to run its task.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $ 
+ */
 public interface TaskCompletionListener {
 
-	public void taskCompleted(TaskThread task);
-
+    /**
+     * The method to perform when the task finishes.
+     *
+     * @param task the TaskThead that this listener is listening
+     */
+    public void taskCompleted(TaskThread task);
 }

@@ -24,28 +24,36 @@ import javax.swing.JCheckBox;
 import moa.options.FlagOption;
 import moa.options.Option;
 
+/**
+ * An OptionEditComponent that lets the user edit a flag option.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class FlagOptionEditComponent extends JCheckBox implements
-		OptionEditComponent {
+        OptionEditComponent {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected FlagOption editedOption;
+    protected FlagOption editedOption;
 
-	public FlagOptionEditComponent(FlagOption option) {
-		this.editedOption = option;
-		setEditState(this.editedOption.getValueAsCLIString());
-	}
+    public FlagOptionEditComponent(FlagOption option) {
+        this.editedOption = option;
+        setEditState(this.editedOption.getValueAsCLIString());
+    }
 
-	public Option getEditedOption() {
-		return this.editedOption;
-	}
+    @Override
+    public Option getEditedOption() {
+        return this.editedOption;
+    }
 
-	public void setEditState(String cliString) {
-		setSelected(cliString != null);
-	}
+    @Override
+    public void setEditState(String cliString) {
+        setSelected(cliString != null);
+    }
 
-	public void applyState() {
-		this.editedOption.setValue(isSelected());
-	}
-
+    @Override
+    public void applyState() {
+        this.editedOption.setValue(isSelected());
+    }
 }

@@ -22,49 +22,63 @@ package moa.classifiers;
 import weka.core.Instance;
 import weka.core.Utils;
 
+/**
+ * Hoeffding Option Tree with majority class and naive Bayes learners at the
+ * leaves.
+ *
+ * <p>Decision option tree for streaming data with adaptive Naive Bayes
+ * classiﬁcation at leaves. This adaptive Naive Bayes prediction method monitors
+ * the error rate of majority class and Naive Bayes decisions in every
+ * leaf, and chooses to employ Naive Bayes decisions only where they have been
+ * more accurate in past cases.</p>
+ *
+ * <p>Parameters:</p> <ul>
+ * <li>Same parameters as HoeffdingOptionTreeNB</li> </ul>
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class HoeffdingOptionTreeNBAdaptive extends HoeffdingOptionTreeNB {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public static class LearningNodeNBAdaptive extends LearningNodeNB {
+    public static class LearningNodeNBAdaptive extends LearningNodeNB {
 
-		private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-		protected double mcCorrectWeight = 0.0;
+        protected double mcCorrectWeight = 0.0;
 
-		protected double nbCorrectWeight = 0.0;
+        protected double nbCorrectWeight = 0.0;
 
-		public LearningNodeNBAdaptive(double[] initialClassObservations) {
-			super(initialClassObservations);
-		}
+        public LearningNodeNBAdaptive(double[] initialClassObservations) {
+            super(initialClassObservations);
+        }
 
-		@Override
-		public void learnFromInstance(Instance inst, HoeffdingOptionTree hot) {
-			int trueClass = (int) inst.classValue();
-			if (this.observedClassDistribution.maxIndex() == trueClass) {
-				this.mcCorrectWeight += inst.weight();
-			}
-			if (Utils.maxIndex(NaiveBayes.doNaiveBayesPrediction(inst,
-					this.observedClassDistribution, this.attributeObservers)) == trueClass) {
-				this.nbCorrectWeight += inst.weight();
-			}
-			super.learnFromInstance(inst, hot);
-		}
+        @Override
+        public void learnFromInstance(Instance inst, HoeffdingOptionTree hot) {
+            int trueClass = (int) inst.classValue();
+            if (this.observedClassDistribution.maxIndex() == trueClass) {
+                this.mcCorrectWeight += inst.weight();
+            }
+            if (Utils.maxIndex(NaiveBayes.doNaiveBayesPrediction(inst,
+                    this.observedClassDistribution, this.attributeObservers)) == trueClass) {
+                this.nbCorrectWeight += inst.weight();
+            }
+            super.learnFromInstance(inst, hot);
+        }
 
-		@Override
-		public double[] getClassVotes(Instance inst, HoeffdingOptionTree ht) {
-			if (this.mcCorrectWeight > this.nbCorrectWeight) {
-				return this.observedClassDistribution.getArrayCopy();
-			}
-			return NaiveBayes.doNaiveBayesPrediction(inst,
-					this.observedClassDistribution, this.attributeObservers);
-		}
+        @Override
+        public double[] getClassVotes(Instance inst, HoeffdingOptionTree ht) {
+            if (this.mcCorrectWeight > this.nbCorrectWeight) {
+                return this.observedClassDistribution.getArrayCopy();
+            }
+            return NaiveBayes.doNaiveBayesPrediction(inst,
+                    this.observedClassDistribution, this.attributeObservers);
+        }
+    }
 
-	}
-
-	@Override
-	protected LearningNode newLearningNode(double[] initialClassObservations) {
-		return new LearningNodeNBAdaptive(initialClassObservations);
-	}
-
+    @Override
+    protected LearningNode newLearningNode(double[] initialClassObservations) {
+        return new LearningNodeNBAdaptive(initialClassObservations);
+    }
 }

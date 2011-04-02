@@ -19,7 +19,8 @@
  */
 package moa.gui;
 
+// not used?
 public interface AWTInteractiveRenderer extends AWTRenderer {
 
-	public void mouseClicked(int pixelX, int pixelY);
+    public void mouseClicked(int pixelX, int pixelY);
 }

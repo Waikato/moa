@@ -21,37 +21,46 @@ package moa.classifiers;
 
 import moa.AbstractMOAObject;
 
+/**
+ * Class for observing the class data distribution for a null attribute.
+ * This method is used to disable the observation for an attribute.
+ * Used in decision trees to monitor data statistics on leaves.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class NullAttributeClassObserver extends AbstractMOAObject implements
-		AttributeClassObserver {
+        AttributeClassObserver {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public void observeAttributeClass(double attVal, int classVal, double weight) {
+    @Override
+    public void observeAttributeClass(double attVal, int classVal, double weight) {
+    }
 
-	}
+    @Override
+    public double probabilityOfAttributeValueGivenClass(double attVal,
+            int classVal) {
+        return 0.0;
+    }
 
-	public double probabilityOfAttributeValueGivenClass(double attVal,
-			int classVal) {
-		return 0.0;
-	}
+    public double totalWeightOfClassObservations() {
+        return 0.0;
+    }
 
-	public double totalWeightOfClassObservations() {
-		return 0.0;
-	}
+    public double weightOfObservedMissingValues() {
+        return 0.0;
+    }
 
-	public double weightOfObservedMissingValues() {
-		return 0.0;
-	}
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {
+        // TODO Auto-generated method stub
+    }
 
-	public void getDescription(StringBuilder sb, int indent) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(
-			SplitCriterion criterion, double[] preSplitDist, int attIndex,
-			boolean binaryOnly) {
-		return null;
-	}
-
+    @Override
+    public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(
+            SplitCriterion criterion, double[] preSplitDist, int attIndex,
+            boolean binaryOnly) {
+        return null;
+    }
 }

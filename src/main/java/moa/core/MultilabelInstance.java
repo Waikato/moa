@@ -19,23 +19,23 @@
  */
 package moa.core;
 
-import weka.core.Instance;
-import weka.core.Instances;
 import weka.core.SparseInstance;
 
 /**
-  MultilabelInstance.
-*/
+ * Multilabel instance.
+ *
+ * @author Jesse Read (jmr30@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class MultilabelInstance extends SparseInstance {
 
-	int L = -1;
+    int L = -1;
 
-	public void setNumLabels(int n) {
-		this.L = n;
-	}
+    public void setNumLabels(int n) {
+        this.L = n;
+    }
 
-	public int getNumLabels() {
-		return this.L;
-	}
-
+    public int getNumLabels() {
+        return this.L;
+    }
 }

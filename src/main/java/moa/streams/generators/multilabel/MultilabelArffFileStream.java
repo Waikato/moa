@@ -19,52 +19,40 @@
  */
 package moa.streams.generators.multilabel;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-
 import moa.streams.ArffFileStream;
-import moa.core.InputStreamProgressMonitor;
 import moa.core.InstancesHeader;
 import moa.core.MultilabelInstancesHeader;
-import moa.core.ObjectRepository;
-import moa.options.AbstractOptionHandler;
-import moa.options.FileOption;
 import moa.options.IntOption;
-import moa.tasks.TaskMonitor;
-import moa.core.MultilabelInstance;
 
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.SparseInstance;
-
+/**
+ * Stream reader for ARFF files of multilabel data.
+ *
+ * @author Jesse Read (jmr30@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class MultilabelArffFileStream extends ArffFileStream {
 
-	@Override
-	public String getPurposeString() {
-		return "A stream read from an ARFF file.";
-	}
-	
-	private static final long serialVersionUID = 1L;
+    @Override
+    public String getPurposeString() {
+        return "A stream read from an ARFF file.";
+    }
 
-	public IntOption numLabelsOption = new IntOption( "numLabels", 'l',
-			"The number of labels. e.g. n = 10 : the first 10 binary attributes are the labels; n = -10 the last 10 binary attributes are the labels.", -1, -1, Integer.MAX_VALUE);
+    private static final long serialVersionUID = 1L;
 
-	public MultilabelArffFileStream() {
-	}
+    public IntOption numLabelsOption = new IntOption("numLabels", 'l',
+            "The number of labels. e.g. n = 10 : the first 10 binary attributes are the labels; n = -10 the last 10 binary attributes are the labels.", -1, -1, Integer.MAX_VALUE);
 
-	public MultilabelArffFileStream(String arffFileName, int numLabels) {
-		this.arffFileOption.setValue(arffFileName);
-		this.numLabelsOption.setValue(numLabels);
-		restart();
-	}
+    public MultilabelArffFileStream() {
+    }
 
-	@Override
-	public InstancesHeader getHeader() {
-		return new MultilabelInstancesHeader(this.instances,numLabelsOption.getValue());
-	}
+    public MultilabelArffFileStream(String arffFileName, int numLabels) {
+        this.arffFileOption.setValue(arffFileName);
+        this.numLabelsOption.setValue(numLabels);
+        restart();
+    }
 
+    @Override
+    public InstancesHeader getHeader() {
+        return new MultilabelInstancesHeader(this.instances, numLabelsOption.getValue());
+    }
 }

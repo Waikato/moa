@@ -19,71 +19,83 @@
  */
 package moa.tasks;
 
+/**
+ * Class that represents a null monitor.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class NullMonitor implements TaskMonitor {
 
-	public void setCurrentActivity(String activityDescription,
-			double fracComplete) {
+    @Override
+    public void setCurrentActivity(String activityDescription,
+            double fracComplete) {
+    }
 
-	}
+    @Override
+    public void setCurrentActivityDescription(String activity) {
+    }
 
-	public void setCurrentActivityDescription(String activity) {
+    @Override
+    public void setCurrentActivityFractionComplete(double fracComplete) {
+    }
 
-	}
+    @Override
+    public boolean taskShouldAbort() {
+        return false;
+    }
 
-	public void setCurrentActivityFractionComplete(double fracComplete) {
+    @Override
+    public String getCurrentActivityDescription() {
+        return null;
+    }
 
-	}
+    @Override
+    public double getCurrentActivityFractionComplete() {
+        return -1.0;
+    }
 
-	public boolean taskShouldAbort() {
-		return false;
-	}
+    @Override
+    public boolean isPaused() {
+        return false;
+    }
 
-	public String getCurrentActivityDescription() {
-		return null;
-	}
+    @Override
+    public boolean isCancelled() {
+        return false;
+    }
 
-	public double getCurrentActivityFractionComplete() {
-		return -1.0;
-	}
+    @Override
+    public void requestCancel() {
+    }
 
-	public boolean isPaused() {
-		return false;
-	}
+    @Override
+    public void requestPause() {
+    }
 
-	public boolean isCancelled() {
-		return false;
-	}
+    @Override
+    public void requestResume() {
+    }
 
-	public void requestCancel() {
+    @Override
+    public Object getLatestResultPreview() {
+        return null;
+    }
 
-	}
+    @Override
+    public void requestResultPreview() {
+    }
 
-	public void requestPause() {
+    @Override
+    public boolean resultPreviewRequested() {
+        return false;
+    }
 
-	}
+    @Override
+    public void setLatestResultPreview(Object latestPreview) {
+    }
 
-	public void requestResume() {
-
-	}
-
-	public Object getLatestResultPreview() {
-		return null;
-	}
-
-	public void requestResultPreview() {
-
-	}
-
-	public boolean resultPreviewRequested() {
-		return false;
-	}
-
-	public void setLatestResultPreview(Object latestPreview) {
-
-	}
-
-	public void requestResultPreview(ResultPreviewListener toInform) {
-
-	}
-
+    @Override
+    public void requestResultPreview(ResultPreviewListener toInform) {
+    }
 }

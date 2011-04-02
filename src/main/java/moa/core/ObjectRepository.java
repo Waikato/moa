@@ -19,8 +19,13 @@
  */
 package moa.core;
 
+/**
+ * Interface for object repositories.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public interface ObjectRepository {
 
-	Object getObjectNamed(String string);
-
+    Object getObjectNamed(String string);
 }

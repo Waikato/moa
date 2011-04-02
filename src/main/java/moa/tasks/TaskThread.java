@@ -24,177 +24,182 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
 
+/**
+ * Task Thread.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class TaskThread extends Thread {
 
-	public static enum Status {
-		NOT_STARTED, RUNNING, PAUSED, CANCELLING, CANCELLED, COMPLETED, FAILED
-	}
+    public static enum Status {
 
-	protected Task runningTask;
+        NOT_STARTED, RUNNING, PAUSED, CANCELLING, CANCELLED, COMPLETED, FAILED
+    }
 
-	protected volatile Status currentStatus;
+    protected Task runningTask;
 
-	protected TaskMonitor taskMonitor;
+    protected volatile Status currentStatus;
 
-	protected ObjectRepository repository;
+    protected TaskMonitor taskMonitor;
 
-	protected Object finalResult;
+    protected ObjectRepository repository;
 
-	protected long taskStartTime;
+    protected Object finalResult;
 
-	protected long taskEndTime;
+    protected long taskStartTime;
 
-	protected double latestPreviewGrabTime = 0.0;
+    protected long taskEndTime;
 
-	CopyOnWriteArraySet<TaskCompletionListener> completionListeners = new CopyOnWriteArraySet<TaskCompletionListener>();
+    protected double latestPreviewGrabTime = 0.0;
 
-	public TaskThread(Task toRun) {
-		this(toRun, null);
-	}
+    CopyOnWriteArraySet<TaskCompletionListener> completionListeners = new CopyOnWriteArraySet<TaskCompletionListener>();
 
-	public TaskThread(Task toRun, ObjectRepository repository) {
-		this.runningTask = toRun;
-		this.repository = repository;
-		this.currentStatus = Status.NOT_STARTED;
-		this.taskMonitor = new StandardTaskMonitor();
-		this.taskMonitor.setCurrentActivityDescription("Running task " + toRun);
-	}
+    public TaskThread(Task toRun) {
+        this(toRun, null);
+    }
 
-	@Override
-	public void run() {
-		TimingUtils.enablePreciseTiming();
-		this.taskStartTime = TimingUtils.getNanoCPUTimeOfThread(getId());
-		try {
-			this.currentStatus = Status.RUNNING;
-			this.finalResult = this.runningTask.doTask(this.taskMonitor,
-					this.repository);
-			this.currentStatus = this.taskMonitor.isCancelled() ? Status.CANCELLED
-					: Status.COMPLETED;
-		} catch (Throwable ex) {
-			this.currentStatus = Status.FAILED;
-			this.finalResult = new FailedTaskReport(ex);
-		}
-		this.taskEndTime = TimingUtils.getNanoCPUTimeOfThread(getId());
-		fireTaskCompleted();
-		this.taskMonitor.setLatestResultPreview(null); // free preview memory
-	}
+    public TaskThread(Task toRun, ObjectRepository repository) {
+        this.runningTask = toRun;
+        this.repository = repository;
+        this.currentStatus = Status.NOT_STARTED;
+        this.taskMonitor = new StandardTaskMonitor();
+        this.taskMonitor.setCurrentActivityDescription("Running task " + toRun);
+    }
 
-	public synchronized void pauseTask() {
-		if (this.currentStatus == Status.RUNNING) {
-			this.taskMonitor.requestPause();
-			this.currentStatus = Status.PAUSED;
-		}
-	}
+    @Override
+    public void run() {
+        TimingUtils.enablePreciseTiming();
+        this.taskStartTime = TimingUtils.getNanoCPUTimeOfThread(getId());
+        try {
+            this.currentStatus = Status.RUNNING;
+            this.finalResult = this.runningTask.doTask(this.taskMonitor,
+                    this.repository);
+            this.currentStatus = this.taskMonitor.isCancelled() ? Status.CANCELLED
+                    : Status.COMPLETED;
+        } catch (Throwable ex) {
+            this.currentStatus = Status.FAILED;
+            this.finalResult = new FailedTaskReport(ex);
+        }
+        this.taskEndTime = TimingUtils.getNanoCPUTimeOfThread(getId());
+        fireTaskCompleted();
+        this.taskMonitor.setLatestResultPreview(null); // free preview memory
+    }
 
-	public synchronized void resumeTask() {
-		if (this.currentStatus == Status.PAUSED) {
-			this.taskMonitor.requestResume();
-			this.currentStatus = Status.RUNNING;
-		}
-	}
+    public synchronized void pauseTask() {
+        if (this.currentStatus == Status.RUNNING) {
+            this.taskMonitor.requestPause();
+            this.currentStatus = Status.PAUSED;
+        }
+    }
 
-	public synchronized void cancelTask() {
-		if ((this.currentStatus == Status.RUNNING)
-				|| (this.currentStatus == Status.PAUSED)) {
-			this.taskMonitor.requestCancel();
-			this.currentStatus = Status.CANCELLING;
-		}
-	}
+    public synchronized void resumeTask() {
+        if (this.currentStatus == Status.PAUSED) {
+            this.taskMonitor.requestResume();
+            this.currentStatus = Status.RUNNING;
+        }
+    }
 
-	public double getCPUSecondsElapsed() {
-		double secondsElapsed = 0.0;
-		if (this.currentStatus == Status.NOT_STARTED) {
-			secondsElapsed = 0.0;
-		} else if (isComplete()) {
-			secondsElapsed = TimingUtils.nanoTimeToSeconds(this.taskEndTime
-					- this.taskStartTime);
-		} else {
-			secondsElapsed = TimingUtils.nanoTimeToSeconds(TimingUtils
-					.getNanoCPUTimeOfThread(getId())
-					- this.taskStartTime);
-		}
-		return secondsElapsed > 0.0 ? secondsElapsed : 0.0;
-	}
+    public synchronized void cancelTask() {
+        if ((this.currentStatus == Status.RUNNING)
+                || (this.currentStatus == Status.PAUSED)) {
+            this.taskMonitor.requestCancel();
+            this.currentStatus = Status.CANCELLING;
+        }
+    }
 
-	public Task getTask() {
-		return this.runningTask;
-	}
+    public double getCPUSecondsElapsed() {
+        double secondsElapsed = 0.0;
+        if (this.currentStatus == Status.NOT_STARTED) {
+            secondsElapsed = 0.0;
+        } else if (isComplete()) {
+            secondsElapsed = TimingUtils.nanoTimeToSeconds(this.taskEndTime
+                    - this.taskStartTime);
+        } else {
+            secondsElapsed = TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfThread(getId())
+                    - this.taskStartTime);
+        }
+        return secondsElapsed > 0.0 ? secondsElapsed : 0.0;
+    }
 
-	public String getCurrentStatusString() {
-		switch (this.currentStatus) {
-		case NOT_STARTED:
-			return "not started";
-		case RUNNING:
-			return "running";
-		case PAUSED:
-			return "paused";
-		case CANCELLING:
-			return "cancelling";
-		case CANCELLED:
-			return "cancelled";
-		case COMPLETED:
-			return "completed";
-		case FAILED:
-			return "failed";
-		}
-		return "unknown";
-	}
+    public Task getTask() {
+        return this.runningTask;
+    }
 
-	public String getCurrentActivityString() {
-		return (isComplete() || (this.currentStatus == Status.NOT_STARTED)) ? ""
-				: this.taskMonitor.getCurrentActivityDescription();
-	}
+    public String getCurrentStatusString() {
+        switch (this.currentStatus) {
+            case NOT_STARTED:
+                return "not started";
+            case RUNNING:
+                return "running";
+            case PAUSED:
+                return "paused";
+            case CANCELLING:
+                return "cancelling";
+            case CANCELLED:
+                return "cancelled";
+            case COMPLETED:
+                return "completed";
+            case FAILED:
+                return "failed";
+        }
+        return "unknown";
+    }
 
-	public double getCurrentActivityFracComplete() {
-		switch (this.currentStatus) {
-		case NOT_STARTED:
-			return 0.0;
-		case RUNNING:
-		case PAUSED:
-		case CANCELLING:
-			return this.taskMonitor.getCurrentActivityFractionComplete();
-		case CANCELLED:
-		case COMPLETED:
-		case FAILED:
-			return 1.0;
-		}
-		return 0.0;
-	}
+    public String getCurrentActivityString() {
+        return (isComplete() || (this.currentStatus == Status.NOT_STARTED)) ? ""
+                : this.taskMonitor.getCurrentActivityDescription();
+    }
 
-	public boolean isComplete() {
-		return ((this.currentStatus == Status.CANCELLED)
-				|| (this.currentStatus == Status.COMPLETED) || (this.currentStatus == Status.FAILED));
-	}
+    public double getCurrentActivityFracComplete() {
+        switch (this.currentStatus) {
+            case NOT_STARTED:
+                return 0.0;
+            case RUNNING:
+            case PAUSED:
+            case CANCELLING:
+                return this.taskMonitor.getCurrentActivityFractionComplete();
+            case CANCELLED:
+            case COMPLETED:
+            case FAILED:
+                return 1.0;
+        }
+        return 0.0;
+    }
 
-	public Object getFinalResult() {
-		return this.finalResult;
-	}
+    public boolean isComplete() {
+        return ((this.currentStatus == Status.CANCELLED)
+                || (this.currentStatus == Status.COMPLETED) || (this.currentStatus == Status.FAILED));
+    }
 
-	public void addTaskCompletionListener(TaskCompletionListener tcl) {
-		this.completionListeners.add(tcl);
-	}
+    public Object getFinalResult() {
+        return this.finalResult;
+    }
 
-	public void removeTaskCompletionListener(TaskCompletionListener tcl) {
-		this.completionListeners.remove(tcl);
-	}
+    public void addTaskCompletionListener(TaskCompletionListener tcl) {
+        this.completionListeners.add(tcl);
+    }
 
-	protected void fireTaskCompleted() {
-		for (TaskCompletionListener listener : this.completionListeners) {
-			listener.taskCompleted(this);
-		}
-	}
+    public void removeTaskCompletionListener(TaskCompletionListener tcl) {
+        this.completionListeners.remove(tcl);
+    }
 
-	public void getPreview(ResultPreviewListener previewer) {
-		this.taskMonitor.requestResultPreview(previewer);
-		this.latestPreviewGrabTime = getCPUSecondsElapsed();
-	}
+    protected void fireTaskCompleted() {
+        for (TaskCompletionListener listener : this.completionListeners) {
+            listener.taskCompleted(this);
+        }
+    }
 
-	public Object getLatestResultPreview() {
-		return this.taskMonitor.getLatestResultPreview();
-	}
+    public void getPreview(ResultPreviewListener previewer) {
+        this.taskMonitor.requestResultPreview(previewer);
+        this.latestPreviewGrabTime = getCPUSecondsElapsed();
+    }
 
-	public double getLatestPreviewGrabTimeSeconds() {
-		return this.latestPreviewGrabTime;
-	}
+    public Object getLatestResultPreview() {
+        return this.taskMonitor.getLatestResultPreview();
+    }
 
+    public double getLatestPreviewGrabTimeSeconds() {
+        return this.latestPreviewGrabTime;
+    }
 }

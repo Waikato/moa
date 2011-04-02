@@ -19,22 +19,16 @@
  */
 package moa.classifiers;
 
-import weka.core.Instance;
+/**
+ * Abstract binary conditional test for instances to use to split nodes in Hoeffding trees.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
+public abstract class InstanceConditionalBinaryTest extends InstanceConditionalTest {
 
-public abstract class InstanceConditionalBinaryTest extends
-		InstanceConditionalTest {
-
-	public boolean passesTest(Instance inst) {
-		return branchForInstance(inst) == 0;
-	}
-
-	public boolean failsTest(Instance inst) {
-		return branchForInstance(inst) == 1;
-	}
-
-	@Override
-	public int maxBranches() {
-		return 2;
-	}
-
+    @Override
+    public int maxBranches() {
+        return 2;
+    }
 }

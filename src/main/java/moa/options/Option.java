@@ -23,27 +23,80 @@ import javax.swing.JComponent;
 
 import moa.MOAObject;
 
+/**
+ * Interface representing an option or parameter. 
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $ 
+ */
 public interface Option extends MOAObject {
 
-	public String getName();
+    /**
+     * Gets the name of this option
+     *
+     * @return the name of this option
+     */
+    public String getName();
 
-	public char getCLIChar();
+    /**
+     * Gets the Command Line Interface text of this option
+     *
+     * @return the Command Line Interface text
+     */
+    public char getCLIChar();
 
-	public String getPurpose();
+    /**
+     * Gets the purpose of this option
+     *
+     * @return the purpose of this option
+     */
+    public String getPurpose();
 
-	public String getDefaultCLIString();
+    /**
+     * Gets the Command Line Interface text
+     *
+     * @return the Command Line Interface text
+     */
+    public String getDefaultCLIString();
 
-	public void setValueViaCLIString(String s);
+    /**
+     * Sets value of this option via the Command Line Interface text
+     *
+     * @param s the Command Line Interface text
+     */
+    public void setValueViaCLIString(String s);
 
-	public String getValueAsCLIString();
+    /**
+     * Gets the value of a Command Line Interface text as a string
+     *
+     * @return the string with the value of the Command Line Interface text
+     */
+    public String getValueAsCLIString();
 
-	public void resetToDefault();
+    /**
+     * Resets this option to the default value
+     *
+     */
+    public void resetToDefault();
 
-	// human readable form
-	public String getStateString();
+    /**
+     * Gets the state of this option in human readable form
+     *
+     * @return the string with state of this option in human readable form
+     */
+    public String getStateString();
 
-	public Option copy();
+    /**
+     * Gets a copy of this option
+     *
+     * @return the copy of this option
+     */
+    public Option copy();
 
-	public JComponent getEditComponent();
-
+    /**
+     * Gets the GUI component to edit
+     *
+     * @return the component to edit
+     */
+    public JComponent getEditComponent();
 }

@@ -31,60 +31,66 @@ import moa.options.FlagOption;
 import moa.options.IntOption;
 import moa.streams.InstanceStream;
 
+/**
+ * Task to output a stream to an ARFF file
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class WriteStreamToARFFFile extends MainTask {
 
-	@Override
-	public String getPurposeString() {
-		return "Outputs a stream to an ARFF file.";
-	}
-	
-	private static final long serialVersionUID = 1L;
+    @Override
+    public String getPurposeString() {
+        return "Outputs a stream to an ARFF file.";
+    }
 
-	public ClassOption streamOption = new ClassOption("stream", 's',
-			"Stream to write.", InstanceStream.class,
-			"generators.RandomTreeGenerator");
+    private static final long serialVersionUID = 1L;
 
-	public FileOption arffFileOption = new FileOption("arffFile", 'f',
-			"Destination ARFF file.", null, "arff", true);
+    public ClassOption streamOption = new ClassOption("stream", 's',
+            "Stream to write.", InstanceStream.class,
+            "generators.RandomTreeGenerator");
 
-	public IntOption maxInstancesOption = new IntOption("maxInstances", 'm',
-			"Maximum number of instances to write to file.", 10000000, 0,
-			Integer.MAX_VALUE);
+    public FileOption arffFileOption = new FileOption("arffFile", 'f',
+            "Destination ARFF file.", null, "arff", true);
 
-	public FlagOption suppressHeaderOption = new FlagOption("suppressHeader",
-			'h', "Suppress header from output.");
+    public IntOption maxInstancesOption = new IntOption("maxInstances", 'm',
+            "Maximum number of instances to write to file.", 10000000, 0,
+            Integer.MAX_VALUE);
 
-	@Override
-	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-		InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
-		File destFile = this.arffFileOption.getFile();
-		if (destFile != null) {
-			try {
-				Writer w = new BufferedWriter(new FileWriter(destFile));
-				monitor.setCurrentActivityDescription("Writing stream to ARFF");
-				if (!this.suppressHeaderOption.isSet()) {
-					w.write(stream.getHeader().toString());
-					w.write("\n");
-				}
-				int numWritten = 0;
-				while ((numWritten < this.maxInstancesOption.getValue())
-						&& stream.hasMoreInstances()) {
-					w.write(stream.nextInstance().toString());
-					w.write("\n");
-					numWritten++;
-				}
-				w.close();
-			} catch (Exception ex) {
-				throw new RuntimeException(
-						"Failed writing to file " + destFile, ex);
-			}
-			return new String("Stream written to ARFF file " + destFile);
-		}
-		throw new IllegalArgumentException("No destination file to write to.");
-	}
+    public FlagOption suppressHeaderOption = new FlagOption("suppressHeader",
+            'h', "Suppress header from output.");
 
-	public Class<?> getTaskResultType() {
-		return String.class;
-	}
+    @Override
+    protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
+        File destFile = this.arffFileOption.getFile();
+        if (destFile != null) {
+            try {
+                Writer w = new BufferedWriter(new FileWriter(destFile));
+                monitor.setCurrentActivityDescription("Writing stream to ARFF");
+                if (!this.suppressHeaderOption.isSet()) {
+                    w.write(stream.getHeader().toString());
+                    w.write("\n");
+                }
+                int numWritten = 0;
+                while ((numWritten < this.maxInstancesOption.getValue())
+                        && stream.hasMoreInstances()) {
+                    w.write(stream.nextInstance().toString());
+                    w.write("\n");
+                    numWritten++;
+                }
+                w.close();
+            } catch (Exception ex) {
+                throw new RuntimeException(
+                        "Failed writing to file " + destFile, ex);
+            }
+            return "Stream written to ARFF file " + destFile;
+        }
+        throw new IllegalArgumentException("No destination file to write to.");
+    }
 
+    @Override
+    public Class<?> getTaskResultType() {
+        return String.class;
+    }
 }

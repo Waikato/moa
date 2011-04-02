@@ -19,8 +19,21 @@
  */
 package moa.tasks;
 
+/**
+ * Interface implemented by classes that preview results 
+ * on the Graphical User Interface 
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public interface ResultPreviewListener {
 
-	public void latestPreviewChanged();
-
+    /**
+     * This method is used to receive a signal from
+     * <code>TaskMonitor</code> that the lastest preview has
+     * changed. This method is implemented in <code>PreviewPanel</code>
+     * to change the results that are shown in its panel.
+     *
+     */
+    public void latestPreviewChanged();
 }

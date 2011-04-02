@@ -22,43 +22,64 @@ package moa.tasks;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 
+/**
+ * Abstract Task. All runnable tasks in MOA extend this class.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public abstract class AbstractTask extends AbstractOptionHandler implements
-		Task {
+        Task {
 
-	public String getTaskName() {
-		return this.getClass().getSimpleName();
-	}
+    /**
+     * Gets the name of this task.
+     *
+     * @return the name of this task
+     */
+    public String getTaskName() {
+        return this.getClass().getSimpleName();
+    }
 
-	public Object doTask() {
-		return doTask(new NullMonitor(), null);
-	}
+    @Override
+    public Object doTask() {
+        return doTask(new NullMonitor(), null);
+    }
 
-	public Object doTask(TaskMonitor monitor, ObjectRepository repository) {
-		monitor.setCurrentActivity("Preparing options to " + getTaskName()
-				+ "...", -1.0);
-		prepareClassOptions(monitor, repository);
-		if (monitor.taskShouldAbort()) {
-			return null;
-		}
-		monitor.setCurrentActivity("Doing task " + getTaskName() + "...", -1.0);
-		Object result = doTaskImpl(monitor, repository);
-		monitor.setCurrentActivity("Task " + getTaskName() + " complete.", 1.0);
-		this.classOptionNamesToPreparedObjects = null; // clean up refs
-		return result;
-	}
+    @Override
+    public Object doTask(TaskMonitor monitor, ObjectRepository repository) {
+        monitor.setCurrentActivity("Preparing options to " + getTaskName()
+                + "...", -1.0);
+        prepareClassOptions(monitor, repository);
+        if (monitor.taskShouldAbort()) {
+            return null;
+        }
+        monitor.setCurrentActivity("Doing task " + getTaskName() + "...", -1.0);
+        Object result = doTaskImpl(monitor, repository);
+        monitor.setCurrentActivity("Task " + getTaskName() + " complete.", 1.0);
+        this.classOptionNamesToPreparedObjects = null; // clean up refs
+        return result;
+    }
 
-	protected abstract Object doTaskImpl(TaskMonitor monitor,
-			ObjectRepository repository);
+    /**
+     * This method performs this task.
+     * <code>AbstractTask</code> implements <code>doTask</code> so all
+     * its extensions only need to implement <code>doTaskImpl</code>.
+     *
+     * @param monitor the TaskMonitor to use
+     * @param repository  the ObjectRepository to use
+     * @return an object with the result of this task
+     */
+    protected abstract Object doTaskImpl(TaskMonitor monitor,
+            ObjectRepository repository);
 
-	@Override
-	protected void prepareForUseImpl(TaskMonitor monitor,
-			ObjectRepository repository) {
-		// tasks prepare themselves upon running
-	}
+    @Override
+    protected void prepareForUseImpl(TaskMonitor monitor,
+            ObjectRepository repository) {
+        // tasks prepare themselves upon running
+    }
 
-	public void getDescription(StringBuilder sb, int indent) {
-		// TODO Auto-generated method stub
-
-	}
-
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {
+        // TODO Auto-generated method stub
+    }
 }

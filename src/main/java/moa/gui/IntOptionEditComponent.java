@@ -31,56 +31,63 @@ import javax.swing.event.ChangeListener;
 import moa.options.IntOption;
 import moa.options.Option;
 
+/**
+ * An OptionEditComponent that lets the user edit an integer option.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class IntOptionEditComponent extends JPanel implements
-		OptionEditComponent {
+        OptionEditComponent {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected IntOption editedOption;
+    protected IntOption editedOption;
 
-	protected JSpinner spinner;
+    protected JSpinner spinner;
 
-	protected JSlider slider;
+    protected JSlider slider;
 
-	public IntOptionEditComponent(IntOption option) {
-		this.editedOption = option;
-		int minVal = option.getMinValue();
-		int maxVal = option.getMaxValue();
-		setLayout(new GridLayout(1, 0));
-		this.spinner = new JSpinner(new SpinnerNumberModel(option.getValue(),
-				minVal, maxVal, 1));
-		add(this.spinner);
-		if ((minVal > Integer.MIN_VALUE) && (maxVal < Integer.MAX_VALUE)) {
-			this.slider = new JSlider(minVal, maxVal, option.getValue());
-			add(this.slider);
-			this.slider.addChangeListener(new ChangeListener() {
-				public void stateChanged(ChangeEvent e) {
-					IntOptionEditComponent.this.spinner
-							.setValue(IntOptionEditComponent.this.slider
-									.getValue());
-				}
-			});
-			this.spinner.addChangeListener(new ChangeListener() {
-				public void stateChanged(ChangeEvent e) {
-					IntOptionEditComponent.this.slider
-							.setValue(((Integer) IntOptionEditComponent.this.spinner
-									.getValue()).intValue());
-				}
-			});
-		}
-	}
+    public IntOptionEditComponent(IntOption option) {
+        this.editedOption = option;
+        int minVal = option.getMinValue();
+        int maxVal = option.getMaxValue();
+        setLayout(new GridLayout(1, 0));
+        this.spinner = new JSpinner(new SpinnerNumberModel(option.getValue(),
+                minVal, maxVal, 1));
+        add(this.spinner);
+        if ((minVal > Integer.MIN_VALUE) && (maxVal < Integer.MAX_VALUE)) {
+            this.slider = new JSlider(minVal, maxVal, option.getValue());
+            add(this.slider);
+            this.slider.addChangeListener(new ChangeListener() {
 
-	public void applyState() {
-		this.editedOption.setValue(((Integer) this.spinner.getValue())
-				.intValue());
-	}
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    IntOptionEditComponent.this.spinner.setValue(IntOptionEditComponent.this.slider.getValue());
+                }
+            });
+            this.spinner.addChangeListener(new ChangeListener() {
 
-	public Option getEditedOption() {
-		return this.editedOption;
-	}
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    IntOptionEditComponent.this.slider.setValue(((Integer) IntOptionEditComponent.this.spinner.getValue()).intValue());
+                }
+            });
+        }
+    }
 
-	public void setEditState(String cliString) {
-		this.spinner.setValue(IntOption.cliStringToInt(cliString));
-	}
+    @Override
+    public void applyState() {
+        this.editedOption.setValue(((Integer) this.spinner.getValue()).intValue());
+    }
 
+    @Override
+    public Option getEditedOption() {
+        return this.editedOption;
+    }
+
+    @Override
+    public void setEditState(String cliString) {
+        this.spinner.setValue(IntOption.cliStringToInt(cliString));
+    }
 }

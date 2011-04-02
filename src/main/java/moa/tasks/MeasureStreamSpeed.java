@@ -27,46 +27,51 @@ import moa.options.ClassOption;
 import moa.options.IntOption;
 import moa.streams.InstanceStream;
 
+/**
+ * Task for measuring the speed of the stream.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class MeasureStreamSpeed extends MainTask {
 
-	@Override
-	public String getPurposeString() {
-		return "Measures the speed of a stream.";
-	}
-	
-	private static final long serialVersionUID = 1L;
+    @Override
+    public String getPurposeString() {
+        return "Measures the speed of a stream.";
+    }
 
-	public ClassOption streamOption = new ClassOption("stream", 's',
-			"Stream to measure.", InstanceStream.class,
-			"generators.RandomTreeGenerator");
+    private static final long serialVersionUID = 1L;
 
-	public IntOption generateSizeOption = new IntOption("generateSize", 'g',
-			"Number of examples.", 10000000, 0, Integer.MAX_VALUE);
+    public ClassOption streamOption = new ClassOption("stream", 's',
+            "Stream to measure.", InstanceStream.class,
+            "generators.RandomTreeGenerator");
 
-	@Override
-	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-		TimingUtils.enablePreciseTiming();
-		int numInstances = 0;
-		InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
-		long genStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
-		while (numInstances < this.generateSizeOption.getValue()) {
-			stream.nextInstance();
-			numInstances++;
-		}
-		double genTime = TimingUtils.nanoTimeToSeconds(TimingUtils
-				.getNanoCPUTimeOfCurrentThread()
-				- genStartTime);
-		return new LearningEvaluation(
-				new Measurement[] {
-						new Measurement("Number of instances generated",
-								numInstances),
-						new Measurement("Time elapsed", genTime),
-						new Measurement("Instances per second", numInstances
-								/ genTime) });
-	}
+    public IntOption generateSizeOption = new IntOption("generateSize", 'g',
+            "Number of examples.", 10000000, 0, Integer.MAX_VALUE);
 
-	public Class<?> getTaskResultType() {
-		return LearningEvaluation.class;
-	}
+    @Override
+    protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
+        TimingUtils.enablePreciseTiming();
+        int numInstances = 0;
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
+        long genStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
+        while (numInstances < this.generateSizeOption.getValue()) {
+            stream.nextInstance();
+            numInstances++;
+        }
+        double genTime = TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread()
+                - genStartTime);
+        return new LearningEvaluation(
+                new Measurement[]{
+                    new Measurement("Number of instances generated",
+                    numInstances),
+                    new Measurement("Time elapsed", genTime),
+                    new Measurement("Instances per second", numInstances
+                    / genTime)});
+    }
 
+    @Override
+    public Class<?> getTaskResultType() {
+        return LearningEvaluation.class;
+    }
 }

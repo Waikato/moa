@@ -23,29 +23,34 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
+/**
+ * A filter that is used to restrict the files that are shown.
+ *
+ *  
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $ 
+ */
 public class FileExtensionFilter extends FileFilter {
 
-	protected String fileExtension;
+    protected String fileExtension;
 
-	public FileExtensionFilter(String extension) {
-		this.fileExtension = extension.toLowerCase();
-	}
+    public FileExtensionFilter(String extension) {
+        this.fileExtension = extension.toLowerCase();
+    }
 
-	@Override
-	public boolean accept(File f) {
-		if (f != null) {
-			if (f.isDirectory()) {
-				return true;
-			}
-			return (f.getName().toLowerCase()
-					.endsWith("." + this.fileExtension));
-		}
-		return false;
-	}
+    @Override
+    public boolean accept(File f) {
+        if (f != null) {
+            if (f.isDirectory()) {
+                return true;
+            }
+            return (f.getName().toLowerCase().endsWith("." + this.fileExtension));
+        }
+        return false;
+    }
 
-	@Override
-	public String getDescription() {
-		return ("*." + this.fileExtension);
-	}
-
+    @Override
+    public String getDescription() {
+        return ("*." + this.fileExtension);
+    }
 }

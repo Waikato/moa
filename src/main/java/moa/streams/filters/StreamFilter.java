@@ -21,8 +21,18 @@ package moa.streams.filters;
 
 import moa.streams.InstanceStream;
 
+/**
+ * Interface representing a stream filter. 
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $ 
+ */
 public interface StreamFilter extends InstanceStream {
 
-	public void setInputStream(InstanceStream stream);
-
+    /**
+     * Sets the input stream to the filter
+     *
+     * @param stream the input stream to the filter
+     */
+    public void setInputStream(InstanceStream stream);
 }

@@ -22,50 +22,52 @@ package moa.classifiers;
 import moa.options.IntOption;
 import weka.core.Instance;
 
+/**
+ * Random decision trees for data streams that uses naive Bayes learners at the leaves.
+ *
+ * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
+ * @version $Revision: 7 $
+ */
 public class RandomHoeffdingTreeNB extends RandomHoeffdingTree {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public IntOption nbThresholdOption = new IntOption(
-			"nbThreshold",
-			'q',
-			"The number of instances a leaf should observe before permitting Naive Bayes.",
-			0, 0, Integer.MAX_VALUE);
+    public IntOption nbThresholdOption = new IntOption(
+            "nbThreshold",
+            'q',
+            "The number of instances a leaf should observe before permitting Naive Bayes.",
+            0, 0, Integer.MAX_VALUE);
 
-	public static class LearningNodeNB extends RandomLearningNode {
+    public static class LearningNodeNB extends RandomLearningNode {
 
-		private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-		public LearningNodeNB(double[] initialClassObservations) {
-			super(initialClassObservations);
-		}
+        public LearningNodeNB(double[] initialClassObservations) {
+            super(initialClassObservations);
+        }
 
-		@Override
-		public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
-			if (getWeightSeen() >= ((HoeffdingTreeNB) ht).nbThresholdOption
-					.getValue()) {
-				return NaiveBayes
-						.doNaiveBayesPrediction(inst,
-								this.observedClassDistribution,
-								this.attributeObservers);
-			}
-			return super.getClassVotes(inst, ht);
-		}
+        @Override
+        public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
+            if (getWeightSeen() >= ((HoeffdingTreeNB) ht).nbThresholdOption.getValue()) {
+                return NaiveBayes.doNaiveBayesPrediction(inst,
+                        this.observedClassDistribution,
+                        this.attributeObservers);
+            }
+            return super.getClassVotes(inst, ht);
+        }
 
-		@Override
-		public void disableAttribute(int attIndex) {
-			// should not disable poor atts - they are used in NB calc
-		}
+        @Override
+        public void disableAttribute(int attIndex) {
+            // should not disable poor atts - they are used in NB calc
+        }
+    }
 
-	}
+    public RandomHoeffdingTreeNB() {
+        this.removePoorAttsOption = null;
+    }
 
-	public RandomHoeffdingTreeNB() {
-		this.removePoorAttsOption = null;
-	}
-
-	@Override
-	protected LearningNode newLearningNode(double[] initialClassObservations) {
-		return new LearningNodeNB(initialClassObservations);
-	}
-
+    @Override
+    protected LearningNode newLearningNode(double[] initialClassObservations) {
+        return new LearningNodeNB(initialClassObservations);
+    }
 }

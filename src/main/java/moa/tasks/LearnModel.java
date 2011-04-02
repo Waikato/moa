@@ -25,99 +25,102 @@ import moa.options.ClassOption;
 import moa.options.IntOption;
 import moa.streams.InstanceStream;
 
+/**
+ * Task for learning a model without any evaluation.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class LearnModel extends MainTask {
 
-	@Override
-	public String getPurposeString() {
-		return "Learns a model from a stream.";
-	}
-	
-	private static final long serialVersionUID = 1L;
+    @Override
+    public String getPurposeString() {
+        return "Learns a model from a stream.";
+    }
 
-	public ClassOption learnerOption = new ClassOption("learner", 'l',
-			"Classifier to train.", Classifier.class, "NaiveBayes");
+    private static final long serialVersionUID = 1L;
 
-	public ClassOption streamOption = new ClassOption("stream", 's',
-			"Stream to learn from.", InstanceStream.class,
-			"generators.RandomTreeGenerator");
+    public ClassOption learnerOption = new ClassOption("learner", 'l',
+            "Classifier to train.", Classifier.class, "NaiveBayes");
 
-	public IntOption maxInstancesOption = new IntOption("maxInstances", 'm',
-			"Maximum number of instances to train on per pass over the data.",
-			10000000, 0, Integer.MAX_VALUE);
+    public ClassOption streamOption = new ClassOption("stream", 's',
+            "Stream to learn from.", InstanceStream.class,
+            "generators.RandomTreeGenerator");
 
-	public IntOption numPassesOption = new IntOption("numPasses", 'p',
-			"The number of passes to do over the data.", 1, 1,
-			Integer.MAX_VALUE);
+    public IntOption maxInstancesOption = new IntOption("maxInstances", 'm',
+            "Maximum number of instances to train on per pass over the data.",
+            10000000, 0, Integer.MAX_VALUE);
 
-	public IntOption maxMemoryOption = new IntOption("maxMemory", 'b',
-			"Maximum size of model (in bytes). -1 = no limit.", -1, -1,
-			Integer.MAX_VALUE);
+    public IntOption numPassesOption = new IntOption("numPasses", 'p',
+            "The number of passes to do over the data.", 1, 1,
+            Integer.MAX_VALUE);
 
-	public IntOption memCheckFrequencyOption = new IntOption(
-			"memCheckFrequency", 'q',
-			"How many instances between memory bound checks.", 100000, 0,
-			Integer.MAX_VALUE);
+    public IntOption maxMemoryOption = new IntOption("maxMemory", 'b',
+            "Maximum size of model (in bytes). -1 = no limit.", -1, -1,
+            Integer.MAX_VALUE);
 
-	public LearnModel() {
+    public IntOption memCheckFrequencyOption = new IntOption(
+            "memCheckFrequency", 'q',
+            "How many instances between memory bound checks.", 100000, 0,
+            Integer.MAX_VALUE);
 
-	}
+    public LearnModel() {
+    }
 
-	public LearnModel(Classifier learner, InstanceStream stream,
-			int maxInstances, int numPasses) {
-		this.learnerOption.setCurrentObject(learner);
-		this.streamOption.setCurrentObject(stream);
-		this.maxInstancesOption.setValue(maxInstances);
-		this.numPassesOption.setValue(numPasses);
-	}
+    public LearnModel(Classifier learner, InstanceStream stream,
+            int maxInstances, int numPasses) {
+        this.learnerOption.setCurrentObject(learner);
+        this.streamOption.setCurrentObject(stream);
+        this.maxInstancesOption.setValue(maxInstances);
+        this.numPassesOption.setValue(numPasses);
+    }
 
-	public Class<?> getTaskResultType() {
-		return Classifier.class;
-	}
+    @Override
+    public Class<?> getTaskResultType() {
+        return Classifier.class;
+    }
 
-	@Override
-	public Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-		Classifier learner = (Classifier) getPreparedClassOption(this.learnerOption);
-		InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
-		learner.setModelContext(stream.getHeader());
-		int numPasses = this.numPassesOption.getValue();
-		int maxInstances = this.maxInstancesOption.getValue();
-		for (int pass = 0; pass < numPasses; pass++) {
-			long instancesProcessed = 0;
-			monitor.setCurrentActivity("Training learner"
-					+ (numPasses > 1 ? (" (pass " + (pass + 1) + "/"
-							+ numPasses + ")") : "") + "...", -1.0);
-			if (pass > 0) {
-				stream.restart();
-			}
-			while (stream.hasMoreInstances()
-					&& ((maxInstances < 0) || (instancesProcessed < maxInstances))) {
-				learner.trainOnInstance(stream.nextInstance());
-				instancesProcessed++;
-				if (instancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
-					if (monitor.taskShouldAbort()) {
-						return null;
-					}
-					long estimatedRemainingInstances = stream
-							.estimatedRemainingInstances();
-					if (maxInstances > 0) {
-						long maxRemaining = maxInstances - instancesProcessed;
-						if ((estimatedRemainingInstances < 0)
-								|| (maxRemaining < estimatedRemainingInstances)) {
-							estimatedRemainingInstances = maxRemaining;
-						}
-					}
-					monitor
-							.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
-									: (double) instancesProcessed
-											/ (double) (instancesProcessed + estimatedRemainingInstances));
-					if (monitor.resultPreviewRequested()) {
-						monitor.setLatestResultPreview(learner.copy());
-					}
-				}
-			}
-		}
-		learner.setModelContext(stream.getHeader());
-		return learner;
-	}
-
+    @Override
+    public Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
+        Classifier learner = (Classifier) getPreparedClassOption(this.learnerOption);
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
+        learner.setModelContext(stream.getHeader());
+        int numPasses = this.numPassesOption.getValue();
+        int maxInstances = this.maxInstancesOption.getValue();
+        for (int pass = 0; pass < numPasses; pass++) {
+            long instancesProcessed = 0;
+            monitor.setCurrentActivity("Training learner"
+                    + (numPasses > 1 ? (" (pass " + (pass + 1) + "/"
+                    + numPasses + ")") : "") + "...", -1.0);
+            if (pass > 0) {
+                stream.restart();
+            }
+            while (stream.hasMoreInstances()
+                    && ((maxInstances < 0) || (instancesProcessed < maxInstances))) {
+                learner.trainOnInstance(stream.nextInstance());
+                instancesProcessed++;
+                if (instancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
+                    if (monitor.taskShouldAbort()) {
+                        return null;
+                    }
+                    long estimatedRemainingInstances = stream.estimatedRemainingInstances();
+                    if (maxInstances > 0) {
+                        long maxRemaining = maxInstances - instancesProcessed;
+                        if ((estimatedRemainingInstances < 0)
+                                || (maxRemaining < estimatedRemainingInstances)) {
+                            estimatedRemainingInstances = maxRemaining;
+                        }
+                    }
+                    monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
+                            : (double) instancesProcessed
+                            / (double) (instancesProcessed + estimatedRemainingInstances));
+                    if (monitor.resultPreviewRequested()) {
+                        monitor.setLatestResultPreview(learner.copy());
+                    }
+                }
+            }
+        }
+        learner.setModelContext(stream.getHeader());
+        return learner;
+    }
 }

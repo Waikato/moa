@@ -21,79 +21,104 @@ package moa.evaluation;
 
 import moa.AbstractMOAObject;
 import moa.core.Measurement;
+import weka.core.Instance;
 import weka.core.Utils;
 
+/**
+ * Classification evaluator that updates evaluation results using an Exponential Weighted Moving Average.
+ *
+ * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
+ * @version $Revision: 7 $
+ */
 public class EWMAClassificationPerformanceEvaluator extends AbstractMOAObject
-		implements ClassificationPerformanceEvaluator {
+        implements ClassificationPerformanceEvaluator {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected double TotalweightObserved;
-	
-	protected double alpha;
+    protected double TotalweightObserved;
 
-	protected Estimator weightCorrect;
-	
-	protected class Estimator {
+    protected double alpha;
 
-		protected double alpha;
-		protected double estimation;
-		
-		public Estimator(double a) {
-			alpha = a;
-			estimation = 0;
-		}
-		public void add(double value) {
-			estimation += alpha * (value - estimation);
-		}
-		public double estimation() {
-			return estimation;
-		}
-	}
-	
-	public void setalpha(double a) {
-		this.alpha= a;
-		reset();
-	}
-	
-	public void reset() {
-		weightCorrect = new Estimator(this.alpha);
-	}
+    protected Estimator weightCorrect;
 
-	public void addClassificationAttempt(int trueClass, double[] classVotes,
-			double weight) {
-		if (weight > 0.0) {
-			this.TotalweightObserved += weight;
-			if (Utils.maxIndex(classVotes) == trueClass) {
-				this.weightCorrect.add(1);
-			} else
-			    this.weightCorrect.add(0);
-		}
-	}
+    protected class Estimator {
 
-	public Measurement[] getPerformanceMeasurements() {
-		return new Measurement[] {
-				new Measurement("classified instances",
-						this.TotalweightObserved),
-				new Measurement("classifications correct (percent)",
-						getFractionCorrectlyClassified() * 100.0) };
-	}
+        protected double alpha;
 
-	public double getTotalWeightObserved() {
-		return this.TotalweightObserved;
-	}
+        protected double estimation;
 
-	public double getFractionCorrectlyClassified() {
-		return this.weightCorrect.estimation();
-	}
+        public Estimator(double a) {
+            alpha = a;
+            estimation = 0;
+        }
 
-	public double getFractionIncorrectlyClassified() {
-		return 1.0 - getFractionCorrectlyClassified();
-	}
+        public void add(double value) {
+            estimation += alpha * (value - estimation);
+        }
 
-	public void getDescription(StringBuilder sb, int indent) {
-		Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
-				sb, indent);
-	}
+        public double estimation() {
+            return estimation;
+        }
+    }
 
+    public void setalpha(double a) {
+        this.alpha = a;
+        reset();
+    }
+
+    @Override
+    public void reset() {
+        weightCorrect = new Estimator(this.alpha);
+    }
+
+    @Override
+    public void addResult(Instance inst, double[] classVotes) {
+        double weight = inst.weight();
+        int trueClass = (int) inst.classValue();
+        if (weight > 0.0) {
+            this.TotalweightObserved += weight;
+            if (Utils.maxIndex(classVotes) == trueClass) {
+                this.weightCorrect.add(1);
+            } else {
+                this.weightCorrect.add(0);
+            }
+        }
+    }
+    /*public void addClassificationAttempt(int trueClass, double[] classVotes,
+    double weight) {
+    if (weight > 0.0) {
+    this.TotalweightObserved += weight;
+    if (Utils.maxIndex(classVotes) == trueClass) {
+    this.weightCorrect.add(1);
+    } else
+    this.weightCorrect.add(0);
+    }
+    }*/
+
+    @Override
+    public Measurement[] getPerformanceMeasurements() {
+        return new Measurement[]{
+                    new Measurement("classified instances",
+                    this.TotalweightObserved),
+                    new Measurement("classifications correct (percent)",
+                    getFractionCorrectlyClassified() * 100.0)};
+    }
+
+    public double getTotalWeightObserved() {
+        return this.TotalweightObserved;
+    }
+
+    public double getFractionCorrectlyClassified() {
+        return this.weightCorrect.estimation();
+    }
+
+    public double getFractionIncorrectlyClassified() {
+        return 1.0 - getFractionCorrectlyClassified();
+    }
+
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {
+        Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
+                sb, indent);
+    }
 }

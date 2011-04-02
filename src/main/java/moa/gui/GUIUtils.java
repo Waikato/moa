@@ -28,21 +28,26 @@ import javax.swing.JTextArea;
 
 import moa.core.MiscUtils;
 
+/**
+ * This class offers util methods for displaying dialogs showing errors or exceptions.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class GUIUtils {
 
-	public static void showErrorDialog(Component parent, String title,
-			String message) {
-		JTextArea messagePanel = new JTextArea(message);
-		JScrollPane messageScroll = new JScrollPane(messagePanel);
-		messageScroll.setPreferredSize(new Dimension(400, 100));
-		JOptionPane.showMessageDialog(parent, messageScroll, title,
-				JOptionPane.ERROR_MESSAGE);
-	}
+    public static void showErrorDialog(Component parent, String title,
+            String message) {
+        JTextArea messagePanel = new JTextArea(message);
+        JScrollPane messageScroll = new JScrollPane(messagePanel);
+        messageScroll.setPreferredSize(new Dimension(400, 100));
+        JOptionPane.showMessageDialog(parent, messageScroll, title,
+                JOptionPane.ERROR_MESSAGE);
+    }
 
-	public static void showExceptionDialog(Component parent, String title,
-			Exception ex) {
-		showErrorDialog(parent, title, ex.getMessage() + "\n\n"
-				+ MiscUtils.getStackTraceString(ex));
-	}
-
+    public static void showExceptionDialog(Component parent, String title,
+            Exception ex) {
+        showErrorDialog(parent, title, ex.getMessage() + "\n\n"
+                + MiscUtils.getStackTraceString(ex));
+    }
 }

@@ -24,39 +24,55 @@ import moa.options.AbstractOptionHandler;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
+/**
+ * Abstract Stream Filter.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public abstract class AbstractStreamFilter extends AbstractOptionHandler
-		implements StreamFilter {
+        implements StreamFilter {
 
-	protected InstanceStream inputStream;
+    /** The input stream to this filter. */
+    protected InstanceStream inputStream;
 
-	public void setInputStream(InstanceStream stream) {
-		this.inputStream = stream;
-		prepareForUse();
-	}
+    @Override
+    public void setInputStream(InstanceStream stream) {
+        this.inputStream = stream;
+        prepareForUse();
+    }
 
-	@Override
-	public void prepareForUseImpl(TaskMonitor monitor,
-			ObjectRepository repository) {
-		restartImpl();
-	}
+    @Override
+    public void prepareForUseImpl(TaskMonitor monitor,
+            ObjectRepository repository) {
+        restartImpl();
+    }
 
-	public long estimatedRemainingInstances() {
-		return this.inputStream.estimatedRemainingInstances();
-	}
+    @Override
+    public long estimatedRemainingInstances() {
+        return this.inputStream.estimatedRemainingInstances();
+    }
 
-	public boolean hasMoreInstances() {
-		return this.inputStream.hasMoreInstances();
-	}
+    @Override
+    public boolean hasMoreInstances() {
+        return this.inputStream.hasMoreInstances();
+    }
 
-	public boolean isRestartable() {
-		return this.inputStream.isRestartable();
-	}
+    @Override
+    public boolean isRestartable() {
+        return this.inputStream.isRestartable();
+    }
 
-	public void restart() {
-		this.inputStream.restart();
-		restartImpl();
-	}
+    @Override
+    public void restart() {
+        this.inputStream.restart();
+        restartImpl();
+    }
 
-	protected abstract void restartImpl();
-
+    /**
+     * Restarts this filter. All instances that extends from
+     * <code>AbstractStreamFilter</code> must implement <code>restartImpl</code>.
+     * <code>restart</code> uses <code>restartImpl</code> in <code>AbstractStreamFilter</code>.
+     */
+    protected abstract void restartImpl();
 }

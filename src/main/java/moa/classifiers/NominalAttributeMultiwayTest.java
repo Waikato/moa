@@ -22,45 +22,49 @@ package moa.classifiers;
 import moa.core.InstancesHeader;
 import weka.core.Instance;
 
+/**
+ * Nominal multi way conditional test for instances to use to split nodes in Hoeffding trees.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class NominalAttributeMultiwayTest extends InstanceConditionalTest {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected int attIndex;
+    protected int attIndex;
 
-	public NominalAttributeMultiwayTest(int attIndex) {
-		this.attIndex = attIndex;
-	}
+    public NominalAttributeMultiwayTest(int attIndex) {
+        this.attIndex = attIndex;
+    }
 
-	@Override
-	public int branchForInstance(Instance inst) {
-		int instAttIndex = this.attIndex < inst.classIndex() ? this.attIndex
-				: this.attIndex + 1;
-		return inst.isMissing(instAttIndex) ? -1 : (int) inst
-				.value(instAttIndex);
-	}
+    @Override
+    public int branchForInstance(Instance inst) {
+        int instAttIndex = this.attIndex < inst.classIndex() ? this.attIndex
+                : this.attIndex + 1;
+        return inst.isMissing(instAttIndex) ? -1 : (int) inst.value(instAttIndex);
+    }
 
-	@Override
-	public String decribeConditionForBranch(int branch, InstancesHeader context) {
-		return InstancesHeader.getAttributeNameString(context, this.attIndex)
-				+ " = "
-				+ InstancesHeader.getNominalValueString(context, this.attIndex,
-						branch);
-	}
+    @Override
+    public String describeConditionForBranch(int branch, InstancesHeader context) {
+        return InstancesHeader.getAttributeNameString(context, this.attIndex)
+                + " = "
+                + InstancesHeader.getNominalValueString(context, this.attIndex,
+                branch);
+    }
 
-	@Override
-	public int maxBranches() {
-		return -1;
-	}
+    @Override
+    public int maxBranches() {
+        return -1;
+    }
 
-	public void getDescription(StringBuilder sb, int indent) {
-		// TODO Auto-generated method stub
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {
+        // TODO Auto-generated method stub
+    }
 
-	}
-
-	@Override
-	public int[] getAttsTestDependsOn() {
-		return new int[] { this.attIndex };
-	}
-
+    @Override
+    public int[] getAttsTestDependsOn() {
+        return new int[]{this.attIndex};
+    }
 }

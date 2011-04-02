@@ -32,68 +32,77 @@ import javax.swing.JTextField;
 import moa.options.FileOption;
 import moa.options.Option;
 
+/**
+ * An OptionEditComponent that lets the user edit a file option.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class FileOptionEditComponent extends JPanel implements
-		OptionEditComponent {
+        OptionEditComponent {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected FileOption editedOption;
+    protected FileOption editedOption;
 
-	protected JTextField textField = new JTextField();
+    protected JTextField textField = new JTextField();
 
-	protected JButton browseButton = new JButton("Browse");
+    protected JButton browseButton = new JButton("Browse");
 
-	public FileOptionEditComponent(FileOption option) {
-		this.editedOption = option;
-		setLayout(new BorderLayout());
-		add(this.textField, BorderLayout.CENTER);
-		add(this.browseButton, BorderLayout.EAST);
-		this.browseButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				browseForFile();
-			}
-		});
-		setEditState(this.editedOption.getValueAsCLIString());
-	}
+    public FileOptionEditComponent(FileOption option) {
+        this.editedOption = option;
+        setLayout(new BorderLayout());
+        add(this.textField, BorderLayout.CENTER);
+        add(this.browseButton, BorderLayout.EAST);
+        this.browseButton.addActionListener(new ActionListener() {
 
-	public void applyState() {
-		this.editedOption.setValueViaCLIString(this.textField.getText()
-				.length() > 0 ? this.textField.getText() : null);
-	}
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                browseForFile();
+            }
+        });
+        setEditState(this.editedOption.getValueAsCLIString());
+    }
 
-	public Option getEditedOption() {
-		return this.editedOption;
-	}
+    @Override
+    public void applyState() {
+        this.editedOption.setValueViaCLIString(this.textField.getText().length() > 0 ? this.textField.getText() : null);
+    }
 
-	public void setEditState(String cliString) {
-		this.textField.setText(cliString);
-	}
+    @Override
+    public Option getEditedOption() {
+        return this.editedOption;
+    }
 
-	public void browseForFile() {
-		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setAcceptAllFileFilterUsed(true);
-		String extension = this.editedOption.getDefaultFileExtension();
-		if (extension != null) {
-			fileChooser.addChoosableFileFilter(new FileExtensionFilter(
-					extension));
-		}
-		fileChooser.setSelectedFile(new File(this.textField.getText()));
-		if (this.editedOption.isOutputFile()) {
-			if (fileChooser.showSaveDialog(this.browseButton) == JFileChooser.APPROVE_OPTION) {
-				File chosenFile = fileChooser.getSelectedFile();
-				String fileName = chosenFile.getPath();
-				if (!chosenFile.exists()) {
-					if ((extension != null) && !fileName.endsWith(extension)) {
-						fileName = fileName + "." + extension;
-					}
-				}
-				this.textField.setText(fileName);
-			}
-		} else {
-			if (fileChooser.showOpenDialog(this.browseButton) == JFileChooser.APPROVE_OPTION) {
-				this.textField.setText(fileChooser.getSelectedFile().getPath());
-			}
-		}
-	}
+    @Override
+    public void setEditState(String cliString) {
+        this.textField.setText(cliString);
+    }
 
+    public void browseForFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setAcceptAllFileFilterUsed(true);
+        String extension = this.editedOption.getDefaultFileExtension();
+        if (extension != null) {
+            fileChooser.addChoosableFileFilter(new FileExtensionFilter(
+                    extension));
+        }
+        fileChooser.setSelectedFile(new File(this.textField.getText()));
+        if (this.editedOption.isOutputFile()) {
+            if (fileChooser.showSaveDialog(this.browseButton) == JFileChooser.APPROVE_OPTION) {
+                File chosenFile = fileChooser.getSelectedFile();
+                String fileName = chosenFile.getPath();
+                if (!chosenFile.exists()) {
+                    if ((extension != null) && !fileName.endsWith(extension)) {
+                        fileName = fileName + "." + extension;
+                    }
+                }
+                this.textField.setText(fileName);
+            }
+        } else {
+            if (fileChooser.showOpenDialog(this.browseButton) == JFileChooser.APPROVE_OPTION) {
+                this.textField.setText(fileChooser.getSelectedFile().getPath());
+            }
+        }
+    }
 }

@@ -36,144 +36,151 @@ import moa.options.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
+/**
+ * Stream generator for a random radial basis function stream.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class RandomRBFGenerator extends AbstractOptionHandler implements
-		InstanceStream {
+        InstanceStream {
 
-	@Override
-	public String getPurposeString() {
-		return "Generates a random radial basis function stream.";
-	}
+    @Override
+    public String getPurposeString() {
+        return "Generates a random radial basis function stream.";
+    }
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public IntOption modelRandomSeedOption = new IntOption("modelRandomSeed",
-			'r', "Seed for random generation of model.", 1);
+    public IntOption modelRandomSeedOption = new IntOption("modelRandomSeed",
+            'r', "Seed for random generation of model.", 1);
 
-	public IntOption instanceRandomSeedOption = new IntOption(
-			"instanceRandomSeed", 'i',
-			"Seed for random generation of instances.", 1);
+    public IntOption instanceRandomSeedOption = new IntOption(
+            "instanceRandomSeed", 'i',
+            "Seed for random generation of instances.", 1);
 
-	public IntOption numClassesOption = new IntOption("numClasses", 'c',
-			"The number of classes to generate.", 2, 2, Integer.MAX_VALUE);
+    public IntOption numClassesOption = new IntOption("numClasses", 'c',
+            "The number of classes to generate.", 2, 2, Integer.MAX_VALUE);
 
-	public IntOption numAttsOption = new IntOption("numAtts", 'a',
-			"The number of attributes to generate.", 10, 0, Integer.MAX_VALUE);
+    public IntOption numAttsOption = new IntOption("numAtts", 'a',
+            "The number of attributes to generate.", 10, 0, Integer.MAX_VALUE);
 
-	public IntOption numCentroidsOption = new IntOption("numCentroids", 'n',
-			"The number of centroids in the model.", 50, 1, Integer.MAX_VALUE);
+    public IntOption numCentroidsOption = new IntOption("numCentroids", 'n',
+            "The number of centroids in the model.", 50, 1, Integer.MAX_VALUE);
 
-	protected static class Centroid implements Serializable {
+    protected static class Centroid implements Serializable {
 
-		private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-		public double[] centre;
+        public double[] centre;
 
-		public int classLabel;
+        public int classLabel;
 
-		public double stdDev;
+        public double stdDev;
+    }
 
-	}
+    protected InstancesHeader streamHeader;
 
-	protected InstancesHeader streamHeader;
+    protected Centroid[] centroids;
 
-	protected Centroid[] centroids;
+    protected double[] centroidWeights;
 
-	protected double[] centroidWeights;
+    protected Random instanceRandom;
 
-	protected Random instanceRandom;
+    @Override
+    public void prepareForUseImpl(TaskMonitor monitor,
+            ObjectRepository repository) {
+        monitor.setCurrentActivity("Preparing random RBF...", -1.0);
+        generateHeader();
+        generateCentroids();
+        restart();
+    }
 
-	@Override
-	public void prepareForUseImpl(TaskMonitor monitor,
-			ObjectRepository repository) {
-		monitor.setCurrentActivity("Preparing random RBF...", -1.0);
-		generateHeader();
-		generateCentroids();
-		restart();
-	}
+    @Override
+    public InstancesHeader getHeader() {
+        return this.streamHeader;
+    }
 
-	public InstancesHeader getHeader() {
-		return this.streamHeader;
-	}
+    @Override
+    public long estimatedRemainingInstances() {
+        return -1;
+    }
 
-	public long estimatedRemainingInstances() {
-		return -1;
-	}
+    @Override
+    public boolean hasMoreInstances() {
+        return true;
+    }
 
-	public boolean hasMoreInstances() {
-		return true;
-	}
+    @Override
+    public boolean isRestartable() {
+        return true;
+    }
 
-	public boolean isRestartable() {
-		return true;
-	}
+    @Override
+    public void restart() {
+        this.instanceRandom = new Random(this.instanceRandomSeedOption.getValue());
+    }
 
-	public void restart() {
-		this.instanceRandom = new Random(this.instanceRandomSeedOption
-				.getValue());
-	}
+    @Override
+    public Instance nextInstance() {
+        Centroid centroid = this.centroids[MiscUtils.chooseRandomIndexBasedOnWeights(this.centroidWeights,
+                this.instanceRandom)];
+        int numAtts = this.numAttsOption.getValue();
+        double[] attVals = new double[numAtts + 1];
+        for (int i = 0; i < numAtts; i++) {
+            attVals[i] = (this.instanceRandom.nextDouble() * 2.0) - 1.0;
+        }
+        double magnitude = 0.0;
+        for (int i = 0; i < numAtts; i++) {
+            magnitude += attVals[i] * attVals[i];
+        }
+        magnitude = Math.sqrt(magnitude);
+        double desiredMag = this.instanceRandom.nextGaussian()
+                * centroid.stdDev;
+        double scale = desiredMag / magnitude;
+        for (int i = 0; i < numAtts; i++) {
+            attVals[i] = centroid.centre[i] + attVals[i] * scale;
+        }
+        Instance inst = new DenseInstance(1.0, attVals);
+        inst.setDataset(getHeader());
+        inst.setClassValue(centroid.classLabel);
+        return inst;
+    }
 
-	public Instance nextInstance() {
-		Centroid centroid = this.centroids[MiscUtils
-				.chooseRandomIndexBasedOnWeights(this.centroidWeights,
-						this.instanceRandom)];
-		int numAtts = this.numAttsOption.getValue();
-		double[] attVals = new double[numAtts + 1];
-		for (int i = 0; i < numAtts; i++) {
-			attVals[i] = (this.instanceRandom.nextDouble() * 2.0) - 1.0;
-		}
-		double magnitude = 0.0;
-		for (int i = 0; i < numAtts; i++) {
-			magnitude += attVals[i] * attVals[i];
-		}
-		magnitude = Math.sqrt(magnitude);
-		double desiredMag = this.instanceRandom.nextGaussian()
-				* centroid.stdDev;
-		double scale = desiredMag / magnitude;
-		for (int i = 0; i < numAtts; i++) {
-			attVals[i] = centroid.centre[i] + attVals[i] * scale;
-		}
-		Instance inst = new DenseInstance(1.0, attVals);
-		inst.setDataset(getHeader());
-		inst.setClassValue(centroid.classLabel);
-		return inst;
-	}
+    protected void generateHeader() {
+        FastVector attributes = new FastVector();
+        for (int i = 0; i < this.numAttsOption.getValue(); i++) {
+            attributes.addElement(new Attribute("att" + (i + 1)));
+        }
+        FastVector classLabels = new FastVector();
+        for (int i = 0; i < this.numClassesOption.getValue(); i++) {
+            classLabels.addElement("class" + (i + 1));
+        }
+        attributes.addElement(new Attribute("class", classLabels));
+        this.streamHeader = new InstancesHeader(new Instances(
+                getCLICreationString(InstanceStream.class), attributes, 0));
+        this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
+    }
 
-	protected void generateHeader() {
-		FastVector attributes = new FastVector();
-		for (int i = 0; i < this.numAttsOption.getValue(); i++) {
-			attributes.addElement(new Attribute("att" + (i + 1)));
-		}
-		FastVector classLabels = new FastVector();
-		for (int i = 0; i < this.numClassesOption.getValue(); i++) {
-			classLabels.addElement("class" + (i + 1));
-		}
-		attributes.addElement(new Attribute("class", classLabels));
-		this.streamHeader = new InstancesHeader(new Instances(
-				getCLICreationString(InstanceStream.class), attributes, 0));
-		this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
-	}
+    protected void generateCentroids() {
+        Random modelRand = new Random(this.modelRandomSeedOption.getValue());
+        this.centroids = new Centroid[this.numCentroidsOption.getValue()];
+        this.centroidWeights = new double[this.centroids.length];
+        for (int i = 0; i < this.centroids.length; i++) {
+            this.centroids[i] = new Centroid();
+            double[] randCentre = new double[this.numAttsOption.getValue()];
+            for (int j = 0; j < randCentre.length; j++) {
+                randCentre[j] = modelRand.nextDouble();
+            }
+            this.centroids[i].centre = randCentre;
+            this.centroids[i].classLabel = modelRand.nextInt(this.numClassesOption.getValue());
+            this.centroids[i].stdDev = modelRand.nextDouble();
+            this.centroidWeights[i] = modelRand.nextDouble();
+        }
+    }
 
-	protected void generateCentroids() {
-		Random modelRand = new Random(this.modelRandomSeedOption.getValue());
-		this.centroids = new Centroid[this.numCentroidsOption.getValue()];
-		this.centroidWeights = new double[this.centroids.length];
-		for (int i = 0; i < this.centroids.length; i++) {
-			this.centroids[i] = new Centroid();
-			double[] randCentre = new double[this.numAttsOption.getValue()];
-			for (int j = 0; j < randCentre.length; j++) {
-				randCentre[j] = modelRand.nextDouble();
-			}
-			this.centroids[i].centre = randCentre;
-			this.centroids[i].classLabel = modelRand
-					.nextInt(this.numClassesOption.getValue());
-			this.centroids[i].stdDev = modelRand.nextDouble();
-			this.centroidWeights[i] = modelRand.nextDouble();
-		}
-	}
-
-	public void getDescription(StringBuilder sb, int indent) {
-		// TODO Auto-generated method stub
-
-	}
-
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {
+        // TODO Auto-generated method stub
+    }
 }

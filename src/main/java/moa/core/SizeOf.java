@@ -18,7 +18,6 @@
  * SizeOf.java
  * Copyright (C) 2009 University of Waikato, Hamilton, New Zealand
  */
-
 package moa.core;
 
 import sizeof.agent.SizeOfAgent;
@@ -31,38 +30,38 @@ import sizeof.agent.SizeOfAgent;
  */
 public class SizeOf {
 
-	/** whether the agent is present. */
-	protected static Boolean m_Present;
+    /** whether the agent is present. */
+    protected static Boolean m_Present;
 
-	/**
-	 * Checks whteher the agent is present.
-	 *
-	 * @return true if the agent is present, false otherwise
-	 */
-	protected static synchronized boolean isPresent() {
-		if (m_Present == null) {
-			try {
-				SizeOfAgent.fullSizeOf(new Integer(1));
-				m_Present = true;
-			}
-			catch (Exception e) {
-				m_Present = false;
-			}
-		}
+    /**
+     * Checks whteher the agent is present.
+     *
+     * @return true if the agent is present, false otherwise
+     */
+    protected static synchronized boolean isPresent() {
+        if (m_Present == null) {
+            try {
+                SizeOfAgent.fullSizeOf(new Integer(1));
+                m_Present = true;
+            } catch (Exception e) {
+                m_Present = false;
+            }
+        }
 
-		return m_Present;
-	}
+        return m_Present;
+    }
 
-	/**
-	 * Returns the size of the object.
-	 *
-	 * @param o	the object to get the size for
-	 * @return the size of the object, or if the agent isn't present -1
-	 */
-	public static long sizeOf(Object o) {
-		if (isPresent())
-			return SizeOfAgent.fullSizeOf(o);
-		else
-			return -1;
-	}
+    /**
+     * Returns the size of the object.
+     *
+     * @param o	the object to get the size for
+     * @return the size of the object, or if the agent isn't present -1
+     */
+    public static long sizeOf(Object o) {
+        if (isPresent()) {
+            return SizeOfAgent.fullSizeOf(o);
+        } else {
+            return -1;
+        }
+    }
 }

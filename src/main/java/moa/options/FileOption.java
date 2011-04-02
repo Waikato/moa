@@ -25,39 +25,44 @@ import javax.swing.JComponent;
 
 import moa.gui.FileOptionEditComponent;
 
+/**
+ * File option.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class FileOption extends StringOption {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected String defaultFileExtension;
+    protected String defaultFileExtension;
 
-	protected boolean isOutputFile;
+    protected boolean isOutputFile;
 
-	public FileOption(String name, char cliChar, String purpose,
-			String defaultFileName, String defaultExtension, boolean isOutput) {
-		super(name, cliChar, purpose, defaultFileName);
-		this.defaultFileExtension = defaultExtension;
-		this.isOutputFile = isOutput;
-	}
+    public FileOption(String name, char cliChar, String purpose,
+            String defaultFileName, String defaultExtension, boolean isOutput) {
+        super(name, cliChar, purpose, defaultFileName);
+        this.defaultFileExtension = defaultExtension;
+        this.isOutputFile = isOutput;
+    }
 
-	public String getDefaultFileExtension() {
-		return this.defaultFileExtension;
-	}
+    public String getDefaultFileExtension() {
+        return this.defaultFileExtension;
+    }
 
-	public boolean isOutputFile() {
-		return this.isOutputFile;
-	}
+    public boolean isOutputFile() {
+        return this.isOutputFile;
+    }
 
-	public File getFile() {
-		if ((getValue() != null) && (getValue().length() > 0)) {
-			return new File(getValue());
-		}
-		return null;
-	}
+    public File getFile() {
+        if ((getValue() != null) && (getValue().length() > 0)) {
+            return new File(getValue());
+        }
+        return null;
+    }
 
-	@Override
-	public JComponent getEditComponent() {
-		return new FileOptionEditComponent(this);
-	}
-
+    @Override
+    public JComponent getEditComponent() {
+        return new FileOptionEditComponent(this);
+    }
 }

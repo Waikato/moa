@@ -24,32 +24,39 @@ import javax.swing.JComboBox;
 import moa.options.MultiChoiceOption;
 import moa.options.Option;
 
+/**
+ * An OptionEditComponent that lets the user edit a multi choice option.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class MultiChoiceOptionEditComponent extends JComboBox implements
-		OptionEditComponent {
+        OptionEditComponent {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected MultiChoiceOption editedOption;
+    protected MultiChoiceOption editedOption;
 
-	public MultiChoiceOptionEditComponent(MultiChoiceOption option) {
-		super(option.getOptionLabels());
-		this.editedOption = option;
-		setSelectedIndex(option.getChosenIndex());
-	}
+    public MultiChoiceOptionEditComponent(MultiChoiceOption option) {
+        super(option.getOptionLabels());
+        this.editedOption = option;
+        setSelectedIndex(option.getChosenIndex());
+    }
 
-	public void applyState() {
-		this.editedOption.setChosenIndex(getSelectedIndex());
-	}
+    @Override
+    public void applyState() {
+        this.editedOption.setChosenIndex(getSelectedIndex());
+    }
 
-	public Option getEditedOption() {
-		return this.editedOption;
-	}
+    @Override
+    public Option getEditedOption() {
+        return this.editedOption;
+    }
 
-	public void setEditState(String cliString) {
-		MultiChoiceOption tempOpt = (MultiChoiceOption) this.editedOption
-				.copy();
-		tempOpt.setValueViaCLIString(cliString);
-		setSelectedIndex(tempOpt.getChosenIndex());
-	}
-
+    @Override
+    public void setEditState(String cliString) {
+        MultiChoiceOption tempOpt = (MultiChoiceOption) this.editedOption.copy();
+        tempOpt.setValueViaCLIString(cliString);
+        setSelectedIndex(tempOpt.getChosenIndex());
+    }
 }

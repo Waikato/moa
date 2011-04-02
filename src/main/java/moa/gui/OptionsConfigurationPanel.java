@@ -49,175 +49,183 @@ import moa.options.Option;
 import moa.options.OptionHandler;
 import moa.options.Options;
 
+/**
+ * This panel displays an options configuration.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class OptionsConfigurationPanel extends JPanel {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public static final int FIXED_PANEL_WIDTH = 400;
+    public static final int FIXED_PANEL_WIDTH = 400;
 
-	public static final int MAX_PANEL_HEIGHT = 300;
+    public static final int MAX_PANEL_HEIGHT = 300;
 
-	protected Options options;
+    protected Options options;
 
-	protected List<OptionEditComponent> editComponents = new LinkedList<OptionEditComponent>();
+    protected List<OptionEditComponent> editComponents = new LinkedList<OptionEditComponent>();
 
-	protected JButton helpButton = new JButton("Help");
+    protected JButton helpButton = new JButton("Help");
 
-	protected JButton resetButton = new JButton("Reset to defaults");
+    protected JButton resetButton = new JButton("Reset to defaults");
 
-	public OptionsConfigurationPanel(String purposeString, Options options) {
-		this.options = options;
-		setLayout(new BorderLayout());
-		if (purposeString != null) {
-			JTextArea purposeTextArea = new JTextArea(purposeString, 3, 0);
-			purposeTextArea.setEditable(false);
-			purposeTextArea.setLineWrap(true);
-			purposeTextArea.setWrapStyleWord(true);
-			purposeTextArea.setEnabled(false);
-			purposeTextArea.setBorder(BorderFactory
-					.createTitledBorder("Purpose"));
-			purposeTextArea.setBackground(getBackground());
-			add(purposeTextArea, BorderLayout.NORTH);
-		}
-		JPanel optionsPanel = createLabelledOptionComponentListPanel(options
-				.getOptionArray(), this.editComponents);
-		JScrollPane scrollPane = new JScrollPane(optionsPanel,
-				ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		int optionPanelHeight = (int) optionsPanel.getPreferredSize()
-				.getHeight();
-		int scrollPaneHeight = (int) scrollPane.getPreferredSize().getHeight();
-		scrollPane.setPreferredSize(new Dimension(FIXED_PANEL_WIDTH,
-				scrollPaneHeight > MAX_PANEL_HEIGHT ? MAX_PANEL_HEIGHT
-						: scrollPaneHeight));
-		optionsPanel.setPreferredSize(new Dimension(0, optionPanelHeight));
-		add(scrollPane, BorderLayout.CENTER);
-		JPanel lowerButtons = new JPanel();
-		lowerButtons.setLayout(new FlowLayout());
-		lowerButtons.add(this.helpButton);
-		lowerButtons.add(this.resetButton);
-		add(lowerButtons, BorderLayout.SOUTH);
-		this.helpButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				showHelpDialog();
-			}
-		});
-		this.resetButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				resetToDefaults();
-			}
-		});
-	}
+    public OptionsConfigurationPanel(String purposeString, Options options) {
+        this.options = options;
+        setLayout(new BorderLayout());
+        if (purposeString != null) {
+            JTextArea purposeTextArea = new JTextArea(purposeString, 3, 0);
+            purposeTextArea.setEditable(false);
+            purposeTextArea.setLineWrap(true);
+            purposeTextArea.setWrapStyleWord(true);
+            purposeTextArea.setEnabled(false);
+            purposeTextArea.setBorder(BorderFactory.createTitledBorder("Purpose"));
+            purposeTextArea.setBackground(getBackground());
+            add(purposeTextArea, BorderLayout.NORTH);
+        }
+        JPanel optionsPanel = createLabelledOptionComponentListPanel(options.getOptionArray(), this.editComponents);
+        JScrollPane scrollPane = new JScrollPane(optionsPanel,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        int optionPanelHeight = (int) optionsPanel.getPreferredSize().getHeight();
+        int scrollPaneHeight = (int) scrollPane.getPreferredSize().getHeight();
+        scrollPane.setPreferredSize(new Dimension(FIXED_PANEL_WIDTH,
+                scrollPaneHeight > MAX_PANEL_HEIGHT ? MAX_PANEL_HEIGHT
+                : scrollPaneHeight));
+        optionsPanel.setPreferredSize(new Dimension(0, optionPanelHeight));
+        add(scrollPane, BorderLayout.CENTER);
+        JPanel lowerButtons = new JPanel();
+        lowerButtons.setLayout(new FlowLayout());
+        lowerButtons.add(this.helpButton);
+        lowerButtons.add(this.resetButton);
+        add(lowerButtons, BorderLayout.SOUTH);
+        this.helpButton.addActionListener(new ActionListener() {
 
-	public static boolean showEditOptionsDialog(Component parent, String title,
-			OptionHandler optionHandler) {
-		OptionsConfigurationPanel panel = new OptionsConfigurationPanel(
-				optionHandler.getPurposeString(), optionHandler.getOptions());
-		if (JOptionPane.showOptionDialog(parent, panel, title,
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null,
-				null, null) == JOptionPane.OK_OPTION) {
-			panel.applyChanges();
-			return true;
-		}
-		return false;
-	}
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                showHelpDialog();
+            }
+        });
+        this.resetButton.addActionListener(new ActionListener() {
 
-	public String getHelpText() {
-		return this.options.getHelpString();
-	}
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                resetToDefaults();
+            }
+        });
+    }
 
-	public void showHelpDialog() {
-		JTextArea helpTextArea = new JTextArea(getHelpText(), 20, 80);
-		helpTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-		helpTextArea.setEditable(false);
-		JOptionPane.showMessageDialog(this, new JScrollPane(helpTextArea),
-				"Options Help", JOptionPane.INFORMATION_MESSAGE);
-	}
+    public static boolean showEditOptionsDialog(Component parent, String title,
+            OptionHandler optionHandler) {
+        OptionsConfigurationPanel panel = new OptionsConfigurationPanel(
+                optionHandler.getPurposeString(), optionHandler.getOptions());
+        if (JOptionPane.showOptionDialog(parent, panel, title,
+                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null,
+                null, null) == JOptionPane.OK_OPTION) {
+            panel.applyChanges();
+            return true;
+        }
+        return false;
+    }
 
-	public void resetToDefaults() {
-		for (OptionEditComponent editor : this.editComponents) {
-			editor.setEditState(editor.getEditedOption().getDefaultCLIString());
-		}
-	}
+    public String getHelpText() {
+        return this.options.getHelpString();
+    }
 
-	public void applyChanges() {
-		for (OptionEditComponent editor : this.editComponents) {
-			try {
-				editor.applyState();
-			} catch (Exception ex) {
-				GUIUtils.showExceptionDialog(this, "Problem with option "
-						+ editor.getEditedOption().getName(), ex);
-			}
-		}
-	}
+    public void showHelpDialog() {
+        JTextArea helpTextArea = new JTextArea(getHelpText(), 20, 80);
+        helpTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        helpTextArea.setEditable(false);
+        JOptionPane.showMessageDialog(this, new JScrollPane(helpTextArea),
+                "Options Help", JOptionPane.INFORMATION_MESSAGE);
+    }
 
-	protected static JPanel createLabelledOptionComponentListPanel(
-			Option[] options, List<OptionEditComponent> editComponents) {
-		JPanel panel = new JPanel();
-		if ((options != null) && (options.length > 0)) {
-			GridBagLayout gbLayout = new GridBagLayout();
-			GridBagConstraints gbc = new GridBagConstraints();
-			panel.setLayout(gbLayout);
-			for (int i = 0; i < options.length; i++) {
-				JLabel label = new JLabel(options[i].getName());
-				label.setToolTipText(options[i].getPurpose());
-				gbc.gridx = 0;
-				gbc.fill = GridBagConstraints.NONE;
-				gbc.anchor = GridBagConstraints.EAST;
-				gbc.weightx = 0;
-				gbc.insets = new Insets(5, 5, 5, 5);
-				gbLayout.setConstraints(label, gbc);
-				panel.add(label);
-				JComponent editor = options[i].getEditComponent();
-				label.setLabelFor(editor);
-				if (editComponents != null) {
-					editComponents.add((OptionEditComponent) editor);
-				}
-				gbc.gridx = 1;
-				gbc.fill = GridBagConstraints.HORIZONTAL;
-				gbc.anchor = GridBagConstraints.CENTER;
-				gbc.weightx = 1;
-				gbc.insets = new Insets(5, 5, 5, 5);
-				gbLayout.setConstraints(editor, gbc);
-				panel.add(editor);
-			}
-		} else {
-			panel.add(new JLabel("No options."));
-		}
-		return panel;
-	}
+    public void resetToDefaults() {
+        for (OptionEditComponent editor : this.editComponents) {
+            editor.setEditState(editor.getEditedOption().getDefaultCLIString());
+        }
+    }
 
-	private static void createAndShowGUI() {
+    public void applyChanges() {
+        for (OptionEditComponent editor : this.editComponents) {
+            try {
+                editor.applyState();
+            } catch (Exception ex) {
+                GUIUtils.showExceptionDialog(this, "Problem with option "
+                        + editor.getEditedOption().getName(), ex);
+            }
+        }
+    }
 
-		// Create and set up the window.
-		JFrame frame = new JFrame("Test");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    protected static JPanel createLabelledOptionComponentListPanel(
+            Option[] options, List<OptionEditComponent> editComponents) {
+        JPanel panel = new JPanel();
+        if ((options != null) && (options.length > 0)) {
+            GridBagLayout gbLayout = new GridBagLayout();
+            GridBagConstraints gbc = new GridBagConstraints();
+            panel.setLayout(gbLayout);
+            for (int i = 0; i < options.length; i++) {
+                JLabel label = new JLabel(options[i].getName());
+                label.setToolTipText(options[i].getPurpose());
+                gbc.gridx = 0;
+                gbc.fill = GridBagConstraints.NONE;
+                gbc.anchor = GridBagConstraints.EAST;
+                gbc.weightx = 0;
+                gbc.insets = new Insets(5, 5, 5, 5);
+                gbLayout.setConstraints(label, gbc);
+                panel.add(label);
+                JComponent editor = options[i].getEditComponent();
+                label.setLabelFor(editor);
+                if (editComponents != null) {
+                    editComponents.add((OptionEditComponent) editor);
+                }
+                gbc.gridx = 1;
+                gbc.fill = GridBagConstraints.HORIZONTAL;
+                gbc.anchor = GridBagConstraints.CENTER;
+                gbc.weightx = 1;
+                gbc.insets = new Insets(5, 5, 5, 5);
+                gbLayout.setConstraints(editor, gbc);
+                panel.add(editor);
+            }
+        } else {
+            panel.add(new JLabel("No options."));
+        }
+        return panel;
+    }
 
-		// Create and set up the content pane.
-		Options options = new HoeffdingTree().getOptions();
-		JPanel panel = new OptionsConfigurationPanel(null, options);
-		// createLabelledOptionComponentListPanel(options
-		// .getOptionArray(), null);
-		panel.setOpaque(true); // content panes must be opaque
-		frame.setContentPane(panel);
+    private static void createAndShowGUI() {
 
-		// Display the window.
-		frame.pack();
-		// frame.setSize(400, 400);
-		frame.setVisible(true);
-	}
+        // Create and set up the window.
+        JFrame frame = new JFrame("Test");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-	public static void main(String[] args) {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			javax.swing.SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					createAndShowGUI();
-				}
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        // Create and set up the content pane.
+        Options options = new HoeffdingTree().getOptions();
+        JPanel panel = new OptionsConfigurationPanel(null, options);
+        // createLabelledOptionComponentListPanel(options
+        // .getOptionArray(), null);
+        panel.setOpaque(true); // content panes must be opaque
+        frame.setContentPane(panel);
 
+        // Display the window.
+        frame.pack();
+        // frame.setSize(400, 400);
+        frame.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    createAndShowGUI();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

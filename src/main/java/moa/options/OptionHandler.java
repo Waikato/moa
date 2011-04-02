@@ -23,18 +23,53 @@ import moa.MOAObject;
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
 
+/**
+ * Interface representing an object that handles options or parameters. 
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $ 
+ */
 public interface OptionHandler extends MOAObject {
 
-	public String getPurposeString();
+    /**
+     * Gets the purpose of this object
+     *
+     * @return the string with the purpose of this object
+     */
+    public String getPurposeString();
 
-	public Options getOptions();
+    /**
+     * Gets the options of this object
+     *
+     * @return the options of this object
+     */
+    public Options getOptions();
 
-	public void prepareForUse();
+    /**
+     * This method prepares this object for use.
+     *
+     */
+    public void prepareForUse();
 
-	public void prepareForUse(TaskMonitor monitor, ObjectRepository repository);
+    /**
+     * This method prepares this object for use.
+     *
+     * @param monitor the TaskMonitor to use
+     * @param repository  the ObjectRepository to use
+     */
+    public void prepareForUse(TaskMonitor monitor, ObjectRepository repository);
 
-	public OptionHandler copy();
+    /**
+     * This method produces a copy of this object.
+     *
+     * @return a copy of this object
+     */
+    public OptionHandler copy();
 
-	public String getCLICreationString(Class<?> expectedType);
-
+    /**
+     * Gets the Command Line Interface text to create the object
+     *
+     * @return the Command Line Interface text to create the object
+     */
+    public String getCLICreationString(Class<?> expectedType);
 }

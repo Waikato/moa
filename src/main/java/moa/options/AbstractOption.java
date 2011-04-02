@@ -24,68 +24,97 @@ import javax.swing.JComponent;
 import moa.AbstractMOAObject;
 import moa.gui.StringOptionEditComponent;
 
+/**
+ * Abstract option.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public abstract class AbstractOption extends AbstractMOAObject implements
-		Option {
+        Option {
 
-	public static final char[] illegalNameCharacters = new char[] { ' ', '-',
-			'(', ')' };
+    /** Array of characters not valid to use in option names. */
+    public static final char[] illegalNameCharacters = new char[]{' ', '-',
+        '(', ')'};
 
-	protected String name;
+    /** Name of this option. */
+    protected String name;
 
-	protected char cliChar;
+    /** Command line interface text of this option. */
+    protected char cliChar;
 
-	protected String purpose;
+    /** Text of the purpose of this option. */
+    protected String purpose;
 
-	public static boolean nameIsLegal(String optionName) {
-		for (char illegalChar : illegalNameCharacters) {
-			if (optionName.indexOf(illegalChar) >= 0) {
-				return false;
-			}
-		}
-		return true;
-	}
+    /**
+     * Gets whether the name is valid or not.
+     *
+     * @param optionName the name of the option
+     * @return true if the name that not contain any illegal character
+     */
+    public static boolean nameIsLegal(String optionName) {
+        for (char illegalChar : illegalNameCharacters) {
+            if (optionName.indexOf(illegalChar) >= 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	public AbstractOption(String name, char cliChar, String purpose) {
-		if (!nameIsLegal(name)) {
-			throw new IllegalArgumentException("Illegal option name: " + name);
-		}
-		this.name = name;
-		this.cliChar = cliChar;
-		this.purpose = purpose;
-	}
+    /**
+     * Creates a new instance of an abstract option given its class name,
+     * command line interface text and its purpose.
+     *
+     * @param name the name of this option
+     * @param cliChar the command line interface text
+     * @param purpose the text describing the purpose of this option
+     */
+    public AbstractOption(String name, char cliChar, String purpose) {
+        if (!nameIsLegal(name)) {
+            throw new IllegalArgumentException("Illegal option name: " + name);
+        }
+        this.name = name;
+        this.cliChar = cliChar;
+        this.purpose = purpose;
+    }
 
-	public String getName() {
-		return this.name;
-	}
+    @Override
+    public String getName() {
+        return this.name;
+    }
 
-	public char getCLIChar() {
-		return this.cliChar;
-	}
+    @Override
+    public char getCLIChar() {
+        return this.cliChar;
+    }
 
-	public String getPurpose() {
-		return this.purpose;
-	}
+    @Override
+    public String getPurpose() {
+        return this.purpose;
+    }
 
-	public void resetToDefault() {
-		setValueViaCLIString(getDefaultCLIString());
-	}
+    @Override
+    public void resetToDefault() {
+        setValueViaCLIString(getDefaultCLIString());
+    }
 
-	public String getStateString() {
-		return getValueAsCLIString();
-	}
+    @Override
+    public String getStateString() {
+        return getValueAsCLIString();
+    }
 
-	@Override
-	public Option copy() {
-		return (Option) super.copy();
-	}
+    @Override
+    public Option copy() {
+        return (Option) super.copy();
+    }
 
-	public void getDescription(StringBuilder sb, int indent) {
-		// TODO Auto-generated method stub
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {
+        // TODO Auto-generated method stub
+    }
 
-	}
-
-	public JComponent getEditComponent() {
-		return new StringOptionEditComponent(this);
-	}
-
+    @Override
+    public JComponent getEditComponent() {
+        return new StringOptionEditComponent(this);
+    }
 }

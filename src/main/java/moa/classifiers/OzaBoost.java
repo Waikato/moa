@@ -29,6 +29,29 @@ import moa.options.ClassOption;
 import moa.options.FlagOption;
 import moa.options.IntOption;
 
+/**
+ * Incremental on-line boosting of Oza and Russell.
+ * 
+ * <p>See details in:<br /> 
+ * N. Oza and S. Russell. Online bagging and boosting. 
+ * In Artiﬁcial Intelligence and Statistics 2001, pages 105–112. 
+ * Morgan Kaufmann, 2001.</p> 
+ * <p>For the boosting method, Oza and Russell note that the weighting 
+ * procedure of AdaBoost actually divides the total example weight into two
+ * halves – half of the weight is assigned to the correctly classiﬁed examples, 
+ * and the other half goes to the misclassiﬁed examples. They use the Poisson
+ * distribution for deciding the random probability that an example is used for
+ * training, only this time the parameter changes according to the boosting
+ * weight of the example as it is passed through each model in sequence.</p> 
+ * 
+ * <p>Parameters:</p> <ul> 
+ * <li>-l : Classiﬁer to train</li> 
+ * <li>-s : The number of models to boost</li> 
+ * <li>-p : Boost with weights only; no poisson</li> </ul>
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class OzaBoost extends AbstractClassifier {
 
 	private static final long serialVersionUID = 1L;

@@ -19,6 +19,7 @@
  */
 package moa.evaluation;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,55 +28,47 @@ import moa.classifiers.Classifier;
 import moa.clusterers.Clusterer;
 import moa.core.Measurement;
 
+/**
+ * Class that stores an array of evaluation measurements.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class LearningEvaluation extends AbstractMOAObject {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected Measurement[] measurements;
+    protected Measurement[] measurements;
 
-	public LearningEvaluation(Measurement[] measurements) {
-		this.measurements = measurements.clone();
-	}
+    public LearningEvaluation(Measurement[] measurements) {
+        this.measurements = measurements.clone();
+    }
 
-	public LearningEvaluation(Measurement[] evaluationMeasurements,
-			ClassificationPerformanceEvaluator cpe, Classifier model) {
-		List<Measurement> measurementList = new LinkedList<Measurement>();
-		for (Measurement measurement : evaluationMeasurements) {
-			measurementList.add(measurement);
-		}
-		for (Measurement measurement : cpe.getPerformanceMeasurements()) {
-			measurementList.add(measurement);
-		}
-		for (Measurement measurement : model.getModelMeasurements()) {
-			measurementList.add(measurement);
-		}
-		this.measurements = measurementList
-				.toArray(new Measurement[measurementList.size()]);
-	}
-	
-	// Must change to Learner model
-	public LearningEvaluation(Measurement[] evaluationMeasurements,
-			LearningPerformanceEvaluator cpe, Clusterer model) {
-		List<Measurement> measurementList = new LinkedList<Measurement>();
-		for (Measurement measurement : evaluationMeasurements) {
-			measurementList.add(measurement);
-		}
-		for (Measurement measurement : cpe.getPerformanceMeasurements()) {
-			measurementList.add(measurement);
-		}
-		for (Measurement measurement : model.getModelMeasurements()) {
-			measurementList.add(measurement);
-		}
-		this.measurements = measurementList
-				.toArray(new Measurement[measurementList.size()]);
-	}
+    public LearningEvaluation(Measurement[] evaluationMeasurements,
+            ClassificationPerformanceEvaluator cpe, Classifier model) {
+        List<Measurement> measurementList = new LinkedList<Measurement>();
+        measurementList.addAll(Arrays.asList(evaluationMeasurements));
+        measurementList.addAll(Arrays.asList(cpe.getPerformanceMeasurements()));
+        measurementList.addAll(Arrays.asList(model.getModelMeasurements()));
+        this.measurements = measurementList.toArray(new Measurement[measurementList.size()]);
+    }
 
-	public Measurement[] getMeasurements() {
-		return this.measurements.clone();
-	}
+    // Must change to Learner model
+    public LearningEvaluation(Measurement[] evaluationMeasurements,
+            LearningPerformanceEvaluator cpe, Clusterer model) {
+        List<Measurement> measurementList = new LinkedList<Measurement>();
+        measurementList.addAll(Arrays.asList(evaluationMeasurements));
+        measurementList.addAll(Arrays.asList(cpe.getPerformanceMeasurements()));
+        measurementList.addAll(Arrays.asList(model.getModelMeasurements()));
+        this.measurements = measurementList.toArray(new Measurement[measurementList.size()]);
+    }
 
-	public void getDescription(StringBuilder sb, int indent) {
-		Measurement.getMeasurementsDescription(this.measurements, sb, indent);
-	}
+    public Measurement[] getMeasurements() {
+        return this.measurements.clone();
+    }
 
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {
+        Measurement.getMeasurementsDescription(this.measurements, sb, indent);
+    }
 }

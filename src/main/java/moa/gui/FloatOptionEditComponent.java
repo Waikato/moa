@@ -31,75 +31,82 @@ import javax.swing.event.ChangeListener;
 import moa.options.FloatOption;
 import moa.options.Option;
 
+/**
+ * An OptionEditComponent that lets the user edit a float option.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class FloatOptionEditComponent extends JPanel implements
-		OptionEditComponent {
+        OptionEditComponent {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public static final int SLIDER_RESOLUTION = 100000;
+    public static final int SLIDER_RESOLUTION = 100000;
 
-	protected FloatOption editedOption;
+    protected FloatOption editedOption;
 
-	protected JSpinner spinner;
+    protected JSpinner spinner;
 
-	protected JSlider slider;
+    protected JSlider slider;
 
-	public FloatOptionEditComponent(FloatOption option) {
-		this.editedOption = option;
-		double minVal = option.getMinValue();
-		double maxVal = option.getMaxValue();
-		setLayout(new GridLayout(1, 0));
-		this.spinner = new JSpinner(new SpinnerNumberModel(option.getValue(),
-				minVal, maxVal, 0.001));
-		add(this.spinner);
-		if ((minVal > Double.NEGATIVE_INFINITY)
-				&& (maxVal < Double.POSITIVE_INFINITY)) {
-			this.slider = new JSlider(0, SLIDER_RESOLUTION,
-					floatValueToSliderValue(option.getValue()));
-			add(this.slider);
-			this.slider.addChangeListener(new ChangeListener() {
-				public void stateChanged(ChangeEvent e) {
-					FloatOptionEditComponent.this.spinner
-							.setValue(sliderValueToFloatValue(FloatOptionEditComponent.this.slider
-									.getValue()));
-				}
-			});
-			this.spinner.addChangeListener(new ChangeListener() {
-				public void stateChanged(ChangeEvent e) {
-					FloatOptionEditComponent.this.slider
-							.setValue(floatValueToSliderValue(((Double) FloatOptionEditComponent.this.spinner
-									.getValue()).doubleValue()));
-				}
-			});
-		}
-	}
+    public FloatOptionEditComponent(FloatOption option) {
+        this.editedOption = option;
+        double minVal = option.getMinValue();
+        double maxVal = option.getMaxValue();
+        setLayout(new GridLayout(1, 0));
+        this.spinner = new JSpinner(new SpinnerNumberModel(option.getValue(),
+                minVal, maxVal, 0.001));
+        add(this.spinner);
+        if ((minVal > Double.NEGATIVE_INFINITY)
+                && (maxVal < Double.POSITIVE_INFINITY)) {
+            this.slider = new JSlider(0, SLIDER_RESOLUTION,
+                    floatValueToSliderValue(option.getValue()));
+            add(this.slider);
+            this.slider.addChangeListener(new ChangeListener() {
 
-	protected int floatValueToSliderValue(double floatValue) {
-		double minVal = this.editedOption.getMinValue();
-		double maxVal = this.editedOption.getMaxValue();
-		return (int) Math.round((floatValue - minVal) / (maxVal - minVal)
-				* SLIDER_RESOLUTION);
-	}
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    FloatOptionEditComponent.this.spinner.setValue(sliderValueToFloatValue(FloatOptionEditComponent.this.slider.getValue()));
+                }
+            });
+            this.spinner.addChangeListener(new ChangeListener() {
 
-	protected double sliderValueToFloatValue(int sliderValue) {
-		double minVal = this.editedOption.getMinValue();
-		double maxVal = this.editedOption.getMaxValue();
-		return minVal
-				+ (((double) sliderValue / SLIDER_RESOLUTION) * (maxVal - minVal));
-	}
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    FloatOptionEditComponent.this.slider.setValue(floatValueToSliderValue(((Double) FloatOptionEditComponent.this.spinner.getValue()).doubleValue()));
+                }
+            });
+        }
+    }
 
-	public void applyState() {
-		this.editedOption.setValue(((Double) this.spinner.getValue())
-				.doubleValue());
-		// this.editedOption.setValue(Double.parseDouble(this.spinner.getValue().toString()));
-	}
+    protected int floatValueToSliderValue(double floatValue) {
+        double minVal = this.editedOption.getMinValue();
+        double maxVal = this.editedOption.getMaxValue();
+        return (int) Math.round((floatValue - minVal) / (maxVal - minVal)
+                * SLIDER_RESOLUTION);
+    }
 
-	public Option getEditedOption() {
-		return this.editedOption;
-	}
+    protected double sliderValueToFloatValue(int sliderValue) {
+        double minVal = this.editedOption.getMinValue();
+        double maxVal = this.editedOption.getMaxValue();
+        return minVal
+                + (((double) sliderValue / SLIDER_RESOLUTION) * (maxVal - minVal));
+    }
 
-	public void setEditState(String cliString) {
-		this.spinner.setValue(FloatOption.cliStringToDouble(cliString));
-	}
+    @Override
+    public void applyState() {
+        this.editedOption.setValue(((Double) this.spinner.getValue()).doubleValue());
+        // this.editedOption.setValue(Double.parseDouble(this.spinner.getValue().toString()));
+    }
 
+    @Override
+    public Option getEditedOption() {
+        return this.editedOption;
+    }
+
+    @Override
+    public void setEditState(String cliString) {
+        this.spinner.setValue(FloatOption.cliStringToDouble(cliString));
+    }
 }

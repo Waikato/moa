@@ -19,108 +19,88 @@
  */
 package moa.tasks;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
-import moa.clusterers.Clusterer;
-import moa.core.Measurement;
 import moa.core.ObjectRepository;
-import moa.core.TimingUtils;
-import moa.evaluation.LearningPerformanceEvaluator;
 import moa.evaluation.LearningCurve;
-import moa.evaluation.LearningEvaluation;
 import moa.options.ClassOption;
 import moa.options.FileOption;
 import moa.options.IntOption;
-import moa.streams.InstanceStream;
 import moa.gui.visualization.BatchCmd;
-import moa.clusterers.ClusterGenerator;
-import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
-import moa.clusterers.clustream.Clustream;
-import moa.evaluation.F1;
-import moa.evaluation.General;
-import moa.evaluation.MeasureCollection;
-import moa.evaluation.SSQ;
-import moa.evaluation.SilhouetteCoefficient;
-import moa.evaluation.StatisticalCollection;
-import moa.evaluation.EntropyCollection;
-import moa.streams.clustering.ClusterEvent;
-import weka.core.Instance;
-import moa.streams.clustering.ClusterEventListener;
-import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
-import weka.core.Instance;
 
+/**
+ * Task for evaluating a clusterer on a stream.
+ *
+ * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
+ * @version $Revision: 7 $
+ */
 public class EvaluateClustering extends MainTask {
 
-	@Override
-	public String getPurposeString() {
-		return "Evaluates a clusterer on a stream by testing then training with each example in sequence.";
-	}
-	
-	private static final long serialVersionUID = 1L;
+    @Override
+    public String getPurposeString() {
+        return "Evaluates a clusterer on a stream.";
+    }
 
-	public ClassOption learnerOption = new ClassOption("learner", 'l',
-			"Clusterer to train.", AbstractClusterer.class, "clustream.Clustream");
+    private static final long serialVersionUID = 1L;
 
-	public ClassOption streamOption = new ClassOption("stream", 's',
-			"Stream to learn from.", RandomRBFGeneratorEvents.class,
-			"RandomRBFGeneratorEvents");
+    public ClassOption learnerOption = new ClassOption("learner", 'l',
+            "Clusterer to train.", AbstractClusterer.class, "clustream.Clustream");
 
-	public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
-			"Maximum number of instances to test/train on  (-1 = no limit).",
-			100000, -1, Integer.MAX_VALUE);
+    public ClassOption streamOption = new ClassOption("stream", 's',
+            "Stream to learn from.", RandomRBFGeneratorEvents.class,
+            "RandomRBFGeneratorEvents");
 
-	public IntOption measureCollectionTypeOption = new IntOption(
-			"measureCollectionType", 'm',
-			"Type of measure collection", 0, 0,
-			Integer.MAX_VALUE);
+    public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
+            "Maximum number of instances to test/train on  (-1 = no limit).",
+            100000, -1, Integer.MAX_VALUE);
 
-	/*public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
-			"Performance evaluation method.",
-			LearningPerformanceEvaluator.class,
-			"BasicClusteringPerformanceEvaluator");*/
+    public IntOption measureCollectionTypeOption = new IntOption(
+            "measureCollectionType", 'm',
+            "Type of measure collection", 0, 0,
+            Integer.MAX_VALUE);
 
-	/*public IntOption timeLimitOption = new IntOption("timeLimit", 't',
-			"Maximum number of seconds to test/train for (-1 = no limit).", -1,
-			-1, Integer.MAX_VALUE);
+    /*public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
+    "Performance evaluation method.",
+    LearningPerformanceEvaluator.class,
+    "BasicClusteringPerformanceEvaluator");*/
 
-	public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
-			'f',
-			"How many instances between samples of the learning performance.",
-			100000, 0, Integer.MAX_VALUE);
+    /*public IntOption timeLimitOption = new IntOption("timeLimit", 't',
+    "Maximum number of seconds to test/train for (-1 = no limit).", -1,
+    -1, Integer.MAX_VALUE);
 
-	public IntOption maxMemoryOption = new IntOption("maxMemory", 'b',
-			"Maximum size of model (in bytes). -1 = no limit.", -1, -1,
-			Integer.MAX_VALUE);
+    public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
+    'f',
+    "How many instances between samples of the learning performance.",
+    100000, 0, Integer.MAX_VALUE);
 
-	public IntOption memCheckFrequencyOption = new IntOption(
-			"memCheckFrequency", 'q',
-			"How many instances between memory bound checks.", 100000, 0,
-			Integer.MAX_VALUE);*/
+    public IntOption maxMemoryOption = new IntOption("maxMemory", 'b',
+    "Maximum size of model (in bytes). -1 = no limit.", -1, -1,
+    Integer.MAX_VALUE);
 
-	public FileOption outputFileOption = new FileOption("outputFile", 'd',
-			"File to output intermediate csv results to.", "outputClustering.csv", "csv", true);
+    public IntOption memCheckFrequencyOption = new IntOption(
+    "memCheckFrequency", 'q',
+    "How many instances between memory bound checks.", 100000, 0,
+    Integer.MAX_VALUE);*/
+    public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
+            "File to append intermediate csv reslts to.", "outputClustering.csv", "csv", true);
 
-	public Class<?> getTaskResultType() {
-		return LearningCurve.class;
-	}
+    @Override
+    public Class<?> getTaskResultType() {
+        return LearningCurve.class;
+    }
 
-	@Override
-	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
+    @Override
+    protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
 
-		BatchCmd.runBatch((RandomRBFGeneratorEvents) getPreparedClassOption(this.streamOption),
-			(AbstractClusterer) getPreparedClassOption(this.learnerOption),
-                        (int) measureCollectionTypeOption.getValue(),
-			(int) this.instanceLimitOption.getValue(),
-			(String) outputFileOption.getValue());
+        BatchCmd.runBatch((RandomRBFGeneratorEvents) getPreparedClassOption(this.streamOption),
+                (AbstractClusterer) getPreparedClassOption(this.learnerOption),
+                (int) measureCollectionTypeOption.getValue(),
+                (int) this.instanceLimitOption.getValue(),
+                (String) dumpFileOption.getValue());
 
-		LearningCurve learningCurve = new LearningCurve(
-				"learning evaluation instances");
-		//System.out.println(learner.toString());
-		return learningCurve;
-	}
-
+        LearningCurve learningCurve = new LearningCurve(
+                "learning evaluation instances");
+        //System.out.println(learner.toString());
+        return learningCurve;
+    }
 }

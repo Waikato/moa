@@ -23,52 +23,60 @@ import javax.swing.JComponent;
 
 import moa.gui.FlagOptionEditComponent;
 
+/**
+ * Flag option.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class FlagOption extends AbstractOption {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected boolean isSet = false;
+    protected boolean isSet = false;
 
-	public FlagOption(String name, char cliChar, String purpose) {
-		super(name, cliChar, purpose);
-	}
+    public FlagOption(String name, char cliChar, String purpose) {
+        super(name, cliChar, purpose);
+    }
 
-	public void setValue(boolean v) {
-		this.isSet = v;
-	}
+    public void setValue(boolean v) {
+        this.isSet = v;
+    }
 
-	public void set() {
-		setValue(true);
-	}
+    public void set() {
+        setValue(true);
+    }
 
-	public void unset() {
-		setValue(false);
-	}
+    public void unset() {
+        setValue(false);
+    }
 
-	public boolean isSet() {
-		return this.isSet;
-	}
+    public boolean isSet() {
+        return this.isSet;
+    }
 
-	public String getDefaultCLIString() {
-		return null;
-	}
+    @Override
+    public String getDefaultCLIString() {
+        return null;
+    }
 
-	public String getValueAsCLIString() {
-		return this.isSet ? "" : null;
-	}
+    @Override
+    public String getValueAsCLIString() {
+        return this.isSet ? "" : null;
+    }
 
-	public void setValueViaCLIString(String s) {
-		this.isSet = (s != null);
-	}
+    @Override
+    public void setValueViaCLIString(String s) {
+        this.isSet = (s != null);
+    }
 
-	@Override
-	public String getStateString() {
-		return this.isSet ? "true" : "false";
-	}
+    @Override
+    public String getStateString() {
+        return this.isSet ? "true" : "false";
+    }
 
-	@Override
-	public JComponent getEditComponent() {
-		return new FlagOptionEditComponent(this);
-	}
-
+    @Override
+    public JComponent getEditComponent() {
+        return new FlagOptionEditComponent(this);
+    }
 }

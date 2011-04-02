@@ -19,6 +19,9 @@
  */
 package moa.classifiers;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import weka.core.Instance;
 import weka.core.Utils;
 
@@ -30,288 +33,325 @@ import moa.options.MultiChoiceOption;
 
 /**
  * Class for handling concept drift datasets with a wrapper on a
- * classifier.<p>data
+ * classifier.<p>
  *
  * Valid options are:<p>
  *
  * -l classname <br>
  * Specify the full class name of a classifier as the basis for
  * the concept drift classifier.<p>
- *
+ * -d Drift detection method to use: DDM or EDDM<br>
  *
  * @author Manuel Baena (mbaena@lcc.uma.es)
  * @version 1.1
  */
 public class SingleClassifierDrift extends AbstractClassifier {
 
-	public class DriftDetectionMethod extends AbstractMOAObject {
+    public class DriftDetectionMethod extends AbstractMOAObject {
 
-	    private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-		public static final int DDM_INCONTROL_LEVEL = 0;
-		public static final int DDM_WARNING_LEVEL = 1;
-		public static final int DDM_OUTCONTROL_LEVEL = 2;
+        public static final int DDM_INCONTROL_LEVEL = 0;
 
-		public int computeNextVal(boolean prediction) {
-			return 0;
-			};
+        public static final int DDM_WARNING_LEVEL = 1;
 
-		//@Override
-		public void getModelDescription(StringBuilder out, int indent){
-			};
-	    public void getDescription(StringBuilder sb, int indent) {
-              // TODO Auto-generated method stub
-        };
+        public static final int DDM_OUTCONTROL_LEVEL = 2;
 
-	}
+        public int computeNextVal(boolean prediction) {
+            return 0;
+        }
 
-	public class JGamaMethod extends DriftDetectionMethod {
+        public void getDescription(StringBuilder sb, int indent) {
+            // TODO Auto-generated method stub
+        }
+    }
 
+    public class JGamaMethod extends DriftDetectionMethod {
 
-		private static final int JGAMAMETHOD_MINNUMINST = 30;
-		private int m_n;
-		private double m_p;
-		private double m_s;
-		private double m_psmin;
-		private double m_pmin;
-		private double m_smin;
+        private static final int JGAMAMETHOD_MINNUMINST = 30;
 
+        private int m_n;
 
-		public JGamaMethod() {
-			initialize();
-		}
+        private double m_p;
 
-		private void initialize() {
-			m_n=1;
-			m_p = 1;
-			m_s = 0;
-			m_psmin = Double.MAX_VALUE;
-			m_pmin = Double.MAX_VALUE;
-			m_smin = Double.MAX_VALUE;
-		}
+        private double m_s;
 
-		@Override
-		public int computeNextVal(boolean prediction) {
-			if (prediction == false) {
-				m_p = m_p + (1.0-m_p)/(double)m_n;
-			 } else {
-				 m_p = m_p - (m_p)/(double)m_n;
-			 }
-			 m_s = Math.sqrt(m_p*(1-m_p)/(double)m_n);
+        private double m_psmin;
 
+        private double m_pmin;
 
-			 m_n++;
+        private double m_smin;
 
-			 //System.out.print(prediction + " " + m_n + " " +  (m_p+m_s) + " ");
+        public JGamaMethod() {
+            initialize();
+        }
 
-			 if (m_n < JGAMAMETHOD_MINNUMINST) {
-				 return DDM_INCONTROL_LEVEL;
-			 }
+        private void initialize() {
+            m_n = 1;
+            m_p = 1;
+            m_s = 0;
+            m_psmin = Double.MAX_VALUE;
+            m_pmin = Double.MAX_VALUE;
+            m_smin = Double.MAX_VALUE;
+        }
 
-			 if(m_p+m_s <= m_psmin){
-				 m_pmin = m_p;
-				 m_smin = m_s;
-				 m_psmin = m_p+m_s;
-			 }
+        @Override
+        public int computeNextVal(boolean prediction) {
+            if (prediction == false) {
+                m_p = m_p + (1.0 - m_p) / (double) m_n;
+            } else {
+                m_p = m_p - (m_p) / (double) m_n;
+            }
+            m_s = Math.sqrt(m_p * (1 - m_p) / (double) m_n);
 
 
-			 if (m_n > JGAMAMETHOD_MINNUMINST && m_p+m_s > m_pmin + 3*m_smin){
-				 initialize();
-				 return DDM_OUTCONTROL_LEVEL;
-			 } else if (m_p+m_s > m_pmin + 2*m_smin) {
-				 return DDM_WARNING_LEVEL;
-			 } else {
-				 return DDM_INCONTROL_LEVEL;
-			 }
-		}
+            m_n++;
 
-	}
+            //System.out.print(prediction + " " + m_n + " " +  (m_p+m_s) + " ");
 
-	public class EDDM extends DriftDetectionMethod {
-		private static final double FDDM_OUTCONTROL = 0.9;
-		private static final double FDDM_WARNING = 0.95;
+            if (m_n < JGAMAMETHOD_MINNUMINST) {
+                return DDM_INCONTROL_LEVEL;
+            }
 
-		private static final double FDDM_MINNUMINSTANCES = 30;
-
-		private double m_numErrors;
-		private int m_minNumErrors = 30;
-		private int m_n;
-		private int m_d;
-		private int m_lastd;
-
-		private double m_mean;
-		private double m_stdTemp;
-		private double m_m2smax;
-		private int m_lastLevel;
-
-		public EDDM() {
-			initialize();
-		}
-
-		private void initialize() {
-			m_n=1;
-			m_numErrors=0;
-			m_d=0;
-			m_lastd=0;
-			m_mean=0.0;
-			m_stdTemp=0.0;
-			m_m2smax=0.0;
-			m_lastLevel = DDM_INCONTROL_LEVEL;
-		}
-
-		@Override
-		public int computeNextVal(boolean prediction) {
-			//System.out.print(prediction + " " + m_n + " " + probability + " ");
-			m_n++;
-			if (prediction == false) {
-				m_numErrors += 1;
-				m_lastd = m_d;
-				m_d = m_n-1;
-				int distance = m_d - m_lastd;
-				double oldmean = m_mean;
-				m_mean = m_mean + ((double)distance - m_mean)/m_numErrors;
-				m_stdTemp = m_stdTemp + (distance - m_mean)*(distance-oldmean);
-				double std = Math.sqrt(m_stdTemp/m_numErrors);
-				double m2s = m_mean + 2*std;
-
-				//System.out.print(m_numErrors + " " + m_mean + " " + std + " " + m2s + " " + m_m2smax + " ");
-
-				if (m2s > m_m2smax) {
-					if (m_n > FDDM_MINNUMINSTANCES) {
-						m_m2smax = m2s;
-					}
-					m_lastLevel = DDM_INCONTROL_LEVEL;
-					//System.out.print(1 + " ");
-				} else {
-					double p = m2s/m_m2smax;
-					//System.out.print(p + " ");
-					if (m_n > FDDM_MINNUMINSTANCES && m_numErrors > m_minNumErrors && p < FDDM_OUTCONTROL) {
-						initialize();
-						return DDM_OUTCONTROL_LEVEL;
-					} else if (m_n > FDDM_MINNUMINSTANCES && m_numErrors > m_minNumErrors && p < FDDM_WARNING) {
-						m_lastLevel=DDM_WARNING_LEVEL;
-						return DDM_WARNING_LEVEL;
-					} else {
-						m_lastLevel=DDM_INCONTROL_LEVEL;
-						return DDM_INCONTROL_LEVEL;
-					}
-				}
-			} else {
-				//System.out.print(m_numErrors + " " + m_mean + " " + Math.sqrt(m_stdTemp/m_numErrors) + " " + (m_mean + 2*Math.sqrt(m_stdTemp/m_numErrors)) + " " + m_m2smax + " ");
-				//System.out.print(((m_mean + 2*Math.sqrt(m_stdTemp/m_numErrors))/m_m2smax) + " ");
-			}
-			return m_lastLevel;
-		}
-
-	}
+            if (m_p + m_s <= m_psmin) {
+                m_pmin = m_p;
+                m_smin = m_s;
+                m_psmin = m_p + m_s;
+            }
 
 
+            if (m_n > JGAMAMETHOD_MINNUMINST && m_p + m_s > m_pmin + 3 * m_smin) {
+                initialize();
+                return DDM_OUTCONTROL_LEVEL;
+            } else if (m_p + m_s > m_pmin + 2 * m_smin) {
+                return DDM_WARNING_LEVEL;
+            } else {
+                return DDM_INCONTROL_LEVEL;
+            }
+        }
+    }
 
-	private static final long serialVersionUID = 1L;
+    public class EDDM extends DriftDetectionMethod {
 
-	public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-			"Classifier to train.", Classifier.class, "NaiveBayes");
+        private static final double FDDM_OUTCONTROL = 0.9;
+
+        private static final double FDDM_WARNING = 0.95;
+
+        private static final double FDDM_MINNUMINSTANCES = 30;
+
+        private double m_numErrors;
+
+        private int m_minNumErrors = 30;
+
+        private int m_n;
+
+        private int m_d;
+
+        private int m_lastd;
+
+        private double m_mean;
+
+        private double m_stdTemp;
+
+        private double m_m2smax;
+
+        private int m_lastLevel;
+
+        public EDDM() {
+            initialize();
+        }
+
+        private void initialize() {
+            m_n = 1;
+            m_numErrors = 0;
+            m_d = 0;
+            m_lastd = 0;
+            m_mean = 0.0;
+            m_stdTemp = 0.0;
+            m_m2smax = 0.0;
+            m_lastLevel = DDM_INCONTROL_LEVEL;
+        }
+
+        @Override
+        public int computeNextVal(boolean prediction) {
+            //System.out.print(prediction + " " + m_n + " " + probability + " ");
+            m_n++;
+            if (prediction == false) {
+                m_numErrors += 1;
+                m_lastd = m_d;
+                m_d = m_n - 1;
+                int distance = m_d - m_lastd;
+                double oldmean = m_mean;
+                m_mean = m_mean + ((double) distance - m_mean) / m_numErrors;
+                m_stdTemp = m_stdTemp + (distance - m_mean) * (distance - oldmean);
+                double std = Math.sqrt(m_stdTemp / m_numErrors);
+                double m2s = m_mean + 2 * std;
+
+                //System.out.print(m_numErrors + " " + m_mean + " " + std + " " + m2s + " " + m_m2smax + " ");
+
+                if (m2s > m_m2smax) {
+                    if (m_n > FDDM_MINNUMINSTANCES) {
+                        m_m2smax = m2s;
+                    }
+                    m_lastLevel = DDM_INCONTROL_LEVEL;
+                    //System.out.print(1 + " ");
+                } else {
+                    double p = m2s / m_m2smax;
+                    //System.out.print(p + " ");
+                    if (m_n > FDDM_MINNUMINSTANCES && m_numErrors > m_minNumErrors && p < FDDM_OUTCONTROL) {
+                        initialize();
+                        return DDM_OUTCONTROL_LEVEL;
+                    } else if (m_n > FDDM_MINNUMINSTANCES && m_numErrors > m_minNumErrors && p < FDDM_WARNING) {
+                        m_lastLevel = DDM_WARNING_LEVEL;
+                        return DDM_WARNING_LEVEL;
+                    } else {
+                        m_lastLevel = DDM_INCONTROL_LEVEL;
+                        return DDM_INCONTROL_LEVEL;
+                    }
+                }
+            } else {
+                //System.out.print(m_numErrors + " " + m_mean + " " + Math.sqrt(m_stdTemp/m_numErrors) + " " + (m_mean + 2*Math.sqrt(m_stdTemp/m_numErrors)) + " " + m_m2smax + " ");
+                //System.out.print(((m_mean + 2*Math.sqrt(m_stdTemp/m_numErrors))/m_m2smax) + " ");
+            }
+            return m_lastLevel;
+        }
+    }
+
+    private static final long serialVersionUID = 1L;
+
+    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
+            "Classifier to train.", Classifier.class, "NaiveBayes");
 
     public MultiChoiceOption driftDetectionMethodOption = new MultiChoiceOption(
-			"driftDetectionMethod", 'd', "Drift detection method to use.", new String[] {
-					"DDM", "EDDM" }, new String[] {
-					"DDM: Joao Gama Drift Detection Method",
-					"EDDM: Early Drift Detection Method" }, 0);
+            "driftDetectionMethod", 'd', "Drift detection method to use.", new String[]{
+                "DDM", "EDDM"}, new String[]{
+                "DDM: Joao Gama Drift Detection Method",
+                "EDDM: Early Drift Detection Method"}, 0);
 
-	public Classifier classifier;
+    protected Classifier classifier;
 
-	protected Classifier newclassifier;
+    protected Classifier newclassifier;
 
-	protected DriftDetectionMethod driftDetectionMethod;
+    protected DriftDetectionMethod driftDetectionMethod;
 
-	protected boolean newClassifierReset;
+    protected boolean newClassifierReset;
+    //protected int numberInstances = 0;
 
-	@Override
-	public int measureByteSize() {
-		int size = (int) SizeOf.sizeOf(this);
-		size += classifier.measureByteSize();
-		size += newclassifier.measureByteSize();
-		return size;
-	}
+    protected int ddmLevel;
 
-	@Override
-	public void resetLearningImpl() {
-		this.classifier = (Classifier) getPreparedClassOption(this.baseLearnerOption);
-		this.newclassifier = (Classifier) getPreparedClassOption(this.baseLearnerOption);
-		this.classifier.resetLearning();
-		this.newclassifier.resetLearning();
-		this.driftDetectionMethod =  newDriftDetectionMethod();
-		newClassifierReset = false;
+    public boolean isWarningDetected() {
+        return (this.ddmLevel == DriftDetectionMethod.DDM_WARNING_LEVEL);
+    }
 
-	}
+    public boolean isChangeDetected() {
+        return (this.ddmLevel == DriftDetectionMethod.DDM_OUTCONTROL_LEVEL);
+    }
 
-	@Override
-	public void trainOnInstanceImpl(Instance inst) {
-		int trueClass = (int) inst.classValue();
-		boolean prediction;
-		if (Utils.maxIndex(this.classifier.getVotesForInstance(inst)) == trueClass) {
-			prediction = true;
-		} else {
-			prediction = false;
-		}
-		switch (this.driftDetectionMethod.computeNextVal(prediction) ){
-			case DriftDetectionMethod.DDM_WARNING_LEVEL:
-				//System.out.println("1 0 W");
-				if (newClassifierReset == true) {
-					this.newclassifier.resetLearning();
-					newClassifierReset = false;
-				}
-				this.newclassifier.trainOnInstance(inst);
-				break;
+    @Override
+    public int measureByteSize() {
+        int size = (int) SizeOf.sizeOf(this);
+        size += classifier.measureByteSize();
+        size += newclassifier.measureByteSize();
+        return size;
+    }
 
-			case DriftDetectionMethod.DDM_OUTCONTROL_LEVEL:
-				//System.out.println("0 1 O");
-				this.classifier = null;
-				this.classifier = this.newclassifier;
-				if (this.classifier instanceof WEKAClassifier) {
-					((WEKAClassifier) this.classifier).buildClassifier();
-				}
-				this.newclassifier = (Classifier) getPreparedClassOption(this.baseLearnerOption);
-				this.newclassifier.resetLearning();
-				break;
+    @Override
+    public void resetLearningImpl() {
+        this.classifier = (Classifier) getPreparedClassOption(this.baseLearnerOption);
+        this.newclassifier = this.classifier.copy();
+        this.classifier.resetLearning();
+        this.newclassifier.resetLearning();
+        this.driftDetectionMethod = newDriftDetectionMethod();
+        this.newClassifierReset = false;
+    }
 
-			case DriftDetectionMethod.DDM_INCONTROL_LEVEL:
-				//System.out.println("0 0 I");
-				newClassifierReset = true;
-				break;
-			default:
-				//System.out.println("ERROR!");
+    protected int changeDetected = 0;
 
-		}
+    protected int warningDetected = 0;
 
-		this.classifier.trainOnInstance(inst);
-	}
+    @Override
+    public void trainOnInstanceImpl(Instance inst) {
+        //this.numberInstances++;
+        int trueClass = (int) inst.classValue();
+        boolean prediction;
+        if (Utils.maxIndex(this.classifier.getVotesForInstance(inst)) == trueClass) {
+            prediction = true;
+        } else {
+            prediction = false;
+        }
+        this.ddmLevel = this.driftDetectionMethod.computeNextVal(prediction);
+        switch (this.ddmLevel) {
+            case DriftDetectionMethod.DDM_WARNING_LEVEL:
+                //System.out.println("1 0 W");
+                this.warningDetected++;
+                if (newClassifierReset == true) {
+                    this.newclassifier.resetLearning();
+                    newClassifierReset = false;
+                }
+                this.newclassifier.trainOnInstance(inst);
+                break;
 
-	public double[] getVotesForInstance(Instance inst) {
-		return this.classifier.getVotesForInstance(inst);
-	}
+            case DriftDetectionMethod.DDM_OUTCONTROL_LEVEL:
+                //System.out.println("0 1 O");
+                this.changeDetected++;
+                this.classifier = null;
+                this.classifier = this.newclassifier;
+                if (this.classifier instanceof WEKAClassifier) {
+                    ((WEKAClassifier) this.classifier).buildClassifier();
+                }
+                this.newclassifier = ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
+                this.newclassifier.resetLearning();
+                break;
 
-	public boolean isRandomizable() {
-		return true;
-	}
+            case DriftDetectionMethod.DDM_INCONTROL_LEVEL:
+                //System.out.println("0 0 I");
+                newClassifierReset = true;
+                break;
+            default:
+            //System.out.println("ERROR!");
 
-	@Override
-	public void getModelDescription(StringBuilder out, int indent) {
-		((AbstractClassifier) this.classifier).getModelDescription(out, indent);
-	}
+        }
 
-	@Override
-	protected Measurement[] getModelMeasurementsImpl() {
-		return ((AbstractClassifier) this.classifier).getModelMeasurementsImpl();
-	}
+        this.classifier.trainOnInstance(inst);
+    }
 
-	protected DriftDetectionMethod newDriftDetectionMethod() {
-		switch (this.driftDetectionMethodOption.getChosenIndex()) {
-			case 0:
-				return new JGamaMethod();
-			case 1:
-				return new EDDM();
-		}
-		return new DriftDetectionMethod();
-	}
+    public double[] getVotesForInstance(Instance inst) {
+        return this.classifier.getVotesForInstance(inst);
+    }
+
+    @Override
+    public boolean isRandomizable() {
+        return true;
+    }
+
+    @Override
+    public void getModelDescription(StringBuilder out, int indent) {
+        ((AbstractClassifier) this.classifier).getModelDescription(out, indent);
+    }
+
+    @Override
+    protected Measurement[] getModelMeasurementsImpl() {
+        List<Measurement> measurementList = new LinkedList<Measurement>();
+        measurementList.add(new Measurement("Change detected", this.changeDetected));
+        measurementList.add(new Measurement("Warning detected", this.warningDetected));
+        Measurement[] modelMeasurements = ((AbstractClassifier) this.classifier).getModelMeasurementsImpl();
+        if (modelMeasurements != null) {
+            for (Measurement measurement : modelMeasurements) {
+                measurementList.add(measurement);
+            }
+        }
+        this.changeDetected = 0;
+        this.warningDetected = 0;
+        return measurementList.toArray(new Measurement[measurementList.size()]);
+    }
+
+    protected DriftDetectionMethod newDriftDetectionMethod() {
+        switch (this.driftDetectionMethodOption.getChosenIndex()) {
+            case 0:
+                return new JGamaMethod();
+            case 1:
+                return new EDDM();
+        }
+        return new DriftDetectionMethod();
+    }
 }

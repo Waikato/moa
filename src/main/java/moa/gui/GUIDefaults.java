@@ -18,7 +18,6 @@
  * GUIDefaults.java
  * Copyright (C) 2006 University of Waikato, Hamilton, New Zealand
  */
-
 package moa.gui;
 
 import moa.core.PropertiesReader;
@@ -36,167 +35,165 @@ import java.util.Vector;
  *
  * @author  FracPete (fracpete at waikato dot ac dot nz)
  * @version $Revision: 6103 $
- * @see #PROPERTY_FILE
  */
 public class GUIDefaults
-  implements Serializable {
-  
-  /** for serialization. */
-  private static final long serialVersionUID = 4954795757927524225L;
+        implements Serializable {
 
-  /** The name of the properties file. */
-  public final static String PROPERTY_FILE = "moa/gui/GUI.props";
+    /** for serialization. */
+    private static final long serialVersionUID = 4954795757927524225L;
 
-  /** Properties associated with the GUI options. */
-  protected static Properties PROPERTIES;
-  static {
-    try {
-      PROPERTIES = PropertiesReader.readProperties(PROPERTY_FILE);
+    /** The name of the properties file. */
+    public final static String PROPERTY_FILE = "moa/gui/GUI.props";
+
+    /** Properties associated with the GUI options. */
+    protected static Properties PROPERTIES;
+
+    static {
+        try {
+            PROPERTIES = PropertiesReader.readProperties(PROPERTY_FILE);
+        } catch (Exception e) {
+            System.err.println("Problem reading properties. Fix before continuing.");
+            e.printStackTrace();
+            PROPERTIES = new Properties();
+        }
     }
-    catch (Exception e) {
-      System.err.println("Problem reading properties. Fix before continuing.");
-      e.printStackTrace();
-      PROPERTIES = new Properties();
-    }
-  }
 
-  /**
-   * returns the value for the specified property, if non-existent then the
-   * default value.
-   *
-   * @param property      the property to retrieve the value for
-   * @param defaultValue  the default value for the property
-   * @return              the value of the specified property
-   */
-  public static String get(String property, String defaultValue) {
-    return PROPERTIES.getProperty(property, defaultValue);
-  }
-
-  /**
-   * returns the associated properties file.
-   * 
-   * @return              the props file
-   */
-  public final static Properties getProperties() {
-    return PROPERTIES;
-  }
-  
-  /**
-   * Tries to instantiate the class stored for this property, optional 
-   * options will be set as well. Returns null if unsuccessful.
-   * 
-   * @param property      the property to get the object for
-   * @param defaultValue  the default object spec string
-   * @return              if successful the fully configured object, null
-   *                      otherwise
-   */
-  protected static Object getObject(String property, String defaultValue) {
-    return getObject(property, defaultValue, Object.class);
-  }
-  
-  /**
-   * Tries to instantiate the class stored for this property, optional 
-   * options will be set as well. Returns null if unsuccessful.
-   * 
-   * @param property      the property to get the object for
-   * @param defaultValue  the default object spec string
-   * @param cls           the class the object must be derived from
-   * @return              if successful the fully configured object, null
-   *                      otherwise
-   */
-  protected static Object getObject(String property, String defaultValue, Class cls) {
-    Object	result;
-    String	tmpStr;
-    String[]	tmpOptions;
-    
-    result = null;
-    
-    try {
-      tmpStr     = get(property, defaultValue);
-      tmpOptions = Utils.splitOptions(tmpStr);
-      if (tmpOptions.length != 0) {
-	tmpStr        = tmpOptions[0];
-	tmpOptions[0] = "";
-	result        = Utils.forName(cls, tmpStr, tmpOptions);
-      }
+    /**
+     * returns the value for the specified property, if non-existent then the
+     * default value.
+     *
+     * @param property      the property to retrieve the value for
+     * @param defaultValue  the default value for the property
+     * @return              the value of the specified property
+     */
+    public static String get(String property, String defaultValue) {
+        return PROPERTIES.getProperty(property, defaultValue);
     }
-    catch (Exception e) {
-      e.printStackTrace();
-      result = null;
-    }
-    
-    return result;
-  }
 
-  
-  /**
-   * returns an array with the classnames of all the additional panels to 
-   * display as tabs in the GUI.
-   * 
-   * @return		the classnames
-   */
-  public static String[] getTabs() {
-    String[]	result;
-    String	tabs;
-    
-    // read and split on comma
-    tabs   = get("Tabs", "moa.gui.ClassificationTabPanel,moa.gui.clustertab.ClusteringTabPanel");
-    result = tabs.split(",");
-    
-    return result;
-  }
-  
-  /**
-   * Returns the initial directory for the file chooser used for opening
-   * datasets. 
-   * <p/>
-   * The following placeholders are recognized:
-   * <pre>
-   *   %t - the temp directory
-   *   %h - the user's home directory
-   *   %c - the current directory
-   *   %% - gets replaced by a single percentage sign
-   * </pre>
-   * 
-   * @return		the default directory
-   */
-  public static String getInitialDirectory() {
-    String	result;
-    
-    result = get("InitialDirectory", "%c");
-    result = result.replaceAll("%t", System.getProperty("java.io.tmpdir"));
-    result = result.replaceAll("%h", System.getProperty("user.home"));
-    result = result.replaceAll("%c", System.getProperty("user.dir"));
-    result = result.replaceAll("%%", System.getProperty("%"));
-    
-    return result;
-  }
-    
-  /**
-   * only for testing - prints the content of the props file.
-   * 
-   * @param args	commandline parameters - ignored
-   */
-  public static void main(String[] args) {
-    Enumeration		names;
-    String		name;
-    Vector		sorted;
-    
-    System.out.println("\nMOA defaults:");
-    names = PROPERTIES.propertyNames();
-
-    // sort names
-    sorted = new Vector();
-    while (names.hasMoreElements())
-      sorted.add(names.nextElement());
-    Collections.sort(sorted);
-    names = sorted.elements();
-    
-    // output
-    while (names.hasMoreElements()) {
-      name = names.nextElement().toString();
-      System.out.println("- " + name + ": " + PROPERTIES.getProperty(name, ""));
+    /**
+     * returns the associated properties file.
+     *
+     * @return              the props file
+     */
+    public final static Properties getProperties() {
+        return PROPERTIES;
     }
-    System.out.println();
-  }
+
+    /**
+     * Tries to instantiate the class stored for this property, optional
+     * options will be set as well. Returns null if unsuccessful.
+     *
+     * @param property      the property to get the object for
+     * @param defaultValue  the default object spec string
+     * @return              if successful the fully configured object, null
+     *                      otherwise
+     */
+    protected static Object getObject(String property, String defaultValue) {
+        return getObject(property, defaultValue, Object.class);
+    }
+
+    /**
+     * Tries to instantiate the class stored for this property, optional
+     * options will be set as well. Returns null if unsuccessful.
+     *
+     * @param property      the property to get the object for
+     * @param defaultValue  the default object spec string
+     * @param cls           the class the object must be derived from
+     * @return              if successful the fully configured object, null
+     *                      otherwise
+     */
+    protected static Object getObject(String property, String defaultValue, Class cls) {
+        Object result;
+        String tmpStr;
+        String[] tmpOptions;
+
+        result = null;
+
+        try {
+            tmpStr = get(property, defaultValue);
+            tmpOptions = Utils.splitOptions(tmpStr);
+            if (tmpOptions.length != 0) {
+                tmpStr = tmpOptions[0];
+                tmpOptions[0] = "";
+                result = Utils.forName(cls, tmpStr, tmpOptions);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = null;
+        }
+
+        return result;
+    }
+
+    /**
+     * returns an array with the classnames of all the additional panels to
+     * display as tabs in the GUI.
+     *
+     * @return		the classnames
+     */
+    public static String[] getTabs() {
+        String[] result;
+        String tabs;
+
+        // read and split on comma
+        tabs = get("Tabs", "moa.gui.ClassificationTabPanel,moa.gui.clustertab.ClusteringTabPanel");
+        result = tabs.split(",");
+
+        return result;
+    }
+
+    /**
+     * Returns the initial directory for the file chooser used for opening
+     * datasets.
+     * <p/>
+     * The following placeholders are recognized:
+     * <pre>
+     *   %t - the temp directory
+     *   %h - the user's home directory
+     *   %c - the current directory
+     *   %% - gets replaced by a single percentage sign
+     * </pre>
+     *
+     * @return		the default directory
+     */
+    public static String getInitialDirectory() {
+        String result;
+
+        result = get("InitialDirectory", "%c");
+        result = result.replaceAll("%t", System.getProperty("java.io.tmpdir"));
+        result = result.replaceAll("%h", System.getProperty("user.home"));
+        result = result.replaceAll("%c", System.getProperty("user.dir"));
+        result = result.replaceAll("%%", System.getProperty("%"));
+
+        return result;
+    }
+
+    /**
+     * only for testing - prints the content of the props file.
+     *
+     * @param args	commandline parameters - ignored
+     */
+    public static void main(String[] args) {
+        Enumeration names;
+        String name;
+        Vector sorted;
+
+        System.out.println("\nMOA defaults:");
+        names = PROPERTIES.propertyNames();
+
+        // sort names
+        sorted = new Vector();
+        while (names.hasMoreElements()) {
+            sorted.add(names.nextElement());
+        }
+        Collections.sort(sorted);
+        names = sorted.elements();
+
+        // output
+        while (names.hasMoreElements()) {
+            name = names.nextElement().toString();
+            System.out.println("- " + name + ": " + PROPERTIES.getProperty(name, ""));
+        }
+        System.out.println();
+    }
 }

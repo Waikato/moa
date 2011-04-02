@@ -19,14 +19,25 @@
  */
 package moa.gui;
 
-public abstract class AbstractTabPanel extends javax.swing.JPanel{
+/**
+ * Abstract Tab Panel.
+ *
+ * @author FracPete (fracpete at waikato dot ac dot nz)
+ * @version $Revision: 7 $
+ */
+public abstract class AbstractTabPanel extends javax.swing.JPanel {
 
-	//returns the string to display as title of the tab
-	public abstract String getTabTitle();
+    /**
+     * Returns the string to display as title of the tab.
+     * 
+     * @return the string to display as title of the tab
+     */
+    public abstract String getTabTitle();
 
-	//a short description (can be used as tool tip) of the tab, or contributor, etc.
-	public abstract String getDescription();
-
-}		
-	
-
+    /**
+     * Returns a short description (can be used as tool tip) of the tab, or contributor, etc.
+     *
+     * @return a short description of this tab panel.
+     */
+    public abstract String getDescription();
+}

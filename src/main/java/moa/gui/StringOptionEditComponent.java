@@ -23,29 +23,36 @@ import javax.swing.JTextField;
 
 import moa.options.Option;
 
+/**
+ * An OptionEditComponent that lets the user edit a string option.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class StringOptionEditComponent extends JTextField implements
-		OptionEditComponent {
+        OptionEditComponent {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected Option editedOption;
+    protected Option editedOption;
 
-	public StringOptionEditComponent(Option option) {
-		this.editedOption = option;
-		setEditState(this.editedOption.getValueAsCLIString());
-	}
+    public StringOptionEditComponent(Option option) {
+        this.editedOption = option;
+        setEditState(this.editedOption.getValueAsCLIString());
+    }
 
-	public Option getEditedOption() {
-		return this.editedOption;
-	}
+    @Override
+    public Option getEditedOption() {
+        return this.editedOption;
+    }
 
-	public void setEditState(String cliString) {
-		setText(cliString);
-	}
+    @Override
+    public void setEditState(String cliString) {
+        setText(cliString);
+    }
 
-	public void applyState() {
-		this.editedOption
-				.setValueViaCLIString(getText().length() > 0 ? getText() : null);
-	}
-
+    @Override
+    public void applyState() {
+        this.editedOption.setValueViaCLIString(getText().length() > 0 ? getText() : null);
+    }
 }

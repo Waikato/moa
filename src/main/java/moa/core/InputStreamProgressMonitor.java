@@ -23,6 +23,12 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Class for monitoring the progress of reading an input stream.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class InputStreamProgressMonitor extends FilterInputStream {
 
 	/** The number of bytes to read in total */

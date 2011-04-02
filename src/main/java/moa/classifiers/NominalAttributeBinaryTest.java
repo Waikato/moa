@@ -22,47 +22,51 @@ package moa.classifiers;
 import moa.core.InstancesHeader;
 import weka.core.Instance;
 
+/**
+ * Nominal binary conditional test for instances to use to split nodes in Hoeffding trees.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class NominalAttributeBinaryTest extends InstanceConditionalBinaryTest {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected int attIndex;
+    protected int attIndex;
 
-	protected int attValue;
+    protected int attValue;
 
-	public NominalAttributeBinaryTest(int attIndex, int attValue) {
-		this.attIndex = attIndex;
-		this.attValue = attValue;
-	}
+    public NominalAttributeBinaryTest(int attIndex, int attValue) {
+        this.attIndex = attIndex;
+        this.attValue = attValue;
+    }
 
-	@Override
-	public int branchForInstance(Instance inst) {
-		int instAttIndex = this.attIndex < inst.classIndex() ? this.attIndex
-				: this.attIndex + 1;
-		return inst.isMissing(instAttIndex) ? -1 : ((int) inst
-				.value(instAttIndex) == this.attValue ? 0 : 1);
-	}
+    @Override
+    public int branchForInstance(Instance inst) {
+        int instAttIndex = this.attIndex < inst.classIndex() ? this.attIndex
+                : this.attIndex + 1;
+        return inst.isMissing(instAttIndex) ? -1 : ((int) inst.value(instAttIndex) == this.attValue ? 0 : 1);
+    }
 
-	@Override
-	public String decribeConditionForBranch(int branch, InstancesHeader context) {
-		if ((branch == 0) || (branch == 1)) {
-			return InstancesHeader.getAttributeNameString(context,
-					this.attIndex)
-					+ (branch == 0 ? " = " : " != ")
-					+ InstancesHeader.getNominalValueString(context,
-							this.attIndex, this.attValue);
-		}
-		throw new IndexOutOfBoundsException();
-	}
+    @Override
+    public String describeConditionForBranch(int branch, InstancesHeader context) {
+        if ((branch == 0) || (branch == 1)) {
+            return InstancesHeader.getAttributeNameString(context,
+                    this.attIndex)
+                    + (branch == 0 ? " = " : " != ")
+                    + InstancesHeader.getNominalValueString(context,
+                    this.attIndex, this.attValue);
+        }
+        throw new IndexOutOfBoundsException();
+    }
 
-	public void getDescription(StringBuilder sb, int indent) {
-		// TODO Auto-generated method stub
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {
+        // TODO Auto-generated method stub
+    }
 
-	}
-
-	@Override
-	public int[] getAttsTestDependsOn() {
-		return new int[] { this.attIndex };
-	}
-
+    @Override
+    public int[] getAttsTestDependsOn() {
+        return new int[]{this.attIndex};
+    }
 }

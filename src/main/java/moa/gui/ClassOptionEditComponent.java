@@ -35,89 +35,107 @@ import javax.swing.event.DocumentListener;
 import moa.options.ClassOption;
 import moa.options.Option;
 
+/**
+ * An OptionEditComponent that lets the user edit a class option.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class ClassOptionEditComponent extends JPanel implements
-		OptionEditComponent {
+        OptionEditComponent {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected ClassOption editedOption;
+    protected ClassOption editedOption;
 
-	protected JTextField textField = new JTextField();
+    protected JTextField textField = new JTextField();
 
-	protected JButton editButton = new JButton("Edit");
+    protected JButton editButton = new JButton("Edit");
 
-	/** listeners that listen to changes to the chosen option. */
-	protected HashSet<ChangeListener> changeListeners = new HashSet<ChangeListener>();
+    /** listeners that listen to changes to the chosen option. */
+    protected HashSet<ChangeListener> changeListeners = new HashSet<ChangeListener>();
 
-	public ClassOptionEditComponent(ClassOption option) {
-		this.editedOption = option;
-		this.textField.setEditable(false);
-		this.textField.getDocument().addDocumentListener(new DocumentListener() {
-			public void removeUpdate(DocumentEvent e) {
-				notifyChangeListeners();
-			}
-			public void insertUpdate(DocumentEvent e) {
-				notifyChangeListeners();
-			}
-			public void changedUpdate(DocumentEvent e) {
-				notifyChangeListeners();
-			}
-		});
-		setLayout(new BorderLayout());
-		add(this.textField, BorderLayout.CENTER);
-		add(this.editButton, BorderLayout.EAST);
-		this.editButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				editObject();
-			}
-		});
-		setEditState(this.editedOption.getValueAsCLIString());
-	}
+    public ClassOptionEditComponent(ClassOption option) {
+        this.editedOption = option;
+        this.textField.setEditable(false);
+        this.textField.getDocument().addDocumentListener(new DocumentListener() {
 
-	public void applyState() {
-		this.editedOption.setValueViaCLIString(this.textField.getText());
-	}
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                notifyChangeListeners();
+            }
 
-	public Option getEditedOption() {
-		return this.editedOption;
-	}
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                notifyChangeListeners();
+            }
 
-	public void setEditState(String cliString) {
-		this.textField.setText(cliString);
-	}
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                notifyChangeListeners();
+            }
+        });
+        setLayout(new BorderLayout());
+        add(this.textField, BorderLayout.CENTER);
+        add(this.editButton, BorderLayout.EAST);
+        this.editButton.addActionListener(new ActionListener() {
 
-	public void editObject() {
-		setEditState(ClassOptionSelectionPanel.showSelectClassDialog(this,
-				"Editing option: " + this.editedOption.getName(),
-				this.editedOption.getRequiredType(), this.textField.getText(),
-				this.editedOption.getNullString()));
-	}
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                editObject();
+            }
+        });
+        setEditState(this.editedOption.getValueAsCLIString());
+    }
 
-	/**
-	 * Adds the listener to the internal set of listeners. Gets notified when
-	 * the option string changes.
-	 *
-	 * @param l the listener to add
-	 */
-	public void addChangeListener(ChangeListener l) {
-		changeListeners.add(l);
-	}
+    @Override
+    public void applyState() {
+        this.editedOption.setValueViaCLIString(this.textField.getText());
+    }
 
-	/**
-	 * Removes the listener from the internal set of listeners.
-	 *
-	 * @param l the listener to remove
-	 */
-	public void removeChangeListener(ChangeListener l) {
-		changeListeners.remove(l);
-	}
+    @Override
+    public Option getEditedOption() {
+        return this.editedOption;
+    }
 
-	/**
-	 * Notifies all registered change listeners that the options have changed.
-	 */
-	protected void notifyChangeListeners() {
-		ChangeEvent e = new ChangeEvent(this);
-		for (ChangeListener l: changeListeners)
-			l.stateChanged(e);
-	}
+    @Override
+    public void setEditState(String cliString) {
+        this.textField.setText(cliString);
+    }
+
+    public void editObject() {
+        setEditState(ClassOptionSelectionPanel.showSelectClassDialog(this,
+                "Editing option: " + this.editedOption.getName(),
+                this.editedOption.getRequiredType(), this.textField.getText(),
+                this.editedOption.getNullString()));
+    }
+
+    /**
+     * Adds the listener to the internal set of listeners. Gets notified when
+     * the option string changes.
+     *
+     * @param l the listener to add
+     */
+    public void addChangeListener(ChangeListener l) {
+        changeListeners.add(l);
+    }
+
+    /**
+     * Removes the listener from the internal set of listeners.
+     *
+     * @param l the listener to remove
+     */
+    public void removeChangeListener(ChangeListener l) {
+        changeListeners.remove(l);
+    }
+
+    /**
+     * Notifies all registered change listeners that the options have changed.
+     */
+    protected void notifyChangeListeners() {
+        ChangeEvent e = new ChangeEvent(this);
+        for (ChangeListener l : changeListeners) {
+            l.stateChanged(e);
+        }
+    }
 }

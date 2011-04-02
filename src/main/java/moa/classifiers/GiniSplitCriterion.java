@@ -24,54 +24,63 @@ import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 import weka.core.Utils;
 
+/**
+ * Class for computing splitting criteria using Gini
+ * with respect to distributions of class values.
+ * The split criterion is used as a parameter on
+ * decision trees and decision stumps.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class GiniSplitCriterion extends AbstractOptionHandler implements
-		SplitCriterion {
+        SplitCriterion {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public double getMeritOfSplit(double[] preSplitDist,
-			double[][] postSplitDists) {
-		double totalWeight = 0.0;
-		double[] distWeights = new double[postSplitDists.length];
-		for (int i = 0; i < postSplitDists.length; i++) {
-			distWeights[i] = Utils.sum(postSplitDists[i]);
-			totalWeight += distWeights[i];
-		}
-		double gini = 0.0;
-		for (int i = 0; i < postSplitDists.length; i++) {
-			gini += (distWeights[i] / totalWeight)
-					* computeGini(postSplitDists[i], distWeights[i]);
-		}
-		return 1.0 - gini;
-	}
+    @Override
+    public double getMeritOfSplit(double[] preSplitDist,
+            double[][] postSplitDists) {
+        double totalWeight = 0.0;
+        double[] distWeights = new double[postSplitDists.length];
+        for (int i = 0; i < postSplitDists.length; i++) {
+            distWeights[i] = Utils.sum(postSplitDists[i]);
+            totalWeight += distWeights[i];
+        }
+        double gini = 0.0;
+        for (int i = 0; i < postSplitDists.length; i++) {
+            gini += (distWeights[i] / totalWeight)
+                    * computeGini(postSplitDists[i], distWeights[i]);
+        }
+        return 1.0 - gini;
+    }
 
-	public double getRangeOfMerit(double[] preSplitDist) {
-		return 1.0;
-	}
+    @Override
+    public double getRangeOfMerit(double[] preSplitDist) {
+        return 1.0;
+    }
 
-	public static double computeGini(double[] dist, double distSumOfWeights) {
-		double gini = 1.0;
-		for (int i = 0; i < dist.length; i++) {
-			double relFreq = dist[i] / distSumOfWeights;
-			gini -= relFreq * relFreq;
-		}
-		return gini;
-	}
+    public static double computeGini(double[] dist, double distSumOfWeights) {
+        double gini = 1.0;
+        for (int i = 0; i < dist.length; i++) {
+            double relFreq = dist[i] / distSumOfWeights;
+            gini -= relFreq * relFreq;
+        }
+        return gini;
+    }
 
-	public static double computeGini(double[] dist) {
-		return computeGini(dist, Utils.sum(dist));
-	}
+    public static double computeGini(double[] dist) {
+        return computeGini(dist, Utils.sum(dist));
+    }
 
-	public void getDescription(StringBuilder sb, int indent) {
-		// TODO Auto-generated method stub
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {
+        // TODO Auto-generated method stub
+    }
 
-	}
-
-	@Override
-	protected void prepareForUseImpl(TaskMonitor monitor,
-			ObjectRepository repository) {
-		// TODO Auto-generated method stub
-
-	}
-
+    @Override
+    protected void prepareForUseImpl(TaskMonitor monitor,
+            ObjectRepository repository) {
+        // TODO Auto-generated method stub
+    }
 }

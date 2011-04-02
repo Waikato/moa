@@ -37,71 +37,77 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+/**
+ * This panel displays text. Used to output the results of tasks.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class TextViewerPanel extends JPanel {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public static String exportFileExtension = "txt";
+    public static String exportFileExtension = "txt";
 
-	protected JTextArea textArea;
+    protected JTextArea textArea;
 
-	protected JScrollPane scrollPane;
+    protected JScrollPane scrollPane;
 
-	protected JButton exportButton;
+    protected JButton exportButton;
 
-	public TextViewerPanel() {
-		this.textArea = new JTextArea();
-		this.textArea.setEditable(false);
-		this.textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-		this.exportButton = new JButton("Export as .txt file...");
-		this.exportButton.setEnabled(false);
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new GridLayout(1, 2));
-		buttonPanel.add(this.exportButton);
-		setLayout(new BorderLayout());
-		this.scrollPane = new JScrollPane(this.textArea);
-		add(this.scrollPane, BorderLayout.CENTER);
-		add(buttonPanel, BorderLayout.SOUTH);
-		this.exportButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileChooser = new JFileChooser();
-				fileChooser.setAcceptAllFileFilterUsed(true);
-				fileChooser.addChoosableFileFilter(new FileExtensionFilter(
-						exportFileExtension));
-				if (fileChooser.showSaveDialog(TextViewerPanel.this) == JFileChooser.APPROVE_OPTION) {
-					File chosenFile = fileChooser.getSelectedFile();
-					String fileName = chosenFile.getPath();
-					if (!chosenFile.exists()
-							&& !fileName.endsWith(exportFileExtension)) {
-						fileName = fileName + "." + exportFileExtension;
-					}
-					try {
-						PrintWriter out = new PrintWriter(new BufferedWriter(
-								new FileWriter(fileName)));
-						out.write(TextViewerPanel.this.textArea.getText());
-						out.close();
-					} catch (IOException ioe) {
-						GUIUtils.showExceptionDialog(
-								TextViewerPanel.this.exportButton,
-								"Problem saving file " + fileName, ioe);
-					}
-				}
-			}
-		});
-	}
+    public TextViewerPanel() {
+        this.textArea = new JTextArea();
+        this.textArea.setEditable(false);
+        this.textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        this.exportButton = new JButton("Export as .txt file...");
+        this.exportButton.setEnabled(false);
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 2));
+        buttonPanel.add(this.exportButton);
+        setLayout(new BorderLayout());
+        this.scrollPane = new JScrollPane(this.textArea);
+        add(this.scrollPane, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+        this.exportButton.addActionListener(new ActionListener() {
 
-	public void setText(String newText) {
-		Point p = this.scrollPane.getViewport().getViewPosition();
-		this.textArea.setText(newText);
-		this.scrollPane.getViewport().setViewPosition(p);
-		this.exportButton.setEnabled(newText != null);
-	}
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setAcceptAllFileFilterUsed(true);
+                fileChooser.addChoosableFileFilter(new FileExtensionFilter(
+                        exportFileExtension));
+                if (fileChooser.showSaveDialog(TextViewerPanel.this) == JFileChooser.APPROVE_OPTION) {
+                    File chosenFile = fileChooser.getSelectedFile();
+                    String fileName = chosenFile.getPath();
+                    if (!chosenFile.exists()
+                            && !fileName.endsWith(exportFileExtension)) {
+                        fileName = fileName + "." + exportFileExtension;
+                    }
+                    try {
+                        PrintWriter out = new PrintWriter(new BufferedWriter(
+                                new FileWriter(fileName)));
+                        out.write(TextViewerPanel.this.textArea.getText());
+                        out.close();
+                    } catch (IOException ioe) {
+                        GUIUtils.showExceptionDialog(
+                                TextViewerPanel.this.exportButton,
+                                "Problem saving file " + fileName, ioe);
+                    }
+                }
+            }
+        });
+    }
 
-	public void addText(String newText) {
-		String text = textArea.getText();
-                text+=(!text.isEmpty())?"\n":"";
-                text+=newText;
-                setText(text);
-	}
+    public void setText(String newText) {
+        Point p = this.scrollPane.getViewport().getViewPosition();
+        this.textArea.setText(newText);
+        this.scrollPane.getViewport().setViewPosition(p);
+        this.exportButton.setEnabled(newText != null);
+    }
 
+    public void addText(String newText) {
+        String text = textArea.getText();
+        text += (!text.isEmpty()) ? "\n" : "";
+        text += newText;
+        setText(text);
+    }
 }

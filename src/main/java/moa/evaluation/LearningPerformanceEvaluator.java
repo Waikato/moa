@@ -22,6 +22,13 @@ package moa.evaluation;
 import moa.MOAObject;
 import moa.core.Measurement;
 
+/**
+ * Interface implemented by learner evaluators to monitor
+ * the results of the learning process.
+ *
+ * @author Albert Bifet (abifet@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public interface LearningPerformanceEvaluator extends MOAObject {
 
 	public void reset();

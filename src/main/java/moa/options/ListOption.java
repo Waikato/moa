@@ -19,76 +19,84 @@
  */
 package moa.options;
 
+/**
+ * List option.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class ListOption extends AbstractOption {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected Option[] currentList;
+    protected Option[] currentList;
 
-	protected Option expectedType;
+    protected Option expectedType;
 
-	protected Option[] defaultList;
+    protected Option[] defaultList;
 
-	protected char separatorChar;
+    protected char separatorChar;
 
-	public ListOption(String name, char cliChar, String purpose,
-			Option expectedType, Option[] defaultList, char separatorChar) {
-		super(name, cliChar, purpose);
-		this.expectedType = expectedType;
-		this.defaultList = defaultList.clone();
-		this.separatorChar = separatorChar;
-		resetToDefault();
-	}
+    public ListOption(String name, char cliChar, String purpose,
+            Option expectedType, Option[] defaultList, char separatorChar) {
+        super(name, cliChar, purpose);
+        this.expectedType = expectedType;
+        this.defaultList = defaultList.clone();
+        this.separatorChar = separatorChar;
+        resetToDefault();
+    }
 
-	public void setList(Option[] optList) {
-		Option[] newArray = new Option[optList.length];
-		for (int i = 0; i < optList.length; i++) {
-			newArray[i] = this.expectedType.copy();
-			newArray[i].setValueViaCLIString(optList[i].getValueAsCLIString());
-		}
-		this.currentList = newArray;
-	}
+    public void setList(Option[] optList) {
+        Option[] newArray = new Option[optList.length];
+        for (int i = 0; i < optList.length; i++) {
+            newArray[i] = this.expectedType.copy();
+            newArray[i].setValueViaCLIString(optList[i].getValueAsCLIString());
+        }
+        this.currentList = newArray;
+    }
 
-	public Option[] getList() {
-		return this.currentList.clone();
-	}
+    public Option[] getList() {
+        return this.currentList.clone();
+    }
 
-	public String getDefaultCLIString() {
-		return optionArrayToCLIString(this.defaultList, this.separatorChar);
-	}
+    @Override
+    public String getDefaultCLIString() {
+        return optionArrayToCLIString(this.defaultList, this.separatorChar);
+    }
 
-	public String getValueAsCLIString() {
-		return optionArrayToCLIString(this.currentList, this.separatorChar);
-	}
+    @Override
+    public String getValueAsCLIString() {
+        return optionArrayToCLIString(this.currentList, this.separatorChar);
+    }
 
-	public void setValueViaCLIString(String s) {
-		this.currentList = cliStringToOptionArray(s, this.separatorChar,
-				this.expectedType);
-	}
+    @Override
+    public void setValueViaCLIString(String s) {
+        this.currentList = cliStringToOptionArray(s, this.separatorChar,
+                this.expectedType);
+    }
 
-	public static Option[] cliStringToOptionArray(String s, char separator,
-			Option expectedType) {
-		if (s.length() < 1) {
-			return new Option[0];
-		}
-		String[] subStrings = s.split(Character.toString(separator));
-		Option[] options = new Option[subStrings.length];
-		for (int i = 0; i < options.length; i++) {
-			options[i] = expectedType.copy();
-			options[i].setValueViaCLIString(subStrings[i]);
-		}
-		return options;
-	}
+    public static Option[] cliStringToOptionArray(String s, char separator,
+            Option expectedType) {
+        if (s.length() < 1) {
+            return new Option[0];
+        }
+        String[] subStrings = s.split(Character.toString(separator));
+        Option[] options = new Option[subStrings.length];
+        for (int i = 0; i < options.length; i++) {
+            options[i] = expectedType.copy();
+            options[i].setValueViaCLIString(subStrings[i]);
+        }
+        return options;
+    }
 
-	public static String optionArrayToCLIString(Option[] os, char separator) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < os.length; i++) {
-			if (i > 0) {
-				sb.append(separator);
-			}
-			sb.append(os[i].getValueAsCLIString());
-		}
-		return sb.toString();
-	}
-
+    public static String optionArrayToCLIString(Option[] os, char separator) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < os.length; i++) {
+            if (i > 0) {
+                sb.append(separator);
+            }
+            sb.append(os[i].getValueAsCLIString());
+        }
+        return sb.toString();
+    }
 }

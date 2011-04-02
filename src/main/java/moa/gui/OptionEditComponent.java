@@ -21,12 +21,31 @@ package moa.gui;
 
 import moa.options.Option;
 
+/**
+ * Interface representing a component to edit an option. 
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $ 
+ */
 public interface OptionEditComponent {
 
-	public Option getEditedOption();
+    /**
+     * Gets the option of this component
+     *
+     * @return the option of this component
+     */
+    public Option getEditedOption();
 
-	public void setEditState(String cliString);
+    /**
+     * Sets the state of the component
+     *
+     * @param cliString the state of the component
+     */
+    public void setEditState(String cliString);
 
-	public void applyState();
-
+    /**
+     * This method applies the state
+     *
+     */
+    public void applyState();
 }

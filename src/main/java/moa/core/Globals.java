@@ -19,28 +19,34 @@
  */
 package moa.core;
 
+/**
+ * Class for storing global information about current version of MOA.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class Globals {
 
-	public static final String workbenchTitle = "{M}assive {O}nline {A}nalysis";
+    public static final String workbenchTitle = "{M}assive {O}nline {A}nalysis";
 
-	public static final String versionString = "11.1 January 2011";
+    public static final String versionString = "11.1 January 2011";
 
-	public static final String copyrightNotice = "(C) 2007-2011 University of Waikato, Hamilton, New Zealand";
+    public static final String copyrightNotice = "(C) 2007-2011 University of Waikato, Hamilton, New Zealand";
 
-	public static final String webAddress = "http://moa.cs.waikato.ac.nz/";
+    public static final String webAddress = "http://moa.cs.waikato.ac.nz/";
 
-	public static String getWorkbenchInfoString() {
-		StringBuilder result = new StringBuilder();
-		result.append(workbenchTitle);
-		StringUtils.appendNewline(result);
-		result.append("Version: ");
-		result.append(versionString);
-		StringUtils.appendNewline(result);
-		result.append("Copyright: ");
-		result.append(copyrightNotice);
-		StringUtils.appendNewline(result);
-		result.append("Web: ");
-		result.append(webAddress);
-		return result.toString();
-	}
+    public static String getWorkbenchInfoString() {
+        StringBuilder result = new StringBuilder();
+        result.append(workbenchTitle);
+        StringUtils.appendNewline(result);
+        result.append("Version: ");
+        result.append(versionString);
+        StringUtils.appendNewline(result);
+        result.append("Copyright: ");
+        result.append(copyrightNotice);
+        StringUtils.appendNewline(result);
+        result.append("Web: ");
+        result.append(webAddress);
+        return result.toString();
+    }
 }

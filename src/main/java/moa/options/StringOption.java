@@ -19,39 +19,47 @@
  */
 package moa.options;
 
+/**
+ * String option.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class StringOption extends AbstractOption {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected String currentVal;
+    protected String currentVal;
 
-	protected String defaultVal;
+    protected String defaultVal;
 
-	public StringOption(String name, char cliChar, String purpose,
-			String defaultVal) {
-		super(name, cliChar, purpose);
-		this.defaultVal = defaultVal;
-		resetToDefault();
-	}
+    public StringOption(String name, char cliChar, String purpose,
+            String defaultVal) {
+        super(name, cliChar, purpose);
+        this.defaultVal = defaultVal;
+        resetToDefault();
+    }
 
-	public void setValue(String v) {
-		this.currentVal = v;
-	}
+    public void setValue(String v) {
+        this.currentVal = v;
+    }
 
-	public String getValue() {
-		return this.currentVal;
-	}
+    public String getValue() {
+        return this.currentVal;
+    }
 
-	public String getDefaultCLIString() {
-		return this.defaultVal;
-	}
+    @Override
+    public String getDefaultCLIString() {
+        return this.defaultVal;
+    }
 
-	public String getValueAsCLIString() {
-		return this.currentVal;
-	}
+    @Override
+    public String getValueAsCLIString() {
+        return this.currentVal;
+    }
 
-	public void setValueViaCLIString(String s) {
-		setValue(s);
-	}
-
+    @Override
+    public void setValueViaCLIString(String s) {
+        setValue(s);
+    }
 }

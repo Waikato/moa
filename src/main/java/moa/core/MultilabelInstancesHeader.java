@@ -19,25 +19,25 @@
  */
 package moa.core;
 
-import moa.core.InstancesHeader;
-
-import weka.core.Instance;
 import weka.core.Instances;
 
 /**
-  MultilabelInstancesHeader.
-*/
+ * Class for storing the header or context of a multilabel data stream.
+ * It allows to know the number of attributes and class labels.
+ *
+ * @author Jesse Read (jmr30@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class MultilabelInstancesHeader extends InstancesHeader {
 
-	private int m_NumLabels = -1;
+    private int m_NumLabels = -1;
 
-	public MultilabelInstancesHeader(Instances i, int numLabels) {
-		super(i);
-		m_NumLabels = numLabels;
-	}
+    public MultilabelInstancesHeader(Instances i, int numLabels) {
+        super(i);
+        m_NumLabels = numLabels;
+    }
 
-	public int getNumClassLabels() {
-		return m_NumLabels;
-	}
-
+    public int getNumClassLabels() {
+        return m_NumLabels;
+    }
 }

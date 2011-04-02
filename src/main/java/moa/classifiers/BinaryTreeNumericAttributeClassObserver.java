@@ -24,138 +24,145 @@ import java.io.Serializable;
 
 import moa.AbstractMOAObject;
 import moa.core.DoubleVector;
-import weka.core.DenseInstance;
-import weka.core.Instance;
 
+/**
+ * Class for observing the class data distribution for a numeric attribute using a binary tree.
+ * This observer monitors the class distribution of a given attribute.
+ * Used in naive Bayes and decision trees to monitor data statistics on leaves.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class BinaryTreeNumericAttributeClassObserver extends AbstractMOAObject
-		implements AttributeClassObserver {
+        implements AttributeClassObserver {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected class Node implements Serializable {
+    protected class Node implements Serializable {
 
-		private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-		public double cut_point;
+        public double cut_point;
 
-		public DoubleVector classCountsLeft = new DoubleVector();
+        public DoubleVector classCountsLeft = new DoubleVector();
 
-		public DoubleVector classCountsRight = new DoubleVector();
+        public DoubleVector classCountsRight = new DoubleVector();
 
-		public Node left;
+        public Node left;
 
-		public Node right;
+        public Node right;
 
-		public Node(double val, int label, double weight) {
-			this.cut_point = val;
-			this.classCountsLeft.addToValue(label, weight);
-		}
+        public Node(double val, int label, double weight) {
+            this.cut_point = val;
+            this.classCountsLeft.addToValue(label, weight);
+        }
 
-		public void insertValue(double val, int label, double weight) {
-			if (val == this.cut_point) {
-				this.classCountsLeft.addToValue(label, weight);
-			} else if (val <= this.cut_point) {
-				this.classCountsLeft.addToValue(label, weight);
-				if (this.left == null) {
-					this.left = new Node(val, label, weight);
-				} else {
-					this.left.insertValue(val, label, weight);
-				}
-			} else { // val > cut_point
-				this.classCountsRight.addToValue(label, weight);
-				if (this.right == null) {
-					this.right = new Node(val, label, weight);
-				} else {
-					this.right.insertValue(val, label, weight);
-				}
-			}
-		}
-	}
+        public void insertValue(double val, int label, double weight) {
+            if (val == this.cut_point) {
+                this.classCountsLeft.addToValue(label, weight);
+            } else if (val <= this.cut_point) {
+                this.classCountsLeft.addToValue(label, weight);
+                if (this.left == null) {
+                    this.left = new Node(val, label, weight);
+                } else {
+                    this.left.insertValue(val, label, weight);
+                }
+            } else { // val > cut_point
+                this.classCountsRight.addToValue(label, weight);
+                if (this.right == null) {
+                    this.right = new Node(val, label, weight);
+                } else {
+                    this.right.insertValue(val, label, weight);
+                }
+            }
+        }
+    }
 
-	protected Node root = null;
+    protected Node root = null;
 
-	public void observeAttributeClass(double attVal, int classVal, double weight) {
-		if (Double.isNaN(attVal)) { //Instance.isMissingValue(attVal)
+    @Override
+    public void observeAttributeClass(double attVal, int classVal, double weight) {
+        if (Double.isNaN(attVal)) { //Instance.isMissingValue(attVal)
+        } else {
+            if (this.root == null) {
+                this.root = new Node(attVal, classVal, weight);
+            } else {
+                this.root.insertValue(attVal, classVal, weight);
+            }
+        }
+    }
 
-		} else {
-			if (this.root == null) {
-				this.root = new Node(attVal, classVal, weight);
-			} else {
-				this.root.insertValue(attVal, classVal, weight);
-			}
-		}
-	}
+    @Override
+    public double probabilityOfAttributeValueGivenClass(double attVal,
+            int classVal) {
+        // TODO: NaiveBayes broken until implemented
+        return 0.0;
+    }
 
-	public double probabilityOfAttributeValueGivenClass(double attVal,
-			int classVal) {
-		// TODO: NaiveBayes broken until implemented
-		return 0.0;
-	}
+    @Override
+    public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(
+            SplitCriterion criterion, double[] preSplitDist, int attIndex,
+            boolean binaryOnly) {
+        return searchForBestSplitOption(this.root, null, null, null, null, false,
+                criterion, preSplitDist, attIndex);
+    }
 
-	public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(
-			SplitCriterion criterion, double[] preSplitDist, int attIndex,
-			boolean binaryOnly) {
-		return searchForBestSplitOption(this.root, null, null, null, null, false,
-				criterion, preSplitDist, attIndex);
-	}
+    protected AttributeSplitSuggestion searchForBestSplitOption(
+            Node currentNode, AttributeSplitSuggestion currentBestOption,
+            double[] actualParentLeft,
+            double[] parentLeft, double[] parentRight, boolean leftChild,
+            SplitCriterion criterion, double[] preSplitDist, int attIndex) {
+        if (currentNode == null) {
+            return currentBestOption;
+        }
+        DoubleVector leftDist = new DoubleVector();
+        DoubleVector rightDist = new DoubleVector();
+        if (parentLeft == null) {
+            leftDist.addValues(currentNode.classCountsLeft);
+            rightDist.addValues(currentNode.classCountsRight);
+        } else {
+            leftDist.addValues(parentLeft);
+            rightDist.addValues(parentRight);
+            if (leftChild) {
+                //get the exact statistics of the parent value
+                DoubleVector exactParentDist = new DoubleVector();
+                exactParentDist.addValues(actualParentLeft);
+                exactParentDist.subtractValues(currentNode.classCountsLeft);
+                exactParentDist.subtractValues(currentNode.classCountsRight);
 
-	protected AttributeSplitSuggestion searchForBestSplitOption(
-			Node currentNode, AttributeSplitSuggestion currentBestOption,
-			double[] actualParentLeft,
-			double[] parentLeft, double[] parentRight, boolean leftChild,
-			SplitCriterion criterion, double[] preSplitDist, int attIndex) {
-		if (currentNode == null) {
-			return currentBestOption;
-		}
-		DoubleVector leftDist = new DoubleVector();
-		DoubleVector rightDist = new DoubleVector();
-		if (parentLeft == null) {
-			leftDist.addValues(currentNode.classCountsLeft);
-			rightDist.addValues(currentNode.classCountsRight);
-		} else {
-			leftDist.addValues(parentLeft);
-			rightDist.addValues(parentRight);
-			if (leftChild) {
-				//get the exact statistics of the parent value
-				DoubleVector exactParentDist = new DoubleVector();
-				exactParentDist.addValues(actualParentLeft);
-				exactParentDist.subtractValues(currentNode.classCountsLeft);
-				exactParentDist.subtractValues(currentNode.classCountsRight);
-				
-				// move the subtrees
-				leftDist.subtractValues(currentNode.classCountsRight);
-				rightDist.addValues(currentNode.classCountsRight);
-				
-				// move the exact value from the parent
-				rightDist.addValues(exactParentDist);
-				leftDist.subtractValues(exactParentDist);
-				
-			} else {
-				leftDist.addValues(currentNode.classCountsLeft);
-				rightDist.subtractValues(currentNode.classCountsLeft);
-			}
-		}
-		double[][] postSplitDists = new double[][] { leftDist.getArrayRef(),
-				rightDist.getArrayRef() };
-		double merit = criterion.getMeritOfSplit(preSplitDist, postSplitDists);
-		if ((currentBestOption == null) || (merit > currentBestOption.merit)) {
-			currentBestOption = new AttributeSplitSuggestion(
-					new NumericAttributeBinaryTest(attIndex,
-							currentNode.cut_point, true), postSplitDists, merit);
+                // move the subtrees
+                leftDist.subtractValues(currentNode.classCountsRight);
+                rightDist.addValues(currentNode.classCountsRight);
 
-		}
-		currentBestOption = searchForBestSplitOption(currentNode.left,
-				currentBestOption, currentNode.classCountsLeft.getArrayRef(), postSplitDists[0], postSplitDists[1], true,
-				criterion, preSplitDist, attIndex);
-		currentBestOption = searchForBestSplitOption(currentNode.right,
-				currentBestOption, currentNode.classCountsLeft.getArrayRef(), postSplitDists[0], postSplitDists[1], false,
-				criterion, preSplitDist, attIndex);
-		return currentBestOption;
-	}
+                // move the exact value from the parent
+                rightDist.addValues(exactParentDist);
+                leftDist.subtractValues(exactParentDist);
 
-	public void getDescription(StringBuilder sb, int indent) {
-		// TODO Auto-generated method stub
+            } else {
+                leftDist.addValues(currentNode.classCountsLeft);
+                rightDist.subtractValues(currentNode.classCountsLeft);
+            }
+        }
+        double[][] postSplitDists = new double[][]{leftDist.getArrayRef(),
+            rightDist.getArrayRef()};
+        double merit = criterion.getMeritOfSplit(preSplitDist, postSplitDists);
+        if ((currentBestOption == null) || (merit > currentBestOption.merit)) {
+            currentBestOption = new AttributeSplitSuggestion(
+                    new NumericAttributeBinaryTest(attIndex,
+                    currentNode.cut_point, true), postSplitDists, merit);
 
-	}
+        }
+        currentBestOption = searchForBestSplitOption(currentNode.left,
+                currentBestOption, currentNode.classCountsLeft.getArrayRef(), postSplitDists[0], postSplitDists[1], true,
+                criterion, preSplitDist, attIndex);
+        currentBestOption = searchForBestSplitOption(currentNode.right,
+                currentBestOption, currentNode.classCountsLeft.getArrayRef(), postSplitDists[0], postSplitDists[1], false,
+                criterion, preSplitDist, attIndex);
+        return currentBestOption;
+    }
 
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {
+        // TODO Auto-generated method stub
+    }
 }

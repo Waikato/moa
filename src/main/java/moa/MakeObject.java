@@ -26,36 +26,45 @@ import moa.core.Globals;
 import moa.core.SerializeUtils;
 import moa.options.ClassOption;
 
+/**
+ * Class for writing a MOA object to a file from the command line.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class MakeObject {
 
-	public static void main(String[] args) {
-		try {
-			System.err.println();
-			System.err.println(Globals.getWorkbenchInfoString());
-			System.err.println();
-			if (args.length < 2) {
-				System.err.println("usage: java " + MakeObject.class.getName()
-						+ " outputfile.moa \"<object name> <options>\"");
-				System.err.println();
-			} else {
-				String filename = args[0];
-				// build a single string by concatenating cli options
-				StringBuilder cliString = new StringBuilder();
-				for (int i = 1; i < args.length; i++) {
-					cliString.append(" " + args[i]);
-				}
-				// parse options
-				System.err.println("Making object...");
-				Object result = ClassOption.cliStringToObject(cliString
-						.toString(), Object.class, null);
-				System.err.println("Writing object to file: " + filename);
-				SerializeUtils.writeToFile(new File(filename),
-						(Serializable) result);
-				System.err.println("Done.");
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
+    /**
+     * Main method for writing an object to a file from the command line.
+     *
+     * @param args the options
+     */
+    public static void main(String[] args) {
+        try {
+            System.err.println();
+            System.err.println(Globals.getWorkbenchInfoString());
+            System.err.println();
+            if (args.length < 2) {
+                System.err.println("usage: java " + MakeObject.class.getName()
+                        + " outputfile.moa \"<object name> <options>\"");
+                System.err.println();
+            } else {
+                String filename = args[0];
+                // build a single string by concatenating cli options
+                StringBuilder cliString = new StringBuilder();
+                for (int i = 1; i < args.length; i++) {
+                    cliString.append(" " + args[i]);
+                }
+                // parse options
+                System.err.println("Making object...");
+                Object result = ClassOption.cliStringToObject(cliString.toString(), Object.class, null);
+                System.err.println("Writing object to file: " + filename);
+                SerializeUtils.writeToFile(new File(filename),
+                        (Serializable) result);
+                System.err.println("Done.");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 }

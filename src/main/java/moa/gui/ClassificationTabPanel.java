@@ -21,9 +21,12 @@ package moa.gui;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
+/**
+ * This panel allows the user to select and configure a task, and run it.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class ClassificationTabPanel extends AbstractTabPanel {
 
 	private static final long serialVersionUID = 1L;
@@ -42,11 +45,13 @@ public class ClassificationTabPanel extends AbstractTabPanel {
 	}
 
 	//returns the string to display as title of the tab
+    @Override
 	public String getTabTitle() {
 		return "Classification";
 	}
 
 	//a short description (can be used as tool tip) of the tab, or contributor, etc.
+    @Override
 	public String getDescription(){
 		return "MOA Classification";
 	}

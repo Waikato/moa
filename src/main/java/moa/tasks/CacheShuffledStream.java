@@ -28,61 +28,64 @@ import moa.options.IntOption;
 import moa.streams.CachedInstancesStream;
 import moa.streams.InstanceStream;
 
+/**
+ * Task for storing and shuffling examples in memory.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class CacheShuffledStream extends AbstractTask {
 
-	@Override
-	public String getPurposeString() {
-		return "Stores and shuffles examples in memory.";
-	}
-	
-	private static final long serialVersionUID = 1L;
+    @Override
+    public String getPurposeString() {
+        return "Stores and shuffles examples in memory.";
+    }
 
-	public ClassOption streamOption = new ClassOption("stream", 's',
-			"Stream to cache and shuffle.", InstanceStream.class,
-			"generators.RandomTreeGenerator");
+    private static final long serialVersionUID = 1L;
 
-	public IntOption maximumCacheSizeOption = new IntOption("maximumCacheSize",
-			'm', "Maximum number of instances to cache.", 1000000, 1,
-			Integer.MAX_VALUE);
+    public ClassOption streamOption = new ClassOption("stream", 's',
+            "Stream to cache and shuffle.", InstanceStream.class,
+            "generators.RandomTreeGenerator");
 
-	public IntOption shuffleRandomSeedOption = new IntOption(
-			"shuffleRandomSeed", 'r',
-			"Seed for random shuffling of instances.", 1);
+    public IntOption maximumCacheSizeOption = new IntOption("maximumCacheSize",
+            'm', "Maximum number of instances to cache.", 1000000, 1,
+            Integer.MAX_VALUE);
 
-	@Override
-	protected Object doTaskImpl(TaskMonitor monitor, ObjectRepository repository) {
-		InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
-		Instances cache = new Instances(stream.getHeader(), 0);
-		monitor.setCurrentActivity("Caching instances...", -1.0);
-		while ((cache.numInstances() < this.maximumCacheSizeOption.getValue())
-				&& stream.hasMoreInstances()) {
-			cache.add(stream.nextInstance());
-			if (cache.numInstances()
-					% MainTask.INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
-				if (monitor.taskShouldAbort()) {
-					return null;
-				}
-				long estimatedRemainingInstances = stream
-						.estimatedRemainingInstances();
-				long maxRemaining = this.maximumCacheSizeOption.getValue()
-						- cache.numInstances();
-				if ((estimatedRemainingInstances < 0)
-						|| (maxRemaining < estimatedRemainingInstances)) {
-					estimatedRemainingInstances = maxRemaining;
-				}
-				monitor
-						.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
-								: (double) cache.numInstances()
-										/ (double) (cache.numInstances() + estimatedRemainingInstances));
-			}
-		}
-		monitor.setCurrentActivity("Shuffling instances...", -1.0);
-		cache.randomize(new Random(this.shuffleRandomSeedOption.getValue()));
-		return new CachedInstancesStream(cache);
-	}
+    public IntOption shuffleRandomSeedOption = new IntOption(
+            "shuffleRandomSeed", 'r',
+            "Seed for random shuffling of instances.", 1);
 
-	public Class<?> getTaskResultType() {
-		return CachedInstancesStream.class;
-	}
+    @Override
+    protected Object doTaskImpl(TaskMonitor monitor, ObjectRepository repository) {
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
+        Instances cache = new Instances(stream.getHeader(), 0);
+        monitor.setCurrentActivity("Caching instances...", -1.0);
+        while ((cache.numInstances() < this.maximumCacheSizeOption.getValue())
+                && stream.hasMoreInstances()) {
+            cache.add(stream.nextInstance());
+            if (cache.numInstances()
+                    % MainTask.INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
+                if (monitor.taskShouldAbort()) {
+                    return null;
+                }
+                long estimatedRemainingInstances = stream.estimatedRemainingInstances();
+                long maxRemaining = this.maximumCacheSizeOption.getValue()
+                        - cache.numInstances();
+                if ((estimatedRemainingInstances < 0)
+                        || (maxRemaining < estimatedRemainingInstances)) {
+                    estimatedRemainingInstances = maxRemaining;
+                }
+                monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
+                        : (double) cache.numInstances()
+                        / (double) (cache.numInstances() + estimatedRemainingInstances));
+            }
+        }
+        monitor.setCurrentActivity("Shuffling instances...", -1.0);
+        cache.randomize(new Random(this.shuffleRandomSeedOption.getValue()));
+        return new CachedInstancesStream(cache);
+    }
 
+    public Class<?> getTaskResultType() {
+        return CachedInstancesStream.class;
+    }
 }

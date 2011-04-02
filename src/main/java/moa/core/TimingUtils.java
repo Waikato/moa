@@ -19,42 +19,46 @@
  */
 package moa.core;
 
+/**
+ * Class implementing some time utility methods.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class TimingUtils {
 
-	protected static boolean preciseThreadTimesAvailable = false;
+    protected static boolean preciseThreadTimesAvailable = false;
 
-	public static boolean enablePreciseTiming() {
-		if (!preciseThreadTimesAvailable) {
-			try {
-				java.lang.management.ThreadMXBean tmxb = java.lang.management.ManagementFactory
-						.getThreadMXBean();
-				if (tmxb.isCurrentThreadCpuTimeSupported()) {
-					tmxb.setThreadCpuTimeEnabled(true);
-					preciseThreadTimesAvailable = true;
-				}
-			} catch (Throwable e) {
-				// ignore problems, just resort to inaccurate timing
-			}
-		}
-		return preciseThreadTimesAvailable;
-	}
+    public static boolean enablePreciseTiming() {
+        if (!preciseThreadTimesAvailable) {
+            try {
+                java.lang.management.ThreadMXBean tmxb = java.lang.management.ManagementFactory.getThreadMXBean();
+                if (tmxb.isCurrentThreadCpuTimeSupported()) {
+                    tmxb.setThreadCpuTimeEnabled(true);
+                    preciseThreadTimesAvailable = true;
+                }
+            } catch (Throwable e) {
+                // ignore problems, just resort to inaccurate timing
+            }
+        }
+        return preciseThreadTimesAvailable;
+    }
 
-	public static long getNanoCPUTimeOfCurrentThread() {
-		return getNanoCPUTimeOfThread(Thread.currentThread().getId());
-	}
+    public static long getNanoCPUTimeOfCurrentThread() {
+        return getNanoCPUTimeOfThread(Thread.currentThread().getId());
+    }
 
-	public static long getNanoCPUTimeOfThread(long threadID) {
-		if (preciseThreadTimesAvailable) {
-			long time = java.lang.management.ManagementFactory
-					.getThreadMXBean().getThreadCpuTime(threadID);
-			if (time != -1) {
-				return time;
-			}
-		}
-		return System.nanoTime();
-	}
+    public static long getNanoCPUTimeOfThread(long threadID) {
+        if (preciseThreadTimesAvailable) {
+            long time = java.lang.management.ManagementFactory.getThreadMXBean().getThreadCpuTime(threadID);
+            if (time != -1) {
+                return time;
+            }
+        }
+        return System.nanoTime();
+    }
 
-	public static double nanoTimeToSeconds(long nanoTime) {
-		return nanoTime / 1000000000.0;
-	}
+    public static double nanoTimeToSeconds(long nanoTime) {
+        return nanoTime / 1000000000.0;
+    }
 }

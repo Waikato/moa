@@ -24,6 +24,14 @@ import moa.core.InstancesHeader;
 import weka.core.Instance;
 import weka.core.Instances;
 
+/**
+ * Stream generator for representing a stream that is cached in memory.
+ * This generator is used with the task <code>CacheShuffledStream</code> that
+ * stores and shuffles examples in memory.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class CachedInstancesStream extends AbstractMOAObject implements
 		InstanceStream {
 
@@ -37,30 +45,37 @@ public class CachedInstancesStream extends AbstractMOAObject implements
 		this.toStream = toStream;
 	}
 
+    @Override
 	public InstancesHeader getHeader() {
 		return new InstancesHeader(this.toStream);
 	}
 
+    @Override
 	public long estimatedRemainingInstances() {
 		return this.toStream.numInstances() - this.streamPos;
 	}
 
+    @Override
 	public boolean hasMoreInstances() {
 		return this.streamPos < this.toStream.numInstances();
 	}
 
+    @Override
 	public Instance nextInstance() {
 		return this.toStream.instance(this.streamPos++);
 	}
 
+    @Override
 	public boolean isRestartable() {
 		return true;
 	}
 
+    @Override
 	public void restart() {
 		this.streamPos = 0;
 	}
 
+    @Override
 	public void getDescription(StringBuilder sb, int indent) {
 		// TODO Auto-generated method stub
 

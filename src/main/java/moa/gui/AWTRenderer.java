@@ -21,8 +21,14 @@ package moa.gui;
 
 import java.awt.Graphics;
 
+/**
+ * Interface representing a component to edit an option. 
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $ 
+ */
 public interface AWTRenderer {
 
-	public void renderAWTBox(Graphics g, int minPixelX, int minPixelY,
-			int maxPixelX, int maxPixelY);
+    public void renderAWTBox(Graphics g, int minPixelX, int minPixelY,
+            int maxPixelX, int maxPixelY);
 }

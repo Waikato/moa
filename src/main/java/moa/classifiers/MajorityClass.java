@@ -24,54 +24,57 @@ import moa.core.Measurement;
 import moa.core.StringUtils;
 import weka.core.Instance;
 
+/**
+ * Majority class learner. This is the simplest classifier.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class MajorityClass extends AbstractClassifier {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	@SuppressWarnings("hiding")
-	public static final String classifierPurposeString = "Majority class classifier: always predicts the class that has been observed most frequently the in the training data.";
+    @SuppressWarnings("hiding")
+    public static final String classifierPurposeString = "Majority class classifier: always predicts the class that has been observed most frequently the in the training data.";
 
-	protected DoubleVector observedClassDistribution;
+    protected DoubleVector observedClassDistribution;
 
-	@Override
-	public void resetLearningImpl() {
-		this.observedClassDistribution = new DoubleVector();
-	}
+    @Override
+    public void resetLearningImpl() {
+        this.observedClassDistribution = new DoubleVector();
+    }
 
-	@Override
-	public void trainOnInstanceImpl(Instance inst) {
-		this.observedClassDistribution.addToValue((int) inst.classValue(), inst
-				.weight());
-	}
+    @Override
+    public void trainOnInstanceImpl(Instance inst) {
+        this.observedClassDistribution.addToValue((int) inst.classValue(), inst.weight());
+    }
 
-	public double[] getVotesForInstance(Instance i) {
-		return this.observedClassDistribution.getArrayCopy();
-	}
+    public double[] getVotesForInstance(Instance i) {
+        return this.observedClassDistribution.getArrayCopy();
+    }
 
-	@Override
-	protected Measurement[] getModelMeasurementsImpl() {
-		return null;
-	}
+    @Override
+    protected Measurement[] getModelMeasurementsImpl() {
+        return null;
+    }
 
-	@Override
-	public void getModelDescription(StringBuilder out, int indent) {
-		StringUtils.appendIndented(out, indent, "Predicted majority ");
-		out.append(getClassNameString());
-		out.append(" = ");
-		out.append(getClassLabelString(this.observedClassDistribution
-				.maxIndex()));
-		StringUtils.appendNewline(out);
-		for (int i = 0; i < this.observedClassDistribution.numValues(); i++) {
-			StringUtils.appendIndented(out, indent, "Observed weight of ");
-			out.append(getClassLabelString(i));
-			out.append(": ");
-			out.append(this.observedClassDistribution.getValue(i));
-			StringUtils.appendNewline(out);
-		}
-	}
+    @Override
+    public void getModelDescription(StringBuilder out, int indent) {
+        StringUtils.appendIndented(out, indent, "Predicted majority ");
+        out.append(getClassNameString());
+        out.append(" = ");
+        out.append(getClassLabelString(this.observedClassDistribution.maxIndex()));
+        StringUtils.appendNewline(out);
+        for (int i = 0; i < this.observedClassDistribution.numValues(); i++) {
+            StringUtils.appendIndented(out, indent, "Observed weight of ");
+            out.append(getClassLabelString(i));
+            out.append(": ");
+            out.append(this.observedClassDistribution.getValue(i));
+            StringUtils.appendNewline(out);
+        }
+    }
 
-	public boolean isRandomizable() {
-		return false;
-	}
-
+    public boolean isRandomizable() {
+        return false;
+    }
 }

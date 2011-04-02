@@ -31,6 +31,14 @@ import javax.swing.JComponent;
 import moa.gui.WEKAClassOptionEditComponent;
 import moa.tasks.Task;
 
+/**
+ * WEKA class option. This option is used to access options in WEKA.
+ * For example, WEKAClassifier uses it to set the base learner.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @author FracPete (fracpete at waikato dot ac dot nz)
+ * @version $Revision$
+ */
 public class WEKAClassOption extends AbstractClassOption {
 
 	private static final long serialVersionUID = 1L;
@@ -45,6 +53,7 @@ public class WEKAClassOption extends AbstractClassOption {
 		super(name, cliChar, purpose, requiredType, defaultCLIString, nullString);
 	}
 
+    @Override
 	public String getValueAsCLIString() {
 		if ((this.currentValue == null) && (this.nullString != null)) {
 			return this.nullString;
@@ -58,6 +67,7 @@ public class WEKAClassOption extends AbstractClassOption {
 		return result;
 	}
 
+    @Override
 	public void setValueViaCLIString(String s) {
 		if ((this.nullString != null)
 				&& ((s == null) || (s.length() == 0) || s
@@ -67,10 +77,7 @@ public class WEKAClassOption extends AbstractClassOption {
 			try {
 				this.currentValue = cliStringToObject(s, this.requiredType,	null);
 			} catch (Exception e) {
-				IllegalArgumentException iae = new IllegalArgumentException(
-						"Problems with option: " + getName());
-				iae.initCause(e);
-				throw iae;
+				throw new IllegalArgumentException("Problems with option: " + getName(), e);
 			}
 		}
 	}

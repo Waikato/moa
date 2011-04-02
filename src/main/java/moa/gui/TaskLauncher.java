@@ -24,6 +24,14 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+/**
+ * The old main class for the MOA gui, now the main class is <code>GUI</code>.
+ * Lets the user configure
+ * tasks, learners, streams, and perform data stream analysis.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class TaskLauncher extends JPanel {
 
 	private static final long serialVersionUID = 1L;

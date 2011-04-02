@@ -26,82 +26,88 @@ import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.GreenwaldKhannaQuantileSummary;
 
-public class GreenwaldKhannaNumericAttributeClassObserver extends
-		AbstractMOAObject implements AttributeClassObserver {
+/**
+ * Class for observing the class data distribution for a numeric attribute using Greenwald and Khanna methodology.
+ * This observer monitors the class distribution of a given attribute.
+ * Used in naive Bayes and decision trees to monitor data statistics on leaves.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
+public class GreenwaldKhannaNumericAttributeClassObserver extends AbstractMOAObject implements AttributeClassObserver {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected int numTuples;
+    protected int numTuples;
 
-	protected AutoExpandVector<GreenwaldKhannaQuantileSummary> attValDistPerClass = new AutoExpandVector<GreenwaldKhannaQuantileSummary>();
+    protected AutoExpandVector<GreenwaldKhannaQuantileSummary> attValDistPerClass = new AutoExpandVector<GreenwaldKhannaQuantileSummary>();
 
-	public GreenwaldKhannaNumericAttributeClassObserver(int numTuples) {
-		this.numTuples = numTuples;
-	}
+    public GreenwaldKhannaNumericAttributeClassObserver(int numTuples) {
+        this.numTuples = numTuples;
+    }
 
-	public void observeAttributeClass(double attVal, int classVal, double weight) {
-		if (Utils.isMissingValue(attVal)) {
+    @Override
+    public void observeAttributeClass(double attVal, int classVal, double weight) {
+        if (Utils.isMissingValue(attVal)) {
+        } else {
+            GreenwaldKhannaQuantileSummary valDist = this.attValDistPerClass.get(classVal);
+            if (valDist == null) {
+                valDist = new GreenwaldKhannaQuantileSummary(this.numTuples);
+                this.attValDistPerClass.set(classVal, valDist);
+            }
+            // TODO: not taking weight into account
+            valDist.insert(attVal);
+        }
+    }
 
-		} else {
-			GreenwaldKhannaQuantileSummary valDist = this.attValDistPerClass
-					.get(classVal);
-			if (valDist == null) {
-				valDist = new GreenwaldKhannaQuantileSummary(this.numTuples);
-				this.attValDistPerClass.set(classVal, valDist);
-			}
-			// TODO: not taking weight into account
-			valDist.insert(attVal);
-		}
-	}
+    @Override
+    public double probabilityOfAttributeValueGivenClass(double attVal,
+            int classVal) {
+        // TODO: NaiveBayes broken until implemented
+        return 0.0;
+    }
 
-	public double probabilityOfAttributeValueGivenClass(double attVal,
-			int classVal) {
-		// TODO: NaiveBayes broken until implemented
-		return 0.0;
-	}
+    @Override
+    public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(
+            SplitCriterion criterion, double[] preSplitDist, int attIndex,
+            boolean binaryOnly) {
+        AttributeSplitSuggestion bestSuggestion = null;
+        for (GreenwaldKhannaQuantileSummary qs : this.attValDistPerClass) {
+            if (qs != null) {
+                double[] cutpoints = qs.getSuggestedCutpoints();
+                for (double cutpoint : cutpoints) {
+                    double[][] postSplitDists = getClassDistsResultingFromBinarySplit(cutpoint);
+                    double merit = criterion.getMeritOfSplit(preSplitDist,
+                            postSplitDists);
+                    if ((bestSuggestion == null)
+                            || (merit > bestSuggestion.merit)) {
+                        bestSuggestion = new AttributeSplitSuggestion(
+                                new NumericAttributeBinaryTest(attIndex,
+                                cutpoint, true), postSplitDists, merit);
+                    }
+                }
+            }
+        }
+        return bestSuggestion;
+    }
 
-	public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(
-			SplitCriterion criterion, double[] preSplitDist, int attIndex,
-			boolean binaryOnly) {
-		AttributeSplitSuggestion bestSuggestion = null;
-		for (GreenwaldKhannaQuantileSummary qs : this.attValDistPerClass) {
-			if (qs != null) {
-				double[] cutpoints = qs.getSuggestedCutpoints();
-				for (double cutpoint : cutpoints) {
-					double[][] postSplitDists = getClassDistsResultingFromBinarySplit(cutpoint);
-					double merit = criterion.getMeritOfSplit(preSplitDist,
-							postSplitDists);
-					if ((bestSuggestion == null)
-							|| (merit > bestSuggestion.merit)) {
-						bestSuggestion = new AttributeSplitSuggestion(
-								new NumericAttributeBinaryTest(attIndex,
-										cutpoint, true), postSplitDists, merit);
-					}
-				}
-			}
-		}
-		return bestSuggestion;
-	}
+    // assume all values equal to splitValue go to lhs
+    public double[][] getClassDistsResultingFromBinarySplit(double splitValue) {
+        DoubleVector lhsDist = new DoubleVector();
+        DoubleVector rhsDist = new DoubleVector();
+        for (int i = 0; i < this.attValDistPerClass.size(); i++) {
+            GreenwaldKhannaQuantileSummary estimator = this.attValDistPerClass.get(i);
+            if (estimator != null) {
+                long countBelow = estimator.getCountBelow(splitValue);
+                lhsDist.addToValue(i, countBelow);
+                rhsDist.addToValue(i, estimator.getTotalCount() - countBelow);
+            }
+        }
+        return new double[][]{lhsDist.getArrayRef(), rhsDist.getArrayRef()};
+    }
 
-	// assume all values equal to splitValue go to lhs
-	public double[][] getClassDistsResultingFromBinarySplit(double splitValue) {
-		DoubleVector lhsDist = new DoubleVector();
-		DoubleVector rhsDist = new DoubleVector();
-		for (int i = 0; i < this.attValDistPerClass.size(); i++) {
-			GreenwaldKhannaQuantileSummary estimator = this.attValDistPerClass
-					.get(i);
-			if (estimator != null) {
-				long countBelow = estimator.getCountBelow(splitValue);
-				lhsDist.addToValue(i, countBelow);
-				rhsDist.addToValue(i, estimator.getTotalCount() - countBelow);
-			}
-		}
-		return new double[][] { lhsDist.getArrayRef(), rhsDist.getArrayRef() };
-	}
-
-	public void getDescription(StringBuilder sb, int indent) {
-		// TODO Auto-generated method stub
-
-	}
-
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {
+        // TODO Auto-generated method stub
+    }
 }

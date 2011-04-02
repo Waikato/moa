@@ -19,106 +19,127 @@
  */
 package moa.tasks;
 
+/**
+ * Class that represents a standard task monitor.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
+ */
 public class StandardTaskMonitor implements TaskMonitor {
 
-	protected String currentActivityDescription = "";
+    protected String currentActivityDescription = "";
 
-	protected double currentActivityFractionComplete = -1.0;
+    protected double currentActivityFractionComplete = -1.0;
 
-	protected volatile boolean cancelFlag = false;
+    protected volatile boolean cancelFlag = false;
 
-	protected volatile boolean pauseFlag = false;
+    protected volatile boolean pauseFlag = false;
 
-	protected volatile boolean isComplete = false;
+    protected volatile boolean isComplete = false;
 
-	protected volatile boolean resultPreviewRequested = false;
+    protected volatile boolean resultPreviewRequested = false;
 
-	protected volatile Object latestResultPreview = null;
+    protected volatile Object latestResultPreview = null;
 
-	protected volatile ResultPreviewListener resultPreviewer = null;
+    protected volatile ResultPreviewListener resultPreviewer = null;
 
-	public void setCurrentActivity(String activityDescription,
-			double fracComplete) {
-		setCurrentActivityDescription(activityDescription);
-		setCurrentActivityFractionComplete(fracComplete);
-	}
+    @Override
+    public void setCurrentActivity(String activityDescription,
+            double fracComplete) {
+        setCurrentActivityDescription(activityDescription);
+        setCurrentActivityFractionComplete(fracComplete);
+    }
 
-	public void setCurrentActivityDescription(String activity) {
-		this.currentActivityDescription = activity;
-	}
+    @Override
+    public void setCurrentActivityDescription(String activity) {
+        this.currentActivityDescription = activity;
+    }
 
-	public void setCurrentActivityFractionComplete(double fracComplete) {
-		this.currentActivityFractionComplete = fracComplete;
-	}
+    @Override
+    public void setCurrentActivityFractionComplete(double fracComplete) {
+        this.currentActivityFractionComplete = fracComplete;
+    }
 
-	public boolean taskShouldAbort() {
-		if (this.pauseFlag) {
-			try {
-				synchronized (this) {
-					while (this.pauseFlag && !this.cancelFlag) {
-						wait();
-					}
-				}
-			} catch (InterruptedException e) {
-			}
-		}
-		return this.cancelFlag;
-	}
+    @Override
+    public boolean taskShouldAbort() {
+        if (this.pauseFlag) {
+            try {
+                synchronized (this) {
+                    while (this.pauseFlag && !this.cancelFlag) {
+                        wait();
+                    }
+                }
+            } catch (InterruptedException e) {
+            }
+        }
+        return this.cancelFlag;
+    }
 
-	public String getCurrentActivityDescription() {
-		return this.currentActivityDescription;
-	}
+    @Override
+    public String getCurrentActivityDescription() {
+        return this.currentActivityDescription;
+    }
 
-	public double getCurrentActivityFractionComplete() {
-		return this.currentActivityFractionComplete;
-	}
+    @Override
+    public double getCurrentActivityFractionComplete() {
+        return this.currentActivityFractionComplete;
+    }
 
-	public boolean isCancelled() {
-		return this.cancelFlag;
-	}
+    @Override
+    public boolean isCancelled() {
+        return this.cancelFlag;
+    }
 
-	public void requestCancel() {
-		this.cancelFlag = true;
-		requestResume();
-	}
+    @Override
+    public void requestCancel() {
+        this.cancelFlag = true;
+        requestResume();
+    }
 
-	public void requestPause() {
-		this.pauseFlag = true;
-	}
+    @Override
+    public void requestPause() {
+        this.pauseFlag = true;
+    }
 
-	public synchronized void requestResume() {
-		this.pauseFlag = false;
-		notify();
-	}
+    @Override
+    public synchronized void requestResume() {
+        this.pauseFlag = false;
+        notify();
+    }
 
-	public boolean isPaused() {
-		return this.pauseFlag;
-	}
+    @Override
+    public boolean isPaused() {
+        return this.pauseFlag;
+    }
 
-	public Object getLatestResultPreview() {
-		return this.latestResultPreview;
-	}
+    @Override
+    public Object getLatestResultPreview() {
+        return this.latestResultPreview;
+    }
 
-	public void requestResultPreview() {
-		this.resultPreviewRequested = true;
-	}
+    @Override
+    public void requestResultPreview() {
+        this.resultPreviewRequested = true;
+    }
 
-	public void requestResultPreview(ResultPreviewListener toInform) {
-		this.resultPreviewer = toInform;
-		this.resultPreviewRequested = true;
-	}
+    @Override
+    public void requestResultPreview(ResultPreviewListener toInform) {
+        this.resultPreviewer = toInform;
+        this.resultPreviewRequested = true;
+    }
 
-	public boolean resultPreviewRequested() {
-		return this.resultPreviewRequested;
-	}
+    @Override
+    public boolean resultPreviewRequested() {
+        return this.resultPreviewRequested;
+    }
 
-	public synchronized void setLatestResultPreview(Object latestPreview) {
-		this.resultPreviewRequested = false;
-		this.latestResultPreview = latestPreview;
-		if (this.resultPreviewer != null) {
-			this.resultPreviewer.latestPreviewChanged();
-		}
-		this.resultPreviewer = null;
-	}
-
+    @Override
+    public synchronized void setLatestResultPreview(Object latestPreview) {
+        this.resultPreviewRequested = false;
+        this.latestResultPreview = latestPreview;
+        if (this.resultPreviewer != null) {
+            this.resultPreviewer.latestPreviewChanged();
+        }
+        this.resultPreviewer = null;
+    }
 }
