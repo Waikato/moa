@@ -47,11 +47,10 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
 
     protected int numClasses;
 
+    @Override
     public void reset() {
         reset(this.numClasses);
     }
-
-    ;
 
     public void reset(int numClasses) {
         this.numClasses = numClasses;
@@ -82,22 +81,6 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
             this.columnKappa[trueClass] += weight;
         }
     }
-    /*
-    public void addClassificationAttempt(int trueClass, double[] classVotes,
-    double weight) {
-    if (weight > 0.0) {
-    if (this.weightObserved == 0) {
-    reset(classVotes.length>1?classVotes.length:2);
-    }
-    this.weightObserved += weight;
-    int predictedClass = Utils.maxIndex(classVotes);
-    if (predictedClass == trueClass) {
-    this.weightCorrect += weight;
-    }
-    this.rowKappa[predictedClass] += weight;
-    this.columnKappa[trueClass] += weight;
-    }
-    }*/
 
     @Override
     public Measurement[] getPerformanceMeasurements() {
