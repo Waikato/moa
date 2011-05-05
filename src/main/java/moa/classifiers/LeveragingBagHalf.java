@@ -23,14 +23,20 @@ import weka.core.Instance;
 
 import moa.core.DoubleVector;
 import moa.core.Measurement;
-import moa.core.SizeOf;
 import moa.options.ClassOption;
 import moa.options.FlagOption;
 import moa.options.FloatOption;
 import moa.options.IntOption;
 
 /**
- * Leveraging Bagging Half for evolving data streams using ADWIN.
+ * Leveraging Bagging for evolving data streams using ADWIN
+ * using resampling without replacement half of the instances.
+ *
+ * <p>See details in:<br />
+ * Albert Bifet, Geoffrey Holmes, Bernhard Pfahringer.
+ * Leveraging Bagging for Evolving Data Streams
+ * Machine Learning and Knowledge Discovery in Databases, European
+ * Conference, ECML PKDD}, 2010.</p>
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
@@ -63,18 +69,6 @@ public class LeveragingBagHalf extends AbstractClassifier {
     protected int[][] matrixCodes;
 
     protected boolean initMatrixCodes = false;
-
-    @Override
-    public int measureByteSize() {
-        int size = (int) SizeOf.sizeOf(this);
-        for (Classifier classifier : this.ensemble) {
-            size += classifier.measureByteSize();
-        }
-        for (ADWIN adwin : this.ADError) {
-            size += adwin.measureByteSize();
-        }
-        return size;
-    }
 
     @Override
     public void resetLearningImpl() {

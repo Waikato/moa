@@ -185,7 +185,7 @@ public class HoeffdingOptionTree extends AbstractClassifier {
         }
 
         public int calcByteSize() {
-            return (int) (SizeOf.sizeOf(this) + SizeOf.sizeOf(this.observedClassDistribution));
+            return (int) (SizeOf.sizeOf(this) + SizeOf.fullSizeOf(this.observedClassDistribution));
         }
 
         public int calcByteSizeIncludingSubtree() {
@@ -271,7 +271,7 @@ public class HoeffdingOptionTree extends AbstractClassifier {
         @Override
         public int calcByteSize() {
             return super.calcByteSize()
-                    + (int) (SizeOf.sizeOf(this.children) + SizeOf.sizeOf(this.splitTest));
+                    + (int) (SizeOf.sizeOf(this.children) + SizeOf.fullSizeOf(this.splitTest));
         }
 
         @Override
@@ -520,7 +520,7 @@ public class HoeffdingOptionTree extends AbstractClassifier {
         @Override
         public int calcByteSize() {
             return super.calcByteSize()
-                    + (int) (SizeOf.sizeOf(this.attributeObservers));
+                    + (int) (SizeOf.fullSizeOf(this.attributeObservers));
         }
 
         @Override
@@ -1029,9 +1029,9 @@ public class HoeffdingOptionTree extends AbstractClassifier {
         long totalInactiveSize = 0;
         for (FoundNode foundNode : learningNodes) {
             if (foundNode.node instanceof ActiveLearningNode) {
-                totalActiveSize += SizeOf.sizeOf(foundNode.node);
+                totalActiveSize += SizeOf.fullSizeOf(foundNode.node);
             } else {
-                totalInactiveSize += SizeOf.sizeOf(foundNode.node);
+                totalInactiveSize += SizeOf.fullSizeOf(foundNode.node);
             }
         }
         if (totalActiveSize > 0) {

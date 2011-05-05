@@ -140,7 +140,8 @@ public class EvaluateInterleavedTestThenTrain extends MainTask {
             evaluator.addResult(testInst, prediction);
             learner.trainOnInstance(trainInst);
             instancesProcessed++;
-            if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0) {
+            if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0
+                  ||  stream.hasMoreInstances() == false) {
                 long evaluateTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
                 double time = TimingUtils.nanoTimeToSeconds(evaluateTime - evaluateStartTime);
                 double timeIncrement = TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);

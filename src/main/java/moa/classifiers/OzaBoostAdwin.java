@@ -22,7 +22,6 @@ package moa.classifiers;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
-import moa.core.SizeOf;
 import moa.options.ClassOption;
 import moa.options.FlagOption;
 import moa.options.FloatOption;
@@ -76,18 +75,6 @@ public class OzaBoostAdwin extends AbstractClassifier {
     protected int Km1 = 1;
 
     protected boolean initKm1 = false;
-
-    @Override
-    public int measureByteSize() {
-        int size = (int) SizeOf.sizeOf(this);
-        for (Classifier classifier : this.ensemble) {
-            size += classifier.measureByteSize();
-        }
-        for (ADWIN adwin : this.ADError) {
-            size += adwin.measureByteSize();
-        }
-        return size;
-    }
 
     @Override
     public void resetLearningImpl() {

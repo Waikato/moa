@@ -27,7 +27,6 @@ import weka.core.Utils;
 
 import moa.AbstractMOAObject;
 import moa.core.Measurement;
-import moa.core.SizeOf;
 import moa.options.ClassOption;
 import moa.options.MultiChoiceOption;
 
@@ -247,13 +246,6 @@ public class SingleClassifierDrift extends AbstractClassifier {
         return (this.ddmLevel == DriftDetectionMethod.DDM_OUTCONTROL_LEVEL);
     }
 
-    @Override
-    public int measureByteSize() {
-        int size = (int) SizeOf.sizeOf(this);
-        size += classifier.measureByteSize();
-        size += newclassifier.measureByteSize();
-        return size;
-    }
 
     @Override
     public void resetLearningImpl() {

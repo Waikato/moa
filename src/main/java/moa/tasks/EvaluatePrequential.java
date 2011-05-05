@@ -97,7 +97,7 @@ public class EvaluatePrequential extends MainTask {
 
     public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
             "File to append output predictions to.", null, "pred", true);
-    //New for prequential method
+    //New for prequential method DEPRECATED
 
     public IntOption widthOption = new IntOption("width",
             'w', "Size of Window", 1000);
@@ -116,15 +116,30 @@ public class EvaluatePrequential extends MainTask {
         Classifier learner = (Classifier) getPreparedClassOption(this.learnerOption);
         InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
         ClassificationPerformanceEvaluator evaluator = (ClassificationPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
+        LearningCurve learningCurve = new LearningCurve(
+                "learning evaluation instances");
+
         //New for prequential methods
         if (evaluator instanceof WindowClassificationPerformanceEvaluator) {
-            ((WindowClassificationPerformanceEvaluator) evaluator).setWindowWidth(widthOption.getValue());
+            //((WindowClassificationPerformanceEvaluator) evaluator).setWindowWidth(widthOption.getValue());
+            if (widthOption.getValue() != 1000) {
+                System.out.println("DEPRECATED! Use EvaluatePrequential -e (WindowClassificationPerformanceEvaluator -w " + widthOption.getValue() + ")");
+            }
+            return learningCurve;
         }
         if (evaluator instanceof EWMAClassificationPerformanceEvaluator) {
-            ((EWMAClassificationPerformanceEvaluator) evaluator).setalpha(alphaOption.getValue());
+            //((EWMAClassificationPerformanceEvaluator) evaluator).setalpha(alphaOption.getValue());
+            if (alphaOption.getValue() != .01) {
+                System.out.println("DEPRECATED! Use EvaluatePrequential -e (EWMAClassificationPerformanceEvaluator -a " + alphaOption.getValue() + ")");
+            }
+            return learningCurve;
         }
         if (evaluator instanceof FadingFactorClassificationPerformanceEvaluator) {
-            ((FadingFactorClassificationPerformanceEvaluator) evaluator).setalpha(alphaOption.getValue());
+            //((FadingFactorClassificationPerformanceEvaluator) evaluator).setalpha(alphaOption.getValue());
+            if (alphaOption.getValue() != .01) {
+                System.out.println("DEPRECATED! Use EvaluatePrequential -e (FadingFactorClassificationPerformanceEvaluator -a " + alphaOption.getValue() + ")");
+            }
+            return learningCurve;
         }
         //End New for prequential methods
 
@@ -134,8 +149,7 @@ public class EvaluatePrequential extends MainTask {
         int maxSeconds = this.timeLimitOption.getValue();
         int secondsElapsed = 0;
         monitor.setCurrentActivity("Evaluating learner...", -1.0);
-        LearningCurve learningCurve = new LearningCurve(
-                "learning evaluation instances");
+
         File dumpFile = this.dumpFileOption.getFile();
         PrintStream immediateResultStream = null;
         if (dumpFile != null) {
@@ -191,7 +205,8 @@ public class EvaluatePrequential extends MainTask {
             evaluator.addResult(testInst, prediction);
             learner.trainOnInstance(trainInst);
             instancesProcessed++;
-            if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0) {
+            if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0
+                    || stream.hasMoreInstances() == false) {
                 long evaluateTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
                 double time = TimingUtils.nanoTimeToSeconds(evaluateTime - evaluateStartTime);
                 double timeIncrement = TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);

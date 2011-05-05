@@ -74,6 +74,6 @@ public abstract class AbstractMOAObject implements MOAObject {
      * @return the memory size of this object
      */
     public static int measureByteSize(MOAObject obj) {
-        return (int) SizeOf.sizeOf(obj);
+        return (int) SizeOf.fullSizeOf(obj);
     }
 }

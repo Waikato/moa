@@ -24,7 +24,6 @@ import weka.core.Instance;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
-import moa.core.SizeOf;
 import moa.options.ClassOption;
 import moa.options.IntOption;
 
@@ -90,18 +89,6 @@ public class OzaBagAdwin extends AbstractClassifier {
     protected Classifier[] ensemble;
 
     protected ADWIN[] ADError;
-
-    @Override
-    public int measureByteSize() {
-        int size = (int) SizeOf.sizeOf(this);
-        for (Classifier classifier : this.ensemble) {
-            size += classifier.measureByteSize();
-        }
-        for (ADWIN adwin : this.ADError) {
-            size += adwin.measureByteSize();
-        }
-        return size;
-    }
 
     @Override
     public void resetLearningImpl() {

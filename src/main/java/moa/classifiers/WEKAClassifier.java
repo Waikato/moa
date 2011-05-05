@@ -26,7 +26,6 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 import moa.core.Measurement;
-import moa.core.SizeOf;
 import moa.options.IntOption;
 import moa.options.WEKAClassOption;
 
@@ -65,13 +64,6 @@ public class WEKAClassifier
     protected boolean isClassificationEnabled;
 
     protected boolean isBufferStoring;
-
-    @Override
-    public int measureByteSize() {
-        int size = (int) SizeOf.sizeOf(this);
-        //size += classifier.measureByteSize();
-        return size;
-    }
 
     @Override
     public void resetLearningImpl() {

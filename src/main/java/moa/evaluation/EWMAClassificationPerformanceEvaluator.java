@@ -19,8 +19,12 @@
  */
 package moa.evaluation;
 
-import moa.AbstractMOAObject;
 import moa.core.Measurement;
+import moa.core.ObjectRepository;
+import moa.options.FloatOption;
+import moa.options.AbstractOptionHandler;
+import moa.tasks.TaskMonitor;
+
 import weka.core.Instance;
 import weka.core.Utils;
 
@@ -30,14 +34,15 @@ import weka.core.Utils;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class EWMAClassificationPerformanceEvaluator extends AbstractMOAObject
+public class EWMAClassificationPerformanceEvaluator extends AbstractOptionHandler
         implements ClassificationPerformanceEvaluator {
 
     private static final long serialVersionUID = 1L;
 
     protected double TotalweightObserved;
 
-    protected double alpha;
+    public FloatOption alphaOption = new FloatOption("alpha",
+            'a', "Fading factor or exponential smoothing factor", .01);
 
     protected Estimator weightCorrect;
 
@@ -61,14 +66,14 @@ public class EWMAClassificationPerformanceEvaluator extends AbstractMOAObject
         }
     }
 
-    public void setalpha(double a) {
-        this.alpha = a;
-        reset();
-    }
-
+    /*   public void setalpha(double a) {
+    this.alpha = a;
+    reset();
+    }*/
+    
     @Override
     public void reset() {
-        weightCorrect = new Estimator(this.alpha);
+        weightCorrect = new Estimator(this.alphaOption.getValue());
     }
 
     @Override
@@ -120,5 +125,11 @@ public class EWMAClassificationPerformanceEvaluator extends AbstractMOAObject
     public void getDescription(StringBuilder sb, int indent) {
         Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
                 sb, indent);
+    }
+
+    @Override
+    public void prepareForUseImpl(TaskMonitor monitor,
+            ObjectRepository repository) {
+        reset();
     }
 }

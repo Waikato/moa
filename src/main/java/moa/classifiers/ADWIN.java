@@ -19,7 +19,7 @@
  */
 package moa.classifiers;
 
-import moa.core.SizeOf;
+import moa.AbstractMOAObject;
 
 /**
  * ADaptive sliding WINdow method. This method is a change detector and estimator.
@@ -32,7 +32,7 @@ import moa.core.SizeOf;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class ADWIN { //extends Estimator {
+public class ADWIN extends AbstractMOAObject {
 
     private class List {
 
@@ -41,12 +41,6 @@ public class ADWIN { //extends Estimator {
         protected ListItem head;
 
         protected ListItem tail;
-
-        public int measureByteSize() {
-            int size = (int) SizeOf.sizeOf(this);
-            size += count * head.measureByteSize();
-            return size;
-        }
 
         public List() {
 //			post: initializes the list to be empty.
@@ -150,11 +144,6 @@ public class ADWIN { //extends Estimator {
         protected double bucketTotal[] = new double[MAXBUCKETS + 1];
 
         protected double bucketVariance[] = new double[MAXBUCKETS + 1];
-
-        public int measureByteSize() {
-            int size = (int) SizeOf.sizeOf(this);
-            return size;
-        }
 
         public ListItem() {
 //			post: initializes the node to be a tail node
@@ -373,12 +362,6 @@ public class ADWIN { //extends Estimator {
 
     public double getWidthT() {
         return mdblWidth;
-    }
-
-    public int measureByteSize() {
-        int size = (int) SizeOf.sizeOf(this);
-        size += listRowBuckets.measureByteSize();
-        return size;
     }
 
     private void initBuckets() {
@@ -609,5 +592,10 @@ public class ADWIN { //extends Estimator {
     }
 
     public void setW(int W0) {
+    }
+
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {
+
     }
 }

@@ -19,8 +19,11 @@
  */
 package moa.evaluation;
 
-import moa.AbstractMOAObject;
 import moa.core.Measurement;
+import moa.core.ObjectRepository;
+import moa.options.AbstractOptionHandler;
+import moa.options.IntOption;
+import moa.tasks.TaskMonitor;
 import weka.core.Utils;
 import weka.core.Instance;
 
@@ -30,16 +33,15 @@ import weka.core.Instance;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class WindowClassificationPerformanceEvaluator extends AbstractMOAObject
+public class WindowClassificationPerformanceEvaluator extends AbstractOptionHandler
         implements ClassificationPerformanceEvaluator {
 
     private static final long serialVersionUID = 1L;
 
-//	public IntOption widthOption = new IntOption("width",
-//			'w', "Size of Window", 1000);
-    protected double TotalweightObserved = 0;
+    public IntOption widthOption = new IntOption("width",
+            'w', "Size of Window", 1000);
 
-    protected int width;
+    protected double TotalweightObserved = 0;
 
     protected Estimator weightObserved;
 
@@ -84,11 +86,10 @@ public class WindowClassificationPerformanceEvaluator extends AbstractMOAObject
         }
     }
 
-    public void setWindowWidth(int w) {
-        this.width = w;
-        reset();
-    }
-
+    /*   public void setWindowWidth(int w) {
+    this.width = w;
+    reset();
+    }*/
     @Override
     public void reset() {
         reset(this.numClasses);
@@ -99,11 +100,11 @@ public class WindowClassificationPerformanceEvaluator extends AbstractMOAObject
         this.rowKappa = new Estimator[numClasses];
         this.columnKappa = new Estimator[numClasses];
         for (int i = 0; i < this.numClasses; i++) {
-            this.rowKappa[i] = new Estimator(this.width);
-            this.columnKappa[i] = new Estimator(this.width);
+            this.rowKappa[i] = new Estimator(this.widthOption.getValue());
+            this.columnKappa[i] = new Estimator(this.widthOption.getValue());
         }
-        this.weightCorrect = new Estimator(this.width);
-        this.weightObserved = new Estimator(this.width);
+        this.weightCorrect = new Estimator(this.widthOption.getValue());
+        this.weightObserved = new Estimator(this.widthOption.getValue());
         this.TotalweightObserved = 0;
     }
 
@@ -197,5 +198,10 @@ public class WindowClassificationPerformanceEvaluator extends AbstractMOAObject
     public void getDescription(StringBuilder sb, int indent) {
         Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
                 sb, indent);
+    }
+
+    @Override
+    public void prepareForUseImpl(TaskMonitor monitor,
+            ObjectRepository repository) {
     }
 }

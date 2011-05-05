@@ -24,7 +24,6 @@ import weka.core.Instance;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
-import moa.core.SizeOf;
 import moa.options.ClassOption;
 import moa.options.FlagOption;
 import moa.options.IntOption;
@@ -70,15 +69,6 @@ public class OzaBoost extends AbstractClassifier {
 	protected double[] scms;
 
 	protected double[] swms;
-
-	@Override
-	public int measureByteSize() {
-		int size = (int) SizeOf.sizeOf(this);
-		for (Classifier classifier : this.ensemble) {
-			size += classifier.measureByteSize();
-		}
-		return size;
-	}
 
 	@Override
 	public void resetLearningImpl() {

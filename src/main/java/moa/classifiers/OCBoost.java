@@ -23,7 +23,6 @@ import weka.core.Instance;
 import weka.core.Utils;
 
 import moa.core.Measurement;
-import moa.core.SizeOf;
 import moa.options.ClassOption;
 import moa.options.FloatOption;
 import moa.options.IntOption;
@@ -78,15 +77,6 @@ public class OCBoost extends AbstractClassifier {
     protected double[][] wpos;
 
     protected double[][] wneg;
-
-    @Override
-    public int measureByteSize() {
-        int size = (int) SizeOf.sizeOf(this);
-        for (Classifier classifier : this.ensemble) {
-            size += classifier.measureByteSize();
-        }
-        return size;
-    }
 
     @Override
     public void resetLearningImpl() {

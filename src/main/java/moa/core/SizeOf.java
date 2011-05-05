@@ -59,6 +59,20 @@ public class SizeOf {
      */
     public static long sizeOf(Object o) {
         if (isPresent()) {
+            return SizeOfAgent.sizeOf(o);
+        } else {
+            return -1;
+        }
+    }
+
+    /**
+     * Returns the full size of the object.
+     *
+     * @param o	the object to get the size for
+     * @return the size of the object, or if the agent isn't present -1
+     */
+    public static long fullSizeOf(Object o) {
+        if (isPresent()) {
             return SizeOfAgent.fullSizeOf(o);
         } else {
             return -1;
