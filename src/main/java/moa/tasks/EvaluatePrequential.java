@@ -97,8 +97,8 @@ public class EvaluatePrequential extends MainTask {
 
     public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
             "File to append output predictions to.", null, "pred", true);
-    //New for prequential method DEPRECATED
 
+    //New for prequential method DEPRECATED
     public IntOption widthOption = new IntOption("width",
             'w', "Size of Window", 1000);
 
@@ -124,22 +124,22 @@ public class EvaluatePrequential extends MainTask {
             //((WindowClassificationPerformanceEvaluator) evaluator).setWindowWidth(widthOption.getValue());
             if (widthOption.getValue() != 1000) {
                 System.out.println("DEPRECATED! Use EvaluatePrequential -e (WindowClassificationPerformanceEvaluator -w " + widthOption.getValue() + ")");
+                 return learningCurve;
             }
-            return learningCurve;
         }
         if (evaluator instanceof EWMAClassificationPerformanceEvaluator) {
             //((EWMAClassificationPerformanceEvaluator) evaluator).setalpha(alphaOption.getValue());
             if (alphaOption.getValue() != .01) {
                 System.out.println("DEPRECATED! Use EvaluatePrequential -e (EWMAClassificationPerformanceEvaluator -a " + alphaOption.getValue() + ")");
+                return learningCurve;
             }
-            return learningCurve;
         }
         if (evaluator instanceof FadingFactorClassificationPerformanceEvaluator) {
             //((FadingFactorClassificationPerformanceEvaluator) evaluator).setalpha(alphaOption.getValue());
             if (alphaOption.getValue() != .01) {
                 System.out.println("DEPRECATED! Use EvaluatePrequential -e (FadingFactorClassificationPerformanceEvaluator -a " + alphaOption.getValue() + ")");
+                return learningCurve;
             }
-            return learningCurve;
         }
         //End New for prequential methods
 

@@ -24,7 +24,7 @@ import moa.evaluation.LearningCurve;
 import moa.options.ClassOption;
 import moa.options.FileOption;
 import moa.options.IntOption;
-import moa.gui.visualization.BatchCmd;
+import moa.gui.BatchCmd;
 import moa.clusterers.AbstractClusterer;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
 

@@ -1,5 +1,6 @@
-/*
+/**
  *    RandomRBFGenerator.java
+
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  *
@@ -17,9 +18,19 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+
+/**
+ * based on RandomRBFGenerator by Richard Kirkby
+ * @author Timm Jansen (timm.jansen@gmail.com)
+ * 
+ * 
+ * 
+ */
 package moa.streams.clustering;
 
+import java.beans.DesignMode;
 import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedList;
@@ -31,6 +42,7 @@ import moa.core.AutoExpandVector;
 import moa.core.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.gui.visualization.DataPoint;
+import moa.options.FlagOption;
 import moa.options.FloatOption;
 import moa.options.IntOption;
 import moa.streams.InstanceStream;
@@ -40,6 +52,7 @@ import weka.core.DenseInstance;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.filters.unsupervised.attribute.MergeTwoValues;
 
 public class RandomRBFGeneratorEvents extends ClusteringStream {
     private transient Vector listeners;
@@ -51,16 +64,16 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
 
     public IntOption instanceRandomSeedOption = new IntOption(
                     "instanceRandomSeed", 'i',
-                    "Seed for random generation of instances.", 1);
+                    "Seed for random generation of instances.", 5);
 
     public IntOption numClusterOption = new IntOption("numCluster", 'K',
-                    "The average number of centroids in the model.", 4, 1, Integer.MAX_VALUE);
+                    "The average number of centroids in the model.", 5, 1, Integer.MAX_VALUE);
 
     public IntOption numClusterRangeOption = new IntOption("numClusterRange", 'k',
-                    "Deviation of the number of centroids in the model.", 3, 1, Integer.MAX_VALUE);
+                    "Deviation of the number of centroids in the model.", 3, 0, Integer.MAX_VALUE);
 
     public FloatOption kernelRadiiOption = new FloatOption("kernelRadius", 'R',
-                    "The average radii of the centroids in the model.", 0.05, 0, 1);
+                    "The average radii of the centroids in the model.", 0.07, 0, 1);
 
     public FloatOption kernelRadiiRangeOption = new FloatOption("kernelRadiusRange", 'r',
                     "Deviation of average radii of the centroids in the model.", 0, 0, 1);
@@ -70,7 +83,7 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
                     "contain the same amount of points.", 0, 0, 1);
 
     public IntOption speedOption = new IntOption("speed", 'V',
-                    "Kernels move a predefined distance of 0.01 every X points", 100, 1, Integer.MAX_VALUE);
+                    "Kernels move a predefined distance of 0.01 every X points", 500, 1, Integer.MAX_VALUE);
 
     public IntOption speedRangeOption = new IntOption("speedRange", 'v',
                     "Speed/Velocity point offset", 0, 0, Integer.MAX_VALUE);
@@ -78,33 +91,27 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
     public FloatOption noiseLevelOption = new FloatOption("noiseLevel", 'N',
                     "Noise level", 0.1, 0, 1);
 
+    public FlagOption noiseInClusterOption = new FlagOption("noiseInCluster", 'n',
+                    "Allow noise to be placed within a cluster");
+
     public IntOption eventFrequencyOption = new IntOption("eventFrequency", 'E',
-                    "Event frequency", 15000, 0, Integer.MAX_VALUE);
+                    "Event frequency. Enable at least one of the events below and set numClusterRange!", 30000, 0, Integer.MAX_VALUE);
 
-    public FloatOption eventMergeWeightOption = new FloatOption("eventMergeWeight", 'M',
-                    "", 0.5, 0, 1);
+    public FlagOption eventMergeSplitOption = new FlagOption("eventMergeSplitOption", 'M',
+                    "Enable merging and splitting of clusters. Set eventFrequency and numClusterRange!");
 
-    public FloatOption eventSplitWeightOption = new FloatOption("eventSplitWeight", 'P',
-                    "Influences the probablity of SplitClusterChange events relative to the total sum of all event-weights." +
-                    "SplitClusterChange Events will split a cluster into two clusters.", 0.5, 0, 1);
+    public FlagOption eventDeleteCreateOption = new FlagOption("eventDeleteCreate", 'C',
+    				"Enable emering and disapperaing of clusters. Set eventFrequency and numClusterRange!");
 
-//    public FloatOption eventSizeWeightOption = new FloatOption("eventSizeWeight", 'S',
-//                    "Influences the probablity of SizeClusterChange events relative to the total sum of all event-weights." +
-//                    "SizeClusterChange Events will increase/decrease the clusters radius.", 0.5, 0, 1);
-//
-//    public FloatOption eventDensityWeightOption = new FloatOption("eventDensityWeight", 'D',
-//                    "Influences the probablity of DensityClusterChange events relative to the total sum of all event-weights." +
-//                    "DensityClusterChange Events will increase/decrease the amount of points contained by a cluster.", 0.5, 0, 1);
-
-
+    
     private double merge_threshold = 0.7;
     private int kernelMovePointFrequency = 10;
     private double maxDistanceMoveThresholdByStep = 0.01;
     private int maxOverlapFitRuns = 50;
-    private double eventFrequencyRange = 0.25;
+    private double eventFrequencyRange = 0;
     //double test = (2.0/5.0) + (2.0/5.0) - 0.6;
 
-    private boolean debug = true;
+    private boolean debug = false;
 
     private AutoExpandVector<GeneratorCluster> kernels;
     protected Random instanceRandom;
@@ -112,19 +119,20 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
     private int numGeneratedInstances;
     private int numActiveKernels;
     private int nextEventCounter;
-    private int nextEventChoice;
+    private int nextEventChoice = -1;
     private int clusterIdCounter;
     private GeneratorCluster mergeClusterA;
     private GeneratorCluster mergeClusterB;
+    private boolean mergeKernelsOverlapping = false;
 
 
 
     private class GeneratorCluster{
         //TODO: points is redundant to microclusterpoints, we need to come 
-        //up with a good strategie that microclusters get updated and 
+        //up with a good strategy that microclusters get updated and 
         //rebuild if needed. Idea: Sort microclusterpoints by timestamp and let 
         // microclusterdecay hold the timestamp for when the last point in a 
-        //micro cluster gets kicked then we rebuild... or maybe not... could be
+        //microcluster gets kicked, then we rebuild... or maybe not... could be
         //same as searching for point to be kicked. more likely is we rebuild 
         //fewer times then insert.
         
@@ -134,6 +142,7 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         double[] moveVector;
         int totalMovementSteps;
         int currentMovementSteps;
+        boolean isSplitting = false;
 
         LinkedList<DataPoint> points = new LinkedList<DataPoint>();
         ArrayList<SphereCluster> microClusters = new ArrayList<SphereCluster>();
@@ -164,9 +173,9 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
             if(tryCounter < maxOverlapFitRuns){
                 generator.setId(label);
                 double avgWeight = 1.0/numClusterOption.getValue();
-                double weight = avgWeight + avgWeight*densityRangeOption.getValue()*instanceRandom.nextDouble();
+                double weight = avgWeight + (instanceRandom.nextBoolean()?-1:1)*avgWeight*densityRangeOption.getValue()*instanceRandom.nextDouble();
                 generator.setWeight(weight);
-                setDesitnation(null, 0);
+                setDesitnation(null);
             }
             else{
                 generator = null;
@@ -178,7 +187,7 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         public GeneratorCluster(int label, SphereCluster cluster) {
             this.generator = cluster;
             cluster.setId(label);
-            setDesitnation(null, 0);
+            setDesitnation(null);
         }
 
         public int getWorkID(){
@@ -308,7 +317,7 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
                             center[d]+= moveVector[d];
                             if(center[d]- radius < 0 || center[d] + radius > 1){
                                 outofbounds = true;
-                                setDesitnation(null, 0);
+                                setDesitnation(null);
                                 break;
                             }
                         }
@@ -318,12 +327,13 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
             }
             else{
                 if(!merging){
-                    setDesitnation(null, 0);
+                    setDesitnation(null);
+                    isSplitting = false;
                 }
             }
         }
 
-        void setDesitnation(double[] destination, int steps){
+        void setDesitnation(double[] destination){
 
             if(destination == null){
                 destination = new double [numAttsOption.getValue()];
@@ -339,10 +349,10 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
             for ( int d = 0; d < dim; d++ ) {
                 v[d]=destination[d]-center[d];
             }
-            setMoveVector(v, steps);
+            setMoveVector(v);
         }
 
-        void setMoveVector(double[] vector, int steps){
+        void setMoveVector(double[] vector){
             moveVector = vector;
             int speedInPoints  = speedOption.getValue();
             if(speedRangeOption.getValue() > 0)
@@ -354,22 +364,25 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
             for ( int d = 0; d < moveVector.length; d++ ) {
                 length+=Math.pow(vector[d],2);
             }
+            length = Math.sqrt(length);
 
-            totalMovementSteps = (int)(length/maxDistanceMoveThresholdByStep*speedInPoints);
+            totalMovementSteps = (int)(length/(maxDistanceMoveThresholdByStep*kernelMovePointFrequency)*speedInPoints);
             for ( int d = 0; d < moveVector.length; d++ ) {
                 moveVector[d]/=(double)totalMovementSteps;
             }
 
+
             currentMovementSteps = 0;
 //            if(debug){
 //                System.out.println("Setting new direction for C"+generator.getId()+": distance "
-//                        +Math.sqrt(length)+" in "+totalMovementSteps+" steps");
+//                        +length+" in "+totalMovementSteps+" steps");
 //            }
         }
 
         private String tryMerging(GeneratorCluster merge){
            String message = "";
-           if(generator.overlapRadiusDegree(merge.generator) > merge_threshold){
+           double overlapDegree = generator.overlapRadiusDegree(merge.generator);
+           if(overlapDegree > merge_threshold){
                 SphereCluster mcluster = merge.generator;
                 double radius = Math.max(generator.getRadius(), mcluster.getRadius());
                 generator.combine(mcluster);
@@ -395,12 +408,19 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
                 numActiveKernels--;
                 mergeClusterB = mergeClusterA = null;
                 merging = false;
+                mergeKernelsOverlapping = false;
             }
-            return message;
+           else{
+	           if(overlapDegree > 0 && !mergeKernelsOverlapping){
+	        	   mergeKernelsOverlapping = true;
+	        	   message = "Merge overlapping started";
+	           }
+           }
+           return message;
         }
 
         private String splitKernel(){
-            
+            isSplitting = true;
             //todo radius range
             double radius = kernelRadiiOption.getValue();
             double avgWeight = 1.0/numClusterOption.getValue();
@@ -412,6 +432,7 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
 
             if(spcluster !=null){
                 GeneratorCluster gc = new GeneratorCluster(clusterIdCounter++, spcluster);
+                gc.isSplitting = true;
                 kernels.add(gc);
                 normalizeWeights();
                 numActiveKernels++;
@@ -422,12 +443,23 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
                         ". Not enough room for new cluster, decrease average radii, number of clusters or enable overlap.");
                 return "";
             }
-
         }
+        
+        private String fadeOut(){
+        	kill = decayHorizonOption.getValue();
+        	generator.setWeight(0.0);
+        	numActiveKernels--;
+        	normalizeWeights();
+        	return "Fading out C"+generator.getId();
+        }
+        
+        
     }
 
     public RandomRBFGeneratorEvents() {
-
+        noiseInClusterOption.set();
+//        eventDeleteCreateOption.set();
+//        eventMergeSplitOption.set();
     }
 
     public InstancesHeader getHeader() {
@@ -456,7 +488,7 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
     public void restart() {
             instanceRandom = new Random(instanceRandomSeedOption.getValue());
             nextEventCounter = eventFrequencyOption.getValue();
-            nextEventChoice = instanceRandom.nextInt(2);
+            nextEventChoice = getNextEvent();
             numActiveKernels = 0;
             numGeneratedInstances = 0;
             clusterIdCounter = 0;
@@ -489,14 +521,13 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
             clusterIdCounter++;
         }
         normalizeWeights();
-        //updateOverlaps();
     }
 
     public Instance nextInstance() {
         numGeneratedInstances++;
         eventScheduler();
 
-        //make room for thge classlabel
+        //make room for the classlabel
         double[] values_new = new double [numAttsOption.getValue()+1];
         double[] values = null;
         int clusterChoice = -1;
@@ -507,7 +538,7 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         }
         else{
             //get ranodm noise point
-            values = getNewSample();
+            values = getNoisePoint();
         }
 
         if(Double.isNaN(values[0])){
@@ -540,13 +571,14 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         return clustering;
     }
 
-    public Clustering getClustering(){
+    public Clustering getMicroClustering(){
         Clustering clustering = new Clustering();
         int id = 0;
 
             for (int c = 0; c < kernels.size(); c++) {
                 for (int m = 0; m < kernels.get(c).microClusters.size(); m++) {
                     kernels.get(c).microClusters.get(m).setId(id);
+                    kernels.get(c).microClusters.get(m).setGroundTruth(kernels.get(c).generator.getId());
                     clustering.add(kernels.get(c).microClusters.get(m));
                     id++;
                 }
@@ -558,10 +590,11 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
 
 /**************************** EVENTS ******************************************/
     private void eventScheduler(){
+
         for ( int i = 0; i < kernels.size(); i++ ) {
             kernels.get(i).updateKernel();
         }
-
+        
         nextEventCounter--;
         //only move kernels every 10 points, performance reasons????
         //should this be randomized as well???
@@ -573,65 +606,125 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
             }
         }
 
+
+        if(eventFrequencyOption.getValue() == 0){
+            return;
+        }
+
         String type ="";
         String message ="";
+        boolean eventFinished = false;
         switch(nextEventChoice){
             case 0:
+                if(numActiveKernels > 1 && numActiveKernels > numClusterOption.getValue() - numClusterRangeOption.getValue()){
+                    message = mergeKernels(nextEventCounter);
+                    type = "Merge";
+                }
+                if(mergeClusterA==null && mergeClusterB==null && message.startsWith("Clusters merging")){
+                	eventFinished = true;
+                }                
+            break;
+            case 1:
                 if(nextEventCounter<=0){
                     if(numActiveKernels < numClusterOption.getValue() + numClusterRangeOption.getValue()){
                         type = "Split";
                         message = splitKernel();
-                        message+=" -> numKernels = "+numActiveKernels;
                     }
-                    else{
-                        nextEventChoice=-1;
-                    }
-                }
-            break;
-            case 1:
-                if(numActiveKernels > numClusterOption.getValue() - numClusterRangeOption.getValue()){
-                    message = mergeKernels(false);
-                    type = "Merge";
-                    if(!message.equals(""))
-                        message+=" -> numKernels = "+numActiveKernels;
-                }
-                else{
-                    nextEventChoice=-1;
+                    eventFinished = true;
                 }
             break;
             case 2:
                 if(nextEventCounter<=0){
-                    message = changeWeight(true);
-                    type = "Increase Weight";
+                	if(numActiveKernels > 1 && numActiveKernels > numClusterOption.getValue() - numClusterRangeOption.getValue()){
+                        message = fadeOut();
+                        type = "Delete";
+                    }
+                	eventFinished = true;
                 }
             break;
             case 3:
                 if(nextEventCounter<=0){
-                    message = changeWeight(false);
-                    type = "Decrease Weight";
+                	if(numActiveKernels < numClusterOption.getValue() + numClusterRangeOption.getValue()){
+	                    message = fadeIn();
+	                    type = "Create";
+                	}
+                	eventFinished = true;          	
                 }
             break;
-            case 4:
-                if(nextEventCounter<=0){
-                    message = changeRadius(true);
-                    type = "Increase Radius";
-                }
-            break;
-            case 5:
-                if(nextEventCounter<=0){
-                    message = changeRadius(false);
-                    type = "Decrease Radius";
-                }
-            break;
+
         }
-        if ((nextEventCounter <= 0 &&!message.isEmpty()) || nextEventChoice==-1){
+        if (eventFinished){
                 nextEventCounter = (int)(eventFrequencyOption.getValue()+(instanceRandom.nextBoolean()?-1:1)*eventFrequencyOption.getValue()*eventFrequencyRange*instanceRandom.nextDouble());
-                nextEventChoice = instanceRandom.nextInt(2);
+                nextEventChoice = getNextEvent();
+                //System.out.println("Next event choice: "+nextEventChoice);
         }
-        if(!message.isEmpty())
-            fireClusterChange(numGeneratedInstances, type, message);
+        if(!message.isEmpty()){
+        	message+=" (numKernels = "+numActiveKernels+" at "+numGeneratedInstances+")";
+        	if(!type.equals("Merge") || message.startsWith("Clusters merging"))
+        		fireClusterChange(numGeneratedInstances, type, message);
+        }
+    }
+    
+    private int getNextEvent() {
+    	int choice = -1;
+    	boolean lowerLimit = numActiveKernels <= numClusterOption.getValue() - numClusterRangeOption.getValue();
+    	boolean upperLimit = numActiveKernels >= numClusterOption.getValue() + numClusterRangeOption.getValue();
+
+    	if(!lowerLimit || !upperLimit){
+	    	int mode = -1;
+	    	if(eventDeleteCreateOption.isSet() && eventMergeSplitOption.isSet()){
+	    		mode = instanceRandom.nextInt(2);
+	    	}
+	    	
+			if(mode==0 || (mode==-1 && eventMergeSplitOption.isSet())){
+				//have we reached a limit? if not free choice
+				if(!lowerLimit && !upperLimit) 
+					choice = instanceRandom.nextInt(2);
+				else
+					//we have a limit. if lower limit, choose split
+					if(lowerLimit)
+						choice = 1;
+					//otherwise we reached upper level, choose merge
+					else
+						choice = 0;
+			}
+			
+			if(mode==1 || (mode==-1 && eventDeleteCreateOption.isSet())){
+				//have we reached a limit? if not free choice
+				if(!lowerLimit && !upperLimit) 
+					choice = instanceRandom.nextInt(2)+2;
+				else
+					//we have a limit. if lower limit, choose create
+					if(lowerLimit)
+						choice = 3;
+					//otherwise we reached upper level, choose delete
+					else
+						choice = 2;
+			}
+    	}
+
+    	
+    	return choice;
     }
 
+	private String fadeOut(){
+	    int id = instanceRandom.nextInt(kernels.size());
+	    while(kernels.get(id).kill!=-1)
+	        id = instanceRandom.nextInt(kernels.size());
+	
+	    String message = kernels.get(id).fadeOut();
+	    return message;
+    }
+    
+    private String fadeIn(){
+	    	GeneratorCluster gc = new GeneratorCluster(clusterIdCounter++);
+	        kernels.add(gc);
+	        numActiveKernels++;
+	        normalizeWeights();
+    	return "Creating new cluster";
+    }
+    
+    
     private String changeWeight(boolean increase){
         double changeRate = 0.1;
         int id = instanceRandom.nextInt(kernels.size());
@@ -693,57 +786,56 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         //TODO generateHeader(); does that do anything? Ref on dataset in instances?
     }
 
-    private String mergeKernels(boolean reset){
-        if(numActiveKernels >1 && ((mergeClusterA == null && mergeClusterB == null) || reset)){
-//            if(reset){
-//                System.out.println("Reset merging, wasn't possible to merge C"+mergeClusterA+" and C"+mergeClusterB);
-//                if(mergeClusterA!=-1)
-//                    kernels.get(mergeClusterA).merging = false;
-//                if(mergeClusterA!=-1)
-//                    kernels.get(mergeClusterB).merging = false;
-//                mergeClusterA = mergeClusterB = -1;
-//
-//            }
-            //choose clusters to merge
-            mergeClusterA = kernels.get(instanceRandom.nextInt(kernels.size()));
-            while(mergeClusterA.kill!=-1)
-                mergeClusterA = kernels.get(instanceRandom.nextInt(kernels.size()));
+    private String mergeKernels(int steps){
+        if(numActiveKernels >1 && ((mergeClusterA == null && mergeClusterB == null))){
 
-            mergeClusterB = mergeClusterA;
-            while(mergeClusterB == mergeClusterA || mergeClusterB.kill!=-1){
-                mergeClusterB = kernels.get(instanceRandom.nextInt(kernels.size()));
-            }
-            boolean outofbound = true;
-            double[] merge_point = new double [numAttsOption.getValue()];
-            double maxradius = Math.max(mergeClusterA.generator.getRadius(),
-                                            mergeClusterB.generator.getRadius());
-
-            int counter = maxOverlapFitRuns;
-            while(outofbound && counter > 0){
-                counter--;
-                outofbound = false;
-                for (int j = 0; j < numAttsOption.getValue(); j++) {
-                     merge_point[j] = instanceRandom.nextDouble();
-                     if(merge_point[j]- maxradius < 0 || merge_point[j] + maxradius > 1){
-                        outofbound = true;
-                        break;
-                     }
-                }
-            }
-            if(counter <= 0)
-                return "";
-
-            mergeClusterA.merging = true;
-            mergeClusterB.merging = true;
-            mergeClusterA.setDesitnation(merge_point,nextEventCounter);
-            mergeClusterB.setDesitnation(merge_point,nextEventCounter);
-            if(debug)
-                System.out.println("Try to merge cluster "+mergeClusterA.getWorkID()+
-                        " into "+mergeClusterB.getWorkID()+
-                        " at "+Arrays.toString(merge_point)+
-                        " time "+numGeneratedInstances);
-
-            return "";
+        	//choose clusters to merge
+        	double diseredDist = steps / speedOption.getValue() * maxDistanceMoveThresholdByStep;
+        	double minDist = Double.MAX_VALUE;
+//        	System.out.println("DisredDist:"+(2*diseredDist));
+        	for(int i = 0; i < kernels.size(); i++){
+        		for(int j = 0; j < i; j++){
+            		if(kernels.get(i).kill!=-1 || kernels.get(j).kill!=-1){
+            			continue;
+            		}
+            		else{
+            			double kernelDist = kernels.get(i).generator.getCenterDistance(kernels.get(j).generator);
+            			double d = kernelDist-2*diseredDist;
+//            			System.out.println("Dist:"+i+" / "+j+" "+d);
+            			if(Math.abs(d) < minDist && 
+            					(minDist != Double.MAX_VALUE || d>0 || Math.abs(d) < 0.001)){
+            				minDist = Math.abs(d);
+            				mergeClusterA = kernels.get(i);
+            				mergeClusterB = kernels.get(j);
+            			}
+            		}
+        		}
+        	}
+        	
+        	if(mergeClusterA!=null && mergeClusterB!=null){
+	        	double[] merge_point = mergeClusterA.generator.getCenter();
+	        	double[] v = mergeClusterA.generator.getDistanceVector(mergeClusterB.generator);
+	        	for (int i = 0; i < v.length; i++) {
+	        		merge_point[i]= merge_point[i]+v[i]*0.5;
+				}
+	
+	            mergeClusterA.merging = true;
+	            mergeClusterB.merging = true;
+	            mergeClusterA.setDesitnation(merge_point);
+	            mergeClusterB.setDesitnation(merge_point);
+	            
+	            if(debug){
+	            	System.out.println("Center1"+Arrays.toString(mergeClusterA.generator.getCenter()));
+		        	System.out.println("Center2"+Arrays.toString(mergeClusterB.generator.getCenter()));
+		            System.out.println("Vector"+Arrays.toString(v));        	
+	            	
+	                System.out.println("Try to merge cluster "+mergeClusterA.generator.getId()+
+	                        " into "+mergeClusterB.generator.getId()+
+	                        " at "+Arrays.toString(merge_point)+
+	                        " time "+numGeneratedInstances);
+	            }
+	            return "Init merge";
+        	}
         }
 
         if(mergeClusterA != null && mergeClusterB != null){
@@ -762,15 +854,39 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
 /************************* TOOLS **************************************/
 
     public void getDescription(StringBuilder sb, int indent) {
-            // TODO Auto-generated method stub
 
     }
 
-    private double[] getNewSample(){
+    private double[] getNoisePoint(){
         double [] sample = new double [numAttsOption.getValue()];
-        for (int j = 0; j < numAttsOption.getValue(); j++) {
-             sample[j] = instanceRandom.nextDouble();
+        boolean incluster = true;
+        int counter = 20;
+        while(incluster){
+            for (int j = 0; j < numAttsOption.getValue(); j++) {
+                 sample[j] = instanceRandom.nextDouble();
+            }
+            incluster = false;
+            if(!noiseInClusterOption.isSet() && counter > 0){
+                counter--;
+                for(int c = 0; c < kernels.size(); c++){
+                    for(int m = 0; m < kernels.get(c).microClusters.size(); m++){
+                        Instance inst = new DenseInstance(1, sample);
+                        if(kernels.get(c).microClusters.get(m).getInclusionProbability(inst) > 0){
+                            incluster = true;
+                            break;
+                        }
+                    }
+                    if(incluster)
+                        break;
+                }
+            }
         }
+
+//        double [] sample = new double [numAttsOption.getValue()];
+//        for (int j = 0; j < numAttsOption.getValue(); j++) {
+//             sample[j] = instanceRandom.nextDouble();
+//        }
+             
         return sample;
     }
 

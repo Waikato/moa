@@ -74,7 +74,7 @@ public class Point {
 	
 	public Cluster toCluster(){
 		//Convert point to Cluster
-		return (new SphereCluster(this.coordinates, .05, this.weight)); //Radius = .05?
+		return (new SphereCluster(this.coordinates, 1, this.weight)); //Radius =1?
 		
 	}
 

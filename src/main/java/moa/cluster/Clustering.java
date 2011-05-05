@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import moa.AbstractMOAObject;
+import moa.clusterers.clustream.Clustream;
 import moa.core.AutoExpandVector;
 import moa.gui.visualization.DataPoint;
 import weka.core.Instance;
@@ -55,6 +56,39 @@ public class Clustering extends AbstractMOAObject{
             }
         }
     }
+
+//    public Clustering(List<DataPoint> points, int microK){
+//        HashMap<Integer, Integer> labelMap = classValues(points);
+//        int dim = points.get(0).dataset().numAttributes()-1;
+//
+//        int numClasses = labelMap.size();
+//
+//        ArrayList<Instance>[] sorted_points = (ArrayList<Instance>[]) new ArrayList[numClasses];
+//        for (int i = 0; i < numClasses; i++) {
+//            sorted_points[i] = new ArrayList<Instance>();
+//        }
+//        for (DataPoint point : points) {
+//            int clusterid = (int)point.classValue();
+//            if(clusterid == -1) continue;
+//            sorted_points[labelMap.get(clusterid)].add((Instance)point);
+//        }
+//        this.clusters = new AutoExpandVector<Cluster>();
+//        for (int i = 0; i < numClasses; i++) {
+//            if(sorted_points[i].size()>0){
+//                ArrayList<SphereCluster> cl = new ArrayList<SphereCluster>();
+//                Clustering micro = Clustream.kMeans(microK, sorted_points[i], dim);
+//
+//                for(int m = 0; m < micro.size(); m++){
+//                    mico.
+//                }
+//
+//                SphereCluster s = new SphereCluster(sorted_points[i],dim);
+//                s.setId(sorted_points[i].get(0).classValue());
+//                s.setGroundTruth(sorted_points[i].get(0).classValue());
+//                clusters.add(s);
+//            }
+//        }
+//    }
 
     public Clustering(ArrayList<DataPoint> points, double overlapThreshold, int initMinPoints){
         HashMap<Integer, Integer> labelMap = Clustering.classValues(points);
@@ -151,13 +185,21 @@ public class Clustering extends AbstractMOAObject{
     public static HashMap<Integer, Integer> classValues(List<DataPoint> points){
         HashMap<Integer,Integer> classes = new HashMap<Integer, Integer>();
         int workcluster = 0;
+        boolean hasnoise = false;
         for (int i = 0; i < points.size(); i++) {
             int label = (int) points.get(i).classValue();
-            if(!classes.containsKey(label)){
-                classes.put(label,workcluster);
-                workcluster++;
+            if(label == -1){
+                hasnoise = true;
+            }
+            else{
+                if(!classes.containsKey(label)){
+                    classes.put(label,workcluster);
+                    workcluster++;
+                }
             }
         }
+        if(hasnoise)
+            classes.put(-1,workcluster);
         return classes;
     }
 

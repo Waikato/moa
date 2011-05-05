@@ -3,7 +3,6 @@ package moa.cluster;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import moa.gui.visualization.DataPoint;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 
@@ -184,8 +183,6 @@ public class SphereCluster extends Cluster {
         setCenter(c);
         setRadius(r);
         setWeight(w0+w1);
-
-
 
     }
 

@@ -460,7 +460,7 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         panelControl.add(labelNumPause, gridBagConstraints);
 
         numPauseAfterPoints.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        numPauseAfterPoints.setText("10000");
+        numPauseAfterPoints.setText(Integer.toString(RunVisualizer.initialPauseInterval));
         numPauseAfterPoints.setPreferredSize(new java.awt.Dimension(70, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 8;

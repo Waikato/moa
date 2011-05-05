@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package moa.gui.visualization;
 
 import java.awt.Color;
@@ -27,14 +22,14 @@ import moa.gui.TextViewerPanel;
 import moa.gui.clustertab.ClusteringVisualEvalPanel;
 import moa.gui.clustertab.ClusteringVisualTab;
 import moa.streams.clustering.ClusterEvent;
+import weka.core.Instance;
 import moa.gui.clustertab.ClusteringSetupTab;
 import moa.streams.clustering.ClusterEventListener;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
 import weka.core.Attribute;
-import weka.core.FastVector;
 import weka.core.DenseInstance;
-import weka.core.Instance;
+import weka.core.FastVector;
 import weka.core.Instances;
 
 /**
@@ -49,7 +44,7 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
     private int m_wait_frequency = 1000;
     private int redrawInterval = 100;
     
-    private final int initialPauseInterval = 10000;
+    public static final int initialPauseInterval = 500000;
 
     public static boolean debug_stop = false;
 
@@ -155,7 +150,7 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
         //get those values from the generator
         int dims = m_stream0.numAttsOption.getValue();
         visualPanel.setDimensionComobBoxes(dims);
-//        visualPanel.setPauseInterval(initialPauseInterval);
+        visualPanel.setPauseInterval(initialPauseInterval);
 
         m_evalPanel.setMeasures(m_measures0, m_measures1, this);
         m_graphcanvas.setGraph(m_measures0[0], m_measures1[0],0,processFrequency);
@@ -192,7 +187,7 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
                 else
                     next1 = next0;
 
-                //if(m_timestamp < 5000) continue;
+//                if(m_timestamp < 40000) continue;
                 DataPoint point0 = new DataPoint(next0,m_timestamp);
                 DataPoint point1 = new DataPoint(next1,m_timestamp);
 
@@ -221,9 +216,9 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
 
                 Instance traininst1 = new DenseInstance(point1);
                 if(m_clusterer1 instanceof ClusterGenerator)
-                    traininst1.setDataset(point0.dataset());
+                    traininst1.setDataset(point1.dataset());
                 else
-                    traininst1.deleteAttributeAt(point0.classIndex());
+                    traininst1.deleteAttributeAt(point1.classIndex());
 
                 m_clusterer0.trainOnInstanceImpl(traininst0);
                 m_clusterer1.trainOnInstanceImpl(traininst1);
@@ -275,6 +270,7 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
 
     private void processClusterings(ArrayList<DataPoint> points0, ArrayList<DataPoint> points1){
         gtClustering0 = new Clustering(points0);
+//        gtClustering0 = ((RandomRBFGeneratorEvents)m_stream0).getClustering();
         //gtClustering0 = new Clustering(points0, 0.5, 5);
         //gtClustering0 = ((RandomRBFGeneratorEvents)m_stream0).getClustering();
         gtClustering1 = new Clustering(points1);
@@ -375,8 +371,8 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
 //    if(m_visualPanel.isEnabledDrawGroundTruth() && gtClustering0!= null && gtClustering0.size() > 0)
 //        m_streampanel0.drawGTClustering(gtClustering0, Color.BLACK);
 //        if(m_visualPanel.isEnabledDrawClustering()){
-//            drawGenClustering(m_streampanel0, ((RandomRBFGeneratorEvents)m_stream0).getGeneratingClusters() , Color.BLUE);
-//            drawClustering(m_streampanel0, ((RandomRBFGeneratorEvents)m_stream0).getClustering(), Color.RED);
+//            //drawGenClustering(m_streampanel0, ((RandomRBFGeneratorEvents)m_stream0).getGeneratingClusters() , Color.BLUE);
+//
 //        }
         if(macro1!= null && macro1.size() > 0)
                 m_streampanel1.drawMacroClustering(macro1, Color.BLUE);

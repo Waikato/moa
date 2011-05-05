@@ -13,7 +13,7 @@ public class Entry {
     /**
      * The actual entry data.
      */
-    private ClusKernel data;
+    public ClusKernel data;
     /**
      * The buffer of this entry. It can also be seen as the buffer of the child
      * node, it is here just to simplify the insertion recuersion.
@@ -25,6 +25,14 @@ public class Entry {
      */
     private Node child;
     /**
+     *	A reference to the Entry's parent Entry
+     */
+    private Entry parentEntry;
+    /**
+     *	A reference to the Node, that contains this Entry
+     */
+    private Node node;
+	/**
      * Last time this entry was changed.
      */
     private long timestamp;
@@ -60,16 +68,15 @@ public class Entry {
      * @see #data
      */
     protected Entry(int numberDimensions,
-            Node node, long currentTime) {
-
+            Node node, long currentTime, Entry parentEntry, Node containerNode) {
         this(numberDimensions);
-
         this.child = node;
-
+        this.parentEntry = parentEntry;
+        this.node = containerNode;
         Entry[] entries = node.getEntries();
         for (int i = 0; i < entries.length; i++) {
             Entry entry = entries[i];
-
+            entry.setParentEntry(this);
             if (entry.isEmpty()) {
                 break;
             }
@@ -79,6 +86,8 @@ public class Entry {
 
         this.timestamp = currentTime;
     }
+
+
 
     /**
      * Constructuctor that creates an <code>Entry</code> with an empty buffer
@@ -91,26 +100,52 @@ public class Entry {
      * @see Kernel
      * @see #data
      */
-    protected Entry(int numberDimensions, ClusKernel cluster, long currentTime) {
+    public Entry(int numberDimensions, ClusKernel cluster, long currentTime) {
         this(numberDimensions);
-
         this.data.add(cluster);
-
         this.timestamp = currentTime;
     }
-
+    /**
+     * extended constructor with containerNode and parentEntry
+     * @param numberDimensions
+     * @param cluster
+     * @param currentTime
+     * @param parentEntry
+     * @param containerNode
+     */
+    protected Entry(int numberDimensions, ClusKernel cluster, long currentTime, Entry parentEntry, Node containerNode) {
+        this(numberDimensions);
+        this.parentEntry = parentEntry;
+        this.data.add(cluster);
+        this.node = containerNode;
+        this.timestamp = currentTime;
+    }
     /**
      * Copy constructor. Everythin is copied, including the child.
      * @param other
      */
     protected Entry(Entry other) {
+    	this.parentEntry = other.parentEntry;
+    	this.node = other.node;
         this.buffer = new ClusKernel(other.buffer);
         this.data = new ClusKernel(other.data);
         this.timestamp = other.timestamp;
         this.child = other.child;
+    	if (other.getChild()!=null)
+	    	for (Entry e : other.getChild().getEntries()){
+	    		e.setParentEntry(this);
+	    	}
     }
 
-    /**
+    public Node getNode() {
+		return node;
+	}
+
+	public void setNode(Node node) {
+		this.node = node;
+	}
+
+	/**
      * Clear the Entry. All points in the buffer and in the data cluster are
      * lost, the connection to the child is lost and the timestamp is set to
      * the default value.
@@ -158,7 +193,7 @@ public class Entry {
      * @see Kernel
      * @see #data
      */
-    protected double calcDistance(Entry other) {
+    public double calcDistance(Entry other) {
         return this.getData().calcDistance(other.getData());
     }
 
@@ -177,6 +212,11 @@ public class Entry {
         this.data.add(other.data);
         this.timestamp = currentTime;
         this.child = other.child;
+        if (child!=null){
+        	for (Entry e : child.getEntries()){
+        		e.setParentEntry(this);
+        	}
+        }
     }
 
     /**
@@ -188,7 +228,7 @@ public class Entry {
      * @see #data
      * @see Kernel#add(tree.Kernel) 
      */
-    protected void add(Entry other) {
+    public void add(Entry other) {
         this.data.add(other.data);
     }
 
@@ -270,7 +310,7 @@ public class Entry {
      * in the tree.
      * @return A reference to the child of this <code>Entry</code>
      */
-    protected Node getChild() {
+    public Node getChild() {
         return child;
     }
 
@@ -283,6 +323,13 @@ public class Entry {
     protected ClusKernel getData() {
         return data;
     }
+    public Entry getParentEntry() {
+		return parentEntry;
+	}
+
+	public void setParentEntry(Entry parent) {
+		this.parentEntry = parent;
+	}
 
     /**
      * Setter for the child in this entry. Use to build the tree.
@@ -290,7 +337,7 @@ public class Entry {
      * <code>Entry</code>
      * @see Node
      */
-    protected void setChild(Node child) {
+    public void setChild(Node child) {
         this.child = child;
     }
 
@@ -343,15 +390,20 @@ public class Entry {
     protected void overwriteOldEntry(Entry newEntry) {
         assert (this.getBuffer().isEmpty());
         assert (newEntry.getBuffer().isEmpty());
-
         this.data.overwriteOldCluster(newEntry.data);
+        newEntry.setParentEntry(this.parentEntry);
+        if (newEntry.getChild()!=null)
+        for (Entry e : newEntry.getChild().getEntries())
+        	e.setParentEntry(this);
+        //this.setParentEntry(newEntry.getParentEntry());
+        this.child=newEntry.child;
     }
 
     /**
      * This functions reads every entry in the child node and calculates the
      * corresponding <code>data Kernel</code>. Timestamps are not changed.
      * @see #data
-     * @see Kernel
+     * @see Kerne
      */
     protected void recalculateData() {
         Node currentChild = this.getChild();
@@ -377,7 +429,7 @@ public class Entry {
      * @return True if this entry is deemed irrelevant, false otherwise.
      */
     protected boolean isIrrelevant(double threshold) {
-        return this.getData().getWeightedN() < threshold;
+        return this.getData().getWeight() < threshold;
     }
 
     /**

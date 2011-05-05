@@ -40,8 +40,8 @@ public class BucketManager  {
 		this.clustererRandom = random;
 		this.numberOfBuckets = (int) Math.ceil(Math.log((double)n/(double)maxsize) / Math.log(2) )+2;
 		this.maxBucketsize = maxsize;
-		this.buckets = new Bucket[this.numberOfBuckets+1];
-		for(int i=0; i<this.numberOfBuckets+1; i++){
+		this.buckets = new Bucket[this.numberOfBuckets];
+		for(int i=0; i<this.numberOfBuckets; i++){
 			this.buckets[i] = new Bucket(d,maxsize);
 		}
 		this.treeCoreset = new TreeCoreset();
@@ -89,8 +89,7 @@ public class BucketManager  {
 				/*
 				as long as the next bucket is full output the coreset to the spillover of the next bucket
 				*/
-				
-				while(nextbucket < this.numberOfBuckets && this.buckets[nextbucket].cursize == this.maxBucketsize){
+				while(this.buckets[nextbucket].cursize == this.maxBucketsize){
 					//printf("Bucket %d full \n",nextbucket);
 					this.treeCoreset.unionTreeCoreset(this.maxBucketsize,this.maxBucketsize,
 						this.maxBucketsize,p.dimension, 

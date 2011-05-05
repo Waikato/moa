@@ -17,12 +17,14 @@ public class ClusKernel extends CFCluster{
     public static final double EPSILON = 0.00000001;
     public static final double MIN_VARIANCE = 1e-50; // 1e-100; // 0.0000001;
 
+
     /**
-     * Counting of the number of N weighted by how much time passes between
-     * updates. If this weighted N is under a threshhold, we may consider
+     * Counting of the number of N as normal N is weighted by how much time passes between
+     * updates. If weighted N is under a threshhold, we may consider
      * the cluster irrelevant and we can delete it.
      */
-    private double weightedN;
+
+    private double totalN;
 
     /**
      * A constructor that makes a Kernel which just represents the given point.
@@ -32,7 +34,7 @@ public class ClusKernel extends CFCluster{
      */
     public ClusKernel(double[] point, int dim) {
         super(point, dim);
-        this.weightedN = 1;
+        this.totalN = 1;
     }
 
     /**
@@ -44,7 +46,7 @@ public class ClusKernel extends CFCluster{
      */
     protected ClusKernel(int numberDimensions) {
         super(numberDimensions);
-        this.weightedN = 0;
+        this.totalN = 0;
     }
 
     /**
@@ -53,7 +55,7 @@ public class ClusKernel extends CFCluster{
      */
     protected ClusKernel(ClusKernel other) {
         super(other);
-        this.weightedN = other.getWeightedN();
+        this.totalN = other.getTotalN();
     }
 
     /**
@@ -63,7 +65,7 @@ public class ClusKernel extends CFCluster{
      */
     public void add(ClusKernel other) {
         super.add(other);
-        this.weightedN += other.weightedN;
+        this.totalN += other.totalN;
     }
 
     /**
@@ -96,7 +98,7 @@ public class ClusKernel extends CFCluster{
         }
 
         double weightFactor = AuxiliaryFunctions.weight(negLambda, timeDifference);
-        this.weightedN *= weightFactor;
+        this.N *= weightFactor;
         for (int i = 0; i < LS.length; i++) {
             LS[i] *= weightFactor;
             SS[i] *= weightFactor;
@@ -109,11 +111,11 @@ public class ClusKernel extends CFCluster{
      * @param other The other cluster to which the distance is calculated.
      * @return The distance between this cluster and the other.
      */
-    protected double calcDistance(ClusKernel other) {
+    public double calcDistance(ClusKernel other) {
         // TODO: (Fernando, Felix) Adapt the distance function to the new algorithmn.
 
-        double N1 = this.getWeightedN();
-        double N2 = other.getWeightedN();
+        double N1 = this.getWeight();
+        double N2 = other.getWeight();
 
         double[] thisLS = this.LS;
         double[] otherLS = other.LS;
@@ -124,15 +126,16 @@ public class ClusKernel extends CFCluster{
             res += substracted * substracted;
         }
 
-        return res;
+        // TODO INFO: added sqrt to the computation [PK 10.09.10] 
+        return Math.sqrt(res);
     }
 
     /**
      * Returns the weighted number of points in the cluster.
      * @return The weighted number of points in the cluster.
      */
-    protected double getWeightedN() {
-        return weightedN;
+    private double getTotalN() {
+        return totalN;
     }
 
     /**
@@ -141,29 +144,29 @@ public class ClusKernel extends CFCluster{
      * <code>false</code> otherwise.
      */
     protected boolean isEmpty() {
-        return this.N == 0;
+        return this.totalN == 0;
     }
 
     /**
      * Remove all points from this cluster.
      */
     protected void clear() {
-        this.N = 0;
-        this.weightedN = 0.0;
+        this.totalN = 0;
+        this.N = 0.0;
         Arrays.fill(this.LS, 0.0);
         Arrays.fill(this.SS, 0.0);
     }
 
     /**
-     * Overwrites the LS, SS and weightedN in this cluster to the values of the 
+     * Overwrites the LS, SS and weightedN in this cluster to the values of the
      * given cluster but adds N and classCount of the given cluster to this one.
      * This function is useful when the weight of an entry becomes to small, and
      * we want to forget the information of the old points.
      * @param other The cluster that should overwrite the information.
      */
     protected void overwriteOldCluster(ClusKernel other) {
+        this.totalN = other.totalN;
         this.N = other.N;
-        this.weightedN = other.weightedN;
         AuxiliaryFunctions.overwriteDoubleArray(this.LS, other.LS);
         AuxiliaryFunctions.overwriteDoubleArray(this.SS, other.SS);
 
@@ -171,9 +174,14 @@ public class ClusKernel extends CFCluster{
 
     @Override
     public double getWeight() {
-        return this.weightedN;
+        return this.N;
     }
 
+
+    @Override
+    public CFCluster getCF(){
+        return this;
+    }
 
 
     /**
@@ -182,22 +190,49 @@ public class ClusKernel extends CFCluster{
     public double[] getCenter() {
         assert (!this.isEmpty());
         double res[] = new double[this.LS.length];
-        double weightedSize = this.getWeightedN();
+        double weightedSize = this.getWeight();
         for (int i = 0; i < res.length; i++) {
             res[i] = this.LS[i] / weightedSize;
         }
         return res;
     }
 
+//    @Override
+//    public double getInclusionProbability(Instance instance) {
+//
+//        double dist = calcNormalizedDistance(instance.toDoubleArray());
+//        double res = AuxiliaryFunctions.distanceProbabilty(dist, LS.length);
+//        assert (res >= 0.0 && res <= 1.0) : "Bad confidence " + res + " for"
+//                + " distance " + dist;
+//
+//        return res;
+//    }
+
     @Override
     public double getInclusionProbability(Instance instance) {
-
-        double dist = calcNormalizedDistance(instance.toDoubleArray());
-        double res = AuxiliaryFunctions.distanceProbabilty(dist, LS.length);
-        assert (res >= 0.0 && res <= 1.0) : "Bad confidence " + res + " for"
-                + " distance " + dist;
-
-        return res;
+        //trivial cluster
+        if(N == 1){
+            double distance = 0.0;
+            for (int i = 0; i < LS.length; i++) {
+                double d = LS[i] - instance.value(i);
+                distance += d * d;
+            }
+            distance = Math.sqrt(distance);
+            if( distance < EPSILON )
+                return 1.0;
+            return 0.0;
+        }
+        else{
+            double dist = calcNormalizedDistance(instance.toDoubleArray());
+            if(dist <= getRadius()){
+                return 1;
+            }
+            else{
+                return 0;
+            }
+//            double res = AuxiliaryFunctions.distanceProbabilty(dist, LS.length);
+//            return res;
+        }
     }
 
     /**
@@ -205,53 +240,51 @@ public class ClusKernel extends CFCluster{
      * @return The radius of the cluster.
      * @see Cluster#getRadius()
      */
+    @Override
     public double getRadius() {
-        double[] squaredVarianceVector = this.getSquaredVarianceVector();
+        //trivial cluster
+        if(N == 1) return 0;
 
-        // The value with which every component of the squared root of every
-        // variance vector component is multiplied.
-        // TODO: weight MUST depend on #dimensions! (follow cumulative gamma function!)
-        // SEE: http://en.wikipedia.org/wiki/Incomplete_gamma_function
-        // SEE: http://ieeexplore.ieee.org/iel5/8819/27916/01246282.pdf
-        // Numerical calculation: http://algolist.manual.ru/maths/count_fast/gamma_function.php
-        final double componentWeight = 1;
-
-        // Use standart deviation to calculate average radius
-        double sumOfVariances = 0.0;
-        for (int i = 0; i < squaredVarianceVector.length; i++) {
-            double d = squaredVarianceVector[i];
-            sumOfVariances += componentWeight * Math.sqrt(d);
-        }
-
-        return 1.6*(sumOfVariances / squaredVarianceVector.length);
+        return getDeviation()*1.6;
     }
 
 
+    private double getDeviation(){
+        double[] variance = getVarianceVector();
+        double sumOfDeviation = 0.0;
+        for (int i = 0; i < variance.length; i++) {
+            double d = Math.sqrt(variance[i]);
+            sumOfDeviation += d;
+        }
+        return sumOfDeviation / variance.length;
+    }
 
-    public double[] getSquaredVarianceVector() {
+
+    private double[] getVarianceVector() {
         double[] res = new double[this.LS.length];
         for (int i = 0; i < this.LS.length; i++) {
             double ls = this.LS[i];
             double ss = this.SS[i];
 
-            double lsDivN = ls / this.weightedN;
+            double lsDivN = ls / this.getWeight();
             double lsDivNSquared = lsDivN * lsDivN;
-            double ssDivN = ss / this.weightedN;
+            double ssDivN = ss / this.getWeight();
             res[i] = ssDivN - lsDivNSquared;
 
             // Due to numerical errors, small negative values can occur.
             // We correct this by settings them to almost zero.
             if (res[i] <= 0.0) {
                 if (res[i] > -EPSILON) {
-                    res[i] = MIN_VARIANCE * MIN_VARIANCE;
-                } else {
-                    assert (false) : "Bad variance " + res[i]
-                            + ", weighted N is " + getWeightedN();
+                    res[i] = MIN_VARIANCE;
                 }
+            }
+            else{
+
             }
         }
         return res;
     }
+
 
     /**
      * Calculate the normalized euclidean distance (Mahalanobis distance for
@@ -261,16 +294,15 @@ public class ClusKernel extends CFCluster{
      *
      * TODO: check whether WEIGHTING is correctly applied to variances
      */
+    //???????
     private double calcNormalizedDistance(double[] point) {
-        assert (this.LS.length == point.length);
-        double N1 = this.getWeightedN();
-        double[] thisLS = this.LS;
-        double[] squaredVariances = this.getSquaredVarianceVector();
+        double[] variance = getVarianceVector();
+        double[] center = getCenter();
         double res = 0.0;
 
-        for (int i = 0; i < thisLS.length; i++) {
-            double substracted = (thisLS[i] / N1) - (point[i]);
-            res += (substracted * substracted) / squaredVariances[i];
+        for (int i = 0; i < center.length; i++) {
+            double diff = center[i] - point[i];
+            res += (diff * diff);// variance[i];
         }
         return Math.sqrt(res);
     }

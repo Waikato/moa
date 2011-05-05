@@ -3,8 +3,8 @@ package moa.clusterers.clustree;
 //import cluster.Cluster;
 //import cluster.Clustering;
 //import cluster.StreamClusterer;
+import java.util.ArrayList;
 import java.util.LinkedList;
-import moa.cluster.CFCluster;
 import moa.clusterers.clustree.util.*;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
@@ -17,18 +17,20 @@ import weka.core.Instance;
  * @author sanchez
  */
 public class ClusTree extends AbstractClusterer{
-    public IntOption timeWindowOption = new IntOption("timeWindow",
-			't', "Rang of the window.", 1000);
+	private static final long serialVersionUID = 1L;
+
+	public IntOption horizonOption = new IntOption("horizon",
+			'h', "Range of the window.", 1000);
 
     public IntOption maxHeightOption = new IntOption(
-			"maxHeight", 'h',
+			"maxHeight", 'H',
 			"The maximal height of the tree", 8);
 
     private static int INSERTIONS_BETWEEN_CLEANUPS = 10000;
     /**
      * The root node of the tree.
      */
-    private Node root;
+    protected Node root;
     // Information about the data represented in this tree.
     /**
      * Dimensionality of the data points managed by this tree.
@@ -37,7 +39,7 @@ public class ClusTree extends AbstractClusterer{
     /**
      * Parameter for the weighting function use to weight the entries.
      */
-    private double negLambda;
+    protected double negLambda;
     /**
      * The current height of the tree. Should always be smaller than maxHeight.
      */
@@ -45,7 +47,7 @@ public class ClusTree extends AbstractClusterer{
     /**
      * The maximal height of the tree.
      */
-    private int maxHeight;
+    protected int maxHeight;
     /**
      * This variable is used to keep the inverse height that is stored in every
      * node correct.
@@ -61,14 +63,21 @@ public class ClusTree extends AbstractClusterer{
     /**
      * Number of points inserted into the tree.
      */
-
     private int numberInsertions;
     private long timestamp;
 
-
+    /**
+     * Parameter to determine wich strategy to use
+     */
+    //TODO: Add Option for that
+    protected boolean breadthFirstStrat = false;
+    
+    //TODO: cleanup
+    private Entry alsoUpdate;
+    
     @Override
     public void resetLearningImpl() {
-        negLambda = (1.0 / (double) timeWindowOption.getValue())
+        negLambda = (1.0 / (double) horizonOption.getValue())
                 * (Math.log(weightThreshold) / Math.log(2));
         maxHeight = maxHeightOption.getValue();
         numberDimensions = -1;
@@ -77,7 +86,6 @@ public class ClusTree extends AbstractClusterer{
         height = 0;
         numRootSplits = 0;
         numberInsertions = 0;
-
     }
 
 
@@ -137,32 +145,293 @@ public class ClusTree extends AbstractClusterer{
      * @see Budget
      */
     public void insert(ClusKernel newPoint, Budget budget, long timestamp) {
-
-        Entry rootEntry = new Entry(this.numberDimensions,
-                root, timestamp);
-        ClusKernel carriedBuffer = new ClusKernel(this.numberDimensions);
-        Entry toInsertHere = insert(newPoint, carriedBuffer, root, rootEntry,
-                budget, timestamp);
-
-        if (toInsertHere != null) {
-            this.numRootSplits++;
-            this.height += this.height < this.maxHeight ? 1 : 0;
-
-            Node newRoot = new Node(this.numberDimensions,
-                    toInsertHere.getChild().getRawLevel() + 1);
-            newRoot.addEntry(rootEntry, timestamp);
-            newRoot.addEntry(toInsertHere, timestamp);
-            this.root = newRoot;
+        if (breadthFirstStrat){
+          	insertBreadthFirst(newPoint, budget, timestamp);
+       }
+        else{
+	    	Entry rootEntry = new Entry(this.numberDimensions,
+	                root, timestamp, null, null);
+	        ClusKernel carriedBuffer = new ClusKernel(this.numberDimensions);
+	        Entry toInsertHere = insert(newPoint, carriedBuffer, root, rootEntry,
+	                budget, timestamp);
+	
+	        if (toInsertHere != null) {
+	            this.numRootSplits++;
+	            this.height += this.height < this.maxHeight ? 1 : 0;
+	            
+	            Node newRoot = new Node(this.numberDimensions,
+	                    toInsertHere.getChild().getRawLevel() + 1);
+	            newRoot.addEntry(rootEntry, timestamp);
+	            newRoot.addEntry(toInsertHere, timestamp);
+	            rootEntry.setNode(newRoot);
+	            toInsertHere.setNode(newRoot);
+	            this.root = newRoot;
+	        }
         }
 
         this.numberInsertions++;
         if (this.numberInsertions % INSERTIONS_BETWEEN_CLEANUPS == 0) {
             cleanUp(this.root, 0);
         }
-
     }
 
-    // TODO: Expand all function that work on entries to work with the Budget.
+    /**
+     * insert newPoint into the tree using the BreadthFirst strategy, i.e.: insert into
+     * the closest entry in a leaf node.
+     * @param newPoint
+     * @param budget
+     * @param timestamp
+     * @return
+     */
+	private Entry insertBreadthFirst(ClusKernel newPoint, Budget budget, long timestamp) {
+    	//check all leaf nodes and get the one with the closest entry to newPoint
+		Node bestFit = findBestLeafNode(newPoint);
+    	bestFit.makeOlder(timestamp, negLambda);
+    	Entry parent = bestFit.getEntries()[0].getParentEntry(); 	
+    	// Search for an Entry with a weight under the threshold.
+   	    Entry irrelevantEntry = bestFit.getIrrelevantEntry(this.weightThreshold);
+        int numFreeEntries = bestFit.numFreeEntries();
+        Entry newEntry = new Entry(newPoint.getCenter().length,
+    			newPoint, timestamp, parent, bestFit);
+        //if there is space, add it to the node ( doesn't ever occur, since nodes are created with 3 entries) 
+        if (numFreeEntries>0){
+        	bestFit.addEntry(newEntry, timestamp);
+        }
+        //if outdated cluster in this best fitting node, replace it
+         else if (irrelevantEntry != null) {
+	        irrelevantEntry.overwriteOldEntry(newEntry);
+        }
+        //if there is space/outdated cluster on path to top, split. Else merge without split
+        else {
+        	if (existsOutdatedEntryOnPath(bestFit)||!this.hasMaximalSize()){
+	            // We have to split.
+	        	insertHereWithSplit(newEntry, bestFit, timestamp);
+	        }
+        	else {
+	            mergeEntryWithoutSplit(bestFit, newEntry,
+	                    timestamp);
+	        }
+        }
+        //update all nodes on path to top.
+        if (bestFit.getEntries()[0].getParentEntry()!=null)
+        	updateToTop(bestFit.getEntries()[0].getParentEntry().getNode());
+        return null;
+    }
+ /**
+  * This method checks if there is an outdated (or empty) entry on the path from node to root.
+  * It updates the weights of nodes on path and then checks if it is outdated.
+  * @param node
+  * @return true if an outdated/empty entry exists on the path
+  */
+	private boolean existsOutdatedEntryOnPath(Node node) {
+    	if (node == root){
+    		node.makeOlder(timestamp, negLambda);
+    		return node.getIrrelevantEntry(this.weightThreshold)!=null;
+    	}
+    	do{
+    		node = node.getEntries()[0].getParentEntry().getNode();
+    		node.makeOlder(timestamp, negLambda);
+    		for (Entry e : node.getEntries()){
+    			e.recalculateData();
+    		}
+    		if (node.numFreeEntries()>0)
+    			return true;
+    		if (node.getIrrelevantEntry(this.weightThreshold)!=null)
+    			return true;
+    	}while(node.getEntries()[0].getParentEntry()!=null);
+		return false;
+	}
+    
+    /**
+     * recalculates data for all entries, that lie on the path from the root to the 
+     * Entry toUpdate.
+     */
+	private void updateToTop(Node toUpdate) {
+    	while(toUpdate!=null){
+    		for (Entry e: toUpdate.getEntries())
+    			e.recalculateData();
+    		if (toUpdate.getEntries()[0].getParentEntry()==null)
+    			break;
+    		toUpdate=toUpdate.getEntries()[0].getParentEntry().getNode();
+    	}
+	}
+
+	/**
+	 * Method called by insertBreadthFirst.
+	 * @param toInsert
+	 * @param insertNode
+	 * @param timestamp
+	 * @return
+	 */
+	private Entry insertHereWithSplit(Entry toInsert, Node insertNode,
+			long timestamp) {
+		//Handle root split
+   	    if (insertNode.getEntries()[0].getParentEntry()==null){
+   	    	root.makeOlder(timestamp, negLambda);
+   	    	Entry irrelevantEntry = insertNode.getIrrelevantEntry(this.weightThreshold);
+   	        int numFreeEntries = insertNode.numFreeEntries();
+   	        if (irrelevantEntry != null) {
+   		        irrelevantEntry.overwriteOldEntry(toInsert);
+   	        }
+   	        else if (numFreeEntries>0){
+   	        	insertNode.addEntry(toInsert, timestamp);
+   	        }
+   	        else{
+	            this.numRootSplits++;
+	            this.height += this.height < this.maxHeight ? 1 : 0;
+	            Entry oldRootEntry = new Entry(this.numberDimensions,
+	                    root, timestamp, null, null);
+	            Node newRoot = new Node(this.numberDimensions,
+	                    this.height);
+	            Entry newRootEntry = split(toInsert, root, oldRootEntry, timestamp);
+	            newRoot.addEntry(oldRootEntry, timestamp);
+	            newRoot.addEntry(newRootEntry, timestamp);
+	            this.root = newRoot;
+	            for (Entry c : oldRootEntry.getChild().getEntries())
+	            	c.setParentEntry(root.getEntries()[0]);
+	            for (Entry c : newRootEntry.getChild().getEntries())
+	            	c.setParentEntry(root.getEntries()[1]);
+   	        }
+            return null;
+   	    }
+   	    insertNode.makeOlder(timestamp, negLambda);
+    	Entry irrelevantEntry = insertNode.getIrrelevantEntry(this.weightThreshold);
+        int numFreeEntries = insertNode.numFreeEntries();
+        if (irrelevantEntry != null) {
+	        irrelevantEntry.overwriteOldEntry(toInsert);
+        }
+        else if (numFreeEntries>0){
+        	insertNode.addEntry(toInsert, timestamp);
+        }
+        else {
+	            // We have to split.
+	        	Entry parentEntry = insertNode.getEntries()[0].getParentEntry();
+	        	Entry residualEntry = split(toInsert, insertNode, parentEntry, timestamp);
+	        	if (alsoUpdate!=null){
+	        		alsoUpdate = residualEntry;
+	        	}
+	        	Node nodeForResidualEntry = insertNode.getEntries()[0].getParentEntry().getNode();
+	        	//recursive call
+	        	return insertHereWithSplit(residualEntry, nodeForResidualEntry, timestamp);
+	    }
+        
+        //no Split
+        return null;
+	}
+
+
+	// XXX: Document the insertion when the final implementation is done.
+	private Entry insertHere(Entry newEntry, Node currentNode,
+	        Entry parentEntry, ClusKernel carriedBuffer, Budget budget,
+	        long timestamp) {
+	
+	    int numFreeEntries = currentNode.numFreeEntries();
+	
+	    // Insert the buffer that we carry.
+	    if (!carriedBuffer.isEmpty()) {
+	        Entry bufferEntry = new Entry(this.numberDimensions,
+	                carriedBuffer, timestamp, parentEntry, currentNode);
+	
+	        if (numFreeEntries <= 1) {
+	            // Distance from buffer to entries.
+	            Entry nearestEntryToCarriedBuffer =
+	                    currentNode.nearestEntry(newEntry);
+	            double distanceNearestEntryToBuffer =
+	                    nearestEntryToCarriedBuffer.calcDistance(newEntry);
+	
+	            // Distance between buffer and point to insert.
+	            double distanceBufferNewEntry =
+	                    newEntry.calcDistance(carriedBuffer);
+	
+	            // Best distance between Entrys in the Node.
+	            BestMergeInNode bestMergeInNode =
+	                    calculateBestMergeInNode(currentNode);
+	
+	            // See what the minimal distance is and do the correspoding
+	            // action.
+	            if (distanceNearestEntryToBuffer <= distanceBufferNewEntry
+	                    && distanceNearestEntryToBuffer <= bestMergeInNode.distance) {
+	                // Aggregate buffer entry to nearest entry in node.
+	                nearestEntryToCarriedBuffer.aggregateEntry(bufferEntry,
+	                        timestamp, this.negLambda);
+	            } else if (distanceBufferNewEntry <= distanceNearestEntryToBuffer
+	                    && distanceBufferNewEntry <= bestMergeInNode.distance) {
+	                newEntry.mergeWith(bufferEntry);
+	            } else {
+	                currentNode.mergeEntries(bestMergeInNode.entryPos1,
+	                        bestMergeInNode.entryPos2);
+	                currentNode.addEntry(bufferEntry, timestamp);
+	            }
+	
+	        } else {
+	            assert (currentNode.isLeaf());
+	            currentNode.addEntry(bufferEntry, timestamp);
+	        }
+	    }
+	
+	    // Normally the insertion of the carries buffer does not change the
+	    // number of free entries, but in case of future changes we calculate
+	    // the number again.
+	    numFreeEntries = currentNode.numFreeEntries();
+	
+	    // Search for an Entry with a weight under the threshold.
+	    Entry irrelevantEntry = currentNode.getIrrelevantEntry(this.weightThreshold);
+	    if (currentNode.isLeaf() && irrelevantEntry != null) {
+	        irrelevantEntry.overwriteOldEntry(newEntry);
+	    } else if (numFreeEntries >= 1) {
+	        currentNode.addEntry(newEntry, timestamp);
+	    } else {
+	        if (currentNode.isLeaf() && (this.hasMaximalSize()
+	                || !budget.hasMoreTime())) {
+	            mergeEntryWithoutSplit(currentNode, newEntry,
+	                    timestamp);
+	        } else {
+	            // We have to split.
+	            return split(newEntry, currentNode, parentEntry, timestamp);
+	        }
+	    }
+	
+	    return null;
+	}
+
+	/**
+	 * This method calculates the distances between the new point and each Entry in a leaf node.
+	 * It returns the node that contains the entry with the smallest distance
+	 * to the new point.
+	 * @param newPoint
+	 * @return best fitting node
+	 */
+	private Node findBestLeafNode(ClusKernel newPoint) {
+    	double minDist = Double.MAX_VALUE;
+    	Node bestFit = null;
+    	for (Node e: collectLeafNodes(root)){
+    		if (newPoint.calcDistance(e.nearestEntry(newPoint).getData())<minDist){
+    			bestFit = e;
+    			minDist = newPoint.calcDistance(e.nearestEntry(newPoint).getData());
+    		}
+    	}
+    	if (bestFit!=null)
+    		return bestFit;
+    	else
+    		return root;
+	}
+    
+    private ArrayList<Node> collectLeafNodes(Node curr){
+    	ArrayList<Node> toReturn = new ArrayList<Node>();
+    	if (curr==null)
+    		return toReturn;
+    	if	(curr.isLeaf()){
+    		toReturn.add(curr);
+    		return toReturn;
+    	}
+    	else{
+    		for (Entry e : curr.getEntries())
+    			toReturn.addAll(collectLeafNodes(e.getChild()));
+    		return toReturn;
+    	}
+    }
+
+	// TODO: Expand all function that work on entries to work with the Budget.
     private Entry insert(ClusKernel pointToInsert, ClusKernel carriedBuffer,
             Node currentNode, Entry parentEntry, Budget budget, long timestamp) {
         assert (currentNode != null);
@@ -179,7 +448,7 @@ public class ClusTree extends AbstractClusterer{
         if (currentNode.isLeaf()) {
             // At the end of the function the entry will be inserted.
             toInsertHere = new Entry(this.numberDimensions,
-                    pointToInsert, timestamp);
+                    pointToInsert, timestamp, parentEntry, currentNode);
         } else {
 
             Entry bestEntry = currentNode.nearestEntry(pointToInsert);
@@ -231,80 +500,6 @@ public class ClusTree extends AbstractClusterer{
 
         // If nothing else needs to be done in all the above levels
         // return null to signalize it.
-        return null;
-    }
-
-    // XXX: Document the insertion when the final implementation is done.
-    private Entry insertHere(Entry newEntry, Node currentNode,
-            Entry parentEntry, ClusKernel carriedBuffer, Budget budget,
-            long timestamp) {
-
-        int numFreeEntries = currentNode.numFreeEntries();
-
-        // Insert the buffer that we carry.
-        if (!carriedBuffer.isEmpty()) {
-            Entry bufferEntry = new Entry(this.numberDimensions,
-                    carriedBuffer, timestamp);
-
-            if (numFreeEntries <= 1) {
-                // Distance from buffer to entries.
-                Entry nearestEntryToCarriedBuffer =
-                        currentNode.nearestEntry(newEntry);
-                double distanceNearestEntryToBuffer =
-                        nearestEntryToCarriedBuffer.calcDistance(newEntry);
-
-                // Distance between buffer and point to insert.
-                double distanceBufferNewEntry =
-                        newEntry.calcDistance(carriedBuffer);
-
-                // Best distance between Entrys in the Node.
-                BestMergeInNode bestMergeInNode =
-                        calculateBestMergeInNode(currentNode);
-
-                // See what the minimal distance is and do the correspoding
-                // action.
-                if (distanceNearestEntryToBuffer <= distanceBufferNewEntry
-                        && distanceNearestEntryToBuffer <= bestMergeInNode.distance) {
-                    // Aggregate buffer entry to nearest entry in node.
-                    nearestEntryToCarriedBuffer.aggregateEntry(bufferEntry,
-                            timestamp, this.negLambda);
-                } else if (distanceBufferNewEntry <= distanceNearestEntryToBuffer
-                        && distanceBufferNewEntry <= bestMergeInNode.distance) {
-                    newEntry.mergeWith(bufferEntry);
-                } else {
-                    currentNode.mergeEntries(bestMergeInNode.entryPos1,
-                            bestMergeInNode.entryPos2);
-                    currentNode.addEntry(bufferEntry, timestamp);
-                }
-
-            } else {
-                assert (currentNode.isLeaf());
-                currentNode.addEntry(bufferEntry, timestamp);
-            }
-        }
-
-        // Normally the insertion of the carries buffer does not change the
-        // number of free entries, but in case of future changes we calculate
-        // the number again.
-        numFreeEntries = currentNode.numFreeEntries();
-
-        // Search for an Entry with a weight under the threshold.
-        Entry irrelevantEntry = currentNode.getIrrelevantEntry(this.weightThreshold);
-        if (currentNode.isLeaf() && irrelevantEntry != null) {
-            irrelevantEntry.overwriteOldEntry(newEntry);
-        } else if (numFreeEntries >= 1) {
-            currentNode.addEntry(newEntry, timestamp);
-        } else {
-            if (currentNode.isLeaf() && (this.hasMaximalSize()
-                    || !budget.hasMoreTime())) {
-                mergeEntryWithoutSplit(currentNode, newEntry,
-                        timestamp);
-            } else {
-                // We have to split.
-                return split(newEntry, currentNode, parentEntry, timestamp);
-            }
-        }
-
         return null;
     }
 
@@ -461,11 +656,23 @@ public class ClusTree extends AbstractClusterer{
         // Set the other node into the tree.
         parentEntry.setChild(node);
         parentEntry.recalculateData();
-
+        int count = 0;
+        for (Entry e : node.getEntries()){
+        	e.setParentEntry(parentEntry);
+        	if (e.getData().N!=0)
+        		count++;
+        }
+        //System.out.println(count);
         // Generate a new entry for the residual node.
         Entry residualEntry = new Entry(this.numberDimensions,
-                residualNode, timestamp);
-
+                residualNode, timestamp, parentEntry, node);
+        count=0;
+        for (Entry e: residualNode.getEntries()){
+        	e.setParentEntry(residualEntry);
+        	if (e.getData().N!=0)
+        		count++;
+        }
+        //System.out.println(count);
         return residualEntry;
     }
 
@@ -512,7 +719,7 @@ public class ClusTree extends AbstractClusterer{
      * @param currentTime The current time
      * @return The kernels at the leaf level as a clustering
      */
-
+    //TODO: Microcluster unter dem Threshhold nich zurckgeben (WIe bei outdated entries)
     @Override
     public Clustering getMicroClusteringResult() {
         return getClustering(timestamp, -1);
@@ -539,7 +746,8 @@ public class ClusTree extends AbstractClusterer{
 
         while (!queue.isEmpty()) {
             Node current = queue.remove();
-
+           // if (current == null)
+           // 	continue;
             int currentLevel = current.getLevel(this);
             boolean isLeaf = (current.isLeaf() && currentLevel <= maxHeight)
                     || currentLevel == maxHeight;
@@ -554,13 +762,17 @@ public class ClusTree extends AbstractClusterer{
                     if (entry == null || entry.isEmpty()) {
                         continue;
                     }
+                    // XXX
+                    entry.makeOlder(currentTime, this.negLambda);
+                    if (entry.isIrrelevant(this.weightThreshold))
+                    	continue;
 
-                    long diff = currentTime - entry.getTimestamp();
                     ClusKernel gaussKernel = new ClusKernel(entry.getData());
 
-                    if (diff > 0) {
-                        gaussKernel.makeOlder(diff, negLambda);
-                    }
+//                  long diff = currentTime - entry.getTimestamp();
+//                    if (diff > 0) {
+//                        gaussKernel.makeOlder(diff, negLambda);
+//                    }
 
                     clusters.add(gaussKernel);
                 }

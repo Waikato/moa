@@ -86,7 +86,7 @@ public class MicroCluster extends CFCluster {
 
     @Override
     public double getRadius() {
-        return getRadius(currentTimestamp.getTimestamp())*1.6;
+        return getRadius(currentTimestamp.getTimestamp())*2;
     }
 
     public double getRadius(long timestamp) {
@@ -128,5 +128,14 @@ public class MicroCluster extends CFCluster {
             return 1.0;
         }
         return 0.0;
+    }
+
+    @Override
+    public CFCluster getCF(){
+        //SphereCluster sc = new SphereCluster(getCenter(), getRadius(), getWeight());
+        CFCluster cf = copy();
+        double w = getWeight();
+        cf.setN(w);
+        return cf;
     }
 }

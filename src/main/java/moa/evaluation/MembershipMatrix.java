@@ -15,6 +15,7 @@ public class MembershipMatrix {
     int total_entries;
     int class_distribution[];
     int total_class_entries;
+    int initalBuildTimestamp = -1;
 
     public MembershipMatrix(Clustering foundClustering, ArrayList<DataPoint> points) {
         classmap = Clustering.classValues(points);
@@ -52,6 +53,8 @@ public class MembershipMatrix {
             }
 
         }
+        
+        initalBuildTimestamp = points.get(0).getTimestamp();
     }
 
     public int getClusterClassWeight(int i, int j){
@@ -121,6 +124,9 @@ public class MembershipMatrix {
     }
 
 
-
+    public int getInitalBuildTimestamp(){
+    	return initalBuildTimestamp;
+    }
+    
 
 }

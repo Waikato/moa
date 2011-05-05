@@ -53,7 +53,7 @@ import java.util.ArrayList;
 * {@literal Date: 2007/11/18 21:57}
 *
 * used for moa for calculating most compact sphere cluster
-* modified by Timm Jansen (jansen@cs.rwth-aachen.de) to be used with high 
+* modified by Timm Jansen (timm.jansen@gmail.com) to be used with high 
 * dimensional points
 *
 */

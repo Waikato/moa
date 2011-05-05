@@ -1,6 +1,7 @@
-package moa.gui.visualization;
+package moa.gui;
 
 import java.io.BufferedWriter;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,6 +13,7 @@ import moa.clusterers.ClusterGenerator;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
 import moa.clusterers.clustream.Clustream;
+//import moa.evaluation.CMD;
 import moa.evaluation.F1;
 import moa.evaluation.General;
 import moa.evaluation.MeasureCollection;
@@ -19,12 +21,14 @@ import moa.evaluation.SSQ;
 import moa.evaluation.SilhouetteCoefficient;
 import moa.evaluation.StatisticalCollection;
 import moa.evaluation.EntropyCollection;
+import moa.gui.visualization.DataPoint;
+import moa.gui.visualization.RunVisualizer;
 import moa.streams.clustering.ClusterEvent;
 import weka.core.Instance;
-import weka.core.DenseInstance;
 import moa.streams.clustering.ClusterEventListener;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
+import weka.core.DenseInstance;
 
 /**
  *
@@ -60,11 +64,29 @@ public class BatchCmd implements ClusterEventListener{
 		clusterer.prepareForUse();
 	}
 
+	private ArrayList<ClusterEvent> getEventList(){
+		return clusterEvents;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static ArrayList<Class> getMeasureSelection(int selection){
+		ArrayList<Class>mclasses = new ArrayList<Class>();
+		//mclasses.add(CMD.class);
+		mclasses.add(EntropyCollection.class);
+		mclasses.add(F1.class);
+		mclasses.add(General.class);
+		mclasses.add(SSQ.class);
+		mclasses.add(SilhouetteCoefficient.class);
+		mclasses.add(StatisticalCollection.class);
+
+		return mclasses;
+	}
+
 
 	public static void main(String[] args){
 		RandomRBFGeneratorEvents stream = new RandomRBFGeneratorEvents();
 		AbstractClusterer clusterer = new Clustream();
-		int measureCollectionType = 1;
+		int measureCollectionType = 0;
 		int amountInstances = 20000;
 		String testfile = "d:\\data\\test.csv";
 
@@ -76,7 +98,7 @@ public class BatchCmd implements ClusterEventListener{
 			int measureCollectionType, int amountInstances, String outputFile){
 		// create the measure collection 
 		MeasureCollection[] measures = getMeasures(getMeasureSelection(measureCollectionType));
-
+		
 		// run the batch job
 		BatchCmd batch = new BatchCmd(clusterer, stream, measures, amountInstances);
 		batch.run();
@@ -84,7 +106,7 @@ public class BatchCmd implements ClusterEventListener{
 		// read events and horizon
 		ArrayList<ClusterEvent> clusterEvents = batch.getEventList();
 		int horizon = stream.decayHorizonOption.getValue();
-
+		
 		// write results to file
 		exportCSV(outputFile, clusterEvents, measures, horizon);
 	}
@@ -117,7 +139,7 @@ public class BatchCmd implements ClusterEventListener{
 
 			if(counter <= 0){
 				//                if(m_timestamp%(totalInstances/10) == 0)
-				//                    System.out.println("Thread"+threadID+":"+(m_timestamp*100/totalInstances)+"% ");
+					//                    System.out.println("Thread"+threadID+":"+(m_timestamp*100/totalInstances)+"% ");
 				for(DataPoint p:pointBuffer0)
 					p.updateWeight(m_timestamp, decay_rate);
 
@@ -126,14 +148,14 @@ public class BatchCmd implements ClusterEventListener{
 
 				gtClustering0 = new Clustering(pointBuffer0);
 				if(useMicroGT && stream instanceof RandomRBFGeneratorEvents){
-					gtClustering0 = ((RandomRBFGeneratorEvents)stream).getClustering();
+					gtClustering0 = ((RandomRBFGeneratorEvents)stream).getMicroClustering();
 				}
 
 				clustering0 = clusterer.getClusteringResult();
 				if(clusterer.implementsMicroClusterer()){
 					if(clusterer instanceof ClusterGenerator
 							&& stream instanceof RandomRBFGeneratorEvents){
-						((ClusterGenerator)clusterer).setSourceClustering(((RandomRBFGeneratorEvents)stream).getClustering());
+						((ClusterGenerator)clusterer).setSourceClustering(((RandomRBFGeneratorEvents)stream).getMicroClustering());
 					}
 					Clustering microC = clusterer.getMicroClusteringResult();
 					if(clusterer.evaluateMicroClusteringOption.isSet()){
@@ -161,38 +183,6 @@ public class BatchCmd implements ClusterEventListener{
 	}
 
 	@SuppressWarnings("unchecked")
-	private static ArrayList<Class> getMeasureSelection(int selection){
-		final int ENTROPY = 1;
-		final int INTERNAL = 2;
-		final int STATISTICAL = 3;
-
-		ArrayList<Class>mclasses = new ArrayList<Class>();
-		mclasses.add(General.class);
-
-		switch(selection) {
-		case ENTROPY:
-			mclasses.add(EntropyCollection.class);
-			mclasses.add(F1.class);
-			break;
-		case INTERNAL:
-			mclasses.add(SSQ.class);
-			mclasses.add(SilhouetteCoefficient.class);
-			break;
-		case STATISTICAL:
-			mclasses.add(StatisticalCollection.class);
-			break;
-		default:
-			mclasses.add(EntropyCollection.class);
-			mclasses.add(F1.class);
-			mclasses.add(SSQ.class);
-			mclasses.add(SilhouetteCoefficient.class);
-			mclasses.add(StatisticalCollection.class);
-		}
-
-		return mclasses;
-	}
-
-	@SuppressWarnings("unchecked")
 	private static MeasureCollection[] getMeasures(ArrayList<Class> measure_classes){
 		MeasureCollection[] measures = new MeasureCollection[measure_classes.size()];
 		for (int i = 0; i < measure_classes.size(); i++) {
@@ -207,12 +197,6 @@ public class BatchCmd implements ClusterEventListener{
 		}
 		return measures;
 	}
-
-	
-	private ArrayList<ClusterEvent> getEventList(){
-		return clusterEvents;
-	}
-	
 
 	public void changeCluster(ClusterEvent e) {
 		if(clusterEvents!=null) clusterEvents.add(e);

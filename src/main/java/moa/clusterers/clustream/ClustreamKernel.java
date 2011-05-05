@@ -2,7 +2,6 @@ package moa.clusterers.clustream;
 import java.util.ArrayList;
 import java.util.Random;
 import moa.cluster.CFCluster;
-import weka.core.DenseInstance;
 import weka.core.Instance;
 
 /**
@@ -15,16 +14,23 @@ public class ClustreamKernel extends CFCluster {
     protected double LST;
     protected double SST;
 
+    int m;
+    double t;
 
-    public ClustreamKernel( Instance instance, int dimensions, long timestamp ) {
+
+    public ClustreamKernel( Instance instance, int dimensions, long timestamp , double t, int m) {
         super(instance, dimensions);
+        this.t = t;
+        this.m = m;
 	this.LST = timestamp;
 	this.SST = timestamp*timestamp;
     }
 
-    public ClustreamKernel( ClustreamKernel cluster ) {
+    public ClustreamKernel( ClustreamKernel cluster, double t, int m ) {
         super(cluster);
-	this.LST = cluster.LST;
+        this.t = t;
+        this.m = m;
+        this.LST = cluster.LST;
 	this.SST = cluster.SST;
     }
 
@@ -39,7 +45,9 @@ public class ClustreamKernel extends CFCluster {
 	}
     }
 
-    public void add( ClustreamKernel other ) {
+    @Override
+    public void add( CFCluster other2 ) {
+        ClustreamKernel other = (ClustreamKernel) other2;
 	assert( other.LS.length == this.LS.length );
 	this.N += other.N;
 	this.LST += other.LST;
@@ -52,10 +60,10 @@ public class ClustreamKernel extends CFCluster {
     }
 
     public double getRelevanceStamp() {
-	if ( N < 2*Clustream.m )
+	if ( N < 2*m )
 	    return getMuTime();
 
-	return getMuTime() + getSigmaTime() * getQuantile( ((double)Clustream.m)/(2*N) );
+	return getMuTime() + getSigmaTime() * getQuantile( ((double)m)/(2*N) );
     }
 
     private double getMuTime() {
@@ -75,8 +83,15 @@ public class ClustreamKernel extends CFCluster {
     public double getRadius() {
         //trivial cluster
         if(N == 1) return 0;
+        if(t==1)
+            t=1;
 
-        return getDeviation()*1.6;
+        return getDeviation()*t;
+    }
+
+    @Override
+    public CFCluster getCF(){
+        return this;
     }
 
 
@@ -227,18 +242,19 @@ public class ClustreamKernel extends CFCluster {
         return res;
     }
 
-    @Override
-    public Instance sample(Random random ) {
-	double[] res = new double[LS.length];
-	double[] variance = getVarianceVector();
-        double[] center = getCenter();
-	for ( int i = 0; i < res.length; i++ ) {
-	    double radius = Math.sqrt(variance[i]);
-	    res[i] = center[i] + random.nextGaussian() * radius;
-	}
-
-	return new DenseInstance (1.0,res);
-    }
+//    @Override
+//    public Instance sample(Random random ) {
+//	double[] res = new double[LS.length];
+//	double[] variance = getVarianceVector();
+//        double[] center = getCenter();
+//        double radius = getRadius();
+//	for ( int i = 0; i < res.length; i++ ) {
+//
+//	    res[i] = center[i] + random.nextGaussian() * radius;
+//	}
+//
+//	return new Instance (1.0,res);
+//    }
 
     @Override
     protected void getClusterSpecificInfo(ArrayList<String> infoTitle, ArrayList<String> infoValue) {

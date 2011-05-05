@@ -2,7 +2,7 @@ package moa.gui.visualization;
 
 import weka.gui.explorer.Explorer;
 import weka.core.Memory;
-import weka.gui.LookAndFeel;
+//import weka.gui.LookAndFeel;
 import java.awt.BorderLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -18,7 +18,7 @@ import weka.core.Instances;
  *
  * Copy of main() from weka.gui.Explorer to start the Explorer with the
  * processed data already loaded
- * 
+ *
  */
 public class WekaExplorer {
 
@@ -27,10 +27,10 @@ public class WekaExplorer {
     private static Memory m_Memory = new Memory(true);
 
     public WekaExplorer(Instances instances) {
-
-        weka.core.logging.Logger.log(weka.core.logging.Logger.Level.INFO, "Logging started");
-
-        LookAndFeel.setLookAndFeel();
+        //weka.core.logging.Logger.log(weka.core.logging.Logger.Level.INFO, "Logging started");
+        try {
+            javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        } catch (Exception e) {}
 
         try {
             // uncomment to disable the memory management:

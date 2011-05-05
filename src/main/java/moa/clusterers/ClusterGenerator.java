@@ -1,11 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package moa.clusterers;
 
 import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.Random;
 import moa.cluster.Clustering;
@@ -22,7 +18,9 @@ import weka.core.Instance;
  */
 public class ClusterGenerator extends AbstractClusterer{
 
-    public IntOption timeWindowOption = new IntOption("timeWindow",
+	private static final long serialVersionUID = 1L;
+
+	public IntOption timeWindowOption = new IntOption("timeWindow",
 			't', "Rang of the window.", 1000);
 
     public FloatOption radiusDecreaseOption = new FloatOption("radiusDecrease", 'r',
@@ -34,16 +32,20 @@ public class ClusterGenerator extends AbstractClusterer{
     public FloatOption positionOffsetOption = new FloatOption("positionOffset", 'p',
                 "The average radii of the centroids in the model.", 0, 0, 1);
 
-//    public FloatOption microclusterOverlapOption = new FloatOption("microclusterOverlap", 'o',
-//                "Allowed overlap of microclusters", 0.5, 0.0001, 1);
+    public FloatOption clusterRemoveOption = new FloatOption("clusterRemove", 'D',
+                "Deletes complete clusters from the clustering.", 0, 0, 1);
+
+    public FloatOption joinClustersOption = new FloatOption("joinClusters", 'j',
+            "Join two clusters if their hull distance is less minRadius times this factor.", 0, 0, 1);
+
+    public FloatOption clusterAddOption = new FloatOption("clusterAdd", 'A',
+                "Adds additional clusters.", 0, 0, 1);
 
     private static double err_intervall_width = 0.0;
     private ArrayList<DataPoint> points;
     private int instanceCounter;
     private int windowCounter;
     private Random random;
-    private double overlapThreshold;
-    private int microInitMinPoints = 5;
     private Clustering sourceClustering = null;
 
     @Override
@@ -52,7 +54,8 @@ public class ClusterGenerator extends AbstractClusterer{
         instanceCounter = 0;
         windowCounter = 0;
         random = new Random(227);
-//        overlapThreshold = microclusterOverlapOption.getValue();
+
+        //joinClustersOption.set();
         //evaluateMicroClusteringOption.set();
     }
 
@@ -82,11 +85,14 @@ public class ClusterGenerator extends AbstractClusterer{
         //System.out.println("Numcluster:"+clustering.size()+" / "+num);
         //Clustering source_clustering = new Clustering(points, overlapThreshold, microInitMinPoints);
         if(sourceClustering == null){
+
             System.out.println("You need to set a source clustering for the ClusterGenerator to work");
             return null;
         }
         return alterClustering(sourceClustering);
     }
+
+
 
     public Clustering getClusteringResult(){
         sourceClustering = new Clustering(points);
@@ -111,6 +117,16 @@ public class ClusterGenerator extends AbstractClusterer{
         //0: no changes
         //1: distance between centers is 2 * original radius
         double errLevelPosition = positionOffsetOption.getValue();
+
+
+        int numRemoveCluster = (int)(clusterRemoveOption.getValue()*scclustering.size());
+
+        int numAddCluster = (int)(clusterAddOption.getValue()*scclustering.size());
+
+        for (int c = 0; c < numRemoveCluster; c++) {
+            int delId = random.nextInt(scclustering.size());
+            scclustering.remove(delId);
+        }
 
         int numCluster = scclustering.size();
         double[] err_seeds = new double[numCluster];
@@ -209,12 +225,102 @@ public class ClusterGenerator extends AbstractClusterer{
 
             clustering.add(newCluster);
         }
+
+        if(joinClustersOption.getValue() > 0){
+            clustering = joinClusters(clustering);
+        }
+
+        //add new clusters by copying clusters and set a random center
+        for (int c = 0; c < numAddCluster; c++) {
+            int copyId = random.nextInt(clustering.size());
+            SphereCluster scorg = (SphereCluster)clustering.get(copyId);
+            int dim = scorg.getCenter().length;
+            double[] center = new double [dim];
+            double radius = scorg.getRadius();
+
+            boolean outofbounds = true;
+            int tryCounter = 0;
+            while(outofbounds && tryCounter < 20){
+                tryCounter++;
+                outofbounds = false;
+                for (int j = 0; j < center.length; j++) {
+                     center[j] = random.nextDouble();
+                     if(center[j]- radius < 0 || center[j] + radius > 1){
+                        outofbounds = true;
+                        break;
+                     }
+                }
+            }
+            if(outofbounds){
+                System.out.println("Coludn't place additional cluster");
+            }
+            else{
+                SphereCluster scnew = new SphereCluster(center, radius, scorg.getWeight()/2);
+                scorg.setWeight(scorg.getWeight()-scnew.getWeight());
+                clustering.add(scnew);
+            }
+        }
+
         return clustering;
 
     }
 
 
 
+    private Clustering joinClusters(Clustering clustering){
+
+        double radiusFactor = joinClustersOption.getValue();
+        boolean[] merged = new boolean[clustering.size()];
+
+        Clustering mclustering = new Clustering();
+
+        if(radiusFactor >0){
+            for (int c1 = 0; c1 < clustering.size(); c1++) {
+                SphereCluster sc1 = (SphereCluster) clustering.get(c1);
+                double minDist = Double.MAX_VALUE;
+                double minOver = 1;
+                int maxindexCon = -1;
+                int maxindexOver = -1;
+                for (int c2 = 0; c2 < clustering.size(); c2++) {
+                    SphereCluster sc2 = (SphereCluster) clustering.get(c2);
+//                    double over = sc1.overlapRadiusDegree(sc2);
+//                    if(over > 0 && over < minOver){
+//                       minOver = over;
+//                       maxindexOver = c2;
+//                    }
+                    double dist = sc1.getHullDistance(sc2);
+                    double threshold = Math.min(sc1.getRadius(), sc2.getRadius())*radiusFactor;
+                    if(dist > 0 && dist < minDist && dist < threshold){
+                            minDist = dist;
+                            maxindexCon = c2;
+                    }
+                }
+                int maxindex = -1;
+                if(maxindexOver!=-1)
+                    maxindex = maxindexOver;
+                else
+                    maxindex = maxindexCon;
+
+                if(maxindex!=-1 && !merged[c1]){
+                    merged[c1]=true;
+                    merged[maxindex]=true;
+                    SphereCluster scnew = new SphereCluster(sc1.getCenter(),sc1.getRadius(),sc1.getWeight());
+                    SphereCluster sc2 = (SphereCluster) clustering.get(maxindex);
+                    scnew.merge(sc2);
+                    mclustering.add(scnew);
+                }
+            }
+        }
+
+        for (int i = 0; i < merged.length; i++) {
+            if(!merged[i])
+                 mclustering.add(clustering.get(i));
+        }
+
+
+        return mclustering;
+
+    }
 
 
 

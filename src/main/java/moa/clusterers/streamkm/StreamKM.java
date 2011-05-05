@@ -14,18 +14,17 @@ import weka.core.Instance;
 Christian Sohler, Kamil Swierkot
  */
 
-
 public class StreamKM extends AbstractClusterer {
 
     public IntOption sizeCoresetOption = new IntOption("sizeCoreset",
-			's', "Size of the coreset.", 100);
+			's', "Size of the coreset.", 10000);
 
     public IntOption numClustersOption = new IntOption(
 			"numClusters", 'k',
 			"Number of clusters to compute.", 5);
 			
 	public IntOption widthOption = new IntOption("width",
-			'w', "Size of Window for training learner.", 1000, 0, Integer.MAX_VALUE);
+			'w', "Size of Window for training learner.", 100000, 0, Integer.MAX_VALUE);
 			
 	public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
 					"Seed for random behaviour of the classifier.", 1);	
@@ -43,11 +42,6 @@ public class StreamKM extends AbstractClusterer {
 	protected BucketManager manager;
 	
 	protected boolean initialized = false;	
-	protected boolean clustersComputed = false;
-	
-	//protected Point[] points;
-	
-	protected Point[] tmpCentresStreamingCoreset;
 	
 	private final static double THRESHOLD = 1.000;
 
@@ -61,8 +55,6 @@ public class StreamKM extends AbstractClusterer {
 
 		//initalize random generator with seed
 		this.clustererRandom = new MTRandom(this.randomSeedOption.getValue());
-		
-		//this.points = new Point[1000];
 	}
 
     @Override
@@ -76,13 +68,8 @@ public class StreamKM extends AbstractClusterer {
 		
 		manager.insertPoint(new Point(inst, this.numberInstances));     
         
-        //this.points[this.numberInstances % widthOption.getValue()] = new Point(inst, this.numberInstances);
-        //if ((this.numberInstances < 15) ) 
-        //	System.out.println(this.points[this.numberInstances].coordinates[0]+" "+this.points[this.numberInstances].coordinates[1]);
         this.numberInstances++;
-		if ((this.numberInstances)% widthOption.getValue() == 0) {
-			
-			this.clustersComputed = true;
+		if (this.numberInstances % widthOption.getValue() == 0) {
 			
 			Point[] streamingCoreset = manager.getCoresetFromManager(dimension);
 			
@@ -90,18 +77,15 @@ public class StreamKM extends AbstractClusterer {
 			double minCost = 0.0;
 			double curCost = 0.0;
 			
-			minCost = lloydPlusPlus(numberOfCentres, coresetsize, dimension, streamingCoreset);
+			minCost = lloydPlusPlus(numberOfCentres, coresetsize, dimension, streamingCoreset, centresStreamingCoreset);
 			curCost = minCost;
-			centresStreamingCoreset = this.tmpCentresStreamingCoreset.clone();
 
 			for(int i = 1; i < 5; i++){
-				
-				curCost = lloydPlusPlus(numberOfCentres, coresetsize, dimension, streamingCoreset);
-				//System.out.println(i+" "+curCost+" "+tmpCentresStreamingCoreset.length);
+				Point[] tmpCentresStreamingCoreset= new Point[0];
+				curCost = lloydPlusPlus(numberOfCentres, coresetsize, dimension, streamingCoreset, tmpCentresStreamingCoreset);
 				if(curCost < minCost) {
 					minCost = curCost;
-					centresStreamingCoreset = this.tmpCentresStreamingCoreset.clone();
-					
+					centresStreamingCoreset = tmpCentresStreamingCoreset;
 				}
 		    }
 		}
@@ -128,27 +112,26 @@ public class StreamKM extends AbstractClusterer {
 
     @Override
     public Clustering getClusteringResult() {
-		if ( !this.clustersComputed ) {
-			return new Clustering( new Cluster[0] );
+		if ( !this.initialized ) {
+			return new Clustering();
 		}
-
-		Cluster[] res = new Cluster[centresStreamingCoreset.length];
 		
-		
+		Clustering clustering = new Clustering();
 		for ( int i = 0; i < centresStreamingCoreset.length; i++ ) {
-			res[i] = centresStreamingCoreset[i].toCluster();
-			//System.out.println(i+" "+res[i].getCenter()[0]+" "+res[i].getCenter()[1]+" ");
+			if(centresStreamingCoreset[i] != null){
+				clustering.add(centresStreamingCoreset[i].toCluster());
+			}
 		}
-
-		return new Clustering( res );
+		
+		return clustering;
     }
 
     
-    public double lloydPlusPlus(int k, int n, int d, Point points[]){
-		//System.out.println("starting kMeans++");
+    public double lloydPlusPlus(int k, int n, int d, Point points[], Point centres[]){
+		//printf("starting kMeans++\n");
 		//choose random centres
-		this.tmpCentresStreamingCoreset = chooseRandomCentres(k, n, d, points);
-		double cost = targetFunctionValue(k, n, this.tmpCentresStreamingCoreset, points);
+		centres = chooseRandomCentres(k, n, d, points);
+		double cost = targetFunctionValue(k, n, centres, points);
 		double newCost = cost;
 		
 
@@ -165,7 +148,7 @@ public class StreamKM extends AbstractClusterer {
 			}
 			//compute centres of mass
 			for(i = 0; i < n; i++){
-				int centre = points[i].determineClusterCentreKMeans(k,this.tmpCentresStreamingCoreset);
+				int centre = points[i].determineClusterCentreKMeans(k,centres);
 				for(int l = 0; l < massCentres[centre].dimension; l++){
 					if(points[i].weight != 0.0)
 						massCentres[centre].coordinates[l] += points[i].coordinates[l];
@@ -176,32 +159,29 @@ public class StreamKM extends AbstractClusterer {
 			
 			//move centres
 			for(i=0; i<k; i++){
-				for(int l=0; l < this.tmpCentresStreamingCoreset[i].dimension; l++){
-					this.tmpCentresStreamingCoreset[i].coordinates[l] = massCentres[i].coordinates[l];
-					this.tmpCentresStreamingCoreset[i].weight = numberOfPoints[i];
+				for(int l=0; l<centres[i].dimension; l++){
+					centres[i].coordinates[l] = massCentres[i].coordinates[l];
+					centres[i].weight = numberOfPoints[i];
 				}
 			}
 			
 			//calculate costs
-			newCost = targetFunctionValue(k, n, this.tmpCentresStreamingCoreset, points);
-			//System.out.println("old cost: "+cost+", new cost: "+newCost);
+			newCost = targetFunctionValue(k, n, centres, points);
+			//printf("old cost:%f, new cost:%f \n",cost,newCost);
 		} while (newCost < THRESHOLD * cost);
 
-
-		//System.out.println("Centres: \n");
+		/*printf("Centres: \n");
 		int i=0;
 		for(i=0;i<k;i++){
-			//System.out.print("(");
+			printf("(");
 			int l = 0;
-			for(l=0;l<this.tmpCentresStreamingCoreset[i].dimension;l++){
-			//	System.out.print(this.tmpCentresStreamingCoreset[i].coordinates[l] / this.tmpCentresStreamingCoreset[i].weight);
-				this.tmpCentresStreamingCoreset[i].coordinates[l] /= this.tmpCentresStreamingCoreset[i].weight;
-			//	System.out.print(",");
+			for(l=0;l<centres[i].dimension;l++){
+				printf("%f,",centres[i].coordinates[l] / centres[i].weight);
 			}
-			//System.out.println(")");
+			printf(")\n");
 		}
-		//System.out.println("kMeans++ finished");
-		//System.out.println(i+" "+newCost+" "+this.tmpCentresStreamingCoreset.length);*/
+		printf("kMeans++ finished\n");
+		*/ 
 		return newCost; 
 	}
 	

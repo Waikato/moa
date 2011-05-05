@@ -7,15 +7,15 @@ public abstract class CFCluster extends SphereCluster {
     /**
      * Number of points in the cluster.
      */
-    protected double N;
+    public double N;
     /**
      * Linear sum of all the points added to the cluster.
      */
-    protected double[] LS;
+    public double[] LS;
     /**
      * Squared sum of all the points added to the cluster.
      */
-    protected double[] SS;
+    public double[] SS;
 
     /**
      * Instatiates an empty kernel with the given dimensionality.
@@ -49,12 +49,13 @@ public abstract class CFCluster extends SphereCluster {
         this.SS = Arrays.copyOf(cluster.SS, cluster.SS.length);
     }
 
-    public void add( CFCluster cluster ) {
+    public void add(CFCluster cluster ) {
 	this.N += cluster.N;
 	addVectors( this.LS, cluster.LS );
 	addVectors( this.SS, cluster.SS );
     }
 
+    public abstract CFCluster getCF();
 
     /**
      * @return this kernels' center
@@ -90,6 +91,10 @@ public abstract class CFCluster extends SphereCluster {
 	return N;
     }
 
+    public void setN(double N){
+        this.N = N;
+    }
+
     /**
      * Adds the second array to the first array element by element. The arrays
      * must have the same length.
@@ -106,9 +111,4 @@ public abstract class CFCluster extends SphereCluster {
             a1[i] += a2[i];
         }
     }
-
-
-
-
-
 }

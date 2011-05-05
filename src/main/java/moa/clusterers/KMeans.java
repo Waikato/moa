@@ -11,6 +11,7 @@ import moa.cluster.CFCluster;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
+import moa.clusterers.denstream.MicroCluster;
 
 /**
  *
@@ -145,7 +146,7 @@ public class KMeans {
 	    if ( res[closestCluster] == null ) {
 		res[closestCluster] = (CFCluster)microcluster.copy();
 	    } else {
-		res[closestCluster].add( microcluster );
+		res[closestCluster].add(microcluster);
 	    }
 	}
 

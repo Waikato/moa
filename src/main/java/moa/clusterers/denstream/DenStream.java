@@ -16,12 +16,13 @@ import weka.core.Instance;
  */
 public class DenStream extends AbstractClusterer {
 
+    public IntOption horizonOption = new IntOption("horizon",
+			'h', "Range of the window.", 1000);
     public FloatOption epsilonOption = new FloatOption("epsilon", 'e',
             "Defines the epsilon neighbourhood", 0.01, 0, 1);
     public IntOption minPointsOption = new IntOption("minPoints", 'p',
             "Minimal number of points cluster has to contain.", 10);
-    public FloatOption lambdaOption = new FloatOption("lambda", 'l',
-            "", 0.006, 0, 1);
+
     public FloatOption betaOption = new FloatOption("beta", 'b',
             "", 0.001, 0, 1);
     public FloatOption muOption = new FloatOption("mu", 'm',
@@ -29,6 +30,7 @@ public class DenStream extends AbstractClusterer {
     public IntOption initPointsOption = new IntOption("initPoints", 'i',
             "Number of points to use for initialization.", 1000);
 
+    private double weightThreshold = 0.01;
     double lambda;
     double epsilon;
     int minPoints;
@@ -45,7 +47,7 @@ public class DenStream extends AbstractClusterer {
     long tp;
     
 
-    private class DenPoint extends DenseInstance {
+    private class DenPoint extends DenseInstance{
         protected boolean covered;
 
         public DenPoint(Instance nextInstance, Long timestamp) {
@@ -58,7 +60,7 @@ public class DenStream extends AbstractClusterer {
     public void resetLearningImpl() {
         //init DenStream
         currentTimestamp = new Timestamp();
-        lambda = lambdaOption.getValue();
+        lambda = -Math.log(weightThreshold) / Math.log(2)/(double) horizonOption.getValue();
 //        lambda = (Math.log(1.0/0.01)/Math.log(2)/initPointsOption.getValue());
 //        System.out.println(lambda);
         epsilon = epsilonOption.getValue();

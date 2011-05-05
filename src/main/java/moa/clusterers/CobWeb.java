@@ -2,7 +2,7 @@
  *    CobWeb.java
  *    Copyright (C) 2009 University of Waikato, Hamilton, New Zealand
  *    @author Mark Hall (mhall@cs.waikato.ac.nz)
- * 
+ *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -19,27 +19,19 @@
  */
 package moa.clusterers;
 
+import java.io.Serializable;
+
 import moa.cluster.Clustering;
-import moa.core.DoubleVector;
-import moa.core.InstancesHeader;
+import moa.cluster.SphereCluster;
 import moa.core.Measurement;
-import moa.core.ObjectRepository;
 import moa.core.StringUtils;
-import moa.options.AbstractOptionHandler;
-import moa.options.ClassOption;
 import moa.options.FloatOption;
 import moa.options.IntOption;
-import moa.options.Option;
-import moa.options.OptionHandler;
-import moa.streams.filters.StreamFilter;
-import moa.tasks.TaskMonitor;
 import weka.core.AttributeStats;
-import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.experiment.Stats;
-import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Add;
 
 public class CobWeb extends AbstractClusterer {
@@ -57,7 +49,7 @@ public class CobWeb extends AbstractClusterer {
      *
      * @see Serializable
      */
-    private class CNode {// implements Serializable, RevisionHandler {
+    private class CNode implements Serializable {
 
         /** for serialization */
         static final long serialVersionUID = 3452097436933325631L;
@@ -104,6 +96,8 @@ public class CobWeb extends AbstractClusterer {
         public CNode(int numAttributes, Instance leafInstance) {
             this(numAttributes);
             if (m_clusterInstances == null) {
+		//System.out.println(leafInstance.numAttributes()+"-"+leafInstance.value(0)+"-"+leafInstance.value(1)+"-"+leafInstance.value(2));
+		//System.out.println(leafInstance.numAttributes()+"-"+leafInstance.attribute(0).type()+"-"+leafInstance.attribute(1).type()+"-"+leafInstance.attribute(2).type());
                 m_clusterInstances = new Instances(leafInstance.dataset(), 1);
             }
             m_clusterInstances.add(leafInstance);
@@ -685,6 +679,53 @@ public class CobWeb extends AbstractClusterer {
                 }
             }
         }
+
+	/**
+         * Recursively build a clustering representation of the Cobweb tree
+         *
+         * @param depth depth of this node in the tree
+         * @param clustering holds the Clustering representation
+         */
+        protected void computeTreeClustering(int depth, Clustering clustering) {
+
+            if (depth == 0) {
+                determineNumberOfClusters();
+            }
+
+            if (m_children == null) {
+		//Append Cluster
+                /*text.append("\n");
+                for (int j = 0; j < depth; j++) {
+                    text.append("|   ");
+                }
+                text.append("leaf " + m_clusterNum + " ["
+                        + m_clusterInstances.numInstances() + "]");
+		clustering.add(SphereCluster(this.coordinates, .05, m_clusterInstances.numInstances()));*/
+	            if (depth == 0) {
+	    		    double [] centroidCoordinates = new double[m_clusterInstances.numAttributes()];
+			    for (int j = 0; j < m_clusterInstances.numAttributes()-1; j++) {
+				centroidCoordinates[j] = m_clusterInstances.meanOrMode(j);
+			    }
+			    clustering.add(new SphereCluster(centroidCoordinates, .05, m_clusterInstances.numInstances()));
+	            }
+            } else {
+                for (int i = 0; i < m_children.size(); i++) {
+                    /*text.append("\n");
+                    for (int j = 0; j < depth; j++) {
+                        text.append("|   ");
+                    }
+                    text.append("node " + m_clusterNum + " ["
+                            + m_clusterInstances.numInstances()
+                            + "]");*/
+    		    double [] centroidCoordinates = new double[m_clusterInstances.numAttributes()];
+		    for (int j = 0; j < m_clusterInstances.numAttributes()-1; j++) {
+			centroidCoordinates[j] = m_clusterInstances.meanOrMode(j);
+		    }
+		    clustering.add(new SphereCluster(centroidCoordinates, .05, m_clusterInstances.numInstances()));
+                    ((CNode) m_children.elementAt(i)).computeTreeClustering(depth + 1, clustering);
+                }
+            }
+        }
     }
     /**
      * Normal constant.
@@ -925,9 +966,21 @@ public class CobWeb extends AbstractClusterer {
     }
 
     public Clustering getClusteringResult() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        //throw new UnsupportedOperationException("Not supported yet.");
+	Clustering result = new Clustering();
+        if (m_cobwebTree == null) {
+            //StringUtils.appendIndented(out, indent, "Cobweb hasn't been built yet!");
+            //StringUtils.appendNewline(out);
+        } else {
+            m_cobwebTree.computeTreeClustering(0,result);
+	    System.out.println("After Number of clusters: "+numberOfClusters() );
+	}
+	System.out.println("Number of clusters: "+result.size());
+	return result;
     }
+
+
 }
-     
+
 
 

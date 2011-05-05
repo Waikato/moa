@@ -5,7 +5,7 @@ package moa.clusterers.clustree;
 /**
  * A representation of a Node in the <code>Tree</code>
  * @author Fernando Sanchez Villaamil
- * @see Tree
+ * @see LiarTree
  */
 public class Node {
 
@@ -28,7 +28,7 @@ public class Node {
      * manipulates.
      * @param level The INVERSE level at which this node hangs.
      */
-    protected Node(int numberDimensions, int level) {
+    public Node(int numberDimensions, int level) {
         this.level = level;
 
         this.entries = new Entry[NUMBER_ENTRIES];
@@ -36,8 +36,8 @@ public class Node {
         // That no entry can be null makes it much easier to handle.
         for (int i = 0; i < NUMBER_ENTRIES; i++) {
             entries[i] = new Entry(numberDimensions);
+            entries[i].setNode(this);
         }
-
     }
 
     /**
@@ -60,6 +60,24 @@ public class Node {
             entries[i] = new Entry(numberDimensions);
         }
     }
+    
+    /**
+     * USED FOR EM_TOP_DOWN BULK LOADING
+     * @param numberDimensions
+     * @param level
+     * @param argEntries
+     */
+    public Node(int numberDimensions, int level, Entry[] argEntries) {
+        this.level = level;
+
+        this.entries = new Entry[NUMBER_ENTRIES];
+        // Generate all entries when we generate a Node.
+        // That no entry can be null makes it much easier to handle.
+        for (int i = 0; i < NUMBER_ENTRIES; i++) {
+            entries[i] = argEntries[i];
+        }
+    }
+
 
     /**
      * Checks if this node is a leaf. A node is a leaf when none of the entries
@@ -88,9 +106,9 @@ public class Node {
      * @throws EmptyNodeException This Exception is thrown when this function is
      * called on an empty node.
      * @see Kernel
-     * @see Entry#calcDistance(tree.Kernel)
+     * @see Entry#calcDistance(moa.clusterers.tree.Kernel)
      */
-    protected Entry nearestEntry(ClusKernel buffer) {
+    public Entry nearestEntry(ClusKernel buffer) {
 
         // TODO: (Fernando) Adapt the nearestEntry(...) function to the new algorithmn.
 
@@ -168,8 +186,8 @@ public class Node {
      * @throws NoFreeEntryException Is thrown when there is no space left in
      * the node for the new entry.
      */
-    protected void addEntry(Entry newEntry, long currentTime){
-
+    public void addEntry(Entry newEntry, long currentTime){
+    	newEntry.setNode(this);
         int freePosition = getNextEmptyPosition();
         entries[freePosition].initializeEntry(newEntry, currentTime);
     }
@@ -222,7 +240,7 @@ public class Node {
      * @return An array with references to the children of this node.
      * @see Entry
      */
-    protected Entry[] getEntries() {
+    public Entry[] getEntries() {
         return entries;
     }
 
@@ -230,7 +248,7 @@ public class Node {
      * Return the level number in the node. This is not the real level. For the
      * real level one has to call <code>getLevel(Tree tree)</code>.
      * @return The raw level of the node.
-     * @see #getLevel(tree.Tree)
+     * @see #getLevel(moa.clusterers.LiarTree.Tree)
      */
     protected int getRawLevel() {
         return level;

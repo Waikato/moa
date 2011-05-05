@@ -119,6 +119,15 @@ public class PointPanel extends JPanel{
             
 
     private Color getErrorColor(){
+//        String cmdvalue = point.getMeasureValue("Connectivity");
+//        Color color = null;
+//        if(!cmdvalue.equals("")){
+//            double err = Double.parseDouble(cmdvalue);
+//            if(err < 1){
+//                int alpha = (int)(100+155*err);
+//                color = new Color(255, 0, 0, alpha);
+//            }
+//        }
         String cmdvalue = point.getMeasureValue("CMD");
         Color color = null;
         if(!cmdvalue.equals("")){
