@@ -77,9 +77,9 @@ public class ListOption extends AbstractOption {
 
     public static Option[] cliStringToOptionArray(String s, char separator,
             Option expectedType) {
-        if (s.length() < 1) {
-            return new Option[0];
-        }
+	 if (s == null || s.length() < 1) {
+             return new Option[0];
+         }
         String[] subStrings = s.split(Character.toString(separator));
         Option[] options = new Option[subStrings.length];
         for (int i = 0; i < options.length; i++) {

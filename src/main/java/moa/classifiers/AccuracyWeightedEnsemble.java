@@ -215,10 +215,11 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier
 		java.util.Arrays.sort(this.storedWeights, weightComparator);
 
 		// Select top k classifiers to construct the ensemble
+		int storeSize = this.storedLearners.length;
 		for (int i = 0; i < ensembleSize; i++)
 		{
-			this.ensembleWeights[i] = this.storedWeights[ensembleSize - i - 1][0];
-			this.ensemble[i] = this.storedLearners[(int) this.storedWeights[ensembleSize - i - 1][1]];
+			this.ensembleWeights[i] = this.storedWeights[storeSize - i - 1][0];
+			this.ensemble[i] = this.storedLearners[(int) this.storedWeights[storeSize - i - 1][1]];		
 		}
 
 		this.classDistributions = null;
@@ -261,7 +262,16 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier
 			candidateWeight += computeWeight(learner, test);
 		}
 
-		return candidateWeight / numFolds;
+		double resultWeight = candidateWeight / numFolds;
+		
+		if(Double.isInfinite(resultWeight))
+		{
+			return Double.MAX_VALUE;
+		}
+		else	
+		{
+			return resultWeight;
+		}
 	}
 
 	/**
@@ -347,7 +357,7 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier
 					if (vote.sumOfValues() > 0.0)
 					{
 						vote.normalize();
-						vote.scaleValues(this.ensembleWeights[i]);
+						vote.scaleValues(this.ensembleWeights[i]/(1.0*this.ensemble.length));
 						combinedVote.addValues(vote);
 					}
 				}

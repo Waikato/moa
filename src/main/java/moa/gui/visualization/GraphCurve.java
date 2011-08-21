@@ -1,12 +1,21 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * GraphCurve.java
+ *    GraphCurve.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
  *
- * Created on 13.04.2010, 10:43:49
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 package moa.gui.visualization;
@@ -18,10 +27,6 @@ import java.util.ArrayList;
 import moa.evaluation.MeasureCollection;
 import moa.streams.clustering.ClusterEvent;
 
-/**
- *
- * @author jansen
- */
 public class GraphCurve extends javax.swing.JPanel {
     private double min_value = 0;
     private double max_value = 1;
@@ -44,15 +49,7 @@ public class GraphCurve extends javax.swing.JPanel {
     public void setGraph(MeasureCollection measure0, MeasureCollection measure1, int selection){
        this.measure0 = measure0;
        this.measure1 = measure1;
-       int m = 0;
-       while(selection >= 0) {
-           if(measure0.isEnabled(m))
-                selection--;
-           if(selection >= 0)
-               m++;
-
-       }
-       measureSelected = m;
+       this.measureSelected = selection;
        repaint();
     }
     
@@ -72,7 +69,7 @@ public class GraphCurve extends javax.swing.JPanel {
         }
         else{
             if(measure0!=null){
-                    paintFullCurve(g, measure0, measureSelected, Color.red);
+                paintFullCurve(g, measure0, measureSelected, Color.red);
             }
         }
         paintEvents(g);
@@ -83,6 +80,7 @@ public class GraphCurve extends javax.swing.JPanel {
     private void paintFullCurve(Graphics g, MeasureCollection m, int mSelect, Color color){
             if (m.getNumberOfValues(mSelect)==0) return;
 
+            boolean corrupted = false;
             int height = getHeight();
             int width = getWidth();
             int n = m.getNumberOfValues(mSelect);
@@ -109,12 +107,19 @@ public class GraphCurve extends javax.swing.JPanel {
                 else{
                     //spreading one value
                     x[i] = (i)*(int)(1/x_resolution)+(int)(1/x_resolution/2);
-                    y[i] = (int)(height-(m.getValue(mSelect,i)/max_value)*height);
+                    double value = m.getValue(mSelect,i);
+                    if(Double.isNaN(value)){
+                        corrupted = true;
+                        break;
+                    }
+                    y[i] = (int)(height-(value/max_value)*height);
                     
                 }
             }
-            g.setColor(color);
-            g.drawPolyline(x, y, n);
+            if(!corrupted){
+                g.setColor(color);
+                g.drawPolyline(x, y, n);
+            }
             
     }
 

@@ -1,13 +1,29 @@
+/*
+ *    SSQ.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
 package moa.evaluation;
 
 import java.util.ArrayList;
 import moa.cluster.Clustering;
 import moa.gui.visualization.DataPoint;
 
-/**
- *
- * @author jansen
- */
 public class SSQ extends MeasureCollection{
 
     public SSQ() {
@@ -33,19 +49,16 @@ public class SSQ extends MeasureCollection{
             if(points.get(p).classValue()==-1) continue;
 
             double minDistance = Double.MAX_VALUE;
-            int closest_cluster = -1;
             for (int c = 0; c < clustering.size(); c++) {
                 double distance = 0.0;
                 double[] center = clustering.get(c).getCenter();
                 for (int i = 0; i < center.length; i++) {
                     double d = points.get(p).value(i) - center[i];
                     distance += d * d;
-                    closest_cluster = c;
                 }
                 minDistance = Math.min(distance, minDistance);
             }
             
-            //points.get(p).setSSQvalues(minDistance, closest_cluster);
             sum+=minDistance;
         }
         

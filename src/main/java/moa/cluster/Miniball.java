@@ -9,8 +9,8 @@ import java.util.ArrayList;
 * http://www.inf.ethz.ch/personal/gaertner/texts/own_work/esa99_final.pdf<br>
 * for reading about the algorithm and the implementation of it.<p>
 * <p>
-* If interested in Bounding Sphere algorithms read also published work of <B>Emo Welzl</B> "Smallest enclosing disks (balls<br>
-* and Ellipsoid)" and
+* If interested in Bounding Sphere algorithms read also published work of 
+* <B>Emo Welzl</B> "Smallest enclosing disks (balls and Ellipsoid)" and
 * the work of <B>Jack Ritter</B> on "Efficient Bounding Spheres"  at<br>
 * http://tog.acm.org/GraphicsGems/gems/BoundSphere.c?searchterm=calc<p>
 * <p><p>
@@ -53,7 +53,7 @@ import java.util.ArrayList;
 * {@literal Date: 2007/11/18 21:57}
 *
 * used for moa for calculating most compact sphere cluster
-* modified by Timm Jansen (timm.jansen@gmail.com) to be used with high 
+* modified by Timm Jansen (moa@cs.rwth-aachen.de) to be used with high 
 * dimensional points
 *
 */

@@ -52,24 +52,23 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 
 	protected IntOption randomSeedOption;
 
-        public FlagOption evaluateMicroClusteringOption;
+    public FlagOption evaluateMicroClusteringOption;
 
-	protected Random clustererRandom;
+    protected Random clustererRandom;
 
-        protected Clustering clustering;
-
+    protected Clustering clustering;
+    
 	public AbstractClusterer() {
 		if (isRandomizable()) {
 			this.randomSeedOption = new IntOption("randomSeed", 'r',
 					"Seed for random behaviour of the Clusterer.", 1);
 		}
 
-                if( implementsMicroClusterer()){
-                    //System.out.println("das");
-                    this.evaluateMicroClusteringOption =
-                            new FlagOption("evaluateMicroClustering", 'M',
-                            "Evaluate the underlying microclustering instead of the macro clustering");
-                }
+        if( implementsMicroClusterer()){
+            this.evaluateMicroClusteringOption =
+                    new FlagOption("evaluateMicroClustering", 'M',
+                    "Evaluate the underlying microclustering instead of the macro clustering");
+        }
 	}
 
 	@Override
@@ -295,6 +294,10 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
             return false;
         }
 
+        public boolean  keepClassLabel(){
+            return false;
+        }
+        
         public Clustering getMicroClusteringResult(){
             return null;
         };

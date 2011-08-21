@@ -1,14 +1,33 @@
+/*
+ *    ClustreamKernel.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
 package moa.clusterers.clustream;
 import java.util.ArrayList;
 import java.util.Random;
 import moa.cluster.CFCluster;
 import weka.core.Instance;
 
-/**
- *
- */
 public class ClustreamKernel extends CFCluster {
-    private final static double EPSILON = 0.00005;
+	private static final long serialVersionUID = 1L;
+
+	private final static double EPSILON = 0.00005;
     public static final double MIN_VARIANCE = 1e-50;
 
     protected double LST;
@@ -22,8 +41,8 @@ public class ClustreamKernel extends CFCluster {
         super(instance, dimensions);
         this.t = t;
         this.m = m;
-	this.LST = timestamp;
-	this.SST = timestamp*timestamp;
+        this.LST = timestamp;
+		this.SST = timestamp*timestamp;
     }
 
     public ClustreamKernel( ClustreamKernel cluster, double t, int m ) {
@@ -31,52 +50,52 @@ public class ClustreamKernel extends CFCluster {
         this.t = t;
         this.m = m;
         this.LST = cluster.LST;
-	this.SST = cluster.SST;
+        this.SST = cluster.SST;
     }
 
     public void insert( Instance instance, long timestamp ) {
-	N++;
-	LST += timestamp;
-	SST += timestamp*timestamp;
-
-	for ( int i = 0; i < instance.numValues(); i++ ) {
-	    LS[i] += instance.value(i);
-	    SS[i] += instance.value(i)*instance.value(i);
-	}
+		N++;
+		LST += timestamp;
+		SST += timestamp*timestamp;
+	
+		for ( int i = 0; i < instance.numValues(); i++ ) {
+		    LS[i] += instance.value(i);
+		    SS[i] += instance.value(i)*instance.value(i);
+		}
     }
 
     @Override
     public void add( CFCluster other2 ) {
         ClustreamKernel other = (ClustreamKernel) other2;
-	assert( other.LS.length == this.LS.length );
-	this.N += other.N;
-	this.LST += other.LST;
-	this.SST += other.SST;
-
-	for ( int i = 0; i < LS.length; i++ ) {
-	    this.LS[i] += other.LS[i];
-	    this.SS[i] += other.SS[i];
-	}
+		assert( other.LS.length == this.LS.length );
+		this.N += other.N;
+		this.LST += other.LST;
+		this.SST += other.SST;
+	
+		for ( int i = 0; i < LS.length; i++ ) {
+		    this.LS[i] += other.LS[i];
+		    this.SS[i] += other.SS[i];
+		}
     }
 
     public double getRelevanceStamp() {
-	if ( N < 2*m )
-	    return getMuTime();
-
-	return getMuTime() + getSigmaTime() * getQuantile( ((double)m)/(2*N) );
+		if ( N < 2*m )
+		    return getMuTime();
+	
+		return getMuTime() + getSigmaTime() * getQuantile( ((double)m)/(2*N) );
     }
 
     private double getMuTime() {
-	return LST / N;
+    	return LST / N;
     }
 
     private double getSigmaTime() {
-	return Math.sqrt(SST/N - (LST/N)*(LST/N));
+    	return Math.sqrt(SST/N - (LST/N)*(LST/N));
     }
 
     private double getQuantile( double z ) {
-	assert( z >= 0 && z <= 1 );
-	return Math.sqrt( 2 ) * inverseError( 2*z - 1 );
+		assert( z >= 0 && z <= 1 );
+		return Math.sqrt( 2 ) * inverseError( 2*z - 1 );
     }
 
     @Override
@@ -86,7 +105,7 @@ public class ClustreamKernel extends CFCluster {
         if(t==1)
             t=1;
 
-        return getDeviation()*t;
+        return getDeviation()*radiusFactor;
     }
 
     @Override
@@ -232,29 +251,8 @@ public class ClustreamKernel extends CFCluster {
         zProd *= z2;  // z^13
         res += (20036983 * zProd) / 797058662400d;
 
-        /*
-        zProd *= z2;  // z^15
-        res += (2280356863 * zProd)/334764638208000;
-         */
-
-        // +(49020204823 pi^(17/2) x^17)/26015994740736000+(65967241200001 pi^(19/2) x^19)/124564582818643968000+(15773461423793767 pi^(21/2) x^21)/104634249567660933120000+O(x^22)
-
         return res;
     }
-
-//    @Override
-//    public Instance sample(Random random ) {
-//	double[] res = new double[LS.length];
-//	double[] variance = getVarianceVector();
-//        double[] center = getCenter();
-//        double radius = getRadius();
-//	for ( int i = 0; i < res.length; i++ ) {
-//
-//	    res[i] = center[i] + random.nextGaussian() * radius;
-//	}
-//
-//	return new Instance (1.0,res);
-//    }
 
     @Override
     protected void getClusterSpecificInfo(ArrayList<String> infoTitle, ArrayList<String> infoValue) {

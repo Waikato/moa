@@ -1,3 +1,23 @@
+/*
+ *    ClusteringSetupTab.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
 package moa.gui.clustertab;
 
 import java.awt.event.ActionListener;
@@ -11,16 +31,6 @@ import moa.gui.FileExtensionFilter;
 import moa.gui.TextViewerPanel;
 import moa.streams.clustering.ClusteringStream;
 
-/*
- * ClusteringSetupTab.java
- *
- * Created on 20.03.2010, 09:41:54
- */
-
-/**
- *
- * @author jansen
- */
 public class ClusteringSetupTab extends javax.swing.JPanel {
     private ClusteringTabPanel clusteringTab;
     private String lastfile;
@@ -28,23 +38,15 @@ public class ClusteringSetupTab extends javax.swing.JPanel {
     /** Creates new form ClusteringSetupTab */
     public ClusteringSetupTab() {
         initComponents();
-        clusteringAlgoPanel0.renderAlgoPanel(false);
-        clusteringAlgoPanel1.renderAlgoPanel(true);
+        clusteringAlgoPanel0.renderAlgoPanel();
     }
 
     public AbstractClusterer getClusterer0(){
-        return clusteringAlgoPanel0.getClusterer();
+        return clusteringAlgoPanel0.getClusterer0();
     }
 
     public AbstractClusterer getClusterer1(){
-        if(!clusteringAlgoPanel1.duplicateClusterer())
-            return clusteringAlgoPanel1.getClusterer();
-        else
-            return clusteringAlgoPanel0.getClusterer();
-    }
-
-    public boolean duplicateClusterer(){
-        return clusteringAlgoPanel1.duplicateClusterer();
+        return clusteringAlgoPanel0.getClusterer1();
     }
 
     public ClusteringStream getStream0(){
@@ -53,20 +55,6 @@ public class ClusteringSetupTab extends javax.swing.JPanel {
 
     public MeasureCollection[] getMeasures(){
         return clusteringEvalPanel1.getSelectedMeasures();
-    }
-
-    public ClusteringStream getStream1(){
-        //if duplicate stream is active we return the duplicated stream, 
-        //but for performance we should really use the same stream and only 
-        //copy the generated points
-        if(!clusteringAlgoPanel1.duplicateStream())
-            return clusteringAlgoPanel1.getStream();
-        else
-            return clusteringAlgoPanel0.getStream();
-    }
-
-    public boolean duplicateStream(){
-        return clusteringAlgoPanel1.duplicateStream();
     }
 
     public TextViewerPanel getLogPanel(){
@@ -90,8 +78,6 @@ public class ClusteringSetupTab extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         clusteringAlgoPanel0 = new moa.gui.clustertab.ClusteringAlgoPanel();
-        enableCompAlgo = new javax.swing.JCheckBox();
-        clusteringAlgoPanel1 = new moa.gui.clustertab.ClusteringAlgoPanel();
         clusteringEvalPanel1 = new moa.gui.clustertab.ClusteringEvalPanel();
         buttonStart = new javax.swing.JButton();
         buttonStop = new javax.swing.JButton();
@@ -103,34 +89,17 @@ public class ClusteringSetupTab extends javax.swing.JPanel {
 
         setLayout(new java.awt.GridBagLayout());
 
-        clusteringAlgoPanel0.setPreferredSize(new java.awt.Dimension(300, 60));
+        clusteringAlgoPanel0.setMinimumSize(new java.awt.Dimension(335, 150));
+        clusteringAlgoPanel0.setPanelTitle("Cluster Algorithm Setup");
+        clusteringAlgoPanel0.setPreferredSize(new java.awt.Dimension(335, 150));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
         add(clusteringAlgoPanel0, gridBagConstraints);
-
-        enableCompAlgo.setSelected(true);
-        enableCompAlgo.setText("use Comparison-Algorithm for visualization");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(21, 4, 0, 4);
-        add(enableCompAlgo, gridBagConstraints);
-
-        clusteringAlgoPanel1.setPreferredSize(new java.awt.Dimension(350, 150));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 4;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.insets = new java.awt.Insets(4, 4, 4, 4);
-        add(clusteringAlgoPanel1, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 0;
@@ -239,16 +208,9 @@ public class ClusteringSetupTab extends javax.swing.JPanel {
     private void buttonExportSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExportSettingsActionPerformed
         StringBuffer sb = new StringBuffer();
         sb.append(clusteringAlgoPanel0.getStreamValueAsCLIString()+"\n");
-        sb.append(clusteringAlgoPanel0.getAlgorithmValueAsCLIString()+"\n");
-        if(clusteringAlgoPanel1.duplicateStream())
-            sb.append("1"+"\n");
-        else
-            sb.append(clusteringAlgoPanel1.getStreamValueAsCLIString()+"\n");
+        sb.append(clusteringAlgoPanel0.getAlgorithm0ValueAsCLIString()+"\n");
+        sb.append(clusteringAlgoPanel0.getAlgorithm1ValueAsCLIString()+"\n");
         
-        if(clusteringAlgoPanel1.duplicateClusterer())
-            sb.append("1"+"\n");
-        else
-            sb.append(clusteringAlgoPanel1.getAlgorithmValueAsCLIString()+"\n");
         System.out.println(sb);
         logPanel.addText(sb.toString());
         
@@ -267,27 +229,15 @@ public class ClusteringSetupTab extends javax.swing.JPanel {
         try {
             BufferedReader in = new BufferedReader(new FileReader(filepath));
 
-            String line = in.readLine();
-            String stream0 = line;
+            String stream0 = in.readLine();
             clusteringAlgoPanel0.setStreamValueAsCLIString(stream0);
-            
-            line = in.readLine();
-            String algo0 = line;
-            clusteringAlgoPanel0.setAlgorithmValueAsCLIString(algo0);
 
-            line = in.readLine();
-            String stream1 = line;
-            if(stream1.startsWith("1"))
-                clusteringAlgoPanel1.setDuplicateStream(true);
-            else
-                clusteringAlgoPanel1.setStreamValueAsCLIString(stream1);
+            String algo0 = in.readLine();
+            clusteringAlgoPanel0.setAlgorithm0ValueAsCLIString(algo0);
 
-            line = in.readLine();
-            String algo1 = line;
-            if(algo1.startsWith("1"))
-                clusteringAlgoPanel1.setDuplicateClusterer(true);
-            else
-                clusteringAlgoPanel1.setAlgorithmValueAsCLIString(algo1);
+            String algo1 = in.readLine();
+            clusteringAlgoPanel0.setAlgorithm1ValueAsCLIString(algo1);
+
 
             System.out.println("Loading settings from "+filepath);
             logPanel.addText("Loading settings from "+filepath);
@@ -305,9 +255,7 @@ public class ClusteringSetupTab extends javax.swing.JPanel {
     private javax.swing.JButton buttonStop;
     private javax.swing.JButton buttonWeka;
     private moa.gui.clustertab.ClusteringAlgoPanel clusteringAlgoPanel0;
-    private moa.gui.clustertab.ClusteringAlgoPanel clusteringAlgoPanel1;
     private moa.gui.clustertab.ClusteringEvalPanel clusteringEvalPanel1;
-    private javax.swing.JCheckBox enableCompAlgo;
     private moa.gui.TextViewerPanel logPanel;
     // End of variables declaration//GEN-END:variables
 
@@ -359,9 +307,6 @@ public class ClusteringSetupTab extends javax.swing.JPanel {
         buttonStop.setEnabled(!state);
         buttonExportSettings.setEnabled(state);
         buttonImportSettings.setEnabled(state);
-//        clusteringAlgoPanel1.setEnabled(state);
-//        clusteringEvalPanel1.setEnabled(state);
-        enableCompAlgo.setEnabled(state);
     }
 
 

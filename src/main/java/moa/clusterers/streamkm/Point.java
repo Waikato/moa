@@ -10,7 +10,6 @@ import weka.core.Instance;
  * @author Marcel R. Ackermann, Christiane Lammersen, Marcus Maertens, Christoph Raupach, 
 Christian Sohler, Kamil Swierkot
  */
-
 public class Point {
 
 	//dimension

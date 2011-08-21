@@ -1,12 +1,21 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * ObjectPanel.java
+ *    PointPanel.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
  *
- * Created on 04.02.2010, 11:27:19
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 package moa.gui.visualization;
@@ -16,10 +25,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import javax.swing.JPanel;
 
-/**
- *
- * @author jansen
- */
 public class PointPanel extends JPanel{
     static final int POINTSIZE = 4;
     DataPoint point;
@@ -49,7 +54,7 @@ public class PointPanel extends JPanel{
         setVisible(true);
         setOpaque(false);
         setSize(new Dimension(1,1));
-	setLocation(0,0);
+        setLocation(0,0);
         initComponents();
 
     }
@@ -64,7 +69,7 @@ public class PointPanel extends JPanel{
         y_dim = sp.getActiveYDim();
 
         setSize(new Dimension(panel_size+1,panel_size+1));
-	setLocation((int)(point.value(x_dim)*window_size-(panel_size/2)),(int)(point.value(y_dim)*window_size-(panel_size/2)));
+        setLocation((int)(point.value(x_dim)*window_size-(panel_size/2)),(int)(point.value(y_dim)*window_size-(panel_size/2)));
     }
 
     /** This method is called from within the constructor to
@@ -119,15 +124,6 @@ public class PointPanel extends JPanel{
             
 
     private Color getErrorColor(){
-//        String cmdvalue = point.getMeasureValue("Connectivity");
-//        Color color = null;
-//        if(!cmdvalue.equals("")){
-//            double err = Double.parseDouble(cmdvalue);
-//            if(err < 1){
-//                int alpha = (int)(100+155*err);
-//                color = new Color(255, 0, 0, alpha);
-//            }
-//        }
         String cmdvalue = point.getMeasureValue("CMD");
         Color color = null;
         if(!cmdvalue.equals("")){
@@ -163,7 +159,6 @@ public class PointPanel extends JPanel{
             Color c = getPointColorbyClass((int)point.classValue(), numCl);
 
             color = new Color(c.getRed(),c.getGreen(),c.getBlue(),alpha);
-            //color = new Color(default_color.getRed(), default_color.getGreen(), default_color.getBlue(), alpha);
         }
         return color;
     }

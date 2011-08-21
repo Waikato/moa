@@ -1,18 +1,31 @@
+/*
+ *    MeasureCollection.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
 package moa.evaluation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
 import moa.AbstractMOAObject;
 import moa.cluster.Clustering;
 import moa.gui.visualization.DataPoint;
 
-/**
- *
- * @author jansen
- */
 public abstract class MeasureCollection extends AbstractMOAObject{
     private String[] names;
     private ArrayList<Double>[] values;
@@ -23,6 +36,7 @@ public abstract class MeasureCollection extends AbstractMOAObject{
     private double[] maxValue;
     private double[] sumValues;
     private boolean[] enabled;
+    private boolean[] corrupted;
     private double time;
     private boolean debug = true;
     private MembershipMatrix mm = null;
@@ -30,6 +44,8 @@ public abstract class MeasureCollection extends AbstractMOAObject{
     private HashMap<String, Integer> map;
 
     private int numMeasures = 0;
+    
+    
 
 
      public MeasureCollection() {
@@ -44,6 +60,7 @@ public abstract class MeasureCollection extends AbstractMOAObject{
         maxValue = new double[numMeasures];
         minValue = new double[numMeasures];
         sumValues = new double[numMeasures];
+        corrupted = new boolean[numMeasures];
         enabled = getDefaultEnabled();
         time = 0;
         events = new ArrayList<String>();
@@ -53,6 +70,7 @@ public abstract class MeasureCollection extends AbstractMOAObject{
                 sortedValues[i] = new ArrayList<Double>();
                 maxValue[i] = Double.MIN_VALUE;
                 minValue[i] = Double.MAX_VALUE;
+                corrupted[i] = false;
                 sumValues[i] = 0.0;
         }
 
@@ -64,6 +82,7 @@ public abstract class MeasureCollection extends AbstractMOAObject{
          if(Double.isNaN(value)){
         	 if(debug)
         		 System.out.println("NaN for "+names[index]);
+             corrupted[index] = true;
          }
          if(value < 0){
         	 if(debug)
@@ -83,6 +102,12 @@ public abstract class MeasureCollection extends AbstractMOAObject{
         else{
             System.out.println(name+" is not a valid measure key, no value added");
         }
+     }
+     
+     //add an empty entry e.g. if evaluation crashed internally
+     public void addEmptyValue(int index){
+         values[index].add(Double.NaN);
+         corrupted[index] = true;
      }
 
      public int getNumMeasures(){
@@ -107,7 +132,9 @@ public abstract class MeasureCollection extends AbstractMOAObject{
      }
 
      public double getMean(int index){
-         if(values[index].size()<1) return Double.NaN;
+         if(corrupted[index] || values[index].size()<1)
+             return Double.NaN;
+
          return sumValues[index]/values[index].size();
      }
 

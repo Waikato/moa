@@ -1,5 +1,24 @@
-package moa.gui.clustertab;
+/*
+ *    ClusteringVisualTab.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
 
+package moa.gui.clustertab;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -14,22 +33,13 @@ import moa.gui.visualization.GraphCanvas;
 import moa.gui.visualization.RunVisualizer;
 import moa.gui.visualization.StreamPanel;
 
-/*
- * ClusteringVisualTab.java
- *
- * Created on 20.03.2010, 09:48:06
- */
-
-/**
- *
- * @author admin
- */
 public class ClusteringVisualTab extends javax.swing.JPanel implements ActionListener{
-    RunVisualizer visualizer = null;
-    Thread visualizerThread = null;
-    Boolean running = false;
-    ClusteringSetupTab clusteringSetupTab = null;
+	private RunVisualizer visualizer = null;
+    private Thread visualizerThread = null;
+    private Boolean running = false;
+    private ClusteringSetupTab clusteringSetupTab = null;
     private String exportFile;
+    private String screenshotFilebase;
 
     /** Creates new form ClusteringVisualTab */
     public ClusteringVisualTab() {
@@ -596,8 +606,16 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonScreenshotMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonScreenshotMouseClicked
-        streamPanel0.screenshot("Moa\\MOAStreamPanel1", true, true);
-        streamPanel1.screenshot("Moa\\MOAStreamPanel2", true, true);
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setAcceptAllFileFilterUsed(true);
+        if(screenshotFilebase!=null)
+            fileChooser.setSelectedFile(new File(screenshotFilebase));
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        	screenshotFilebase = fileChooser.getSelectedFile().getPath();
+        	streamPanel0.screenshot(screenshotFilebase+"_"+label_processed_points_value.getText()+"_0", true, true);
+            streamPanel1.screenshot(screenshotFilebase+"_"+label_processed_points_value.getText()+"_1", true, true);
+        }
+
     }//GEN-LAST:event_buttonScreenshotMouseClicked
 
     private void buttonRunMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonRunMouseClicked

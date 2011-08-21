@@ -1,3 +1,23 @@
+/*
+ *    EntropyCollection.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
 package moa.evaluation;
 
 import java.util.ArrayList;
@@ -111,7 +131,8 @@ public class EntropyCollection extends MeasureCollection{
             homogeneity = 1;
         else
             homogeneity = 1 - FCcrossEntropy/FCentropy;
-        //set err values for now, needs to be debugged
+
+        //TODO set err values for now, needs to be debugged
         if(homogeneity > 1 || homogeneity < 0)
             addValue("Homogeneity",-1);
         else
@@ -125,9 +146,6 @@ public class EntropyCollection extends MeasureCollection{
         addValue("Completeness",completeness);
 
         double vmeasure = (1+beta)*homogeneity*completeness/(beta*homogeneity+completeness);
-        if(Double.isNaN(vmeasure)){
-
-        }
 
         if(vmeasure > 1 || homogeneity < 0)
             addValue("V-Measure",-1);
@@ -150,10 +168,6 @@ public class EntropyCollection extends MeasureCollection{
         if(numClasses > 1)
             mutual/=Math.log10(numClasses);
 
-//        if(Math.abs(mutualraw + varInfoFC + varInfoHC) < 1e-10)
-//            varInfo = 1;
-//        else
-//            varInfo = 2*mutualraw/(-varInfoFC - varInfoHC );
         double varInfo = 1;
         if(FCentropy + GTentropy > 0)
             varInfo = 2*mutual/(FCentropy + GTentropy);

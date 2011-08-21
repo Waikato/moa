@@ -1,7 +1,26 @@
+/*
+ *    ClusterGenerator.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
 package moa.clusterers;
 
 import java.util.ArrayList;
-
 import java.util.Arrays;
 import java.util.Random;
 import moa.cluster.Clustering;
@@ -12,10 +31,6 @@ import moa.options.FloatOption;
 import moa.options.IntOption;
 import weka.core.Instance;
 
-/**
- *
- * @author jansen
- */
 public class ClusterGenerator extends AbstractClusterer{
 
 	private static final long serialVersionUID = 1L;
@@ -334,16 +349,19 @@ public class ClusterGenerator extends AbstractClusterer{
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
     public boolean isRandomizable() {
         return false;
     }
 
-    public double[] getVotesForInstance(Instance inst) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    @Override
+    public boolean  keepClassLabel(){
+        return true;
     }
 
-
-
+    public double[] getVotesForInstance(Instance inst) {
+        return null;
+    }
 }
 
 

@@ -1,6 +1,21 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ *    DataPoint.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 package moa.gui.visualization;
@@ -11,10 +26,6 @@ import java.util.TreeSet;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 
-/**
- *
- * @author jansen
- */
 public class DataPoint extends DenseInstance{
     protected int timestamp;
     private HashMap<String, String> measure_values;
@@ -28,7 +39,6 @@ public class DataPoint extends DenseInstance{
     }
 
     public void updateWeight(int cur_timestamp, double decay_rate){
-        //setWeight(Math.exp((-1.0)*decay_rate*(cur_timestamp-timestamp)));
         setWeight(Math.pow(2,(-1.0)*decay_rate*(cur_timestamp-timestamp)));
     }
 
@@ -102,11 +112,5 @@ public class DataPoint extends DenseInstance{
         }
         return Math.sqrt(distance);
     }
-
-//    public DataPoint(Instance instance, int timestamp, Integer timestamp_reference){
-//        this.instance = instance;
-//    }
-
-
 
 }

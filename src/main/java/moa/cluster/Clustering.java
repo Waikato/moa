@@ -1,14 +1,29 @@
+/*
+ *    CFCluster.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
 package moa.cluster;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import moa.AbstractMOAObject;
-import moa.clusterers.clustream.Clustream;
 import moa.core.AutoExpandVector;
 import moa.gui.visualization.DataPoint;
 import weka.core.Instance;
@@ -31,7 +46,7 @@ public class Clustering extends AbstractMOAObject{
         }
     }
 
-    public Clustering(List<DataPoint> points){
+    public Clustering(List<? extends Instance> points){
         HashMap<Integer, Integer> labelMap = classValues(points);
         int dim = points.get(0).dataset().numAttributes()-1;
 
@@ -41,7 +56,7 @@ public class Clustering extends AbstractMOAObject{
         for (int i = 0; i < numClasses; i++) {
             sorted_points[i] = new ArrayList<Instance>();
         }
-        for (DataPoint point : points) {
+        for (Instance point : points) {
             int clusterid = (int)point.classValue();
             if(clusterid == -1) continue;
             sorted_points[labelMap.get(clusterid)].add((Instance)point);
@@ -56,39 +71,6 @@ public class Clustering extends AbstractMOAObject{
             }
         }
     }
-
-//    public Clustering(List<DataPoint> points, int microK){
-//        HashMap<Integer, Integer> labelMap = classValues(points);
-//        int dim = points.get(0).dataset().numAttributes()-1;
-//
-//        int numClasses = labelMap.size();
-//
-//        ArrayList<Instance>[] sorted_points = (ArrayList<Instance>[]) new ArrayList[numClasses];
-//        for (int i = 0; i < numClasses; i++) {
-//            sorted_points[i] = new ArrayList<Instance>();
-//        }
-//        for (DataPoint point : points) {
-//            int clusterid = (int)point.classValue();
-//            if(clusterid == -1) continue;
-//            sorted_points[labelMap.get(clusterid)].add((Instance)point);
-//        }
-//        this.clusters = new AutoExpandVector<Cluster>();
-//        for (int i = 0; i < numClasses; i++) {
-//            if(sorted_points[i].size()>0){
-//                ArrayList<SphereCluster> cl = new ArrayList<SphereCluster>();
-//                Clustering micro = Clustream.kMeans(microK, sorted_points[i], dim);
-//
-//                for(int m = 0; m < micro.size(); m++){
-//                    mico.
-//                }
-//
-//                SphereCluster s = new SphereCluster(sorted_points[i],dim);
-//                s.setId(sorted_points[i].get(0).classValue());
-//                s.setGroundTruth(sorted_points[i].get(0).classValue());
-//                clusters.add(s);
-//            }
-//        }
-//    }
 
     public Clustering(ArrayList<DataPoint> points, double overlapThreshold, int initMinPoints){
         HashMap<Integer, Integer> labelMap = Clustering.classValues(points);
@@ -182,7 +164,7 @@ public class Clustering extends AbstractMOAObject{
      * @param points 
      * @return an array with the min and max class label value
      */
-    public static HashMap<Integer, Integer> classValues(List<DataPoint> points){
+    public static HashMap<Integer, Integer> classValues(List<? extends Instance> points){
         HashMap<Integer,Integer> classes = new HashMap<Integer, Integer>();
         int workcluster = 0;
         boolean hasnoise = false;

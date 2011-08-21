@@ -1,3 +1,23 @@
+/*
+ *    Clustream.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
 package moa.clusterers.clustream;
 
 import java.util.ArrayList;
@@ -15,6 +35,9 @@ import weka.core.Instance;
 
 
 public class Clustream extends AbstractClusterer{
+
+	private static final long serialVersionUID = 1L;
+
 	public IntOption timeWindowOption = new IntOption("horizon",
 			'h', "Rang of the window.", 1000);
 
@@ -69,7 +92,7 @@ public class Clustream extends AbstractClusterer{
 				centers[i] = buffer.get( i ); // TODO: make random!
 			}
 			Clustering kmeans_clustering = kMeans(k, centers, buffer);
-			//Clustering kmeans_clustering = kMeans(k, buffer);
+//			Clustering kmeans_clustering = kMeans(k, buffer);
 
 			for ( int i = 0; i < kmeans_clustering.size(); i++ ) {
 				kernels[i] = new ClustreamKernel( new DenseInstance(1.0,centers[i].getCenter()), dim, timestamp, t, m );

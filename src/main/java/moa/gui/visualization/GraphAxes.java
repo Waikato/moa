@@ -1,7 +1,21 @@
 /*
- * GraphAxes.java
+ *    GraphAxes.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
  *
- * Created on 13.04.2010, 10:43:25
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 package moa.gui.visualization;
@@ -11,10 +25,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.text.DecimalFormat;
 
-/**
- *
- * @author jansen
- */
 public class GraphAxes extends javax.swing.JPanel {
     private final int x_offset_left = 35;
     private final int x_offset_right = 5;
@@ -85,10 +95,7 @@ public class GraphAxes extends javax.swing.JPanel {
         for (int i = 0; w*i < width-x_offset_right; i++) {
             g.drawLine(w*i+x_offset_left, height+y_offset_top, w*i+x_offset_left, height+y_offset_top+5);
 
-//            int exp = (int)Math.log10(w*i*processFrequency);
-//            int multipleof1000 = exp/3;
-              String label = Integer.toString((int)(w*i*processFrequency*x_resolution));
-//            if(multipleof1000 == 1) label = w*i*processFrequency/1000+"k";
+            String label = Integer.toString((int)(w*i*processFrequency*x_resolution));
 
             int str_length = g.getFontMetrics().stringWidth(label);
             g.drawString(label,w*i+x_offset_left-str_length/2,height+y_offset_top+18);

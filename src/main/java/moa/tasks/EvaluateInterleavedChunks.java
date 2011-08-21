@@ -220,7 +220,7 @@ public class EvaluateInterleavedChunks extends MainTask {
 			if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0) {
 				
 				double RAMHoursIncrement = learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); //GBs
-                RAMHoursIncrement *= ((sampleTrainTime + sampleTestTime) / 3600.0); //Hours
+                RAMHoursIncrement *= (TimingUtils.nanoTimeToSeconds(sampleTrainTime + sampleTestTime) / 3600.0); //Hours
                 RAMHours += RAMHoursIncrement;
 				
 				double avgTrainTime = TimingUtils.nanoTimeToSeconds(sampleTrainTime)/((double)this.sampleFrequencyOption.getValue()/chunkInstances.numInstances());

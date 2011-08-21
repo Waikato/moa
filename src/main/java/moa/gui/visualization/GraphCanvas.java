@@ -1,7 +1,21 @@
 /*
- * GraphCanvas.java
+ *    GraphCanvas.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
  *
- * Created on 21.03.2010, 11:46:16
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 package moa.gui.visualization;
@@ -15,10 +29,6 @@ import javax.swing.JViewport;
 import moa.evaluation.MeasureCollection;
 import moa.streams.clustering.ClusterEvent;
 
-/**
- *
- * @author admin
- */
 public class GraphCanvas extends JPanel{
     private MeasureCollection measure0 = null;
     private MeasureCollection measure1 = null;
@@ -53,7 +63,6 @@ public class GraphCanvas extends JPanel{
 
     /** Creates new form GraphCanvas */
     public GraphCanvas() {
-        //initComponents();
         addComponents();
         eventLabelList = new ArrayList<JLabel>();
     }
@@ -96,7 +105,6 @@ public class GraphCanvas extends JPanel{
         if(updateMinMaxValues() || force){
             int maxLabel = (int)Math.ceil(max_x_value/x_resolution/500);
             int width = (int)(maxLabel*500);
-            //System.out.println(maxLabel);
             setSize(width, getHeight());
             setPreferredSize(new Dimension(width, getHeight()));
             
@@ -107,10 +115,6 @@ public class GraphCanvas extends JPanel{
             updateSize();
             
             axesPanel.repaint();
-
-            if(viewport!=null){
-                //System.out.println(viewport.getViewPosition().x+" "+viewport.getViewSize().width);
-            }
         }
 
         //check for new events
@@ -202,8 +206,8 @@ public class GraphCanvas extends JPanel{
 
     @Override
     protected void paintComponent(Graphics g) {
-        //needed in case parent component gets resized, doesn't full work yet
-        //when reducing height
+        //needed in case parent component gets resized
+    	//TODO doesn't fully work yet when reducing height
         updateSize();
         super.paintComponent(g);
     }
@@ -217,7 +221,6 @@ public class GraphCanvas extends JPanel{
 
         curvePanel.setLocation(x_offset_left+1, y_offset_top);
         eventPanel.setLocation(x_offset_left+1, 0);
-        //eventPanel.setOpaque(false);
         eventPanel.setLayout(null);
         
         add(axesPanel);

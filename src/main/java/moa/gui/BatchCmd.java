@@ -1,7 +1,26 @@
+/*
+ *    BatchCmd.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
 package moa.gui;
 
 import java.io.BufferedWriter;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,7 +32,6 @@ import moa.clusterers.ClusterGenerator;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
 import moa.clusterers.clustream.Clustream;
-//import moa.evaluation.CMD;
 import moa.evaluation.F1;
 import moa.evaluation.General;
 import moa.evaluation.MeasureCollection;
@@ -29,12 +47,6 @@ import moa.streams.clustering.ClusterEventListener;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
 import weka.core.DenseInstance;
-
-/**
- *
- * @author jansen
- */
-
 
 public class BatchCmd implements ClusterEventListener{
 
@@ -71,7 +83,6 @@ public class BatchCmd implements ClusterEventListener{
 	@SuppressWarnings("unchecked")
 	private static ArrayList<Class> getMeasureSelection(int selection){
 		ArrayList<Class>mclasses = new ArrayList<Class>();
-		//mclasses.add(CMD.class);
 		mclasses.add(EntropyCollection.class);
 		mclasses.add(F1.class);
 		mclasses.add(General.class);
@@ -83,6 +94,7 @@ public class BatchCmd implements ClusterEventListener{
 	}
 
 
+	/* TODO read args from command line */
 	public static void main(String[] args){
 		RandomRBFGeneratorEvents stream = new RandomRBFGeneratorEvents();
 		AbstractClusterer clusterer = new Clustream();

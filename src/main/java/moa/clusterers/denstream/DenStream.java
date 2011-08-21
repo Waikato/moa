@@ -1,3 +1,23 @@
+/*
+ *    DenStream.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Wels (moa@cs.rwth-aachen.de)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
 package moa.clusterers.denstream;
 
 import java.util.ArrayList;
@@ -11,8 +31,15 @@ import weka.core.DenseInstance;
 import weka.core.Instance;
 
 /**
+ * DenStream: Density-based clustering over an evolving data stream with noise (2006)
  *
- * @author jansen
+ * This implementation only creates a microclustering. For now all microclustering algorithms 
+ * will be clustered in RunVisualizer with the general kMeans-microclustering implementation 
+ * to make all clustering approaches comparable. 
+ * 
+ * TODO: see KMeans.java: need of MacroCluster interface 
+ * TODO: implementation of DBScan as general macro clustering approach
+ *
  */
 public class DenStream extends AbstractClusterer {
 
@@ -61,8 +88,6 @@ public class DenStream extends AbstractClusterer {
         //init DenStream
         currentTimestamp = new Timestamp();
         lambda = -Math.log(weightThreshold) / Math.log(2)/(double) horizonOption.getValue();
-//        lambda = (Math.log(1.0/0.01)/Math.log(2)/initPointsOption.getValue());
-//        System.out.println(lambda);
         epsilon = epsilonOption.getValue();
         minPoints = minPointsOption.getValue();
         mu = muOption.getValue();

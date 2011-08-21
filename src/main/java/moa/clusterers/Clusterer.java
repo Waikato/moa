@@ -47,18 +47,18 @@ public interface Clusterer extends MOAObject, OptionHandler, AWTRenderable {
 
 	public double[] getVotesForInstance(Instance inst);
 
-	//public boolean correctlyClassifies(Instance inst);
-
 	public Measurement[] getModelMeasurements();
 
 	public Clusterer[] getSubClusterers();
 
 	public Clusterer copy();
 
-        public Clustering getClusteringResult();
+    public Clustering getClusteringResult();
 
-        public boolean implementsMicroClusterer();
+    public boolean implementsMicroClusterer();
 
-        public Clustering getMicroClusteringResult();
+    public Clustering getMicroClusteringResult();
+    
+    public boolean keepClassLabel();
 
 }

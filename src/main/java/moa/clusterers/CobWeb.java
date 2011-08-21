@@ -2,7 +2,7 @@
  *    CobWeb.java
  *    Copyright (C) 2009 University of Waikato, Hamilton, New Zealand
  *    @author Mark Hall (mhall@cs.waikato.ac.nz)
- *
+ * 
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -703,8 +703,8 @@ public class CobWeb extends AbstractClusterer {
 		clustering.add(SphereCluster(this.coordinates, .05, m_clusterInstances.numInstances()));*/
 	            if (depth == 0) {
 	    		    double [] centroidCoordinates = new double[m_clusterInstances.numAttributes()];
-			    for (int j = 0; j < m_clusterInstances.numAttributes()-1; j++) {
-				centroidCoordinates[j] = m_clusterInstances.meanOrMode(j);
+			    for (int j = 0; j < m_clusterInstances.numAttributes()-1; j++) {						
+				centroidCoordinates[j] = m_clusterInstances.meanOrMode(j);	
 			    }
 			    clustering.add(new SphereCluster(centroidCoordinates, .05, m_clusterInstances.numInstances()));
 	            }
@@ -718,8 +718,8 @@ public class CobWeb extends AbstractClusterer {
                             + m_clusterInstances.numInstances()
                             + "]");*/
     		    double [] centroidCoordinates = new double[m_clusterInstances.numAttributes()];
-		    for (int j = 0; j < m_clusterInstances.numAttributes()-1; j++) {
-			centroidCoordinates[j] = m_clusterInstances.meanOrMode(j);
+		    for (int j = 0; j < m_clusterInstances.numAttributes()-1; j++) {						
+			centroidCoordinates[j] = m_clusterInstances.meanOrMode(j);	
 		    }
 		    clustering.add(new SphereCluster(centroidCoordinates, .05, m_clusterInstances.numInstances()));
                     ((CNode) m_children.elementAt(i)).computeTreeClustering(depth + 1, clustering);
@@ -973,14 +973,14 @@ public class CobWeb extends AbstractClusterer {
             //StringUtils.appendNewline(out);
         } else {
             m_cobwebTree.computeTreeClustering(0,result);
-	    System.out.println("After Number of clusters: "+numberOfClusters() );
+	    System.out.println("After Number of clusters: "+numberOfClusters() );    
 	}
 	System.out.println("Number of clusters: "+result.size());
-	return result;
+	return result; 
     }
 
 
 }
-
+     
 
 

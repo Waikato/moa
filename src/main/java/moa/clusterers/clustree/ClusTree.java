@@ -1,8 +1,25 @@
+/*
+ *    ClusTree.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Sanchez Villaamil (moa@cs.rwth-aachen.de)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
 package moa.clusterers.clustree;
 
-//import cluster.Cluster;
-//import cluster.Clustering;
-//import cluster.StreamClusterer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import moa.clusterers.clustree.util.*;
@@ -12,20 +29,20 @@ import moa.core.Measurement;
 import moa.options.IntOption;
 import weka.core.Instance;
 
-/**
- * A representation of a tree.
- * @author sanchez
- */
 public class ClusTree extends AbstractClusterer{
 	private static final long serialVersionUID = 1L;
-
+	
 	public IntOption horizonOption = new IntOption("horizon",
 			'h', "Range of the window.", 1000);
 
     public IntOption maxHeightOption = new IntOption(
 			"maxHeight", 'H',
-			"The maximal height of the tree", 8);
-
+			"The maximal height of the tree", getDefaultHeight());
+    
+    protected int getDefaultHeight() {
+    	return 8;
+    }
+    
     private static int INSERTIONS_BETWEEN_CLEANUPS = 10000;
     /**
      * The root node of the tree.
@@ -54,12 +71,12 @@ public class ClusTree extends AbstractClusterer{
      */
     private int numRootSplits;
     /**
-     * The thresholf for the weighting of an Entry. An Entry is irrelevant, if
+     * The threshold for the weighting of an Entry. An Entry is irrelevant, if
      * it is in a leaf and the weightedN of the data Cluster is smaller than
      * this threshold.
      * @see Entry#data
      */
-    private double weightThreshold = 0.01;
+    private double weightThreshold = 0.05;
     /**
      * Number of points inserted into the tree.
      */
@@ -659,7 +676,7 @@ public class ClusTree extends AbstractClusterer{
         int count = 0;
         for (Entry e : node.getEntries()){
         	e.setParentEntry(parentEntry);
-        	if (e.getData().N!=0)
+        	if (e.getData().getN() != 0)
         		count++;
         }
         //System.out.println(count);
@@ -669,7 +686,7 @@ public class ClusTree extends AbstractClusterer{
         count=0;
         for (Entry e: residualNode.getEntries()){
         	e.setParentEntry(residualEntry);
-        	if (e.getData().N!=0)
+        	if (e.getData().getN() != 0)
         		count++;
         }
         //System.out.println(count);
@@ -719,7 +736,7 @@ public class ClusTree extends AbstractClusterer{
      * @param currentTime The current time
      * @return The kernels at the leaf level as a clustering
      */
-    //TODO: Microcluster unter dem Threshhold nich zurckgeben (WIe bei outdated entries)
+    //TODO: Microcluster unter dem Threshhold nich zur�ckgeben (WIe bei outdated entries)
     @Override
     public Clustering getMicroClusteringResult() {
         return getClustering(timestamp, -1);

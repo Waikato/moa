@@ -1,7 +1,7 @@
 /*
  *    General.java
- *    Copyright (C) 2010 RWTH Aachen University, Aachen, Germany
- *    @author Timm Jansen (timm.jansen@gmail.com)
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -27,11 +27,6 @@ import moa.cluster.SphereCluster;
 import moa.gui.visualization.DataPoint;
 import weka.core.Instance;
 
-/**
- *
- * @author jansen
- *
- */
 public class General extends MeasureCollection{
     private int numPoints;
     private int numFClusters;

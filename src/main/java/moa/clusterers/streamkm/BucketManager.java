@@ -6,7 +6,6 @@ package moa.clusterers.streamkm;
  * @author Marcel R. Ackermann, Christiane Lammersen, Marcus Maertens, Christoph Raupach, 
 Christian Sohler, Kamil Swierkot
  */
-
 public class BucketManager  {
 
 	protected class Bucket {

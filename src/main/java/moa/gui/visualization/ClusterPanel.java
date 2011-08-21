@@ -1,6 +1,21 @@
 /*
+ *    ClusterPanel.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
  *
- * Created on 04.02.2010, 11:27:19
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 package moa.gui.visualization;
@@ -12,10 +27,6 @@ import java.awt.Graphics2D;
 import javax.swing.JPanel;
 import moa.cluster.SphereCluster;
 
-/**
- *
- * @author jansen
- */
 public class ClusterPanel extends JPanel {
     private SphereCluster cluster;
 
@@ -27,8 +38,6 @@ public class ClusterPanel extends JPanel {
     protected int y_dim = 1;
     protected Color col;
     protected Color default_color = Color.BLACK;
-//    protected int timestamp;
-//    protected double decay;
     protected double[] direction = null;
 
     protected StreamPanel streamPanel;
@@ -43,8 +52,6 @@ public class ClusterPanel extends JPanel {
     /** Creates new form ObjectPanel */
 
     public ClusterPanel(SphereCluster cluster, Color color, StreamPanel sp) {
-//        this.timestamp = timestamp;
-//        this.decay_rate = decay_rate;
         this.cluster = cluster;
         center = cluster.getCenter();
         r = cluster.getRadius();
@@ -55,7 +62,7 @@ public class ClusterPanel extends JPanel {
         setVisible(true);
         setOpaque(false);
         setSize(new Dimension(1,1));
-	setLocation(0,0);
+        setLocation(0,0);
 
         initComponents();
     }
@@ -135,16 +142,6 @@ public class ClusterPanel extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        //are we using fading clusters? if not remove deacy stuff
-        //see RunVisualizer
-//        updateDecay(RunVisualizer.getCurrentTimestamp(), decay_rate);
-//        if(decay < 0.01 || center==null){
-//            getParent().remove(this);
-//            return;
-//        }
-
-        //Graphics2D g2 = (Graphics2D)g;
-        //g2.setStroke(new BasicStroke(2));
         updateLocation();
         if(highligted){
             g.setColor(Color.BLUE);
@@ -168,11 +165,6 @@ public class ClusterPanel extends JPanel {
         
 
     }
-
-//    public void updateDecay(int cur_timestamp, double decay_rate){
-//        decay = Math.pow(2,(-1.0)*decay_rate*(cur_timestamp-timestamp));
-//
-//    }
 
     public void highlight(boolean enabled){
         highligted = enabled;
@@ -212,20 +204,6 @@ public class ClusterPanel extends JPanel {
         int radius = panel_size;
         imageGraphics.drawOval(x, y, radius, radius);
     }
-
-//    public String getObjectInfo(){
-//        StringBuffer sb = new StringBuffer();
-//        sb.append("Cluster"+"\t"+id+"\n");
-//        sb.append("----------------\n");
-//        sb.append("X \t"+center[x_dim]+"\n");
-//        sb.append("Y \t"+center[y_dim]+"\n");
-//        sb.append("Radius \t"+r+"\n");
-//        sb.append("Weight \t"+weight+"\n");
-//
-//
-//        return sb.toString();
-//    }
-
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

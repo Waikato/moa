@@ -21,16 +21,14 @@
 
 /**
  * based on RandomRBFGenerator by Richard Kirkby
- * @author Timm Jansen (timm.jansen@gmail.com)
+ * @author Jansen (moa@cs.rwth-aachen.de)
  * 
  * 
  * 
  */
 package moa.streams.clustering;
 
-import java.beans.DesignMode;
 import java.util.ArrayList;
-
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedList;
@@ -52,7 +50,7 @@ import weka.core.DenseInstance;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
-import weka.filters.unsupervised.attribute.MergeTwoValues;
+
 
 public class RandomRBFGeneratorEvents extends ClusteringStream {
     private transient Vector listeners;
@@ -109,7 +107,6 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
     private double maxDistanceMoveThresholdByStep = 0.01;
     private int maxOverlapFitRuns = 50;
     private double eventFrequencyRange = 0;
-    //double test = (2.0/5.0) + (2.0/5.0) - 0.6;
 
     private boolean debug = false;
 
@@ -353,6 +350,8 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         }
 
         void setMoveVector(double[] vector){
+        	//we are ignoring the steps, otherwise we have to change 
+        	//speed of the kernels, do we want that?
             moveVector = vector;
             int speedInPoints  = speedOption.getValue();
             if(speedRangeOption.getValue() > 0)

@@ -81,10 +81,11 @@ public class AccuracyUpdatedEnsemble extends AccuracyWeightedEnsemble
 		double mse_r = this.computeMseR();
 
 		// Select top k classifiers to construct the ensemble
+		int storeSize = this.storedLearners.length;
 		for (int i = 0; i < ensembleSize; i++)
 		{
-			this.ensembleWeights[i] = this.storedWeights[ensembleSize - i - 1][0];
-			this.ensemble[i] = this.storedLearners[(int) this.storedWeights[ensembleSize - i - 1][1]];
+			this.ensembleWeights[i] = this.storedWeights[storeSize - i - 1][0];
+			this.ensemble[i] = this.storedLearners[(int) this.storedWeights[storeSize - i - 1][1]];		
 
 			if (this.ensemble[i] != addedClassifier)
 			{
@@ -137,7 +138,7 @@ public class AccuracyUpdatedEnsemble extends AccuracyWeightedEnsemble
 		}
 
 		mse_i /= this.chunkSize;
-
+		
 		if(mse_i > 0)
 		{
 			return 1.0 / mse_i;

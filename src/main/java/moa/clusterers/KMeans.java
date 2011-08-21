@@ -1,6 +1,21 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ *    KMeans.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 package moa.clusterers;
@@ -11,14 +26,30 @@ import moa.cluster.CFCluster;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
-import moa.clusterers.denstream.MicroCluster;
 
 /**
+ * A kMeans implementation for microclusterings. For now it only uses the real centers of the 
+ * groundtruthclustering for implementation. There should also be an option to use random 
+ * centers. 
+ * TODO: random centers
+ * TODO: Create a macro clustering interface to make different macro clustering algorithms available 
+ * to micro clustering algorithms like clustream, denstream and clustree   
  *
- * @author jansen
  */
 public class KMeans {
 
+    /**
+     * This kMeans implementation clusters a big number of microclusters 
+     * into a smaller amount of macro clusters. To make it comparable to other 
+     * algorithms it uses the real centers of the ground truth macro clustering
+     * to have the best possible initialization. The quality of resulting 
+     * macro clustering yields an upper bound for kMeans on the underlying 
+     * microclustering.        
+     * 
+     * @param centers of the ground truth clustering 
+     * @param data list of microclusters
+     * @return
+     */
     public static Clustering kMeans(Cluster[] centers, List<? extends Cluster> data ) {
         int k = centers.length;
 

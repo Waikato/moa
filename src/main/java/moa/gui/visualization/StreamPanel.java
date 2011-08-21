@@ -1,12 +1,21 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * StreamPanel.java
+ *    StreamPanel.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
  *
- * Created on 05.02.2010, 10:01:26
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
 package moa.gui.visualization;
@@ -36,10 +45,6 @@ import javax.swing.JScrollPane;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 
-/**
- *
- * @author jansen
- */
 public class StreamPanel extends JPanel implements ComponentListener{
 
     private ClusterPanel highlighted_cluster = null;
@@ -60,13 +65,6 @@ public class StreamPanel extends JPanel implements ComponentListener{
     private BufferedImage pointCanvas;
     private pointCanvasPanel layerPointCanvas;
     private boolean pointsVisible = true;
-//    float W = 9;
-//    float[] TEST = {
-//        1 / W, 1 / W, 1 / W,
-//        1 / W, 1 / W, 1 / W,
-//        1 / W, 1 / W, 1 / W
-//    };
-//    private boolean BLUR = false;
     private boolean ANTIALIAS = false;
 
 
@@ -74,7 +72,6 @@ public class StreamPanel extends JPanel implements ComponentListener{
         BufferedImage image = null;
         public void setImage(BufferedImage image){
             setSize(image.getWidth(), image.getWidth());
-//            System.out.println("Size "+getWidth());
             this.image = image;
         }
         @Override
@@ -197,27 +194,12 @@ public class StreamPanel extends JPanel implements ComponentListener{
 
     public void applyDrawDecay(float factor){
 
-//        if (BLUR) {
-//            Kernel kernel = new Kernel(3, 3, TEST);
-//            ConvolveOp blurOp = new ConvolveOp(kernel,
-//                    ConvolveOp.EDGE_NO_OP, null);
-//            pointCanvas = blurOp.filter(pointCanvas, null);
-//        }
-
         RescaleOp brightenOp = new RescaleOp(1f, 150f/factor, null);
         pointCanvas = brightenOp.filter(pointCanvas, null);
 
         layerPointCanvas.setImage(pointCanvas);
         layerPointCanvas.repaint();
     }
-
-
-//    public void clearClusterings(){
-//        layerMacro.removeAll();
-//        layerMicro.removeAll();
-//        layerGroundTruth.removeAll();
-//        repaint();
-//    }
 
     private void drawClustering(JPanel layer, Clustering clustering, Color color){
         layer.removeAll();
@@ -241,13 +223,16 @@ public class StreamPanel extends JPanel implements ComponentListener{
     }
 
     public void screenshot(String filename, boolean svg, boolean png){
+    	if(layerPoints.getComponentCount()==0 && layerMacro.getComponentCount()==0 && layerMicro.getComponentCount()==0)
+    		return;
+    	
         BufferedImage image = new BufferedImage(getWidth(),getHeight(),BufferedImage.TYPE_INT_RGB);
         if(png){
             synchronized(getTreeLock()){
                 Graphics g = image.getGraphics();
                 paintAll(g);
                 try {
-                    ImageIO.write(image, "png", new File("C:\\"+filename+".png"));
+                    ImageIO.write(image, "png", new File(filename+".png"));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -255,7 +240,7 @@ public class StreamPanel extends JPanel implements ComponentListener{
         }
         if(svg){
             try {
-                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("C:\\"+filename+".svg")));
+                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filename+".svg")));
                 int width = 500;
                 out.write("<?xml version=\"1.0\"?>\n");
                 out.write("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n");
@@ -320,14 +305,9 @@ public class StreamPanel extends JPanel implements ComponentListener{
         else{
             int size = (int)(Math.min(width_org, height_org)*zoom_factor*zoom);
 
-            //System.out.println(x+" "+x*zoom_factor*zoom+" "+zoom);
-
             setSize(new Dimension(size*zoom, size*zoom));
             setPreferredSize(new Dimension(size*zoom, size*zoom));
 
-            int view_x = scrollPane.getViewport().getViewPosition().x;
-            int view_y = scrollPane.getViewport().getViewPosition().y;
-            //System.out.println("View"+view_x+"/"+view_y+"");
             scrollPane.getViewport().setViewPosition(new Point((int)(x*zoom_factor*zoom+x),(int)( y*zoom_factor*zoom+y)));
         }
     }

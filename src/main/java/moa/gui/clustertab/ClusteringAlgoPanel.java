@@ -1,14 +1,38 @@
+/*
+ *    ClusteringAlgoPanel.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program; if not, write to the Free Software
+ *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
 package moa.gui.clustertab;
 
 import java.awt.BorderLayout;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -18,109 +42,133 @@ import moa.clusterers.Clusterer;
 import moa.gui.GUIUtils;
 import moa.gui.OptionEditComponent;
 import moa.options.ClassOption;
-import moa.options.FlagOption;
 import moa.options.Option;
-import moa.options.Options;
-import moa.streams.InstanceStream;
 import moa.streams.clustering.ClusteringStream;
+import moa.streams.generators.RandomRBFGenerator;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * ClusteringAlgoPanel.java
- *
- * Created on 20.03.2010, 10:20:18
- */
-
-/**
- *
- * @author admin
- */
-public class ClusteringAlgoPanel extends javax.swing.JPanel {
+public class ClusteringAlgoPanel extends javax.swing.JPanel implements ActionListener{
 
     protected List<OptionEditComponent> editComponents = new LinkedList<OptionEditComponent>();
 
     private ClassOption streamOption = new ClassOption("Stream", 's',
-                "Stream to learn from.", ClusteringStream.class,
-                "RandomRBFGeneratorEvents");
+                "", ClusteringStream.class,
+                "RandomRBFGeneratorEvents"); 
 
-   private ClassOption algorithmOption = new ClassOption("Algorithm", 'a',
-               "Algorithm to use.", Clusterer.class,
-                "ClusterGenerator");
+   private ClassOption algorithmOption0 = new ClassOption("Algorithm0", 'a',
+               "Algorithm to use.", Clusterer.class, "ClusterGenerator");
 
-   private FlagOption sameStreamOption = new FlagOption("duplicateStream", 'S', "Same as above");
-   private FlagOption sameAlgoOption = new FlagOption("duplicateAlgorithm", 'A', "Same as above");
+   private ClassOption algorithmOption1 = new ClassOption("Algorithm1", 'c',
+               "Comparison algorithm", Clusterer.class, "", "clustream.Clustream");
+   
 
-   private boolean secondAlgorithm = false;
-
-    /** Creates new form ClusteringAlgoPanel */
     public ClusteringAlgoPanel() {
-        //initComponents();
-
+        initComponents();
     }
 
-    public void renderAlgoPanel(boolean secondAlgorithm){
-        this.secondAlgorithm = secondAlgorithm;
-        
+    public void renderAlgoPanel(){
+
         setLayout(new BorderLayout());
 
         ArrayList<Option> options = new ArrayList<Option>();
         options.add(streamOption);
-        if(secondAlgorithm)
-            options.add(sameStreamOption);
-        options.add(algorithmOption);
-        if(secondAlgorithm)
-            options.add(sameAlgoOption);
-        
+        options.add(algorithmOption0);
+        options.add(algorithmOption1);
+
         JPanel optionsPanel = new JPanel();
         GridBagLayout gbLayout = new GridBagLayout();
-        GridBagConstraints gbc = new GridBagConstraints();
         optionsPanel.setLayout(gbLayout);
-        for (int i = 0; i < options.size(); i++) {
-            JLabel label = new JLabel(options.get(i).getName());
-            label.setToolTipText(options.get(i).getPurpose());
-            gbc.gridx = 0;
-            gbc.fill = GridBagConstraints.NONE;
-            gbc.anchor = GridBagConstraints.EAST;
-            gbc.weightx = 0;
-            gbc.insets = new Insets(5, 5, 5, 5);
-            optionsPanel.add(label, gbc);
-            JComponent editor = options.get(i).getEditComponent();
-            label.setLabelFor(editor);
-            editComponents.add((OptionEditComponent) editor);
+        
+        //Create generic label constraints
+        GridBagConstraints gbcLabel = new GridBagConstraints();
+        gbcLabel.gridx = 0;
+        gbcLabel.fill = GridBagConstraints.NONE;
+        gbcLabel.anchor = GridBagConstraints.EAST;
+        gbcLabel.weightx = 0;
+        gbcLabel.insets = new Insets(5, 5, 5, 5);
+        
+        //Create generic editor constraints
+        GridBagConstraints gbcOption = new GridBagConstraints();
+        gbcOption.gridx = 1;
+        gbcOption.fill = GridBagConstraints.HORIZONTAL;
+        gbcOption.anchor = GridBagConstraints.CENTER;
+        gbcOption.weightx = 1;
+        gbcOption.insets = new Insets(5, 5, 5, 0);
 
-            gbc.gridx = 1;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            gbc.anchor = GridBagConstraints.CENTER;
-            gbc.weightx = 1;
-            gbc.insets = new Insets(5, 5, 5, 5);
-            optionsPanel.add(editor, gbc);
-       }
+        //Stream Option
+        JLabel labelStream = new JLabel("Stream");
+        labelStream.setToolTipText("Stream to use.");
+        optionsPanel.add(labelStream, gbcLabel);
+        JComponent editorStream = streamOption.getEditComponent();
+        labelStream.setLabelFor(editorStream);
+        editComponents.add((OptionEditComponent) editorStream);
+        optionsPanel.add(editorStream, gbcOption);
 
-        if(secondAlgorithm)
-            setPanelTitle("Cluster Comparison-Algorithm Setup");
+        //Algorithm0 Option
+        JLabel labelAlgo0 = new JLabel("Algorithm1");
+        labelAlgo0.setToolTipText("Algorithm to use.");
+        optionsPanel.add(labelAlgo0, gbcLabel);
+        JComponent editorAlgo0 = algorithmOption0.getEditComponent();
+        labelAlgo0.setLabelFor(editorAlgo0);
+        editComponents.add((OptionEditComponent) editorAlgo0);
+        optionsPanel.add(editorAlgo0, gbcOption);
+
+        //Algorithm1 Option
+        JLabel labelAlgo1 = new JLabel("Algorithm2");
+        labelAlgo1.setToolTipText("Comparison algorithm to use.");
+        optionsPanel.add(labelAlgo1, gbcLabel);
+        JComponent editorAlgo1 = algorithmOption1.getEditComponent();
+        labelAlgo1.setLabelFor(editorAlgo1);
+        editComponents.add((OptionEditComponent) editorAlgo1);
+        optionsPanel.add(editorAlgo1, gbcOption);
+
+        //use comparison Algorithm Option
+        GridBagConstraints gbcClearButton = new GridBagConstraints();
+        gbcClearButton.gridx = 2;
+        gbcClearButton.gridy = 2;
+        gbcClearButton.fill = GridBagConstraints.NONE;
+        gbcClearButton.anchor = GridBagConstraints.CENTER;
+        gbcClearButton.insets = new Insets(5, 0, 5, 5);
+
+        JButton clearButton = new JButton("Clear");
+        clearButton.addActionListener(this);
+        clearButton.setActionCommand("clear");
+        optionsPanel.add(clearButton, gbcClearButton);      
+        
+            
         add(optionsPanel);
     }
 
-    public AbstractClusterer getClusterer(){
+    public void actionPerformed(ActionEvent e) {
+        if(e.getActionCommand().equals("clear")){
+            algorithmOption1.setValueViaCLIString("None");
+            editComponents.get(2).setEditState("None");
+        }
+    }    
+    
+    public AbstractClusterer getClusterer0(){
         AbstractClusterer c = null;
         applyChanges();
         try {
-            c = (AbstractClusterer) ClassOption.cliStringToObject(algorithmOption.getValueAsCLIString(), Clusterer.class, null);
+            c = (AbstractClusterer) ClassOption.cliStringToObject(algorithmOption0.getValueAsCLIString(), Clusterer.class, null);
         } catch (Exception ex) {
             Logger.getLogger(ClusteringAlgoPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
         return c;
     }
-
-    public boolean duplicateClusterer(){
+    
+    public AbstractClusterer getClusterer1(){
+        AbstractClusterer c = null;
         applyChanges();
-        return sameAlgoOption.isSet();
+        if(!algorithmOption1.getValueAsCLIString().equals("None")){
+            try {
+                c = (AbstractClusterer) ClassOption.cliStringToObject(algorithmOption1.getValueAsCLIString(), Clusterer.class, null);
+            } catch (Exception ex) {
+                Logger.getLogger(ClusteringAlgoPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return c;
     }
-
+    
     public ClusteringStream getStream(){
         ClusteringStream s = null;
         applyChanges();
@@ -132,46 +180,36 @@ public class ClusteringAlgoPanel extends javax.swing.JPanel {
         return s;
     }
 
-    public boolean duplicateStream(){
-        applyChanges();
-        return sameStreamOption.isSet();
-    }
-
     public String getStreamValueAsCLIString(){
         applyChanges();
         return streamOption.getValueAsCLIString();
     }
 
-    public String getAlgorithmValueAsCLIString(){
+    public String getAlgorithm0ValueAsCLIString(){
         applyChanges();
-        return algorithmOption.getValueAsCLIString();
+        return algorithmOption0.getValueAsCLIString();
     }
-
+    
+    public String getAlgorithm1ValueAsCLIString(){
+        applyChanges();
+        return algorithmOption1.getValueAsCLIString();
+    }
+    
+    /* We need to fetch the right item from editComponents list, index needs to match GUI order */
     public void setStreamValueAsCLIString(String s){
         streamOption.setValueViaCLIString(s);
-        int index = 0;
-        editComponents.get(index).setEditState(streamOption.getValueAsCLIString());
+        editComponents.get(0).setEditState(streamOption.getValueAsCLIString());
     }
 
-    public void setAlgorithmValueAsCLIString(String s){
-        algorithmOption.setValueViaCLIString(s);
-        int index = secondAlgorithm?2:1;
-        editComponents.get(index).setEditState(algorithmOption.getValueAsCLIString());
+    public void setAlgorithm0ValueAsCLIString(String s){
+        algorithmOption0.setValueViaCLIString(s);
+        editComponents.get(1).setEditState(algorithmOption0.getValueAsCLIString());
     }
 
-    public void setDuplicateStream(boolean state){
-        if(secondAlgorithm){
-            sameStreamOption.setValue(state);
-            editComponents.get(1).setEditState(sameStreamOption.getValueAsCLIString());
-        }
-    }
-
-    public void setDuplicateClusterer(boolean state){
-        if(secondAlgorithm){
-            sameAlgoOption.setValue(state);
-            editComponents.get(3).setEditState(sameAlgoOption.getValueAsCLIString());
-        }
-    }
+    public void setAlgorithm1ValueAsCLIString(String s){
+        algorithmOption1.setValueViaCLIString(s);
+        editComponents.get(2).setEditState(algorithmOption1.getValueAsCLIString());
+    }    
 
     public void applyChanges() {
             for (OptionEditComponent editor : this.editComponents) {
@@ -197,15 +235,12 @@ public class ClusteringAlgoPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        optionsFrame = new javax.swing.JFrame();
-
         setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Cluster Algorithm Setup", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
         setLayout(new java.awt.GridBagLayout());
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JFrame optionsFrame;
     // End of variables declaration//GEN-END:variables
 
 }
