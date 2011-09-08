@@ -36,7 +36,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -143,9 +143,9 @@ public class StreamPanel extends JPanel implements ComponentListener{
             layerPointCanvas.setVisible(false);
     }
 
-    void drawPointPanels(LinkedList<DataPoint> pointBuffer, int timestamp, double decay_rate, double decay_threshold) {
-        for(int p = 0; p < pointBuffer.size(); p++){
-            PointPanel pointPanel = new PointPanel(pointBuffer.get(p),decay_rate,decay_threshold);
+    void drawPointPanels(ArrayList<DataPoint> points, int timestamp, double decay_rate, double decay_threshold) {
+        for(int p = 0; p < points.size(); p++){
+            PointPanel pointPanel = new PointPanel(points.get(p),decay_rate,decay_threshold);
             layerPoints.add(pointPanel);
             pointPanel.updateLocation();
         }

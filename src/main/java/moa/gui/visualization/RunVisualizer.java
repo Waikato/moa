@@ -191,6 +191,10 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
         int processCounter = 0;
         int speedCounter = 0;
         LinkedList<DataPoint> pointBuffer0 = new LinkedList<DataPoint>();
+        LinkedList<DataPoint> pointBuffer1 = new LinkedList<DataPoint>();
+        ArrayList<DataPoint> pointarray0 = null;
+        ArrayList<DataPoint> pointarray1 = null;
+
 
         while(work || processCounter!=0){
             if (m_stream0.hasMoreInstances()) {
@@ -209,10 +213,19 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
                     pointBuffer0.removeFirst();
                 }
 
+                DataPoint point1 = null;
+                if(m_clusterer1!=null){
+                	point1 = new DataPoint(next0,timestamp);
+                	pointBuffer1.add(point1);
+	                while(pointBuffer1.size() > m_stream0_decayHorizon){
+	                    pointBuffer1.removeFirst();
+	                }
+                }
+
                 if(m_visualPanel.isEnabledDrawPoints()){
                     m_streampanel0.drawPoint(point0);
                     if(m_clusterer1!=null)
-                        m_streampanel1.drawPoint(point0);
+                        m_streampanel1.drawPoint(point1);
                     if(processCounter%m_redrawInterval==0){
                         m_streampanel0.applyDrawDecay(m_stream0_decayHorizon/(float)(m_redrawInterval));
                         if(m_clusterer1!=null)
@@ -229,11 +242,11 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
                 
                 
                 if(m_clusterer1!=null){
-                    Instance traininst1 = new DenseInstance(point0);
+                    Instance traininst1 = new DenseInstance(point1);
                     if(m_clusterer1.keepClassLabel())
-                        traininst1.setDataset(point0.dataset());
+                        traininst1.setDataset(point1.dataset());
                     else
-                        traininst1.deleteAttributeAt(point0.classIndex());
+                        traininst1.deleteAttributeAt(point1.classIndex());
                     m_clusterer1.trainOnInstanceImpl(traininst1);
                 }
 
@@ -242,8 +255,16 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
                     for(DataPoint p:pointBuffer0)
                         p.updateWeight(timestamp, m_stream0_decay_rate);
 
-                    ArrayList<DataPoint> pointarray0 = new ArrayList<DataPoint>(pointBuffer0);
-                    ArrayList<DataPoint> pointarray1 = new ArrayList<DataPoint>(pointBuffer0);
+                    pointarray0 = new ArrayList<DataPoint>(pointBuffer0);
+                    		
+                    if(m_clusterer1!=null){
+                        for(DataPoint p:pointBuffer1)
+                            p.updateWeight(timestamp, m_stream0_decay_rate);
+
+                		pointarray1 = new ArrayList<DataPoint>(pointBuffer1);	
+                    }
+                    
+                    
                     processClusterings(pointarray0, pointarray1);
 
                     int pauseInterval = m_visualPanel.getPauseInterval();
@@ -271,9 +292,9 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
             }
         }
         if(!stop){
-            m_streampanel0.drawPointPanels(pointBuffer0, timestamp, m_stream0_decay_rate, m_stream0_decay_threshold);
+            m_streampanel0.drawPointPanels(pointarray0, timestamp, m_stream0_decay_rate, m_stream0_decay_threshold);
             if(m_clusterer1!=null)
-                m_streampanel1.drawPointPanels(pointBuffer0, timestamp, m_stream0_decay_rate, m_stream0_decay_threshold);
+                m_streampanel1.drawPointPanels(pointarray1, timestamp, m_stream0_decay_rate, m_stream0_decay_threshold);
             work_pause();
         }
     }
