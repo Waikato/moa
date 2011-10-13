@@ -25,6 +25,7 @@ import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
 import moa.options.FlagOption;
+import moa.options.FloatOption;
 import moa.options.IntOption;
 import moa.tasks.TaskMonitor;
 import weka.core.Instance;
@@ -72,17 +73,17 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier
 	/**
 	 * Number of component classifiers.
 	 */
-	public IntOption memberCountOption = new IntOption("memberCount", 'n', "The maximum number of classifier in an ensemble.", 15, 1, Integer.MAX_VALUE);
+	public FloatOption memberCountOption = new FloatOption("memberCount", 'n', "The maximum number of classifier in an ensemble.", 15, 1, Integer.MAX_VALUE);
 
 	/**
 	 * Number of classifiers remembered and available for ensemble construction.
 	 */
-	public IntOption storedCountOption = new IntOption("storedCount", 'r', "The maximum number of classifiers to store and choose from when creating an ensemble.", 30, 1, Integer.MAX_VALUE);
+	public FloatOption storedCountOption = new FloatOption("storedCount", 'r', "The maximum number of classifiers to store and choose from when creating an ensemble.", 30, 1, Integer.MAX_VALUE);
 
 	/**
 	 * Chunk size.
 	 */
-	public IntOption chunkSizeOption = new IntOption("chunkSize", 'c', "The chunk size used for classifier creation and evaluation.", 1000, 1, Integer.MAX_VALUE);
+	public IntOption chunkSizeOption = new IntOption("chunkSize", 'c', "The chunk size used for classifier creation and evaluation.", 500, 1, Integer.MAX_VALUE);
 
 	/**
 	 * Number of folds in candidate classifier cross-validation.
@@ -93,6 +94,12 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier
 	protected Classifier[] ensemble;
 	protected Classifier[] storedLearners;
 	protected double[] ensembleWeights;
+	
+	/**
+	 * The weights of stored classifiers.
+	 * storedWeights[x][0] = weight
+	 * storedWeights[x][1] = classifier
+	 */
 	protected double[][] storedWeights;
 
 	protected int processedInstances;
@@ -107,8 +114,14 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier
 	@Override
 	public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository)
 	{
-		this.maxMemberCount = memberCountOption.getValue();
-		this.maxStoredCount = storedCountOption.getValue();
+		this.maxMemberCount = (int)memberCountOption.getValue();
+		this.maxStoredCount = (int)storedCountOption.getValue();
+		
+		if(this.maxMemberCount > this.maxStoredCount)
+		{
+		    this.maxStoredCount = this.maxMemberCount;
+		}
+		
 		this.chunkSize = this.chunkSizeOption.getValue();
 		this.numFolds = this.numFoldsOption.getValue();
 		this.candidateClassifier = (Classifier) getPreparedClassOption(this.learnerOption);
@@ -177,7 +190,7 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier
 
 		for (int i = 0; i < this.storedLearners.length; i++)
 		{
-			this.storedWeights[i][0] = this.computeWeight(this.storedLearners[i], this.currentChunk);
+			this.storedWeights[i][0] = this.computeWeight(this.storedLearners[(int)this.storedWeights[i][1]], this.currentChunk);
 		}
 
 		if (this.storedLearners.length < this.maxStoredCount)
@@ -357,7 +370,8 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier
 					if (vote.sumOfValues() > 0.0)
 					{
 						vote.normalize();
-						vote.scaleValues(this.ensembleWeights[i]/(1.0*this.ensemble.length));
+						//scale weight and prevent overflow
+						vote.scaleValues(this.ensembleWeights[i]/(1.0 * this.ensemble.length + 1));
 						combinedVote.addValues(vote);
 					}
 				}
@@ -378,14 +392,33 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier
 	@Override
 	protected Measurement[] getModelMeasurementsImpl()
 	{
-		Measurement[] measurements = null;
-		if (this.ensembleWeights != null)
+		Measurement[] measurements = new Measurement[this.maxStoredCount];
+		
+		for (int m = 0; m < this.maxMemberCount; m++)
 		{
-			measurements = new Measurement[this.ensembleWeights.length];
-			for (int i = 0; i < this.ensembleWeights.length; i++)
+		    measurements[m] = new Measurement("Member weight " + (m + 1), -1);
+		}
+		
+		for (int s = this.maxMemberCount; s < this.maxStoredCount; s++)
+		{
+		    measurements[s] = new Measurement("Stored member weight " + (s + 1), -1);
+		}
+		
+		if (this.storedWeights != null)
+		{
+		    int storeSize = this.storedWeights.length;
+		    
+		    for (int i = 0; i < storeSize; i++)
+		    {
+			if(i < this.ensemble.length)
 			{
-				measurements[i] = new Measurement("member weight " + (i + 1), this.ensembleWeights[i]);
+			    measurements[i] = new Measurement("Member weight " + (i + 1), this.storedWeights[storeSize - i - 1][0]);
 			}
+			else
+			{
+			    measurements[i] = new Measurement("Stored member weight " + (i + 1), this.storedWeights[storeSize - i - 1][0]);
+			}
+		    }
 		}
 		return measurements;
 	}
@@ -424,7 +457,7 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier
 			{
 				newStored[i] = this.storedLearners[i];
 				newStoredWeights[i][0] = this.storedWeights[i][0];
-				newStoredWeights[i][1] = i;
+				newStoredWeights[i][1] = this.storedWeights[i][1];
 			}
 			else
 			{
