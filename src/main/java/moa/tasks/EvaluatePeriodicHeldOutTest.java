@@ -2,6 +2,7 @@
  *    EvaluatePeriodicHeldOutTest.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ *    @author Ammar Shaker (shaker@mathematik.uni-marburg.de)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -135,11 +136,12 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
             }
             testStream = new CachedInstancesStream(testInstances);
         } else {
-            testStream = (InstanceStream) stream.copy();
-            monitor.setCurrentActivity("Skipping test examples...", -1.0);
+            //testStream = (InstanceStream) stream.copy();
+            testStream = stream;
+            /*monitor.setCurrentActivity("Skipping test examples...", -1.0);
             for (int i = 0; i < testSize; i++) {
-                stream.nextInstance();
-            }
+            stream.nextInstance();
+            }*/
         }
         instancesProcessed = 0;
         TimingUtils.enablePreciseTiming();
@@ -167,7 +169,7 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
             if (totalTrainTime > this.trainTimeOption.getValue()) {
                 break;
             }
-            testStream.restart();
+            //testStream.restart();
             evaluator.reset();
             long testInstancesProcessed = 0;
             monitor.setCurrentActivityDescription("Testing (after "
@@ -179,10 +181,9 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
             for (int i = 0; i < testSize; i++) {
                 Instance testInst = (Instance) testStream.nextInstance().copy();
                 int trueClass = (int) testInst.classValue();
-                //testInst.setClassMissing();
+                testInst.setClassMissing();
                 double[] prediction = learner.getVotesForInstance(testInst);
-                //evaluator.addClassificationAttempt(trueClass, prediction,
-                //		testInst.weight());
+                testInst.setClassValue(trueClass);
                 evaluator.addResult(testInst, prediction);
                 testInstancesProcessed++;
                 if (testInstancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
@@ -273,6 +274,7 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
         return learningCurve;
     }
 
+    @Override
     public Class<?> getTaskResultType() {
         return LearningCurve.class;
     }
