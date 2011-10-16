@@ -37,7 +37,7 @@ import moa.options.StringOption;
 /**
  * A task allowing to create and plot gnuplot scripts.
  * 
- * @author Dariusz Brzeziñski
+ * @author Dariusz Brzezinski
  * 
  */
 public class Plot extends MainTask {
@@ -207,7 +207,7 @@ public class Plot extends MainTask {
 
     /**
      * Plot output terminal.
-     * @author Dariusz Brzeziñski
+     * @author Dariusz Brzeziï¿½ski
      *
      */
     public enum Terminal {
@@ -254,7 +254,7 @@ public class Plot extends MainTask {
 
     /**
      * Location of the legend on the plot.
-     * @author Dariusz Brzeziñski
+     * @author Dariusz Brzeziï¿½ski
      *
      */
     public enum LegendLocation {
@@ -293,7 +293,7 @@ public class Plot extends MainTask {
 
     /**
      * Type of legend.
-     * @author Dariusz Brzeziñski
+     * @author Dariusz Brzeziï¿½ski
      *
      */
     public enum LegendType {

@@ -78,7 +78,7 @@ public abstract class MeasureCollection extends AbstractMOAObject{
 
     protected abstract String[] getNames();
 
-     protected void addValue(int index, double value){
+     public void addValue(int index, double value){
          if(Double.isNaN(value)){
         	 if(debug)
         		 System.out.println("NaN for "+names[index]);

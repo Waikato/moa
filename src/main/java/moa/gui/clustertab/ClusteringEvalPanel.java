@@ -17,7 +17,6 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-
 package moa.gui.clustertab;
 
 import java.awt.GridBagConstraints;
@@ -27,13 +26,16 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import moa.core.AutoClassDiscovery;
 import moa.core.AutoExpandVector;
+import moa.evaluation.ClassificationMeasureCollection;
 import moa.evaluation.MeasureCollection;
 
 public class ClusteringEvalPanel extends javax.swing.JPanel {
-    Class<?>[] measure_classes = null;
-    ArrayList<JLabel>  labels = null;
-    ArrayList<JCheckBox> checkboxes = null;
 
+    Class<?>[] measure_classes = null;
+
+    ArrayList<JLabel> labels = null;
+
+    ArrayList<JCheckBox> checkboxes = null;
 
     /** Creates new form ClusteringEvalPanel */
     public ClusteringEvalPanel() {
@@ -44,13 +46,13 @@ public class ClusteringEvalPanel extends javax.swing.JPanel {
         addComponents();
     }
 
-    private void addComponents(){
+    private void addComponents() {
         GridBagConstraints gb = new GridBagConstraints();
         gb.insets = new java.awt.Insets(4, 7, 4, 7);
         int counter = 0;
         for (int i = 0; i < measure_classes.length; i++) {
             try {
-                MeasureCollection m = (MeasureCollection)measure_classes[i].newInstance();
+                MeasureCollection m = (MeasureCollection) measure_classes[i].newInstance();
                 for (int j = 0; j < m.getNumMeasures(); j++) {
                     String t = m.getName(j);
                     JLabel l = new JLabel(m.getName(j));
@@ -62,19 +64,20 @@ public class ClusteringEvalPanel extends javax.swing.JPanel {
                     contentPanel.add(l, gb);
 
                     JCheckBox cb = new JCheckBox();
-                    
-                    if(m.isEnabled(j))
+
+                    if (m.isEnabled(j)) {
                         cb.setSelected(true);
-                    else
+                    } else {
                         cb.setSelected(false);
-                    
+                    }
+
                     gb.gridx = 1;
                     checkboxes.add(cb);
                     contentPanel.add(cb, gb);
                     counter++;
                 }
             } catch (Exception ex) {
-                Logger.getLogger("Couldn't create Instance for "+measure_classes[i].getName());
+                Logger.getLogger("Couldn't create Instance for " + measure_classes[i].getName());
                 ex.printStackTrace();
             }
 
@@ -90,36 +93,48 @@ public class ClusteringEvalPanel extends javax.swing.JPanel {
     }
 
     private Class<?>[] findMeasureClasses() {
-            AutoExpandVector<Class<?>> finalClasses = new AutoExpandVector<Class<?>>();
-            Class<?>[] classesFound = AutoClassDiscovery.findClassesOfType("moa.evaluation",
-                            MeasureCollection.class);
-            for (Class<?> foundClass : classesFound) {
-                    finalClasses.add(foundClass);
+        AutoExpandVector<Class<?>> finalClasses = new AutoExpandVector<Class<?>>();
+        Class<?>[] classesFound = AutoClassDiscovery.findClassesOfType("moa.evaluation",
+                MeasureCollection.class);
+        for (Class<?> foundClass : classesFound) {
+            //Not add ClassificationMeasureCollection
+            boolean noClassificationMeasures = true;
+            for (Class cl: foundClass.getInterfaces()) {
+                if (cl.toString().contains("moa.evaluation.ClassificationMeasureCollection")){
+                    noClassificationMeasures = false;
+                }
             }
-            return finalClasses.toArray(new Class<?>[finalClasses.size()]);
+            if (noClassificationMeasures ) { 
+                finalClasses.add(foundClass);
+            }
+        }
+        return finalClasses.toArray(new Class<?>[finalClasses.size()]);
     }
 
-    public MeasureCollection[] getSelectedMeasures(){
+    public MeasureCollection[] getSelectedMeasures() {
         ArrayList<MeasureCollection> measuresSelect = new ArrayList<MeasureCollection>();
-        
+
         int counter = 0;
         for (int i = 0; i < measure_classes.length; i++) {
             try {
-                MeasureCollection m = (MeasureCollection)measure_classes[i].newInstance();
+                MeasureCollection m = (MeasureCollection) measure_classes[i].newInstance();
                 boolean addMeasure = false;
-                for (int j = 0; j <  m.getNumMeasures(); j++) {
+                for (int j = 0; j < m.getNumMeasures(); j++) {
                     boolean selected = checkboxes.get(counter).isSelected();
                     m.setEnabled(j, selected);
-                    if(selected) addMeasure = true;
+                    if (selected) {
+                        addMeasure = true;
+                    }
                     counter++;
                 }
-                if(addMeasure)
+                if (addMeasure) {
                     measuresSelect.add(m);
+                }
 
-                
+
 
             } catch (Exception ex) {
-                Logger.getLogger("Couldn't create Instance for "+measure_classes[i].getName());
+                Logger.getLogger("Couldn't create Instance for " + measure_classes[i].getName());
                 ex.printStackTrace();
             }
         }
@@ -163,10 +178,8 @@ public class ClusteringEvalPanel extends javax.swing.JPanel {
         add(scrollPane, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel contentPanel;
     private javax.swing.JScrollPane scrollPane;
     // End of variables declaration//GEN-END:variables
-
 }

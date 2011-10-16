@@ -34,7 +34,7 @@ import moa.AbstractMOAObject;
  */
 public class ADWIN extends AbstractMOAObject {
 
-    private class List {
+    private class List extends AbstractMOAObject {
 
         protected int count;
 
@@ -128,9 +128,13 @@ public class ADWIN extends AbstractMOAObject {
             //temp=null;
             return;
         }
+
+        @Override
+        public void getDescription(StringBuilder sb, int indent) {
+        }
     }
 
-    private class ListItem {
+    private class ListItem extends AbstractMOAObject {
 //		protected Object data;
 
         protected ListItem next;
@@ -271,6 +275,10 @@ public class ADWIN extends AbstractMOAObject {
         this.data = anObject;
         }
          */
+
+        @Override
+        public void getDescription(StringBuilder sb, int indent) {
+        }
     }
 
     public static final double DELTA = .002; //.1;
@@ -596,6 +604,5 @@ public class ADWIN extends AbstractMOAObject {
 
     @Override
     public void getDescription(StringBuilder sb, int indent) {
-
     }
 }

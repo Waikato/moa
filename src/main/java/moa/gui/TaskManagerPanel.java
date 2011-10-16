@@ -45,6 +45,7 @@ import javax.swing.table.TableCellRenderer;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
+import moa.tasks.EvaluatePrequential;
 import moa.tasks.LearnModel;
 import moa.tasks.MainTask;
 import moa.tasks.Task;
@@ -166,7 +167,7 @@ public class TaskManagerPanel extends JPanel {
         }
     }
 
-    protected MainTask currentTask = new LearnModel();
+    protected MainTask currentTask = new EvaluatePrequential();//LearnModel();
 
     protected List<TaskThread> taskList = new ArrayList<TaskThread>();
 
