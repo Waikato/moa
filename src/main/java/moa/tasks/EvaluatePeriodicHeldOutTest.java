@@ -180,7 +180,7 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
             long testStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
             for (int i = 0; i < testSize; i++) {
                 Instance testInst = (Instance) testStream.nextInstance().copy();
-                int trueClass = (int) testInst.classValue();
+                double trueClass = testInst.classValue();
                 testInst.setClassMissing();
                 double[] prediction = learner.getVotesForInstance(testInst);
                 testInst.setClassValue(trueClass);
