@@ -110,12 +110,15 @@ public class GaussianNumericAttributeClassObserver extends AbstractMOAObject
         Set<Double> suggestedSplitValues = new TreeSet<Double>();
         double minValue = Double.POSITIVE_INFINITY;
         double maxValue = Double.NEGATIVE_INFINITY;
-        for (int i = 0; i < this.minValueObservedPerClass.numValues(); i++) {
-            if (this.minValueObservedPerClass.getValue(i) < minValue) {
-                minValue = this.minValueObservedPerClass.getValue(i);
-            }
-            if (this.maxValueObservedPerClass.getValue(i) > maxValue) {
-                maxValue = this.maxValueObservedPerClass.getValue(i);
+        for (int i = 0; i < this.attValDistPerClass.size(); i++) {
+            GaussianEstimator estimator = this.attValDistPerClass.get(i);
+            if (estimator != null) {
+                if (this.minValueObservedPerClass.getValue(i) < minValue) {
+                    minValue = this.minValueObservedPerClass.getValue(i);
+                }
+                if (this.maxValueObservedPerClass.getValue(i) > maxValue) {
+                    maxValue = this.maxValueObservedPerClass.getValue(i);
+                }
             }
         }
         if (minValue < Double.POSITIVE_INFINITY) {
