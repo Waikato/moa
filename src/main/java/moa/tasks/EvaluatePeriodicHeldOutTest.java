@@ -169,7 +169,9 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
             if (totalTrainTime > this.trainTimeOption.getValue()) {
                 break;
             }
-            //testStream.restart();
+	    if (this.cacheTestOption.isSet()) {
+                testStream.restart();
+            } 
             evaluator.reset();
             long testInstancesProcessed = 0;
             monitor.setCurrentActivityDescription("Testing (after "
