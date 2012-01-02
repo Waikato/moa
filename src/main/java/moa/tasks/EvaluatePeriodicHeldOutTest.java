@@ -146,13 +146,14 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
         instancesProcessed = 0;
         TimingUtils.enablePreciseTiming();
         double totalTrainTime = 0.0;
-        while ((this.trainSizeOption.getValue() < 1)
-                || (instancesProcessed < this.trainSizeOption.getValue())) {
+        while ((this.trainSizeOption.getValue() < 1
+                || instancesProcessed < this.trainSizeOption.getValue())
+                && stream.hasMoreInstances() == true) {
             monitor.setCurrentActivityDescription("Training...");
             long instancesTarget = instancesProcessed
                     + this.sampleFrequencyOption.getValue();
             long trainStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
-            while (instancesProcessed < instancesTarget) {
+            while (instancesProcessed < instancesTarget && stream.hasMoreInstances() == true) {
                 learner.trainOnInstance(stream.nextInstance());
                 instancesProcessed++;
                 if (instancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
@@ -180,7 +181,11 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
                     / (double) (this.trainSizeOption.getValue()) * 100.0), 2)
                     + "% training)...");
             long testStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
-            for (int i = 0; i < testSize; i++) {
+            int instCount = 0 ;
+            for (instCount = 0; instCount < testSize; instCount++) {
+				if (stream.hasMoreInstances() == false) {
+					break;
+				}
                 Instance testInst = (Instance) testStream.nextInstance().copy();
                 double trueClass = testInst.classValue();
                 testInst.setClassMissing();
@@ -196,10 +201,13 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
                             / (double) (testSize));
                 }
             }
+        	if ( instCount != testSize) {
+				break;
+			}
             double testTime = TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread()
                     - testStartTime);
             List<Measurement> measurements = new ArrayList<Measurement>();
-            measurements.add(new Measurement("evaluation instances",
+            measurements.add(new Measurement("evaluation instances",            		
                     instancesProcessed));
             measurements.add(new Measurement("total train time", totalTrainTime));
             measurements.add(new Measurement("total train speed",
