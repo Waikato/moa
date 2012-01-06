@@ -21,10 +21,13 @@ package moa.classifiers;
 
 import weka.core.Utils;
 
-import moa.AbstractMOAObject;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.GreenwaldKhannaQuantileSummary;
+import moa.core.ObjectRepository;
+import moa.options.AbstractOptionHandler;
+import moa.options.IntOption;
+import moa.tasks.TaskMonitor;
 
 /**
  * Class for observing the class data distribution for a numeric attribute using Greenwald and Khanna methodology.
@@ -34,17 +37,14 @@ import moa.core.GreenwaldKhannaQuantileSummary;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class GreenwaldKhannaNumericAttributeClassObserver extends AbstractMOAObject implements AttributeClassObserver {
+public class GreenwaldKhannaNumericAttributeClassObserver extends AbstractOptionHandler implements AttributeClassObserver {
 
     private static final long serialVersionUID = 1L;
 
-    protected int numTuples;
-
     protected AutoExpandVector<GreenwaldKhannaQuantileSummary> attValDistPerClass = new AutoExpandVector<GreenwaldKhannaQuantileSummary>();
 
-    public GreenwaldKhannaNumericAttributeClassObserver(int numTuples) {
-        this.numTuples = numTuples;
-    }
+    public IntOption numTuplesOption = new IntOption("numTuples", 'n',
+        "The number of tuples.", 10, 1, Integer.MAX_VALUE);
 
     @Override
     public void observeAttributeClass(double attVal, int classVal, double weight) {
@@ -52,7 +52,7 @@ public class GreenwaldKhannaNumericAttributeClassObserver extends AbstractMOAObj
         } else {
             GreenwaldKhannaQuantileSummary valDist = this.attValDistPerClass.get(classVal);
             if (valDist == null) {
-                valDist = new GreenwaldKhannaQuantileSummary(this.numTuples);
+                valDist = new GreenwaldKhannaQuantileSummary(this.numTuplesOption.getValue());
                 this.attValDistPerClass.set(classVal, valDist);
             }
             // TODO: not taking weight into account
@@ -108,6 +108,11 @@ public class GreenwaldKhannaNumericAttributeClassObserver extends AbstractMOAObj
 
     @Override
     public void getDescription(StringBuilder sb, int indent) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
     }
 }

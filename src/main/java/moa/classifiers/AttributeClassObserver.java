@@ -19,7 +19,7 @@
  */
 package moa.classifiers;
 
-import moa.MOAObject;
+import moa.options.OptionHandler;
 
 /**
  * Interface for observing the class data distribution for an attribute.
@@ -29,7 +29,7 @@ import moa.MOAObject;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $ 
  */
-public interface AttributeClassObserver extends MOAObject {
+public interface AttributeClassObserver extends OptionHandler {
 
     /**
      * Updates statistics of this observer given an attribute value, a class
@@ -63,4 +63,5 @@ public interface AttributeClassObserver extends MOAObject {
     public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(
             SplitCriterion criterion, double[] preSplitDist, int attIndex,
             boolean binaryOnly);
+
 }

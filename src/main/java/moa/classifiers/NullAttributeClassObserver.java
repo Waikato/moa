@@ -19,7 +19,9 @@
  */
 package moa.classifiers;
 
-import moa.AbstractMOAObject;
+import moa.core.ObjectRepository;
+import moa.options.AbstractOptionHandler;
+import moa.tasks.TaskMonitor;
 
 /**
  * Class for observing the class data distribution for a null attribute.
@@ -29,7 +31,7 @@ import moa.AbstractMOAObject;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class NullAttributeClassObserver extends AbstractMOAObject implements
+public class NullAttributeClassObserver extends AbstractOptionHandler implements
         AttributeClassObserver {
 
     private static final long serialVersionUID = 1L;
@@ -62,5 +64,10 @@ public class NullAttributeClassObserver extends AbstractMOAObject implements
             SplitCriterion criterion, double[] preSplitDist, int attIndex,
             boolean binaryOnly) {
         return null;
+    }
+
+    @Override
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
+        // TODO Auto-generated method stub
     }
 }

@@ -22,8 +22,10 @@ package moa.classifiers;
 
 import java.io.Serializable;
 
-import moa.AbstractMOAObject;
 import moa.core.DoubleVector;
+import moa.core.ObjectRepository;
+import moa.options.AbstractOptionHandler;
+import moa.tasks.TaskMonitor;
 
 /**
  * Class for observing the class data distribution for a numeric attribute using a binary tree.
@@ -33,7 +35,7 @@ import moa.core.DoubleVector;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class BinaryTreeNumericAttributeClassObserver extends AbstractMOAObject
+public class BinaryTreeNumericAttributeClassObserver extends AbstractOptionHandler
         implements AttributeClassObserver {
 
     private static final long serialVersionUID = 1L;
@@ -163,6 +165,11 @@ public class BinaryTreeNumericAttributeClassObserver extends AbstractMOAObject
 
     @Override
     public void getDescription(StringBuilder sb, int indent) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
     }
 }

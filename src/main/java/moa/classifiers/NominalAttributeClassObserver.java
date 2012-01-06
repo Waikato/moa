@@ -19,11 +19,13 @@
  */
 package moa.classifiers;
 
+import moa.core.ObjectRepository;
+import moa.tasks.TaskMonitor;
 import weka.core.Utils;
 
-import moa.AbstractMOAObject;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
+import moa.options.AbstractOptionHandler;
 
 /**
  * Class for observing the class data distribution for a nominal attribute.
@@ -33,7 +35,7 @@ import moa.core.DoubleVector;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class NominalAttributeClassObserver extends AbstractMOAObject implements
+public class NominalAttributeClassObserver extends AbstractOptionHandler implements
         AttributeClassObserver {
 
     private static final long serialVersionUID = 1L;
@@ -158,4 +160,10 @@ public class NominalAttributeClassObserver extends AbstractMOAObject implements
     public void getDescription(StringBuilder sb, int indent) {
         // TODO Auto-generated method stub
     }
+
+    @Override
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
+        // TODO Auto-generated method stub
+    }
+
 }

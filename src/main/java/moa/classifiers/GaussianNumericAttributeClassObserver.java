@@ -19,15 +19,18 @@
  */
 package moa.classifiers;
 
+import moa.core.ObjectRepository;
+import moa.tasks.TaskMonitor;
 import weka.core.Utils;
 
 import java.util.Set;
 import java.util.TreeSet;
 
-import moa.AbstractMOAObject;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.GaussianEstimator;
+import moa.options.AbstractOptionHandler;
+import moa.options.IntOption;
 
 /**
  * Class for observing the class data distribution for a numeric attribute using gaussian estimators.
@@ -37,12 +40,10 @@ import moa.core.GaussianEstimator;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class GaussianNumericAttributeClassObserver extends AbstractMOAObject
+public class GaussianNumericAttributeClassObserver extends AbstractOptionHandler
         implements AttributeClassObserver {
 
     private static final long serialVersionUID = 1L;
-
-    protected int numBins;
 
     protected DoubleVector minValueObservedPerClass = new DoubleVector();
 
@@ -50,13 +51,8 @@ public class GaussianNumericAttributeClassObserver extends AbstractMOAObject
 
     protected AutoExpandVector<GaussianEstimator> attValDistPerClass = new AutoExpandVector<GaussianEstimator>();
 
-    public GaussianNumericAttributeClassObserver() {
-        this(10);
-    }
-
-    public GaussianNumericAttributeClassObserver(int numBins) {
-        this.numBins = numBins;
-    }
+    public IntOption numBinsOption = new IntOption("numBins", 'n',
+            "The number of bins.", 10, 1, Integer.MAX_VALUE);
 
     @Override
     public void observeAttributeClass(double attVal, int classVal, double weight) {
@@ -123,8 +119,8 @@ public class GaussianNumericAttributeClassObserver extends AbstractMOAObject
         }
         if (minValue < Double.POSITIVE_INFINITY) {
             double range = maxValue - minValue;
-            for (int i = 0; i < this.numBins; i++) {
-                double splitValue = range / (this.numBins + 1.0) * (i + 1)
+            for (int i = 0; i < this.numBinsOption.getValue(); i++) {
+                double splitValue = range / (this.numBinsOption.getValue() + 1.0) * (i + 1)
                         + minValue;
                 if ((splitValue > minValue) && (splitValue < maxValue)) {
                     suggestedSplitValues.add(splitValue);
@@ -162,6 +158,11 @@ public class GaussianNumericAttributeClassObserver extends AbstractMOAObject
 
     @Override
     public void getDescription(StringBuilder sb, int indent) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
     }
 }

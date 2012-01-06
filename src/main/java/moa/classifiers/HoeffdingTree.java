@@ -37,6 +37,7 @@ import moa.options.FloatOption;
 import moa.options.IntOption;
 import moa.options.MultiChoiceOption;
 import moa.core.SizeOf;
+import moa.options.AbstractOptionHandler;
 import weka.core.Instance;
 
 /**
@@ -98,7 +99,7 @@ public class HoeffdingTree extends AbstractClassifier {
             "Maximum memory consumed by the tree.", 33554432, 0,
             Integer.MAX_VALUE);
 
-    public MultiChoiceOption numericEstimatorOption = new MultiChoiceOption(
+ /*   public MultiChoiceOption numericEstimatorOption = new MultiChoiceOption(
             "numericEstimator", 'n', "Numeric estimator to use.", new String[]{
                 "GAUSS10", "GAUSS100", "GK10", "GK100", "GK1000", "VFML10",
                 "VFML100", "VFML1000", "BINTREE"}, new String[]{
@@ -109,6 +110,11 @@ public class HoeffdingTree extends AbstractClassifier {
                 "Greenwald-Khanna quantile summary with 1000 tuples",
                 "VFML method with 10 bins", "VFML method with 100 bins",
                 "VFML method with 1000 bins", "Exhaustive binary tree"}, 0);
+*/
+
+    public ClassOption numericEstimatorOption = new ClassOption("numericEstimator",
+            'n', "Numeric estimator to use.", AttributeClassObserver.class,
+            "GaussianNumericAttributeClassObserver");
 
     public IntOption memoryEstimatePeriodOption = new IntOption(
             "memoryEstimatePeriod", 'e',
@@ -582,27 +588,8 @@ public class HoeffdingTree extends AbstractClassifier {
     }
 
     protected AttributeClassObserver newNumericClassObserver() {
-        switch (this.numericEstimatorOption.getChosenIndex()) {
-            case 0:
-                return new GaussianNumericAttributeClassObserver(10);
-            case 1:
-                return new GaussianNumericAttributeClassObserver(100);
-            case 2:
-                return new GreenwaldKhannaNumericAttributeClassObserver(10);
-            case 3:
-                return new GreenwaldKhannaNumericAttributeClassObserver(100);
-            case 4:
-                return new GreenwaldKhannaNumericAttributeClassObserver(1000);
-            case 5:
-                return new VFMLNumericAttributeClassObserver(10);
-            case 6:
-                return new VFMLNumericAttributeClassObserver(100);
-            case 7:
-                return new VFMLNumericAttributeClassObserver(1000);
-            case 8:
-                return new BinaryTreeNumericAttributeClassObserver();
-        }
-        return new GaussianNumericAttributeClassObserver();
+        AttributeClassObserver numericClassObserver = (AttributeClassObserver) getPreparedClassOption(this.numericEstimatorOption);
+        return (AttributeClassObserver) numericClassObserver.copy();
     }
 
     protected void attemptToSplit(ActiveLearningNode node, SplitNode parent,

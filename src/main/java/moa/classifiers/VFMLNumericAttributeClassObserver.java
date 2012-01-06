@@ -25,8 +25,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import moa.AbstractMOAObject;
 import moa.core.DoubleVector;
+import moa.core.ObjectRepository;
+import moa.options.AbstractOptionHandler;
+import moa.options.IntOption;
+import moa.tasks.TaskMonitor;
 
 /**
  * Class for observing the class data distribution for a numeric attribute as in VFML.
@@ -35,7 +38,7 @@ import moa.core.DoubleVector;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class VFMLNumericAttributeClassObserver extends AbstractMOAObject
+public class VFMLNumericAttributeClassObserver extends AbstractOptionHandler
         implements AttributeClassObserver {
 
     private static final long serialVersionUID = 1L;
@@ -55,11 +58,9 @@ public class VFMLNumericAttributeClassObserver extends AbstractMOAObject
 
     protected List<Bin> binList = new ArrayList<Bin>();
 
-    protected int numBins;
+    public IntOption numBinsOption = new IntOption("numBins", 'n',
+        "The number of bins.", 10, 1, Integer.MAX_VALUE);
 
-    public VFMLNumericAttributeClassObserver(int numBins) {
-        this.numBins = numBins;
-    }
 
     @Override
     public void observeAttributeClass(double attVal, int classVal, double weight) {
@@ -113,7 +114,7 @@ public class VFMLNumericAttributeClassObserver extends AbstractMOAObject
                 }
                 Bin bin = this.binList.get(index); // VLIndex(ct->bins, index);
                 if ((bin.lowerBound == attVal)
-                        || (this.binList.size() >= this.numBins)) {// Option.getValue())
+                        || (this.binList.size() >= this.numBinsOption.getValue())) {// Option.getValue())
                     // {//1000)
                     // {
                     // if this is the exact same boundary and class as the bin
@@ -206,6 +207,11 @@ public class VFMLNumericAttributeClassObserver extends AbstractMOAObject
 
     @Override
     public void getDescription(StringBuilder sb, int indent) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
     }
 }
