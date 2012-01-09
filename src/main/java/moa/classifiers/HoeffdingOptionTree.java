@@ -43,7 +43,6 @@ import moa.options.FileOption;
 import moa.options.FlagOption;
 import moa.options.FloatOption;
 import moa.options.IntOption;
-import moa.options.MultiChoiceOption;
 
 /**
  * Hoeffding Option Tree with majority class learners at the leaves.
@@ -115,8 +114,12 @@ public class HoeffdingOptionTree extends AbstractClassifier {
 */
 
     public ClassOption numericEstimatorOption = new ClassOption("numericEstimator",
-            'n', "Numeric estimator to use.", AttributeClassObserver.class,
+            'n', "Numeric estimator to use.", NumericAttributeClassObserver.class,
             "GaussianNumericAttributeClassObserver");
+    
+    public ClassOption nominalEstimatorOption = new ClassOption("nominalEstimator",
+            'd', "Nominal estimator to use.", DiscreteAttributeClassObserver.class,
+            "NominalAttributeClassObserver");
 
     public IntOption memoryEstimatePeriodOption = new IntOption(
             "memoryEstimatePeriod", 'e',
@@ -158,7 +161,7 @@ public class HoeffdingOptionTree extends AbstractClassifier {
     public FlagOption noPrePruneOption = new FlagOption("noPrePrune", 'p',
             "Disable pre-pruning.");
 
-    public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
+    public FileOption dumpFileOption = new FileOption("dumpFile", 'f',
             "File to append option table to.", null, "csv", true);
 
     public IntOption memoryStrategyOption = new IntOption("memStrategy", 'z',
@@ -747,14 +750,14 @@ public class HoeffdingOptionTree extends AbstractClassifier {
     }
 
     protected AttributeClassObserver newNominalClassObserver() {
-        return new NominalAttributeClassObserver();
+        AttributeClassObserver nominalClassObserver = (AttributeClassObserver) getPreparedClassOption(this.nominalEstimatorOption);
+        return (AttributeClassObserver) nominalClassObserver.copy();
     }
 
-     protected AttributeClassObserver newNumericClassObserver() {
+    protected AttributeClassObserver newNumericClassObserver() {
         AttributeClassObserver numericClassObserver = (AttributeClassObserver) getPreparedClassOption(this.numericEstimatorOption);
         return (AttributeClassObserver) numericClassObserver.copy();
     }
-
 
     protected void attemptToSplit(ActiveLearningNode node, SplitNode parent,
             int parentIndex) {

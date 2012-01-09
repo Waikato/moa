@@ -35,9 +35,7 @@ import moa.options.ClassOption;
 import moa.options.FlagOption;
 import moa.options.FloatOption;
 import moa.options.IntOption;
-import moa.options.MultiChoiceOption;
 import moa.core.SizeOf;
-import moa.options.AbstractOptionHandler;
 import weka.core.Instance;
 
 /**
@@ -113,8 +111,12 @@ public class HoeffdingTree extends AbstractClassifier {
 */
 
     public ClassOption numericEstimatorOption = new ClassOption("numericEstimator",
-            'n', "Numeric estimator to use.", AttributeClassObserver.class,
+            'n', "Numeric estimator to use.", NumericAttributeClassObserver.class,
             "GaussianNumericAttributeClassObserver");
+    
+    public ClassOption nominalEstimatorOption = new ClassOption("nominalEstimator",
+            'd', "Nominal estimator to use.", DiscreteAttributeClassObserver.class,
+            "NominalAttributeClassObserver");
 
     public IntOption memoryEstimatePeriodOption = new IntOption(
             "memoryEstimatePeriod", 'e',
@@ -584,7 +586,8 @@ public class HoeffdingTree extends AbstractClassifier {
     }
 
     protected AttributeClassObserver newNominalClassObserver() {
-        return new NominalAttributeClassObserver();
+        AttributeClassObserver nominalClassObserver = (AttributeClassObserver) getPreparedClassOption(this.nominalEstimatorOption);
+        return (AttributeClassObserver) nominalClassObserver.copy();
     }
 
     protected AttributeClassObserver newNumericClassObserver() {

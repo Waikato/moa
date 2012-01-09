@@ -36,7 +36,7 @@ import moa.options.AbstractOptionHandler;
  * @version $Revision: 7 $
  */
 public class NominalAttributeClassObserver extends AbstractOptionHandler implements
-        AttributeClassObserver {
+        DiscreteAttributeClassObserver {
 
     private static final long serialVersionUID = 1L;
 

@@ -41,7 +41,7 @@ import moa.options.IntOption;
  * @version $Revision: 7 $
  */
 public class GaussianNumericAttributeClassObserver extends AbstractOptionHandler
-        implements AttributeClassObserver {
+        implements NumericAttributeClassObserver {
 
     private static final long serialVersionUID = 1L;
 

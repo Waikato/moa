@@ -36,7 +36,7 @@ import moa.tasks.TaskMonitor;
  * @version $Revision: 7 $
  */
 public class BinaryTreeNumericAttributeClassObserver extends AbstractOptionHandler
-        implements AttributeClassObserver {
+        implements NumericAttributeClassObserver {
 
     private static final long serialVersionUID = 1L;
 
