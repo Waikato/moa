@@ -82,12 +82,17 @@ public class OptionsConfigurationPanel extends JPanel {
             purposeTextArea.setEnabled(false);
             purposeTextArea.setBorder(BorderFactory.createTitledBorder("Purpose"));
             purposeTextArea.setBackground(getBackground());
-            add(purposeTextArea, BorderLayout.NORTH);
+            JScrollPane scrollPanePurpose = new JScrollPane(purposeTextArea,
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPanePurpose.setBorder(null);
+            add(scrollPanePurpose, BorderLayout.NORTH);
         }
         JPanel optionsPanel = createLabelledOptionComponentListPanel(options.getOptionArray(), this.editComponents);
         JScrollPane scrollPane = new JScrollPane(optionsPanel,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(null);
         int optionPanelHeight = (int) optionsPanel.getPreferredSize().getHeight();
         int scrollPaneHeight = (int) scrollPane.getPreferredSize().getHeight();
         scrollPane.setPreferredSize(new Dimension(FIXED_PANEL_WIDTH,
