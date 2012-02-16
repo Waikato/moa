@@ -59,7 +59,7 @@ public class EvaluatePrequential extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Classifier to train.", Classifier.class, "NaiveBayes");
+            "Classifier to train.", Classifier.class, "bayes.NaiveBayes");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", InstanceStream.class,
@@ -82,10 +82,6 @@ public class EvaluatePrequential extends MainTask {
             'f',
             "How many instances between samples of the learning performance.",
             100000, 0, Integer.MAX_VALUE);
-
-    public IntOption maxMemoryOption = new IntOption("maxMemory", 'b',
-            "Maximum size of model (in bytes). -1 = no limit.", -1, -1,
-            Integer.MAX_VALUE);
 
     public IntOption memCheckFrequencyOption = new IntOption(
             "memCheckFrequency", 'q',

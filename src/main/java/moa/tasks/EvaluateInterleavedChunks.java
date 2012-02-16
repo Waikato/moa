@@ -49,7 +49,7 @@ public class EvaluateInterleavedChunks extends MainTask {
 	 * Allows to select the trained classifier.
 	 */
 	public ClassOption learnerOption = new ClassOption("learner", 'l',
-			"Classifier to train.", Classifier.class, "NaiveBayes");
+			"Classifier to train.", Classifier.class, "bayes.NaiveBayes");
 
 	/**
 	 * Allows to select the stream the classifier will learn. 

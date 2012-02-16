@@ -79,7 +79,7 @@ public class FilteredStream extends AbstractOptionHandler implements
             }
         }
         InstanceStream chain = (InstanceStream) getPreparedClassOption(this.streamOption);
-        for (int i = filters.length - 1; i >= 0; i--) {
+        for (int i = 0; i < filters.length; i++) {
             filters[i].setInputStream(chain);
             chain = filters[i];
         }

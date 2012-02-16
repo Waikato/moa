@@ -2,6 +2,7 @@
  *    TaskManagerPanel.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ *    @author Manuel Martín (msalvador@bournemouth.ac.uk)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -24,12 +25,26 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -46,7 +61,6 @@ import moa.core.StringUtils;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
 import moa.tasks.EvaluatePrequential;
-import moa.tasks.LearnModel;
 import moa.tasks.MainTask;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
@@ -62,6 +76,8 @@ public class TaskManagerPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     public static final int MILLISECS_BETWEEN_REFRESH = 600;
+
+    public static String exportFileExtension = "log";
 
     public class ProgressCellRenderer extends JProgressBar implements
             TableCellRenderer {
@@ -194,6 +210,59 @@ public class TaskManagerPanel extends JPanel {
     public TaskManagerPanel() {
         this.taskDescField.setText(this.currentTask.getCLICreationString(MainTask.class));
         this.taskDescField.setEditable(false);
+        final Component comp = this.taskDescField;
+        this.taskDescField.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent evt) {
+                if (evt.getClickCount() == 1) {
+                    if ((evt.getButton() == MouseEvent.BUTTON3)
+                            || ((evt.getButton() == MouseEvent.BUTTON1) && evt.isAltDown() && evt.isShiftDown())) {
+                        JPopupMenu menu = new JPopupMenu();
+                        JMenuItem item;
+
+                        item = new JMenuItem("Copy configuration to clipboard");
+                        item.addActionListener(new ActionListener() {
+
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                copyClipBoardConfiguration();
+                            }
+                        });
+                        menu.add(item);
+
+
+
+                        item = new JMenuItem("Save selected tasks to file");
+                        item.addActionListener(new ActionListener() {
+
+                            @Override
+                            public void actionPerformed(ActionEvent arg0) {
+                                saveLogSelectedTasks();
+                            }
+                        });
+                        menu.add(item);
+
+
+                        item = new JMenuItem("Enter configuration...");
+                        item.addActionListener(new ActionListener() {
+
+                            @Override
+                            public void actionPerformed(ActionEvent arg0) {
+                                String newTaskString = JOptionPane.showInputDialog("Insert command line");
+                                if (newTaskString != null) {
+                                    setTaskString(newTaskString);
+                                }
+                            }
+                        });
+                        menu.add(item);
+
+                        menu.show(comp, evt.getX(), evt.getY());
+                    }
+                }
+            }
+        });
+
         JPanel configPanel = new JPanel();
         configPanel.setLayout(new BorderLayout());
         configPanel.add(this.configureTaskButton, BorderLayout.WEST);
@@ -221,6 +290,7 @@ public class TaskManagerPanel extends JPanel {
         this.taskTable.getSelectionModel().addListSelectionListener(
                 new ListSelectionListener() {
 
+                    @Override
                     public void valueChanged(ListSelectionEvent arg0) {
                         taskSelectionChanged();
                     }
@@ -271,6 +341,7 @@ public class TaskManagerPanel extends JPanel {
                 deleteSelectedTasks();
             }
         });
+
         javax.swing.Timer updateListTimer = new javax.swing.Timer(
                 MILLISECS_BETWEEN_REFRESH, new ActionListener() {
 
@@ -354,6 +425,45 @@ public class TaskManagerPanel extends JPanel {
             this.taskList.remove(thread);
         }
         this.taskTableModel.fireTableDataChanged();
+    }
+
+    public void copyClipBoardConfiguration() {
+
+        StringSelection selection = new StringSelection(this.taskDescField.getText().trim());
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(selection, selection);
+
+    }
+
+    public void saveLogSelectedTasks() {
+        String tasksLog = "";
+        TaskThread[] selectedTasks = getSelectedTasks();
+        for (TaskThread thread : selectedTasks) {
+            tasksLog += ((OptionHandler) thread.getTask()).getCLICreationString(MainTask.class) + "\n";
+        }
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setAcceptAllFileFilterUsed(true);
+        fileChooser.addChoosableFileFilter(new FileExtensionFilter(
+                exportFileExtension));
+        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File chosenFile = fileChooser.getSelectedFile();
+            String fileName = chosenFile.getPath();
+            if (!chosenFile.exists()
+                    && !fileName.endsWith(exportFileExtension)) {
+                fileName = fileName + "." + exportFileExtension;
+            }
+            try {
+                PrintWriter out = new PrintWriter(new BufferedWriter(
+                        new FileWriter(fileName)));
+                out.write(tasksLog);
+                out.close();
+            } catch (IOException ioe) {
+                GUIUtils.showExceptionDialog(
+                        this,
+                        "Problem saving file " + fileName, ioe);
+            }
+        }
     }
 
     private static void createAndShowGUI() {

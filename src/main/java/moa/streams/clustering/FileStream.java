@@ -188,7 +188,7 @@ public class FileStream extends ClusteringStream{
 			Arrays.sort(removeAttributes);
 			
 			//set updated number of attributes (class attribute included)
-			numAttsOption = new IntOption("numAtts", 'a',"", removeAttributes.length+1);
+			numAttsOption = new IntOption("numAtts", 'a',"", instances.numAttributes() - removeAttributes.length);
 			
 			if(removeAttributes.length > 0){
 				System.out.println("Removing the following attributes:");

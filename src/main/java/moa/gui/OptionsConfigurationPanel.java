@@ -44,7 +44,7 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 
-import moa.classifiers.HoeffdingTree;
+import moa.classifiers.trees.HoeffdingTree;
 import moa.options.Option;
 import moa.options.OptionHandler;
 import moa.options.Options;

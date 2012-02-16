@@ -35,7 +35,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import moa.classifiers.Classifier;
-import moa.classifiers.DecisionStump;
+import moa.classifiers.trees.DecisionStump;
 import moa.options.ClassOption;
 
 /**
