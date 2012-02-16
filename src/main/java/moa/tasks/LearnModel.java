@@ -55,10 +55,6 @@ public class LearnModel extends MainTask {
             "The number of passes to do over the data.", 1, 1,
             Integer.MAX_VALUE);
 
-    public IntOption maxMemoryOption = new IntOption("maxMemory", 'b',
-            "Maximum size of model (in bytes). -1 = no limit.", -1, -1,
-            Integer.MAX_VALUE);
-
     public IntOption memCheckFrequencyOption = new IntOption(
             "memCheckFrequency", 'q',
             "How many instances between memory bound checks.", 100000, 0,
