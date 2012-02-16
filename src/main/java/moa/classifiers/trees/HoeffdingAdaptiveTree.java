@@ -17,18 +17,19 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.trees;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
+import moa.classifiers.bayes.NaiveBayes;
+import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
+import moa.classifiers.core.driftdetection.ADWIN;
 import moa.core.DoubleVector;
-
+import moa.core.MiscUtils;
 import moa.options.MultiChoiceOption;
 import weka.core.Instance;
 import weka.core.Utils;
-
-import moa.core.MiscUtils;
-import java.util.Random;
 
 /**
  * Hoeffding Adaptive Tree for evolving data streams.
@@ -46,13 +47,18 @@ import java.util.Random;
  * adaptive (NBAdaptive).
  * </ul>
  *
- * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
 public class HoeffdingAdaptiveTree extends HoeffdingTreeNBAdaptive {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
+    public String getPurposeString() {
+        return "Hoeffding Adaptive Tree for evolving data streams that uses ADWIN to replace branches for new ones.";
+    }
+    
     public MultiChoiceOption leafpredictionOption = new MultiChoiceOption(
             "leafprediction", 'l', "Leaf prediction to use.", new String[]{
                 "MC", "NB", "NBAdaptive"}, new String[]{

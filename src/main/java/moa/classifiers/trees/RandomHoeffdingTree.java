@@ -17,8 +17,9 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.trees;
 
+import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import weka.core.Instance;
 
 /**
@@ -30,6 +31,11 @@ import weka.core.Instance;
 public class RandomHoeffdingTree extends HoeffdingTree {
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public String getPurposeString() {
+        return "Random decision trees for data streams.";
+    }
 
     public static class RandomLearningNode extends ActiveLearningNode {
 

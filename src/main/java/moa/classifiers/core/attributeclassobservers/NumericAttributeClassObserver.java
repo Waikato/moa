@@ -17,7 +17,7 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.core.attributeclassobservers;
 
 /**
  * Interface for observing the class data distribution for a numeric attribute.

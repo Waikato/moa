@@ -17,7 +17,7 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.bayes;
 
 import moa.core.Measurement;
 import moa.core.StringUtils;
@@ -26,27 +26,20 @@ import moa.options.FloatOption;
 import weka.core.*;
 
 import java.util.*;
+import moa.classifiers.AbstractClassifier;
 
 /**
-<!-- globalinfo-start -->
- * Class for building and using a multinomial Naive Bayes classifier.
- * Performs text classic bayesian prediction while making naive assumption that all inputs are independent.
- * For more information see,<br/>
- * <br/>
- * Andrew Mccallum, Kamal Nigam: A Comparison of Event Models for Naive Bayes Text Classification. In: AAAI-98 Workshop on 'Learning for Text Categorization', 1998.<br/>
- * <br/>
- * The core equation for this classifier:<br/>
- * <br/>
- * P[Ci|D] = (P[D|Ci] x P[Ci]) / P[D] (Bayes rule)<br/>
- * <br/>
- * where Ci is class i and D is a document.<br/>
- * <br/>
- * Incremental version of the algorithm.
+ * <!-- globalinfo-start --> Class for building and using a multinomial Naive
+ * Bayes classifier. Performs text classic bayesian prediction while making
+ * naive assumption that all inputs are independent. For more information
+ * see,<br/> <br/> Andrew Mccallum, Kamal Nigam: A Comparison of Event Models
+ * for Naive Bayes Text Classification. In: AAAI-98 Workshop on 'Learning for
+ * Text Categorization', 1998.<br/> <br/> The core equation for this
+ * classifier:<br/> <br/> P[Ci|D] = (P[D|Ci] x P[Ci]) / P[D] (Bayes rule)<br/>
+ * <br/> where Ci is class i and D is a document.<br/> <br/> Incremental version
+ * of the algorithm.
  * <p/>
-<!-- globalinfo-end -->
- *
-<!-- technical-bibtex-start -->
- * BibTeX:
+ * <!-- globalinfo-end --> * <!-- technical-bibtex-start --> BibTeX:
  * <pre>
  * &#64;inproceedings{Mccallum1998,
  *    author = {Andrew Mccallum and Kamal Nigam},
@@ -56,7 +49,7 @@ import java.util.*;
  * }
  * </pre>
  * <p/>
-<!-- technical-bibtex-end -->
+ * <!-- technical-bibtex-end -->
  */
 public class NaiveBayesMultinomial extends AbstractClassifier {
 
@@ -64,28 +57,39 @@ public class NaiveBayesMultinomial extends AbstractClassifier {
             'l', "Laplace correction factor.",
             1.0, 0.00, Integer.MAX_VALUE);
 
-    /** for serialization */
+    /**
+     * for serialization
+     */
     private static final long serialVersionUID = -7204398796974263187L;
 
-    @SuppressWarnings("hiding")
-    public static final String classifierPurposeString = "Multinomial Naive Bayes classifier: performs classic bayesian prediction while making naive assumption that all inputs are independent.";
+    @Override
+    public String getPurposeString() {
+        return "Multinomial Naive Bayes classifier: performs classic bayesian prediction while making naive assumption that all inputs are independent.";
+    }
 
-
-    /** sum of weight_of_instance * word_count_of_instance for each class */
+    /**
+     * sum of weight_of_instance * word_count_of_instance for each class
+     */
     protected double[] m_classTotals;
 
-    /** copy of header information for use in toString method */
+    /**
+     * copy of header information for use in toString method
+     */
     protected Instances m_headerInfo;
 
-    /** number of class values */
+    /**
+     * number of class values
+     */
     protected int m_numClasses;
 
-    /** the probability of a class (i.e. Pr[H]) */
+    /**
+     * the probability of a class (i.e. Pr[H])
+     */
     protected double[] m_probOfClass;
 
     /**
-     * probability that a word (w) exists in a class (H) (i.e. Pr[w|H])
-     * The matrix is in the this format: m_wordTotalForClass[wordAttribute][class]
+     * probability that a word (w) exists in a class (H) (i.e. Pr[w|H]) The
+     * matrix is in the this format: m_wordTotalForClass[wordAttribute][class]
      */
     protected double[][] m_wordTotalForClass;
 
@@ -99,7 +103,7 @@ public class NaiveBayesMultinomial extends AbstractClassifier {
     /**
      * Trains the classifier with the given instance.
      *
-     * @param instance 	the new training instance to include in the model
+     * @param instance the new training instance to include in the model
      */
     @Override
     public void trainOnInstanceImpl(Instance inst) {
@@ -142,8 +146,8 @@ public class NaiveBayesMultinomial extends AbstractClassifier {
      * Calculates the class membership probabilities for the given test
      * instance.
      *
-     * @param instance 	the instance to be classified
-     * @return 		predicted class probability distribution
+     * @param instance the instance to be classified
+     * @return predicted class probability distribution
      */
     @Override
     public double[] getVotesForInstance(Instance instance) {

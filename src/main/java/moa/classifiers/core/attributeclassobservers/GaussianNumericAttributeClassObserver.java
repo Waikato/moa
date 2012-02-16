@@ -17,7 +17,7 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.core.attributeclassobservers;
 
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
@@ -25,6 +25,9 @@ import weka.core.Utils;
 
 import java.util.Set;
 import java.util.TreeSet;
+import moa.classifiers.core.AttributeSplitSuggestion;
+import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
+import moa.classifiers.core.splitcriteria.SplitCriterion;
 
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;

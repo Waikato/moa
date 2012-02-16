@@ -17,8 +17,10 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.meta;
 
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
 import weka.core.Instance;
 
 import moa.core.DoubleVector;
@@ -49,10 +51,15 @@ import moa.options.IntOption;
  */
 public class OzaBag extends AbstractClassifier {
 
+    @Override
+    public String getPurposeString() {
+        return "Incremental on-line bagging of Oza and Russell.";
+    }
+        
     private static final long serialVersionUID = 1L;
 
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "HoeffdingTree");
+            "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
             "The number of models in the bag.", 10, 1, Integer.MAX_VALUE);

@@ -18,10 +18,12 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.active;
 
 import java.util.LinkedList;
 import java.util.List;
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
 
 import weka.core.Instance;
 import weka.core.Utils;
@@ -37,32 +39,32 @@ import moa.options.MultiChoiceOption;
  *
  * <p>Active learning focuses on learning an accurate model with as few labels
  * as possible. Streaming data poses additional challenges for active learning,
- * since the data distribution may change over time (concept drift) and classifiers
- * need to adapt. Conventional active learning strategies concentrate on querying
- * the most uncertain instances, which are typically concentrated around the
- * decision boundary. If changes do not occur close to the boundary, they will
- * be missed and classifiers will fail to adapt. This class contains four active
- * learning strategies for streaming data that explicitly handle concept drift.
- * They are based on randomization, fixed uncertainty, dynamic allocation of 
- * labeling efforts over time and randomization of the search space [ZBPH]. 
- * It also contains the Selective Sampling strategy, which is adapted from [CGZ]
- * it uses a variable labeling threshold.
+ * since the data distribution may change over time (concept drift) and
+ * classifiers need to adapt. Conventional active learning strategies
+ * concentrate on querying the most uncertain instances, which are typically
+ * concentrated around the decision boundary. If changes do not occur close to
+ * the boundary, they will be missed and classifiers will fail to adapt. This
+ * class contains four active learning strategies for streaming data that
+ * explicitly handle concept drift. They are based on randomization, fixed
+ * uncertainty, dynamic allocation of labeling efforts over time and
+ * randomization of the search space [ZBPH]. It also contains the Selective
+ * Sampling strategy, which is adapted from [CGZ] it uses a variable labeling
+ * threshold.
  *
  * </p>
  *
  * <p>[ZBPH] Indre Zliobaite, Albert Bifet, Bernhard Pfahringer, Geoff Holmes:
  * Active Learning with Evolving Streaming Data. ECML/PKDD (3) 2011: 597-612</p>
-
- * <p>[CGZ] N. Cesa-Bianchi, C. Gentile, and L. Zaniboni. Worst-case analysis of selective
- * sampling for linear classification. J. Mach. Learn. Res. (7) 2006: 1205-1230</p>.
  *
- * <p>Parameters:</p> <ul>
- * <li>-l : Classiﬁer to train</li>
- * <li>-d : Strategy to use: Random, FixedUncertainty, VarUncertainty, RandVarUncertainty, SelSampling</li> </ul>
- * <li>-b : Budget to use</li>
- * <li>-u : Fixed threshold</li>
- * <li>-s : Floating budget step</li>
- * <li>-n : Number of instances at beginning without active learning</li>
+ * <p>[CGZ] N. Cesa-Bianchi, C. Gentile, and L. Zaniboni. Worst-case analysis of
+ * selective sampling for linear classification. J. Mach. Learn. Res. (7) 2006:
+ * 1205-1230</p>.
+ *
+ * <p>Parameters:</p> <ul> <li>-l : Classiﬁer to train</li> <li>-d : Strategy to
+ * use: Random, FixedUncertainty, VarUncertainty, RandVarUncertainty,
+ * SelSampling</li> </ul> <li>-b : Budget to use</li> <li>-u : Fixed
+ * threshold</li> <li>-s : Floating budget step</li> <li>-n : Number of
+ * instances at beginning without active learning</li>
  *
  * @author Indre Zliobaite (zliobaite at gmail dot com)
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
@@ -71,6 +73,11 @@ import moa.options.MultiChoiceOption;
 public class ActiveClassifier extends AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public String getPurposeString() {
+        return "Active learning classifier for evolving data streams";
+    }
 
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
             "Classifier to train.", Classifier.class, "SingleClassifierDrift");
@@ -135,7 +142,7 @@ public class ActiveClassifier extends AbstractClassifier {
             this.classifier.trainOnInstance(inst);
             this.costLabeling++;
             this.costLabelingRandom++;
-        } 
+        }
 
     }
 
@@ -185,6 +192,9 @@ public class ActiveClassifier extends AbstractClassifier {
 
         if (this.iterationControl <= this.numInstancesInitOption.getValue()) {
             costNow = 0;
+            //Use all instances at the beginning
+            this.classifier.trainOnInstance(inst);
+            return;
         } else {
             costNow = (this.costLabeling - this.numInstancesInitOption.getValue()) / ((double) this.iterationControl - this.numInstancesInitOption.getValue());
         }
@@ -238,7 +248,7 @@ public class ActiveClassifier extends AbstractClassifier {
         measurementList.add(new Measurement("newThreshold", this.newThreshold));
         measurementList.add(new Measurement("maxPosterior", this.maxPosterior));
         measurementList.add(new Measurement("accuracyBaseLearner (percent)", 100 * this.accuracyBaseLearner / this.costLabeling));
-        Measurement[] modelMeasurements = ((AbstractClassifier) this.classifier).getModelMeasurementsImpl();
+        Measurement[] modelMeasurements = ((AbstractClassifier) this.classifier).getModelMeasurements();
         if (modelMeasurements != null) {
             for (Measurement measurement : modelMeasurements) {
                 measurementList.add(measurement);

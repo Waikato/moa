@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-
 import moa.core.InstancesHeader;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
@@ -64,7 +63,7 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     protected IntOption randomSeedOption;
 
     /** Random Generator used in randomizable learners  */
-    protected Random classifierRandom;
+    public Random classifierRandom;
 
     /**
      * Creates an classifier and setups the random seed option

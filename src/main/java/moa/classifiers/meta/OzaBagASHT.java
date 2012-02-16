@@ -17,8 +17,10 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.meta;
 
+import moa.classifiers.Classifier;
+import moa.classifiers.trees.ASHoeffdingTree;
 import moa.core.DoubleVector;
 import moa.core.MiscUtils;
 import moa.options.IntOption;
@@ -84,6 +86,11 @@ public class OzaBagASHT extends OzaBag {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
+    public String getPurposeString() {
+        return "Bagging using trees of different size.";
+    }
+    
     public IntOption firstClassifierSizeOption = new IntOption("firstClassifierSize", 'f',
             "The size of first classifier in the bag.", 1, 1, Integer.MAX_VALUE);
 

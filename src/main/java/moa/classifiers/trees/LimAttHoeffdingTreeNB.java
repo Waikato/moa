@@ -17,22 +17,22 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.trees;
 
+import moa.classifiers.bayes.NaiveBayes;
 import moa.options.IntOption;
 import weka.core.Instance;
 
 /**
- * Hoeffding decision trees with a limited number of attributes for data streams that uses naive Bayes learners at the leaves.
- * LimAttClassifier is the stacking method that can be used with these decision trees.
- * For more information see,<br/>
- * <br/>
- * Albert Bifet, Eibe Frank, Geoffrey Holmes, Bernhard Pfahringer: Accurate
- * Ensembles for Data Streams: Combining Restricted Hoeffding Trees using Stacking.
- * Journal of Machine Learning Research - Proceedings Track 13: 225-240 (2010)
- *
-<!-- technical-bibtex-start -->
- * BibTeX:
+ * Hoeffding decision trees with a limited number of attributes for data streams
+ * that uses naive Bayes learners at the leaves. LimAttClassifier is the
+ * stacking method that can be used with these decision trees. For more
+ * information see,<br/> <br/> Albert Bifet, Eibe Frank, Geoffrey Holmes,
+ * Bernhard Pfahringer: Accurate Ensembles for Data Streams: Combining
+ * Restricted Hoeffding Trees using Stacking. Journal of Machine Learning
+ * Research - Proceedings Track 13: 225-240 (2010)
+ * * 
+<!-- technical-bibtex-start --> BibTeX:
  * <pre>
  * &#64;article{BifetFHP10,
  * author    = {Albert Bifet and
@@ -48,55 +48,56 @@ import weka.core.Instance;
  * }
  * </pre>
  * <p/>
-<!-- technical-bibtex-end -->
+ * <!-- technical-bibtex-end -->
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
 public class LimAttHoeffdingTreeNB extends LimAttHoeffdingTree {
 
-	private static final long serialVersionUID = 1L;
+    @Override
+    public String getPurposeString() {
+        return "Hoeffding decision trees with a limited number of attributes for data streams that uses naive Bayes learners at the leaves.";
+    }
 
-	public IntOption nbThresholdOption = new IntOption(
-			"nbThreshold",
-			'q',
-			"The number of instances a leaf should observe before permitting Naive Bayes.",
-			0, 0, Integer.MAX_VALUE);
+    private static final long serialVersionUID = 1L;
 
-	public static class LearningNodeNB extends LimAttLearningNode {
+    public IntOption nbThresholdOption = new IntOption(
+            "nbThreshold",
+            'q',
+            "The number of instances a leaf should observe before permitting Naive Bayes.",
+            0, 0, Integer.MAX_VALUE);
 
-		private static final long serialVersionUID = 1L;
+    public static class LearningNodeNB extends LimAttLearningNode {
 
-		public LearningNodeNB(double[] initialClassObservations) {
-			super(initialClassObservations);
-		}
+        private static final long serialVersionUID = 1L;
 
-		@Override
-		public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
-			if (getWeightSeen() >= ((HoeffdingTreeNB) ht).nbThresholdOption
-					.getValue()) {
-				return NaiveBayes
-						.doNaiveBayesPrediction(inst,
-								this.observedClassDistribution,
-								this.attributeObservers);
-			}
-			return super.getClassVotes(inst, ht);
-		}
+        public LearningNodeNB(double[] initialClassObservations) {
+            super(initialClassObservations);
+        }
 
-		@Override
-		public void disableAttribute(int attIndex) {
-			// should not disable poor atts - they are used in NB calc
-		}
+        @Override
+        public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
+            if (getWeightSeen() >= ((HoeffdingTreeNB) ht).nbThresholdOption.getValue()) {
+                return NaiveBayes.doNaiveBayesPrediction(inst,
+                        this.observedClassDistribution,
+                        this.attributeObservers);
+            }
+            return super.getClassVotes(inst, ht);
+        }
 
-	}
+        @Override
+        public void disableAttribute(int attIndex) {
+            // should not disable poor atts - they are used in NB calc
+        }
+    }
 
-	public LimAttHoeffdingTreeNB() {
-		this.removePoorAttsOption = null;
-	}
+    public LimAttHoeffdingTreeNB() {
+        this.removePoorAttsOption = null;
+    }
 
-	@Override
-	protected LearningNode newLearningNode(double[] initialClassObservations) {
-		return new LearningNodeNB(initialClassObservations);
-	}
-
+    @Override
+    protected LearningNode newLearningNode(double[] initialClassObservations) {
+        return new LearningNodeNB(initialClassObservations);
+    }
 }

@@ -17,8 +17,9 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.functions;
 
+import moa.classifiers.AbstractClassifier;
 import moa.core.Measurement;
 import moa.options.FloatOption;
 import weka.core.Instance;
@@ -28,10 +29,7 @@ import weka.core.Instance;
  *
  * <p>Performs classic perceptron multiclass learning incrementally.</p>
  *
- * <p>Parameters:</p>
- * <ul>
- * <li>-r : Learning ratio of the classifier</li>
- * </ul>
+ * <p>Parameters:</p> <ul> <li>-r : Learning ratio of the classifier</li> </ul>
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
@@ -40,8 +38,10 @@ public class Perceptron extends AbstractClassifier {
 
     private static final long serialVersionUID = 221L;
 
-    @SuppressWarnings("hiding")
-    public static final String classifierPurposeString = "Perceptron classifier: Single perceptron classifier.";
+    @Override
+    public String getPurposeString() {
+        return "Perceptron classifier: Single perceptron classifier.";
+    }
 
     public FloatOption learningRatioOption = new FloatOption("learningRatio", 'r', "Learning ratio", 1);
 

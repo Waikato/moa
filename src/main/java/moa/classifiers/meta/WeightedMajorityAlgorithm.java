@@ -17,8 +17,10 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.meta;
 
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
@@ -32,7 +34,7 @@ import weka.core.Instance;
 import weka.core.Utils;
 
 /**
- * Weighted majority algorithm  for data streams.
+ * Weighted majority algorithm for data streams.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
@@ -40,21 +42,26 @@ import weka.core.Utils;
 public class WeightedMajorityAlgorithm extends AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
-
+    
+    @Override
+    public String getPurposeString() {
+        return "Weighted majority algorithm for data streams.";
+    }
+        
     public ListOption learnerListOption = new ListOption(
             "learners",
             'l',
             "The learners to combine.",
             new ClassOption("learner", ' ', "", Classifier.class,
-            "HoeffdingTree"),
+            "trees.HoeffdingTree"),
             new Option[]{
                 new ClassOption("", ' ', "", Classifier.class,
-                "HoeffdingTree"),
+                "trees.HoeffdingTree"),
                 new ClassOption("", ' ', "", Classifier.class,
-                "HoeffdingTreeNB"),
+                "trees.HoeffdingTreeNB"),
                 new ClassOption("", ' ', "", Classifier.class,
-                "HoeffdingTreeNBAdaptive"),
-                new ClassOption("", ' ', "", Classifier.class, "NaiveBayes")},
+                "trees.HoeffdingTreeNBAdaptive"),
+                new ClassOption("", ' ', "", Classifier.class, "bayes.NaiveBayes")},
             ',');
 
     public FloatOption betaOption = new FloatOption("beta", 'b',

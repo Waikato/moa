@@ -17,13 +17,16 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.core.attributeclassobservers;
 
 import weka.core.Utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import moa.classifiers.core.AttributeSplitSuggestion;
+import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
+import moa.classifiers.core.splitcriteria.SplitCriterion;
 
 import moa.core.DoubleVector;
 import moa.core.ObjectRepository;

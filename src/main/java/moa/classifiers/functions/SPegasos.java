@@ -23,8 +23,9 @@
  *    Copyright (C) 2009 University of Waikato, Hamilton, New Zealand
  *
  */
-package moa.classifiers;
+package moa.classifiers.functions;
 
+import moa.classifiers.AbstractClassifier;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.options.FloatOption;
@@ -33,15 +34,15 @@ import weka.core.Instance;
 import weka.core.Utils;
 
 /**
-<!-- globalinfo-start -->
- * Implements the stochastic variant of the Pegasos (Primal Estimated sub-GrAdient SOlver for SVM) method of Shalev-Shwartz et al. (2007). For more information, see<br/>
- * <br/>
- * S. Shalev-Shwartz, Y. Singer, N. Srebro: Pegasos: Primal Estimated sub-GrAdient SOlver for SVM. In: 24th International Conference on MachineLearning, 807-814, 2007.
+ * <!-- globalinfo-start --> Implements the stochastic variant of the Pegasos
+ * (Primal Estimated sub-GrAdient SOlver for SVM) method of Shalev-Shwartz et
+ * al. (2007). For more information, see<br/> <br/> S. Shalev-Shwartz, Y.
+ * Singer, N. Srebro: Pegasos: Primal Estimated sub-GrAdient SOlver for SVM. In:
+ * 24th International Conference on MachineLearning, 807-814, 2007.
  * <p/>
-<!-- globalinfo-end -->
- *
-<!-- technical-bibtex-start -->
- * BibTeX:
+ * <!-- globalinfo-end -->
+ * * 
+<!-- technical-bibtex-start --> BibTeX:
  * <pre>
  * &#64;inproceedings{Shalev-Shwartz2007,
  *    author = {S. Shalev-Shwartz and Y. Singer and N. Srebro},
@@ -52,18 +53,24 @@ import weka.core.Utils;
  * }
  * </pre>
  * <p/>
-<!-- technical-bibtex-end -->
+ * <!-- technical-bibtex-end -->
  *
  */
 public class SPegasos extends AbstractClassifier {
 
-    /** For serialization */
+    /**
+     * For serialization
+     */
     private static final long serialVersionUID = -3732968666673530290L;
 
-     @SuppressWarnings("hiding")
-    public static final String classifierPurposeString = "Stochastic variant of the Pegasos (Primal Estimated sub-GrAdient SOlver for SVM) method of Shalev-Shwartz et al. (2007).";
+    @Override
+    public String getPurposeString() {
+        return "Stochastic variant of the Pegasos (Primal Estimated sub-GrAdient SOlver for SVM) method of Shalev-Shwartz et al. (2007).";
+    }
 
-    /** The regularization parameter */
+    /**
+     * The regularization parameter
+     */
     protected double m_lambda = 0.0001;
 
     public FloatOption lambdaRegularizationOption = new FloatOption("lambdaRegularization",
@@ -74,7 +81,9 @@ public class SPegasos extends AbstractClassifier {
 
     protected static final int LOGLOSS = 1;
 
-    /** The current loss function to minimize */
+    /**
+     * The current loss function to minimize
+     */
     protected int m_loss = HINGE;
 
     public MultiChoiceOption lossFunctionOption = new MultiChoiceOption(
@@ -83,10 +92,14 @@ public class SPegasos extends AbstractClassifier {
                 "Hinge loss (SVM)",
                 "Log loss (logistic regression)"}, 0);
 
-    /** Stores the weights (+ bias in the last element) */
+    /**
+     * Stores the weights (+ bias in the last element)
+     */
     protected double[] m_weights;
 
-    /** Holds the current iteration number */
+    /**
+     * Holds the current iteration number
+     */
     protected double m_t;
 
     /**
@@ -181,7 +194,7 @@ public class SPegasos extends AbstractClassifier {
     /**
      * Trains the classifier with the given instance.
      *
-     * @param instance 	the new training instance to include in the model
+     * @param instance the new training instance to include in the model
      */
     @Override
     public void trainOnInstanceImpl(Instance instance) {
@@ -243,8 +256,8 @@ public class SPegasos extends AbstractClassifier {
      * Calculates the class membership probabilities for the given test
      * instance.
      *
-     * @param instance 	the instance to be classified
-     * @return 		predicted class probability distribution
+     * @param instance the instance to be classified
+     * @return predicted class probability distribution
      */
     @Override
     public double[] getVotesForInstance(Instance inst) {

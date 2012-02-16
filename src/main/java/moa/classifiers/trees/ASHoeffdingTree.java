@@ -17,7 +17,7 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.trees;
 
 import weka.core.Instance;
 
@@ -79,6 +79,11 @@ public class ASHoeffdingTree extends HoeffdingTreeNBAdaptive {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
+    public String getPurposeString() {
+        return "Adaptive Size Hoeffding Tree used in Bagging using trees of different size.";
+    }    
+    
     protected int maxSize = 10000; //EXTENSION TO ASHT
 
     protected boolean resetTree = false;

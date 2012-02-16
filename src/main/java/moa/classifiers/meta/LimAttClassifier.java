@@ -18,13 +18,17 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.meta;
 
+import moa.classifiers.trees.LimAttHoeffdingTree;
 import weka.core.Instance;
 import weka.core.Utils;
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import moa.classifiers.core.driftdetection.ADWIN;
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
 
 import moa.core.Measurement;
 import moa.options.ClassOption;
@@ -76,6 +80,11 @@ import moa.options.IntOption;
  */
 public class LimAttClassifier extends AbstractClassifier {
 
+    @Override
+    public String getPurposeString() {
+        return "Ensemble Combining Restricted Hoeffding Trees using Stacking";
+    }    
+    
     /*
      * Class that generates all combinations of n elements, taken
      * r at a time. The algorithm is described by
@@ -191,7 +200,7 @@ public class LimAttClassifier extends AbstractClassifier {
     private static final long serialVersionUID = 1L;
 
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "LimAttHoeffdingTreeNBAdaptive");
+            "Classifier to train.", Classifier.class, "trees.LimAttHoeffdingTreeNBAdaptive");
 
     public IntOption numAttributesOption = new IntOption("numAttributes", 'n',
             "The number of attributes to use per model.", 1, 1, Integer.MAX_VALUE);

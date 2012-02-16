@@ -24,8 +24,9 @@
  *    Copyright (C) 2009 University of Waikato, Hamilton, New Zealand
  *
  */
-package moa.classifiers;
+package moa.classifiers.functions;
 
+import moa.classifiers.AbstractClassifier;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.options.FloatOption;
@@ -45,8 +46,10 @@ public class SGD extends AbstractClassifier {
     /** For serialization */
     private static final long serialVersionUID = -3732968666673530290L;
 
-    @SuppressWarnings("hiding")
-    public static final String classifierPurposeString = "Stochastic gradient descent for learning various linear models (binary class SVM, binary class logistic regression and linear regression).";
+      @Override
+    public String getPurposeString() {
+        return "Stochastic gradient descent for learning various linear models (binary class SVM, binary class logistic regression and linear regression).";
+    }
 
     /** The regularization parameter */
     protected double m_lambda = 0.0001;

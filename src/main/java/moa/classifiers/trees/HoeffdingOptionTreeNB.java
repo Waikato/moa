@@ -17,8 +17,9 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.trees;
 
+import moa.classifiers.bayes.NaiveBayes;
 import moa.options.IntOption;
 import weka.core.Instance;
 
@@ -36,7 +37,12 @@ import weka.core.Instance;
 public class HoeffdingOptionTreeNB extends HoeffdingOptionTree {
 
     private static final long serialVersionUID = 1L;
-
+    
+    @Override
+    public String getPurposeString() {
+        return "Hoeffding Option Tree with naive Bayes learners at the leaves.";
+    }
+        
     public IntOption nbThresholdOption = new IntOption(
             "nbThreshold",
             'q',

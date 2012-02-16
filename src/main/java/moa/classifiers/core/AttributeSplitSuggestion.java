@@ -17,8 +17,9 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.core;
 
+import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.AbstractMOAObject;
 
 /**

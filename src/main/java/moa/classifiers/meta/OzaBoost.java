@@ -17,8 +17,10 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.meta;
 
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
 import weka.core.Instance;
 
 import moa.core.DoubleVector;
@@ -30,126 +32,125 @@ import moa.options.IntOption;
 
 /**
  * Incremental on-line boosting of Oza and Russell.
- * 
- * <p>See details in:<br /> 
- * N. Oza and S. Russell. Online bagging and boosting. 
- * In Artiﬁcial Intelligence and Statistics 2001, pages 105–112. 
- * Morgan Kaufmann, 2001.</p> 
- * <p>For the boosting method, Oza and Russell note that the weighting 
- * procedure of AdaBoost actually divides the total example weight into two
- * halves – half of the weight is assigned to the correctly classiﬁed examples, 
- * and the other half goes to the misclassiﬁed examples. They use the Poisson
- * distribution for deciding the random probability that an example is used for
- * training, only this time the parameter changes according to the boosting
- * weight of the example as it is passed through each model in sequence.</p> 
- * 
- * <p>Parameters:</p> <ul> 
- * <li>-l : Classiﬁer to train</li> 
- * <li>-s : The number of models to boost</li> 
- * <li>-p : Boost with weights only; no poisson</li> </ul>
+ *
+ * <p>See details in:<br /> N. Oza and S. Russell. Online bagging and boosting.
+ * In Artiﬁcial Intelligence and Statistics 2001, pages 105–112. Morgan
+ * Kaufmann, 2001.</p> <p>For the boosting method, Oza and Russell note that the
+ * weighting procedure of AdaBoost actually divides the total example weight
+ * into two halves – half of the weight is assigned to the correctly classiﬁed
+ * examples, and the other half goes to the misclassiﬁed examples. They use the
+ * Poisson distribution for deciding the random probability that an example is
+ * used for training, only this time the parameter changes according to the
+ * boosting weight of the example as it is passed through each model in
+ * sequence.</p>
+ *
+ * <p>Parameters:</p> <ul> <li>-l : Classiﬁer to train</li> <li>-s : The number
+ * of models to boost</li> <li>-p : Boost with weights only; no poisson</li>
+ * </ul>
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
 public class OzaBoost extends AbstractClassifier {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-			"Classifier to train.", Classifier.class, "HoeffdingTree");
+    @Override
+    public String getPurposeString() {
+        return "Incremental on-line boosting of Oza and Russell.";
+    }
 
-	public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
-			"The number of models to boost.", 10, 1, Integer.MAX_VALUE);
+    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
+            "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
 
-	public FlagOption pureBoostOption = new FlagOption("pureBoost", 'p',
-			"Boost with weights only; no poisson.");
+    public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
+            "The number of models to boost.", 10, 1, Integer.MAX_VALUE);
 
-	protected Classifier[] ensemble;
+    public FlagOption pureBoostOption = new FlagOption("pureBoost", 'p',
+            "Boost with weights only; no poisson.");
 
-	protected double[] scms;
+    protected Classifier[] ensemble;
 
-	protected double[] swms;
+    protected double[] scms;
 
-	@Override
-	public void resetLearningImpl() {
-		this.ensemble = new Classifier[this.ensembleSizeOption.getValue()];
-		Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
-		baseLearner.resetLearning();
-		for (int i = 0; i < this.ensemble.length; i++) {
-			this.ensemble[i] = baseLearner.copy();
-		}
-		this.scms = new double[this.ensemble.length];
-		this.swms = new double[this.ensemble.length];
-	}
+    protected double[] swms;
 
-	@Override
-	public void trainOnInstanceImpl(Instance inst) {
-		double lambda_d = 1.0;
-		for (int i = 0; i < this.ensemble.length; i++) {
-			double k = this.pureBoostOption.isSet() ? lambda_d : MiscUtils
-					.poisson(lambda_d, this.classifierRandom);
-			if (k > 0.0) {
-				Instance weightedInst = (Instance) inst.copy();
-				weightedInst.setWeight(inst.weight() * k);
-				this.ensemble[i].trainOnInstance(weightedInst);
-			}
-			if (this.ensemble[i].correctlyClassifies(inst)) {
-				this.scms[i] += lambda_d;
-				lambda_d *= this.trainingWeightSeenByModel / (2 * this.scms[i]);
-			} else {
-				this.swms[i] += lambda_d;
-				lambda_d *= this.trainingWeightSeenByModel / (2 * this.swms[i]);
-			}
-		}
-	}
+    @Override
+    public void resetLearningImpl() {
+        this.ensemble = new Classifier[this.ensembleSizeOption.getValue()];
+        Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
+        baseLearner.resetLearning();
+        for (int i = 0; i < this.ensemble.length; i++) {
+            this.ensemble[i] = baseLearner.copy();
+        }
+        this.scms = new double[this.ensemble.length];
+        this.swms = new double[this.ensemble.length];
+    }
 
-	protected double getEnsembleMemberWeight(int i) {
-		double em = this.swms[i] / (this.scms[i] + this.swms[i]);
-		if ((em == 0.0) || (em > 0.5)) {
-			return 0.0;
-		}
-		double Bm = em / (1.0 - em);
-		return Math.log(1.0 / Bm);
-	}
+    @Override
+    public void trainOnInstanceImpl(Instance inst) {
+        double lambda_d = 1.0;
+        for (int i = 0; i < this.ensemble.length; i++) {
+            double k = this.pureBoostOption.isSet() ? lambda_d : MiscUtils.poisson(lambda_d, this.classifierRandom);
+            if (k > 0.0) {
+                Instance weightedInst = (Instance) inst.copy();
+                weightedInst.setWeight(inst.weight() * k);
+                this.ensemble[i].trainOnInstance(weightedInst);
+            }
+            if (this.ensemble[i].correctlyClassifies(inst)) {
+                this.scms[i] += lambda_d;
+                lambda_d *= this.trainingWeightSeenByModel / (2 * this.scms[i]);
+            } else {
+                this.swms[i] += lambda_d;
+                lambda_d *= this.trainingWeightSeenByModel / (2 * this.swms[i]);
+            }
+        }
+    }
 
-	public double[] getVotesForInstance(Instance inst) {
-		DoubleVector combinedVote = new DoubleVector();
-		for (int i = 0; i < this.ensemble.length; i++) {
-			double memberWeight = getEnsembleMemberWeight(i);
-			if (memberWeight > 0.0) {
-				DoubleVector vote = new DoubleVector(this.ensemble[i]
-						.getVotesForInstance(inst));
-				if (vote.sumOfValues() > 0.0) {
-					vote.normalize();
-					vote.scaleValues(memberWeight);
-					combinedVote.addValues(vote);
-				}
-			} else {
-				break;
-			}
-		}
-		return combinedVote.getArrayRef();
-	}
+    protected double getEnsembleMemberWeight(int i) {
+        double em = this.swms[i] / (this.scms[i] + this.swms[i]);
+        if ((em == 0.0) || (em > 0.5)) {
+            return 0.0;
+        }
+        double Bm = em / (1.0 - em);
+        return Math.log(1.0 / Bm);
+    }
 
-	public boolean isRandomizable() {
-		return true;
-	}
+    public double[] getVotesForInstance(Instance inst) {
+        DoubleVector combinedVote = new DoubleVector();
+        for (int i = 0; i < this.ensemble.length; i++) {
+            double memberWeight = getEnsembleMemberWeight(i);
+            if (memberWeight > 0.0) {
+                DoubleVector vote = new DoubleVector(this.ensemble[i].getVotesForInstance(inst));
+                if (vote.sumOfValues() > 0.0) {
+                    vote.normalize();
+                    vote.scaleValues(memberWeight);
+                    combinedVote.addValues(vote);
+                }
+            } else {
+                break;
+            }
+        }
+        return combinedVote.getArrayRef();
+    }
 
-	@Override
-	public void getModelDescription(StringBuilder out, int indent) {
-		// TODO Auto-generated method stub
+    public boolean isRandomizable() {
+        return true;
+    }
 
-	}
+    @Override
+    public void getModelDescription(StringBuilder out, int indent) {
+        // TODO Auto-generated method stub
+    }
 
-	@Override
-	protected Measurement[] getModelMeasurementsImpl() {
-		return new Measurement[] { new Measurement("ensemble size",
-				this.ensemble != null ? this.ensemble.length : 0) };
-	}
+    @Override
+    protected Measurement[] getModelMeasurementsImpl() {
+        return new Measurement[]{new Measurement("ensemble size",
+                    this.ensemble != null ? this.ensemble.length : 0)};
+    }
 
-	@Override
-	public Classifier[] getSubClassifiers() {
-		return this.ensemble.clone();
-	}
-
+    @Override
+    public Classifier[] getSubClassifiers() {
+        return this.ensemble.clone();
+    }
 }

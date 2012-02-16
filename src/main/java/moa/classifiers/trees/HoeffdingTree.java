@@ -17,7 +17,7 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.trees;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -27,6 +27,14 @@ import java.util.List;
 import java.util.Set;
 
 import moa.AbstractMOAObject;
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
+import moa.classifiers.core.AttributeSplitSuggestion;
+import moa.classifiers.core.attributeclassobservers.DiscreteAttributeClassObserver;
+import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
+import moa.classifiers.core.attributeclassobservers.NullAttributeClassObserver;
+import moa.classifiers.core.attributeclassobservers.NumericAttributeClassObserver;
+import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
@@ -93,6 +101,11 @@ public class HoeffdingTree extends AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
+    public String getPurposeString() {
+        return "Hoeffding Tree or VFDT.";
+    }
+    
     public IntOption maxByteSizeOption = new IntOption("maxByteSize", 'm',
             "Maximum memory consumed by the tree.", 33554432, 0,
             Integer.MAX_VALUE);

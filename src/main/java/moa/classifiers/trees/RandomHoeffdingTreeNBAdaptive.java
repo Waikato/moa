@@ -17,14 +17,15 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.trees;
 
+import moa.classifiers.bayes.NaiveBayes;
 import weka.core.Instance;
 import weka.core.Utils;
 
 /**
- * Random Hoeffding Tree with majority class and naive Bayes learners at the leaves.
- * It uses for each leaf the classifier with higher accuracy.
+ * Random Hoeffding Tree with majority class and naive Bayes learners at the
+ * leaves. It uses for each leaf the classifier with higher accuracy.
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
@@ -32,6 +33,11 @@ import weka.core.Utils;
 public class RandomHoeffdingTreeNBAdaptive extends RandomHoeffdingTreeNB {
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public String getPurposeString() {
+        return "Random Hoeffding Tree with majority class and naive Bayes learners at the leaves.";
+    }
 
     public static class LearningNodeNBAdaptive extends LearningNodeNB {
 

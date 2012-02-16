@@ -18,8 +18,9 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.meta;
 
+import moa.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.classifiers.UpdateableClassifier;
 import weka.core.Instance;
@@ -41,6 +42,11 @@ public class WEKAClassifier
 
     private static final long serialVersionUID = 1L;
 
+    @Override
+    public String getPurposeString() {
+        return "Classifier from Weka";
+    }
+    
     public WEKAClassOption baseLearnerOption = new WEKAClassOption("baseLearner", 'l',
             "Classifier to train.", weka.classifiers.Classifier.class, "weka.classifiers.bayes.NaiveBayesUpdateable");
 

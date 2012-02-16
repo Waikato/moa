@@ -17,8 +17,9 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.functions;
 
+import moa.classifiers.AbstractClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
@@ -34,8 +35,10 @@ public class MajorityClass extends AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("hiding")
-    public static final String classifierPurposeString = "Majority class classifier: always predicts the class that has been observed most frequently the in the training data.";
+    @Override
+    public String getPurposeString() {
+        return "Majority class classifier: always predicts the class that has been observed most frequently the in the training data.";
+    }
 
     protected DoubleVector observedClassDistribution;
 

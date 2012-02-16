@@ -17,8 +17,11 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.meta;
 
+import moa.classifiers.core.driftdetection.ADWIN;
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
 import weka.core.Instance;
 
 import moa.core.DoubleVector;
@@ -45,8 +48,13 @@ public class LeveragingBagME extends AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
+    public String getPurposeString() {
+        return " Leveraging Bagging ME for evolving data streams using ADWIN using weight 1 if misclassified, otherwise error/(1-error)";
+    }    
+    
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "HoeffdingTree");
+            "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
             "The number of models in the bag.", 10, 1, Integer.MAX_VALUE);

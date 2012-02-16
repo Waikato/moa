@@ -17,8 +17,10 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.meta;
 
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
 import weka.core.Instance;
 import weka.core.Utils;
 
@@ -54,9 +56,14 @@ import moa.options.IntOption;
 public class OCBoost extends AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
-
+    
+    @Override
+    public String getPurposeString() {
+        return "Online Coordinate boosting for two classes evolving data streams.";
+    }
+        
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "HoeffdingTree");
+            "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
             "The number of models to boost.", 10, 1, Integer.MAX_VALUE);

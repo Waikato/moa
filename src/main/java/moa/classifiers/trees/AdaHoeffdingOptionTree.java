@@ -17,8 +17,11 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.trees;
 
+import moa.classifiers.bayes.NaiveBayes;
+import moa.classifiers.trees.HoeffdingOptionTreeNB;
+import moa.classifiers.trees.HoeffdingOptionTree;
 import weka.core.Instance;
 import weka.core.Utils;
 
@@ -39,9 +42,14 @@ import weka.core.Utils;
  * @version $Revision: 7 $
  */
 public class AdaHoeffdingOptionTree extends HoeffdingOptionTreeNB {
-
+    
     private static final long serialVersionUID = 1L;
 
+    @Override
+    public String getPurposeString() {
+        return "Adaptive decision option tree for streaming data with adaptive Naive Bayes classification at leaves.";
+    }
+     
     public static class AdaLearningNode extends LearningNodeNB {
 
         private static final long serialVersionUID = 1L;

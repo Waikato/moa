@@ -17,13 +17,15 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.trees;
 
+import moa.classifiers.bayes.NaiveBayes;
 import moa.options.IntOption;
 import weka.core.Instance;
 
 /**
- * Random decision trees for data streams that uses naive Bayes learners at the leaves.
+ * Random decision trees for data streams that uses naive Bayes learners at the
+ * leaves.
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
@@ -31,6 +33,11 @@ import weka.core.Instance;
 public class RandomHoeffdingTreeNB extends RandomHoeffdingTree {
 
     private static final long serialVersionUID = 1L;
+
+    @Override
+    public String getPurposeString() {
+        return "Random decision trees for data streams that uses naive Bayes learners at the leaves.";
+    }
 
     public IntOption nbThresholdOption = new IntOption(
             "nbThreshold",

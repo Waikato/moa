@@ -17,8 +17,9 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.trees;
 
+import moa.classifiers.bayes.NaiveBayes;
 import weka.core.Instance;
 import weka.core.Utils;
 
@@ -40,7 +41,13 @@ import weka.core.Utils;
 public class HoeffdingTreeNBAdaptive extends HoeffdingTreeNB {
 
     private static final long serialVersionUID = 1L;
-
+    
+    @Override
+    public String getPurposeString() {
+        return "Hoeffding Tree with majority class and naive Bayes learners at the leaves.";
+    }
+    
+    
     public static class LearningNodeNBAdaptive extends LearningNodeNB {
 
         private static final long serialVersionUID = 1L;

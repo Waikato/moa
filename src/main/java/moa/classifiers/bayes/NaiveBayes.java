@@ -17,8 +17,12 @@
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-package moa.classifiers;
+package moa.classifiers.bayes;
 
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
+import moa.classifiers.core.attributeclassobservers.GaussianNumericAttributeClassObserver;
+import moa.classifiers.core.attributeclassobservers.NominalAttributeClassObserver;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
@@ -29,17 +33,14 @@ import weka.core.Instance;
  * Naive Bayes incremental learner.
  *
  * <p>Performs classic bayesian prediction while making naive assumption that
- * all inputs are independent.<br />
- * Naive Bayes is a classiﬁer algorithm known for its simplicity and low
- * computational cost. Given n different classes, the trained Naive Bayes
- * classiﬁer predicts for every unlabelled instance I the class C to which
- * it belongs with high accuracy.</p>
+ * all inputs are independent.<br /> Naive Bayes is a classiﬁer algorithm known
+ * for its simplicity and low computational cost. Given n different classes, the
+ * trained Naive Bayes classiﬁer predicts for every unlabelled instance I the
+ * class C to which it belongs with high accuracy.</p>
  *
- * <p>Parameters:</p>
- * <ul>
- * <li>-r : Seed for random behaviour of the classifier</li>
- * </ul>
- * 
+ * <p>Parameters:</p> <ul> <li>-r : Seed for random behaviour of the
+ * classifier</li> </ul>
+ *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
@@ -47,8 +48,10 @@ public class NaiveBayes extends AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("hiding")
-    public static final String classifierPurposeString = "Naive Bayes classifier: performs classic bayesian prediction while making naive assumption that all inputs are independent.";
+    @Override
+    public String getPurposeString() {
+        return "Naive Bayes classifier: performs classic bayesian prediction while making naive assumption that all inputs are independent.";
+    }
 
     protected DoubleVector observedClassDistribution;
 
