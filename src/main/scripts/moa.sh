@@ -1,4 +1,4 @@
 #!/bin/bash
 
-java -cp moa.jar:weka.jar -javaagent:sizeofag.jar moa.gui.GUI
+java -cp moa.jar -javaagent:sizeofag.jar moa.gui.GUI
 
