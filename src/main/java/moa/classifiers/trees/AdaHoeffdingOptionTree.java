@@ -20,8 +20,6 @@
 package moa.classifiers.trees;
 
 import moa.classifiers.bayes.NaiveBayes;
-import moa.classifiers.trees.HoeffdingOptionTreeNB;
-import moa.classifiers.trees.HoeffdingOptionTree;
 import weka.core.Instance;
 import weka.core.Utils;
 
@@ -41,7 +39,7 @@ import weka.core.Utils;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class AdaHoeffdingOptionTree extends HoeffdingOptionTreeNB {
+public class AdaHoeffdingOptionTree extends HoeffdingOptionTree {
     
     private static final long serialVersionUID = 1L;
 

@@ -75,7 +75,7 @@ import weka.core.Instance;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class ASHoeffdingTree extends HoeffdingTreeNBAdaptive {
+public class ASHoeffdingTree extends HoeffdingTree {
 
     private static final long serialVersionUID = 1L;
 

@@ -19,8 +19,10 @@
  */
 package moa.classifiers.trees;
 
+import moa.classifiers.bayes.NaiveBayes;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import weka.core.Instance;
+import weka.core.Utils;
 
 /**
  * Hoeffding decision trees with a restricted number of attributes for data
@@ -28,9 +30,8 @@ import weka.core.Instance;
  * decision trees. For more information see,<br/> <br/> Albert Bifet, Eibe
  * Frank, Geoffrey Holmes, Bernhard Pfahringer: Accurate Ensembles for Data
  * Streams: Combining Restricted Hoeffding Trees using Stacking. Journal of
- * Machine Learning Research - Proceedings Track 13: 225-240 (2010)
- * * 
-<!-- technical-bibtex-start --> BibTeX:
+ * Machine Learning Research - Proceedings Track 13: 225-240 (2010) * <!--
+ * technical-bibtex-start --> BibTeX:
  * <pre>
  * &#64;article{BifetFHP10,
  * author    = {Albert Bifet and
@@ -110,9 +111,81 @@ public class LimAttHoeffdingTree extends HoeffdingTree {
         this.removePoorAttsOption = null;
     }
 
+    public static class LearningNodeNB extends LimAttLearningNode {
+
+        private static final long serialVersionUID = 1L;
+
+        public LearningNodeNB(double[] initialClassObservations) {
+            super(initialClassObservations);
+        }
+
+        @Override
+        public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
+            if (getWeightSeen() >= ht.nbThresholdOption.getValue()) {
+                return NaiveBayes.doNaiveBayesPrediction(inst,
+                        this.observedClassDistribution,
+                        this.attributeObservers);
+            }
+            return super.getClassVotes(inst, ht);
+        }
+
+        @Override
+        public void disableAttribute(int attIndex) {
+            // should not disable poor atts - they are used in NB calc
+        }
+    }
+
+    public static class LearningNodeNBAdaptive extends LearningNodeNB {
+
+        private static final long serialVersionUID = 1L;
+
+        protected double mcCorrectWeight = 0.0;
+
+        protected double nbCorrectWeight = 0.0;
+
+        public LearningNodeNBAdaptive(double[] initialClassObservations) {
+            super(initialClassObservations);
+        }
+
+        @Override
+        public void learnFromInstance(Instance inst, HoeffdingTree ht) {
+            int trueClass = (int) inst.classValue();
+            if (this.observedClassDistribution.maxIndex() == trueClass) {
+                this.mcCorrectWeight += inst.weight();
+            }
+            if (Utils.maxIndex(NaiveBayes.doNaiveBayesPrediction(inst,
+                    this.observedClassDistribution, this.attributeObservers)) == trueClass) {
+                this.nbCorrectWeight += inst.weight();
+            }
+            super.learnFromInstance(inst, ht);
+        }
+
+        @Override
+        public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
+            if (this.mcCorrectWeight > this.nbCorrectWeight) {
+                return this.observedClassDistribution.getArrayCopy();
+            }
+            double ret[] = NaiveBayes.doNaiveBayesPrediction(inst,
+                    this.observedClassDistribution, this.attributeObservers);
+            for (int i = 0; i < ret.length; i++) {
+                ret[i] *= this.observedClassDistribution.sumOfValues();
+            }
+            return ret;
+        }
+    }
+
     @Override
     protected LearningNode newLearningNode(double[] initialClassObservations) {
-        return new LimAttLearningNode(initialClassObservations);
+        LearningNode ret;
+        int predictionOption = this.leafpredictionOption.getChosenIndex();
+        if (predictionOption == 0) { //MC
+            ret = new LimAttLearningNode(initialClassObservations);
+        } else if (predictionOption == 1) { //NB
+            ret = new LearningNodeNB(initialClassObservations);
+        } else { //NBAdaptive
+            ret = new LearningNodeNBAdaptive(initialClassObservations);
+        }
+        return ret;
     }
 
     @Override

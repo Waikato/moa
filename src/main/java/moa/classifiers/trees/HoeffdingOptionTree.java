@@ -34,6 +34,7 @@ import java.util.Set;
 
 import moa.AbstractMOAObject;
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.bayes.NaiveBayes;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.DiscreteAttributeClassObserver;
@@ -47,14 +48,10 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.SizeOf;
 import moa.core.StringUtils;
-import moa.options.ClassOption;
-import moa.options.FileOption;
-import moa.options.FlagOption;
-import moa.options.FloatOption;
-import moa.options.IntOption;
+import moa.options.*;
 
 /**
- * Hoeffding Option Tree with majority class learners at the leaves.
+ * Hoeffding Option Tree.
  *
  * <p>Hoeffding Option Trees are regular Hoeffding trees containing additional
  * option nodes that allow several tests to be applied, leading to multiple
@@ -63,37 +60,33 @@ import moa.options.IntOption;
  * multiple paths of the tree, contributing, in different ways, to different
  * options.</p>
  *
- * <p>See for details:</p>
- * <p>B. Pfahringer, G. Holmes, and R. Kirkby. New options for hoeffding trees.
- * In AI, pages 90–99, 2007.</p>
+ * <p>See for details:</p> <p>B. Pfahringer, G. Holmes, and R. Kirkby. New
+ * options for hoeffding trees. In AI, pages 90–99, 2007.</p>
  *
- * <p>Parameters:</p> <ul>
- * <li>-o : Maximum number of option paths per node</li>
- * <li>-m : Maximum memory consumed by the tree</li>
- * <li>-n : Numeric estimator to use :</li>
- * <ul>
- * <li> Gaussian approximation evaluating 10 splitpoints</li>
- * <li> Gaussian approximation evaluating 100 splitpoints</li>
- * <li> Greenwald-Khanna quantile summary with 10 tuples</li>
- * <li> Greenwald-Khanna quantile summary with 100 tuples</li>
- * <li> Greenwald-Khanna quantile summary with 1000 tuples</li>
- * <li> VFML method with 10 bins</li>
- * <li> VFML method with 100 bins</li>
- * <li> VFML method with 1000 bins</li>
- * <li> Exhaustive binary tree</li>
+ * <p>Parameters:</p> <ul> <li>-o : Maximum number of option paths per node</li>
+ * <li>-m : Maximum memory consumed by the tree</li> <li>-n : Numeric estimator
+ * to use :</li> <ul> <li> Gaussian approximation evaluating 10 splitpoints</li>
+ * <li> Gaussian approximation evaluating 100 splitpoints</li> <li>
+ * Greenwald-Khanna quantile summary with 10 tuples</li> <li> Greenwald-Khanna
+ * quantile summary with 100 tuples</li> <li> Greenwald-Khanna quantile summary
+ * with 1000 tuples</li> <li> VFML method with 10 bins</li> <li> VFML method
+ * with 100 bins</li> <li> VFML method with 1000 bins</li> <li> Exhaustive
+ * binary tree</li> </ul> <li>-e : How many instances between memory consumption
+ * checks</li> <li>-g : The number of instances a leaf should observe between
+ * split attempts</li> <li>-s : Split criterion to use. Example :
+ * InfoGainSplitCriterion</li> <li>-c : The allowable error in split decision,
+ * values closer to 0 will take longer to decide</li> <li>-w : The allowable
+ * error in secondary split decisions, values closer to 0 will take longer to
+ * decide</li> <li>-t : Threshold below which a split will be forced to break
+ * ties</li> <li>-b : Only allow binary splits</li> <li>-z : Memory strategy to
+ * use</li> <li>-r : Disable poor attributes</li> <li>-p : Disable
+ * pre-pruning</li> <li>-d : File to append option table to.</li> 
+ *  <li> -l : Leaf prediction to use: MajorityClass (MC), Naive Bayes (NB) or NaiveBayes
+ * adaptive (NBAdaptive).</li>
+ *  <li> -q : The number of instances a leaf should observe before
+ * permitting Naive Bayes</li>
  * </ul>
- * <li>-e : How many instances between memory consumption checks</li>
- * <li>-g : The number of instances a leaf should observe between split attempts</li>
- * <li>-s : Split criterion to use. Example : InfoGainSplitCriterion</li>
- * <li>-c : The allowable error in split decision, values closer to 0 will take longer to decide</li>
- * <li>-w : The allowable error in secondary split decisions, values closer to 0 will take longer to decide</li>
- * <li>-t : Threshold below which a split will be forced to break ties</li>
- * <li>-b : Only allow binary splits</li>
- * <li>-z : Memory strategy to use</li>
- * <li>-r : Disable poor attributes</li>
- * <li>-p : Disable pre-pruning</li>
- * <li>-d : File to append option table to.</li>
- * </ul>
+ *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
@@ -103,9 +96,9 @@ public class HoeffdingOptionTree extends AbstractClassifier {
 
     @Override
     public String getPurposeString() {
-        return "Hoeffding Option Tree with majority class learners at the leaves.";
+        return "Hoeffding Option Tree: single tree that represents multiple trees.";
     }
-       
+
     public IntOption maxOptionPathsOption = new IntOption("maxOptionPaths",
             'o', "Maximum number of option paths per node.", 5, 1,
             Integer.MAX_VALUE);
@@ -114,23 +107,21 @@ public class HoeffdingOptionTree extends AbstractClassifier {
             "Maximum memory consumed by the tree.", 33554432, 0,
             Integer.MAX_VALUE);
 
- /*   public MultiChoiceOption numericEstimatorOption = new MultiChoiceOption(
-            "numericEstimator", 'n', "Numeric estimator to use.", new String[]{
-                "GAUSS10", "GAUSS100", "GK10", "GK100", "GK1000", "VFML10",
-                "VFML100", "VFML1000", "BINTREE"}, new String[]{
-                "Gaussian approximation evaluating 10 splitpoints",
-                "Gaussian approximation evaluating 100 splitpoints",
-                "Greenwald-Khanna quantile summary with 10 tuples",
-                "Greenwald-Khanna quantile summary with 100 tuples",
-                "Greenwald-Khanna quantile summary with 1000 tuples",
-                "VFML method with 10 bins", "VFML method with 100 bins",
-                "VFML method with 1000 bins", "Exhaustive binary tree"}, 0);
-*/
-
+    /*
+     * public MultiChoiceOption numericEstimatorOption = new MultiChoiceOption(
+     * "numericEstimator", 'n', "Numeric estimator to use.", new String[]{
+     * "GAUSS10", "GAUSS100", "GK10", "GK100", "GK1000", "VFML10", "VFML100",
+     * "VFML1000", "BINTREE"}, new String[]{ "Gaussian approximation evaluating
+     * 10 splitpoints", "Gaussian approximation evaluating 100 splitpoints",
+     * "Greenwald-Khanna quantile summary with 10 tuples", "Greenwald-Khanna
+     * quantile summary with 100 tuples", "Greenwald-Khanna quantile summary
+     * with 1000 tuples", "VFML method with 10 bins", "VFML method with 100
+     * bins", "VFML method with 1000 bins", "Exhaustive binary tree"}, 0);
+     */
     public ClassOption numericEstimatorOption = new ClassOption("numericEstimator",
             'n', "Numeric estimator to use.", NumericAttributeClassObserver.class,
             "GaussianNumericAttributeClassObserver");
-    
+
     public ClassOption nominalEstimatorOption = new ClassOption("nominalEstimator",
             'd', "Nominal estimator to use.", DiscreteAttributeClassObserver.class,
             "NominalAttributeClassObserver");
@@ -641,6 +632,9 @@ public class HoeffdingOptionTree extends AbstractClassifier {
         this.activeLeafByteSizeEstimate = 0.0;
         this.byteSizeEstimateOverheadFraction = 1.0;
         this.maxPredictionPaths = 0;
+        if (this.leafpredictionOption.getChosenIndex() > 0) {
+            this.removePoorAttsOption = null;
+        }
     }
 
     @Override
@@ -753,14 +747,6 @@ public class HoeffdingOptionTree extends AbstractClassifier {
             double n) {
         return Math.sqrt(((range * range) * Math.log(1.0 / confidence))
                 / (2.0 * n));
-    }
-
-    protected LearningNode newLearningNode() {
-        return newLearningNode(new double[0]);
-    }
-
-    protected LearningNode newLearningNode(double[] initialClassObservations) {
-        return new ActiveLearningNode(initialClassObservations);
     }
 
     protected AttributeClassObserver newNominalClassObserver() {
@@ -1121,5 +1107,94 @@ public class HoeffdingOptionTree extends AbstractClassifier {
                 findLearningNodes(splitNode.nextOption, splitNode, -999, found);
             }
         }
+    }
+
+    public MultiChoiceOption leafpredictionOption = new MultiChoiceOption(
+            "leafprediction", 'l', "Leaf prediction to use.", new String[]{
+                "MC", "NB", "NBAdaptive"}, new String[]{
+                "Majority class",
+                "Naive Bayes",
+                "Naive Bayes Adaptive"}, 2);
+
+    public IntOption nbThresholdOption = new IntOption(
+            "nbThreshold",
+            'q',
+            "The number of instances a leaf should observe before permitting Naive Bayes.",
+            0, 0, Integer.MAX_VALUE);
+
+    public static class LearningNodeNB extends ActiveLearningNode {
+
+        private static final long serialVersionUID = 1L;
+
+        public LearningNodeNB(double[] initialClassObservations) {
+            super(initialClassObservations);
+        }
+
+        @Override
+        public double[] getClassVotes(Instance inst, HoeffdingOptionTree hot) {
+            if (getWeightSeen() >=  hot.nbThresholdOption.getValue()) {
+                return NaiveBayes.doNaiveBayesPrediction(inst,
+                        this.observedClassDistribution,
+                        this.attributeObservers);
+            }
+            return super.getClassVotes(inst, hot);
+        }
+
+        @Override
+        public void disableAttribute(int attIndex) {
+            // should not disable poor atts - they are used in NB calc
+        }
+    }
+
+    public static class LearningNodeNBAdaptive extends LearningNodeNB {
+
+        private static final long serialVersionUID = 1L;
+
+        protected double mcCorrectWeight = 0.0;
+
+        protected double nbCorrectWeight = 0.0;
+
+        public LearningNodeNBAdaptive(double[] initialClassObservations) {
+            super(initialClassObservations);
+        }
+
+        @Override
+        public void learnFromInstance(Instance inst, HoeffdingOptionTree hot) {
+            int trueClass = (int) inst.classValue();
+            if (this.observedClassDistribution.maxIndex() == trueClass) {
+                this.mcCorrectWeight += inst.weight();
+            }
+            if (Utils.maxIndex(NaiveBayes.doNaiveBayesPrediction(inst,
+                    this.observedClassDistribution, this.attributeObservers)) == trueClass) {
+                this.nbCorrectWeight += inst.weight();
+            }
+            super.learnFromInstance(inst, hot);
+        }
+
+        @Override
+        public double[] getClassVotes(Instance inst, HoeffdingOptionTree ht) {
+            if (this.mcCorrectWeight > this.nbCorrectWeight) {
+                return this.observedClassDistribution.getArrayCopy();
+            }
+            return NaiveBayes.doNaiveBayesPrediction(inst,
+                    this.observedClassDistribution, this.attributeObservers);
+        }
+    }
+
+    protected LearningNode newLearningNode() {
+        return newLearningNode(new double[0]);
+    }
+
+    protected LearningNode newLearningNode(double[] initialClassObservations) {
+        LearningNode ret;
+        int predictionOption = this.leafpredictionOption.getChosenIndex();
+        if (predictionOption == 0) { //MC
+            ret = new ActiveLearningNode(initialClassObservations);
+        } else if (predictionOption == 1) { //NB
+            ret = new LearningNodeNB(initialClassObservations);
+        } else { //NBAdaptive
+            ret = new LearningNodeNBAdaptive(initialClassObservations);
+        }
+        return ret;
     }
 }

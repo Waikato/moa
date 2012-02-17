@@ -50,7 +50,7 @@ import weka.core.Utils;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class HoeffdingAdaptiveTree extends HoeffdingTreeNBAdaptive {
+public class HoeffdingAdaptiveTree extends HoeffdingTree {
 
     private static final long serialVersionUID = 1L;
 
@@ -59,12 +59,12 @@ public class HoeffdingAdaptiveTree extends HoeffdingTreeNBAdaptive {
         return "Hoeffding Adaptive Tree for evolving data streams that uses ADWIN to replace branches for new ones.";
     }
     
-    public MultiChoiceOption leafpredictionOption = new MultiChoiceOption(
+ /*   public MultiChoiceOption leafpredictionOption = new MultiChoiceOption(
             "leafprediction", 'l', "Leaf prediction to use.", new String[]{
                 "MC", "NB", "NBAdaptive"}, new String[]{
                 "Majority class",
                 "Naive Bayes",
-                "Naive Bayes Adaptive"}, 2);
+                "Naive Bayes Adaptive"}, 2);*/
 
     public interface NewNode {
 

@@ -19,8 +19,10 @@
  */
 package moa.classifiers.trees;
 
+import moa.classifiers.bayes.NaiveBayes;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import weka.core.Instance;
+import weka.core.Utils;
 
 /**
  * Random decision trees for data streams.
@@ -84,13 +86,81 @@ public class RandomHoeffdingTree extends HoeffdingTree {
         }
     }
 
+    public static class LearningNodeNB extends RandomLearningNode {
+
+        private static final long serialVersionUID = 1L;
+
+        public LearningNodeNB(double[] initialClassObservations) {
+            super(initialClassObservations);
+        }
+
+        @Override
+        public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
+            if (getWeightSeen() >= ht.nbThresholdOption.getValue()) {
+                return NaiveBayes.doNaiveBayesPrediction(inst,
+                        this.observedClassDistribution,
+                        this.attributeObservers);
+            }
+            return super.getClassVotes(inst, ht);
+        }
+
+        @Override
+        public void disableAttribute(int attIndex) {
+            // should not disable poor atts - they are used in NB calc
+        }
+    }
+
+    public static class LearningNodeNBAdaptive extends LearningNodeNB {
+
+        private static final long serialVersionUID = 1L;
+
+        protected double mcCorrectWeight = 0.0;
+
+        protected double nbCorrectWeight = 0.0;
+
+        public LearningNodeNBAdaptive(double[] initialClassObservations) {
+            super(initialClassObservations);
+        }
+
+        @Override
+        public void learnFromInstance(Instance inst, HoeffdingTree ht) {
+            int trueClass = (int) inst.classValue();
+            if (this.observedClassDistribution.maxIndex() == trueClass) {
+                this.mcCorrectWeight += inst.weight();
+            }
+            if (Utils.maxIndex(NaiveBayes.doNaiveBayesPrediction(inst,
+                    this.observedClassDistribution, this.attributeObservers)) == trueClass) {
+                this.nbCorrectWeight += inst.weight();
+            }
+            super.learnFromInstance(inst, ht);
+        }
+
+        @Override
+        public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
+            if (this.mcCorrectWeight > this.nbCorrectWeight) {
+                return this.observedClassDistribution.getArrayCopy();
+            }
+            return NaiveBayes.doNaiveBayesPrediction(inst,
+                    this.observedClassDistribution, this.attributeObservers);
+        }
+    }
+
     public RandomHoeffdingTree() {
         this.removePoorAttsOption = null;
     }
 
     @Override
     protected LearningNode newLearningNode(double[] initialClassObservations) {
-        return new RandomLearningNode(initialClassObservations);
+        LearningNode ret;
+        int predictionOption = this.leafpredictionOption.getChosenIndex();
+        if (predictionOption == 0) { //MC
+            ret = new RandomLearningNode(initialClassObservations);
+        } else if (predictionOption == 1) { //NB
+            ret = new LearningNodeNB(initialClassObservations);
+        } else { //NBAdaptive
+            ret = new LearningNodeNBAdaptive(initialClassObservations);
+        }
+        return ret;
     }
 
     @Override
