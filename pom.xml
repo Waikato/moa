@@ -12,7 +12,7 @@
 	<groupId>nz.ac.waikato</groupId>
 	<artifactId>moa-datastream</artifactId>
 	<name>MOA - Massive Online Analysis</name>
-	<version>0.1-SNAPSHOT</version>
+	<version>12.03-SNAPSHOT</version>
 	<description>
 	    Massive On-line Analysis is an environment for massive data mining.
 
@@ -20,9 +20,9 @@
         a collection of machine learning algorithms. Related to the WEKA project, also 
         written in Java, while scaling to more demanding problems.
     </description>
-	<url>http://http://moa.cs.waikato.ac.nz/</url>
+	<url>http://moa.cs.waikato.ac.nz/</url>
 	<scm>
-		<url>https://moa-datastream.svn.sourceforge.net/svnroot/moa-datastream</url>
+		<url>https://code.google.com/p/moa/</url>
 	</scm>
 	<organization>
 		<name>University of WAIKATO</name>
@@ -69,7 +69,7 @@
 		<dependency>
 			<groupId>weka</groupId>
 			<artifactId>weka</artifactId>
-			<version>3.7.0</version>
+			<version>372</version>
 		</dependency>
 		<dependency>
 			<groupId>sizeof</groupId>
