@@ -54,10 +54,10 @@ public class SingleClassifierDrift extends AbstractClassifier {
     }
     
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "NaiveBayes");
+            "Classifier to train.", Classifier.class, "bayes.NaiveBayes");
     
     public ClassOption driftDetectionMethodOption = new ClassOption("driftDetectionMethod", 'd',
-             "Drift detection method to use.", DriftDetectionMethod.class, "JGamaMethod");
+             "Drift detection method to use.", DriftDetectionMethod.class, "DDM");
 
     protected Classifier classifier;
 
