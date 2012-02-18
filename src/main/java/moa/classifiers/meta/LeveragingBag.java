@@ -27,21 +27,15 @@ import weka.core.Instance;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
-import moa.options.ClassOption;
-import moa.options.FlagOption;
-import moa.options.FloatOption;
-import moa.options.IntOption;
+import moa.options.*;
 
 /**
- * Leveraging Bagging for evolving data streams using ADWIN.
- * Leveraging Bagging and Leveraging Bagging MC
- * using Random Output Codes ( -o option).
+ * Leveraging Bagging for evolving data streams using ADWIN. Leveraging Bagging
+ * and Leveraging Bagging MC using Random Output Codes ( -o option).
  *
- * <p>See details in:<br />
- * Albert Bifet, Geoffrey Holmes, Bernhard Pfahringer.
- * Leveraging Bagging for Evolving Data Streams
- * Machine Learning and Knowledge Discovery in Databases, European
- * Conference, ECML PKDD}, 2010.</p>
+ * <p>See details in:<br /> Albert Bifet, Geoffrey Holmes, Bernhard Pfahringer.
+ * Leveraging Bagging for Evolving Data Streams Machine Learning and Knowledge
+ * Discovery in Databases, European Conference, ECML PKDD}, 2010.</p>
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
@@ -49,12 +43,12 @@ import moa.options.IntOption;
 public class LeveragingBag extends AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Override
     public String getPurposeString() {
-        return " Leveraging Bagging for evolving data streams using ADWIN.";
+        return "Leveraging Bagging for evolving data streams using ADWIN.";
     }
-    
+
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
             "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
 
@@ -70,6 +64,16 @@ public class LeveragingBag extends AbstractClassifier {
     // Leveraging Bagging MC: uses this option to use Output Codes
     public FlagOption outputCodesOption = new FlagOption("outputCodes", 'o',
             "Use Output Codes to use binary classifiers.");
+
+    public MultiChoiceOption leveraginBagAlgorithmOption = new MultiChoiceOption(
+            "leveraginBagAlgorithm", 'm', "Leveraging Bagging to use.", new String[]{
+                "LeveragingBag", "LeveragingBagME", "LeveragingBagHalf", "LeveragingBagWT", "LeveragingSubag"},
+            new String[]{"Leveraging Bagging for evolving data streams using ADWIN",
+                "Leveraging Bagging ME using weight 1 if misclassified, otherwise error/(1-error)",
+                "Leveraging Bagging Half using resampling without replacement half of the instances",
+                "Leveraging Bagging WT without taking out all instances.",
+                "Leveraging Subagging using resampling without replacement."
+            }, 0);
 
     protected Classifier[] ensemble;
 
@@ -134,22 +138,34 @@ public class LeveragingBag extends AbstractClassifier {
 
 
         boolean Change = false;
-        double w = 1.0;
-        double mt = 0.0;
         Instance weightedInst = (Instance) inst.copy();
-        /*for (int i = 0; i < this.ensemble.length; i++) {
-        if (this.outputCodesOption.isSet()) {
-        weightedInst.setClassValue((double) this.matrixCodes[i][(int) inst.classValue()] );
-        }
-        if(!this.ensemble[i].correctlyClassifies(weightedInst)) {
-        mt++;
-        }
-        }*/
-        //update w
-        w = this.weightShrinkOption.getValue(); //1.0 +mt/2.0;
+        double w = this.weightShrinkOption.getValue();
+
         //Train ensemble of classifiers
         for (int i = 0; i < this.ensemble.length; i++) {
-            int k = MiscUtils.poisson(w, this.classifierRandom);
+            double k = 0.0;
+            switch (this.leveraginBagAlgorithmOption.getChosenIndex()) {
+                case 0: //LeveragingBag
+                    k = MiscUtils.poisson(w, this.classifierRandom);
+                    break;
+                case 1: //LeveragingBagME
+                    double error = this.ADError[i].getEstimation();
+                    k = !this.ensemble[i].correctlyClassifies(weightedInst) ? 1.0 : (this.classifierRandom.nextDouble() < (error / (1.0 - error)) ? 1.0 : 0.0);
+                    break;
+                case 2: //LeveragingBagHalf
+                    w = 1.0;
+                    k = this.classifierRandom.nextBoolean() ? 0.0 : w;
+                    break;
+                case 3: //LeveragingBagWT
+                    w = 1.0;
+                    k = 1.0 + MiscUtils.poisson(w, this.classifierRandom);
+                    break;
+                case 4: //LeveragingSubag
+                    w = 1.0;
+                    k = MiscUtils.poisson(1, this.classifierRandom);
+                    k = (k > 0) ? w : 0;
+                    break;
+            }
             if (k > 0) {
                 if (this.outputCodesOption.isSet()) {
                     weightedInst.setClassValue((double) this.matrixCodes[i][(int) inst.classValue()]);
@@ -248,3 +264,4 @@ public class LeveragingBag extends AbstractClassifier {
         return this.ensemble.clone();
     }
 }
+
