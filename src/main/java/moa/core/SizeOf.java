@@ -43,7 +43,7 @@ public class SizeOf {
             try {
                 SizeOfAgent.fullSizeOf(new Integer(1));
                 m_Present = true;
-            } catch (Exception e) {
+            } catch (Throwable t) {
                 m_Present = false;
             }
         }
