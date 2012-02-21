@@ -22,7 +22,7 @@ import java.util.ArrayList;
 *<br>
 *This program is free software; you can redistribute it and/or modify<br>
 *it under the terms of the GNU General Public License as published by<br>
-*the Free Software Foundation; either version 2 of the License, or<br>
+*the Free Software Foundation; either version 3 of the License, or<br>
 *(at your option) any later version.<br>
 *<br>
 *This program is distributed in the hope that it will be useful,<br>
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 *GNU General Public License for more details.<br>
 *<br>
 *You should have received a copy of the GNU General Public License<br>
-*along with this program; if not, write to the Free Software<br>
+*along with this program. If not, see <http://www.gnu.org/licenses/>.<br>
 *Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA,<br>
 *or download the License terms from prep.ai.mit.edu/pub/gnu/COPYING-2.0.<br>
 *<br>
