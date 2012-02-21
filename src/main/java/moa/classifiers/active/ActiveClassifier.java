@@ -80,7 +80,7 @@ public class ActiveClassifier extends AbstractClassifier {
     }
 
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "SingleClassifierDrift");
+            "Classifier to train.", Classifier.class, "drift.SingleClassifierDrift");
 
     public MultiChoiceOption activeLearningStrategyOption = new MultiChoiceOption(
             "activeLearningStrategy", 'd', "Active Learning Strategy to use.", new String[]{

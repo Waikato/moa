@@ -200,7 +200,7 @@ public class LimAttClassifier extends AbstractClassifier {
     private static final long serialVersionUID = 1L;
 
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "trees.LimAttHoeffdingTreeNBAdaptive");
+            "Classifier to train.", Classifier.class, "trees.LimAttHoeffdingTree");
 
     public IntOption numAttributesOption = new IntOption("numAttributes", 'n',
             "The number of attributes to use per model.", 1, 1, Integer.MAX_VALUE);

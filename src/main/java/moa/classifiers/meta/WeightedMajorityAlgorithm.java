@@ -56,11 +56,11 @@ public class WeightedMajorityAlgorithm extends AbstractClassifier {
             "trees.HoeffdingTree"),
             new Option[]{
                 new ClassOption("", ' ', "", Classifier.class,
-                "trees.HoeffdingTree"),
+                "trees.HoeffdingTree -l MC"),
                 new ClassOption("", ' ', "", Classifier.class,
-                "trees.HoeffdingTreeNB"),
+                "trees.HoeffdingTree -l NB"),
                 new ClassOption("", ' ', "", Classifier.class,
-                "trees.HoeffdingTreeNBAdaptive"),
+                "trees.HoeffdingTree -l NBAdaptive"),
                 new ClassOption("", ' ', "", Classifier.class, "bayes.NaiveBayes")},
             ',');
 

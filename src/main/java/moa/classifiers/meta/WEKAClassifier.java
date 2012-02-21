@@ -48,7 +48,7 @@ public class WEKAClassifier
     }
     
     public WEKAClassOption baseLearnerOption = new WEKAClassOption("baseLearner", 'l',
-            "Classifier to train.", weka.classifiers.Classifier.class, "weka.classifiers.bayes.NaiveBayesUpdateable");
+            "Classifier to train.", weka.classifiers.Classifier.class, "meta.weka.classifiers.bayes.NaiveBayesUpdateable");
 
     public IntOption widthOption = new IntOption("width",
             'w', "Size of Window for training learner.", 0, 0, Integer.MAX_VALUE);
