@@ -127,6 +127,7 @@
             <include name="*.zip"/>
          </fileset>
       </unzip>
+      <delete file="${build}/weka-src.jar" />
    </target>
 
    <!-- compile -->

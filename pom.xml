@@ -69,7 +69,7 @@
 		<dependency>
 			<groupId>weka</groupId>
 			<artifactId>weka</artifactId>
-			<version>372</version>
+			<version>aux</version>
 		</dependency>
 		<dependency>
 			<groupId>sizeof</groupId>

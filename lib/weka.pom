@@ -3,5 +3,5 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>weka</groupId>
 	<artifactId>weka</artifactId>
-	<version>372</version>
+	<version>aux</version>
 </project>
