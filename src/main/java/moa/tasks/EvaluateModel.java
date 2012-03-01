@@ -19,14 +19,19 @@
  */
 package moa.tasks;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import moa.classifiers.Classifier;
 import moa.core.ObjectRepository;
 import moa.evaluation.ClassificationPerformanceEvaluator;
 import moa.evaluation.LearningEvaluation;
 import moa.options.ClassOption;
+import moa.options.FileOption;
 import moa.options.IntOption;
 import moa.streams.InstanceStream;
 import weka.core.Instance;
+import weka.core.Utils;
 
 /**
  * Task for evaluating a static model on a stream.
@@ -59,6 +64,9 @@ public class EvaluateModel extends MainTask {
             "Maximum number of instances to test.", 1000000, 0,
             Integer.MAX_VALUE);
 
+    public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
+            "File to append output predictions to.", null, "pred", true);
+
     public EvaluateModel() {
     }
 
@@ -83,6 +91,24 @@ public class EvaluateModel extends MainTask {
         int maxInstances = this.maxInstancesOption.getValue();
         long instancesProcessed = 0;
         monitor.setCurrentActivity("Evaluating model...", -1.0);
+
+        //File for output predictions
+        File outputPredictionFile = this.outputPredictionFileOption.getFile();
+        PrintStream outputPredictionResultStream = null;
+        if (outputPredictionFile != null) {
+            try {
+                if (outputPredictionFile.exists()) {
+                    outputPredictionResultStream = new PrintStream(
+                            new FileOutputStream(outputPredictionFile, true), true);
+                } else {
+                    outputPredictionResultStream = new PrintStream(
+                            new FileOutputStream(outputPredictionFile), true);
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException(
+                        "Unable to open prediction result file: " + outputPredictionFile, ex);
+            }
+        }
         while (stream.hasMoreInstances()
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))) {
             Instance testInst = (Instance) stream.nextInstance().copy();
@@ -91,6 +117,9 @@ public class EvaluateModel extends MainTask {
             double[] prediction = model.getVotesForInstance(testInst);
             //evaluator.addClassificationAttempt(trueClass, prediction, testInst
             //		.weight());
+            if (outputPredictionFile != null) {
+                outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," + trueClass);
+            }
             evaluator.addResult(testInst, prediction);
             instancesProcessed++;
             if (instancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
@@ -113,6 +142,9 @@ public class EvaluateModel extends MainTask {
                             evaluator.getPerformanceMeasurements()));
                 }
             }
+        }
+        if (outputPredictionResultStream != null) {
+            outputPredictionResultStream.close();
         }
         return new LearningEvaluation(evaluator.getPerformanceMeasurements());
     }
