@@ -75,7 +75,7 @@ public class MOA
 	/** the moa classifier option (this object is used in the GenericObjectEditor). */
 	protected ClassOption m_Classifier = new ClassOption(
 			"classifier", 'B', "The MOA classifier to use from within WEKA.",
-			Classifier.class, m_ActualClassifier.getClass().getSimpleName(),
+			Classifier.class, m_ActualClassifier.getClass().getName().replace("moa.classifiers.", ""),
 			m_ActualClassifier.getClass().getName());
 
   /**
@@ -121,7 +121,7 @@ public class MOA
    *
    * <pre> -B &lt;classname + options&gt;
    *  The MOA classifier to use.
-   *  (default: moa.classifiers.DecisionStump)</pre>
+   *  (default: moa.classifiers.trees.DecisionStump)</pre>
    *
    * <pre> -D
    *  If set, classifier is run in debug mode and
