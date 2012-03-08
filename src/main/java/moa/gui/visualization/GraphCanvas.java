@@ -118,7 +118,7 @@ public class GraphCanvas extends JPanel {
         updateCanvas(false);
     }
 
-    private void updateCanvas(boolean force) {
+    public void updateCanvas(boolean force) {
 
         //check for new min max values first so we know if we have to do some resizing
         if (updateMinMaxValues() || force) {

@@ -365,6 +365,7 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
     private void buttonZoomOutYActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonZoomOutYActionPerformed
         graphCanvas.setSize(new Dimension(graphCanvas.getWidth(), (int) (graphCanvas.getHeight() * 0.8)));
         graphCanvas.setPreferredSize(new Dimension(graphCanvas.getWidth(), (int) (graphCanvas.getHeight() * 0.8)));
+        this.graphCanvas.updateCanvas(true);
     }//GEN-LAST:event_buttonZoomOutYActionPerformed
 
     private void buttonZoomOutXActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonZoomOutXActionPerformed
@@ -374,6 +375,7 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
     private void buttonZoomInYActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonZoomInYActionPerformed
         graphCanvas.setSize(new Dimension(graphCanvas.getWidth(), (int) (graphCanvas.getHeight() * 1.2)));
         graphCanvas.setPreferredSize(new Dimension(graphCanvas.getWidth(), (int) (graphCanvas.getHeight() * 1.2)));
+        this.graphCanvas.updateCanvas(true);
     }//GEN-LAST:event_buttonZoomInYActionPerformed
 
     private void buttonRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRunActionPerformed
