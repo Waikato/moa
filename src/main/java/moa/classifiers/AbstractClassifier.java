@@ -60,7 +60,7 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     protected int randomSeed = 1;
 
     /** Option for randomizable learners to change the random seed */
-    protected IntOption randomSeedOption;
+    public IntOption randomSeedOption;
 
     /** Random Generator used in randomizable learners  */
     public Random classifierRandom;
