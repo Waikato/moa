@@ -1,5 +1,5 @@
 /*
- *    JGamaMethod.java
+ *    DDM.java
  *    Copyright (C) 2008 University of Waikato, Hamilton, New Zealand
  *    @author Manuel Baena (mbaena@lcc.uma.es)
  *
@@ -21,13 +21,14 @@ package moa.classifiers.core.driftdetection;
 
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
+import moa.options.IntOption;
 import moa.tasks.TaskMonitor;
 
 /**
  * Drift detection method based in DDM method of Joao Gama SBIA 2004.
- * 
- * <p>João Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues:
- * Learning with Drift Detection. SBIA 2004: 286-295 </p>
+ *
+ * <p>João Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues: Learning
+ * with Drift Detection. SBIA 2004: 286-295 </p>
  *
  * @author Manuel Baena (mbaena@lcc.uma.es)
  * @version $Revision: 7 $
@@ -36,7 +37,11 @@ public class DDM extends AbstractOptionHandler implements DriftDetectionMethod {
 
     private static final long serialVersionUID = -3518369648142099719L;
 
-    private static final int JGAMAMETHOD_MINNUMINST = 30;
+    public IntOption minNumInstancesOption = new IntOption(
+            "minNumInstances",
+            'n',
+            "The minium number of instances before permitting detecting change.",
+            30, 0, Integer.MAX_VALUE);
 
     private int m_n;
 
@@ -76,7 +81,7 @@ public class DDM extends AbstractOptionHandler implements DriftDetectionMethod {
 
         // System.out.print(prediction + " " + m_n + " " + (m_p+m_s) + " ");
 
-        if (m_n < JGAMAMETHOD_MINNUMINST) {
+        if (m_n < minNumInstancesOption.getValue()) {
             return DDM_INCONTROL_LEVEL;
         }
 
@@ -88,7 +93,7 @@ public class DDM extends AbstractOptionHandler implements DriftDetectionMethod {
 
 
 
-        if (m_n > JGAMAMETHOD_MINNUMINST && m_p + m_s > m_pmin + 3 * m_smin) {
+        if (m_n > minNumInstancesOption.getValue() && m_p + m_s > m_pmin + 3 * m_smin) {
             System.out.println(m_p + ",D");
             initialize();
             return DDM_OUTCONTROL_LEVEL;
