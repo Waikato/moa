@@ -42,7 +42,7 @@ public class RunTasks extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption taskOption = new ClassOption("task", 't',
-            "Task to do.", Task.class, "EvaluatePrequential -l ActiveClassifier -i 1000000 -d temp.txt");
+            "Task to do.", Task.class, "EvaluatePrequential -l active.ActiveClassifier -i 1000000 -d temp.txt");
 
     public StringOption classifierParameterOption = new StringOption("classifierParameter", 'p',
             "Classifier parameter to vary.", "b");

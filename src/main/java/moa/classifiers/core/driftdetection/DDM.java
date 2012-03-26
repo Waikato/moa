@@ -40,7 +40,7 @@ public class DDM extends AbstractOptionHandler implements DriftDetectionMethod {
     public IntOption minNumInstancesOption = new IntOption(
             "minNumInstances",
             'n',
-            "The minium number of instances before permitting detecting change.",
+            "The minimum number of instances before permitting detecting change.",
             30, 0, Integer.MAX_VALUE);
 
     private int m_n;
