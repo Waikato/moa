@@ -4,3 +4,6 @@ target/
 /.classpath
 .project
 /.project
+.settings/
+/.settings/
+
