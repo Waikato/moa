@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+
+  <id>bin</id>
+
+  <formats>
+    <format>zip</format>
+  </formats>
+
+  <fileSets>
+    <fileSet>
+      <directory>${project.build.scriptSourceDirectory}</directory>
+      <outputDirectory>/bin</outputDirectory>
+    </fileSet>
+    
+    <fileSet>
+      <directory>${project.basedir}/src/main/resources/</directory>
+      <outputDirectory>/license</outputDirectory>
+      <includes>
+        <include>LICENSE.txt</include>
+      </includes>
+    </fileSet>
+
+    <fileSet>
+      <directory>${project.build.directory}/generated-sources/license</directory>
+      <outputDirectory>/license</outputDirectory>
+      <includes>
+        <include>*.txt</include>
+      </includes>
+    </fileSet>
+
+    <fileSet>
+      <directory>${project.build.directory}</directory>
+      <outputDirectory>docs/pdf</outputDirectory>
+      <includes>
+        <include>*.pdf</include>
+      </includes>
+    </fileSet>
+
+    <fileSet>
+      <directory>${project.basedir}/src/examples/java</directory>
+      <outputDirectory>examples</outputDirectory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>/lib</outputDirectory>
+      <useProjectArtifact>true</useProjectArtifact>
+      <excludes>
+        <exclude>*:javadoc</exclude>
+      </excludes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>/doc/apidocs</outputDirectory>
+      <useProjectArtifact>true</useProjectArtifact>
+      <includes>
+        <include>nz.ac.waikato.cms.moa:moa:*:javadoc</include>
+      </includes>
+      <unpack>true</unpack>
+    </dependencySet>
+  </dependencySets>
+</assembly>

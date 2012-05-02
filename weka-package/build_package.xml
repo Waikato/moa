@@ -10,7 +10,7 @@
   <!-- set global properties for this build -->
   <property name="src" value="src/main/java"/>
   <property name="src-test" value="src/test/java"/>
-  <property name="lib" value="../lib" />
+  <property name="lib" value="lib" />
   <property name="build" value="build"/>
   <property name="dist"  value="dist"/>
   <property name="doc"  value="doc"/>
@@ -47,7 +47,7 @@
     <mkdir dir="${build}/classes"/>    
 
     <copy todir="src">
-      <fileset dir="../src">
+      <fileset dir="../moa/src">
         <include name="**/*"/>
       </fileset>
     </copy>
@@ -140,6 +140,8 @@
     <copy todir="${dist}/${package}/lib" >
        <fileset dir="${lib}">
          <include name="*.jar"/>
+         <include name="*.zip"/>
+         <exclude name="weka*.jar"/>
        </fileset>
     </copy>
     <mkdir dir="${dist}/${package}/doc"/>
