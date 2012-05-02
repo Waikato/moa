@@ -71,7 +71,8 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
-        <version>1.1-SNAPSHOT</version>
+        <!-- TODO: upgrade to "1.1" to get 3rd-party license file get generated again -->
+        <version>1.0</version>
         <executions>
           <execution>
             <id>add-third-party</id>
