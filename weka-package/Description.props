@@ -9,7 +9,7 @@ PackageName=massiveOnlineAnalysis
 Version=1.0.1
 
 #Date
-Date=2010-05-25
+Date=2012-03-21
 
 # Title (required)
 Title=MOA (Massive On-line Analysis).
@@ -17,7 +17,7 @@ Title=MOA (Massive On-line Analysis).
 Category=Data streams
 
 # Author (required)
-Author=Richard Kirkby and Albert Bifet
+Author=MOA team.
 
 # Maintainer (required)
 Maintainer=Abert Bifet <abifet@cs.waikato.ac.nz>
@@ -28,11 +28,13 @@ License=GPL 3.0
 # Description (required)
 Description=Massive On-line Analysis is an environment for massive data mining. MOA provides a framework for data stream mining and includes tools for evaluation and a collection of machine learning algorithms. Related to the WEKA project, also written in Java, while scaling to more demanding problems. IMPORTANT: This package requires a separate download of the MOA jar file in order to work. After installing the massiveOnlineAnalysis Weka package: 1) download MOA from http://www.cs.waikato.ac.nz/~abifet/MOA, copy the "moa.jar" file from the MOA distribution to $HOME/.weka/packages/massiveOnlineAnalysis/lib, 3) re-start Weka.
 
+Changes=Updated license to GPL 3.0
+
 # Package URL for obtaining the package archive (required)
 PackageURL=http://prdownloads.sourceforge.net/weka/massiveOnlineAnalysis1.0.1.zip?download
 
 # URL for further information
-URL=http://www.cs.waikato.ac.nz/~abifet/MOA/
+URL=http://moa.cs.waikato.ac.nz/
 
 # Enhances various other packages ?
 # Enhances=packageName1,packageName2,...
