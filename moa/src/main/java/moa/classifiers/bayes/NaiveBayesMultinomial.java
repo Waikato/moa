@@ -17,6 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
+
 package moa.classifiers.bayes;
 
 import moa.core.Measurement;
@@ -27,6 +28,7 @@ import weka.core.*;
 
 import java.util.*;
 import moa.classifiers.AbstractClassifier;
+import moa.core.DoubleVector;
 
 /**
  * <!-- globalinfo-start --> Class for building and using a multinomial Naive
@@ -64,7 +66,7 @@ public class NaiveBayesMultinomial extends AbstractClassifier {
 
     @Override
     public String getPurposeString() {
-        return "Multinomial Naive Bayes classifier: performs classic bayesian prediction while making naive assumption that all inputs are independent.";
+        return "AMultinomial Naive Bayes classifier: performs classic bayesian prediction while making naive assumption that all inputs are independent.";
     }
 
     /**
@@ -91,7 +93,7 @@ public class NaiveBayesMultinomial extends AbstractClassifier {
      * probability that a word (w) exists in a class (H) (i.e. Pr[w|H]) The
      * matrix is in the this format: m_wordTotalForClass[wordAttribute][class]
      */
-    protected double[][] m_wordTotalForClass;
+    protected DoubleVector[] m_wordTotalForClass;
 
     protected boolean reset = false;
 
@@ -118,9 +120,10 @@ public class NaiveBayesMultinomial extends AbstractClassifier {
             m_classTotals = new double[m_numClasses];
             Arrays.fill(m_classTotals, laplace * numAttributes);
 
-            m_wordTotalForClass = new double[numAttributes][m_numClasses];
-            for (double[] wordTotal : m_wordTotalForClass) {
-                Arrays.fill(wordTotal, laplace);
+            m_wordTotalForClass = new DoubleVector[m_numClasses];
+            for (int i = 0; i< m_numClasses; i++) {
+                //Arrays.fill(wordTotal, laplace);
+                m_wordTotalForClass[i] = new DoubleVector();
             }
             this.reset = false;
         }
@@ -137,7 +140,12 @@ public class NaiveBayesMultinomial extends AbstractClassifier {
         for (int i = 0; i < inst.numValues(); i++) {
             int index = inst.index(i);
             if (index != classIndex && !inst.isMissing(i)) {
-                m_wordTotalForClass[index][classValue] += w * inst.valueSparse(i);
+                //m_wordTotalForClass[index][classValue] += w * inst.valueSparse(i);
+                double laplaceCorrection = 0.0;
+                if (m_wordTotalForClass[classValue].getValue(index)== 0) {
+                    laplaceCorrection = this.laplaceCorrectionOption.getValue();
+                }
+                m_wordTotalForClass[classValue].addToValue(index, w * inst.valueSparse(i) + laplaceCorrection);
             }
         }
     }
@@ -170,7 +178,8 @@ public class NaiveBayesMultinomial extends AbstractClassifier {
 
             double wordCount = instance.valueSparse(i);
             for (int c = 0; c < m_numClasses; c++) {
-                probOfClassGivenDoc[c] += wordCount * Math.log(m_wordTotalForClass[index][c]);
+                double value = m_wordTotalForClass[c].getValue(index);
+                probOfClassGivenDoc[c] += wordCount * Math.log(value == 0 ? this.laplaceCorrectionOption.getValue() : value );
             }
         }
 
@@ -228,7 +237,11 @@ public class NaiveBayesMultinomial extends AbstractClassifier {
             }
             result.append(m_headerInfo.attribute(w).name()).append("\t");
             for (int c = 0; c < m_numClasses; c++) {
-                result.append(m_wordTotalForClass[w][c] / m_classTotals[c]).append("\t");
+                double value = m_wordTotalForClass[c].getValue(w);
+                if (value == 0){
+                    value = this.laplaceCorrectionOption.getValue();
+                }
+                result.append(value / m_classTotals[c]).append("\t");
             }
             result.append("\n");
         }

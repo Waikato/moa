@@ -24,9 +24,11 @@
  *    Copyright (C) 2009 University of Waikato, Hamilton, New Zealand
  *
  */
+
 package moa.classifiers.functions;
 
 import moa.classifiers.AbstractClassifier;
+import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.options.FloatOption;
@@ -48,7 +50,7 @@ public class SGD extends AbstractClassifier {
 
       @Override
     public String getPurposeString() {
-        return "Stochastic gradient descent for learning various linear models (binary class SVM, binary class logistic regression and linear regression).";
+        return "AStochastic gradient descent for learning various linear models (binary class SVM, binary class logistic regression and linear regression).";
     }
 
     /** The regularization parameter */
@@ -66,7 +68,9 @@ public class SGD extends AbstractClassifier {
             0.0001, 0.00, Integer.MAX_VALUE);
 
     /** Stores the weights (+ bias in the last element) */
-    protected double[] m_weights;
+    protected DoubleVector m_weights;
+    
+    protected double m_bias;
 
     /** Holds the current iteration number */
     protected double m_t;
@@ -150,6 +154,7 @@ public class SGD extends AbstractClassifier {
     public void reset() {
         m_t = 1;
         m_weights = null;
+        m_bias = 0.0;
     }
 
     protected double dloss(double z) {
@@ -171,18 +176,18 @@ public class SGD extends AbstractClassifier {
         return z;
     }
 
-    protected static double dotProd(Instance inst1, double[] weights, int classIndex) {
+    protected static double dotProd(Instance inst1, DoubleVector weights, int classIndex) {
         double result = 0;
 
         int n1 = inst1.numValues();
-        int n2 = weights.length - 1;
+        int n2 = weights.numValues();
 
         for (int p1 = 0, p2 = 0; p1 < n1 && p2 < n2;) {
             int ind1 = inst1.index(p1);
             int ind2 = p2;
             if (ind1 == ind2) {
                 if (ind1 != classIndex && !inst1.isMissingSparse(p1)) {
-                    result += inst1.valueSparse(p1) * weights[p2];
+                    result += inst1.valueSparse(p1) * weights.getValue(p2);
                 }
                 p1++;
                 p2++;
@@ -212,7 +217,8 @@ public class SGD extends AbstractClassifier {
     public void trainOnInstanceImpl(Instance instance) {
 
         if (m_weights == null) {
-            m_weights = new double[instance.numAttributes() + 1];
+            m_weights = new DoubleVector(); 
+            m_bias = 0.0;
         }
 
         if (!instance.classIsMissing()) {
@@ -223,10 +229,10 @@ public class SGD extends AbstractClassifier {
             double z;
             if (instance.classAttribute().isNominal()) {
                 y = (instance.classValue() == 0) ? -1 : 1;
-                z = y * (wx + m_weights[m_weights.length - 1]);
+                z = y * (wx + m_bias);
             } else {
                 y = instance.classValue();
-                z = y - (wx + m_weights[m_weights.length - 1]);
+                z = y - (wx + m_bias);
                 y = 1;
             }
 
@@ -237,8 +243,8 @@ public class SGD extends AbstractClassifier {
             } else {
                 multiplier = 1.0 - (m_learningRate * m_lambda) / m_numInstances;
             }
-            for (int i = 0; i < m_weights.length - 1; i++) {
-                m_weights[i] *= multiplier;
+            for (int i = 0; i < m_weights.numValues(); i++) {
+                m_weights.setValue(i,m_weights.getValue (i) * multiplier);
             }
 
             // Only need to do the following if the loss is non-zero
@@ -252,12 +258,12 @@ public class SGD extends AbstractClassifier {
                 for (int p1 = 0; p1 < n1; p1++) {
                     int indS = instance.index(p1);
                     if (indS != instance.classIndex() && !instance.isMissingSparse(p1)) {
-                        m_weights[indS] += factor * instance.valueSparse(p1);
+                        m_weights.addToValue(indS, factor * instance.valueSparse(p1));
                     }
                 }
 
                 // update the bias
-                m_weights[m_weights.length - 1] += factor;
+                m_bias += factor;
             }
             m_t++;
         }
@@ -274,7 +280,7 @@ public class SGD extends AbstractClassifier {
     public double[] getVotesForInstance(Instance inst) {
 
         if (m_weights == null) {
-            return new double[inst.numAttributes() + 1];
+            return new double[inst.numClasses()];
         }
         double[] result = (inst.classAttribute().isNominal())
                 ? new double[2]
@@ -282,7 +288,7 @@ public class SGD extends AbstractClassifier {
 
 
         double wx = dotProd(inst, m_weights, inst.classIndex());// * m_wScale;
-        double z = (wx + m_weights[m_weights.length - 1]);
+        double z = (wx + m_bias);
 
         if (inst.classAttribute().isNumeric()) {
             result[0] = z;
@@ -336,7 +342,7 @@ public class SGD extends AbstractClassifier {
         // buff.append(m_data.classAttribute().name() + " = \n\n");
         int printed = 0;
 
-        for (int i = 0; i < m_weights.length - 1; i++) {
+        for (int i = 0; i < m_weights.numValues(); i++) {
             // if (i != m_data.classIndex()) {
             if (printed > 0) {
                 buff.append(" + ");
@@ -344,7 +350,7 @@ public class SGD extends AbstractClassifier {
                 buff.append("   ");
             }
 
-            buff.append(Utils.doubleToString(m_weights[i], 12, 4) + " "
+            buff.append(Utils.doubleToString(m_weights.getValue(i), 12, 4) + " "
                     // + m_data.attribute(i).name()
                     + "\n");
 
@@ -352,10 +358,10 @@ public class SGD extends AbstractClassifier {
             //}
         }
 
-        if (m_weights[m_weights.length - 1] > 0) {
-            buff.append(" + " + Utils.doubleToString(m_weights[m_weights.length - 1], 12, 4));
+        if (m_bias > 0) {
+            buff.append(" + " + Utils.doubleToString(m_bias, 12, 4));
         } else {
-            buff.append(" - " + Utils.doubleToString(-m_weights[m_weights.length - 1], 12, 4));
+            buff.append(" - " + Utils.doubleToString(-m_bias, 12, 4));
         }
 
         return buff.toString();
