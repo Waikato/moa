@@ -26,6 +26,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import moa.DoTask;
+import moa.gui.extension.ExtensionManager;
 
 /**
  * The main class for the MOA gui. Lets the user configure
@@ -78,12 +79,16 @@ public class GUI extends JPanel {
 
                 @Override
                 public void run() {
+
                     // Create and set up the window.
                     JFrame frame = new JFrame("MOA Graphical User Interface");
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
                     try {
-                        javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+                    	// load extensions stored in external jars
+						ExtensionManager.loadExternalJars();
+
+						javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
                     } catch (Exception e) {
                     }
 
