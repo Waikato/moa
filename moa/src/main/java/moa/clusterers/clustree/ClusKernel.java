@@ -116,7 +116,11 @@ public class ClusKernel extends CFCluster{
             return;
         }
 
-        double weightFactor = AuxiliaryFunctions.weight(negLambda, timeDifference);
+        //double weightFactor = AuxiliaryFunctions.weight(negLambda, timeDifference);
+        assert (negLambda < 0);
+        assert (timeDifference > 0);
+        double weightFactor = Math.pow(2.0, negLambda * timeDifference);
+
         this.N *= weightFactor;
         for (int i = 0; i < LS.length; i++) {
             LS[i] *= weightFactor;
@@ -186,9 +190,12 @@ public class ClusKernel extends CFCluster{
     protected void overwriteOldCluster(ClusKernel other) {
         this.totalN = other.totalN;
         this.N = other.N;
-        AuxiliaryFunctions.overwriteDoubleArray(this.LS, other.LS);
-        AuxiliaryFunctions.overwriteDoubleArray(this.SS, other.SS);
-
+        //AuxiliaryFunctions.overwriteDoubleArray(this.LS, other.LS);
+        //AuxiliaryFunctions.overwriteDoubleArray(this.SS, other.SS);
+        assert (LS.length == other.LS.length);
+        System.arraycopy(other.LS, 0, LS, 0, LS.length);
+        assert (SS.length == other.SS.length);
+        System.arraycopy(other.SS, 0, SS, 0, SS.length);
     }
 
     @Override
