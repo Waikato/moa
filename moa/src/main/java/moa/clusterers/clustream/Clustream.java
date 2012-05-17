@@ -33,7 +33,9 @@ import moa.options.IntOption;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 
-
+/** Citation: CluStream: Charu C. Aggarwal, Jiawei Han, Jianyong Wang, Philip S. Yu:
+ * A Framework for Clustering Evolving Data Streams. VLDB 2003: 81-92
+ */
 public class Clustream extends AbstractClusterer{
 
 	private static final long serialVersionUID = 1L;

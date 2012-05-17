@@ -33,6 +33,10 @@ import weka.core.Instance;
 /**
  * DenStream: Density-based clustering over an evolving data stream with noise (2006)
  *
+ * Citation: Feng Cao, Martin Ester, Weining Qian, Aoying Zhou:
+ * Density-Based Clustering over an Evolving Data Stream with Noise. SDM
+ * 2006
+ *
  * This implementation only creates a microclustering. For now all microclustering algorithms 
  * will be clustered in RunVisualizer with the general kMeans-microclustering implementation 
  * to make all clustering approaches comparable. 
@@ -70,7 +74,7 @@ public class DenStream extends AbstractClusterer {
 
     boolean initialized;
     private long timestamp = 0;
-    Timestamp currentTimestamp;
+    long currentTimestamp;
     long tp;
     
 
@@ -86,7 +90,7 @@ public class DenStream extends AbstractClusterer {
     @Override
     public void resetLearningImpl() {
         //init DenStream
-        currentTimestamp = new Timestamp();
+        currentTimestamp = 0;//new Timestamp();
         lambda = -Math.log(weightThreshold) / Math.log(2)/(double) horizonOption.getValue();
         epsilon = epsilonOption.getValue();
         minPoints = minPointsOption.getValue();
@@ -121,7 +125,7 @@ public class DenStream extends AbstractClusterer {
     @Override
     public void trainOnInstanceImpl(Instance inst) {
         timestamp++;
-        currentTimestamp.setTimestamp(timestamp);
+        currentTimestamp = timestamp;
         DenPoint point = new DenPoint(inst, timestamp);
         //////////////////
         //Initialization//
