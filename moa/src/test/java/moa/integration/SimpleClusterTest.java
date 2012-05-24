@@ -26,8 +26,6 @@ public class SimpleClusterTest extends TestCase {
 	public void testClusterGenerator(){testClusterer(Clusterers[0]);}
 //	@Test
 //	public void testCobWeb(){testClusterer(Clusterers[1]);}
-//	@Test
-//	public void testKMeans(){testClusterer(Clusterers[2]);}
 	@Test
 	public void testClustream(){testClusterer(Clusterers[3]);}
 	@Test
@@ -38,7 +36,7 @@ public class SimpleClusterTest extends TestCase {
 	public void testStreamKM(){testClusterer(Clusterers[6]);}
 	
 	void testClusterer(String clusterer) {
-		System.err.println("Processing: " + clusterer);
+		System.out.println("Processing: " + clusterer);
 		try {
 			doTask(new String[]{"EvaluateClustering -l " + clusterer});
 		} catch (Exception e) {
@@ -49,10 +47,10 @@ public class SimpleClusterTest extends TestCase {
 	// code copied from moa.DoTask.main, to allow exceptions to be thrown in case of failure
 	public void doTask(String [] args) throws Exception {
         if (args.length < 1) {
-            System.err.println();
-            System.err.println(Globals.getWorkbenchInfoString());
-            System.err.println();
-            System.err.println("No task specified.");
+            System.out.println();
+            System.out.println(Globals.getWorkbenchInfoString());
+            System.out.println();
+            System.out.println("No task specified.");
         } else {
             if (moa.DoTask.isJavaVersionOK() == false || moa.DoTask.isWekaVersionOK() == false) {
                 return;
@@ -79,13 +77,19 @@ public class SimpleClusterTest extends TestCase {
             }
             // parse options
             Task task = (Task) ClassOption.cliStringToObject(cliString.toString(), Task.class, extraOptions);
+            
+            StringBuilder sb = new StringBuilder();
+            task.getDescription(sb, 4);
+            System.out.println(sb.toString());
+            
+            
             Object result = null;
             if (suppressStatusOutputOption.isSet()) {
                 result = task.doTask();
             } else {
-                System.err.println();
-                System.err.println(Globals.getWorkbenchInfoString());
-                System.err.println();
+                System.out.println();
+                System.out.println(Globals.getWorkbenchInfoString());
+                System.out.println();
                 boolean preciseTiming = TimingUtils.enablePreciseTiming();
                 // start the task thread
                 TaskThread taskThread = new TaskThread(task);
@@ -115,8 +119,8 @@ public class SimpleClusterTest extends TestCase {
                         progressLine.setCharAt(
                         		moa.DoTask.MAX_STATUS_STRING_LENGTH - 1, '~');
                     }
-                    System.err.print(progressLine.toString());
-                    System.err.print('\r');
+                    System.out.print(progressLine.toString());
+                    System.out.print('\r');
                     if (++progressAnimIndex >= moa.DoTask.progressAnimSequence.length) {
                         progressAnimIndex = 0;
                     }
@@ -130,26 +134,27 @@ public class SimpleClusterTest extends TestCase {
                 for (int i = 0; i < moa.DoTask.MAX_STATUS_STRING_LENGTH; i++) {
                     cleanupString.append(' ');
                 }
-                System.err.println(cleanupString);
+                System.out.println(cleanupString);
                 result = taskThread.getFinalResult();
                 if (!(result instanceof FailedTaskReport)) {
-                    System.err.print("Task completed in "
+                    System.out.print("Task completed in "
                             + StringUtils.secondsToDHMSString(taskThread.getCPUSecondsElapsed()));
                     if (preciseTiming) {
-                        System.err.print(" (CPU time)");
+                        System.out.print(" (CPU time)");
                     }
-                    System.err.println();
-                    System.err.println();
+                    System.out.println();
+                    System.out.println();
                 }
             }
+            
             if (result instanceof FailedTaskReport) {
-                System.err.println("Task failed. Reason: ");
+                System.out.println("Task failed. Reason: ");
                 ((FailedTaskReport) result).getFailureReason().printStackTrace();
                 throw new Exception(((FailedTaskReport) result).getFailureReason());
             } else {
                 if (!suppressResultOutputOption.isSet()) {
                     if (result instanceof Measurement[]) {
-                        StringBuilder sb = new StringBuilder();
+                        sb = new StringBuilder();
                         Measurement.getMeasurementsDescription(
                                 (Measurement[]) result, sb, 0);
                         System.out.println(sb.toString());

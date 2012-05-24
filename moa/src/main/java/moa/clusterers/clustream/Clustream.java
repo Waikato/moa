@@ -87,7 +87,8 @@ public class Clustream extends AbstractClusterer{
 			}
 
 			int k = kernels.length;
-			assert (k < bufferSize);
+			//System.err.println("k="+k+" bufferSize="+bufferSize);
+			assert (k <= bufferSize);
 
 			ClustreamKernel[] centers = new ClustreamKernel[k];
 			for ( int i = 0; i < k; i++ ) {
