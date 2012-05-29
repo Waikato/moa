@@ -106,7 +106,7 @@ public class BatchCmd implements ClusterEventListener{
 	}
 
 
-	public static void runBatch(RandomRBFGeneratorEvents stream, AbstractClusterer clusterer,
+	public static void runBatch(ClusteringStream stream, AbstractClusterer clusterer,
 			int measureCollectionType, int amountInstances, String outputFile){
 		// create the measure collection 
 		MeasureCollection[] measures = getMeasures(getMeasureSelection(measureCollectionType));

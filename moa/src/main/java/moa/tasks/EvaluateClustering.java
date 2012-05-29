@@ -26,6 +26,7 @@ import moa.options.FileOption;
 import moa.options.IntOption;
 import moa.gui.BatchCmd;
 import moa.clusterers.AbstractClusterer;
+import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
 
 /**
@@ -47,7 +48,7 @@ public class EvaluateClustering extends MainTask {
             "Clusterer to train.", AbstractClusterer.class, "clustream.Clustream");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", RandomRBFGeneratorEvents.class,
+            "Stream to learn from.",  ClusteringStream.class,
             "RandomRBFGeneratorEvents");
 
     public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
@@ -92,7 +93,7 @@ public class EvaluateClustering extends MainTask {
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
 
-        BatchCmd.runBatch((RandomRBFGeneratorEvents) getPreparedClassOption(this.streamOption),
+        BatchCmd.runBatch((ClusteringStream) getPreparedClassOption(this.streamOption),
                 (AbstractClusterer) getPreparedClassOption(this.learnerOption),
                 (int) measureCollectionTypeOption.getValue(),
                 (int) this.instanceLimitOption.getValue(),
