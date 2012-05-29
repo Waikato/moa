@@ -22,6 +22,36 @@ package moa.cluster;
 import java.util.Arrays;
 import weka.core.Instance;
 
+/* micro cluster, as defined by Aggarwal et al, On Clustering Massive Data Streams: A Summarization Praradigm 
+ * in the book Data streams : models and algorithms, by Charu C Aggarwal
+ *  @article{
+	title = {Data Streams: Models and Algorithms},
+	author = {Aggarwal, Charu C.},
+	year = {2007},
+	publisher = {Springer Science+Business Media, LLC},
+	url = {http://ebooks.ulb.tu-darmstadt.de/11157/},
+	institution = {eBooks [http://ebooks.ulb.tu-darmstadt.de/perl/oai2] (Germany)},
+}
+
+DEFINITION A micro-clusterfor a set of d-dimensionalpoints Xi,. .Xi,
+with t i m e s t a m p s ~. . .T,, is the (2-d+3)tuple (CF2", CFlX CF2t, CFlt, n),
+wherein CF2" and CFlX each correspond to a vector of d entries. The definition of each of these entries is as follows:
+
+o For each dimension, the sum of the squares of the data values is maintained
+in CF2". Thus, CF2" contains d values. The p-th entry of CF2" is equal to
+\sum_j=1^n(x_i_j)^2
+
+o For each dimension, the sum of the data values is maintained in C F l X .
+Thus, CFIX contains d values. The p-th entry of CFIX is equal to
+\sum_j=1^n x_i_j
+
+o The sum of the squares of the time stamps Ti,. .Tin maintained in CF2t
+
+o The sum of the time stamps Ti, . . .Tin maintained in CFlt.
+
+o The number of data points is maintained in n.
+
+ */
 public abstract class CFCluster extends SphereCluster {
 
 	private static final long serialVersionUID = 1L;

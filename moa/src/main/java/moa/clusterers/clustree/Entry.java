@@ -451,8 +451,8 @@ public class Entry {
      * @param negLambda	    the aging constant
      */
     protected void makeOlder(long currentTime, double negLambda) {
-        assert (currentTime > this.timestamp) : "currentTime : "
-                + currentTime + ", this.timestamp: " + this.timestamp;
+//        assert (currentTime > this.timestamp) : "currentTime : "
+//                + currentTime + ", this.timestamp: " + this.timestamp;
 
         long diff = currentTime - this.timestamp;
         this.buffer.makeOlder(diff, negLambda);

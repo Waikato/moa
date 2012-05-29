@@ -78,12 +78,14 @@ public class GUI extends JPanel {
 
                 @Override
                 public void run() {
+
                     // Create and set up the window.
                     JFrame frame = new JFrame("MOA Graphical User Interface");
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
                     try {
-                        javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+
+						javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
                     } catch (Exception e) {
                     }
 

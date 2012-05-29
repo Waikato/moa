@@ -28,9 +28,9 @@ public class MicroCluster extends CFCluster {
     private long lastEditT = -1;
     private long creationTimestamp = -1;
     private double lambda;
-    private Timestamp currentTimestamp;
+    private long currentTimestamp;
 
-    public MicroCluster(double[] center, int dimensions, long creationTimestamp, double lambda, Timestamp currentTimestamp) {
+    public MicroCluster(double[] center, int dimensions, long creationTimestamp, double lambda, long currentTimestamp) {
         super(center, dimensions);
         this.creationTimestamp = creationTimestamp;
         this.lastEditT = creationTimestamp;
@@ -38,7 +38,7 @@ public class MicroCluster extends CFCluster {
         this.currentTimestamp = currentTimestamp;
     }
 
-    public MicroCluster(Instance instance, int dimensions, long timestamp, double lambda, Timestamp currentTimestamp) {
+    public MicroCluster(Instance instance, int dimensions, long timestamp, double lambda, long currentTimestamp) {
         this(instance.toDoubleArray(), dimensions, timestamp, lambda, currentTimestamp);
     }
 
@@ -75,7 +75,7 @@ public class MicroCluster extends CFCluster {
 
     @Override
     public double getWeight() {
-        return getWeight(currentTimestamp.getTimestamp());
+        return getWeight(currentTimestamp);
     }
 
     private double getWeight(long timestamp) {
@@ -89,7 +89,7 @@ public class MicroCluster extends CFCluster {
 
     @Override
     public double[] getCenter() {
-        return getCenter(currentTimestamp.getTimestamp());
+        return getCenter(currentTimestamp);
     }
 
     private double[] getCenter(long timestamp) {
@@ -106,7 +106,7 @@ public class MicroCluster extends CFCluster {
 
     @Override
     public double getRadius() {
-        return getRadius(currentTimestamp.getTimestamp())*radiusFactor;
+        return getRadius(currentTimestamp)*radiusFactor;
     }
 
     public double getRadius(long timestamp) {
@@ -115,12 +115,9 @@ public class MicroCluster extends CFCluster {
         double[] cf2 = calcCF2(dt);
         double w = getWeight(timestamp);
         double max = 0;
-        double sum = 0;
         for (int i = 0; i < SS.length; i++) {
             double x1 = cf2[i] / w;
             double x2 = Math.pow(cf1[i] / w, 2);
-            //sum += Math.pow(x1 - x2,2);
-            sum += (x1 - x2);
             if (Math.sqrt(x1 - x2) > max) {
                 max = Math.sqrt(x1 - x2);
             }

@@ -12,6 +12,10 @@ import weka.core.Instance;
  *
  * @author Marcel R. Ackermann, Christiane Lammersen, Marcus Maertens, Christoph Raupach, 
 Christian Sohler, Kamil Swierkot
+
+Citation: Marcel R. Ackermann, Christiane Lammersen, Marcus Märtens,
+Christoph Raupach, Christian Sohler, Kamil Swierkot: StreamKM++: A
+Clustering Algorithms for Data Streams. ALENEX 2010: 173-187
  */
 
 public class StreamKM extends AbstractClusterer {

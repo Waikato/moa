@@ -5,6 +5,6 @@
 #
 # The tabs to display 
 #
-# The classes listed here must be derived fromm the abstract class moa.gui.AbstractTabPanel
+# The classes listed here must be derived from the abstract class moa.gui.AbstractTabPanel 
 Tabs=moa.gui.ClassificationTabPanel,moa.gui.clustertab.ClusteringTabPanel
 

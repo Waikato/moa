@@ -21,6 +21,7 @@ package moa.clusterers;
 
 import java.io.Serializable;
 
+
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.core.Measurement;
@@ -34,6 +35,14 @@ import weka.core.Instances;
 import weka.experiment.Stats;
 import weka.filters.unsupervised.attribute.Add;
 
+/**
+ * Class implementing the Cobweb and Classit clustering algorithms.
+ * See: http://en.wikipedia.org/wiki/Cobweb_%28clustering%29
+ * 
+ * Citation: D. Fisher (1987). 
+ * Knowledge acquisition via incremental conceptual clustering. 
+ * Machine Learning. 2(2):139-172.
+ **/
 public class CobWeb extends AbstractClusterer {
 
     private static final long serialVersionUID = 1L;

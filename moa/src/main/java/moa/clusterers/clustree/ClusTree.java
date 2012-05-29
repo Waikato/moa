@@ -21,6 +21,7 @@
 package moa.clusterers.clustree;
 
 import java.util.ArrayList;
+
 import java.util.LinkedList;
 import moa.clusterers.clustree.util.*;
 import moa.cluster.Clustering;
@@ -29,6 +30,11 @@ import moa.core.Measurement;
 import moa.options.IntOption;
 import weka.core.Instance;
 
+/**
+ * Citation: ClusTree: Philipp Kranen, Ira Assent, Corinna Baldauf, Thomas Seidl:
+ * The ClusTree: indexing micro-clusters for anytime stream mining.
+ * Knowl. Inf. Syst. 29(2): 249-272 (2011) 
+*/
 public class ClusTree extends AbstractClusterer{
 	private static final long serialVersionUID = 1L;
 	
