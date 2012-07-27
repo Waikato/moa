@@ -4,7 +4,7 @@
   <groupId>nz.ac.waikato.cms.moa</groupId>
   <artifactId>moa</artifactId>
   <packaging>jar</packaging>
-  <version>2012.05-SNAPSHOT</version>
+  <version>2012.08-SNAPSHOT</version>
 
   <name>MOA: Massive Online Analysis</name>
   <description>

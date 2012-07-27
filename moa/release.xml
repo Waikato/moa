@@ -3,7 +3,7 @@
 
   <groupId>nz.ac.waikato.cms.moa</groupId>
   <artifactId>moa-release</artifactId>
-  <version>2012.03</version><!-- adjust -->
+  <version>2012.08</version><!-- adjust -->
   <packaging>pom</packaging>
 
   <name>MOA: Massive Online Analysis (release)</name>
@@ -71,8 +71,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
-        <!-- TODO: upgrade to "1.1" to get 3rd-party license file get generated again -->
-        <version>1.0</version>
+        <version>1.1</version>
         <executions>
           <execution>
             <id>add-third-party</id>
