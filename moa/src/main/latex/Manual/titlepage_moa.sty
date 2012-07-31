@@ -1,0 +1,33 @@
+\ProvidesPackage{titlepage_moa}[2009/08/31]
+%\RequirePackage{fix-cm}
+\RequirePackage{graphicx}
+\ProcessOptions
+\renewcommand{\maketitle}{
+\setcounter{page}{1}
+\thispagestyle{empty}
+\begin{center}
+  \includegraphics[height=3cm]{images/LogoMOA.jpg} \\
+  \includegraphics[height=4cm]{images/Waikato.jpg} \\ 
+  \vspace{1.5cm}
+  { \color{nicered} \Huge %\fontfamily{pag}
+  %\fontsize{50}{90}\selecfont 
+  \textbf{Massive Online}} \\ 
+  \vspace{.75cm}
+  {\color{nicered} \Huge %\fontfamily{pag}
+  %\fontsize{50}{90}\selecfont 
+  \textbf{Analysis}} \\
+  \vspace{1cm}
+  {\fontfamily{bch} \Huge %
+  %\fontsize{40}{90}\selecfont 
+  \textbf{Manual} }\\
+  \vspace{1cm}
+  {\rmfamily\Large \@author}\\
+  \vspace{1cm}
+  {\rmfamily\Large \@date}\\
+  \vspace{1cm}
+  \includegraphics[height=1cm]{images/cosi_logo.png} 
+\end{center}
+\thispagestyle{empty}
+\cleardoublepage
+\setcounter{page}{1}
+}

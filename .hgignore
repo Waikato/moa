@@ -1,3 +1,4 @@
+# general
 target/
 /target/
 .classpath
@@ -7,3 +8,20 @@ target/
 .settings/
 /.settings/
 
+syntax: glob
+
+# tmp files
+*.swp
+*.backup
+*~
+
+# for latex
+*.aux
+*.bbl
+*.blg
+*.brf
+*.log
+*.out
+*.synctex.gz
+*.thm
+*.toc
