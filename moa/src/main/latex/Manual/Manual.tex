@@ -3,19 +3,15 @@
 \usepackage{phdthesis}
 \usepackage{titlepage_moa}
 \usepackage{amsthm}
-%\usepackage{palatino}
-%\usepackage{euler}
 \usepackage[bitstream-charter]{mathdesign}
 %
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{epstopdf}
 \usepackage{tikz} 
-%\usepackage{times}
 \usepackage{hyperref}
 \usepackage{algorithm,algorithmic}
-\definecolor{nicered}{rgb}{0.0,0.0,0.4}%{.647,.129,.149}
-%\arrayrulecolor{nicered}
+\definecolor{nicered}{rgb}{0.0,0.0,0.4}
 
 \hypersetup{
     bookmarks=true,         % show bookmarks bar?
@@ -41,13 +37,11 @@
 \long\def\BEGINOMIT#1\ENDOMIT{\relax}  % to omit large portions of text
 \newtheorem{definition}{Definition}{}
 \title{
-%\includegraphics[height=3cm]{LogoMOA.jpg} \\
-%\includegraphics[height=4cm]{Waikato.jpg} \\ \vspace{2cm}
 \textbf{Massive Online Analysis}  \\ 
 Manual
 }
 \author{Albert Bifet, Richard Kirkby, \\Philipp Kranen, Peter Reutemann }
-\date{March 2012 }%\\ \vspace{3cm} \includegraphics[height=1cm]{cosi_logo.png} }
+\date{March 2012}
 \begin{document}
 \lstset{language=Java,basicstyle=\tiny,numbers=left}
 
@@ -120,8 +114,7 @@ setting. The most significant are the following:
 We have to consider these requirements in order to design a new experimental
 framework for data streams.
 Figure~\ref{fig:cycle} illustrates the typical use of a data stream 
-classification algorithm, and how the requirements fit %in. The general model 
-%of data stream classification follows these three steps 
+classification algorithm, and how the requirements fit
 in a repeating cycle:
 \begin{enumerate}
 \item  The algorithm is passed the next available example from the stream
@@ -131,7 +124,6 @@ in a repeating cycle:
    and as quickly as possible (requirement 3).
 \item  The algorithm is ready to accept the next example. On request it is
    able to predict the class of unseen examples
-   % , and  supply a model that can be used to  
    (requirement 4).
 \end{enumerate}
 \BEGINOMIT
@@ -183,8 +175,6 @@ When traditional batch learning reaches a scale where cross-validation is too ti
 consuming, it is often accepted to instead measure performance on a single holdout
 set. This is most useful when the division between train and test sets have
 been pre-defined, so that results from different studies can be directly compared. 
-%Viewing data stream problems as a large-scale case of batch learning,
-%it then follows from batch learning practices that a holdout set is appropriate.
 \item {\bf Interleaved Test-Then-Train or Prequential}:
  Each individual example can be used to test the model
 before it is used for training, and from this the accuracy can be incrementally
@@ -193,39 +183,17 @@ being tested on examples it has not seen. This scheme has the advantage that
 no holdout set is needed for testing, making maximum use of the available
 data. It also ensures a smooth plot of accuracy over time, as each individual
 example will become increasingly less significant to the overall average.
-%    With this procedure the statistics are updated with every example in the
-%stream, and can be recorded at that level of detail if desired. For efficiency
-%reasons a sampling parameter can be used to reduce the storage requirements
-%of the results, by recording only at periodic intervals like the holdout method.
 \end{itemize}
    As data stream classification is a relatively new field, such evaluation 
 practices are not nearly as well researched and established as they are
 in the traditional batch setting. 
 The majority of experimental evaluations use less than one million
 training examples. 
-%Some papers use more than this, up to ten million examples,
-%and only very rarely is there any study like Domingos and 
-%Hulten  that is in the order of tens of millions 
-%of examples. 
 In the context of data streams this is disappointing, because to be
 truly useful at data stream classification the algorithms need to be capable of 
 handling very large (potentially infinite) streams of examples. Demonstrating 
 systems only on small amounts of data does not build a convincing case for capacity
 to solve more demanding data stream applications.
-%    There are several possible reasons for the general lack of training data for
-%evaluation. It could be that researchers come from a traditional machine learning 
-%background with entrenched community standards, where results involving
-%cross-validation on popular real-world data sets are expected for credibility,
-%and alternate practices are less understood. Emphasis on using real-world
-%data will restrict the sizes possible, because there is very little data 
-%freely available that is suitable for data stream evaluation.
-%Another reason could be that the methods are being directly compared with
-%batch learning algorithms, as several of the papers do, so the sizes may 
-%deliberately be kept small to accommodate batch learning. Hopefully no evaluations
-%are intentionally small due to proposed data stream algorithms being too slow
-%or memory hungry to cope with larger amounts of data in reasonable time or
-%memory, because this would raise serious doubts about the algorithm's
-%practical utility.
 
     MOA permits adequately evaluate data stream
 classification algorithms on large streams, in the order
@@ -297,7 +265,6 @@ java -Xmx4G -cp moa.jar;weka.jar -javaagent:sizeofag.jar
 \end{verbatim}
 
 
-%\chapter{Using the GUI}
 \chapter{Using MOA}
 \section{Using the GUI}
 A graphical user interface for configuring and running tasks is available with the command:
@@ -370,7 +337,6 @@ sets for repeatability and comparison.
 \label{sec:algos}
 
 Currently MOA contains several stream clustering methods including:
-%such as StreamKM++~\cite{StreamKM}, CluStream~\cite{CluStream}, ClusTree~\cite{KAB+09}, Den-Stream~\cite{DenStream}, D-Stream~\cite{DStream} and CobWeb~\cite{CobWeb}.
 
 %\BEGINOMIT
 \begin{itemize}
@@ -378,9 +344,6 @@ Currently MOA contains several stream clustering methods including:
 	 and it uses the k-means++ algorithm as a randomized seeding technique to choose the 
 	 first values for the clusters. To compute the small sample, it employs coreset constructions
 	 using a coreset tree for speed up. 
-	 %Coresets are small weighted sets of points that approximates the original point set with
-	 %respect to clustering. It and implements a coreset tree to speed up the time necessary for
-	 %the non-uniform sampling during the coreset construction.
 	\item CluStream: It maintains statistical information about the data using micro-clusters. These micro-clusters are temporal extensions of cluster feature vectors. The 
 	micro-clusters are stored at snapshots in time following a pyramidal pattern. This pattern 
 	allows to recall summary statistics from different time horizons. 
@@ -388,10 +351,6 @@ Currently MOA contains several stream clustering methods including:
 	\item Den-Stream: It uses dense micro-clusters (named core-micro-cluster) 
 	to summarize clusters. To maintain and distinguish the potential clusters and outliers, 
 	this method presents core-micro-cluster and outlier micro-cluster structures.
-	%\item D-Stream: This method maps each input data record into a grid and it
-	% computes the grid density. The grids are clustered based on the density. 
-	% This algorithm adopts a density decaying technique to capture the dynamic changes of a
-	 % data stream. 
 	  \item CobWeb. One of the first incremental methods for clustering data. 
 	  It uses a classification tree. Each node in a classification tree represents a class (concept)
 	   and is labeled by a probabilistic concept that summarizes the attribute-value distributions
@@ -416,8 +375,7 @@ on the same stream or the same algorithm on streams with different noise levels 
 
 \begin{figure*}[t]
 \begin{center} 
-%\epsfig{file=SetupTab.png, scale=0.3}
-\includegraphics[width=0.9\textwidth]{images/VisualTab}%, width=0.77\textwidth}%scale=0.4}
+\includegraphics[width=0.9\textwidth]{images/VisualTab}
 \end{center} 
 \caption{Visualization tab of the clustering MOA graphical user interface.}
 \label{fig:VisualTab}
@@ -596,7 +554,6 @@ while(stream.hasMoreInstances() && numberSamples < numInstances){
 double accuracy = 100.0*(double) numberSamplesCorrect / (double)numberSamples;
 System.out.println(numberSamples+" instances processed with "+accuracy+"% accuracy");
 \end{lstlisting}
-%The following example is based on a Unix/Linux system with Java 5 SDK or greater installed. Other operating systems such as Microsoft Windows will be similar but may need adjustments to suit.
 
 
 \section{Creating a new classifier}
@@ -1127,7 +1084,6 @@ There are the following :
 
 Classes available in MOA to obtain input streams are the following:
 
-%\begin{description}
 \subsection{ArffFileStream}
  A stream read from an ARFF file.
  Example:
@@ -1161,9 +1117,7 @@ instance of the stream belongs to the new concept after the drift.
   \draw[->] (0,-0.2) -- (0,4.2) node[above] {$f(t)$};
   \draw[<->] (2,-0.6) -- (6,-0.6) node[below] {};
   \draw[color=blue!50!black, domain=2:6] plot[id=x]   function{(x-2)}           node[right]{}; %{$f(x) =x$};
-  %\draw[color=blue]   plot[id=sin] function{sin(x)}       node[right] {$f(x) = \sin x$};
   \draw[color=red!50!black] plot[id=exp] function{4/(1+exp(4-x))} node[right] {$f(t)$};% = 1/{(1+ \mathrm e^{-s (x-x_0)}})$};
-  %\shadedraw[left color=gray,right color=green, draw=green!50!black] (2,0) -- (2.5,0) arc (0:45:.5) -- cycle; 
   \colorlet{anglecolor}{blue!50!black}
   \filldraw[fill=blue!20,draw=anglecolor] (2,0) -- (2.5,0) arc(0:45:.5);
   \draw (2.7,.3) node[anglecolor] {$\alpha$};
@@ -1194,7 +1148,7 @@ are constant values that don't depend on $t_0$ and $W$:
 $$f(t_0+W/2) = 1 - f(t_0-W/2) = 1/( 1+ e^{-2}) \approx 88.08 \%$$  
 $$f(t_0+W) = 1 - f(t_0-W) = 1/( 1+ e^{-4}) \approx 98.20 \%$$  
 $$f(t_0+2W) = 1 - f(t_0-2W) = 1/( 1+ e^{-8}) \approx 99.97 \%$$
-\begin{definition} %{\bf ($\oplus$-operation)}\\
+\begin{definition}
 Given two data streams $a$, $b$, we define $c = a  \oplus^{W}_{t_0} b$ as the 
 data stream built joining the two data streams $a$ and $b$, where
 $t_0$ is the point of change, $W$ is the length of change and 
@@ -1604,11 +1558,6 @@ This algorithm is naturally incremental: upon receiving a new example
 (or a batch of new examples), 
 simply increment the relevant counts. Predictions can be made  
 at any time from the current counts. 
-% Example:
-%\begin{footnotesize}
-%\begin{verbatim}               
-%   NaiveBayes
-%\end{verbatim} \end{footnotesize}
 
 Parameters:
 
@@ -1702,7 +1651,6 @@ Parameters:
 \item -q : The number of instances a leaf should observe before permitting Naive Bayes
 \item -l : Leaf classifier to use at the leaves: Majority class, Naive Bayes, Naive Bayes Adaptive.
 By default: Naive Bayes Adaptive.
-%\item -r : Seed for random behaviour of the classifier
 \end{itemize}
 
 In old versions of MOA, a HoeffdingTreeNB was a HoeffdingTree with Naive Bayes classification at leaves,
@@ -1785,7 +1733,6 @@ Parameters:
 \item -q : The number of instances a leaf should observe before permitting Naive Bayes
 \item -l : Leaf classifier to use at the leaves: Majority class, Naive Bayes, Naive Bayes Adaptive.
 By default: Naive Bayes Adaptive.
-%\item -r : Seed for random behaviour of the classifier
 
 \end{itemize}
 In old versions of MOA, a HoeffdingOptionTreeNB was a HoeffdingTree with Naive Bayes classification at leaves,
@@ -1866,14 +1813,7 @@ of bagging and boosting for Data Streams. They show how the process
 of sampling bootstrap replicates from training data can be simulated in a 
 data stream context. 
 They observe that the probability that any individual
-example will be chosen for a replicate %is governed by a Binomial distribution,
-%so the sampling process can be approximated by considering each example
-%in turn and randomly deciding with a Binomial probability distribution how
-%many times to include the example in the formation of a replicate set. %The
-%difficulty with this solution is that the number of examples needs to be
-%known in advance. 
-%Oza and Russell get around this by considering that the 
-%Binomial distribution 
+example will be chosen for a replicate 
 tends to a Poisson(1) distribution. 
 
 
@@ -1907,13 +1847,6 @@ For the boosting method, Oza and Russell
 note that the weighting procedure of AdaBoost actually divides the total example 
 weight into two halves \--- half of the weight is assigned to the correctly
 classified examples, and the other half goes to the misclassified examples. %As
-%the ensemble gets more accurate the number of misclassified examples should
-%progressively get less and less relative to the number of correct classifications.
-%In turn, the misclassified set gets more weight per example than the correctly
-%classified set. This motivates a weight update procedure that 
-%is intended to simulate the batch weight behaviour in a streaming environment,
-%much like the online bagging algorithm is designed to simulate the creation of
-%bootstrap replicates. Once again 
 They use the Poisson distribution for 
 deciding the random probability that an example is used for training, only this time
 the parameter changes according to the boosting weight of the example
@@ -1954,8 +1887,6 @@ Parameters:
 \item -e : Smoothing parameter
 \end{itemize}
 
-%\section{Classifiers for evolving streams}
-
 \subsection{OzaBagASHT} Bagging using trees of different size.
 The Adaptive-Size Hoeffding Tree (ASHT) is derived
 from the Hoeffding Tree algorithm with the following differences:
@@ -1979,22 +1910,17 @@ but this behaviour should not have a negative impact on the ensemble's predictiv
 When the tree size exceeds
 the maximun size value, there are two different delete options:
 \begin{itemize}
- \item delete the oldest node, the root, and all of its children %delete oldest node, the root node and all its children
+ \item delete the oldest node, the root, and all of its children
 except the one where the split has
 been made. After that, the root of the
 child not deleted becomes the new root
-%delete the oldest node, the root, and all of its children.
 
- %\item delete worst error node: the node with higher error and its childs
  \item delete all the nodes of the tree, i.e., restart from a new root.
 \end{itemize}
 
 The maximum allowed size for the $n$-th ASHT tree is
 twice the maximum allowed size for the $(n-1)$-th tree. Moreover, each tree
 has a weight proportional to the inverse of the square of its error, and
-%The size of ASHT 
-%tree $n$ is two times the size of ASHT tree $n-1$. Moreover, it uses  a weight 
-%proportional to the inverse of the square of the error, and 
 it monitors its error
 with an exponential weighted moving average (EWMA) with $\alpha=.01$. The size of the first tree is $2$. 
 
@@ -2068,11 +1994,9 @@ explicitly, but compresses it using a variant of the exponential histogram
 technique. % in \cite{babcock-sampling}. 
 This means that it keeps a window of length $W$
 using only $O(\log W)$ memory and $O(\log W)$ processing time per item. %, 
-%rather than the $O(W)$ one expects from a na{\"\i}ve implementation. 
 %\ENDOMIT
 
-\adwin Bagging is the online bagging method of Oza and Rusell % and boosting algorithms 
-%implemented in MOA 
+\adwin Bagging is the online bagging method of Oza and Rusell
 with the  addition of the \adwin algorithm as a change 
 detector and as an estimator for the weights of the boosting method.
 When a change is detected, the worst classifier of the ensemble of classifiers 
@@ -2393,7 +2317,6 @@ Parameters:
 \chapter{Bi-directional interface with WEKA}
 \label{chap:Weka}
 
-%Until now, MOA and WEKA have been independent systems. Now 
 Now, it is easy to use MOA classifiers and streams from WEKA, and WEKA classifiers from MOA.
 The main difference between using incremental classifiers in WEKA and in MOA will be the evaluation method used.
 
@@ -2411,11 +2334,9 @@ Weka classifiers may be incremental or non incremental methods.
 
 To use the Weka classifiers from MOA it is necessary to use one of the following classes:
 
-%\begin{description}
- \subsection{WekaClassifier} A classifier to use classifiers from WEKA.
+\subsection{WekaClassifier} A classifier to use classifiers from WEKA.
 
 \begin{tikzpicture}[scale=.8,domain=0:18]
-  %\draw[step=2,very thin,color=gray] (-0.1,-0.1) grid (8.2,2.1);
   \draw[step=.05,very thin,color=blue!80!black] (0,0) grid (1,1);
   \draw[step=.1 ,very thin,color=red!80!black] (1,0) grid (2,1);
   \draw[step=.1,very thin,color=red!80!black] (6,0) grid (8,1);
@@ -2428,26 +2349,12 @@ To use the Weka classifiers from MOA it is necessary to use one of the following
   \draw[<->] (0,-1.5) -- (6,-1.5) node[below] {};
   \draw[<->] (6,-1.5) -- (12,-1.5) node[below] {};
  \draw[<-] (12,-1.5) -- (15,-1.5) node[below] {};
-%  \draw[<->] (12,-1.5) -- (18,-1.5) node[below] {};
-  %\draw[color=blue!50!black, domain=2:6] plot[id=x]   function{(x-2)}           node[right]{}; %{$f(x) =x$};
-  %\draw[color=niceblue!50!white, domain=2:6] plot[id=x]   function{(x-2)}           node[right]{}; %{$f(x) =x$};
-  %\draw[color=blue]   plot[id=sin] function{sin(x)}       node[right] {$f(x) = \sin x$};
-  %\draw[color=nicered!50!white] plot[id=exp] function{4/(1+exp(4-x))} node[above] {$f(t)$};% = 1/{(1+ \mathrm e^{-s (x-x_0)}})$};
-  %\draw[color=red!50!black] plot[id=exp] function{4/(1+exp(4-x))} node[above] {$f(t)$};
-  %\shadedraw[left color=gray,right color=green, draw=green!50!black] (2,0) -- (2.5,0) arc (0:45:.5) -- cycle; 
-  %\colorlet{anglecolor}{blue!50!black} %white} %black
-  %\filldraw[fill=blue!20,draw=anglecolor] (2,0) -- (2.5,0) arc(0:45:.5);
-  %\draw (2.7,.3) node[anglecolor] {$\alpha$};
-  %\filldraw[fill=blue!20,draw=anglecolor] (4,2) -- (4.5,2) arc(0:45:.5);
-  %\draw (4.7,2.3) node[anglecolor] {$\alpha$};
 
   \draw (3,-2) node[] {$T$};
   \draw (9,-2) node[] {$T$};
   \draw (.5,-0.9) node[] {$W_i$};
   \draw (7,-0.9) node[] {$W$};
   \draw (13,-0.9) node[] {$W$};
-  %\draw (-0.5,2) node[] {$0.5$};
-  %\draw (-0.5,4) node[] {$1$};
 
 \end{tikzpicture}
 
