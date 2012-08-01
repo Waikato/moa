@@ -68,7 +68,7 @@ MOA is designed to deal with the challenging problems of scaling up the implemen
 world dataset sizes and of making algorithms comparable in benchmark streaming settings.
 
 \begin{center}
-\includegraphics[height=2cm]{images/LogoMOA.jpg} \end{center}
+\includegraphics[height=2cm]{figures/LogoMOA.jpg} \end{center}
 
 MOA contains a collection of offline 
 and online algorithms for both classification and clustering as well as tools for evaluation.  
@@ -106,7 +106,7 @@ setting. The most significant are the following:
 \end{description}
 \begin{figure}[t]
 \begin{center} 
-\includegraphics[height=9cm]{images/Frame.pdf}
+\includegraphics[height=9cm]{figures/Frame.pdf}
 \end{center} 
 \caption{The data stream classification cycle}
 \label{fig:cycle}
@@ -279,7 +279,7 @@ There are two main tabs: one for classification and one for clustering.
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[height=6cm]{images/MOA_Task.png}\end{center}
+\includegraphics[height=6cm]{figures/MOA_Task.png}\end{center}
 \caption{Graphical user interface of MOA}
 \end{figure}
 
@@ -292,7 +292,7 @@ to compare the results of two different tasks: the current task is displayed in 
 
 \begin{figure}[t]
 \begin{center}
-\includegraphics[height=6cm]{images/Configure_Task}\end{center}
+\includegraphics[height=6cm]{figures/Configure_Task}\end{center}
 \caption{Options to set up a task in MOA}
 \end{figure}
 
@@ -322,7 +322,7 @@ The stream clustering tab of MOA has the following main components:
 
 \begin{figure}[t]
 	\centering
-		\includegraphics[width=0.55\textwidth]{images/SetupTab}
+		\includegraphics[width=0.55\textwidth]{figures/SetupTab}
 	\caption{Option dialog for the RBF data generator (by storing and loading settings benchmark streaming data sets can be shared for repeatability and comparison).}
 	\label{fig:framework}
 \end{figure}
@@ -375,7 +375,7 @@ on the same stream or the same algorithm on streams with different noise levels 
 
 \begin{figure*}[t]
 \begin{center} 
-\includegraphics[width=0.9\textwidth]{images/VisualTab}
+\includegraphics[width=0.9\textwidth]{figures/VisualTab}
 \end{center} 
 \caption{Visualization tab of the clustering MOA graphical user interface.}
 \label{fig:VisualTab}
@@ -517,7 +517,7 @@ gnuplot> plot [][0:100] \
 
 This results in the following graph:
 
-\includegraphics{images/gnuplotGraph}
+\includegraphics{figures/gnuplotGraph}
 
 For this problem it is obvious that a full tree can achieve higher accuracy than a single stump, and that a stump has very stable accuracy that does not improve with further training.
 %\ENDOMIT
@@ -2321,15 +2321,15 @@ Now, it is easy to use MOA classifiers and streams from WEKA, and WEKA classifie
 The main difference between using incremental classifiers in WEKA and in MOA will be the evaluation method used.
 
 \begin{center}
-\includegraphics[height=2cm]{images/Weka.png}\end{center}
+\includegraphics[height=2cm]{figures/Weka.png}\end{center}
 
 \section{WEKA classifiers from MOA}
 
 Weka classifiers may be incremental or non incremental methods.
 
 \begin{center}
-\includegraphics[height=5.5cm]{images/Screenshot-moa2.png}
-\includegraphics[height=2.5cm]{images/Screenshot-moa1.png}
+\includegraphics[height=5.5cm]{figures/Screenshot-moa2.png}
+\includegraphics[height=2.5cm]{figures/Screenshot-moa1.png}
 \end{center}
 
 To use the Weka classifiers from MOA it is necessary to use one of the following classes:
@@ -2453,8 +2453,8 @@ This meta-classifier is just a wrapper for MOA classifiers, translating the
 WEKA method calls into MOA ones.
 
 \begin{center}
-\includegraphics[height=5.5cm]{images/Screenshot-WekaE.png}
-\includegraphics[height=2.5cm]{images/Screenshot-weka.png}
+\includegraphics[height=5.5cm]{figures/Screenshot-WekaE.png}
+\includegraphics[height=2.5cm]{figures/Screenshot-weka.png}
 \end{center}
 
 You can use MOA streams within the WEKA framework using the 
