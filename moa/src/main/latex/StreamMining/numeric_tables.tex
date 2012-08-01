@@ -1,0 +1,984 @@
+\begin{table}
+\caption{{\sc vfml10} method with 100KB memory limit.}
+\label{tab:vfml10-100k}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 96.49 & 17 & $<$1 & 0 & 8.12 & 11.4 & 8 & 76 & 84 \\
+{\sc rtsn} & 75.80 & 8 & $<$1 & 0 & 8.47 & 11.5 & 8 & 83 & 87 \\
+{\sc rtc} & 61.37 & 3 & $<$1 & 0 & 3.88 & 5.05 & 5 & 96 & 97 \\
+{\sc rtcn} & 53.63 & 3 & $<$1 & 0 & 3.96 & 5.09 & 6 & 100 & 100 \\
+{\sc rrbfs} & 87.69 & 15 & $<$1 & 0 & 4.99 & 9.97 & 18 & 69 & 84 \\
+{\sc rrbfc} & 87.84 & 6 & $<$1 & 0 & 2.68 & 5.35 & 15 & 76 & 86 \\
+{\sc wave21} & 80.80 & 14 & $<$1 & 0 & 4.00 & 7.99 & 14 & 86 & 91 \\
+{\sc wave40} & 80.28 & 9 & $<$1 & 0 & 2.87 & 5.73 & 13 & 93 & 97 \\
+{\sc genF1} & 95.07 & 15 & $<$1 & 0 & 11.5 & 13.5 & 9 & 49 & 76 \\
+{\sc genF2} & 93.94 & 10 & $<$1 & 0 & 11.8 & 13.4 & 13 & 58 & 73 \\
+{\sc genF3} & 97.52 & 55 & $<$1 & 0 & 12.5 & 13.9 & 8 & 61 & 80 \\
+{\sc genF4} & 94.46 & 5 & $<$1 & 0 & 11.3 & 13.3 & 13 & 59 & 74 \\
+{\sc genF5} & 92.45 & 5 & $<$1 & 0 & 10.9 & 13.1 & 13 & 58 & 73 \\
+{\sc genF6} & 89.70 & 11 & $<$1 & 0 & 8.55 & 11.9 & 12 & 60 & 73 \\
+{\sc genF7} & 96.41 & 10 & $<$1 & 0 & 10.9 & 13.1 & 15 & 59 & 75 \\
+{\sc genF8} & 99.40 & 46 & $<$1 & 0 & 11.8 & 13.5 & 11 & 61 & 79 \\
+{\sc genF9} & 95.80 & 13 & $<$1 & 0 & 9.39 & 12.4 & 12 & 59 & 71 \\
+{\sc genF10} & 99.89 & 203 & $<$1 & 0 & 11.7 & 13.5 & 14 & 65 & 85 \\
+\hline
+average & 87.70 & 25 &  -  & 0 & 8.29 & 10.8 & 11 & 70 & 83 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc vfml10} method with 32MB memory limit.}
+\label{tab:vfml10-32MB}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 99.99 & 1030 & 30 & 28.0 & 51.7 & 150 & 19 & 10 & 54 \\
+{\sc rtsn} & 78.54 & 400 & $<$10 & 14.9 & 1397 & 1948 & 17 & 11 & 76 \\
+{\sc rtc} & 83.58 & 370 & $<$10 & 4.29 & 638 & 884 & 14 & 57 & 85 \\
+{\sc rtcn} & 64.95 & 190 & $<$10 & 4.18 & 705 & 931 & 13 & 59 & 76 \\
+{\sc rrbfs} & 93.13 & 1000 & 20 & 24.4 & 570 & 1188 & 32 & 6 & 53 \\
+{\sc rrbfc} & 98.61 & 910 & $<$10 & 17.3 & 216 & 467 & 34 & 21 & 78 \\
+{\sc wave21} & 84.20 & 900 & $<$10 & 11.7 & 426 & 875 & 28 & 22 & 84 \\
+{\sc wave40} & 84.00 & 730 & $<$10 & 6.89 & 324 & 662 & 27 & 37 & 88 \\
+{\sc genF1} & 95.07 & 690 & 40 & 59.2 & 390 & 752 & 19 & 4 & 73 \\
+{\sc genF2} & 94.10 & 1040 & 30 & 45.0 & 979 & 1382 & 21 & 5 & 68 \\
+{\sc genF3} & 97.52 & 1230 & 190 & 61.0 & 314 & 689 & 17 & 7 & 74 \\
+{\sc genF4} & 94.67 & 1070 & 20 & 44.8 & 936 & 1288 & 23 & 6 & 71 \\
+{\sc genF5} & 92.89 & 980 & $<$10 & 37.6 & 1281 & 1693 & 24 & 5 & 68 \\
+{\sc genF6} & 93.35 & 1020 & 20 & 37.8 & 1151 & 1656 & 29 & 5 & 64 \\
+{\sc genF7} & 96.82 & 1080 & 20 & 36.9 & 1244 & 1560 & 24 & 6 & 65 \\
+{\sc genF8} & 99.42 & 1290 & 60 & 46.9 & 171 & 293 & 15 & 7 & 74 \\
+{\sc genF9} & 96.81 & 1100 & 20 & 39.1 & 1298 & 1603 & 23 & 6 & 69 \\
+{\sc genF10} & 99.89 & 1180 & 380 & 52.1 & 47.4 & 140 & 18 & 5 & 80 \\
+\hline
+average & 91.53 & 901 &  -  & 31.8 & 674 & 1009 & 22 & 16 & 72 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc vfml10} method with 400MB memory limit.}
+\label{tab:vfml10-400MB}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 99.98 & 610 & ? & 68.6 & 0 & 128 & 16 & 6 & 70 \\
+{\sc rtsn} & 78.53 & 120 & 60 & 351 & 386 & 1017 & 18 & 4 & 81 \\
+{\sc rtc} & 83.87 & 90 & $<$10 & 86.1 & 474 & 781 & 15 & 14 & 92 \\
+{\sc rtcn} & 66.06 & 80 & 20 & 71.7 & 474 & 738 & 14 & 24 & 99 \\
+{\sc rrbfs} & 92.43 & 180 & 180 & 418 & 16.0 & 867 & 45 & 1 & 40 \\
+{\sc rrbfc} & 97.41 & 70 & 50 & 110 & 38.8 & 297 & 45 & 2 & 70 \\
+{\sc wave21} & 83.50 & 110 & 100 & 185 & 19.0 & 409 & 41 & 3 & 79 \\
+{\sc wave40} & 83.31 & 80 & 60 & 99.5 & 40.0 & 279 & 35 & 5 & 87 \\
+{\sc genF1} & 95.07 & 430 & ? & 393 & 0 & 646 & 18 & 2 & 77 \\
+{\sc genF2} & 94.10 & 300 & ? & 553 & 0 & 732 & 20 & 2 & 71 \\
+{\sc genF3} & 97.52 & 620 & ? & 259 & 0 & 457 & 14 & 3 & 84 \\
+{\sc genF4} & 94.66 & 260 & ? & 542 & 0 & 681 & 20 & 1 & 72 \\
+{\sc genF5} & 92.84 & 210 & ? & 644 & 0 & 865 & 23 & 1 & 62 \\
+{\sc genF6} & 93.28 & 230 & ? & 570 & 0 & 849 & 31 & 1 & 58 \\
+{\sc genF7} & 96.79 & 160 & ? & 414 & 0 & 571 & 21 & 1 & 59 \\
+{\sc genF8} & 99.42 & 470 & ? & 216 & 0 & 293 & 19 & 2 & 74 \\
+{\sc genF9} & 96.72 & 190 & ? & 683 & 0 & 883 & 23 & 1 & 64 \\
+{\sc genF10} & 99.89 & 1060 & ? & 98.8 & 0 & 138 & 17 & 5 & 77 \\
+\hline
+average & 91.41 & 293 &  -  & 320 & 80.4 & 591 & 24 & 4 & 73 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc vfml100} method with 100KB memory limit.}
+\label{tab:vfml100-100k}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 69.96 & 1 & $<$1 & 0 & 0.41 & 0.51 & 3 & 82 & 89 \\
+{\sc rtsn} & 56.87 & 1 & $<$1 & 0 & 0.05 & 0.06 & 1 & 94 & 95 \\
+{\sc rtc} & 54.24 & 1 & $<$1 & 0 & 0.06 & 0.08 & 2 & 98 & 98 \\
+{\sc rtcn} & 53.32 & 1 & $<$1 & 0 & 0.06 & 0.08 & 2 & 100 & 100 \\
+{\sc rrbfs} & 75.28 & 1 & $<$1 & 0 & 0.18 & 0.35 & 6 & 90 & 98 \\
+{\sc rrbfc} & 54.91 & 1 & $<$1 & 0 & 0.03 & 0.05 & 2 & 89 & 93 \\
+{\sc wave21} & 62.48 & 1 & $<$1 & 0 & 0.03 & 0.05 & 2 & 97 & 98 \\
+{\sc wave40} & 58.97 & 1 & $<$1 & 0 & 0.03 & 0.05 & 2 & 98 & 99 \\
+{\sc genF1} & 95.07 & 26 & $<$1 & 0 & 7.38 & 9.01 & 9 & 55 & 77 \\
+{\sc genF2} & 93.92 & 12 & $<$1 & 0 & 7.64 & 9.08 & 12 & 61 & 73 \\
+{\sc genF3} & 97.47 & 29 & $<$1 & 0 & 7.90 & 8.83 & 7 & 65 & 79 \\
+{\sc genF4} & 94.40 & 5 & $<$1 & 0 & 7.65 & 8.94 & 10 & 64 & 77 \\
+{\sc genF5} & 82.81 & 7 & $<$1 & 0 & 4.37 & 6.78 & 10 & 65 & 76 \\
+{\sc genF6} & 89.98 & 8 & $<$1 & 0 & 7.25 & 8.90 & 15 & 64 & 76 \\
+{\sc genF7} & 96.27 & 9 & $<$1 & 0 & 6.52 & 7.99 & 13 & 54 & 77 \\
+{\sc genF8} & 99.38 & 42 & $<$1 & 0 & 7.36 & 8.51 & 10 & 65 & 76 \\
+{\sc genF9} & 95.34 & 16 & $<$1 & 0 & 5.48 & 7.58 & 12 & 65 & 75 \\
+{\sc genF10} & 99.88 & 583 & $<$1 & 0 & 6.10 & 7.86 & 13 & 66 & 79 \\
+\hline
+average & 79.47 & 41 &  -  & 0 & 3.81 & 4.71 & 7 & 76 & 85 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc vfml100} method with 32MB memory limit.}
+\label{tab:vfml100-32MB}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 100.00 & 1170 & $<$10 & 5.22 & 45.1 & 91.8 & 32 & 12 & 62 \\
+{\sc rtsn} & 78.54 & 660 & $<$10 & 2.78 & 909 & 1366 & 22 & 19 & 63 \\
+{\sc rtc} & 78.51 & 380 & $<$10 & 0.99 & 351 & 474 & 13 & 58 & 84 \\
+{\sc rtcn} & 61.38 & 240 & $<$10 & 0.88 & 309 & 427 & 15 & 71 & 88 \\
+{\sc rrbfs} & 92.94 & 1160 & $<$10 & 3.35 & 402 & 811 & 35 & 7 & 56 \\
+{\sc rrbfc} & 98.16 & 950 & $<$10 & 0.88 & 130 & 262 & 45 & 22 & 76 \\
+{\sc wave21} & 83.89 & 940 & $<$10 & 1.67 & 317 & 636 & 31 & 23 & 82 \\
+{\sc wave40} & 83.66 & 720 & $<$10 & 0.84 & 222 & 446 & 31 & 36 & 84 \\
+{\sc genF1} & 95.06 & 1130 & $<$10 & 10.4 & 463 & 807 & 24 & 6 & 75 \\
+{\sc genF2} & 94.11 & 1130 & $<$10 & 9.95 & 754 & 1075 & 21 & 6 & 70 \\
+{\sc genF3} & 97.51 & 1240 & 20 & 11.0 & 258 & 467 & 16 & 7 & 78 \\
+{\sc genF4} & 94.69 & 1160 & $<$10 & 9.16 & 753 & 994 & 21 & 6 & 71 \\
+{\sc genF5} & 92.86 & 1090 & $<$10 & 9.19 & 922 & 1280 & 24 & 6 & 65 \\
+{\sc genF6} & 93.32 & 1070 & $<$10 & 9.12 & 927 & 1272 & 28 & 6 & 65 \\
+{\sc genF7} & 96.81 & 1170 & $<$10 & 8.72 & 919 & 1095 & 24 & 6 & 69 \\
+{\sc genF8} & 99.42 & 1300 & 20 & 7.63 & 177 & 224 & 16 & 7 & 82 \\
+{\sc genF9} & 96.81 & 710 & $<$10 & 8.40 & 748 & 881 & 22 & 4 & 65 \\
+{\sc genF10} & 99.89 & 710 & 50 & 7.37 & 30.6 & 52.2 & 15 & 3 & 73 \\
+\hline
+average & 90.97 & 941 &  -  & 5.98 & 480 & 703 & 24 & 17 & 73 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc vfml100} method with 400MB memory limit.}
+\label{tab:vfml100-400MB}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 99.99 & 180 & ? & 34.0 & 0 & 59.6 & 13 & 2 & 67 \\
+{\sc rtsn} & 78.52 & 100 & $<$10 & 45.1 & 456 & 746 & 20 & 3 & 80 \\
+{\sc rtc} & 81.26 & 90 & $<$10 & 13.5 & 390 & 539 & 12 & 14 & 92 \\
+{\sc rtcn} & 64.64 & 80 & $<$10 & 11.0 & 373 & 522 & 14 & 24 & 100 \\
+{\sc rrbfs} & 92.23 & 110 & 20 & 51.2 & 106 & 315 & 40 & 1 & 49 \\
+{\sc rrbfc} & 97.72 & 100 & $<$10 & 32.8 & 58.0 & 182 & 38 & 3 & 81 \\
+{\sc wave21} & 83.53 & 110 & 20 & 20.8 & 89.5 & 221 & 28 & 3 & 84 \\
+{\sc wave40} & 83.40 & 100 & $<$10 & 11.8 & 74.8 & 173 & 26 & 5 & 92 \\
+{\sc genF1} & 95.07 & 160 & 130 & 126 & 29.1 & 230 & 16 & 1 & 77 \\
+{\sc genF2} & 94.10 & 140 & 70 & 133 & 108 & 316 & 25 & 1 & 68 \\
+{\sc genF3} & 97.52 & 210 & ? & 116 & 0 & 172 & 13 & 1 & 83 \\
+{\sc genF4} & 94.67 & 130 & 70 & 119 & 158 & 345 & 17 & 1 & 72 \\
+{\sc genF5} & 92.84 & 130 & 60 & 120 & 158 & 441 & 28 & 1 & 56 \\
+{\sc genF6} & 93.21 & 120 & 40 & 120 & 212 & 456 & 30 & 1 & 60 \\
+{\sc genF7} & 96.79 & 120 & 50 & 113 & 130 & 319 & 26 & 1 & 60 \\
+{\sc genF8} & 99.42 & 160 & ? & 93.2 & 0 & 113 & 16 & 1 & 79 \\
+{\sc genF9} & 96.70 & 120 & 40 & 126 & 227 & 477 & 29 & 1 & 58 \\
+{\sc genF10} & 99.89 & 400 & ? & 43.9 & 0 & 60.6 & 18 & 2 & 77 \\
+\hline
+average & 91.19 & 142 &  -  & 73.9 & 143 & 316 & 23 & 4 & 74 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc vfml1000} method with 100KB memory limit.}
+\label{tab:vfml1000-100k}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 71.00 & 1 & $<$1 & 0 & 0.42 & 0.53 & 3 & 77 & 91 \\
+{\sc rtsn} & 56.87 & 1 & $<$1 & 0 & 0.05 & 0.06 & 1 & 88 & 93 \\
+{\sc rtc} & 54.65 & 1 & $<$1 & 0 & 0.07 & 0.10 & 3 & 91 & 96 \\
+{\sc rtcn} & 53.32 & 1 & $<$1 & 0 & 0.06 & 0.08 & 2 & 97 & 100 \\
+{\sc rrbfs} & 59.95 & 1 & $<$1 & 0 & 0.04 & 0.07 & 3 & 82 & 100 \\
+{\sc rrbfc} & 55.23 & 1 & $<$1 & 0 & 0.03 & 0.05 & 2 & 64 & 95 \\
+{\sc wave21} & 62.37 & 1 & $<$1 & 0 & 0.03 & 0.05 & 2 & 92 & 98 \\
+{\sc wave40} & 64.48 & 1 & $<$1 & 0 & 0.03 & 0.05 & 2 & 95 & 100 \\
+{\sc genF1} & 94.81 & 1 & $<$1 & 0 & 0.06 & 0.11 & 5 & 76 & 80 \\
+{\sc genF2} & 93.09 & 1 & $<$1 & 0 & 0.14 & 0.27 & 6 & 74 & 77 \\
+{\sc genF3} & 97.35 & 1 & $<$1 & 0 & 0.19 & 0.34 & 4 & 72 & 81 \\
+{\sc genF4} & 84.13 & 1 & $<$1 & 0 & 0.13 & 0.19 & 4 & 78 & 83 \\
+{\sc genF5} & 71.27 & 1 & $<$1 & 0 & 0.04 & 0.07 & 3 & 79 & 82 \\
+{\sc genF6} & 76.13 & 1 & $<$1 & 0 & 0.07 & 0.13 & 5 & 79 & 82 \\
+{\sc genF7} & 88.63 & 1 & $<$1 & 0 & 0.06 & 0.11 & 3 & 79 & 82 \\
+{\sc genF8} & 98.68 & 1 & $<$1 & 0 & 0.08 & 0.12 & 3 & 76 & 81 \\
+{\sc genF9} & 87.35 & 1 & $<$1 & 0 & 0.06 & 0.11 & 3 & 78 & 82 \\
+{\sc genF10} & 99.77 & 1 & $<$1 & 0 & 0.04 & 0.07 & 3 & 76 & 82 \\
+\hline
+average & 76.06 & 1 &  -  & 0 & 0.09 & 0.14 & 3 & 81 & 88 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc vfml1000} method with 32MB memory limit.}
+\label{tab:vfml1000-32MB}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 100.00 & 1080 & $<$10 & 3.40 & 53.9 & 104 & 44 & 11 & 62 \\
+{\sc rtsn} & 78.52 & 690 & $<$10 & 2.25 & 799 & 1226 & 23 & 20 & 61 \\
+{\sc rtc} & 79.99 & 380 & $<$10 & 0.50 & 270 & 369 & 15 & 58 & 85 \\
+{\sc rtcn} & 60.49 & 230 & $<$10 & 0.98 & 259 & 365 & 17 & 70 & 95 \\
+{\sc rrbfs} & 92.78 & 1150 & $<$10 & 3.22 & 359 & 724 & 54 & 7 & 53 \\
+{\sc rrbfc} & 98.01 & 960 & $<$10 & 0.60 & 118 & 237 & 46 & 22 & 78 \\
+{\sc wave21} & 83.73 & 950 & $<$10 & 1.30 & 287 & 577 & 36 & 23 & 81 \\
+{\sc wave40} & 83.51 & 730 & $<$10 & 0.84 & 200 & 402 & 34 & 37 & 87 \\
+{\sc genF1} & 95.06 & 730 & $<$10 & 6.47 & 302 & 508 & 23 & 4 & 74 \\
+{\sc genF2} & 94.10 & 1110 & $<$10 & 7.38 & 662 & 953 & 22 & 6 & 66 \\
+{\sc genF3} & 97.51 & 1210 & $<$10 & 6.81 & 240 & 421 & 17 & 6 & 78 \\
+{\sc genF4} & 94.67 & 1190 & $<$10 & 7.88 & 694 & 934 & 20 & 6 & 69 \\
+{\sc genF5} & 92.87 & 710 & $<$10 & 6.77 & 674 & 866 & 23 & 4 & 67 \\
+{\sc genF6} & 93.30 & 1110 & $<$10 & 8.51 & 845 & 1176 & 29 & 6 & 66 \\
+{\sc genF7} & 96.81 & 1180 & $<$10 & 5.38 & 704 & 854 & 23 & 6 & 68 \\
+{\sc genF8} & 99.42 & 1270 & $<$10 & 3.71 & 140 & 172 & 15 & 7 & 77 \\
+{\sc genF9} & 96.77 & 1210 & $<$10 & 7.04 & 777 & 923 & 22 & 6 & 70 \\
+{\sc genF10} & 99.89 & 1250 & 20 & 3.97 & 40.4 & 53.6 & 15 & 6 & 73 \\
+\hline
+average & 90.97 & 952 &  -  & 4.28 & 412 & 604 & 27 & 17 & 73 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc vfml1000} method with 400MB memory limit.}
+\label{tab:vfml1000-400MB}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 99.98 & 100 & $<$10 & 12.8 & 18.2 & 53.1 & 20 & 1 & 67 \\
+{\sc rtsn} & 78.50 & 90 & $<$10 & 10.8 & 329 & 523 & 24 & 3 & 81 \\
+{\sc rtc} & 82.07 & 80 & $<$10 & 34.3 & 195 & 309 & 13 & 13 & 93 \\
+{\sc rtcn} & 63.36 & 70 & $<$10 & 7.29 & 240 & 344 & 15 & 22 & 99 \\
+{\sc rrbfs} & 92.02 & 100 & $<$10 & 9.07 & 83.0 & 184 & 38 & 1 & 64 \\
+{\sc rrbfc} & 97.60 & 100 & $<$10 & 12.2 & 57.3 & 139 & 38 & 3 & 82 \\
+{\sc wave21} & 83.29 & 110 & $<$10 & 4.01 & 60.7 & 129 & 24 & 3 & 90 \\
+{\sc wave40} & 83.06 & 90 & $<$10 & 1.69 & 48.2 & 99.8 & 23 & 5 & 95 \\
+{\sc genF1} & 95.06 & 110 & 20 & 21.8 & 85.6 & 157 & 18 & 1 & 78 \\
+{\sc genF2} & 94.10 & 110 & 20 & 25.4 & 143 & 213 & 18 & 1 & 72 \\
+{\sc genF3} & 97.52 & 120 & 40 & 15.4 & 49.3 & 78.2 & 13 & 1 & 83 \\
+{\sc genF4} & 94.66 & 110 & 20 & 27.6 & 170 & 244 & 16 & 1 & 74 \\
+{\sc genF5} & 92.84 & 110 & $<$10 & 23.8 & 218 & 309 & 22 & 1 & 71 \\
+{\sc genF6} & 93.23 & 110 & $<$10 & 23.8 & 219 & 319 & 28 & 1 & 65 \\
+{\sc genF7} & 96.79 & 110 & 20 & 23.0 & 161 & 233 & 27 & 1 & 64 \\
+{\sc genF8} & 99.41 & 130 & 70 & 41.3 & 35.0 & 93.0 & 17 & 1 & 79 \\
+{\sc genF9} & 96.70 & 100 & $<$10 & 22.3 & 168 & 258 & 22 & 1 & 71 \\
+{\sc genF10} & 99.89 & 200 & ? & 25.6 & 0 & 31.0 & 16 & 1 & 76 \\
+\hline
+average & 91.12 & 108 &  -  & 19.0 & 127 & 206 & 22 & 3 & 78 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc bintree} method with 100KB memory limit.}
+\label{tab:bintree-100k}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 66.81 & 1 & $<$1 & 0 & 0.33 & 0.41 & 3 & 70 & 94 \\
+{\sc rtsn} & 56.87 & 1 & $<$1 & 0 & 0.05 & 0.06 & 1 & 82 & 94 \\
+{\sc rtc} & 54.23 & 1 & $<$1 & 0 & 0.06 & 0.08 & 2 & 85 & 97 \\
+{\sc rtcn} & 53.31 & 1 & $<$1 & 0 & 0.06 & 0.08 & 2 & 94 & 100 \\
+{\sc rrbfs} & 59.72 & 1 & $<$1 & 0 & 0.04 & 0.07 & 3 & 68 & 100 \\
+{\sc rrbfc} & 55.27 & 1 & $<$1 & 0 & 0.03 & 0.05 & 2 & 43 & 95 \\
+{\sc wave21} & 62.84 & 1 & $<$1 & 0 & 0.03 & 0.05 & 2 & 82 & 99 \\
+{\sc wave40} & 57.60 & 1 & $<$1 & 0 & 0.02 & 0.03 & 1 & 89 & 100 \\
+{\sc genF1} & 94.79 & 1 & $<$1 & 0 & 0.06 & 0.11 & 4 & 65 & 81 \\
+{\sc genF2} & 77.23 & 1 & $<$1 & 0 & 0.08 & 0.15 & 5 & 75 & 81 \\
+{\sc genF3} & 97.08 & 1 & $<$1 & 0 & 0.10 & 0.16 & 2 & 76 & 85 \\
+{\sc genF4} & 82.24 & 1 & $<$1 & 0 & 0.15 & 0.20 & 3 & 77 & 84 \\
+{\sc genF5} & 71.23 & 1 & $<$1 & 0 & 0.04 & 0.07 & 3 & 75 & 83 \\
+{\sc genF6} & 77.06 & 1 & $<$1 & 0 & 0.04 & 0.07 & 3 & 79 & 85 \\
+{\sc genF7} & 88.63 & 1 & $<$1 & 0 & 0.06 & 0.11 & 3 & 73 & 81 \\
+{\sc genF8} & 98.00 & 1 & $<$1 & 0 & 0.04 & 0.07 & 2 & 71 & 80 \\
+{\sc genF9} & 87.40 & 1 & $<$1 & 0 & 0.06 & 0.11 & 3 & 76 & 82 \\
+{\sc genF10} & 99.77 & 1 & $<$1 & 0 & 0.04 & 0.07 & 3 & 80 & 86 \\
+\hline
+average & 74.45 & 1 &  -  & 0 & 0.07 & 0.11 & 3 & 76 & 89 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc bintree} method with 32MB memory limit.}
+\label{tab:bintree-32MB}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 99.99 & 850 & $<$10 & 2.44 & 52.2 & 97.2 & 21 & 9 & 52 \\
+{\sc rtsn} & 78.49 & 610 & $<$10 & 2.26 & 709 & 1065 & 20 & 18 & 66 \\
+{\sc rtc} & 73.08 & 350 & $<$10 & 0.69 & 257 & 347 & 14 & 53 & 83 \\
+{\sc rtcn} & 59.14 & 220 & $<$10 & 0.35 & 238 & 328 & 15 & 67 & 87 \\
+{\sc rrbfs} & 92.63 & 960 & $<$10 & 2.24 & 301 & 607 & 33 & 6 & 59 \\
+{\sc rrbfc} & 97.88 & 790 & $<$10 & 0.49 & 98.5 & 198 & 33 & 18 & 81 \\
+{\sc wave21} & 83.70 & 820 & $<$10 & 1.26 & 245 & 492 & 31 & 20 & 83 \\
+{\sc wave40} & 83.41 & 650 & $<$10 & 0.51 & 172 & 344 & 33 & 32 & 89 \\
+{\sc genF1} & 95.06 & 960 & $<$10 & 8.21 & 371 & 628 & 23 & 5 & 74 \\
+{\sc genF2} & 94.09 & 610 & $<$10 & 6.69 & 407 & 576 & 20 & 3 & 68 \\
+{\sc genF3} & 97.51 & 1070 & $<$10 & 4.89 & 212 & 373 & 17 & 6 & 78 \\
+{\sc genF4} & 94.66 & 1010 & $<$10 & 6.60 & 620 & 817 & 19 & 5 & 68 \\
+{\sc genF5} & 92.86 & 960 & $<$10 & 6.40 & 846 & 1093 & 23 & 5 & 68 \\
+{\sc genF6} & 93.27 & 950 & $<$10 & 7.38 & 742 & 1014 & 25 & 5 & 65 \\
+{\sc genF7} & 96.80 & 1030 & $<$10 & 5.03 & 590 & 721 & 22 & 5 & 67 \\
+{\sc genF8} & 99.43 & 1040 & $<$10 & 3.89 & 122 & 149 & 15 & 6 & 76 \\
+{\sc genF9} & 96.74 & 1050 & $<$10 & 5.69 & 685 & 825 & 21 & 6 & 70 \\
+{\sc genF10} & 99.89 & 1100 & $<$10 & 0.98 & 47.9 & 59.2 & 17 & 5 & 79 \\
+\hline
+average & 90.48 & 835 &  -  & 3.67 & 373 & 541 & 22 & 15 & 73 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc bintree} method with 400MB memory limit.}
+\label{tab:bintree-400MB}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 99.97 & 70 & $<$10 & 11.7 & 18.2 & 50.9 & 15 & 1 & 69 \\
+{\sc rtsn} & 78.49 & 70 & $<$10 & 9.36 & 263 & 411 & 19 & 2 & 98 \\
+{\sc rtc} & 76.15 & 60 & $<$10 & 3.30 & 172 & 234 & 11 & 10 & 93 \\
+{\sc rtcn} & 61.84 & 50 & $<$10 & 2.55 & 199 & 279 & 15 & 17 & 99 \\
+{\sc rrbfs} & 91.29 & 40 & $<$10 & 7.88 & 36.9 & 89.5 & 31 & 0 & 68 \\
+{\sc rrbfc} & 96.83 & 40 & $<$10 & 7.32 & 31.0 & 76.6 & 26 & 1 & 86 \\
+{\sc wave21} & 82.28 & 20 & $<$10 & 1.41 & 14.0 & 30.8 & 19 & 1 & 94 \\
+{\sc wave40} & 82.18 & 20 & $<$10 & 1.02 & 14.0 & 30.1 & 20 & 2 & 95 \\
+{\sc genF1} & 95.05 & 80 & 20 & 61.6 & 23.8 & 121 & 16 & 0 & 80 \\
+{\sc genF2} & 94.06 & 80 & $<$10 & 14.2 & 129 & 188 & 19 & 0 & 71 \\
+{\sc genF3} & 97.52 & 80 & 20 & 11.3 & 44.3 & 68.4 & 12 & 0 & 82 \\
+{\sc genF4} & 94.66 & 80 & $<$10 & 20.1 & 125 & 177 & 18 & 0 & 74 \\
+{\sc genF5} & 92.81 & 80 & $<$10 & 37.2 & 177 & 262 & 20 & 0 & 70 \\
+{\sc genF6} & 93.23 & 80 & $<$10 & 12.5 & 218 & 286 & 23 & 0 & 67 \\
+{\sc genF7} & 96.75 & 50 & $<$10 & 13.8 & 89.3 & 134 & 20 & 0 & 65 \\
+{\sc genF8} & 99.40 & 10 & $<$10 & 4.31 & 2.89 & 11.3 & 14 & 0 & 78 \\
+{\sc genF9} & 96.65 & 70 & $<$10 & 15.4 & 110 & 176 & 19 & 0 & 71 \\
+{\sc genF10} & 99.89 & 100 & 30 & 11.3 & 4.99 & 21.6 & 16 & 0 & 80 \\
+\hline
+average & 90.50 & 60 &  -  & 13.7 & 92.9 & 147 & 19 & 2 & 80 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc gk100} method with 100KB memory limit.}
+\label{tab:gk100-100k}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 90.34 & 3 & $<$1 & 0 & 3.09 & 4.25 & 6 & 74 & 88 \\
+{\sc rtsn} & 72.81 & 2 & $<$1 & 0 & 2.66 & 3.63 & 7 & 83 & 90 \\
+{\sc rtc} & 53.78 & 1 & $<$1 & 0 & 0.08 & 0.12 & 4 & 94 & 97 \\
+{\sc rtcn} & 52.96 & 1 & $<$1 & 0 & 0.08 & 0.12 & 4 & 100 & 100 \\
+{\sc rrbfs} & 85.74 & 4 & $<$1 & 0 & 2.01 & 4.01 & 14 & 59 & 88 \\
+{\sc rrbfc} & 53.11 & 1 & $<$1 & 0 & 0.05 & 0.09 & 4 & 72 & 90 \\
+{\sc wave21} & 63.72 & 1 & $<$1 & 0 & 0.04 & 0.07 & 2 & 90 & 98 \\
+{\sc wave40} & 72.21 & 1 & $<$1 & 0 & 0.09 & 0.17 & 4 & 93 & 99 \\
+{\sc genF1} & 95.07 & 19 & $<$1 & 0 & 7.17 & 8.26 & 9 & 56 & 78 \\
+{\sc genF2} & 85.94 & 10 & $<$1 & 0 & 6.05 & 7.72 & 12 & 62 & 75 \\
+{\sc genF3} & 97.47 & 43 & $<$1 & 0 & 7.94 & 9.07 & 7 & 64 & 79 \\
+{\sc genF4} & 94.29 & 5 & $<$1 & 0 & 7.15 & 8.41 & 9 & 63 & 78 \\
+{\sc genF5} & 92.37 & 4 & $<$1 & 0 & 7.93 & 9.12 & 11 & 59 & 76 \\
+{\sc genF6} & 92.05 & 5 & $<$1 & 0 & 7.15 & 8.71 & 15 & 60 & 76 \\
+{\sc genF7} & 96.23 & 10 & $<$1 & 0 & 6.62 & 8.19 & 13 & 54 & 77 \\
+{\sc genF8} & 99.35 & 39 & $<$1 & 0 & 7.02 & 8.24 & 10 & 65 & 78 \\
+{\sc genF9} & 95.21 & 16 & $<$1 & 0 & 5.48 & 7.83 & 12 & 63 & 74 \\
+{\sc genF10} & 99.88 & 361 & $<$1 & 0 & 6.95 & 8.24 & 17 & 68 & 79 \\
+\hline
+average & 82.92 & 29 &  -  & 0 & 4.31 & 5.35 & 9 & 71 & 84 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc gk100} method with 32MB memory limit.}
+\label{tab:gk100-32MB}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 100.00 & 1170 & $<$10 & 9.91 & 42.6 & 92.4 & 44 & 12 & 64 \\
+{\sc rtsn} & 78.54 & 580 & $<$10 & 5.35 & 1035 & 1613 & 39 & 17 & 62 \\
+{\sc rtc} & 67.14 & 390 & $<$10 & 1.18 & 500 & 695 & 39 & 59 & 85 \\
+{\sc rtcn} & 53.96 & 230 & $<$10 & 1.52 & 394 & 572 & 46 & 70 & 92 \\
+{\sc rrbfs} & 93.13 & 1160 & $<$10 & 5.96 & 476 & 965 & 40 & 7 & 56 \\
+{\sc rrbfc} & 98.23 & 970 & $<$10 & 1.94 & 168 & 340 & 45 & 23 & 75 \\
+{\sc wave21} & 83.98 & 920 & $<$10 & 2.98 & 346 & 698 & 41 & 22 & 81 \\
+{\sc wave40} & 83.75 & 690 & $<$10 & 1.66 & 253 & 508 & 38 & 34 & 87 \\
+{\sc genF1} & 95.06 & 1190 & $<$10 & 9.80 & 537 & 920 & 48 & 6 & 71 \\
+{\sc genF2} & 94.09 & 1150 & $<$10 & 9.81 & 777 & 1126 & 32 & 6 & 68 \\
+{\sc genF3} & 97.51 & 720 & 30 & 11.6 & 203 & 348 & 34 & 4 & 79 \\
+{\sc genF4} & 94.66 & 1160 & $<$10 & 10.2 & 771 & 1049 & 24 & 6 & 68 \\
+{\sc genF5} & 92.86 & 1140 & $<$10 & 9.37 & 1016 & 1367 & 31 & 6 & 66 \\
+{\sc genF6} & 93.36 & 700 & $<$10 & 8.94 & 775 & 983 & 26 & 4 & 66 \\
+{\sc genF7} & 96.82 & 1200 & $<$10 & 8.38 & 962 & 1154 & 23 & 6 & 68 \\
+{\sc genF8} & 99.42 & 1370 & 30 & 8.22 & 182 & 233 & 19 & 7 & 79 \\
+{\sc genF9} & 96.80 & 1210 & $<$10 & 8.63 & 1063 & 1252 & 24 & 7 & 68 \\
+{\sc genF10} & 99.89 & 1360 & 110 & 8.34 & 49.2 & 71.3 & 18 & 6 & 80 \\
+\hline
+average & 89.96 & 962 &  -  & 6.88 & 531 & 777 & 34 & 17 & 73 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc gk100} method with 400MB memory limit.}
+\label{tab:gk100-400MB}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 99.99 & 280 & ? & 36.8 & 0 & 62.7 & 13 & 3 & 70 \\
+{\sc rtsn} & 78.50 & 90 & 20 & 63.1 & 365 & 738 & 50 & 3 & 74 \\
+{\sc rtc} & 68.51 & 90 & $<$10 & 14.6 & 415 & 602 & 49 & 14 & 91 \\
+{\sc rtcn} & 53.93 & 70 & $<$10 & 14.6 & 281 & 486 & 47 & 22 & 99 \\
+{\sc rrbfs} & 92.31 & 120 & 40 & 72.9 & 125 & 397 & 55 & 1 & 52 \\
+{\sc rrbfc} & 97.59 & 100 & $<$10 & 47.9 & 63.4 & 223 & 43 & 2 & 79 \\
+{\sc wave21} & 83.41 & 100 & 20 & 31.3 & 90.7 & 244 & 43 & 3 & 87 \\
+{\sc wave40} & 83.36 & 90 & 20 & 17.6 & 78.8 & 193 & 34 & 5 & 94 \\
+{\sc genF1} & 95.05 & 180 & 160 & 149 & 44.0 & 312 & 33 & 1 & 72 \\
+{\sc genF2} & 94.08 & 130 & 80 & 133 & 101 & 328 & 24 & 1 & 68 \\
+{\sc genF3} & 97.50 & 230 & ? & 132 & 0 & 204 & 22 & 1 & 82 \\
+{\sc genF4} & 94.64 & 130 & 80 & 123 & 138 & 348 & 23 & 1 & 68 \\
+{\sc genF5} & 92.83 & 120 & 50 & 118 & 198 & 440 & 26 & 1 & 60 \\
+{\sc genF6} & 93.31 & 130 & 50 & 120 & 290 & 517 & 27 & 1 & 64 \\
+{\sc genF7} & 96.79 & 140 & 60 & 121 & 170 & 394 & 27 & 1 & 61 \\
+{\sc genF8} & 99.42 & 240 & ? & 126 & 0 & 152 & 22 & 1 & 82 \\
+{\sc genF9} & 96.68 & 130 & 60 & 140 & 242 & 530 & 23 & 1 & 59 \\
+{\sc genF10} & 99.89 & 480 & ? & 51.4 & 0 & 64.4 & 20 & 2 & 80 \\
+\hline
+average & 89.88 & 158 &  -  & 84.0 & 145 & 346 & 32 & 4 & 75 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc gk1000} method with 100KB memory limit.}
+\label{tab:gk1000-100k}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 69.96 & 1 & $<$1 & 0 & 0.41 & 0.51 & 3 & 58 & 88 \\
+{\sc rtsn} & 56.87 & 1 & $<$1 & 0 & 0.05 & 0.06 & 1 & 76 & 94 \\
+{\sc rtc} & 54.64 & 1 & $<$1 & 0 & 0.07 & 0.10 & 3 & 75 & 98 \\
+{\sc rtcn} & 53.32 & 1 & $<$1 & 0 & 0.06 & 0.08 & 2 & 89 & 100 \\
+{\sc rrbfs} & 59.91 & 1 & $<$1 & 0 & 0.04 & 0.07 & 3 & 40 & 100 \\
+{\sc rrbfc} & 55.21 & 1 & $<$1 & 0 & 0.03 & 0.05 & 2 & 26 & 95 \\
+{\sc wave21} & 61.83 & 1 & $<$1 & 0 & 0.04 & 0.07 & 2 & 58 & 97 \\
+{\sc wave40} & 57.60 & 1 & $<$1 & 0 & 0.02 & 0.03 & 1 & 66 & 100 \\
+{\sc genF1} & 94.81 & 1 & $<$1 & 0 & 0.06 & 0.11 & 5 & 59 & 80 \\
+{\sc genF2} & 77.78 & 1 & $<$1 & 0 & 0.07 & 0.13 & 5 & 55 & 81 \\
+{\sc genF3} & 97.18 & 1 & $<$1 & 0 & 0.11 & 0.18 & 3 & 69 & 84 \\
+{\sc genF4} & 82.45 & 1 & $<$1 & 0 & 0.12 & 0.17 & 3 & 64 & 83 \\
+{\sc genF5} & 70.95 & 1 & $<$1 & 0 & 0.04 & 0.07 & 3 & 55 & 82 \\
+{\sc genF6} & 76.40 & 1 & $<$1 & 0 & 0.07 & 0.13 & 5 & 48 & 82 \\
+{\sc genF7} & 88.98 & 1 & $<$1 & 0 & 0.06 & 0.11 & 3 & 67 & 82 \\
+{\sc genF8} & 98.72 & 1 & $<$1 & 0 & 0.08 & 0.12 & 3 & 55 & 81 \\
+{\sc genF9} & 87.30 & 1 & $<$1 & 0 & 0.06 & 0.11 & 3 & 64 & 82 \\
+{\sc genF10} & 99.85 & 1 & $<$1 & 0 & 0.10 & 0.16 & 4 & 45 & 83 \\
+\hline
+average & 74.65 & 1 &  -  & 0 & 0.08 & 0.13 & 3 & 59 & 88 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc gk1000} method with 32MB memory limit.}
+\label{tab:gk1000-32MB}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 100.00 & 1120 & $<$10 & 3.05 & 44.6 & 83.7 & 49 & 11 & 70 \\
+{\sc rtsn} & 78.53 & 680 & $<$10 & 2.17 & 758 & 1165 & 24 & 20 & 69 \\
+{\sc rtc} & 80.44 & 360 & $<$10 & 0.58 & 267 & 363 & 15 & 55 & 92 \\
+{\sc rtcn} & 59.41 & 240 & $<$10 & 0.55 & 261 & 370 & 18 & 71 & 96 \\
+{\sc rrbfs} & 92.80 & 1120 & $<$10 & 2.41 & 342 & 688 & 49 & 6 & 56 \\
+{\sc rrbfc} & 97.94 & 930 & $<$10 & 0.55 & 113 & 227 & 50 & 22 & 77 \\
+{\sc wave21} & 83.78 & 840 & $<$10 & 1.22 & 263 & 528 & 34 & 20 & 84 \\
+{\sc wave40} & 83.48 & 630 & $<$10 & 0.64 & 180 & 360 & 35 & 32 & 86 \\
+{\sc genF1} & 95.07 & 1190 & $<$10 & 4.04 & 407 & 696 & 25 & 6 & 76 \\
+{\sc genF2} & 94.11 & 1120 & $<$10 & 3.98 & 581 & 833 & 25 & 6 & 71 \\
+{\sc genF3} & 97.51 & 1190 & $<$10 & 4.38 & 239 & 411 & 17 & 6 & 77 \\
+{\sc genF4} & 94.68 & 1190 & $<$10 & 3.98 & 664 & 867 & 21 & 6 & 68 \\
+{\sc genF5} & 92.88 & 830 & $<$10 & 4.06 & 691 & 877 & 23 & 4 & 71 \\
+{\sc genF6} & 93.36 & 1100 & $<$10 & 3.77 & 780 & 1017 & 29 & 6 & 65 \\
+{\sc genF7} & 96.81 & 1170 & $<$10 & 3.82 & 698 & 833 & 22 & 6 & 69 \\
+{\sc genF8} & 99.42 & 1240 & $<$10 & 3.11 & 140 & 170 & 15 & 7 & 78 \\
+{\sc genF9} & 96.77 & 1200 & $<$10 & 3.88 & 786 & 928 & 23 & 6 & 72 \\
+{\sc genF10} & 99.89 & 1140 & 20 & 2.32 & 38.4 & 48.7 & 15 & 5 & 79 \\
+\hline
+average & 90.94 & 961 &  -  & 2.70 & 403 & 581 & 27 & 16 & 75 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc gk1000} method with 400MB memory limit.}
+\label{tab:gk1000-400MB}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 99.97 & 60 & $<$10 & 17.6 & 8.00 & 42.2 & 10 & 1 & 69 \\
+{\sc rtsn} & 78.50 & 90 & $<$10 & 18.7 & 351 & 574 & 20 & 3 & 81 \\
+{\sc rtc} & 81.85 & 70 & $<$10 & 7.10 & 192 & 267 & 12 & 11 & 94 \\
+{\sc rtcn} & 62.60 & 60 & $<$10 & 5.17 & 223 & 316 & 20 & 19 & 100 \\
+{\sc rrbfs} & 92.08 & 100 & $<$10 & 17.5 & 89.1 & 213 & 42 & 1 & 64 \\
+{\sc rrbfc} & 97.57 & 90 & $<$10 & 16.5 & 55.1 & 143 & 46 & 2 & 82 \\
+{\sc wave21} & 82.94 & 50 & $<$10 & 4.73 & 35.3 & 80.1 & 22 & 1 & 95 \\
+{\sc wave40} & 82.78 & 40 & $<$10 & 3.16 & 27.0 & 60.3 & 20 & 2 & 95 \\
+{\sc genF1} & 95.06 & 100 & 20 & 25.0 & 79.4 & 152 & 17 & 1 & 77 \\
+{\sc genF2} & 94.10 & 100 & 20 & 18.3 & 138 & 204 & 19 & 1 & 71 \\
+{\sc genF3} & 97.52 & 110 & 50 & 17.6 & 45.8 & 76.6 & 13 & 1 & 85 \\
+{\sc genF4} & 94.67 & 100 & $<$10 & 23.6 & 133 & 193 & 16 & 1 & 76 \\
+{\sc genF5} & 92.86 & 100 & $<$10 & 22.9 & 209 & 290 & 19 & 1 & 72 \\
+{\sc genF6} & 93.34 & 100 & $<$10 & 18.8 & 249 & 326 & 27 & 1 & 69 \\
+{\sc genF7} & 96.80 & 110 & 20 & 18.4 & 156 & 222 & 28 & 1 & 67 \\
+{\sc genF8} & 99.41 & 110 & 70 & 37.9 & 28.0 & 80.0 & 16 & 1 & 80 \\
+{\sc genF9} & 96.67 & 100 & $<$10 & 23.0 & 178 & 275 & 23 & 1 & 65 \\
+{\sc genF10} & 99.89 & 150 & ? & 19.8 & 0 & 24.3 & 16 & 1 & 80 \\
+\hline
+average & 91.03 & 91 &  -  & 17.6 & 122 & 197 & 21 & 3 & 79 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc gauss10} method with 100KB memory limit.}
+\label{tab:gauss10-100k}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 96.95 & 11 & $<$1 & 0 & 9.05 & 12.6 & 8 & 74 & 82 \\
+{\sc rtsn} & 75.20 & 6 & $<$1 & 0 & 9.35 & 12.7 & 11 & 81 & 85 \\
+{\sc rtc} & 62.49 & 10 & $<$1 & 0 & 8.32 & 10.6 & 6 & 95 & 96 \\
+{\sc rtcn} & 53.63 & 10 & $<$1 & 0 & 8.57 & 10.7 & 5 & 100 & 100 \\
+{\sc rrbfs} & 88.56 & 8 & $<$1 & 0 & 5.44 & 10.9 & 19 & 64 & 79 \\
+{\sc rrbfc} & 91.36 & 12 & $<$1 & 0 & 4.92 & 9.83 & 29 & 74 & 83 \\
+{\sc wave21} & 81.21 & 12 & $<$1 & 0 & 4.92 & 9.83 & 16 & 81 & 87 \\
+{\sc wave40} & 81.20 & 13 & $<$1 & 0 & 4.62 & 9.23 & 16 & 91 & 95 \\
+{\sc genF1} & 95.07 & 11 & $<$1 & 0 & 11.4 & 13.8 & 11 & 47 & 76 \\
+{\sc genF2} & 78.46 & 4 & $<$1 & 0 & 9.90 & 13.0 & 10 & 56 & 72 \\
+{\sc genF3} & 97.50 & 35 & $<$1 & 0 & 12.2 & 14.1 & 7 & 59 & 79 \\
+{\sc genF4} & 93.68 & 6 & $<$1 & 0 & 11.3 & 13.7 & 12 & 57 & 74 \\
+{\sc genF5} & 71.73 & 4 & $<$1 & 0 & 8.75 & 12.5 & 11 & 56 & 72 \\
+{\sc genF6} & 91.89 & 5 & $<$1 & 0 & 11.0 & 13.6 & 11 & 57 & 75 \\
+{\sc genF7} & 96.51 & 9 & $<$1 & 0 & 10.5 & 13.2 & 13 & 59 & 75 \\
+{\sc genF8} & 99.41 & 36 & $<$1 & 0 & 11.6 & 13.9 & 10 & 61 & 76 \\
+{\sc genF9} & 96.07 & 12 & $<$1 & 0 & 8.69 & 12.4 & 12 & 57 & 70 \\
+{\sc genF10} & 99.88 & 281 & $<$1 & 0 & 10.6 & 13.4 & 13 & 64 & 82 \\
+\hline
+average & 86.16 & 27 &  -  & 0 & 8.96 & 12.2 & 12 & 69 & 81 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc gauss10} method with 32MB memory limit.}
+\label{tab:gauss10-32MB}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 99.99 & 1110 & 1000 & 89.0 & 3.78 & 176 & 16 & 11 & 62 \\
+{\sc rtsn} & 78.48 & 350 & 20 & 34.6 & 1890 & 2509 & 23 & 10 & 67 \\
+{\sc rtc} & 83.00 & 300 & $<$10 & 11.6 & 729 & 1001 & 13 & 45 & 67 \\
+{\sc rtcn} & 62.45 & 220 & $<$10 & 12.5 & 849 & 1103 & 11 & 67 & 92 \\
+{\sc rrbfs} & 93.27 & 730 & 60 & 97.5 & 576 & 1346 & 53 & 4 & 36 \\
+{\sc rrbfc} & 98.72 & 770 & $<$10 & 67.0 & 227 & 588 & 35 & 18 & 76 \\
+{\sc wave21} & 84.37 & 730 & 40 & 44.4 & 505 & 1098 & 37 & 18 & 78 \\
+{\sc wave40} & 84.21 & 620 & 20 & 26.9 & 391 & 835 & 32 & 31 & 89 \\
+{\sc genF1} & 95.07 & 1000 & 190 & 144 & 504 & 1175 & 20 & 5 & 73 \\
+{\sc genF2} & 94.03 & 900 & 60 & 120 & 988 & 1643 & 23 & 5 & 60 \\
+{\sc genF3} & 97.52 & 1170 & 470 & 168 & 253 & 787 & 17 & 6 & 79 \\
+{\sc genF4} & 94.67 & 920 & 80 & 139 & 824 & 1372 & 25 & 5 & 65 \\
+{\sc genF5} & 92.36 & 720 & 50 & 99.6 & 966 & 1804 & 36 & 4 & 49 \\
+{\sc genF6} & 93.31 & 840 & 40 & 108 & 1152 & 1727 & 21 & 4 & 63 \\
+{\sc genF7} & 96.81 & 1010 & 60 & 109 & 1151 & 1593 & 21 & 5 & 62 \\
+{\sc genF8} & 99.42 & 1350 & 690 & 161 & 169 & 467 & 17 & 7 & 79 \\
+{\sc genF9} & 96.78 & 990 & 50 & 120 & 1120 & 1560 & 19 & 5 & 70 \\
+{\sc genF10} & 99.89 & 2320 & ? & 156 & 0 & 229 & 20 & 11 & 83 \\
+\hline
+average & 91.35 & 892 &  -  & 94.8 & 683 & 1167 & 24 & 14 & 69 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc gauss10} method with 400MB memory limit.}
+\label{tab:gauss10-400MB}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 99.99 & 1170 & ? & 94.2 & 0 & 178 & 16 & 12 & 71 \\
+{\sc rtsn} & 78.45 & 170 & ? & 1114 & 0 & 1450 & 23 & 5 & 82 \\
+{\sc rtc} & 83.02 & 80 & 20 & 218 & 442 & 928 & 14 & 13 & 92 \\
+{\sc rtcn} & 61.87 & 50 & 40 & 190 & 40.6 & 309 & 12 & 17 & 99 \\
+{\sc rrbfs} & 92.93 & 350 & ? & 752 & 0 & 1503 & 57 & 2 & 37 \\
+{\sc rrbfc} & 98.21 & 200 & ? & 300 & 0 & 601 & 50 & 5 & 67 \\
+{\sc wave21} & 84.01 & 250 & ? & 485 & 0 & 969 & 57 & 6 & 76 \\
+{\sc wave40} & 83.80 & 180 & ? & 346 & 0 & 691 & 59 & 9 & 88 \\
+{\sc genF1} & 95.07 & 480 & ? & 405 & 0 & 696 & 19 & 3 & 77 \\
+{\sc genF2} & 94.00 & 430 & ? & 817 & 0 & 1269 & 23 & 2 & 61 \\
+{\sc genF3} & 97.52 & 1020 & ? & 388 & 0 & 722 & 17 & 5 & 83 \\
+{\sc genF4} & 94.65 & 460 & ? & 743 & 0 & 1028 & 27 & 3 & 70 \\
+{\sc genF5} & 92.15 & 350 & ? & 984 & 0 & 1767 & 39 & 2 & 48 \\
+{\sc genF6} & 93.28 & 370 & ? & 932 & 0 & 1309 & 24 & 2 & 61 \\
+{\sc genF7} & 96.79 & 290 & ? & 654 & 0 & 868 & 19 & 2 & 65 \\
+{\sc genF8} & 99.42 & 810 & ? & 199 & 0 & 280 & 17 & 4 & 82 \\
+{\sc genF9} & 96.74 & 360 & ? & 952 & 0 & 1250 & 19 & 2 & 66 \\
+{\sc genF10} & 99.89 & 2310 & ? & 155 & 0 & 228 & 20 & 11 & 82 \\
+\hline
+average & 91.21 & 518 &  -  & 540 & 26.8 & 891 & 28 & 6 & 73 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc gauss100} method with 100KB memory limit.}
+\label{tab:gauss100-100k}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 98.00 & 15 & $<$1 & 0 & 8.97 & 12.5 & 7 & 74 & 79 \\
+{\sc rtsn} & 70.84 & 4 & $<$1 & 0 & 8.01 & 12.0 & 31 & 73 & 83 \\
+{\sc rtc} & 63.38 & 10 & $<$1 & 0 & 8.04 & 10.5 & 6 & 95 & 96 \\
+{\sc rtcn} & 52.99 & 5 & $<$1 & 0 & 7.40 & 10.1 & 15 & 100 & 100 \\
+{\sc rrbfs} & 87.86 & 8 & $<$1 & 0 & 5.44 & 10.9 & 20 & 54 & 75 \\
+{\sc rrbfc} & 84.95 & 8 & $<$1 & 0 & 4.92 & 9.83 & 118 & 57 & 74 \\
+{\sc wave21} & 81.30 & 12 & $<$1 & 0 & 4.91 & 9.81 & 16 & 75 & 92 \\
+{\sc wave40} & 81.05 & 12 & $<$1 & 0 & 4.67 & 9.33 & 22 & 86 & 95 \\
+{\sc genF1} & 95.00 & 11 & $<$1 & 0 & 10.1 & 13.1 & 13 & 45 & 74 \\
+{\sc genF2} & 71.53 & 4 & $<$1 & 0 & 7.30 & 11.8 & 14 & 47 & 68 \\
+{\sc genF3} & 97.52 & 29 & $<$1 & 0 & 13.1 & 14.5 & 8 & 59 & 79 \\
+{\sc genF4} & 88.75 & 4 & $<$1 & 0 & 7.84 & 12.1 & 11 & 50 & 72 \\
+{\sc genF5} & 82.80 & 5 & $<$1 & 0 & 9.44 & 12.8 & 14 & 51 & 72 \\
+{\sc genF6} & 88.15 & 7 & $<$1 & 0 & 8.11 & 12.2 & 15 & 53 & 72 \\
+{\sc genF7} & 96.53 & 10 & $<$1 & 0 & 10.5 & 13.3 & 14 & 56 & 74 \\
+{\sc genF8} & 99.41 & 36 & $<$1 & 0 & 11.3 & 13.7 & 10 & 58 & 75 \\
+{\sc genF9} & 96.00 & 11 & $<$1 & 0 & 8.83 & 12.4 & 12 & 55 & 70 \\
+{\sc genF10} & 99.88 & 311 & $<$1 & 0 & 10.9 & 13.5 & 14 & 61 & 79 \\
+\hline
+average & 85.33 & 28 &  -  & 0 & 8.33 & 11.9 & 20 & 64 & 79 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc gauss100} method with 32MB memory limit.}
+\label{tab:gauss100-32MB}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 99.99 & 1310 & ? & 73.8 & 0 & 136 & 15 & 13 & 61 \\
+{\sc rtsn} & 78.06 & 260 & 20 & 43.6 & 1150 & 2029 & 109 & 8 & 52 \\
+{\sc rtc} & 83.27 & 340 & $<$10 & 10.8 & 805 & 1115 & 16 & 52 & 83 \\
+{\sc rtcn} & 54.68 & 190 & $<$10 & 9.92 & 840 & 1329 & 94 & 57 & 89 \\
+{\sc rrbfs} & 93.32 & 780 & 60 & 95.2 & 620 & 1431 & 62 & 4 & 48 \\
+{\sc rrbfc} & 98.49 & 700 & $<$10 & 64.2 & 268 & 664 & 197 & 16 & 66 \\
+{\sc wave21} & 84.34 & 670 & 40 & 45.9 & 491 & 1074 & 47 & 16 & 79 \\
+{\sc wave40} & 84.18 & 560 & 20 & 28.2 & 379 & 814 & 37 & 28 & 86 \\
+{\sc genF1} & 95.06 & 930 & 190 & 142 & 516 & 1200 & 28 & 5 & 69 \\
+{\sc genF2} & 94.04 & 810 & 60 & 119 & 867 & 1577 & 47 & 4 & 49 \\
+{\sc genF3} & 97.52 & 1170 & 430 & 165 & 285 & 846 & 19 & 6 & 79 \\
+{\sc genF4} & 94.65 & 840 & 80 & 129 & 769 & 1408 & 51 & 5 & 50 \\
+{\sc genF5} & 92.64 & 770 & 40 & 98.4 & 1126 & 1843 & 51 & 4 & 54 \\
+{\sc genF6} & 93.17 & 790 & 50 & 104 & 1005 & 1716 & 42 & 4 & 52 \\
+{\sc genF7} & 96.82 & 940 & 60 & 107 & 1131 & 1595 & 22 & 5 & 58 \\
+{\sc genF8} & 99.42 & 1300 & 610 & 161 & 168 & 476 & 21 & 7 & 72 \\
+{\sc genF9} & 96.78 & 990 & 50 & 119 & 1089 & 1533 & 21 & 5 & 62 \\
+{\sc genF10} & 99.89 & 2000 & ? & 152 & 0 & 226 & 24 & 9 & 68 \\
+\hline
+average & 90.91 & 853 &  -  & 92.6 & 639 & 1167 & 50 & 14 & 65 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage
+\begin{table}
+\caption{{\sc gauss100} method with 400MB memory limit.}
+\label{tab:gauss100-400MB}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|r|}
+\hline
+dataset	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{examples to full\\memory (millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+{\sc rts} & 99.99 & 1350 & ? & 74.4 & 0 & 137 & 15 & 14 & 70 \\
+{\sc rtsn} & 78.02 & 170 & ? & 1018 & 0 & 1670 & 107 & 5 & 58 \\
+{\sc rtc} & 82.94 & 80 & 20 & 217 & 433 & 916 & 20 & 12 & 93 \\
+{\sc rtcn} & 54.30 & 70 & 30 & 185 & 263 & 693 & 193 & 22 & 96 \\
+{\sc rrbfs} & 92.95 & 350 & ? & 753 & 0 & 1506 & 70 & 2 & 35 \\
+{\sc rrbfc} & 97.75 & 180 & ? & 328 & 0 & 656 & 205 & 4 & 59 \\
+{\sc wave21} & 83.99 & 240 & ? & 469 & 0 & 939 & 80 & 6 & 79 \\
+{\sc wave40} & 83.79 & 170 & ? & 333 & 0 & 666 & 66 & 9 & 88 \\
+{\sc genF1} & 95.07 & 640 & ? & 571 & 0 & 1031 & 29 & 3 & 71 \\
+{\sc genF2} & 93.99 & 410 & ? & 829 & 0 & 1418 & 56 & 2 & 49 \\
+{\sc genF3} & 97.52 & 960 & ? & 392 & 0 & 731 & 19 & 5 & 83 \\
+{\sc genF4} & 94.62 & 430 & ? & 810 & 0 & 1317 & 61 & 2 & 48 \\
+{\sc genF5} & 92.61 & 350 & ? & 987 & 0 & 1576 & 57 & 2 & 51 \\
+{\sc genF6} & 93.10 & 370 & ? & 910 & 0 & 1515 & 47 & 2 & 48 \\
+{\sc genF7} & 96.79 & 400 & ? & 892 & 0 & 1235 & 28 & 2 & 54 \\
+{\sc genF8} & 99.42 & 1110 & ? & 302 & 0 & 441 & 22 & 6 & 74 \\
+{\sc genF9} & 96.75 & 350 & ? & 953 & 0 & 1290 & 31 & 2 & 55 \\
+{\sc genF10} & 99.89 & 2050 & ? & 156 & 0 & 231 & 24 & 9 & 70 \\
+\hline
+average & 90.75 & 538 &  -  & 566 & 38.7 & 998 & 63 & 6 & 66 \\
+\hline
+\end{tabular}
+\end{table}
+\clearpage

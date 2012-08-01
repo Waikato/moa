@@ -1,0 +1,124 @@
+%%
+%% This is file `phdthesis.sty`,
+%%
+%% This style file changes the appearance of the pages to improve
+%% the aesthetics of PhD theses (in my opinion =)
+%%
+%% Copyright (C) 2007  Jamie Stevens
+%%
+%%
+%%  This program is free software: you can redistribute it and/or modify
+%%  it under the terms of the GNU General Public License as published by
+%%  the Free Software Foundation, either version 3 of the License, or
+%%  (at your option) any later version.
+%%
+%%  This program is distributed in the hope that it will be useful,
+%%  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%%  GNU General Public License for more details.
+%%
+%%  You should have received a copy of the GNU General Public License
+%%  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+%%
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{phdthesis}[2007/09/11 v1.0 PhD Thesis Style]
+
+%% change the equation number appearance
+%% load up the AMS math package
+\RequirePackage{amsmath}
+
+%% load up the fancy box making package
+\RequirePackage{fancybox}
+
+%% make the equation numbers have little ovals around them
+%\def\tagform@#1{\maketag@@@{\cornersize{0.8}\ovalbox{\ignorespaces\sffamily{#1}\unskip\@@italiccorr}}}
+
+%% Load up PS insertion package
+\RequirePackage{psboxit}
+\PScommands
+
+%% Load up fancy headers and footers package
+\RequirePackage{fancyhdr}
+
+\RequirePackage{tikz}
+\RequirePackage{xcolor}
+%\definecolor{nicered}{rgb}{.647,.129,.149}
+%% now reset the headers and footers
+\fancyhead{}
+\fancyfoot{}
+%% make the odd pages have the section name on the top right
+\fancyhead[RO]{\color{black}\fontfamily{pag}\fontseries{b}\selectfont  \rightmark}
+%% make the even pages have the chapter name on the top left
+\fancyhead[LE]{\color{black}\fontfamily{pag}\fontseries{b}\selectfont  \leftmark} 
+%\rmfamily \bfseries  \leftmark}
+%\renewcommand{\headrule}{\color{nicered} \vbox to 0pt{\hbox to\headwidth{\hrulefill}\vss}}
+%\renewcommand{\headrule}{\vbox to 10pt{\color{nicered} \hbox to\headwidth{\hrulefill}\vss}}
+\renewcommand{\headrule}{\color{nicered}}
+
+%% put the page numbers on the bottom in a nice box
+%% even side pages
+\fancyfoot[LE]{\psboxit{box 0.8 setgray fill}
+{\makebox[10mm][c]{\rule{0cm}{4mm}\color{nicered}{\bfseries \thepage}}}}
+%% odd side pages
+\fancyfoot[RO]{\psboxit{box 1 setgray fill}
+{\hspace{\textwidth}\psboxit{box 0.8 setgray fill}
+{\makebox[10mm][c]{\rule{0cm}{4mm}\color{nicered}{\bfseries \thepage}}}}}
+
+%% make the bottom line above the page number box
+%\renewcommand{\footrulewidth}{0.4pt}
+%\renewcommand{\footruleskip}{0mm}
+
+%% bring the style into effect
+\pagestyle{fancy}
+
+%% now redefine the plain style pages (chapter pages, contents pages)
+%% to have the same page number stuff on the bottom
+\fancypagestyle{plain}{
+\fancyhf{}
+\fancyfoot[RO]{\psboxit{box 1 setgray fill}
+{\hspace{\textwidth}\psboxit{box 0.8 setgray fill}
+{\makebox[10mm][c]{\rule{0cm}{4mm}\color{nicered}{\bfseries \thepage}}}}}
+\renewcommand{\headrulewidth}{0pt}
+%\renewcommand{\footrulewidth}{0.5pt}
+}
+
+%% this next section (till \makeatother) makes sure that blank pages
+%% are actually completely blank, cause they're not usually
+\makeatletter
+\def\cleardoublepage{\clearpage\if@twoside \ifodd\c@page\else
+	\hbox{}
+	\vspace*{\fill}
+	\thispagestyle{empty}
+	\newpage
+	\if@twocolumn\hbox{}\newpage\fi\fi\fi}
+\makeatother
+
+
+%% now change the chapter style
+%% load up the quotchap package
+\RequirePackage[utopia]{quotchap}
+%\RequirePackage[avantgarde]{quotchap}
+\definecolor{chaptergrey}{rgb}{0.0,0.0,0.6}
+%{.647,.129,.149}%{0.6,0.6,0.6}}
+%\definecolor{nicered}{rgb}
+%% make the quotation appear next to the chapter number
+\renewcommand\chapterheadstartvskip{\vspace*{-5\baselineskip}}
+
+%% now change the section heading to have a line beneath it
+%% load up the fancy title-style package
+%\usepackage[dvips]{color}
+%\RequirePackage[calcwidth,rigidchapters,explicit]{titlesec}
+\RequirePackage[calcwidth]{titlesec}
+
+%\titleformat{\section}[hang]{\rmfamily\bfseries \color{nicered}}
+\titleformat{\section}[hang]{\fontfamily{pag}\fontseries{b}\selectfont \color{nicered}}
+{\Large\thesection}{12pt}{\Large}[{\titlerule[0.5pt] \color{nicered}}]
+
+\titleformat{\subsection}{\normalfont\large\bfseries \color{nicered}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries \color{nicered}}{\thesubsubsection}{1em}{}
+
+
+
+%%
+%% End of file `phdthesis.sty`
+

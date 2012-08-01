@@ -1,0 +1,97 @@
+%\onecolumn
+%\appendix 
+%\section{Appendix: Proof of Theorem 1}
+
+\begin{proof}
+
+{\bf{Part 1)}}
+Assume $\muz=\muu=\mu_W$ as null hypothesis. We show that for any partition
+$W$ as $W_0W_1$ we have probability at most $\delta/n$ that \adwinz
+decides to shrink $W$ to $W_1$, or equivalently,
+%
+\begin{eqnarray*}
+%\label{Edecomposeprobs0}
+\Pr [\, |\hmuu - \hmuz| \ge  \epsc\, ] \le \delta/n.
+\end{eqnarray*}
+%
+Since there are at most $n$ partitions $W_0W_1$, the claim follows by the union bound. 
+Note that, for every real number $k\in (0,1)$, $|\hmuu - \hmuz|\ge  \epsc$ 
+can be decomposed as
+\begin{eqnarray*}
+\label{Edecomposeprobs1}
+\Pr [\, |\hmuu - \hmuz| \ge  \epsc \,]
+&\le& \Pr [\, |\hmuu - \mu_W| \ge  k \epsc \,] + \Pr[\, |\mu_W - \hmuz| \ge  (1-k)\epsc )\,].
+\end{eqnarray*} 
+Applying the Hoeffding bound, we have then 
+\begin{eqnarray*}
+\label{Edecomposeprobs2}
+\Pr [\, |\hmuu - \hmuz| \ge  \epsc \,]
+&\le& 2\exp(-2 (k\,\epsc)^2 \,n_0) + 2\exp(-2 ((1-k)\,\epsc)^2 \,n_1)
+\end{eqnarray*} 
+To approximately minimize the sum, we choose the value of $k$ 
+that makes both probabilities equal, i.e.\ such that 
+$$
+(k \,\epsc)^2 \,n_0 = ((1-k)\,\epsc)^2 \,n_1. 
+$$
+which is $k=\sqrt{n_1 / n_0} / (1+\sqrt{n_1 / n_0})$. 
+For this $k$, we have precisely 
+$$
+(k \,\epsc)^2 \, n_0 
+      = \frac{n_1 n_0}{(\sqrt{n_0}+\sqrt{n_1})^2}\; \epsc^2 
+      \le \frac{n_1 n_0}{(n_0+n_1)} \; \epsc^2
+      = m \; \epsc^2. 
+$$
+Therefore, in order to have 
+$$
+\Pr [\, |\hmuu - \hmuz| \ge  \epsc \,] \le \frac{\delta}{n}
+$$
+it suffices to have 
+$$
+4 \exp(-2m \; \epsc^2) \le \frac{\delta}{n}
+$$
+which is satisfied by 
+$$
+\epsc = \sqrt{\frac{1}{2m} \; \ln\frac{4n}{\delta}}\;.
+$$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+{\bf{Part 2)}}
+Now assume $|\muz - \muu| > %\ge 
+ 2\epsc$. We want to show that
+$\Pr [\, |\hmuu - \hmuz| \le  \epsc \,] \le \delta$, which means that 
+with probability at least $1-\delta$ change is detected and 
+the algorithm cuts $W$ to $W_1$. 
+As before, for any $k\in (0,1)$, we can decompose $|\hmuz - \hmuu| \le  \epsc $ as
+%
+\begin{eqnarray*}
+\Pr [\, |\hmuz - \hmuu| \le  \epsc \,] &\le& 
+\Pr [\, (|\hmuz - \muz| \ge  k \epsc ) \cup (|\hmuu - \muu| \ge  (1-k)\epsc )\,]  \\   
+&\le&\Pr [\, |\hmuz - \muz| \ge  k \epsc \,] +  
+\Pr [\, |\hmuu - \muu| \ge  (1-k) \epsc \,]. 
+\end{eqnarray*}
+%
+To see the first inequality, observe that if $|\hmuz - \hmuu| \le  \epsc$, 
+$|\hmuz - \muz| \le  k \epsc$, 
+and $|\hmuu - \muu| \le  (1-k) \epsc$
+hold, by the triangle inequality we have 
+$$
+|\muz - \muu| \le |\hmuz + k\epsc - \hmuu + (1-k)\epsc| 
+\le |\hmuz-\hmuu| + \epsc \le 2\epsc,$$
+contradicting the hypothesis. 
+Using the Hoeffding bound, we have then 
+%
+\begin{eqnarray*}
+\Pr [\, |\hmuz - \hmuu| \ge  \epsc \,]   &\le&
+2 \, \exp(-2(k\,\epsc)^2 \, n_0) + 2 \, \exp(-2((1-k)\,\epsc)^2 \, n_1). 
+\end{eqnarray*} 
+%
+Now, choose $k$ as before to make both terms equal. By the calculations
+in Part 1 we have 
+%
+\begin{eqnarray*}
+\Pr [\, |\hmuz - \hmuu| \ge  \epsc \,]  &\le& 
+4 \exp(-2 \, m \, \epsc^2) \le \frac{\delta}{n} \le \delta,
+\end{eqnarray*} 
+%
+as desired. 
+
+\end{proof}

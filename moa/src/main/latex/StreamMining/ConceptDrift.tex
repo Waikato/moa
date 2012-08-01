@@ -1,0 +1,1245 @@
+%\chapter
+
+
+\BEGINOMIT
+\section{Mining Evolving Data Streams}%Concept Drift}
+
+\label{ch:conceptdrift}
+
+In order to deal with evolving data streams,
+%make time-critical predictions, 
+the model learned
+from the streaming data must be able to capture up-to-date trends
+and transient patterns in the stream \cite{tsymbal-problem,wang03mining}. To do this, as we revise the
+model by incorporating new examples, we must also eliminate the
+effects of outdated examples representing outdated concepts. This is a nontrivial
+task. Also, we propose a new experimental data stream framework for
+studying concept drift.
+
+\section{Introduction}
+%\ENDOMIT
+%Data streams pose several challenges on data mining algorithm design. 
+%Limited use of resources (time and memory) is one. 
+%The necessity of dealing with data whose nature or distribution changes over time is another
+%fundamental one.
+ Dealing with time-changing data requires %in turn 
+strategies for detecting and quantifying change, forgetting stale examples, 
+and for model revision. Fairly generic strategies exist for detecting
+change and deciding when examples are no longer relevant. Model revision
+strategies, on the other hand, are in most cases method-specific.
+
+Most strategies for dealing with time change contain hardwired constants, 
+or else require input parameters, concerning the expected speed or frequency 
+of the change; some examples are {\em a priori} definitions of sliding window
+lengths, values of decay or forgetting parameters, explicit bounds on maximum drift, etc. 
+%\BEGINOMIT
+These choices represent preconceptions 
+on how fast or how often the data are going to evolve and, of course, they 
+may be completely wrong. Even more, no fixed 
+choice may be right, since the stream may experience any combination 
+of abrupt changes, gradual ones, and long stationary periods. 
+More in general, an approach based on fixed parameters will be caught in the following tradeoff: 
+the user would like to use values of parameters that give more accurate statistics 
+(hence, more precision) during periods of stability, but at the same time use the opposite values of
+ parameters to %be able to 
+quickly react to changes, when they occur. 
+%\ENDOMIT
+
+Many ad-hoc methods have been used to deal with drift, often tied to particular algorithms. 
+%In Section~\ref{Sframework} %
+In this chapter we propose a more general approach based on using two primitive design 
+elements: change detectors and estimators. 
+The idea is to 
+encapsulate all the statistical calculations having to do with detecting change and keeping
+updated statistics from a stream an abstract data type that can then be used to replace, 
+in a black-box way, the counters and accumulators that typically all machine learning
+and data mining algorithms use to make their decisions, including when change has occurred. 
+
+We believe that, compared to any previous approaches, our approach better isolates different
+concerns when designing new data mining algorithms, therefore reducing design time,
+increasing modularity, and facilitating analysis. Furthermore, since we crisply identify
+the nuclear problem in dealing with drift, and use a well-optimized algorithmic solution to tackle it,
+the resulting algorithms are more accurate, adaptive, and time- and memory-efficient than other
+ad-hoc approaches. % starting from scratch. 
+%We have given evidence for this superiority in \cite{bif-gav,Kbif-gav,KDD08}
+%and we demonstrate this idea again here.
+
+\subsection{Theoretical approaches}%Learning time-varying concepts}
+
+The task of learning drifting or time-varying concepts has also been studied
+ in computational learning theory. Learning a changing concept is infeasible,
+ if no restrictions are imposed on the type of admissible concept changes,  
+but drifting concepts are provably efficiently learnable (at least for certain 
+concept classes), if the rate or the extent of drift is limited in particular ways. 
+
+Helmbold and Long \cite{helmbold94tracking} assume a possibly permanent but slow concept 
+drift and define the extent of drift as the probability that two subsequent 
+concepts disagree on a randomly drawn example. Their results include an 
+upper bound for the extend of drift maximally tolerable by any learner and 
+algorithms that can learn concepts that do not drift more than a certain 
+constant extent of drift. Furthermore they show that it is sufficient for a 
+learner to see a fixed number of the most recent examples. Hence a window 
+of a certain minimal fixed size allows to learn concepts for which the extent 
+of drift is appropriately limited. 
+While Helmbold and Long restrict the extend of drift, Kuh, Petsche, and 
+Rivest~\cite{kuh} determine a maximal rate of drift that is acceptable by any learner, 
+i. e. a maximally acceptable frequency of concept changes, which implies a 
+lower bound for the size of a fixed window for a time-varying concept to be 
+learnable, which is similar to the lower bound of Helmbold and Long. 
+\ENDOMIT
+\BEGINOMIT
+In practice, however, it usually cannot be guaranteed that the application 
+at hand obeys these restrictions, e.g. a reader of electronic news may change 
+his interests (almost) arbitrarily often and radically. Furthermore the large 
+time window sizes, for which the theoretical results hold, would be impractical. 
+Hence more application oriented approaches rely on far smaller windows 
+of fixed size or on window adjustment heuristics that allow far smaller window 
+sizes and usually perform better than fixed and/or larger windows . 
+While these heuristics are intuitive and work well in their particular application
+ domain, they usually require tuning their parameters, are often not 
+transferable to other domains, and lack a proper theoretical foundation. 
+\ENDOMIT
+%\subsection{Window Size Management Strategies}%Methods}
+
+\section{Algorithms for mining with change}
+%{\change
+In this section we review some of the data mining methods that deal with data streams and concept drift. There are many algorithms in the literature that address this problem. We focus on the ones %we consider more interesting, based in sliding windows and 
+that they are more referred to in other works.
+%... n'hi ha molts, esmentem  els que enfoquen mes o menys el mateix tipus de problemes que nosaltres, basats en sliding windows, etc.
+%}
+
+
+\BEGINOMIT
+\subsection{STAGGER : Schlimmer and Granger}
+
+
+STAGGER is the first rules incremental algorithm that is robust to noise and can handle concept drift.
+
+The main idea behind STAGGER's learning method is a concept representation
+which uses symbolic characterizations that have a sufficiency and a necessity weight associated
+with them. As the system processes the data instances, it either adjusts the weights associated
+with the characterizations or it creates new ones. The concept description in STAGGER is a
+collection of elements, where each individual element is a Boolean function of attribute-valued
+pairs that is represented by a disjunct of conjuncts. A typical example of a concept description
+covering either green rectangles or red triangles can be represented by (shape rectangle and colour
+green) or (shape triangles and colour red) .
+
+For each instance processed, STAGGER computes an expectation value that represents the odds
+that the instance is positive. The computation is done using a holistic approach that combines the
+prior odds of positive instances, the sufficiency weight values of all the matched characterizations
+and the necessity weight values of all the unmatched characterizations.
+In addition to representing concepts in a distributed manner and using Bayesian measures to
+compute an expectation value, STAGGER incrementally modifies both the weights associated with
+individual characterizations and the structure of the characterizations themselves. These two latter
+abilities allow STAGGER to adapt its concept description to better reflect the concept.
+
+STAGGER attempts to deal with the problem of virtual concept drift by having an in-built
+reluctance to modify existing concepts. This method works well when the concept drift is both
+slow and consistent over time.
+However, if the concept drift is fast and in an inconsistent manner then relevant information
+can be lost if the concept is updated after some in-built delay.
+
+STAGGER's input consists of individuals descriptions of instances, along with labels indicating their class.
+The STAGGER major component processes are
+
+%\begin{itemize}
+%\item 
+{\bf Initialization}
+
+STAGGER's initial concept description is a collection of the simplest possible features. Each of these simple characterizations is composed of a set of weighted characterizations. Each characterization is a symbolic expression of conjunctive, disjunctive, and negated attribute-values.
+
+%\item
+ {\bf Projection}
+
+Projection is the process of matching descriptions against subsequent experience. In STAGGER, projection matches each characterization element in the concept representation against new instances. STAGGER uses Bayesian formulas to weight each characterization: 
+\begin{itemize}
+\item Logical sufficiency LS : approximates the degree to which the presence of a feature (F) increases expectation of an outcome (O)
+$$ LS=\frac{p(F|O)}{p(F|\neg O)}$$
+\item Logical necessity NS : approximates the degree to which the absence of a feature (F) decreases expectation of an outcome (O)
+$$ LN=\frac{p(\neg F|O)}{p(\neg F|\neg O)}$$
+\end{itemize}
+
+Projection computes an expectation of class membership by multiplying the prior odds of a positive instance and the LS weights of all matched characterizations with the LN weights of unmatched characterizations.
+
+$$ \rm{Odds(positive|instance)=Odds(positive)} \times {\prod_{\forall matched} LS} {\prod_{\forall unmatched} LN} $$
+
+The resulting number represents the odds in favor of a positive instance. Odds may be easily converted to probability by noting that the probability of the outcomes is $ p= odds/(1+odds)$.
+
+STAGGER's projection matches new instances against all previously acquired concept descriptions, trying to recognize as many concepts as possible.
+
+%\item
+ {\bf Evaluation}
+
+Evaluation is the process of determining the effectiveness of the internal concept descriptions. 
+Each characterization is continually evaluated by adjusting its weights keeping track of the number of times each characterization  is matched or unmatched in examples and nonexamples.
+
+%\item 
+{\bf Refinement}
+
+The process of refinement modifies learned concepts to improve their effectiveness as measured by evaluation. In STAGGER, the elements of the distributed concept description are modified by specialization, generalization, and inversion.
+ The distributed concept represention is unified by combining individual elements to form more complex Boolean characterizations.
+
+%\end{itemize}
+
+
+\subsection{FLORA: Widmer and Kubat}
+FLORA \cite {WidmerKubat} is a supervised incremental learning system that
+takes as input a stream of positive and negative example of a target concept that changes over
+time. The original FLORA algorithm uses a fixed moving window approach to process the data.
+The concept definitions are stored into three description sets:
+
+\begin{itemize}
+ \item ADES description based on positive examples
+ \item NDES descriptions based on negative examples
+ \item PDES concept descriptions based on both positive and negative examples
+\end{itemize} 
+  The system uses the examples present in the moving window to
+incrementally update the knowledge about the concepts. The update of the concept descriptions
+involves two processes: a learning process (adjust concept description based on the new data) and
+a forgetting process (discard data that may be out of date).
+FLORA2 was introduced to address some of the problems associated with FLORA such as
+the fixed window size. FLORA2 has a heuristic routine to dynamically adjust its window size
+and uses a better generalization technique to integrate the knowledge extracted from the examples
+observed. %Figure \ref{Fig:Flora} shows this heuristic procedure. 
+The algorithm was further improved to allow previously extracted knowledge to help
+deal with recurring concepts (FLORA3) and to allow it to handle noisy data (FLORA4).
+\ENDOMIT
+\BEGINOMIT
+\begin{figure}[h]
+\begin{codebox}
+\Procname{$\proc{FloraWindow-Adjustment-Heuristic}$(}
+\zi lc: threshold for low coverage, user-defined
+\zi hc: threshold for high coverage, user-defined
+\zi p: threshold for acceptable accuracy, user-defined
+\zi N: examples covered by the positive concept description
+\zi S: number of conditions in the positive description
+\zi Acc: accuracy of current concept descriptions
+\zi w: window size)
+
+\li \If $(N/S < lc \vee (Acc < p \wedge decreasing(Acc)))$
+\li \Do $\Delta w =- 0.2w$
+\li \Else \If $(N/S > 2.0 \times hc \wedge Acc > p)$
+\li \Do $\Delta w =- 1.0$
+\li \Else \If $(N/S > hc \wedge Acc > p)$
+\li \Do $\Delta w = 0.0$
+\li \Else
+\li \Do $\Delta w = 1.0$ \End \End \End
+\li $w = w + \Delta w$
+\li \Return $w$
+\end{codebox}
+
+\caption{FLORA Window size adaption algorithm}
+\label{Fig:Flora}
+\end{figure}
+
+
+%Window-Adjustment-Heuristic ()
+%lc: threshold for low coverage, user-defined
+%hc: threshold for high coverage, user-defined
+%p: threshold for acceptable accuracy, user-defined
+%N: examples covered by the positive concept description
+%S: number of conditions in the positive description
+%Acc: accuracy of current concept descriptions
+%w: window size
+
+
+\subsection{Suport Vector Machines: Klinkenberg}
+
+Klinkenberg and Joachims \cite{Klinkenberg} presented a method to handle concept drift with support vector machines. A proper introduction to SVM can be found in \cite{Burguess}.
+
+Their method maintains a window on the training data with an appropriate size without using a complicated parameterization. The key idea is to automatically adjust the window size so that the estimated generalization error on new examples is minimized. To get an estimate of the generalization error, a special form of $\xi \alpha$-estimates is used. $\xi \alpha$-estimates are a particularly efficient method for estimating the performance of an SVM, estimating the leave-one-out-error of a SVM based solely 
+on the one SVM solution learned with all examples.
+
+Each example $z=(x,y)$ consists of a feature vector
+$x \in R^N$ and a label $y \in \{-1,+1\}$ indicating its classification. Data arrives over time in batches of equal size,
+each containing $m$ examples.
+% $$z_{(1,1)}, \ldots, z_{(1,m)},
+% z_{(2,1)}, \ldots, z_{(2,m)}, \cdots,
+% z_{(t,1)}, \ldots, z_{(t,m)},
+% z_{(t+1,1)}, \ldots, z_{(t+1,m)}$$
+ %$ z_{(i,j)}$ denotes the j-th example of batch $i$. 
+ For each batch $i$ the data is independently identically distributed with respect to a distribution $\Pr_i(x,y)$. The goal of the learner $\mathcal{L}$ is to sequentially predict the labels of the next batch.
+ 
+ The window adaptive approach that employs this method, works that way:  
+ at batch $t$, it essentially tries various windows sizes, training a SVM for each resulting training set.
+
+%$$
+%\begin{eqnarray}
+%& z_{(t,1)}, \ldots, z_{(t,m)}  \\
+%& z_{(t-1,1)}, \ldots, z_{(t-1,m)},z_{(t,1)}, \ldots, z_{(t,m)}  \\
+%& z_{(t-2,1)}, \ldots, z_{(t-2,m)},z_{(t-1,1)}, \ldots, z_{(t-1,m)},z_{(t,1)}, \ldots, z_{(t,m)}
+%&.\\
+%&.\\
+%&.
+%\end{eqnarray}%{flalign*}
+%$$
+
+For each window size it computes a $\xi \alpha$-estimate based on the result of training, considering only the last batch for the estimation, that is the $m$ most recent training examples $z_{(t,1)}, \ldots, z_{(t,m)}$.
+
+%$$Err^m_{\xi \alpha}(h_{\mathcal{L}})=\frac{| \{i :1 \leq i \leq m 
+%\wedge (\alpha_{(t,i)} R^2_{\Delta}+ \xi_{(t,i)}) \geq 1 \} |}{m}$$
+
+This reflects the assumption that the most recent examples are most similar 
+to the new examples in batch $t+1$. The window size minimizing the $\xi \alpha$-estimate of the error rate is selected by the algorithm and used to train a classifier for the current batch.
+
+The window adaptation algorithm is showed in figure \ref{Fig:SVM}.
+\begin{figure}[h]
+\begin{codebox}
+\Procname{$\proc{SVMWindowSize}$(Stream $S_{Train}$ consisting of $t$ batches of $m$ examples )}
+\li \For $h \in \{0,\ldots, t-1\}$
+\li \Do  train SVM on examples $z_{(t-h,1)}, \ldots, z_{(t,m)}$
+\li  Compute $\xi \alpha$-estimate on examples $z_{(t-h,1)}, \ldots, z_{(t,m)}$
+\End  
+\li \Return Window size which minimizes $\xi \alpha$-estimate.
+\end{codebox}
+
+\caption{Window size adaption algorithm}
+\label{Fig:SVM}
+\end{figure}
+\ENDOMIT
+\BEGINOMIT
+\subsection{Drift Detection Method: Gama}
+\label{DDM}
+The drift detection method (DDM) proposed by Gama et al.  \cite{Gama} controls the number of errors produced by
+the learning model during prediction. %It uses a binomial distribution that 
+%gives the general form of the probability for the random variable that represents the
+It compares the statistics of two windows: the first one contains all the data, and the second one contains only the data from the beginning until the number of errors increases. Their method doesn't store these windows in memory. It keeps only statistics and a window of recent errors data.% since a warning signal is detected.
+
+The number of errors in a sample of $n$ examples is modelized by a binomial distribution. For each point $i$ in the sequence
+that is being sampled, the error rate is the probability of misclassifying ($p_i$),
+with standard deviation given by $s_i = \sqrt{p_i(1 - p_i)/i}$. They assume (as states the
+PAC learning model \cite{Mitchell} that the error rate of the learning algorithm ($p_i$) will
+decrease while the number of examples increases if the distribution of the examples is stationary. A significant increase in the error of the algorithm, suggests
+that the class distribution is changing and, hence, the actual decision model is
+supposed to be inappropriate. Thus, they store the values of $p_i$ and $s_i$ when
+$p_i+s_i$ reaches its minimum value during the process (obtaining $p_{pmin}$ and $s_{min}$).
+And it checks when the following conditions triggers:
+\begin{itemize}
+\item $p_i + s_i \geq p_{min} + 2 \cdot s_{min}$ for the warning level. Beyond this level, the examples are stored in anticipation of a possible change of context.
+
+\item $p_i + s_i \geq p_{min} + 3 \cdot s_{min}$ for the drift level. Beyond this level the concept drift is supposed to be true, the model induced by the learning method is reset and a new model is learnt using the examples stored since the warning level triggered. The values for $p_{min}$ and $s_{min}$ are reset too.
+
+\end{itemize}
+
+This approach has a good behaviour detecting abrupt changes and gradual
+changes when the gradual change is not very slow, but it has difficulties when
+the change is slowly gradual. In that case, the examples will be stored for long
+time, the drift level can take too much time to trigger and the examples memory
+can be exceeded.
+\ENDOMIT
+
+
+\subsection{OLIN: Last}
+Last in \cite{olin} describes an online classification system that uses the info-fuzzy network (IFN). % explained in Section~\ref{ssec:Classification}. 
+The system called OLIN (On Line Information Network) gets a continuous stream of non-stationary data and builds a network based on %the latest examples.
+a sliding window of the latest examples.
+The system dynamically adapts the size of the training
+window and the frequency of model re-construction to the current rate of concept drift
+%The calculations of the window size in OLIN are based on the information theory and statistics. 
+
+OLIN uses the statistical significance of the difference between the training and the validation accuracy of the current model as an indicator of concept stability.
+
+OLIN adjusts dynamically the number of examples between model reconstructions
+by using the following heuristic: keep the current model for more examples
+if the concept appears to be stable and reduce drastically the size of the validation
+window, if a concept drift is detected. %Figure \ref{Fig:OLIN} shows this window size adaption algorithm.
+ 
+OLIN generates a new model for every new sliding window. This approach ensures accurate and relevant models over time and therefore an increase in the classification accuracy. However, the OLIN algorithm has a major drawback, which is the high cost of generating new models. OLIN does not take into account the costs involved in replacing the existing model with a new one. 
+
+
+%The experimental results of \cite{Last} show that in non-stationary data streams, dynamic windowing generates more accurate models than the static (fixed size) windowing approach used by CVFDT.
+\BEGINOMIT
+\begin{figure}
+\begin{codebox}
+\Procname{$\proc{OLIN}$( }
+
+\zi S : A continuous stream of examples
+\zi $n_{min}$: first example to be classified number
+\zi $n_{max}$: last example to be classified number
+\zi C: candidate input attributes set 
+\zi Sign: user-specified significance level
+\zi $P_e$: Maximum model allowable prediction error
+\zi Init\_Add\_Count: number of new examples to be classified 
+\zi Inc\_Add\_Count: \% to increase the \# of examples between model re-constructions
+\zi Max\_Add\_Count: Maximum \# of examples between model re-constructions
+\zi Red\_Add\_Count: \% to reduce the \# of examples between model reconstructions
+\zi Min\_Add\_Count: Minimum \# of examples between model re-constructions
+\zi Max\_Win: Maximum \# of examples in a training window)
+
+\li  Calculate the initial size of the training window $W_{init}$ 
+\li  Let the training window size $W = W_{init}$
+\li  $i \gets n_{min} - W$
+\li  $j \gets W$
+\li  Add\_Count $\gets$ Init\_Add\_Count
+\li  \While $j < n_{max}$
+\li \Do
+\li  Obtain a model (IFN) by applying the IN algorithm to window $W$ %$W$ latest training examples
+\li  Calculate the training error rate $E_{tr}$ on window $W$ % of the obtained model on $W$ training examples
+\li  Calculate the index of the last validation example $k = j +$ Add\_Count;
+\li  Calculate the validation error rate $E_{Val}$ of the obtained model 
+\li       on Add\_Count validation examples
+\li  Update the index of the last training example $j = k$
+\li  Find the maximum difference between the training and the validation errors Max\_Diff
+
+\li \If ($E_{Val} - E_{tr}) < $Max\_Diff 
+\li \Then  // concept is stable 
+\li Add\_Count =Min( Add\_Count * (1+(Inc\_Add\_Count/100)), Max\_Add\_Count)
+\li W = Min (W + Add\_Count, Max\_Win)
+\li \Else //concept drift detected
+\li  Re-calculate the size of the training window $W$ 
+\li   $i \gets j - W$
+\li  Add\_Count = Max (Add\_Count * (1- (Red\_Add\_Count/100)), Min\_Add\_Count)
+\End  
+\li \Return the current model (IFN)
+\End
+\end{codebox}
+
+\caption{Window size adaption algorithm}
+\label{Fig:OLIN}
+\end{figure}
+\ENDOMIT
+
+\subsection{CVFDT: Domingos}
+\label{CVFDT}
+Hulten, Spencer and Domingos presented Concept-adapting Very Fast Decision Trees CVFDT \cite{hulten-mining} algorithm as an extension of VFDT to deal with concept change. 
+
+% The processes that generate massive data sets and open-ended data streams often span months or years, during which the data-generating distribution can change significantly, violating the iid assumption made by most learning algorithms.
+
+Figure \ref{CVFDT} shows CVFDT algorithm.
+ CVFDT keeps the
+model it is learning in sync with such changing concepts by continuously monitoring the quality of old search decisions with respect to a sliding window of data from the data stream, and updating them in a fine-grained way when it detects that the distribution of data is changing. In particular, it maintains sufficient statistics throughout time for every candidate $M$ considered at every search step. After the first $w$ examples, where $w$ is the window width,
+it subtracts the oldest example from these statistics whenever a new one is added. After every $\Delta n$ new examples, it determines again the best candidates at every previous search decision point. If one of them is better than an old winner by $\delta^*$ then one of two things has
+happened. Either the original decision was incorrect (which will happen a fraction $\delta$ of the time) or concept drift has occurred. In either case,it begins an alternate search starting
+from the new winners, while continuing to pursue the original search. Periodically it uses
+a number of new examples as a validation set to compare the performance of the models
+produced by the new and old searches. It prunes an old search (and replace it with the
+new one) when the new model is on average better than the old one, and it prunes the new 
+search if after a maximum number of validations its models have failed to become more
+accurate on average than the old ones. If more than a maximum number of new searches is
+in progress, it prunes the lowest-performing ones.
+
+\begin{figure}
+\begin{codebox}
+\Procname{$\proc{CVFDT}(Stream,\delta)$}
+\li  Let HT be a tree with a single leaf(root) 
+\li  Init counts $n_{ijk}$ at root
+\li \For each example $(x,y)$ in Stream 
+\li \Do Add, Remove and Forget Examples
+\li $\proc{CVFDTGrow} ((x,y),HT, \delta)$
+\li $\proc{CheckSplitValidity} (HT,n, \delta)$ 
+\End  \End
+\end{codebox}
+
+\begin{codebox}
+\Procname{$\proc{CVFDTGrow} ((x,y),HT, \delta)$}
+\li  Sort $(x,y)$ to leaf $l$ using $HT$ 
+\li  Update counts $n_{ijk}$ at leaf $l$ and nodes traversed in the sort
+\li \If examples seen so far at $l$ are not all of the same class 
+\li \Then   Compute $G$ for each attribute
+\li \If $G$(Best Attr.)$ - G$(2nd best) $> \sqrt{\frac{R^2\ln 1/\delta}{2n}}$ 
+\li \Then  Split leaf on best attribute
+\li \For each branch
+\li    \Do   Start new leaf and initialize counts
+\End  
+\li  Create alternate subtree
+\End \End
+\end{codebox}
+
+\begin{codebox}
+\Procname{$\proc{CheckSplitValidity} (HT,n, \delta)$}
+\li \For each node $l$ in $HT$ that it is not a leaf
+\li \Do \For each tree $T_{alt}$ in ALT(l)
+\li \Do $\proc{CheckSplitValidity} (T_{alt},n, \delta)$ 
+\End
+\li \If exists a new promising attributes at node $l$
+\li \Do  Start an alternate subtree
+\End
+\end{codebox}
+
+
+\caption{The CVFDT algorithm}
+\label{CVFDT}
+\end{figure}
+
+
+\subsection{UFFT: Gama}
+
+Gama, Medas and Rocha \cite {GamaUFFT} presented the Ultra Fast Forest of Trees (UFFT) algorithm.
+
+UFFT  is an algorithm for supervised classification learning, that generates a forest 
+of binary trees. The algorithm
+is incremental, processing each example in constant
+time, works on-line,  UFFT is designed for continuous data. It
+uses analytical techniques to choose the splitting criteria,
+and the information gain to estimate the merit of each possible
+splitting-test. For multi-class problems, the algorithm
+builds a binary tree for each possible pair of classes leading
+to a forest-of-trees. During the training phase the algorithm
+maintains a short term memory. Given a data stream, a
+limited number of the most recent examples are maintained
+in a data structure that supports constant time insertion
+and deletion. When a test is installed, a leaf is transformed
+into a decision node with two descendant leaves. The sufficient 
+statistics of the leaf are initialized with the examples
+in the short term memory that will fall at that leaf. 
+
+The UFFT algorithm maintains,
+at each node of all decision trees, a Na\"{\i}ve Bayes classifier.
+Those classifiers were constructed using the sufficient statistics
+needed to evaluate the splitting criteria when that node
+was a leaf. After the leaf becomes a node, all examples that
+traverse the node will be classified by the Na\"{\i}ve Bayes. The
+basic idea of the drift detection method is to control this
+error-rate. If the distribution of the examples is stationary,
+the error rate of Na\"{\i}ve-Bayes decreases. If there is a
+change on the distribution of the examples the Na\"{\i}ve Bayes
+error increases. The system uses DDM, the drift detection method explained in Section~\ref{SsDDM}. When it detects  an statistically significant 
+increase of the Na\"{\i}ve-Bayes error in a given node, an
+indication of a change in the distribution of the examples,
+this suggest that the splitting-test that has been installed at
+this node is no longer appropriate. The subtree rooted at
+that node is pruned, and the node becomes a leaf. All the
+sufficient statistics of the leaf are initialized.
+When a new training example becomes available, it will
+cross the corresponding binary decision trees from the root
+node till a leaf. At each node, the Na\"{\i}ve Bayes installed at
+that node classifies the example. The example will be correctly
+or incorrectly classified. For a set of examples the
+error is a random variable from Bernoulli trials. The Binomial
+distribution gives the general form of the probability for
+the random variable that represents the number of errors in
+a sample of $n$ examples. 
+
+The sufficient statistics of the leaf are initialized with
+  the examples in the short term memory %whose time stamp is greater 
+  %than kw.
+that maintains a limited number of the most recent examples.
+It is possible to observe an increase of the error reaching the warning
+level, followed by a decrease. This method uses the information already available
+to the learning algorithm and does not require additional
+computational resources.
+An advantage of this method is it continuously monitors
+the online error of Na\"{\i}ve Bayes. It can detect changes in the
+class-distribution of the examples at any time. All decision
+nodes contain Na\"{\i}ve Bayes to detect changes in the class distribution
+of the examples that traverse the node, that
+correspond to detect shifts in different regions of the instance
+space. Nodes near the root should be able to detect abrupt
+changes in the distribution of the examples, while deeper
+nodes should detect smoothed changes. %All the main characteristics
+%of UFFT are due to the splitting criteria. 
+
+%\subsection{Research issues}
+
+
+
+
+
+\Section{A Methodology for Adaptive Stream Mining}%General Methodology for Adaptive Algorithms}
+\label{Sframework}
+
+%The starting point of our work is the following observation: 
+In the data stream mining literature, %and more specifically data streams mining,
+most algorithms incorporate one or more of the following ingredients: 
+windows to remember recent examples; methods for detecting distribution change in the input; 
+and methods for keeping updated estimations for some statistics of the input. 
+We see them as the basis for solving the three central problems of
+
+\begin{itemize}
+ \item  what to remember or forget,
+ \item  when to do the model upgrade, and  
+ \item  how to do the model upgrade.
+\end{itemize}
+
+Our claim is that by basing mining algorithms on well-designed, well-encap\-sulated
+modules for these tasks, one can often get more generic and more efficient solutions
+than by using ad-hoc techniques as required.  
+%Similarly, we will argue that our methods for inducing decision trees are simpler to describe, 
+%adapt better to the data, perform better or much better, and use less memory than the ad-hoc designed
+%CVFDT algorithm, even though they are all derived from the same VFDT mining algorithm. 
+
+\input{ConFrame}
+
+\subsection{Window Management Models}%Window strategies }
+%In addition, Window  %Strategies of change detection and prediction 
+Window strategies have been used in conjunction
+with %learning / 
+mining algorithms in two ways: one,
+externally to the learning algorithm; the window system %change detector and predictor
+is used to monitor the error rate of the current model, which under
+stable distributions should keep decreasing or at most stabilize;
+when instead this rate grows significantly, change is declared and
+the base learning algorithm is invoked to revise or rebuild the
+model with fresh data. Note that in this case the window memory
+contains bits or real numbers (not full examples).
+%There are many data mining algorithms that keeps important statistics over the input data, and try to discover patterns using %these statistics. 
+Figure~\ref{fig:fr2} shows this model. 
+%{\tt ADWIN} is our contribution algorithm presented in next chapter.
+% of Machine Learning technique. %Data Mining algorithm. %This is the most usual framework used when data comes from stationary data and there is no change in data distribution.
+
+%\begin{columns}
+\BEGINOMIT
+%\column{5.5cm}
+%\begin{block}{No Concept Drift}
+\begin{figure}[h]
+\begin{picture}(160,160)(-80,0)
+
+%\put(25,0){\framebox(100,170)}
+\put(10,110){\vector(1,0){30}}
+\put(20,120){\makebox(0,0){input}}
+\put(140,120){\makebox(0,0){output}}
+\put(40,10){\framebox(80,145)}
+\put(80,140){\makebox(0,0){DM Algorithm}}
+%\put(40,105){\framebox(80,25){Data Mining Algorithm}}
+%\put(40,80){\framebox(80,25){Static Model}}
+\put(120,110){\vector(1,0){30}}
+
+
+%\only<1-2>{
+\put(50,20){\framebox(60,16){Counter$_1$}}
+\put(50,40){\framebox(60,16){Counter$_2$}}
+\put(50,60){\framebox(60,16){Counter$_3$}}
+\put(50,80){\framebox(60,16){Counter$_4$}}
+\put(50,100){\framebox(60,16){Counter$_5$}}
+%\put(50,120){\framebox(60,16){Counter 6}}
+%}
+	
+\end{picture}
+\caption{Data mining algorithm that uses statistics counters.}
+\label{fig:fr1}
+\end{figure}
+%\end{block}
+
+%\column{5.5cm}
+%\only<1>{
+%\begin{block}{Concept drift}
+\ENDOMIT
+
+The other way is to embed the window system {\em inside} the learning
+algorithm, to maintain the statistics required by the learning
+algorithm continuously updated; it is then the algorithm's responsibility
+to keep the model in synchrony with these statistics, as shown in Figure~\ref{fig:fr3}. 
+
+\begin{figure}[h]
+
+\begin{picture}(160,160)(-80,0)
+\put(10,110){\vector(1,0){30}}
+\put(20,120){\makebox(0,0){input}}
+\put(140,120){\makebox(0,0){output}}
+\put(40,105){\framebox(80,50){DM Algorithm}}
+%\put(40,105){\framebox(80,25){Data Mining Algorithm}}
+\put(40,80){\framebox(80,25){Static Model}}
+\put(120,110){\vector(1,0){30}}
+
+%\put(240,90){\vector(1,0){40}}
+%\put(290,100){\makebox(0,0){Alarm}}
+%\put(160,60){\framebox(80,50){Change Detect.}}
+%\put(120,125){\vector(1,0){160}}
+%\put(300,135){\makebox(0,0){Estimation}}
+
+\put(40,10){\color{nicered}\framebox(80,30){Change Detect.}}
+%\put(20,0){\framebox(250,150)}
+
+\put(30,110){\line(0,-1){80}}
+\put(30,30){\vector(1,0){10}}	
+%\put(180,30){\vector(1,0){100}}
+%\put(280,40){\makebox(0,0){$x_l$}}	
+\put(80,40){\vector(0,1){40}}
+%\put(170,40){\vector(0,1){20}}
+%\put(170,60){\vector(0,-1){20}}
+
+\put(140,110){\line(0,-1){80}}	
+\put(140,30){\vector(-1,0){20}}	
+\end{picture}
+\caption{Data mining algorithm framework with concept drift.}
+\label{fig:fr2}
+\end{figure}
+\BEGINOMIT
+%\end{block}
+%}
+%\only<2>{
+%\begin{block}{Concept Drift}
+
+Our proposal is to use the same technique that in the static data case, only replacing the counters by estimators of these data. The main advantage is
+that the statistics are encapsulated in the window-resizing estimator algorithm
+ without having the user to decide any parameter. The user simply assumes that the data mining algorithm works with the statistics of the currently relevant data.
+ Figure~\ref{fig:fr3} shows this structure.
+\ENDOMIT
+
+\begin{figure}[h]
+
+\begin{picture}(160,160)(-80,0)
+
+%\put(25,0){\framebox(100,170)}
+\put(10,110){\vector(1,0){30}}
+\put(20,120){\makebox(0,0){input}}
+\put(140,120){\makebox(0,0){output}}
+\put(40,10){\framebox(80,145)}
+\put(80,140){\makebox(0,0){DM Algorithm}}
+%\put(40,105){\framebox(80,25){Data Mining Algorithm}}
+%\put(40,80){\framebox(80,25){Static Model}}
+\put(120,110){\vector(1,0){30}}
+
+%\only<2>{\color<2>{blue}
+\put(47,20){\color{nicered}\framebox(60,16){Estimator$_1$}}
+\put(47,40){\color{nicered}\framebox(60,16){Estimator$_2$}}
+\put(47,60){\color{nicered}\framebox(60,16){Estimator$_3$}}
+\put(47,80){\color{nicered}\framebox(60,16){Estimator$_4$}}
+\put(47,100){\color{nicered}\framebox(60,16){Estimator$_5$}}
+%\put(50,120){\framebox(60,16){Counter 6}}
+%}
+	
+\end{picture}
+%\end{block}
+%}
+\caption{Data mining algorithm framework with concept drift using estimators replacing counters.} 
+\label{fig:fr3}
+\end{figure}
+
+%\end{columns}
+
+%\subsection{Window Management Models}
+
+Learning algorithms that detect change, usually compare statistics of two windows.
+Note that the methods may be memoryless: they may keep window statistics without 
+storing all their elements. %They compare statistics of the windows, not their elements.
+There have been in the literature, some different window management strategies:
+\begin{itemize}
+\item Equal \& fixed size subwindows: Kifer et al.~\cite{kifer-detecting} 
+compares one reference, non-sliding, window of older data with a sliding window
+of the same size keeping 
+%compares one window of older data with a window with the same size keeping 
+the most recent data.
+\item Equal size adjacent subwindows: Dasu et al.~\cite{Dasu} compares 
+two adjacent sliding windows of the same size of recent data.
+\item Total window against subwindow: Gama et al.~\cite{Gama} compares the window that contains all the data with a subwindow of data from the beginning until it detects that the accuracy of the algorithm decreases.
+\end{itemize}
+
+%In Chapter~\ref{ch:adwin} we will present {\tt ADWIN}, a method whose %{\tt ADWIN}'s 
+The strategy of {\tt ADWIN}, the method presented in next chapter, 
+will be to compare all the adjacent subwindows in which is possible to partition the window containing all the data.
+Figure~\ref{Fig:wms} shows these window management strategies.
+
+
+\begin{figure}[h]
+Let $W= \fbox{101010110111111}$
+\begin{itemize}
+\item {Equal \& fixed size subwindows:} $ \fbox{1010}1011011\fbox{1111}$
+%{\sl D. Kifer, S. Ben-David, and J. Gehrke}. Detecting change in data streams. 2004
+%\hline
+
+\item {Equal size adjacent subwindows:} $ 1010101\fbox{1011}\fbox{1111}$ 
+%{\sl Dasu et al.}
+%\hline
+
+\item { Total window against subwindow:}
+$ \fbox{\fbox{10101011011}1111}$
+%{\sl J. Gama, P. Medas, G. Castillo, and P. Rodrigues.} Learning with drift detection. 2004
+
+%\hline
+%\end{columns}
+
+\item {{\tt ADWIN:}  All adjacent subwindows:}
+\begin{eqnarray*}
+\fbox{1} \fbox{01010110111111} \\
+\fbox{1010} \fbox{10110111111} \\
+\fbox{1010101} \fbox{10111111} \\
+\fbox{1010101101} \fbox{11111} \\
+\fbox{10101011011111} \fbox{1} \\
+\end{eqnarray*}
+
+\end{itemize}
+\caption{Different window management strategies}
+\label{Fig:wms}
+\end{figure}
+
+\section{Optimal Change Detector and Predictor}
+\label{sOptimal}
+
+We have presented in section~\ref{Sframework} a general framework for 
+time change detectors and predictors. Using this framework we can establish
+ the main properties of an optimal
+change detector and predictor system as the following:
+
+\begin{itemize}
+\item High accuracy
+\item Fast detection of change
+\item Low false positives and negatives ratios 
+\item Low computational cost: minimum space and time needed
+\item Theoretical guarantees 
+\item No parameters needed
+\item Detector of type IV: Estimator with Memory and Change Detector
+\end{itemize}
+
+In the next chapter we will present %design and propose 
+{\tt ADWIN}, %the method presented in next chapter, is 
+a change detector and predictor 
+with these characteristics, using an adaptive sliding window model.  %Our proposal 
+{\tt ADWIN}'s window management strategy will be to compare all the adjacent subwindows in which is possible to partition the window containing all the data.
+It seems that this procedure may be the most accurate, since it looks at all possible subwindows partitions. On the other hand, time cost is the main disadvantage of this method. Considering this, we will provide another version working in the strict conditions of the Data Stream model, namely low
+memory and low processing per item.
+
+
+
+
+
+%%% END OF FILE
+
+
+\BEGINOMIT
+In order to deal with evolving data streams,
+%make time-critical predictions, 
+the model learned
+from the streaming data must be able to capture up-to-date trends
+and transient patterns in the stream \cite{tsymbal-problem,wang03mining}. To do this, as we revise the
+model by incorporating new examples, we must also eliminate the
+effects of outdated examples representing outdated concepts. This is a nontrivial
+task. 
+
+The challenge of maintaining an accurate and up-todate learner algorithm %classifier
+ for infinite data streams with concept drifts including
+the following:
+
+\begin{itemize}
+\item {\bf Accuracy}. It is difficult to decide what are the examples
+that represent outdated concepts, and hence their effects
+should be excluded from the current model. A commonly
+used approach is to {\sl forget} old examples at a constant rate.
+However, a higher rate would lower the accuracy of the {\sl uptodate} model as it is supported by a less amount of training
+data and a lower rate would make the model less sensitive
+to the current trend and prevent it from discovering transient
+patterns.
+
+\item  {\bf Efficiency}. For example, decision trees are constructed in a greedy {\sl divide and conquer} manner, and they are non-stable. Even a slight
+drift of the underlying concepts may trigger substantial changes
+(e.g., replacing old branches with new branches, re-growing
+or building alternative subbranches) in the tree, and severely
+compromise learning efficiency.
+
+\item {\bf Ease of use}. Substantial implementation efforts are required
+to adapt classification methods such as decision trees
+to handle data streams with drifting concepts in an incremental
+manner [21]. The usability of this approach is limited as
+state-of-the-art learning methods cannot be applied directly.
+\end{itemize}
+
+Also, a difficult problem in handling concept drift is distinguishing between true concept
+drift and noise. Some algorithms may overreact to noise, erroneously interpreting it as
+concept drift, while others may be highly robust to noise, adjusting to the changes too
+slowly. An ideal learner should combine robustness to noise and sensitivity to concept
+drift~\cite{tsymbal-problem,WidmerKubat}.
+\ENDOMIT
+
+
+\BEGINOMIT
+\section{Types of concept drift}
+
+The following different modes of change have been identified in the literature:
+
+\begin{itemize}
+\item concept change
+\begin{itemize}
+\item concept drift
+\item concept shift
+\end{itemize}
+\item distribution or sampling change
+\end{itemize}
+
+Concept change refers to the change of the underlying concept over time.
+Concept drift describes a gradual change of the concept .
+ Concept shift happens when a change between two concepts is more abrupt. 
+Distribution change, also known as sampling
+change or shift or virtual concept drift , refers to the change in the data distribution.
+
+Even if the concept remains the same, this change may often lead to revising the
+current model as the model's error rate may no longer be acceptable with the
+new data distribution.
+
+Some authors, as Stanley~\cite{stanley03learning}, have suggested that from the practical point of view, it is not
+essential to differentiate between concept change and sampling change since the
+current model needs to be changed in both cases.
+We agree to sone extent, and our methods will not be targeted to one particular type of change.
+%Both cases of concept drift and concept shift abound in the
+%real world. Since they have different characteristics, they may require different
+%optimal prediction strategies.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Change Detection}
+
+Change detection is not an easy task, since a fundamental
+limitation~\cite{Gustaffson:2000} exists: the design of a change detector
+is a compromise between detecting true changes and avoiding false
+alarms. 
+See~\cite{Gustaffson:2000} and~\cite{Baseville93} for a more detailed survey of change detection methods.
+
+\subsection{The CUSUM Test}
+\label{Sscusum}
+
+The cumulative sum (CUSUM algorithm), which was first proposed in \cite{Page54}, 
+is a change detection algorithm that gives an alarm when the mean of the input data is significantly 
+different from zero. The CUSUM input can be any filter residual, for instance 
+the prediction error from a Kalman filter.
+
+The CUSUM test is as follows:
+$$g_0=0$$
+$$g_t=\mbox{max }(0,g_{t-1}+ \epsilon_t -\upsilon)$$
+$$\mbox{if } g_t>h \mbox{ then alarm and } g_t=0$$
+%
+The CUSUM test is memoryless, and its accuracy depends on the choice of parameters $\upsilon$ and $h$.
+
+\subsection{The Geometric Moving Average Test}
+\label{Ssgma}
+The CUSUM test is a stopping rule. Other stopping rules exist. For example, the Geometric Moving Average (GMA) test,
+first proposed in~\cite{Roberts}, is the following
+$$g_0=0$$
+$$g_t= \lambda g_{t-1}+ ( 1- \lambda) \epsilon_t$$
+$$\mbox{if } g_t>h \mbox{ then alarm and } g_t=0$$
+The forgetting factor $\lambda$ is used to give more or less weight to the last data arrived.
+The treshold $h$ is used to tune the performance of the detector.
+
+
+\subsection{Statistical Tests}
+\label{Ssstatic}
+
+There exist some statistical tests that may be used to detect change.
+A statistical test is a procedure for deciding whether a hypothesis 
+about a quantitative feature of a population is true or false. We test 
+an hypothesis of this sort by drawing a random sample from the population
+ in question and calculating an appropriate statistic on its items. 
+If, in doing so, we obtain a value of the statistic that would occure
+ rarely when the hypothesis is true, we would have reason to reject the hypothesis. 
+
+To detect change, we need to compare two sources of data, and decide if
+the hypothesis $H_0$ that they come from the same distribution is true. 
+Let's suppose we have two estimates, $\hmu_0$ and $\hmu_1$ with variances
+$\sigma_0^2$ and $\sigma_1^2$. If there is no change in the data, 
+these estimates will be consistent. Otherwise, a hypothesis test will
+reject $H_0$ and a change is detected. There are several ways to construct
+such a hypothesis test. The simplest one is to study the difference
+
+$$ \hmu_0 - \hmu_1 \in N(0, \sigma_0^2+ \sigma_1^2), \mbox{ under } H_0$$
+
+or, to make a $\chi^ 2$ test
+
+$$ \frac{(\hmu_0 - \hmu_1)^ 2}{\sigma_0^2+ \sigma_1^2} \in \chi^ 2(1), \mbox{ under } H_0$$
+
+from which a standard hypothesis test can be formulated. 
+
+For example, suppose we want to design a change detector using a statistical test
+with a probability of false alarm of $5\%$, that is,
+
+$$\Pr \left( \frac{|\hmu_0 - \hmu_1|}{\sqrt{\sigma_0^2+ \sigma_1^2}} > h \right) = 0.05$$
+
+A table of the Gaussian distribution shows that $P( X< 1.96) = 0.975$, so the test becomes
+
+$$\frac{(\hmu_0 - \hmu_1)^ 2}{{\sigma_0^2+ \sigma_1^2}} > 1.96$$
+
+\subsection{Drift Detection Method}
+\label{SsDDM}
+
+The drift detection method (DDM) proposed by Gama et al.  \cite{Gama} controls the number of errors produced by
+the learning model during prediction. %It uses a binomial distribution that 
+%gives the general form of the probability for the random variable that represents the
+It compares the statistics of two windows: the first one contains all the data, and the second one contains only the data from the beginning until the number of errors increases. Their method doesn't store these windows in memory. It keeps only statistics and a window of recent errors data.% since a warning signal is detected.
+
+The number of errors in a sample of $n$ examples is modelized by a binomial distribution. For each point $i$ in the sequence
+that is being sampled, the error rate is the probability of misclassifying ($p_i$),
+with standard deviation given by $s_i = \sqrt{p_i(1 - p_i)/i}$. They assume (as states the
+PAC learning model \cite{Mitchell} that the error rate of the learning algorithm ($p_i$) will
+decrease while the number of examples increases if the distribution of the examples is stationary. A significant increase in the error of the algorithm, suggests
+that the class distribution is changing and, hence, the actual decision model is
+supposed to be inappropriate. Thus, they store the values of $p_i$ and $s_i$ when
+$p_i+s_i$ reaches its minimum value during the process (obtaining $p_{pmin}$ and $s_{min}$).
+And it checks when the following conditions triggers:
+\begin{itemize}
+\item $p_i + s_i \geq p_{min} + 2 \cdot s_{min}$ for the warning level. Beyond this level, the examples are stored in anticipation of a possible change of context.
+
+\item $p_i + s_i \geq p_{min} + 3 \cdot s_{min}$ for the drift level. Beyond this level the concept drift is supposed to be true, the model induced by the learning method is reset and a new model is learnt using the examples stored since the warning level triggered. The values for $p_{min}$ and $s_{min}$ are reset too.
+
+\end{itemize}
+
+This approach has a good behaviour detecting abrupt changes and gradual
+changes when the gradual change is not very slow, but it has difficulties when
+the change is slowly gradual. In that case, the examples will be stored for long
+time, the drift level can take too much time to trigger and the examples memory
+can be exceeded.
+
+Baena-Garc\'{\i}a et al. proposed a new method EDDM in order to improve DDM. 
+EDDM~\cite{EDDM} is shown to be better
+than DDM for some data sets and worse for others. It is based on the 
+estimated distribution of the distances between classification errors.
+The window resize procedure is governed by the same heuristics.
+
+
+%\subsection{Other change detection methods}
+\label{Ssochange}
+
+
+\section{Estimation}
+
+%The Estimator component
+An Estimator is an algorithm that estimates the desired statistics on the input data, which
+may change over time. %The algorithm may or may not use the data contained in the Memory. 
+The simplest Estimator algorithm for the expected is the {\em linear estimator,}
+which simply returns the average of the data items contained in the Memory. 
+Other examples of run-time efficient estimators are 
+Auto-Regressive, Auto Regressive Moving Average, and Kalman filters. 
+
+\subsection{Exponential Weighted Moving Average}
+\label{Ssewma}
+
+
+An exponentially weighted moving average (EWMA) estimator is 
+an algorithm that updates the estimation of a variable by combining the most 
+recent measurement of the variable with the EWMA of all previous measurements:
+
+$$ X_k=\alpha z_k + (1 -\alpha) X_{k-1}$$ 
+
+where $X_k$ is the moving average, $z_k$ is the latest measurement, and $\alpha$
+ is the weight given to the latest measurement (between 0 and 1). 
+The idea is to produce an estimate that gives more weight to recent measurements, 
+on the assumption that recent measurements are more likely to be relevant. 
+
+
+
+\subsection{The Kalman Filter}
+\label{Sskalman}
+
+One of the most widely used Estimation algorithms is the Kalman filter. We give here a description
+of its essentials; see \cite{welch} for a complete introduction.
+%The Kalman filter is an optimal recursive data-processing algorithm that generates estimates of the variables 
+%(or states) %of the system being controlled by processing all available measurements. 
+
+The Kalman filter addresses the general problem of trying to estimate the state $x \in \Re^n$ 
+of a discrete-time controlled process that is governed by the linear stochastic difference equation
+$$x_k=Ax_{k-1} + B u_k + w_{k-1}$$
+with a measurement $z \in \Re^m$ that is
+$$Z_k = H x_k + v_k.$$
+%
+The random variables $w_k$ and $v_k$ represent the process and measurement noise
+(respectively). They are assumed to be independent (of each other), white, and with
+normal probability distributions
+$$p(w) \sim N(0,Q) $$
+$$p(v) \sim N(0,R). $$
+%
+In essence, the main function of the Kalman filter is to estimate the state vector 
+using system sensors and measurement data  corrupted by noise.
+
+The Kalman filter estimates a process by using a form of feedback control: the filter
+estimates the process state at some time and then obtains feedback in the form of (noisy)
+measurements. As such, the equations for the Kalman filter fall into two groups: time
+update equations and measurement update equations. The time update equations are
+responsible for projecting forward (in time) the current state and error covariance
+estimates to obtain the a priori estimates for the next time step. 
+$$x^-_k=A x_{k-1} + B u_k$$
+$$P^-_k= AP_{k-1} A^T +Q$$
+%
+The measurement update equations are responsible for the feedback, i.e. for 
+incorporating a new measurement into the a priori estimate to obtain an improved a posteriori estimate.
+%
+$$K_k=P^-_k H^T(H P^-_kH^T+R)^{-1}$$
+$$ x_k=x_k^- + K_k(z_k -Hx_k^-)$$
+$$P_k=(I-K_k H) P^-_k.$$
+%
+There are extensions of the Kalman filter (Extended Kalman Filters, or EKF)
+for the cases in which the process to be estimated or the measurement-to-process
+relation is nonlinear. We do not discuss them here. 
+%Basically, % we change our matrixes $A$ and $H$ for some nonlinear functions $f$ and $h$ A Kalman filter that 
+%that linearizes about the current mean and covariance.
+
+In our case we consider the input data sequence of real values $z_1, z_2, \ldots, z_t, \ldots$ 
+as the measurement data. The difference equation of our discrete-time controlled process is the simpler one, 
+with $A=1, H=1, B=0$. So the equations are simplified to:
+%
+$$K_k= P_{k-1}/(P_{k-1}+R)$$
+$$X_k=X_{k-1}+ K_k(z_k -X_{k-1})$$
+$$P_k=P_k(1-K_k)+Q.$$
+%
+The performance of the Kalman filter depends on the accuracy of the a-priori assumptions:
+\begin{itemize}
+\item linearity of the difference stochastic equation%, and normal probabilities with zero mean of covariances Q and R.
+\item estimation of covariances $Q$ and $R$, assumed to be fixed, known, 
+      and follow normal distributions with zero mean.
+\end{itemize}  
+%
+When applying the Kalman filter to data streams that vary arbitrarily over time, both
+assumptions are problematic. The linearity assumption for sure, but also the assumption
+that parameters $Q$ and $R$ are fixed and known -- in fact, estimating them from the data
+is itself a complex estimation problem. 
+
+\ENDOMIT
+
+%\subsection{Other estimators}
+\label{Ssoestim}
+
+
+
+
+
+
+\BEGINOMIT
+In addition, window strategies have been used in conjunction
+with learning/mining algorithms in two ways: one,
+externally to the learning algorithm; the window is used
+to monitor the error rate of the current model, which under
+stable distributions should keep decreasing or at most stabilize;
+when instead this rate grows significantly, change is declared and
+the base learning algorithm is invoked to revise or rebuild the
+model with fresh data. Note that in this case the window
+contains bits or real numbers (not full examples).
+The other way is to embed the window system {\em inside} the learning
+algorithm, to maintain the statistics required by the learning
+algorithm continuously updated; it is then the algorithm's responsibility
+to keep the model in synchrony with these statistics. 
+%\ENDOMIT
+%In this paper, 
+%The first work \cite{bif-gav}
+
+First, we propose a new algorithm ({\tt ADWIN}, for ADaptive
+WINdowing)
+for maintaining a window of variable size containing bits or real numbers.
+The algorithm automatically grows the window when no change is apparent,
+and shrinks it when data changes.
+Unlike many related works, we provide rigorous guarantees of
+its performance, in the form of bounds on the rates of false positives
+and false negatives.
+In fact, it is possible to show that for some change structures, {\tt ADWIN}
+automatically adjusts its window size to the optimum balance point
+between reaction time and small variance.
+Since {\tt ADWIN} keeps bits or real numbers, it can be put to work
+together with a learning algorithm in the first way, that is,
+to monitor the error rate of the current model.
+
+The first version of {\tt ADWIN} is inefficient in time and memory.
+Using ideas from data-stream algorithmics,
+we provide another version, {\tt ADWIN2}, working in low memory and
+time. In particular, {\tt ADWIN2} keeps a window of length $W$ with
+$O(\log W)$ memory and update time, while keeping essentially
+the same performance guarantees as {\tt ADWIN} (in fact, it does
+slightly better in experiments).
+Because of this low time and memory requirements, it is thus possible
+to use {\tt ADWIN2} in the second way: a learning algorithm
+can create many instances of {\tt ADWIN2} to maintain updated
+the statistics (counts, averages, entropies, \dots) from which it
+builds the model. 
+
+
+
+To test our approach, we perform two types of experiments.
+In the first type, we test the ability of {\tt ADWIN2}
+to track some unknown quantity, independent of any learning.
+We generate a sequence of random bits with some hidden
+probability $p$ that changes over time. We check the rate
+of false positives (\% of claimed changes when $p$ does not
+really change) and false negatives (\% of changes missed
+when $p$ does change) and in this case the time until
+the change is declared. We compare {\tt ADWIN2} with
+a number of fixed-size windows and show, as expected,
+that it performs about as well or only slightly worse than the best
+window for each rate of change, and performs far better than
+each windows of any fixed-size $W$ when the change of rate is
+very different from $W$. We also compare
+to one of the recently proposed variable-size window methods \cite{Gama}
+and show that it performs better, for moderately large quantities of data.
+
+Then we test {\tt ADWIN2} in conjunction with two %a 
+learning algorithms.
+%In this first work,
+ We choose the Na\"\i ve Bayes (NB) predictor  and a $k$-means clusterer since
+it is easiest to observe their reactions % its reaction
+ to time changes. %In the long version of the paper we report on experiments with 
+%a $k$-means clusterer.
+%We are currently working on the application to decision tree induction. 
+We try both using {\tt ADWIN2} ``outside'', monitoring NB's
+error rate, and ``inside'', providing accurate statistics to NB.
+We compare them to fixed-size windows and the 
+ variable-length window strategy in \cite{Gama}.
+We perform experiments both on synthetic and real-life data.
+The second combination ({\tt ADWIN2} inside NB) performs best, sometimes
+spectacularly so. The first combination performs about as well
+as \cite{Gama} in some cases, and substantially better in others.
+\ENDOMIT
+\BEGINOMIT
+{\bf NOTE:} Due to space limitations, several discussions,
+technical details, and results of experiments are omitted in this 
+version. They can be found in the long version, available from the authors'
+homepages.
+%\ENDOMIT
+
+%Our second work \cite{Kbif-gav}
+
+Finally, we propose the combination of a classical estimation method
+in automatic control theory, the Kalman filter, with 
+{\tt ADWIN} as an algorithm for adaptively changing the size of the window in reaction to changes observed in the data. 
+
+%One of the most widely used estimation algorithms is the Kalman filter, an algorithm that generates 
+%estimates of variables of the system being controlled by processing available sensor measurements. 
+Kalman filtering and related estimation algorithms
+have proved tremendously useful in a large variety of settings. 
+Automatic machine learning is but one of them; 
+see  \cite{gama-apneas,jacob-04} among many others. 
+There is however an important difference in the 
+control theory and machine learning settings: 
+
+In automatic control, we assume that system parameters are known or easily detectable; 
+these parameters are physical properties of devices, and therefore fixed. 
+In contrast, in most machine learning situations the distribution that generates the examples
+is totally unknown, and there is no obvious way to measure any of its statistics, 
+other than estimating them from the data. In addition, these statistics 
+may vary impredictably over time, either continuously at a slow rate, or abruptly from time to time. 
+
+We combine {\tt ADWIN} and Kalman filter and
+compare experimentally the performance of the resulting algorithm, 
+{\tt K-ADWIN}, with other estimator algorithms. %The intuition
+%why this combination should be better than {\tt ADWIN} alone
+%or the Kalman filter alone is as follows. 
+\BEGINOMIT
+The Kalman filter is a memoryless algorithm, and it can benefit from having
+a memory aside. In particular, running a Kalman filter requires
+knowledge of at least two parameters of the system, named
+{\em state covariance} and {\em measurement covariance}, that should
+be estimated a priori. These are generally difficult to measure in the context
+of learning from a data stream, and in addition they can vary over time. 
+The window that {\tt ADWIN} maintains adaptively is guaranteed
+to contain up-to-date examples from which the current value of
+these covariances can be estimated and used in the Kalman filter. 
+
+On the other hand, {\tt ADWIN} is somewhat slow in detecting
+a gradual change, because it gives the same weight
+to all examples in the window -- it is what we will call a {\em linear}
+estimator. If there is a slow gradual change, 
+the most recent examples should be given larger weight. This is
+precisely what the Kalman filter does in its estimation. 
+%\ENDOMIT
+As in \cite{bif-gav} %section \ref{ch:conexperiments}
+, we test {\tt K-ADWIN} on two well-known learning 
+algorithms where it is easy to observe the effect of distribution drift:
+the Na\"\i ve Bayes classifier and the $k$-means
+clusterer.
+%\BEGINOMIT
+ We also perform experiments that directly compare the ability
+of different estimators to track the average value of a stream of real numbers
+that varies over time. 
+We use synthetic data in order to control precisely
+the type and amount of distribution drift. The main conclusions are: 
+
+\begin{itemize}
+\item In all three types of experiments (tracking, Na\"\i ve Bayes, and $k$-means), 
+{\tt K-ADWIN} either gives best results or is very close in performance to the best 
+of the estimators we try. And each of the other estimators is 
+clearly outperformed by {\tt K-ADWIN}
+in at least some of the experiments. In other words, no estimator ever does
+much better than {\tt K-ADWIN}, and each of the others 
+is outperformed by {\tt K-ADWIN} in at least one context. 
+\item More precisely, for the tracking problem, {\tt K-ADWIN} and {\tt ADWIN} automatically
+do about as well as the Kalman filter with the best set of fixed covariance parameters
+(parameters which, in general, can only be determined after a good number of experiments). 
+And these three do far better than any fixed-size window. 
+\item In the Na\"\i ve Bayes experiments, {\tt K-ADWIN} does somewhat better than
+{\tt ADWIN} and far better than any memoryless Kalman filter. This is, then, 
+a situation where having a memory clearly helps. 
+\item In the $k$-means case, again {\tt K-ADWIN} performs about as well 
+as the best (and difficult to find) Kalman filter, 
+and they both do much better than fixed-size windows.
+\end{itemize}
+\ENDOMIT

@@ -1,0 +1,107 @@
+% Timememory.tex
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Time and Memory Requirements}
+
+In the experiments above we have only discussed
+the performance in terms of error rate, and not 
+time or memory usage. Certainly, this was not our main goal
+%in this paper, 
+and we have in no way tried to optimize 
+our implementations in either time or memory (as is clearly indicated
+by the choice of Java as programming language). 
+Let us, however, mention some rough figures about time and memory, 
+since they suggest that our approach can be fairly competitive 
+after some optimization work. 
+
+All programs were implemented in Java Standard Edition.
+The experiments were performed on a 3.0 GHz Pentium PC machine with 1 Gigabyte main memory,
+running Microsoft Windows XP.  The Sun Java 2 Runtime Environment, Standard Edition
+(build 1.5.0 06-b05) was used to run all benchmarks.
+
+Consider first the experiments on \adwintwo alone. 
+A bucket formed by an integer plus a real number uses~9 bytes. Therefore, 
+about 540 bytes store a sliding window of 60 buckets. 
+In the boolean case, we could use only 5 bytes per bucket, 
+which reduces our memory requirements to 300 bytes per window of 60 buckets.
+Note that 60 buckets, with our choice of $M=5$ suffice to represent a window
+of length about $2^{60/5} = 4096$. 
+
+%\hrule
+%REVISAR I COMPLETAR AQUEST PARAGRAF i resoldre les ref's a les taules
+%\hrule
+In the experiment comparing different estimators (Tables \ref{tab:compareL11},\ref{tab:compareL13},\ref{tab:compareL21} and \ref{tab:compareL23}), 
+the average number of buckets used by \adwintwo was 45,11, and the average time spent was 23 seconds 
+to process the $10^6$ samples, which is quite remarkable.
+In the Na\"{\i}ve Bayes experiment (Table \ref{tab:NB}), 
+it took an average of 1060 seconds and 2000 buckets to process $10^6$ samples
+by $34$ estimators. 
+%\hrule
+%AQUESTS 34 ESTIMATORS SEGUEIX ESSENT CORRECTE? I VOL DIR 34 ESTIMADORS ADWIN, 
+%NO COMPTEM ELS FIXED-SIZE WINDOWS NI ELS DE GAMA, oi?
+%------ si, �s correcte : s�n 
+%------- 8 atributs x 2 valors atribut x 2 clases + 2 clases = 32+2=34
+%------- per cada experiment es necesiten 34 estimadors diferents.. 
+%\hrule
+This means less than $32$ seconds and $60$ buckets per estimator. 
+%%Per la versi� llarga nom�s?
+The results for $k$-means were similar: We executed the $k$-means
+experiments with $k=5$ and two attributes, with 10 estimators and $10^6$ sample points using
+about an average of 60 buckets and 11.3 seconds for each instance of \adwintwoz.
+
+\begin{table}[htpb]
+%\centering
+%\vskip 0.15in
+\begin{center}
+\begin{tabular}{lccccc}\toprule
+Change scale &\adwintwo& Counter& EWMA & Counter& EWMA+Cusum \\
+   $n$          &         &        & +Cusum            & Object& Object \\
+ \midrule
+30	&72,396	&23	&40	&82	&108 \\
+50	&72,266	&21	&32	&58	&71 \\
+75	&12,079	&17	&23	&54	&66 \\
+100	&12,294	&16	&23	&50	&67 \\
+1,000	&22,070	&15	&20	&52	&89 \\
+10,000	&38,096	&16	&20	&63	&64 \\
+100,000	&54,886	&16	&27	&54	&64 \\
+1,000,000	&71,882	&15	&20	&59	&64 \\ \bottomrule
+\end{tabular}
+\end{center}
+%\vskip -0.1in
+\caption{Time in miliseconds on \adwintwo experiment reading examples from memory}
+\label{tab:ADWINM1}
+\end{table}
+
+\begin{table}[htpb]
+%\centering
+%\vskip 0.15in
+\begin{center}
+\begin{tabular}{lccc}\toprule
+Change scale &\adwintwo& Counter& EWMA+  \\
+  $n$           &         &        & Cusum   \\
+ \midrule
+30	&83,769	&10,999	&11,021\\
+50	&83,934	&11,004	&10,964\\
+75	&23,287	&10,939	&11,002\\
+100	&23,709	&11,086	&10,989\\
+1,000	&33,303	&11,007	&10,994 \\
+10,000	&49,248	&10,930	&10,999 \\
+100,000	&66,296	&10,947	&10,923 \\
+1,000,000	&83,169	&10,926	&11,037 \\ \bottomrule
+\end{tabular}
+\end{center}
+%\vskip -0.1in
+\caption{Time in miliseconds on \adwintwo experiment reading examples from disk}
+\label{tab:ADWINM2}
+\end{table}
+
+Finally, we compare the time needed by an \adwintwoz, a simple counter, and an EWMA with Cusum change detector and predictor.
+We do the following experiment: we feed an \adwintwo estimator, a simple counter and a EWMA with Cusum with $1,000,000$ samples from a distribution
+that has an abrupt change every $n$ samples. 
+ Table~\ref{tab:ADWINM1} shows the results when the samples are retrieved from memory, and  Table~\ref{tab:ADWINM2} when the samples are stored and retrieved from disk. We test also the overhead due to the fact of using objects, instead of native numbers in Java.
+Note that the time difference between \adwintwo and the other methods is not constant, and it depends on the scale of change. The time difference between a EWMA and Cusum estimator and a simple counter estimator is small.
+We observe that the simple counter is the fastest method, and that \adwintwo needs more time to process the samples when there is constant change or when there is no change at all.
+
+
+

@@ -1,0 +1,230 @@
+\section{Introduction}
+\label{Introduction}
+
+%In order to learn with data whose nature changes over time, 
+%we propose %to study and develop 
+%several strategies. 
+ %This current work constitutes our 
+ Our contributions in this area of research %, wich 
+ can be divided in three main ones: a new unified way to look at the problem of concept drift, the proposal of 
+two estimators algorithms that detect change using a sliding 
+window {\tt ADWIN} and {\tt K-ADWIN} (combination of {\tt ADWIN} with Kalman filters),
+and the application to two learners algorithms: Na\"{\i}ve Bayes and K-means.
+
+\input{ConIntrod1}
+%an algorithm {\tt ADWIN} to detect change using a sliding window, and the combination of {\tt ADWIN} with Kalman filters.
+
+\BEGINOMIT
+is one of the core problems in data mining and machine learning.
+To mine or learn such data, one needs strategies for
+the following three tasks, at least: 1) detecting when
+change occurs 2) deciding which examples to keep and which ones
+to forget (or, more in general, keeping updated sufficient statistics),
+and 3) revising the current model(s) when significant  
+change has been detected.
+
+Most strategies use variations of the {\em sliding window} idea:
+a window is maintained that keeps the most recently read examples,
+and from which older examples are dropped according to some
+set of rules. The contents of the window can be used for the
+three tasks above: 1) to detect change (e.g., by using some statistical
+test on different subwindows), 2) obviously, to
+obtain updated statistics from the recent examples,
+and 3) to have data to rebuild or revise the model(s) after data has 
+changed.
+
+The simplest rule is to keep a window
+of some fixed size, usually determined {\em a priori} by the user.
+This can work well if information on the time-scale
+of change is available, but this is rarely the case.
+Normally, the user is caught in a tradeoff without solution:
+choosing a small size (so that the window reflects accurately the current distribution)
+and choosing a large size (so that many examples are available to work on, 
+increasing accuracy in periods of stability).
+A different strategy uses a {\em decay function}
+to weight the importance of examples according to their
+age (see e.g. \cite{CS03}). %strauss
+In this case, the tradeoff shows up in the 
+choice of a decay constant that should match the unknown rate of change.
+
+Less often, it has been proposed to use windows of variable size.
+In general, one tries to keep examples as long as possible, i.e., 
+while not proven stale. This delivers
+the users from having to guess {\em a priori} an unknown parameter such
+as the time scale of change. However, most works along these lines 
+that we know of (e.g., \cite{Gama,Klinkenberg,Last,WidmerKubat})
+are heuristics and have no rigorous guarantees of performance. 
+Some works in computational learning theory 
+(e.g. \cite{bartlett00,helmbold94tracking,herbster95tracking}) 
+describe strategies with rigorous performance
+bounds, but to our knowledge they have never been tried
+in real learning/mining contexts and often assume a known bound 
+on the rate of change. 
+
+In addition, window strategies have been used in conjunction
+with learning/mining algorithms in two ways: one,
+externally to the learning algorithm; the window is used
+to monitor the error rate of the current model, which under
+stable distributions should keep decreasing or at most stabilize;
+when instead this rate grows significantly, change is declared and
+the base learning algorithm is invoked to revise or rebuild the
+model with fresh data. Note that in this case the window
+contains bits or real numbers (not full examples).
+The other way is to embed the window system {\em inside} the learning
+algorithm, to maintain the statistics required by the learning
+algorithm continuously updated; it is then the algorithm's responsibility
+to keep the model in synchrony with these statistics. 
+\ENDOMIT
+%In this paper, 
+Our first work \cite{bif-gav}
+proposes a new algorithm ({\tt ADWIN}, for ADaptive
+WINdowing) %\cite{bif-gav}
+for maintaining a window of variable size containing bits or real numbers.
+The algorithm automatically grows the window when no change is apparent,
+and shrinks it when data changes.
+Unlike many related works, we provide rigorous guarantees of
+its performance, in the form of bounds on the rates of false positives
+and false negatives.
+In fact, it is possible to show that for some change structures, {\tt ADWIN}
+automatically adjusts its window size to the optimum balance point
+between reaction time and small variance.
+Since {\tt ADWIN} keeps bits or real numbers, it can be put to work
+together with a learning algorithm in the first way, that is,
+to monitor the error rate of the current model.
+
+The first version of {\tt ADWIN} is inefficient in time and memory.
+Using ideas from data-stream algorithmics,
+we provide another version, {\tt ADWIN2}, working in low memory and
+time. In particular, {\tt ADWIN2} keeps a window of length $W$ with
+$O(\log W)$ memory and update time, while keeping essentially
+the same performance guarantees as {\tt ADWIN} (in fact, it does
+slightly better in experiments).
+Because of this low time and memory requirements, it is thus possible
+to use {\tt ADWIN2} in the second way: a learning algorithm
+can create many instances of {\tt ADWIN2} to maintain updated
+the statistics (counts, averages, entropies, \dots) from which it
+builds the model. 
+
+
+To test our approach, we perform two types of experiments.
+In the first type, we test the ability of {\tt ADWIN2}
+to track some unknown quantity, independent of any learning.
+We generate a sequence of random bits with some hidden
+probability $p$ that changes over time. We check the rate
+of false positives (\% of claimed changes when $p$ does not
+really change) and false negatives (\% of changes missed
+when $p$ does change) and in this case the time until
+the change is declared. We compare {\tt ADWIN2} with
+a number of fixed-size windows and show, as expected,
+that it performs about as well or only slightly worse than the best
+window for each rate of change, and performs far better than
+each windows of any fixed-size $W$ when the change of rate is
+very different from $W$. We also compare
+to one of the recently proposed variable-size window methods \cite{Gama}
+and show that it performs better, for moderately large quantities of data.
+
+Then we test {\tt ADWIN2} in conjunction with two %a 
+learning algorithms.
+In this first work, we choose the Na\"\i ve Bayes (NB) predictor  and a $k$-means clusterer since
+it is easiest to observe their reactions % its reaction
+ to time changes. %In the long version of the paper we report on experiments with 
+%a $k$-means clusterer.
+%We are currently working on the application to decision tree induction. 
+We try both using {\tt ADWIN2} ``outside'', monitoring NB's
+error rate, and ``inside'', providing accurate statistics to NB.
+We compare them to fixed-size windows and the 
+ variable-length window strategy in \cite{Gama}.
+We perform experiments both on synthetic and real-life data.
+The second combination ({\tt ADWIN2} inside NB) performs best, sometimes
+spectacularly so. The first combination performs about as well
+as \cite{Gama} in some cases, and substantially better in others.
+
+\BEGINOMIT
+{\bf NOTE:} Due to space limitations, several discussions,
+technical details, and results of experiments are omitted in this 
+version. They can be found in the long version, available from the authors'
+homepages.
+\ENDOMIT
+
+Our second work \cite{Kbif-gav} proposes the combination of a classical estimation method
+in automatic control theory, the Kalman filter, with 
+{\tt ADWIN} as an algorithm for adaptively changing the size of the window in reaction to changes observed in the data. 
+
+%One of the most widely used estimation algorithms is the Kalman filter, an algorithm that generates 
+%estimates of variables of the system being controlled by processing available sensor measurements. 
+Kalman filtering and related estimation algorithms
+have proved tremendously useful in a large variety of settings. 
+Automatic machine learning is but one of them; 
+see  \cite{gama-apneas,jacob-04} among many others. 
+There is however an important difference in the 
+control theory and machine learning settings: 
+
+In automatic control, we assume that system parameters are known or easily detectable; 
+these parameters are physical properties of devices, and therefore fixed. 
+In contrast, in most machine learning situations the distribution that generates the examples
+is totally unknown, and there is no obvious way to measure any of its statistics, 
+other than estimating them from the data. In addition, these statistics 
+may vary impredictably over time, either continuously at a slow rate, or abruptly from time to time. 
+
+We combine {\tt ADWIN} and Kalman filter and
+compare experimentally the performance of the resulting algorithm, 
+{\tt K-ADWIN}, with other estimator algorithms. %The intuition
+%why this combination should be better than {\tt ADWIN} alone
+%or the Kalman filter alone is as follows. 
+\BEGINOMIT
+The Kalman filter is a memoryless algorithm, and it can benefit from having
+a memory aside. In particular, running a Kalman filter requires
+knowledge of at least two parameters of the system, named
+{\em state covariance} and {\em measurement covariance}, that should
+be estimated a priori. These are generally difficult to measure in the context
+of learning from a data stream, and in addition they can vary over time. 
+The window that {\tt ADWIN} maintains adaptively is guaranteed
+to contain up-to-date examples from which the current value of
+these covariances can be estimated and used in the Kalman filter. 
+
+On the other hand, {\tt ADWIN} is somewhat slow in detecting
+a gradual change, because it gives the same weight
+to all examples in the window -- it is what we will call a {\em linear}
+estimator. If there is a slow gradual change, 
+the most recent examples should be given larger weight. This is
+precisely what the Kalman filter does in its estimation. 
+\ENDOMIT
+%As in \cite{bif-gav}, %section \ref{ch:conexperiments}
+As with {\tt ADWIN}, we test {\tt K-ADWIN} on two well-known learning 
+algorithms where it is easy to observe the effect of distribution drift:
+the Na\"\i ve Bayes classifier and the $k$-means
+clusterer.
+\BEGINOMIT
+ We also perform experiments that directly compare the ability
+of different estimators to track the average value of a stream of real numbers
+that varies over time. 
+We use synthetic data in order to control precisely
+the type and amount of distribution drift. The main conclusions are: 
+
+\begin{itemize}
+\item In all three types of experiments (tracking, Na\"\i ve Bayes, and $k$-means), 
+{\tt K-ADWIN} either gives best results or is very close in performance to the best 
+of the estimators we try. And each of the other estimators is 
+clearly outperformed by {\tt K-ADWIN}
+in at least some of the experiments. In other words, no estimator ever does
+much better than {\tt K-ADWIN}, and each of the others 
+is outperformed by {\tt K-ADWIN} in at least one context. 
+\item More precisely, for the tracking problem, {\tt K-ADWIN} and {\tt ADWIN} automatically
+do about as well as the Kalman filter with the best set of fixed covariance parameters
+(parameters which, in general, can only be determined after a good number of experiments). 
+And these three do far better than any fixed-size window. 
+\item In the Na\"\i ve Bayes experiments, {\tt K-ADWIN} does somewhat better than
+{\tt ADWIN} and far better than any memoryless Kalman filter. This is, then, 
+a situation where having a memory clearly helps. 
+\item In the $k$-means case, again {\tt K-ADWIN} performs about as well 
+as the best (and difficult to find) Kalman filter, 
+and they both do much better than fixed-size windows.
+\end{itemize}
+\ENDOMIT
+
+%We now shortly summarize and describe just the main contributions of these current works.
+{\change
+The next sections in this Chapter basically elaborate on this Introduction. They are necessarily more technical, and could maybe be skipped on a first reading. They present the material in the works~\cite{Kbif-gav,bif-gav} %[ds06,sdm07]
+although in a different ordering to highlight the motivation and ideas common to both.
+}
+

@@ -1,0 +1,212 @@
+\chapter{Restricted Hoeffding Trees Stacking}
+\label{ch:stacking}
+When applying boosting algorithms to build ensembles of decision trees
+using a standard tree induction algorithm, the tree inducer has access
+to all the attributes in the data. Thus, each tree can model
+arbitrarily complex interactions between attributes in
+principle. However, often the full modeling power of unrestricted
+decision tree learners is not necessary to yield good accuracy with
+boosting, and it may even be harmful because it can lead to
+overfitting. Hence, it is common to apply boosting in conjunction with
+depth-limited decision trees, where the growth of each tree is
+restricted to a certain level. In this way, only a limited set of
+attributes can be used in each tree, but the risk of overfitting is
+reduced. In the extreme case, only a single split is allowed and the
+decision trees degenerate to decision stumps. Despite the fact that
+each restricted tree can only model interactions between a limited set
+of attributes, the overall ensemble is often highly accurate.
+
+The method presented in this chapter is based on this observation~\cite{BifetFHP10}. We
+present an algorithm that produces a classification model based on an
+ensemble of restricted decision trees, where each tree is built from a
+distinct subset of the attributes. The overall model is formed by
+combining the log-odds of the predicted class probabilities of these trees using sigmoid perceptrons, with one perceptron per class. In contrast to the standard boosting approach,
+which forms an ensemble classifier in a greedy fashion, building each tree in
+sequence and assigning corresponding weights as a by-product, our
+method generates each tree in parallel and combines them using perceptron classifiers by adopting the stacking approach~\cite{stacking}. Because we
+are working in a data stream scenario, Hoeffding trees~\cite{vfdt} are
+used as the ensemble members. They, as well as the perceptrons,
+can be trained incrementally, and we also show how \adwinb-based change
+detection~\cite{bif-gav} can be used to apply the method to evolving data
+streams.
+
+There is existing work on boosting for data streams~\cite{ozabagboost}, but
+the algorithm has been found to yield inferior accuracy compared to
+\adwin bagging. Moreover, it is unclear how a boosting algorithm can be
+adapted to data streams that evolve over time: because bagging
+generates models independently, a model can be replaced when it is no
+longer accurate, but the sequential nature of boosting prohibits this
+simple and elegant solution. Because our method generates models
+independently, we can apply this simple strategy, and we show that it yields
+more accurate classifications than Online Bagging~\cite{ozabagboost} on the real-world and
+artificial data streams that we consider in our experiments.
+
+Our method is also related to work on building ensembles using random
+subspace models~\cite{Random-subspace}. In the random subspace approach, each
+model in an ensemble is trained based on a randomly chosen subset of
+attributes. The models' predictions are then combined in an unweighted
+fashion. %\footnote{Is this true?} 
+Because of this latter property, the
+number of attributes available to each model must necessarily be quite
+large in general, so that each individual model is powerful enough to
+yield accurate classifications. In contrast, in our method, we
+exhaustively consider all subsets of a given, small, size, build a
+tree for each subset of attributes, and then combine their predictions
+using stacking. In random forests~\cite{randomforests}, the random subspace
+approach is applied locally at each node of a decision tree in a
+bagged ensemble. Random forests have  been applied to data streams, but did not
+yield substantial improvements on bagging in this
+scenario. %~\cite{leveraging}. %\footnote{Is this true?}
+
+
+\section{Combining Restricted Hoeffding Trees using Stacking}
+
+The basic method we present in this chapter is very simple: enumerate
+all attribute subsets of a given user-specified size $k$, learn
+a Hoeffding tree from each subset based on the incoming data stream,
+gather the trees' predictions for each incoming instance, and use
+these predictions to train simple perceptron classifiers. The question that needs
+to be addressed is how exactly to prepare the ``meta'' level data for
+the perceptrons and what shape it should take.
+
+Rather than using discrete classifications to build the meta level
+model in stacking, it is common to use class probability estimates
+instead because they provide more information due to the fact that they
+represent the degree of confidence that each model has in its
+predictions. Hence, we also adopt this approach in our method: the
+meta-level data is formed by collecting the class probability
+estimates for an incoming new instance, obtained from the Hoeffding
+trees built from the data observed previously.
+
+The meta level combiner we use is based on simple perceptrons with sigmoid
+activation functions, trained using stochastic gradient
+descent to minimize the squared loss with respect to the actual
+observed class labels in the data stream. We train one perceptron per
+class value and use the Hoeffding trees' class probability estimates
+for the corresponding class value to form the input data for each
+perceptron.
+
+There is one caveat. Because the sigmoid activation function is used
+in the perceptrons, we do not use the raw class probability estimates
+as the input values for training them. Rather, we use the log-odds of
+these probability estimates instead. Let $\hat p(c_{ij}|\vec{x})$ be
+the probability estimate for class $i$ and instance $\vec{x}$ obtained
+from Hoeffding tree $j$ in the ensemble. Then we use
+$$
+a_{ij}=\log(\hat p(c_{ij}|\vec{x})/(1-\hat p(c_{ij}|\vec{x}))
+$$ as the value of input attribute $j$ for the perceptron associated
+with class value $i$.
+
+Let $\vec{a_{i}}$ be the vector of log-odds for class $i$. The output
+of the sigmoid perceptron for class $i$ is then
+$f(\vec{a_i})=1/(1+e^{-(\vec{w_i}\vec{a_i}+b_i)})$, based on per-class
+coefficients $\vec{w_i}$ and $b_i$. We use the log-odds as the inputs
+for the perceptron because application of the sigmoid function
+presupposes a linear relationship between $\log(f(\vec{a_i})/(1-f(\vec{a_i})))$
+and $\vec{a_i}$.
+
+To avoid the zero-frequency problem, we slightly modify the
+probability estimates obtained from a Hoeffding tree by adding a small
+constant $\epsilon$ to the probability for each class, and then
+renormalize. In our experiments, we use $\epsilon=0.001$, but smaller
+values lead to very similar results.
+
+The perceptrons are trained using stochastic gradient descent: the
+weight vector is updated each time a new training instance is obtained
+from the data stream. Once the class probability estimates for that
+instance have been obtained from the ensemble of Hoeffding trees, the
+input data for the perceptrons can be formed, and the gradient descent
+update rule can be used to perform the update. The weight values are
+initialized to the reciprocal of the size of the ensemble, so that the
+perceptrons give equal weight to each ensemble member initially.
+
+A crucial aspect of stochastic gradient descent is an appropriately
+chosen learning rate, which determines the magnitude of the update. If
+it is chosen too large, there is a risk that the learning process will
+not converge. A common strategy is to decrease it as the amount of
+training data increases. Let $n$ be the number of training instances
+seen so far in the data stream, and let $m$ be the number of
+attributes. We set the learning rate $\alpha$ based on the following
+equation: $$ \alpha=\frac{2}{2+m+n}.  $$
+
+However, there is a problem with this approach for setting the
+learning rate in the context we consider here: it assumes that the
+training data is identically distributed. This is not actually the case
+in our scenario because the training data for the perceptrons is
+derived from the probability estimates obtained from the Hoeffding
+trees, and these change over time, generally becoming more
+accurate. Setting the learning rate based on the above equation means
+that the perceptrons will adapt too slowly once the initial data in
+the data stream has been processed.
+
+There is a solution to this problem: the stream of predictions from
+the Hoeffding trees can be viewed as an {\it evolving} data stream
+(regardless of whether the underlying data stream forming the training
+data for the Hoeffding trees is actually evolving) and we can use an
+existing change detection method for evolving data streams to detect
+when the learning rate should be reset to a larger value. We do this
+very simply by setting the value of $n$ to zero when change has been
+detected. To detect change, we use the \adwin change
+detector~\cite{bif-gav}, which is discussed in more detail in the next
+section. It detects when the accuracy of a classifier increases or
+decreases significantly as a data stream is processed. We apply it to
+monitor the accuracy of each Hoeffding tree in the ensemble. When
+accuracy changes significantly for one of the trees, the learning
+rate is reset by setting $n$ to zero. The value of $n$ is then
+incremented for each new instance in the stream until a new change is
+detected. This has the effect that the learning rate will be kept
+relatively large while the learning curve for the Hoeffding trees has
+a significant upward trend.
+
+\subsection{\adwinb-based Change Detection}
+
+The \adwin change detector comes with nice theoretical guarantees. In
+addition to using it to reset the learning rate when necessary, we
+also use it to make our ensemble classifier applicable to evolving
+data stream, where the original data stream, used to train the
+Hoeffding trees, changes over time.
+
+The strategy we use to cope with evolving data streams using \adwin is
+very simple: the idea is to replace ensemble members when
+they start to perform poorly.  To implement this, we use \adwin to
+detect when the accuracy of one of the Hoeffding trees in the ensemble
+has dropped significantly.  To do this, we can use the same \adwin change
+detectors that are also applied to detect when the learning rate needs
+to be reset.  When one of the change detectors associated
+with a particular tree reports a significant drop in accuracy, the
+tree is reset and the coefficients in the perceptrons that are
+associated with this tree (one per class value) are set to zero. A new
+tree is then generated from new data in the data stream, so that the
+ensemble can adapt to changes.
+
+Note that all trees for which a significant drop is detected are
+replaced.  Note also that a change detection event automatically
+triggers a reset of the learning rate, which is important because the
+perceptrons need to adapt to the changed ensemble of trees.
+
+\subsection{A Note on Computational Complexity}
+
+This new approach is based on generating trees for all possible attribute
+subsets of size $k$. If there are $m$ attributes in total, there are
+${m}\choose{k}$ of these subsets.  Clearly, only moderate values of
+$k$, or values of $k$ that are very close to $m$, are feasible.  When
+$k$ is one, there is no penalty with respect to computational
+complexity compared to building a single Hoeffding tree, because then
+there is only one tree per attribute, and an unrestricted tree also
+scales linearly in the number of attributes.  If $k$ is two, there is
+an extra factor of $m$ in the computational complexity compared to
+building a single unrestricted Hoeffding tree, i.e. overall effort
+becomes quadratic in the number of attributes.
+
+$k=2$ is very practical even for datasets with a relatively large
+number of attributes, although certainly not for very high-dimensional
+data (for which linear classifiers are usually sufficient
+anyway). Larger values of $k$ are only practical for small numbers of
+attributes, unless $k$ is very close to $m$ (e.g. $k=m-1$). We have
+used $k=4$ for datasets with 10 attributes in our experiments, with
+very acceptable runtimes. It is important to keep in mind that many
+practical classification problems appear to exhibit only very
+low-dimensional interactions, which means small values of $k$ are
+sufficient to yield high accuracy.
+
+

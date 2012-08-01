@@ -1,0 +1,131 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Time Change Detectors and Predictors: A General Framework}
+\label{Ssframework}
+
+Most approaches for predicting and detecting change in streams of data
+can be discussed in the general framework: The system consists of
+three modules: a Memory module, an Estimator Module, and a
+Change Detector or Alarm Generator module. These three modules 
+interact as shown in Figure~\ref{fig:FrameworkDetector}, which 
+is analogous to Figure 8 in \cite{SchonEG:05}. 
+
+\begin{figure}
+\vspace{.2cm}
+\begin{picture}(200,140)
+\put(10,110){\vector(1,0){30}}
+\put(10,120){\makebox(0,0){$x_t$}}
+\put(40,80){\color{nicered} \framebox(80,50){\color{black}Estimator}}
+\put(120,90){\vector(1,0){30}}
+
+\put(240,90){\vector(1,0){40}}
+\put(290,100){\makebox(0,0){Alarm}}
+\put(150,60){\color{nicered} \framebox(90,50){\color{black}Change Detector}}
+\put(120,125){\vector(1,0){160}}
+\put(300,135){\makebox(0,0){Estimation}}
+
+\put(60,10){\color{nicered} \framebox(120,30){\color{black}Memory}}
+\put(20,0){\color{nicered} \framebox(250,150)}
+
+\put(30,110){\line(0,-1){80}}
+\put(30,30){\vector(1,0){30}}	
+%\put(180,30){\vector(1,0){100}}
+%\put(280,40){\makebox(0,0){$x_l$}}	
+\put(80,40){\vector(0,1){40}}
+\put(170,40){\vector(0,1){20}}
+\put(170,60){\vector(0,-1){20}}	
+\end{picture}
+    \caption{General Framework}
+	\label{fig:FrameworkDetector}
+\end{figure}
+
+\noindent
+In general, the input to this algorithm is a sequence 
+$x_1, x_2, \ldots, x_t, \ldots$ of data items whose distribution varies
+over time in an unknown way. The outputs of the algorithm are, 
+at each time step
+
+\begin{itemize}
+\item an estimation of some important parameters of the input distribution, and
+\item a signal alarm indicating that distribution change has recently occurred.
+\end{itemize}
+
+We consider a specific, but very frequent case, of this setting: that in which 
+all the $x_t$ are real values. The desired estimation is usually the expected value of the 
+current $x_t$, and less often another distribution statistics such as the variance. 
+The only assumption on the distribution is that each $x_t$ is drawn independently from each other.
+
+Memory is the component where the algorithm stores all the sample data or summary that considers
+relevant at current time, that is, that presumably shows the current data distribution. 
+
+The Estimator component is an algorithm that estimates the desired statistics on the input data, which
+may change over time. The algorithm may or may not use the data contained in the Memory. 
+The simplest Estimator algorithm for the expected is the {\em linear estimator,}
+which simply returns the average of the data items contained in the Memory. 
+Other examples of run-time efficient estimators are 
+Auto-Regressive, Auto Regressive Moving Average, and Kalman filters. 
+
+The change detector component outputs an alarm signal when it detects change in the input data distribution. 
+It uses the output of the Estimator, and may or may not in addition use the contents of Memory. 
+
+In Table \ref{tab:Types} we classify these predictors in four classes, depending on whether 
+Change Detector and Memory modules exist:
+
+\begin{table}[htpb]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline%\cline{2-3}
+& &\\
+& {\bf No memory} & {\bf Memory} \\
+& &\\
+\hline%\cline{2-3}
+& &\\
+& {\em Type I}&{\em Type III}\\
+{\bf No Change Detector}& Kalman Filter & Adaptive Kalman Filter \\
+& &\\
+\hline%\cline{2-3}
+& &\\
+& {\em Type II}&{\em Type IV}\\
+{\bf Change Detector}& Kalman Filter + CUSUM & {\tt ADWIN} \\ 
+& & Kalman Filter + {\tt ADWIN} \\ 
+& &\\
+\hline%\cline{2-3}
+\end{tabular}
+\caption{Types of Time Change Predictor and some examples}
+\label{tab:Types}
+\end{table}
+
+\begin{itemize}
+\item {\em Type I: Estimator only.} The simplest one is modelled by 
+$$
+\hat{x}_k= (1-\alpha)\hat{x}_{k-1}+\alpha \cdot x_k.
+$$ 
+The linear estimator corresponds to using  $\alpha=1/N$ where $N$ is the width of a virtual window 
+containing the last $N$ elements we want to consider.
+Otherwise, we can give more weight to the last elements with an appropriate constant value of~$\alpha$. 
+The Kalman filter tries to optimize the estimation using a non-constant $\alpha$ (the $K$ value)
+which varies at each discrete time interval. 
+
+\item {\em Type II: Estimator with Change Detector.} 
+An example is the Kalman Filter together with a CUSUM test change detector algorithm, 
+see for example~\cite{jacob-04}.
+
+\item {\em Type III: Estimator with Memory.} We add Memory to improve 
+the results of the Estimator. For example, 
+one can build an Adaptive Kalman Filter that uses the data in Memory to 
+compute adequate values for the process variance $Q$ and the measure variance $R$. 
+In particular, one can use the sum of the last elements stored into a memory window to model 
+the $Q$ parameter and the difference of the last two elements to estimate parameter $R$.  
+
+\item {\em Type IV: Estimator with Memory and Change Detector.} 
+This is the most complete type. Two examples of this type, from the literature, are:
+%
+\begin{itemize}
+\item A Kalman filter with a CUSUM test and fixed-length window memory, as proposed in \cite{SchonEG:05}. 
+Only the Kalman filter has access to the memory.
+\item A linear Estimator over fixed-length windows that flushes when change is detected \cite{kifer-detecting}, 
+and a change detector that compares the running windows with a reference window. 
+\end{itemize}
+In Chapter~\ref{ch:adwin}, we will present {\tt ADWIN}, an adaptive sliding window method 
+that works as a type IV change detector and predictor.
+\end{itemize}
+%

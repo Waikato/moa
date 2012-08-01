@@ -1,0 +1,202 @@
+\chapter{Conclusions}
+\label{chap:conclusions} 
+
+A central argument of this thesis is that the improvement of
+data stream classification algorithms requires a complete evaluation framework. The framework should train and test on sufficiently large amounts of data for realistic measurement, and should account for all three dimensions that are critical aspects of behaviour---error, space and time.
+
+Evaluation will benefit from diverse and challenging benchmark data sets. Researchers need to be aware that there is a shortage of suitable real-world data sets for evaluating classification of streamed examples. The only alternative is artificial data generation, until realistically large and public real-world data sets become freely available.
+
+The framework developed here is used to improve Hoeffding trees, a particular class of algorithm that is known to perform well. Improvements to the basic algorithm are quantified. The benefits of an extensive evaluation process are demonstrated for example in the findings relating to tree prediction. The smaller-scale studies of Gama et al.~\cite{ufft,vfdtc} concluded that permanent use of Naive Bayes prediction in the leaves of decision trees provides general improvement. The broader evaluation performed by this thesis discovered cases where it actually performs worse. This was found by testing on more diverse data sources, with differing memory limits and involving substantially more examples. The findings enabled the proposal of a new adaptive algorithm that is shown to outperform other prediction approaches.
+
+The demands of data stream problems will differ depending on circumstance.
+Nevertheless, data stream problems generally share four common demands. Algorithms demonstrated to best meet these demands will most easily apply to a wide range of data stream scenarios. The demands are:
+
+\begin{enumerate}
+\item The algorithm must process examples in a single pass, accepting each example in the order that it arrives. This capability can be tested by a framework that supplies training examples one-by-one to the algorithm, perhaps inspecting the model in between. A desirable property of an algorithm is low sensitivity to the order of examples. The sensitivity of an algorithm to example ordering can be tested by observing the variance in behaviour between training runs as order is manipulated.
+\item The algorithm must work within limited memory. Algorithms that lack guaranteed bounds on memory usage are troublesome for data stream problems because they could fail. The most simple strategy available to any algorithm is to cease learning once memory is exhausted, however empirical evidence collected for this thesis suggests that it is worthwhile to find strategies enabling the algorithm to continue working, thus learn as much as possible in a more limited capability from further examples once memory is full. An evaluation framework can enforce this by monitoring the amount of memory that the algorithm uses, possibly aborting if the requirement is violated.
+\item The algorithm must work in a limited amount of time, both per training example and per test example. As with Hoeffding trees, the time per example may be directly related to the size in memory, where a maximum size directly translates into maximum time needed to update and predict. This requirement is not as well defined as the others, because the acceptability of a solution is heavily dependent on the time demands of the intended application. A testing framework can measure the speed at which examples are processed, and could be told to abort if a target speed is not attained or start to drop excess examples.
+\item The algorithm should be able to provide predictions for new examples at any point between training examples. A framework can test this ability by periodically requesting predictions, and can use this procedure to monitor performance over time.
+\end{enumerate}
+
+The evaluation framework developed in Chapter~\ref{chap:experimentalsetting} is capable of measuring how well an algorithm can meet the four demands of data stream classification. Practitioners facing a known problem can use the framework to help decide the best algorithm for their needs. They will be able to specify the hardware speed and memory limit before testing competing solutions.
+
+To conduct a general study of algorithm behaviour and avoid having a specific scenario in mind, the range of deployment scenarios has been divided into three general cases: sensor/100KB, handheld/32MB and server/400MB. The base algorithm described in Chapter~\ref{chap:hoeffdingtrees}, the Hoeffding tree induction algorithm, is shown via the framework to be capable of meeting the demands, thus it is generally applicable to data stream problems.
+
+Having such an appropriate framework enables:
+\begin{enumerate}
+\item Empirical results to be produced that are of a depth and scale beyond anything previously reported.
+\item Algorithm varieties to be directly compared in terms of how well they perform at classifying data streams in the three dimensions of interest---error, space and time.
+\item Production of interesting and sometimes surprising results that were previously unknown. The insight gained can motivate more algorithm development.
+\end{enumerate}
+
+Having the sensor/handheld/server environment breakdown creates the opportunity to observe how algorithm suitability can differ depending on application. For example, a single Hoeffding tree with majority class prediction is hard to improve when only 100KB of memory is available. Any enhancement that increases the rate of memory consumption, such as functional leaf predictions or inducing ensembles of trees, rarely proved worthwhile in this environment. In contrast, the same enhancements would demonstrate significant improvement when more memory was available.
+
+Having a state-of-the-art base algorithm and a means to quantify potential modifications has allowed the demonstration of improvements to Hoeffding tree induction. Chapter~\ref{chap:hoeffdingtrees} looked at several minor improvements to the general algorithm.
+Chapter~\ref{chap:numericatts} studied the important but previously unresolved issue of how to best deal with continuous numeric attributes.
+The study in Chapter~\ref{chap:predstrat} tried improving the prediction strategy of the trees. 
+Following the background investigated in Chapter~\ref{chap:improvebackground}, Chapter~\ref{chap:improvecompare} concluded experimentation by measuring the performance implications of combining multiple Hoeffding trees into classifier ensembles.
+
+The studies demonstrate progressive improvement of decision tree induction. The study of numeric approximation showed that small local approximation will globally outperform methods that are locally more accurate but consume more memory. The study of prediction methods at the tree leaves looked at the standard and robust method versus a method that can significantly improve accuracy but that is also worse in several cases---experiments showed that adapting the leaves based on previous local performance can form a hybrid method that outperforms either approach on average. The study of further improvements to classification accuracy, involving ensembles and option trees, demonstrated that combinations of trees can outperform a single tree, but with the proviso that memory restrictions must be carefully considered.
+
+\begin{table}[!t]
+\caption{Average accuracy gains, relative \% change from previous.}
+\label{tab:accgains}
+\centering
+\begin{tabular}{|l|r|r|r||r|}
+\hline
+enhancement	&	100KB	&	32MB	&	400MB	&	average	\\
+\hline
+numeric	&	12.59\%	&	0.41\%	&	0.10\%	&	3.91\%	\\
+prediction	&	-0.08\%	&	0.08\%	&	0.44\%	&	0.15\%	\\
+ensemble	&	0.98\%	&	0.23\%	&	0.26\%	&	0.48\%	\\
+\hline
+\hline
+combined	&	13.60\%	&	0.72\%	&	0.81\%	&	4.57\%	\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[!t]
+\caption{Average training speed losses, relative \% change from previous.}
+\label{tab:trainspeedlosses}
+\centering
+\begin{tabular}{|l|r|r|r||r|}
+\hline
+enhancement	&	100KB	&	32MB	&	400MB	&	average	\\
+\hline
+numeric	&	-13.75\%	&	-17.65\%	&	50.00\%	&	-11.88\%	\\
+prediction	&	-2.90\%	&	0.00\%	&	0.00\%	&	-2.25\%	\\
+ensemble	&	-22.39\%	&	-14.29\%	&	-33.33\%	&	-21.84\%	\\
+\hline
+\hline
+combined	&	-35.00\%	&	-29.41\%	&	0.00\%	&	-32.67\%	\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[!t]
+\caption{Average prediction speed losses, relative \% change from previous.}
+\label{tab:predspeedlosses}
+\centering
+\begin{tabular}{|l|r|r|r||r|}
+\hline
+enhancement	&	100KB	&	32MB	&	400MB	&	average	\\
+\hline
+numeric	&	-7.95\%	&	-4.17\%	&	-7.79\%	&	-6.75\%	\\
+prediction	&	1.23\%	&	-5.80\%	&	-25.35\%	&	-9.50\%	\\
+ensemble	&	-20.73\%	&	-21.54\%	&	-30.19\%	&	-23.50\%	\\
+\hline
+\hline
+combined	&	-26.14\%	&	-29.17\%	&	-51.95\%	&	-35.44\%	\\
+\hline
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:accgains} lists the three relative accuracy gains from the main improvements in isolation, and also the improvement when all three enhancements are combined. Note that the average column does not form a direct average of the three other columns due to the values being a relative change---in the case of the average it is a relative change from the previous average over the environments. Improving the numeric method increased average accuracy across all three environments by 3.91\%, relative to before. Improving the prediction strategy increased relative accuracy by a further 0.15\%, and using an option tree added an additional relative improvement of 0.48\%. The total relative improvement of all enhancements combined is 4.57\%. As this is averaged across all data sets and environments, there are individual cases where the improvement was more significant, such as {\sc wave21}, where the accuracy improved by a relative percentage of 10.03\%. Tables~\ref{tab:trainspeedlosses} and~\ref{tab:predspeedlosses} show the speed costs of the enhancements. Improving the prediction method had the least average impact on training speed, while ensemble methods caused the largest reduction of both training and prediction speeds. Combining all of the enhancements reduced training speed by 32.67\% on average and prediction speed by 35.44\% on average.
+
+In 100KB of memory, the total relative accuracy improvement was 13.60\%, due mostly to the 12.59\% gain by improved numeric approach. In this environment, the prediction enhancement decreased accuracy by 0.08\%, while the option tree introduced an accuracy gain of 0.98\%. The combined enhancements reduced training speed by an average of 35\% and reduced prediction speed by an average of 26.14\%.
+
+In 32MB of memory, the total relative gain was 0.72\% with the largest improvement also coming from the choice of numeric strategy. Training speed reduced due to the numeric and ensemble improvements, when all improvements were combined the speed reduction was 29.41\%, along with a relative prediction speed reduction of 29.17\%. 
+
+In 400MB, the total relative accuracy improvement was 0.81\%, with the best gain coming from the prediction strategy enhancement. The numeric improvement managed to increase training speed in large memory, which counteracted the speed reduction of ensembles on average, meaning that the training speed remained constant on average when all of the enhancements were combined. The prediction speed, however, reduced by half.
+
+A lesson to be learned from the studies is that when memory resources are limited it is often better to take a simple and less demanding approach, one that sacrifices accuracy at the local level, because it is likely that in causing less interruption to the global induction process that a more accurate model overall will be produced.
+
+\section{Contributions}
+
+The contributions of this thesis to the field of data stream classification can be divided into several significant areas:
+
+\begin{enumerate}
+\item Evaluation Framework
+
+Although the basic procedure is not new, similar in process to Dominogs and Hulten~\cite{vfdt}, the survey of work in Section~\ref{sec:preveval} suggests that such rigorous evaluation is rare in practice. In particular, the crucial element of memory management is often overlooked. The framework suggested by this thesis is motivated by ensuring practical and realistic measurement of data stream classification algorithms. The usefulness of the framework is clearly demonstrated by the outputs reported in this thesis. Besides the general procedure, the framework includes a suggested division into three representative usage scenarios, and a suite of synthetic data generators. The hope is that progress in the field can be made by adopting similar practices.
+
+\item Algorithm Development
+
+The Hoeffding tree induction algorithm is enhanced in several ways not suggested before.
+
+\begin{itemize}
+\item Multi-class Gaussian approach to numeric approximation\\(Section~\ref{sec:gaussapprox}).
+\item Adaptively chosen majority class/Naive Bayes prediction strategy (Section~\ref{sec:nbadaptive}).
+\item Hoeffding Option Tree induction algorithm, including a novel approach to limiting options globally in a tree (Section~\ref{sec:hot}).
+\item Memory management implementation details (Section~\ref{sec:memmanage}), including speed optimizations (Section~\ref{sec:fastsizeest}).
+\item Universal skewed-split prevention (Section~\ref{sec:skewedsplits}).
+\end{itemize}
+
+\item Empirical evidence
+
+The results reported in this thesis represent a scale---in numbers of training examples, testing examples, memory limits and data sources---that is beyond anything else previously reported. Direct comparisons are provided between many competing methods that have not been experimentally compared before.
+
+\begin{itemize}
+
+\item Comparison of numeric methods (Chapter~\ref{chap:numericatts})
+\begin{itemize}
+% failure of exhaustive
+\item An exhaustive {\em binary tree} method that retains all information in memory in order to make a precise decision is often outperformed by methods that deliberately lose information to conserve space.
+% success of small methods-gauss10
+\item The methods using the smallest amount of space perform the best. In particular the smallest method of all, a Gaussian approximation that explores ten local split possibilities, is found to be among the most competitive while being less susceptible to data order than other approaches.
+\end{itemize}
+
+\item Comparison of prediction methods (Chapter~\ref{chap:predstrat})
+\begin{itemize}
+% failure of nb
+\item {\em Naive Bayes} prediction used permanently, or after waiting for a fixed number of observations, sometimes performs worse than {\em majority class} prediction.
+% success of nba
+\item Adaptively choosing between {\em Naive Bayes} and {\em majority class} prediction per leaf, based on estimated accuracy, is shown to perform better on average than either method alone.
+\end{itemize}
+
+\item Comparison of ensemble methods (Chapter~\ref{chap:improvecompare})
+\begin{itemize}
+% failure of boosting
+\item Adaptations of {\em AdaBoost} to the data stream setting perform poorly.
+% success of bagging and hot over single tree-reduce variance
+\item An adaption of {\em bagging} and a novel {\em Hoeffding option tree} algorithm are both shown to be capable of outperforming a single Hoeffding tree. They do so by successfully reducing the {\em variance} of the trees.
+% more trees requires more mem
+\item Trends between memory limits and ensemble sizes suggest that as more trees are included in combination, more memory is needed to earn accuracy gains.
+\end{itemize}
+
+% ineffective performance of pre-pruning and poor attribute removal
+\item Two previously suggested enhancements to Hoeffding tree induction were found to be mostly ineffective at raising accuracy---they are pre-pruning (Section~\ref{sec:preprune}) and poor attribute removal (Section~\ref{sec:pooratts}).
+
+\item General differences between memory-restricted environments
+\begin{itemize}
+% 100KB restrictions
+\item In 100KB of memory the simplest/smallest methods fared best. Apart from simplifying the numeric approximation method it was difficult to find any enhancement that demonstrates a convincing improvement over the basic algorithm of a single Hoeffding tree using majority class prediction.
+% 32MB fastest/most processed
+\item In 32MB of memory, accuracy was improved by adaptive Naive Bayes predictions, and improved further with bagging or option trees. More training examples could be processed in ten hours than in the other environments. The 100KB trees terminated early due to exhausting memory until no more growth was possible. The 400MB trees were slower at processing examples due to actively exploring many more possibilities for growth.
+\item In 400MB of memory the accuracy gains of more memory-intensive methods were most evident, such as ten trees/options combined via bagging or option trees. Despite being trained on less examples than the 32MB environment, the models were more complex and often the most accurate.
+\end{itemize}
+
+\end{itemize}
+
+\item MOA (Section~\ref{sec:javaimpl}), an open-source Java software implementation of all algorithms and the evaluation framework---freely available at:
+\begin{quote}
+http://sourceforge.net/projects/moa-datastream/
+\end{quote}
+
+\end{enumerate}
+
+\section{Future Work} 
+
+Classification of high speed streams of examples is a discipline that is a very recent branch of machine learning, which itself is a field of research that is still in its infancy, so there is much left to explore. Avenues for future work have already been mentioned in several places in the thesis. 
+
+Chapter~\ref{chap:introduction} explained that concept drift in data streams is beyond the scope of this thesis. For streams that occur over a substantial period there could be factors that cause the underlying concept to shift, rendering previous observations less relevant and causing the model to become outdated. The evaluation framework could be extended to test how well an algorithm responds to concept drift, by using synthetic generators that shift a concept and a test set that changes accordingly over time. Getting algorithms to successfully cope with concept drift is a very active area of research and typically involves revising old hypotheses formed by the model and focussing more on the most recent examples. In terms of decision trees this entails appropriate and adaptive pruning of the tree. {\em CVFDT}~\cite{cvfdt} is an extension of Hoeffding tree induction that is designed to manage concept drift. In terms of ensemble methods, the base members of the ensemble could be pruned to favour the models that best predict the recent trends in the stream, such as suggested by Chu and Zaniolo~\cite{fastlightboost}.  
+As soon as memory management becomes active it creates a bias towards certain areas of knowledge within a model. This bias could be tuned to treat more recent information as more valuable than older observations. In terms of option trees, each option can potentially explore concepts of varying relevance, so it may be possible to assign weights to options to adapt to shifting concepts, or prune the options that are estimated to be the least relevant.
+
+Chapter~\ref{chap:experimentalsetting} settled on an evaluation procedure that does not produce estimates of the significance between observed differences. One method of producing confidence intervals is to perform multiple runs and measure the variance. This is costly to perform when each run already requires substantial time to complete. A possible compromise may be the use of another less costly estimate of statistical significance, such as McNemar's test~\cite{mcnemar} which can be computed simply by looking at the agreement between competing algorithms on each test example. Chapter~\ref{chap:experimentalsetting} also mentioned that it may be possible to use an exponentially decaying interleaved evaluation procedure, which may help to overcome the interleaved method's problem of over-penalizing early mistakes.
+
+Chapter~\ref{chap:hoeffdingtrees} raised issues about pre-pruning, as it did not appear to make a significant difference to experimental results. More investigation is needed to determine if and when pre-pruning is a worthwhile component of Hoeffding tree induction.
+
+Chapter~\ref{chap:numericatts} revealed difficulties with the Gaussian numeric approximation method on two particular synthetic data sources, both of which are very similar in nature, {\sc genF2} and {\sc genF5}. Other numeric approximation methods do not appear to be affected. The problem is overcome by ensemble methods, and interestingly, will also disappear if other conditions are changed, such as the splitting criterion or restricting the tree to two-way splits only. The tree does poorly because it favours splitting on an irrelevant multi-way nominal split over a relevant two-way numeric split. This result detracts from the otherwise competent performance of {\sc gauss10}. The problem could be related to the problems seen with {\sc gauss100} which also makes poor split decisions on other data sets. It is speculated that these problems could be due to some unintentional bias being present in the split decisions, and perhaps a solution exists similar to the bias correction demonstrated by Quinlan~\cite{c4.5rel8}.
+
+Another suggestion relating to Gaussian numeric approximation is that the process could be made less susceptible to outliers by not tracking the absolute minimum and maximum values. Instead, considering points in the range that are several standard deviations away from the class approximations may be a more robust solution. It will also significantly save memory by storing only three values per attribute and class instead of five.
+
+Chapter~\ref{chap:predstrat} did not explore the tailoring of memory management to Naive Bayes leaf predictions. It is possible that better decisions could be made by taking the accuracy of Naive Bayes models in account when computing the `promise' of leaves. This information is recorded by the adaptive method but was not used when deciding which leaves to deactivate first. Interaction between poor attribute removal and Naive Bayes prediction could also be further investigated.
+
+A significant result of Chapter~\ref{chap:improvecompare} is that attempts at getting competitive results from {\em AdaBoost} in data streams were not successful. It is observed that the origins of AdaBoost lie in the boosting by {\em sampling} adaption of the PAC-learning framework, and as such is more suitable to the batch setting. It is believed that a boosting by {\em filtering} method is more likely to succeed in the data stream setting. The solution needed may be an adaptive boosting algorithm, that adapts to the errors of the base hypotheses like AdaBoost, but one that is expressed as a boosting by filtering method. The work of Domingo and Watanabe~\cite{madaboost} and Bshouty and Gavinsky~\cite{polyboost} claim to offer such a solution, although the former did not perform well when tested, and the latter lacks the simplicity and intuitive appeal of AdaBoost, while also lacking empirical evidence of performance.
+
+Beyond the suggestions that have already been mentioned there are plenty of possibilities for further investigation. 
+The evaluation framework was designed to test classification algorithms. Perhaps there are ways that it could be improved, with more efficient use of time or even more useful comparison between the behaviour of algorithms.
+Apart from classification, other machine learning problems face similar challenges from data streams. These include {\em regression}, predicting continuous numeric outputs, and {\em clustering}, learning from examples without guidance from class labels.
+
+This thesis has focussed on evaluating and improving decision tree methods. There could be further enhancements that improve decision tree induction. Future research directions include the study of other classification algorithms besides decision trees. There are plenty of other machine learning methods that are successful in batch learning, some of which researchers have already tried to adapt to data streams, and others that are yet to be investigated. Use of a common evaluation framework will enable diverse methods to be compared and expose their relative strengths and weaknesses.

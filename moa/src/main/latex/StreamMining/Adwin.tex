@@ -1,0 +1,98 @@
+\chapter{Adaptive Sliding Windows}
+\label{ch:adwin}
+
+\BEGINOMIT
+In this chapter, we present %propose to study and develop 
+several optimal strategies 
+for learning with data whose nature changes over time
+%. This current work constitutes our contributions in this area of research,which can be divided in two main sections
+ : an algorithm {\tt ADWIN} to detect change using an adaptive sliding window, and the combination of {\tt ADWIN} with Kalman filters.
+\ENDOMIT
+
+Dealing with data whose nature changes over time
+is one of the core problems in data mining and machine learning.
+%To mine or learn such data, one needs strategies for
+%the following three tasks, at least: 1) detecting when
+%change occurs 2) deciding which examples to keep and which ones
+%to forget (or, more in general, keeping updated sufficient statistics),
+%and 3) revising the current model(s) when significant  
+%change has been detected.
+In this chapter we present {\tt ADWIN}, an adaptive sliding window
+algorithm, as an estimator with memory and change detector with the
+main properties of optimality explained in section~\ref{sOptimal}. 
+We study and develop also the combination of {\tt ADWIN} with Kalman filters.
+
+
+\section{Introduction}
+\label{Introduction}
+
+\BEGINOMIT
+Dealing with data whose nature changes over time
+is one of the core problems in data mining and machine learning.
+%To mine or learn such data, one needs strategies for
+%the following three tasks, at least: 1) detecting when
+%change occurs 2) deciding which examples to keep and which ones
+%to forget (or, more in general, keeping updated sufficient statistics),
+%and 3) revising the current model(s) when significant  
+%change has been detected.
+In this chapter we prosose {\tt ADWIN}, an adaptive sliding window
+algorithm, as an estimator with memory and change detector with the
+main properties of optimality explained in section~\ref{sOptimal}. 
+\ENDOMIT
+
+Most strategies in the literature use variations of the {sliding window} idea:
+a window is maintained that keeps the most recently read examples,
+and from which older examples are dropped according to some
+set of rules. The contents of the window can be used for the
+three tasks: 1) to detect change (e.g., by using some statistical
+test on different subwindows), 2) obviously, to
+obtain updated statistics from the recent examples,
+and 3) to have data to rebuild or revise the model(s) after data has 
+changed.
+
+The simplest rule is to keep a window
+of some fixed size, usually determined {\em a priori} by the user.
+This can work well if information on the time-scale
+of change is available, but this is rarely the case.
+Normally, the user is caught in a tradeoff without solution:
+choosing a small size (so that the window reflects accurately the current distribution)
+and choosing a large size (so that many examples are available to work on, 
+increasing accuracy in periods of stability).
+A different strategy uses a {\em decay function}
+to weight the importance of examples according to their
+age (see e.g. \cite{CS03}):
+the relative contribution of each data item 
+ is scaled down by a factor that depends on %, and is non-decreasing with,
+elapsed time.
+ %strauss
+In this case, the tradeoff shows up in the 
+choice of a decay constant that should match the unknown rate of change.
+
+
+Less often, it has been proposed to use windows of variable size.
+In general, one tries to keep examples as long as possible, i.e., 
+while not proven stale. This delivers
+the users from having to guess {\em a priori} an unknown parameter such
+as the time scale of change. However, most works along these lines 
+that we know of (e.g., \cite{Gama,Klinkenberg,olin,WidmerKubat})
+are heuristics and have no rigorous guarantees of performance. 
+Some works in computational learning theory 
+(e.g. \cite{bartlett00,helmbold94tracking,herbster95tracking}) 
+describe strategies with rigorous performance
+bounds, but to our knowledge they have never been tried
+in real learning/mining contexts and often assume a known bound 
+on the rate of change. 
+
+We will present {\tt ADWIN}, a parameter-free adaptive size sliding
+window, with theoretical garantees. We will
+use Kalman filters at the last part of this Chapter, in order
+to provide an adaptive weight for each item. % according to their age.
+
+
+
+%\ENDOMIT
+
+\input{ConTechnical}
+\input{ConExperiments}
+\input{ConKalman}
+%\input{ConTimememory}

@@ -1,0 +1,118 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{The Kalman Filter and the CUSUM Test}
+\label{Skalmancusum}
+
+One of the most widely used Estimation algorithms is the Kalman filter. We give here a description
+of its essentials; see \cite{welch} for a complete introduction.
+%The Kalman filter is an optimal recursive data-processing algorithm that generates estimates of the variables 
+%(or states) %of the system being controlled by processing all available measurements. 
+
+The Kalman filter addresses the general problem of trying to estimate the state $x \in \Re^n$ 
+of a discrete-time controlled process that is governed by the linear stochastic difference equation
+$$x_k=Ax_{k-1} + B u_k + w_{k-1}$$
+with a measurement $z \in \Re^m$ that is
+$$Z_k = H x_k + v_k.$$
+%
+The random variables $w_k$ and $v_k$ represent the process and measurement noise
+(respectively). They are assumed to be independent (of each other), white, and with
+normal probability distributions
+$$p(w) \sim N(0,Q) $$
+$$p(v) \sim N(0,R). $$
+%
+In essence, the main function of the Kalman filter is to estimate the state vector 
+using system sensors and measurement data  corrupted by noise.
+
+The Kalman filter estimates a process by using a form of feedback control: the filter
+estimates the process state at some time and then obtains feedback in the form of (noisy)
+measurements. As such, the equations for the Kalman filter fall into two groups: time
+update equations and measurement update equations. The time update equations are
+responsible for projecting forward (in time) the current state and error covariance
+estimates to obtain the a priori estimates for the next time step. 
+$$x^-_k=A x_{k-1} + B u_k$$
+$$P^-_k= AP_{k-1} A^T +Q$$
+%
+The measurement update equations are responsible for the feedback, i.e. for 
+incorporating a new measurement into the a priori estimate to obtain an improved a posteriori estimate.
+%
+$$K_k=P^-_k H^T(H P^-_kH^T+R)^{-1}$$
+$$ x_k=x_k^- + K_k(z_k -Hx_k^-)$$
+$$P_k=(I-K_k H) P^-_k.$$
+%
+There are extensions of the Kalman filter (Extended Kalman Filters, or EKF)
+for the cases in which the process to be estimated or the measurement-to-process
+relation is nonlinear. We do not discuss them here. 
+%Basically, % we change our matrixes $A$ and $H$ for some nonlinear functions $f$ and $h$ A Kalman filter that 
+%that linearizes about the current mean and covariance.
+
+In our case we consider the input data sequence of real values $z_1, z_2, \ldots, z_t, \ldots$ 
+as the measurement data. The difference equation of our discrete-time controlled process is the simpler one, 
+with $A=1, H=1, B=0$. So the equations are simplified to:
+%
+$$K_k= P_{k-1}/(P_{k-1}+R)$$
+$$X_k=X_{k-1}+ K_k(z_k -X_{k-1})$$
+$$P_k=P_k(1-K_k)+Q.$$
+%
+The performance of the Kalman filter depends on the accuracy of the a-priori assumptions:
+\begin{itemize}
+\item linearity of the difference stochastic equation%, and normal probabilities with zero mean of covariances Q and R.
+\item estimation of covariances $Q$ and $R$, assumed to be fixed, known, 
+      and follow normal distributions with zero mean.
+\end{itemize}  
+%
+When applying the Kalman filter to data streams that vary arbitrarily over time, both
+assumptions are problematic. The linearity assumption for sure, but also the assumption
+that parameters $Q$ and $R$ are fixed and known -- in fact, estimating them from the data
+is itself a complex estimation problem. 
+
+The cumulative sum (CUSUM algorithm), which was first proposed in \cite{Page54}, 
+is a change detection algorithm that gives an alarm when the mean of the input data is significantly 
+different from zero. The CUSUM input can be any filter residual, for instance 
+the prediction error from a Kalman filter.
+
+The CUSUM test is as follows:
+$$g_0=0$$
+$$g_t=\mbox{max }(0,g_{t-1}+ \epsilon_t -\upsilon)$$
+$$\mbox{if } g_t>h \mbox{ then alarm and } g_t=0$$
+%
+The CUSUM test is memoryless, and its accuracy depends on the choice of parameters $\upsilon$ and $h$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{{\tt K-ADWIN} = {\tt ADWIN} + Kalman Filtering}
+\label{Skadwin}
+
+In the sequel, whenever we say {\tt ADWIN} we really mean its
+efficient implementation, {\tt ADWIN2}. 
+
+{\tt ADWIN} is basically a linear Estimator with Change Detector that makes an efficient use of 
+Memory. It seems a natural idea to improve its performance by replacing the linear estimator by 
+an adaptive Kalman filter, where the parameters $Q$ and $R$ of the Kalman filter are computed
+using the information in {\tt ADWIN}'s memory. 
+
+We have set $R=W^2/50$ and $Q=200/W$, where $W$ is the length of the window
+maintained by {\tt ADWIN}. While we cannot rigorously prove that these are the optimal choices, 
+we have informal arguments that these are about the ``right'' forms for $R$ and $Q$, on 
+the basis of the theoretical guarantees of {\tt ADWIN}. 
+
+Let us sketch the argument for $Q$. Theorem \ref{ThBV}, part (2) gives a value $\epsilon$
+for the maximum change that may have occurred within the window maintained 
+by {\tt ADWIN}. This means that the process variance within that window is at most $\epsilon^2$, 
+so we want to set $Q=\epsilon^2$. 
+In the formula for $\epsilon$, consider the case in which $n_0 = n_1 = W/2$, then we have
+$$
+\epsilon \ge 4\cdot \sqrt{{\frac{3 (\mu_{W_0}+\epsilon)}{W/2}} \cdot \ln{4W\over\delta} }
+$$
+Isolating from this equation and distinguishing the extreme cases in which 
+$\mu_{W_0} \gg \epsilon$ or $\mu_{W_0} \ll \epsilon$, it can be shown that 
+$Q=\epsilon^2$ has a form that varies between $c/W$ and $d/W^2$. Here, $c$ and $d$ are constant
+for constant values of $\delta$, and $c=200$ is a reasonable estimation. This justifies
+our choice of $Q=200/W$. A similar, slightly more involved argument, 
+can be made to justify that reasonable values of $R$ are in the range $W^2/c$ to $W^3/d$, 
+for somewhat large constants $c$ and $d$.
+
+When there is no change, {\tt ADWIN} window's length increases, 
+so $R$ increases too and $K$ decreases, reducing the significance 
+of the most recent data arrived. 
+Otherwise, if there is change, {\tt ADWIN} window's length reduces, 
+so does $R$, and $K$ increases, which means giving more importance to the last data arrived.

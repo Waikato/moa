@@ -1,0 +1,33 @@
+\ProvidesPackage{titlepage_moa}[2009/08/31]
+%\RequirePackage{fix-cm}
+\RequirePackage{graphicx}
+\ProcessOptions
+\renewcommand{\maketitle}{
+\setcounter{page}{1}
+\thispagestyle{empty}
+\begin{center}
+	\includegraphics[height=3cm]{figures/LogoMOA.jpg}
+	\includegraphics[height=3cm]{figures/Waikato.png} \\ 
+	\vspace{10cm}
+	% {\sffamily\Huge
+	{% TODO: can't compile with this control sequence \fontfamily{pag}\fontsize{60}{90}\selecfont 
+	\textbf{DATA STREAM}} \\ 
+	\vspace{1cm}
+	{%\fontfamily{pag}\fontsize{60}{90}\selecfont 
+	\textbf{MINING}} \\ 
+	\vspace{.5cm}
+	{% TODO: can't compile with this control sequence \fontfamily{bch}\fontsize{40}{90}\selecfont 
+	\textbf{A Practical Approach}} \\
+	\vspace{.5cm}
+	{\rmfamily\Large \@author}\\
+	\vspace{.5cm}
+	{\rmfamily\Large \@date}\\
+	\vspace{.5cm}
+	%\includegraphics[height=3cm]{LogoMOA.jpg} 
+	\includegraphics[height=1cm]{figures/cosi_logo.png} 
+	%\includegraphics[height=2cm]{Waikato.png} 
+\end{center}
+\thispagestyle{empty}
+\cleardoublepage
+\setcounter{page}{1}
+}

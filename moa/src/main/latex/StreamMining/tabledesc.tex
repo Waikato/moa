@@ -1,0 +1,14 @@
+The figures in the following tables represent the final value that was measured at the completion of evaluation.
+The meaning of each table column is described below:
+
+\begin{description}
+\item[accuracy] the percentage of examples that the tree was able to correctly predict from the one million examples reserved for testing
+\item[training examples] the total number of examples that were used to train the tree before evaluation was complete
+\item[examples to full memory] the number of training examples needed by the algorithm to grow the size of the tree to the memory limit (if the limit was in fact hit)
+\item[active leaves] the number of active leaves in the tree (those that are capable of further splitting and Naive Bayes prediction)
+\item[inactive leaves] the number of leaves that have been deactivated by the memory management scheme (these are no longer capable of splitting or Naive Bayes prediction)
+\item[total nodes] the total number of nodes in the tree, including internal decision nodes
+\item[tree depth] the depth of the tree---the length of the longest path from the root to a leaf
+\item[training speed] the speed that the tree was able to train, expressed as a percentage of the maximum speed that examples can be generated from the data source, as measured in Section~\ref{sec:genspeed}
+\item[prediction speed] the speed with which the tree could make predictions on the test data, again expressed as a percentage of maximum stream speed
+\end{description}

@@ -1,0 +1,446 @@
+\chapter{Prediction Strategies}
+\label{chap:predstrat} 
+
+The previous chapters have considered the induction of Hoeffding trees.
+Chapter~\ref{chap:hoeffdingtrees} covered the basic induction of Hoeffding trees, followed by Chapter~\ref{chap:numericatts} which investigated the handling of continuous numeric attributes in the training data. This chapter focuses on the use of models once they have been induced---how predictions are made by the trees. Section~\ref{sec:majclass} describes the standard {\em majority class} prediction method. Attempts to outperform this method are described in Section~\ref{sec:nbleaf} and \ref{sec:nbadaptive}. %The chapter concludes with an experiment in Section~\ref{sec:leafexp} to determine which method is best in practice.
+
+\section{Majority Class}
+\label{sec:majclass}
+
+Prediction using decision trees is straightforward. Examples with unknown label are filtered down the tree to a leaf, and the most likely class label retrieved from the leaf. An obvious and straightforward way of assigning labels to leaves is to determine the most frequent class of examples that were observed there during training. This method is used by the batch methods C4.5/CART and is naturally replicated in the stream setting by Hoeffding trees. If the likelihood of all class labels is desired, an immediate extension is to return a probability distribution of class labels, once again based on the distribution of classes observed from the training examples.
+
+Table~\ref{tab:leafsuffstats} is used to illustrate different prediction schemes throughout the chapter. In the case of majority class, the leaf will always predict class $C_{2}$ for every example, because most examples seen before have been of that class. There have been 60 examples of class $C_{2}$ versus 40 examples of class $C_{1}$, so the leaf will estimate for examples with unknown class that the probability of class $C_{2}$ is 0.6, and the probability of $C_{1}$ is 0.4.
+
+\begin{table}
+\caption{Example sufficient statistics in a leaf after 100 examples have been seen. There are two class labels: $C_{1}$ has been seen 40 times, and $C_{2}$ has been seen 60 times. There are three attributes: $A_{1}$ can either have value A or B, $A_{2}$ can be C, D or E, and $A_{3}$ can be F, G, H or I. The values in the table track how many times each of the values have been seen for each class label.}
+\label{tab:leafsuffstats}
+\centering
+\begin{tabular}{|c|c||c|c|c||c|c|c|c||c|c|}
+\hline
+\multicolumn{2}{|c||}{$A_{1}$} & \multicolumn{3}{|c||}{$A_{2}$} & \multicolumn{4}{|c||}{$A_{3}$} & & \\
+\hline
+A & B & C & D & E & F & G & H & I & class & total \\
+\hline
+12 & 28 & 5 & 10 & 25 & 13 & 9 & 3 & 15 & $C_{1}$ & 40 \\
+34 & 26 & 21 & 8 & 31 & 11 & 21 & 19 & 9 & $C_{2}$ & 60 \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Naive Bayes Leaves}
+\label{sec:nbleaf}
+
+There is more information available during prediction in the leaves of a Hoeffding tree than is considered using majority class classification. The attribute values determine the path of each example down the tree, but once the appropriate leaf has been established it is possible to use the same attribute values to further refine the classification. Gama et al. call this enhancement {\em functional tree leaves}~\cite{ufft,vfdtc}.
+
+If $P(C)$ is the probability of event $C$ occurring, and $P(C|X)$ is the probability of event $C$ given that $X$ occurs, then from Bayes' theorem:
+
+\begin{equation} \label{eq:bayes}
+P(C|X) = \frac{P(X|C) P(C)}{P(X)}
+\end{equation}
+
+This rule is the foundation of the Naive Bayes classifier~\cite{naivebayes}. The classifier is called `naive' because it assumes independence of the attributes. The independence assumption means that for each example the value of any attribute will not have a bearing on the value of any other attribute. It is not realistic to expect such simplistic attribute relationships to be common in practice, but despite this the classifier works surprisingly well in general~\cite{nboptimal,nbdiagnose}.
+
+By collecting the probabilities of each attribute value with respect to the class label from training examples, the probability of the class for unlabeled examples can be computed. Fortunately, the sufficient statistics being maintained in leaves of a Hoeffding tree for the purpose of choosing split tests are also the statistics required to perform Naive Bayes classification. 
+
+Returning to the example in Table~\ref{tab:leafsuffstats}, if an example being classified by the leaf has attribute values $A_{1}$=B, $A_{2}$=E and $A_{3}$=I then the likelihood of the class labels is calculated using Equation~\ref{eq:bayes}:
+\begin{eqnarray*}
+P(C_{1}|X) & = & \frac{ P(X|C_{1}) P(C_{1})}{P(X)} \\
+& = & \frac{ [P(B|C_{1}) \times P(E|C_{1}) \times P(I|C_{1})] \times P(C_{1})}{P(X)} \\
+& = & \frac{\frac{28}{40} \times \frac{25}{40} \times \frac{15}{40} \times \frac{40}{100}}{P(X)} \\
+& = & \frac{0.065625}{P(X)}
+\end{eqnarray*}
+\begin{eqnarray*}
+P(C_{2}|X) & = & \frac{ P(X|C_{2}) P(C_{2})}{P(X)} \\
+& = & \frac{ [P(B|C_{2}) \times P(E|C_{2}) \times P(I|C_{2})] \times P(C_{2})}{P(X)} \\
+& = & \frac{\frac{26}{60} \times \frac{31}{60} \times \frac{9}{60} \times \frac{60}{100}}{P(X)} \\
+& = & \frac{0.02015}{P(X)}
+\end{eqnarray*}
+Normalizing the likelihoods means that the common $P(X)$ denominator is eliminated to reach the final probabilities:
+\begin{displaymath}
+\mbox{probability of } C_{1} = \frac{0.065625}{0.065625 + 0.02015} = 0.77
+\end{displaymath}
+\begin{displaymath}
+\mbox{probability of } C_{2} = \frac{0.02015}{0.065625 + 0.02015} = 0.23
+\end{displaymath}
+So in this case the Naive Bayes prediction chooses class $C_{1}$, contrary to the majority class.
+
+A technicality omitted from the example is the {\em zero frequency} problem that occurs if one of the counts in the table is zero. The Naive Bayes calculation cannot be performed with a probability of zero, so the final implementation overcomes this by using a {\em Laplace} estimator of  1.
+This adjustment, based on {\em Laplace's Law of Succession}, means for example that the class prior probabilities in the example above are instead treated as $\frac{41}{102}$ and $\frac{61}{102}$.
+
+In batch learning the combination of decision trees and Naive Bayes classification has been explored by Kohavi in his work on {\em NBTrees}~\cite{nbtree}. Kohavi's NBTrees are induced by specifically choosing tests that give an accuracy advantage to Naive Bayes leaves. In that setting he found that the hybrid trees could often outperform both single decision trees and single Naive Bayes models. He noted that the method performs well on large data sets, although the meaning of large in the batch setting can differ greatly from the modern stream context---most of the training sets he tested had less than 1,000 examples, with the largest set having under 50,000 examples.
+
+Use of Naive Bayes models in Hoeffding tree induction has implications for the memory management strategy. Firstly, the act of deactivating leaf nodes is more significant, because throwing away the sufficient statistics will also eliminate a leaf's ability to make a Naive Bayes prediction. The heuristic used to select the most promising nodes does not take this into account, as it does not consider the possibility that a leaf may be capable of yielding better accuracy than majority class. For simplicity and consistency in the experimental implementation, the memory management strategy is not changed when Naive Bayes leaves are enabled. This makes sense if the use of Naive Bayes leaves are considered as a prediction-time enhancement to Hoeffding trees. Otherwise changes to memory management behaviour intended to better suit Naive Bayes prediction will significantly impact on overall tree induction, making it harder to interpret direct comparisons with majority class trees.
+
+The outcome of this approach is that when memory gets tight and fewer of the leaves are allowed to remain active, then fewer of the leaves will be capable of Naive Bayes prediction. The fewer the active leaves, the closer the tree will behave to a tree that uses majority class only. By the time the tree is frozen and can no longer afford to hold any active leaves in memory then the tree will have completely reverted to majority class prediction. This behaviour is noted when looking at the experimental results.
+
+The other issue is the secondary memory management strategy of removing poor attributes (Section~\ref{sec:pooratts}). This too will alter the effectiveness of Naive Bayes models, because removing information about attributes removes some of the power that the Naive Bayes models use to predict, regardless of whether the attributes are deemed a poor candidate for splitting or not. As the removal strategy has been shown to not have a large bearing on final tree accuracy, whenever Naive Bayes leaves are employed the attribute removal strategy is not used.
+
+Memory management issues aside, the Naive Bayes enhancement adds no cost to the induction of a Hoeffding tree, neither to the training speed nor memory usage. All of the extra work is done at prediction time. The amount of prediction-time overhead is quantified in the experimental comparison.
+
+Early experimental work confirmed that Naive Bayes predictions are capable of increasing accuracy as Gama et al. observed~\cite{ufft,vfdtc}, but also exposed cases where Naive Bayes prediction fares worse than majority class. The first response to this problem was to suspect that some of the leaf models are immature. In the early stages of a leaf's development the probabilities estimated may be unreliable because they are based on very few observations. If that is the case then there are two possible remedies; either (1) give them a jump-start to make them more reliable from the beginning, or (2) wait until the models are more reliable before using them.
+
+Previous work~\cite{stresstest} has covered several attempts at option (1) of `priming' new leaves with better information. One such attempt, suggested by Gama et al.~\cite{ufft} is to remember a limited number of the most recent examples from the stream, for the purposes of training new leaves as soon as they are created. A problem with this idea is that the number of examples able to be retrieved that apply to a particular leaf will diminish as the tree gets progressively deeper. Other attempts at priming involved trying to inject more of the information known prior to splitting into the resulting leaves of the split. Neither of these attempts were successful at overcoming the problem so are omitted from consideration.
+
+%The experimental results in Section~\ref{sec:leafexp} test two variations of option (2), waiting before trusting Naive Bayes models. The first is very simple---a fixed minimum number of examples are required at a leaf before Naive Bayes prediction is employed. The higher the threshold, the longer the tree will wait and the more often majority class prediction will be used. Setting it too high will not see any change from exclusive use of majority class, and setting it too low will permit premature use of Naive Bayes. The threshold used in the presented results is one thousand examples, which is not overly successful at solving the problem but was found in preliminary experimentation to be the best compromise.
+
+%It appears that a single fixed threshold is simply not sufficient to overcome the problem, motivating further exploration of methods. This led to the development and contribution of a second more sophisticated waiting strategy discussed next.
+
+\section{Adaptive Hybrid}
+\label{sec:nbadaptive}
+
+Cases where Naive Bayes decisions are less accurate than majority class are a concern because more effort is being put in to improve predictions and instead the opposite occurs. In those cases it is better to use the standard majority class method, making it harder to recommend the use of Naive Bayes leaf predictions in all situations.
+
+The method described here tries to make the use of Naive Bayes models more reliable, by only trusting them on a per-leaf basis when there is evidence that there is a true gain to be made.
+The {\em adaptive} method works by monitoring the error rate of majority class and Naive Bayes decisions in every leaf, and choosing to employ Naive Bayes decisions only where they have been more accurate in past cases. Unlike pure Naive Bayes prediction, this process {\em does} introduce an overhead during training. Extra time is spent per training example generating both prediction types and updating error estimates, and extra space per leaf is required for storing the estimates.
+
+\begin{algorithm}
+\caption{Adaptive prediction algorithm.}
+\begin{algorithmic}
+\FORALL{training examples}
+\STATE Sort example into leaf $l$ using $HT$
+\IF{$majorityClass_{l} \ne$ true class of example}
+\STATE increment $mcError_{l}$
+\ENDIF
+\IF{$NaiveBayesPrediction_{l}$(example) $\ne$ true class of example}
+\STATE increment $nbError_{l}$
+\ENDIF
+\STATE Update sufficient statistics in $l$
+\STATE ...
+\ENDFOR
+\STATE
+\FORALL{examples requiring label prediction}
+\STATE Sort example into leaf $l$ using $HT$
+\IF{$nbError_{l} < mcError_{l}$}
+\RETURN $NaiveBayesPrediction_{l}$(example)
+\ELSE
+\RETURN $majorityClass_{l}$
+\ENDIF
+\ENDFOR
+\end{algorithmic}
+\label{alg:htnba}
+\end{algorithm}
+
+
+The pseudo-code listed in Algorithm~\ref{alg:htnba} makes the process explicit. During training, once an example is filtered to a leaf but before the leaf is updated, both majority class prediction and Naive Bayes prediction are performed and both are compared with the true class of the example. Counters are incremented in the leaf to reflect how many errors the respective methods have made. At prediction time, a leaf will use majority class prediction unless the counters suggest that Naive Bayes prediction has made fewer errors, in which case Naive Bayes prediction is used instead.
+
+In terms of the example in Table~\ref{tab:leafsuffstats}, the class predicted for new examples will depend on extra information. If previous training examples were more accurately classified by majority class than Naive Bayes then class $C_{2}$ will be returned, otherwise the attribute values will aid in Naive Bayes prediction as described in the previous subsection.
+
+\BEGINOMIT
+The accuracy gains afforded by this method and the extra costs involved are empirically quantified next.
+
+
+\section{Experimental Comparison of Methods}
+\label{sec:leafexp}
+
+This section uses the testing framework established in Chapter~\ref{chap:experimentalsetting} to compare four strategies for Hoeffding tree prediction. To ease reference to these methods in the text, each has been assigned a short name---the methods are called {\sc htmc}, {\sc htnb}, {\sc htnb1k} and {\sc htnba}. Several elements to Hoeffding tree induction have been covered previously, so the following list summarizes the final properties of each method including references to explanatory text:
+
+\begin{enumerate}
+\item {\sc htmc} algorithm, properties:
+\begin{itemize}
+\item split confidence $\delta = 10^{-7}$ (Section~\ref{sec:splitconf})
+\item grace period $n_{min} = 200$ (Section~\ref{sec:graceperiod})
+\item pre-pruning {\em enabled} (Section~\ref{sec:preprune})
+\item tie-breaking $\tau = 0.05$ (Section~\ref{sec:tiebreak})
+\item skewed split prevention $p_{min} = 0.01$ (Section~\ref{sec:skewedsplits})
+\item memory managed with {\em mem-period}=10,000 for 100KB environment, and {\em mem-period}=100,000 for 32MB/400MB environments \\ (Section~\ref{sec:memmanage})
+\item poor attribute removal {\em enabled} (Section~\ref{sec:pooratts})
+\item numeric attributes handled with {\em Gaussian approximation} using 10 split evaluations (Section~\ref{sec:gaussapprox})
+\item majority class prediction (Section~\ref{sec:majclass})
+\end{itemize}
+\item {\sc htnb} algorithm, properties that differ from {\sc htmc}:
+\begin{itemize}
+\item poor attribute removal {\em disabled} (Section~\ref{sec:pooratts} and~\ref{sec:nbleaf})
+\item Naive Bayes prediction (Section~\ref{sec:nbleaf})
+\end{itemize}
+\item {\sc htnb1k} algorithm, properties that differ from {\sc htnb}:
+\begin{itemize}
+\item majority class prediction in each leaf until 1000 examples seen, then Naive Bayes prediction afterwards (Section~\ref{sec:nbleaf})
+\end{itemize}
+\item {\sc htnba} algorithm, properties that differ from {\sc htnb}:
+\begin{itemize}
+\item adaptive hybrid majority class/Naive Bayes prediction decided per leaf (Section~\ref{sec:nbadaptive})
+\end{itemize}
+\end{enumerate}
+
+{\sc htmc} is a re-implementation that for the most part is equivalent to the VFDT system, and as such can be considered the base Hoeffding tree method. Following the findings from the previous chapter, numeric attributes are handled using a Gaussian approximation that evaluates ten split points.
+In the current comparison the modifications tested involve changing the prediction strategies used by the tree, with {\sc htmc} representing the default majority class method.
+
+\begin{table}
+\caption{Final results averaged over all data sources comparing four methods for Hoeffding tree prediction.}
+\label{tab:leafavgs}
+\centering
+\begin{tabular}{|r|r|r|r|r|r|r|r|r|}
+\hline
+method	&
+\rotatebox{90}{\parbox{9em}{accuracy\\(\%)}} &
+\rotatebox{90}{\parbox{9em}{training examples\\(millions)}} &
+\rotatebox{90}{\parbox{9em}{active leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{inactive leaves\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{total nodes\\(hundreds)}} &
+\rotatebox{90}{\parbox{9em}{tree depth}}	&
+\rotatebox{90}{\parbox{9em}{training speed (\%)}} &
+\rotatebox{90}{\parbox{9em}{prediction speed (\%)}} \\
+\hline
+\multicolumn{9}{|c|}{100KB memory limit / sensor} \\
+\hline
+{\sc htmc} & 85.51 & 27 & 0 & 8.64 & 11.9 & 12 & 69 & 81 \\
+{\sc htnb} & 85.48 & 27 & 0 & 8.69 & 11.9 & 12 & 68 & 81 \\
+{\sc htnb1K} & 85.48 & 27 & 0 & 8.69 & 11.9 & 12 & 68 & 81 \\
+{\sc htnba} & 85.44 & 29 & 0 & 8.65 & 11.9 & 12 & 67 & 82 \\
+\hline
+\multicolumn{9}{|c|}{32MB memory limit / handheld} \\
+\hline
+{\sc htmc} & 90.44 & 902 & 92.3 & 659 & 1134 & 24 & 14 & 69 \\
+{\sc htnb} & 90.48 & 825 & 75.1 & 643 & 1063 & 24 & 14 & 63 \\
+{\sc htnb1K} & 90.48 & 905 & 72.5 & 691 & 1136 & 24 & 14 & 63 \\
+{\sc htnba} & 90.51 & 871 & 73.4 & 670 & 1106 & 24 & 14 & 65 \\
+\hline
+\multicolumn{9}{|c|}{400MB memory limit / server} \\
+\hline
+{\sc htmc} & 90.30 & 525 & 522 & 25.4 & 864 & 28 & 6 & 71 \\
+{\sc htnb} & 90.24 & 464 & 471 & 49.1 & 802 & 28 & 6 & 40 \\
+{\sc htnb1K} & 90.34 & 450 & 494 & 49.1 & 847 & 28 & 6 & 42 \\
+{\sc htnba} & 90.70 & 463 & 489 & 46.7 & 828 & 28 & 6 & 53 \\
+\hline
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:leafavgs} summarizes behaviour of the four methods for each of the three environments. The numbers have been averaged over all data sources. For a more detailed breakdown of the results per data source refer to the tables in Appendix~\ref{sec:predictionMethodTables}.
+
+Recall from Chapter~\ref{chap:experimentalsetting} that each method is allowed a total of ten hours training time. The results reported in the tables represent the final result recorded when ten hours of training were complete or earlier if the tree became frozen. Excessive evaluation overhead was avoided by only measuring and recording the properties of the trees after every ten million training examples in the 32MB/400MB environments, and more frequently in the 100KB environment where changes happen more rapidly, every one million examples.
+
+First, looking at the properties of the trees besides accuracy, it is clear that the 100KB sensor environment strongly limits what the algorithms can achieve.
+In this environment fewer training examples are processed than possible in higher memory environments.
+This happened on every data set, and was caused by tree growth halting after all leaves have been deactivated well before the ten hour training limit.
+In fact, the training times in 100KB did not exceed 30 minutes in any run.
+Because the final trees have been stripped of their active nodes they are effectively only capable of majority class prediction. This explains why the prediction speeds attained by the final trees hardly differ between prediction methods in this environment. One positive effect that the highly constrained memory limit has compared to the other environments is that it allows much higher training speeds to be attained, but this provides little consolation when only limited training is possible.
+
+Looking at environments with higher memory, differences between the four methods begin to show and are the most pronounced in the server environment. It is interesting to see that the server environment is not capable of processing as many examples in the ten hour period as the 32MB handheld environment, neither is it able to grow as many nodes. This can be explained by looking at the extra amount of work involved in maintaining the trees in the largest memory environment. The trees are deeper and have many more active leaves to evaluate, slowing computation and limiting the number of examples that can be handled in a given time.
+
+The average training speed is not significantly affected by the prediction method utilized, which is to be expected in the first three methods as they do not alter the amount of work performed during training, but this is a very positive sign for {\sc htnba} which does in fact do some extra computation per training example. An explanation for this is that the extra processing is integrated with the induction process. The overhead of computing the local prediction accuracy is small when the appropriate data structures are already being updated.
+
+The average prediction speeds of the trees seem to be related to their reliance on Naive Bayes leaves, a result that is understandable given that more computation is involved in making a Naive Bayes prediction than simply returning the majority class in a leaf. For this reason, {\sc htnb} and {\sc htnb1k} are the slowest at prediction because they respectively use Naive Bayes exclusively and almost exclusively, besides the 100KB case which as already explained is incapable of Naive Bayes at the final point. {\sc htnba} lies between {\sc htmc} and the other two in terms of prediction speed, because it uses a mix of both prediction methods.
+
+With regard to accuracy, based on the average results it appears that the prediction enhancements have little merit in the 100KB environment. Enabling Naive Bayes leaves in various forms has actually caused a decline in accuracy overall. The trees are quickly starved of memory and forced to revert fully to majority class prediction. 
+It is possible that Naive Bayes leaves could provide an advantage prior to deactivation.
+
+\begin{table}
+\caption{Modified {\sc htnba} accuracy compared to {\sc htmc}, where {\sc htnba} growth stops as soon as memory is full in 100KB, retaining all Naive Bayes models at the expense of tree size.}
+\label{tab:htmc_vs_htnbstop_acc}
+\centering
+\begin{tabular}{|r||r|r|r||r|r|r|}
+\hline
+ & & fully active \\
+dataset & {\sc htmc} & {\sc htnba} \\
+\hline
+{\sc rts} & \textbf{96.95} & 80.77 \\
+{\sc rtsn} & \textbf{75.20} & 70.11 \\
+{\sc rtc} & \textbf{62.49} & 58.41\\
+{\sc rtcn} & 53.63 & \textbf{54.34} \\
+{\sc rrbfs} & \textbf{88.56} & 83.26 \\
+{\sc rrbfc} & \textbf{91.36} & 73.76\\
+{\sc led} & 73.94 & \textbf{73.99} \\
+{\sc wave21} & 81.21 & \textbf{83.08} \\
+{\sc wave40} & 81.20 & \textbf{83.39} \\
+{\sc genF1} & \textbf{95.07} & 94.80 \\
+{\sc genF2} & \textbf{78.46} & 74.84\\
+{\sc genF3} & 97.50 & \textbf{97.52} \\
+{\sc genF4} & \textbf{93.68} & 89.80 \\
+{\sc genF5} & \textbf{71.73} & 71.03 \\
+{\sc genF6} & \textbf{91.89} & 90.75 \\
+{\sc genF7} & \textbf{96.51} &  96.42\\
+{\sc genF8} & \textbf{99.41} & 99.40 \\
+{\sc genF9} & 96.07 & \textbf{96.08} \\
+{\sc genF10} & \textbf{99.88} & 99.87 \\
+\hline
+average & 85.51 & 82.72 \\
+\hline
+\end{tabular}
+\end{table}
+
+To investigate this further, an experiment was conducted to test what would happen if Naive Bayes models are never deactivated. The only way to achieve this in limited memory is to stop growing the tree as soon as memory is full. As a result the trees end up being significantly smaller (in terms of average numbers of nodes, measured at over 24 times smaller), but the models in the leaves can continue to learn and refine their statistics with more examples.
+Each run was allowed to train for an hour, as experiments with this version of {\sc htnba} showed that any benefit of additional learning after growth had ceased would level out very early, well before an hour of training was complete. 
+Table~\ref{tab:htmc_vs_htnbstop_acc} shows the resulting accuracy, which is on average worse than {\sc htmc} and also worse than the standard memory-managed {\sc htnba}. Figures in bold represent superior accuracy on a particular data set. There are a few examples where a much smaller but Naive Bayes enhanced tree is more accurate than a larger tree relying on majority class prediction. It is not surprising that {\sc led} is one of those cases, as a single Naive Bayes model is capable of solving this particular problem very well. This and other cases demonstrate that more powerful leaf predictions can sometimes provide more benefit than additional tree structure. However, the cases where Naive Bayes models do not compensate for tree structure are more numerous, and some of the differences are very large.
+
+In the main set of results where Naive Bayes nodes are being deactivated to allow further tree expansion, it looks as though the memory limit is too severe to see much evidence of an accuracy advantage from the Naive Bayes models prior to their deactivation. Figure~\ref{fig:100K_NB_win} shows two cases against the trend where there are hints of this happening. On {\sc wave21} the Naive Bayes methods reach reasonable accuracy levels earlier than {\sc htmc}, but they all converge by the time the trees are frozen. {\sc genF4} is a rare case where {\sc htnba} actually looks best throughout in 100KB of memory, although the differences are only fractions of a percent. The fact that the final trees still differ in accuracy despite them all using majority class at that point suggests that another, stronger effect exists.
+
+\begin{figure}
+\centering
+\begin{tabular}{c@{}c}
+\includegraphics[width=0.5\textwidth]{figures/wave21-r1-100k_predaccuracy} &
+\includegraphics[width=0.5\textwidth]{figures/genF4-r1-100k_predaccuracy} \\
+\end{tabular}
+\caption{Two exceptional cases where Naive Bayes leaves perform better than majority class prediction in 100KB of memory.}
+\label{fig:100K_NB_win}
+\end{figure}
+
+The reason why the final trees using alternate prediction methods do not behave the same as {\sc htmc} in the 100KB sensor environment despite them all being theoretically equivalent comes down to differences in memory management. {\sc htmc} saves memory via poor attribute removal where the other methods do not, and in this environment even the slightest difference in available memory can have a large effect on the final tree induced. This is reflected in {\sc htnba} performing even worse still than {\sc htnb}/{\sc htnb1k} overall, which is due to it further increasing the storage requirements of active leaves by a small amount.  
+
+\begin{table}
+\caption{{\sc htmc} vs {\sc htnb} accuracy (\%).}
+\label{tab:htmc_vs_htnb_acc}
+\centering
+\begin{tabular}{|r||r|r|r||r|r|r|}
+\hline
+method$\rightarrow$ & \multicolumn{3}{|c||}{{\sc htmc}} & \multicolumn{3}{|c|}{{\sc htnb}} \\
+\hline
+ & \multicolumn{3}{|c||}{memory limit} & \multicolumn{3}{|c|}{memory limit} \\
+\hline
+dataset & 100KB & 32MB & 400MB & 100KB & 32MB & 400MB \\
+\hline
+{\sc rts} & \textbf{96.95} & 99.99 & 99.99 & 96.87 & 99.99 & 99.99 \\
+{\sc rtsn} & 75.20 & \textbf{78.48} & \textbf{78.45} & \textbf{75.21} & 78.41 & 78.07 \\
+{\sc rtc} & \textbf{62.49} & 83.00 & 83.02 & 61.22 & \textbf{83.16} & \textbf{83.78} \\
+{\sc rtcn} & 53.63 & \textbf{62.45} & 61.87 & 53.63 & 62.32 & \textbf{62.50} \\
+{\sc rrbfs} & \textbf{88.56} & 93.27 & 92.93 & 88.51 & \textbf{93.60} & \textbf{93.52} \\
+{\sc rrbfc} & \textbf{91.36} & 98.72 & 98.21 & 91.24 & \textbf{98.85} & \textbf{98.44} \\
+{\sc led} & 73.94 & 73.99 & 73.96 & 73.94 & \textbf{74.02} & \textbf{73.99} \\
+{\sc wave21} & 81.21 & 84.37 & 84.01 & \textbf{81.28} & \textbf{84.82} & \textbf{85.21} \\
+{\sc wave40} & 81.20 & 84.21 & 83.80 & 81.20 & \textbf{84.55} & \textbf{84.89} \\
+{\sc genF1} & 95.07 & \textbf{95.07} & \textbf{95.07} & 95.07 & 94.99 & 94.80 \\
+{\sc genF2} & 78.46 & \textbf{94.03} & \textbf{94.00} & \textbf{78.84} & 94.01 & 93.72 \\
+{\sc genF3} & \textbf{97.50} & \textbf{97.52} & \textbf{97.52} & 97.49 & 97.48 & 97.36 \\
+{\sc genF4} & 93.68 & \textbf{94.67} & \textbf{94.65} & \textbf{93.83} & 94.65 & 94.27 \\
+{\sc genF5} & 71.73 & \textbf{92.36} & \textbf{92.15} & \textbf{71.84} & 92.27 & 91.67 \\
+{\sc genF6} & 91.89 & \textbf{93.31} & \textbf{93.28} & \textbf{92.08} & 93.26 & 92.18 \\
+{\sc genF7} & 96.51 & \textbf{96.81} & \textbf{96.79} & \textbf{96.52} & 96.77 & 95.49 \\
+{\sc genF8} & 99.41 & \textbf{99.42} & \textbf{99.42} & 99.41 & 99.36 & 99.26 \\
+{\sc genF9} & \textbf{96.07} & \textbf{96.78} & \textbf{96.74} & 95.97 & 96.77 & 95.64 \\
+{\sc genF10} & 99.88 & \textbf{99.89} & \textbf{99.89} & \textbf{99.89} & 99.84 & 99.84 \\
+\hline
+average & 85.51 & 90.44 & 90.30 & 85.48 & 90.48 & 90.24 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+\caption{{\sc htnb} vs {\sc htnb1k} accuracy (\%).}
+\label{tab:htnb_vs_htnb1k_acc}
+\centering
+\begin{tabular}{|r||r|r|r||r|r|r|}
+\hline
+method$\rightarrow$ & \multicolumn{3}{|c||}{{\sc htnb}} & \multicolumn{3}{|c|}{{\sc htnb1k}} \\
+\hline
+ & \multicolumn{3}{|c||}{memory limit} & \multicolumn{3}{|c|}{memory limit} \\
+\hline
+dataset & 100KB & 32MB & 400MB & 100KB & 32MB & 400MB \\
+\hline
+{\sc rts} & 96.87 & 99.99 & 99.99 & 96.87 & 99.99 & 99.99 \\
+{\sc rtsn} & 75.21 & \textbf{78.41} & 78.07 & 75.21 & 78.39 & \textbf{78.36} \\
+{\sc rtc} & 61.22 & 83.16 & \textbf{83.78} & 61.22 & 83.16 & 83.53 \\
+{\sc rtcn} & 53.63 & \textbf{62.32} & \textbf{62.50} & 53.63 & 62.24 & 62.49 \\
+{\sc rrbfs} & 88.51 & 93.60 & 93.52 & 88.51 & \textbf{93.61} & \textbf{93.53} \\
+{\sc rrbfc} & 91.24 & \textbf{98.85} & \textbf{98.44} & 91.24 & 98.84 & 98.15 \\
+{\sc led} & 73.94 & \textbf{74.02} & 73.99 & 73.94 & 74.01 & 73.99 \\
+{\sc wave21} & 81.28 & \textbf{84.82} & \textbf{85.21} & 81.28 & 84.80 & 85.20 \\
+{\sc wave40} & 81.20 & \textbf{84.55} & 84.89 & 81.20 & 84.49 & \textbf{84.92} \\
+{\sc genF1} & 95.07 & 94.99 & 94.80 & 95.07 & \textbf{95.02} & 94.80 \\
+{\sc genF2} & 78.84 & 94.01 & 93.72 & 78.84 & 94.01 & \textbf{93.81} \\
+{\sc genF3} & 97.49 & \textbf{97.48} & 97.36 & 97.49 & 97.47 & \textbf{97.37} \\
+{\sc genF4} & 93.83 & 94.65 & 94.27 & 93.83 & 94.65 & \textbf{94.38} \\
+{\sc genF5} & 71.84 & 92.27 & 91.67 & 71.84 & \textbf{92.37} & \textbf{92.00} \\
+{\sc genF6} & 92.08 & 93.26 & 92.18 & 92.08 & 93.26 & \textbf{92.74} \\
+{\sc genF7} & 96.52 & 96.77 & 95.49 & 96.52 & 96.77 & \textbf{95.97} \\
+{\sc genF8} & 99.41 & 99.36 & 99.26 & 99.41 & \textbf{99.37} & \textbf{99.30} \\
+{\sc genF9} & 95.97 & 96.77 & 95.64 & 95.97 & \textbf{96.78} & \textbf{96.10} \\
+{\sc genF10} & 99.89 & 99.84 & 99.84 & 99.89 & \textbf{99.85} & \textbf{99.86} \\
+\hline
+average & 85.48 & 90.48 & 90.24 & 85.48 & 90.48 & 90.34 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+\caption{{\sc htmc} vs {\sc htnba} accuracy (\%).}
+\label{tab:htmc_vs_htnba_acc}
+\centering
+\begin{tabular}{|r||r|r|r||r|r|r|}
+\hline
+method$\rightarrow$ & \multicolumn{3}{|c||}{{\sc htmc}} & \multicolumn{3}{|c|}{{\sc htnba}} \\
+\hline
+ & \multicolumn{3}{|c||}{memory limit} & \multicolumn{3}{|c|}{memory limit} \\
+\hline
+dataset & 100KB & 32MB & 400MB & 100KB & 32MB & 400MB \\
+\hline
+{\sc rts} & \textbf{96.95} & 99.99 & 99.99 & 96.92 & 99.99 & 99.99 \\
+{\sc rtsn} & \textbf{75.20} & 78.48 & \textbf{78.45} & 74.91 & \textbf{78.49} & 78.44 \\
+{\sc rtc} & \textbf{62.49} & 83.00 & 83.02 & 61.22 & \textbf{83.10} & \textbf{83.84} \\
+{\sc rtcn} & \textbf{53.63} & \textbf{62.45} & 61.87 & 53.60 & 62.26 & \textbf{63.19} \\
+{\sc rrbfs} & \textbf{88.56} & 93.27 & 92.93 & 88.43 & \textbf{93.60} & \textbf{93.84} \\
+{\sc rrbfc} & \textbf{91.36} & 98.72 & 98.21 & 91.19 & \textbf{98.85} & \textbf{98.95} \\
+{\sc led} & 73.94 & 73.99 & 73.96 & \textbf{73.96} & \textbf{74.02} & \textbf{73.98} \\
+{\sc wave21} & 81.21 & 84.37 & 84.01 & \textbf{81.23} & \textbf{84.80} & \textbf{85.66} \\
+{\sc wave40} & 81.20 & 84.21 & 83.80 & 81.20 & \textbf{84.52} & \textbf{85.52} \\
+{\sc genF1} & 95.07 & \textbf{95.07} & \textbf{95.07} & 95.07 & 95.06 & 95.05 \\
+{\sc genF2} & \textbf{78.46} & 94.03 & 94.00 & 78.30 & \textbf{94.05} & \textbf{94.05} \\
+{\sc genF3} & \textbf{97.50} & 97.52 & \textbf{97.52} & 97.49 & 97.52 & 97.51 \\
+{\sc genF4} & 93.68 & 94.67 & 94.65 & \textbf{93.86} & \textbf{94.68} & 94.65 \\
+{\sc genF5} & 71.73 & 92.36 & 92.15 & \textbf{72.10} & \textbf{92.41} & \textbf{92.40} \\
+{\sc genF6} & 91.89 & 93.31 & 93.28 & \textbf{92.09} & 93.31 & \textbf{93.29} \\
+{\sc genF7} & 96.51 & 96.81 & 96.79 & \textbf{96.53} & \textbf{96.82} & \textbf{96.80} \\
+{\sc genF8} & 99.41 & 99.42 & 99.42 & 99.41 & 99.42 & 99.42 \\
+{\sc genF9} & \textbf{96.07} & 96.78 & 96.74 & 95.98 & \textbf{96.81} & \textbf{96.78} \\
+{\sc genF10} & 99.88 & 99.89 & 99.89 & \textbf{99.89} & 99.89 & 99.89 \\
+\hline
+average & 85.51 & 90.44 & 90.30 & 85.44 & 90.51 & 90.70 \\
+\hline
+\end{tabular}
+\end{table}
+
+The final accuracy results are compared in Tables~\ref{tab:htmc_vs_htnb_acc}--\ref{tab:htmc_vs_htnba_acc}. Figures in bold indicate that a particular accuracy is higher for that method than its competitor. The larger memory limits allow active leaves to survive and bring with them results demonstrating a positive gain for the Naive Bayes methods. The trends are most evident in the 400MB case, where many active leaves expose the true merit of the alternative approaches to prediction.
+
+
+\begin{figure}
+\centering
+\begin{tabular}{c@{}c}
+\includegraphics[width=0.5\textwidth]{figures/rts-r1-400MB_leafacc} &
+\includegraphics[width=0.5\textwidth]{figures/rtsn-r1-400MB_leafacc} \\
+\includegraphics[width=0.5\textwidth]{figures/rtc-r1-400MB_leafacc} &
+\includegraphics[width=0.5\textwidth]{figures/rtcn-r1-400MB_leafacc} \\
+\includegraphics[width=0.5\textwidth]{figures/rrbfs-r1-400MB_leafacc} &
+\includegraphics[width=0.5\textwidth]{figures/rrbfc-r1-400MB_leafacc} \\
+\includegraphics[width=0.5\textwidth]{figures/wave21-r1-400MB_leafacc} &
+\includegraphics[width=0.5\textwidth]{figures/wave40-r1-400MB_leafacc} \\
+\end{tabular}
+\caption{Part 1 of learning curves for prediction methods in 400MB memory limit.}
+\label{fig:400MB_pred1}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tabular}{c@{}c}
+\includegraphics[width=0.5\textwidth]{figures/genF1-r1-400MB_leafacc} &
+\includegraphics[width=0.5\textwidth]{figures/genF2-r1-400MB_leafacc} \\
+\includegraphics[width=0.5\textwidth]{figures/genF3-r1-400MB_leafacc} &
+\includegraphics[width=0.5\textwidth]{figures/genF4-r1-400MB_leafacc} \\
+\includegraphics[width=0.5\textwidth]{figures/genF5-r1-400MB_leafacc} &
+\includegraphics[width=0.5\textwidth]{figures/genF6-r1-400MB_leafacc} \\
+\includegraphics[width=0.5\textwidth]{figures/genF7-r1-400MB_leafacc} &
+\includegraphics[width=0.5\textwidth]{figures/genF9-r1-400MB_leafacc} \\
+\end{tabular}
+\caption{Part 2 of learning curves for prediction methods in 400MB memory limit.}
+\label{fig:400MB_pred2}
+\end{figure}
+
+
+Figures~\ref{fig:400MB_pred1} \& \ref{fig:400MB_pred2} show learning curves for most data sources in the 400MB environment. The rate of sampling the points for purposes of plotting has been varied to aid the readability of the graphs. The three cases missing from the graphs ({\sc genF8}, {\sc genF10} and {\sc led}) add little information to that already shown---{\sc genF8} looks similar to {\sc genF7}, and apart from many more examples being processed on {\sc genF10} the relative accuracies look similar also. {\sc led} is not a good source of accuracy comparison because all of the methods fluctuate very close to the optimal Bayes accuracy, so that the methods are hard to visually separate when plotting accuracy over time.
+
+Of the graphs displayed, {\sc rtcn}, {\sc rrbfs}, {\sc rrbfc}, {\sc wave21}, {\sc wave40}, {\sc genF2}, {\sc genF5} and {\sc genF9} are all convincing cases for {\sc htnba}, where the adaptive method dominates in accuracy across the entire evaluation. In the case of {\sc genF1} and {\sc genF3}, {\sc htmc} emerges as the superior variant, but in these cases the difference between {\sc htmc} and {\sc htnba} is much less significant than the poor performance of {\sc htnb}. There are in fact no convincing wins to {\sc htnb}.
+
+Table~\ref{tab:htmc_vs_htnb_acc} compares the final accuracy of {\sc htmc} with that of {\sc htnb}. In the 32MB case there are more data sets for which {\sc htmc} is more accurate, but despite this the overall average looks better for {\sc htnb}. In the 400MB case {\sc htnb} looks less accurate in both the number of wins and the overall average. These losses serve as examples of the problems that Naive Bayes models can have.
+
+Comparing {\sc htnb} with {\sc htnb1k} in Table~\ref{tab:htnb_vs_htnb1k_acc} looks at the difference afforded by waiting a fixed period before trusting Naive Bayes models. There is absolutely no difference to be noted in the 100KB case, and even in the 32MB environment it is difficult to determine a superior method from the results. Only the 400MB environment is able to expose a slight advantage to {\sc htnb1k}, although looking at the learning curves in Figures~\ref{fig:400MB_pred1} \& \ref{fig:400MB_pred2}, for example on {\sc rtsn}, {\sc genF4}, {\sc genF6}, {\sc genF7} and {\sc genF9}, some of the gains do look significant. On {\sc rrbfc}, the fixed threshold appears to have a detrimental effect.
+
+{\sc htnba} is a more convincing improvement over {\sc htnb}. In Table~\ref{tab:htmc_vs_htnba_acc} its accuracy is compared with the base method {\sc htmc}. In the larger memory environments it makes a noticeable difference, outperforming all other methods on average. From these results, aside from its performance in 100KB of memory, the {\sc htnba} method is the superior method of the four. A broad conclusion to be made is that the more memory available, the more benefit able to be provided by {\sc htnba}. This is a sensible result considering how {\sc htnba}'s theoretical capacity to lift accuracy is directly impacted by deactivation of leaves, the direct consequence of limited memory. Due to this section concluding that {\sc htnba} is an improvement on {\sc htmc}, it is the {\sc htnba} algorithm, not {\sc htmc}, that is carried forward to the investigation in Chapter~\ref{chap:improvecompare}.
+
+\section{Summary}
+
+With an established induction method, a study of approaches to prediction was conducted. With the standard method of majority class prediction offering sometimes lower but more reliable accuracy compared to the enhancement of Naive Bayes leaves, a hybrid approach was introduced that adaptively chooses between the methods, and is shown to be the most accurate method overall when sufficient working memory is available.
+
+The average accuracy of the base method {\sc htmc}, across all environments
+and data sets, was established at the end of the previous chapter as 88.75\%.
+{\sc htnba} has an average accuracy of 88.88\%, representing an average
+relative improvement of 0.15\%. Although not as significant overall as the numeric method, improving the prediction strategy has demonstrated improvement when sufficient memory is available. The improvement comes with an overall average training speed reduction of 2.25\%, and an average prediction speed reduction of 9.50\%.
+
+In 100KB of memory the relative accuracy actually dropped by 0.08\%, accompanied by a training speed reduction of 2.90\%. In this environment {\sc htmc} is the recommended algorithm. In 32MB of memory {\sc htnba} gained 0.08\% accuracy relative to {\sc htmc}, with no change in training speed on average, and predictions that are 5.80\% slower. {\sc htnba} is marginally superior in this environment. The most accuracy gains were seen in 400MB, where the average relative gain was 0.44\%. This also was without any training speed reduction on average, although it comes with a significant prediction speed reduction of 25.35\% relative to {\sc htmc}. The best method in this environment is a choice between the faster predictions of {\sc htmc} or the more accurate predictions of {\sc htnba}.
+\ENDOMIT

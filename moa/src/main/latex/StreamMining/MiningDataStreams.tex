@@ -1,0 +1,92 @@
+\chapter{Evolving data streams}
+\label{ch:conceptdrift}
+\BEGINOMIT
+Digital data in many organizations can grow without limit at a high rate of
+millions of data items per day. 
+Every day WalMart records 20 million transactions, 
+Google~\cite{bifet05analysis} handles 100 million searches, and 
+AT\&T produces 275 million call records.
+Several applications naturally generate data streams: %as opposed to data sets:
+ financial tickers, performance measurements in network monitoring 
+and traffic management, log records or click-streams in web tracking and 
+personalization, manufacturing processes, data feeds from sensor 
+applications, call detail records in telecommunications,
+email messages, and others. 
+\ENDOMIT
+%Domains with these continuous data streams include credit
+%fraud detection, mining e-commerce data, web mining, stock analysis, network intrusion detection,
+%telecommunication data mining and many others. %, and counter-terrorism data mining
+ %Mining data streams \cite{WangYH05, WangPY05, aguilar,gaber} brings
+%unique opportunities but also new challenges. 
+%The main challenge 
+%is that `data-intensive' mining is
+%constrained by limited resources of time, memory, and sample size. 
+Data mining has traditionally
+been performed over static datasets, where data mining algorithms can afford to read the input data
+several times. When the source of data items is an open-ended data stream, not all data can be
+loaded into the memory and off-line mining with a fixed size dataset is no longer technically feasible
+due to the unique features of streaming data.
+
+%For many recent 
+%applications, the concept of a continuous data stream is more 
+%appropriate than a data set. Traditional database management systems (DBMSs) expect all data to be 
+%managed within some form of persistent data sets. By nature, a stored data set is appropriate 
+%when significant portions of the data are queried again and again, and 
+%updates are small and/or relatively infrequent. In contrast, a data 
+%stream is appropriate when the data is %changing constantly (often exclusively 
+%increasing 
+%through insertions of new elements, and it is either 
+%unnecessary or impractical to operate on large portions of the data 
+%multiple times.
+
+%Several applications naturally generate data streams: %as opposed to data sets:
+% financial tickers, performance measurements in network monitoring 
+%and traffic management, log records or click-streams in web tracking and 
+%personalization, manufacturing processes, data feeds from sensor 
+%applications, call detail records in telecommunications,
+%email messages, and others.
+
+
+%In the Data Stream model, data items arrive one at a time  at discretesteps, and 
+The following constraints apply in the Data Stream model:
+\begin{enumerate}
+\item  The amount of data that has arrived and will arrive in the future is extremely large; in fact, the sequence is potentially infinite. Thus, it is impossible to store it all. Only a small summary can be computed and stored, and the rest of the information is thrown away. Even if the information could be all stored, it would be unfeasible to go over it for further processing.
+\item The speed of arrival is large, so that each particular element has to be processed essentially in real time, and then discarded.
+\item The distribution generating the items can change over time. Thus, data from the past may become irrelevant (or even harmful) for the current summary.
+\end{enumerate}
+
+Constraints 1 and 2 limit the amount of memory and time-per-item that the streaming algorithm can use. Intense research on the algorithmics of Data Streams has produced a large body of techniques for computing fundamental functions with low memory and time-per-item, usually in combination with the sliding-window technique discussed next.
+
+Constraint 3, the need to adapt to time changes, has been also intensely studied. A typical approach for dealing is based on the use of so-called sliding windows: The algorithm keeps a window of size $W$ containing the last $W$ data items that have arrived (say, in the last $W$ time steps). When a new item arrives, the oldest element in the window is deleted to make place for it. The summary of the Data Stream is at every moment computed or rebuilt from the data in the window only. If $W$ is of moderate size, this essentially takes care of the requirement to use low memory. 
+
+In most cases, the quantity $W$ is assumed to be externally defined, and fixed through
+the execution of the algorithm. The underlying hypothesis is that the user can guess $W$ so that the
+distribution of the data can be thought to be essentially constant in most intervals of size $W$; that
+is, the distribution changes smoothly at a rate that is small w.r.t. $W$, or it can change drastically
+from time to time, but the time between two drastic changes is often much greater than $W$.
+
+Unfortunately, in most of the cases the user does not know in advance what the rate of change is
+going to be, so its choice of $W$ is unlikely to be optimal. Not only that, the rate of change can itself
+vary over time, so the optimal $W$ may itself vary over time.
+
+\BEGINOMIT
+Muthukrishnan's book~\cite{MUT03} is a reference on
+%has written an interesting survey and book of the algorithmics of 
+the {\em Data Stream} model. 
+%This short introduction to the {\em Data Stream} model, is inspired on his work.
+Formally, the input stream $a_1,a_2,\ldots$ arrives sequentially, item by item, and describes an underlying signal $A$, a one-dimensional function $A:[1\cdots N]\rightarrow R$. Input may comprise multiple streams or multidimensional signals. Models differ on how the $a_i$'s describe $A$.
+
+%\BEGINOMIT
+There are different performance measures
+\begin{itemize}
+\item {\bf Processing Time}: Processing time per item $a_i$ % the stream
+\item {\bf Storage}: Space used to store the data structure on $A_t$ at time $t$ 
+\item {\bf Computing Time}: Time needed to compute functions on $A$.
+\end{itemize}
+%\ENDOMIT
+
+The {\em Data Stream} model requires that at an time $t$ in the data stream this three performance measures: the per-item processing time, storage and the computing time to be simultaneously $o(N,t)$, preferably, polylog($N$,$t$).
+\ENDOMIT
+
+
+

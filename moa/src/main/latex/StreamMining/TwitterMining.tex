@@ -1,0 +1,495 @@
+\chapter{Twitter Stream Mining}
+\label{ch:twitter}
+\renewcommand{\v}[1]{\ensuremath{\mathbf{#1}}}
+Twitter is a ``what's-happening-right-now'' tool that enables interested
+parties to follow individual users' thoughts and commentary on events
+in their lives---in almost real-time~\cite{tech-crunch}. It is a potentially valuable
+source of data that can be used to delve into the thoughts of millions
+of people as they are uttering them.  Twitter makes these utterances
+immediately available in a data stream, which can be mined using
+appropriate stream mining techniques.  In principle, this could make
+it possible to infer people's opinions, both at an individual level as
+well as in aggregate, regarding potentially any subject or event~\cite{tech-crunch}.
+
+%Traditional web search engines are useful because they capture
+%people's intent, what they are looking for, what they desire, and what
+%they want to learn about. Instead, Twitter data streams help to
+%capture what people are doing and what they are thinking about.
+
+At the official Twitter Chirp developer conference in April 2010~\cite{business-insider}, the
+company presented some statistics about its site and its users.  In
+April 2010, Twitter had 106 million registered users, and 180 million
+unique visitors every month. New users were signing up at a rate of
+300,000 per day.  Twitter's search engine received around 600 million
+search queries per day, and Twitter received a total of 3 billion
+requests a day via its API. Of Twitter's active users, 37 percent used
+their phone to tweet.
+
+Twitter data follows the data stream model. In this model, data arrive
+at high speed, and algorithms that process them must be able to predict
+in real time and do so under very
+strict constraints of space and time.  Data streams pose several
+challenges for algorithm design. First, they must make use
+of limited resources (time and memory).  Second, they must deal with
+data whose nature or distribution changes over time.
+
+The main Twitter data stream that provides all messages from every
+user in real-time is called Firehose~\cite{streaming-api} and was made available to
+developers in 2010. To deal with this large amount of data,
+and to use it for sentiment analysis and opinion mining---the task
+considered in this chapter---streaming techniques are needed. However,
+to the best of our knowledge, data stream algorithms, in conjunction
+with appropriate evaluation techniques, have so far not been
+considered for this task.
+
+Evaluating data streams in real time is a challenging task.
+Most work in the literature considers only how to build a picture of accuracy over time. Two main
+approaches arise~\cite{MOA}:
+\begin{itemize}
+ \item {\bf Holdout}: Performance is measured using on single hold-out set.
+\item {\bf Interleaved Test-Then-Train or Prequential}:
+ Each individual example is used to test the model
+before it is used for training, and accuracy is incrementally
+updated. 
+\end{itemize}
+  
+A common problem is that for unbalanced data streams with, for example, 90\% of the instances in
+one class, the simplest classifiers will have high accuracies of at least 90\%. To deal with
+this type of data stream,
+we propose the Kappa statistic, based on a sliding window, as a measure for classifier performance
+in unbalanced class streams~\cite{BifetF10}.
+
+\section{Mining Twitter Data: Challenges}
+\label{sec:challenges}
+
+Twitter has its own conventions that renders it distinct from other
+textual data. Consider the following Twitter example message
+(``tweet''): \texttt{RT @toni has a cool \#job}. It shows that users
+may reply to other users by indicating user names using the character
+@, as in, for example, \texttt{@toni}.  Hashtags (\#) are used to
+denote subjects or categories, as in, for example \texttt{\#job}.
+\texttt{RT} is used at the beginning of the tweet to indicate that the
+message is a so-called ``retweet'', a repetition or reposting of a
+previous tweet.
+
+In the knowledge discovery context, there are two fundamental data
+mining tasks that can be considered in conjunction with Twitter data:
+(a) graph mining based on analysis of the links amongst messages, and
+(b) text mining based on analysis of the messages' actual text.
+
+Twitter graph mining has been used to tackle several interesting problems:
+\begin{itemize}
+ \item \textbf{Measuring user influence and dynamics of
+   popularity}. Direct links indicate the flow of information, and
+   thus a user's influence on others. There are three measures of
+   influence: indegree, retweets and mentions. Cha et
+   al.~\cite{icwsm10cha} show that popular users who have high
+   indegree are not necessarily influential in terms of retweets or
+   mentions, and that influence is gained through concerted effort
+   such as limiting tweets to a single topic.
+  \item \textbf{Community discovery and formation}. Java et
+    al.~\cite{java} found communities using HyperText Induced Topic
+    Search (HITS)~\cite{HITS}, and the Clique Percolation
+    Method~\cite{CPM}.  Romero and Kleinberg~\cite{romero} analyze
+    the formation of links in Twitter via the directed closure
+    process.
+%  \item Information-seeking and collective problem-solving 
+  \item \textbf{Social information diffusion}. De Choudhury et
+    al.~\cite{choudhury:sampling} study how data sampling strategies
+    impact the discovery of information diffusion.
+\end{itemize}
+
+There are also a number of interesting tasks that have been tackled
+using Twitter text mining: sentiment analysis, which is the
+application we consider in this chapter, classification of tweets
+into categories, clustering of tweets and trending topic detection.
+
+Considering sentiment analysis~\cite{Liu:06a,Pang+Lee:08b}, O'Connor et al.~\cite{Oconnor10} found
+that surveys of consumer confidence and political opinion correlate
+with sentiment word frequencies in tweets, and propose text stream
+mining as a substitute for traditional polling.  Jansen et
+al.~\cite{Jansen} discuss the implications for organizations of using
+micro-blogging as part of their marketing strategy.  Pak et
+al.~\cite{PAK} used classification based on the multinomial na\"{\i}ve
+Bayes classifier for sentiment analysis. Go et al.~\cite{gohuang}
+compared multinomial na\"{\i}ve Bayes, a maximum entropy classifier,
+and a linear support vector machine; they all exhibited broadly
+comparable accuracy on their test data, but small differences could be
+observed depending on the features used.
+
+
+\subsection{The Twitter Streaming API} 
+\label{sec:api}
+
+The Twitter Application Programming Interface (API)~\cite{api}
+currently provides a Streaming API and two discrete REST APIs. The
+Streaming API~\cite{streaming-api} provides real-time access to Tweets
+in sampled and filtered form. The API is HTTP based, and GET, POST,
+and DELETE requests can be used to access the data.
+
+In Twitter terminology, individual messages describe the ``status'' of
+a user. The streaming API allows near real-time access to subsets of
+public status descriptions, including replies and mentions created by
+public accounts.  Status descriptions created by protected accounts
+and all direct messages are not available.  An interesting property of
+the streaming API is that it can filter status descriptions using
+quality metrics, which are influenced by frequent and repetitious
+status updates, etc.
+
+The API uses basic HTTP authentication and requires a valid Twitter
+account.  Data can be retrieved as XML and the more succinct JSON
+format. Parsing JSON data from the streaming API is simple: every
+object is returned on its own line, and ends with a carriage return.
+%Figure~\ref{fig:tweet} shows a JSON
+%tweet retrieved using the Twitter Streaming API.
+
+%The statuses/sample feed is sampled from the stream of public statuses. No
+%additional data can be gleaned by consuming more than one sampled feed at a
+%given access level or additional feeds at a lower access levels. All feeds at a
+%given access level are identical, and all lower access levels are strict subsets
+%of higher access levels. Long-term consumption of duplicate data wastes limited
+%resources and may lead to a ban from the service.
+\BEGINOMIT
+The main Twitter stream, which provides all status updates from
+everyone in real-time, is called Firehose~\cite{streaming-api}. Two subsamples of this
+stream are defined as the so-called ``Spritzer'' role and
+``Gardenhose'' role respectively. The sampling rate is 5\% for the
+Spritzer role and 15\% for Gardenhose. 
+\ENDOMIT
+%The exact sampling procedure is
+%as follows: The status id modulo 100 is taken on each public status,
+%that is, from the Firehose. Modulus values from 0-4 are delivered to
+%Spritzer, and values 0-14 are delivered to Gardenhose.
+%Over a significant period, a 5\% and a 15\% sample of public statuses is
+%approached. 
+
+\BEGINOMIT
+\begin{figure}
+
+\begin{verbatim}
+ {
+  :favorited=>false, 
+  :source=>"web", 
+  :created_at=>"Wed Sep 23 18:12:25 +0000 2009", 
+  :text=>"Voor de marketeers: Jan Bunt op Molblog over de gevolgen van het
+aandeelhouders- model voor het marketingdenken: http://tinyurl.com/nps6tg", 
+  :user=>{
+    :profile_background_color=>"9ae4e8", 
+    :description=>"marketeer, sportief, ondernemer", 
+    :location=>"", 
+    :profile_sidebar_border_color=>"87bc44", 
+    :profile_link_color=>"0000ff", 
+    :created_at=>"Sun Jul 05 08:45:41 +0000 2009", 
+    :screen_name=>"nicknijhuis", 
+   
+:profile_background_image_url=>"http://s.twimg.com/a/1253301564/images/themes/th
+eme1/bg.png", 
+    :profile_background_tile=>false, 
+    :protected=>false, 
+    :url=>"http://www.linkedin.com/in/nicknijhuis", 
+    :time_zone=>"Amsterdam", 
+    :profile_text_color=>"000000", 
+    :friends_count=>9, 
+   
+:profile_image_url=>"http://a1.twimg.com/profile_images/342659888/portret_nick_k
+lein_normal.jpg", 
+    :statuses_count=>29, 
+    :utc_offset=>3600, 
+    :name=>"Nick Nijhuis", 
+    :following=>nil, 
+    :profile_sidebar_fill_color=>"e0ff92", 
+    :id=>53871280, 
+    :favourites_count=>0, 
+    :verified=>false
+  }, 
+  :truncated=>false, 
+  :in_reply_to_user_id=>nil, 
+  :id=>4321391704, 
+  :in_reply_to_status_id=>nil, 
+  :in_reply_to_screen_name=>nil
+}
+
+\end{verbatim} 
+
+\begin{verbatim}
+{
+  "in_reply_to_user_id":21611055,
+  "text":"@LisaDuncan66 Nice looking background! :) Good job!!",
+  "geo":null,
+  "coordinates":null,
+  "source":"web",
+  "created_at":"Tue May 11 05:25:52 +0000 2010",
+  "in_reply_to_screen_name":"LisaDuncan66",
+  "favorited":false,
+  "truncated":false,
+  "in_reply_to_status_id":13770498708,
+  "place":null,
+  "user" {
+    "friends_count":349,
+    "profile_text_color":"f320ca",
+    "profile_image_url":"http://a3.twimg.com/.../Moi02_normal.jpg",
+    "geo_enabled":false,
+    "notifications":null,
+    "favourites_count":4,
+    "profile_link_color":"004cff",
+    "screen_name":"VDanielleM",
+    "description":"Press attach\u00e9/assistant and aspiring author",
+    "time_zone":"Eastern Time (US & Canada)",
+    "created_at":"Thu Jul 24 23:21:05 +0000 2008",
+    "profile_sidebar_fill_color":"0a0b0b",
+    "statuses_count":1573,
+    "lang":"en",
+    "profile_background_image_url":"http://a1.twimg.com/.../MilkyWayRoad_landolfi.jpg",
+    "profile_sidebar_border_color":"050505",
+    "location":"Montreal, Canada",
+    "contributors_enabled":false,
+    "following":null,
+    "protected":false,
+    "profile_background_tile":true,
+    "name":"Danielle Miron",
+    "profile_background_color":"111313",
+    "followers_count":199,
+    "id":15590776,
+    "verified":false,
+    "utc_offset":-18000,
+    "url":"http://www.facebook.com/people/Danielle-Miron/727215550"
+    },
+  "id":13771698155,
+  "contributors":null
+} 
+\end{verbatim}
+
+\caption{Example of tweet retrieved using the Twitter Streaming API}
+\label{fig:tweet}
+\end{figure} 
+\ENDOMIT 
+\section{Twitter Sentiment Analysis}
+\label{sec:sentiment}
+
+Sentiment analysis can be cast as a classification problem where the
+task is to classify messages into two categories depending on whether
+they convey positive or negative feelings.% See~\cite{Pang+Lee:08b} for
+%a survey of sentiment analysis, and \cite{Liu:06a} for opinion mining
+%techniques.
+
+Twitter sentiment analysis is not an easy task because a tweet can
+contain a significant amount of information in very compressed form, and
+simultaneously carry positive and negative feelings. Consider the
+following example:
+\begin{quote}
+\texttt{I currently use the Nikon D90 and love it, but not as much as the Canon
+40D/50D. I chose the D90 for the  video feature. My mistake.}
+\end{quote} 
+Also, some tweets may contain sarcasm or irony~\cite{carvalho} as in the following example:
+\begin{quote}
+\texttt{After a whole 5 hours away from work, I get to go back again, I'm so
+lucky! }
+\end{quote}
+%\begin{quote}
+%\texttt{``Losing followers is always cool....yaknow. ''}
+%\end{quote} 
+To build classifiers for sentiment analysis, we need to collect
+training data so that we can apply appropriate learning algorithms.
+Labeling tweets manually as positive or negative is a laborious and
+expensive, if not impossible, task.  However, a significant advantage
+of Twitter data is that many tweets have author-provided sentiment
+indicators: changing sentiment is implicit in the use of various types
+of emoticons. Hence we may use these to label our training data.  
+
+{\em Smileys} or {\em emoticons} are visual cues that are associated
+with emotional states~\cite{Read:05a,carvalho}.  They are constructed using the
+characters available on a standard keyboard, representing a facial
+expression of emotion. %Table~\ref{tab:emoticons} shows some examples.
+When the author of a tweet uses an emoticon, they are annotating their
+own text with an emotional state. Annotated tweets can be used to
+train a sentiment classifier.
+
+\section{Streaming Data Evaluation with Unbalanced Classes} 
+%Kappa Statistic for Streaming Data}
+\label{sec:kappa}
+
+In data stream mining, the most frequently used measure for evaluating
+predictive accuracy of a classifier is prequential
+accuracy~\cite{GamaSR09}. We argue that this measure is only
+appropriate when all classes are balanced, and have (approximately)
+the same number of examples.  In this section, we propose the Kappa
+statistic as a more sensitive measure for quantifying the predictive
+performance of streaming classifiers. For example, considering the
+particular target domain in this chapter, the rate in which the Twitter
+Streaming API delivers positive or negative tweets may vary over time;
+we cannot expect it to be 50\% all the time. Hence, a measure that
+automatically compensates for changes in the class distribution should
+be preferable.
+
+Just like accuracy, Kappa needs to be estimated using some sampling
+procedure. Standard estimation procedures for small datasets, such as
+cross-validation, do not apply. In the case of very large datasets or
+data streams, there are two basic evaluation procedures: holdout
+evaluation and prequential evaluation. Only the latter provides a
+picture of performance over time. In prequential evaluation (also
+known as interleaved test-then-train evaluation), each example in a
+data stream is used for testing before it is used for training.
+
+We argue that prequential accuracy is not well-suited for data streams
+with unbalanced data, and that a prequential estimate of Kappa should
+be used instead.
+Let $p_0$ be the
+classifier's prequential accuracy, and $p_c$ the probability that a
+chance classifier---one that assigns the same number of examples to
+each class as the classifier under consideration---makes a correct
+prediction.
+ Consider the simple confusion matrix shown in
+Table~\ref{tab:kappa}.  From this table, we see that Class+ is
+predicted correctly 75 out of 100 times, and Class- is predicted
+correctly 10 times. So accuracy $p_0$ is $85\%$. However a classifier
+predicting solely by chance---in the given proportions---will predict
+Class+ and Class- correctly in 68.06\% and 3.06\% of cases
+respectively. Hence, it will have an accuracy $p_c$ of 71.12\% as
+shown in Table~\ref{tab:kappa2}.
+
+Comparing the classifier's observed accuracy to that of a chance
+predictor renders its performance far less impressive than it first
+seems. The problem is that one class is much more frequent than the
+other in this example and plain accuracy does not compensate for
+this. The Kappa statistic, which normalizes a classifier's accuracy by
+that of a chance predictor, is more appropriate in scenarios such as
+this one.
+
+%A classifier that uses the majority class to predict has an accuracy on the
+%confusion matrix in Table~\ref{tab:kappa} of 83\%. So, the prequential accuracy
+%of $85\%$ of this classifier is not a good indicator of how well the classifier
+%is performing. We need another measure to report accuracy.%, and we propose to
+%use the Kappa Statistic.
+
+\begin{table}[t]
+ \begin{center} 
+\begin{tabular}{lccc} \cline{2-4}
+& Predicted & Predicted & \\
+&  Class+&  Class-&Total\\ \hline
+Correct Class+ &75&	8&	83 \\
+Correct Class-&7&	10&	17 \\ \hline
+Total &82&	18&	100 \\
+\end{tabular}
+\end{center}
+\caption{Simple confusion matrix example}
+\label{tab:kappa}
+\end{table} 
+
+\begin{table}[t]
+ \begin{center} 
+\begin{tabular}{lccc} \cline{2-4}
+& Predicted & Predicted & \\
+&  Class+&  Class-&Total\\ \hline
+Correct Class+ &68.06&	14.94&	83 \\
+Correct Class-&13.94&	3.06&	17\\ \hline
+Total &82&	18&	100 \\
+\end{tabular}
+\end{center}
+\caption{Confusion matrix for chance predictor based on example in
+Table~\ref{tab:kappa}}
+\label{tab:kappa2}
+\end{table} 
+
+The Kappa statistic $\kappa$ was introduced by Cohen~\cite{cohen}.  We
+argue that it is particularly appropriate in data stream mining due to
+potential changes in the class distribution.  Consider a classifier
+$h$, a data set containing $m$ examples and $L$ classes, and a contingency table where
+cell $C_{ij}$ contains the number of examples for which $h(x)=i$ and
+the class is $j$.  If $h(x)$ correctly predicts all the data, then all
+non-zero counts will appear along the diagonal. If $h$ misclassifies
+some examples, then some off-diagonal elements will be non-zero.
+
+We define
+$$p_0= \frac{\sum^{L}_{i=1} C_{ii}}{m}$$
+$$p_c = \sum^L_{i=1} \left( \sum^L_{j=1} \frac{C_{ij}}{m} \cdot
+\sum^L_{j=1}\frac{C_{ji}}{m} \right) $$ 
+
+In problems where one class is much more common than the others, any
+classifier can easily yield a correct prediction by chance, and it
+will hence obtain a high value for $p_0$.  To correct for this, the
+$\kappa$ statistic is defined as follows:
+$$ \kappa = \frac{p_0 -p_c}{1-p_c}$$
+%$\kappa$ uses $p_c$, the probability that the classifiers predicts correctly by
+%chance, given the observed counts in the table.
+If the classifier is always correct then $\kappa = 1 $. If its
+predictions coincide with the correct ones as often as those of the
+chance classifier, then $\kappa = 0$.
+
+The question remains as to how exactly to compute the relevant counts
+for the contingency table: using all examples seen so far is not
+useful in time-changing data streams.  Gama et al.~\cite{GamaSR09}
+propose to use a forgetting mechanism for estimating prequential
+accuracy: a sliding window of size $w$ with the most recent
+observations, or fading factors that weigh observations using a decay
+factor $\alpha$. As the output of the two mechanisms is very
+similar (every window of size $w_0$ may be approximated by some decay
+factor $\alpha_0$), we propose to use the Kappa statistic measured
+using a sliding window. Note that, to calculate the statistic for an
+$n_c$ class problem, we need to maintain only $2 n_c + 1$
+estimators. We store the sum of all rows and columns in the confusion
+matrix ($2 n_c$ values) to compute $p_c$, and we store the prequential
+accuracy $p_0$. The ability to calculate it efficiently is an
+important reason why the Kappa statistic is more appropriate for data
+streams than a measure such as the area under the ROC curve.
+
+
+
+\section{Data Stream Mining Methods}
+\label{sec:methods}
+%\subsection{Data Stream Mining Methods}
+
+There are  three fast incremental methods that are well-suited
+to deal with text data streams: multinomial na\"{\i}ve Bayes, stochastic
+gradient descent, and the Hoeffding tree.
+
+\subsubsection{Multinomial Na\"{\i}ve Bayes}
+
+The multinomial na\"{\i}ve Bayes classifier is a popular classifier
+for document classification that often yields %surprisingly 
+good performance. It can be trivially applied to data streams because it is
+straightforward to update the counts required to estimate conditional
+probabilities.. 
+
+Multinomial naive Bayes considers a document as a bag-of-words. For
+each class $c$, $P (w|c)$, the probability of observing word $w$ given
+this class, is estimated from the training data, simply by computing
+the relative frequency of each word in the collection of training
+documents of that class. The classifier also requires the prior
+probability $P (c)$, which is straightforward to estimate. 
+
+Assuming $n_{wd}$ is the number of times word $w$ occurs in document
+$d$, the probability of class $c$ given a test document is calculated
+as follows:
+$$P(c|d) =\frac{P(c) \prod_{w\in d} P(w|c)^{n_{wd}}}{P(d)},$$
+where $P (d)$ is a normalization factor. To avoid the zero-frequency
+problem, it is common to use the Laplace correction for all
+conditional probabilities involved, which means all counts are
+initialized to value one instead of zero.
+
+\subsubsection{Stochastic Gradient Descent}
+
+Stochastic gradient descent (SGD) has experienced a revival since it
+has been discovered that it provides an efficient means to learn
+some classifiers even if they are based on non-differentiable loss
+functions, such as the hinge loss used in support vector machines. In
+our experiments we use an implementation of vanilla stochastic
+gradient descent with a fixed learning rate, optimizing the hinge loss
+with an $L_2$ penalty that is commonly applied to learn support vector
+machines. With a linear machine, which is frequently applied for document
+classification, the loss function we optimize is:
+$$\frac{\lambda}{2} ||\v{w}||^2 + \sum{[1 - ( y \v{x} \v{w} +
+  b )]_+},$$ where $w$ is the weight vector, $b$ the bias, $\lambda$ the
+regularization parameter, and the class labels $y$ are assumed to be
+in $\{+1,-1\}$.
+
+We compared the performance of our vanilla implementation to that of
+the Pegasos method~\cite{pegasos}, which does not require
+specification of an explicit learning rate, but did not observe a gain
+in performance using the latter. On the contrary, the ability to
+specify an explicit learning rate turned out to be crucial to deal
+with time-changing Twitter data streams : setting the learning rate to
+a value that was too small meant the classifier adapted too slowly to
+local changes in the distribution. In our experiments, we used
+$\lambda=0.0001$ and set the learning rate for the per-example updates
+to the classifier's parameters to 0.1.
+

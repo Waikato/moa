@@ -1,0 +1,188 @@
+\documentclass[a4paper,12pt,twoside]{book}
+%\documentclass[a4paper,14pt,twoside]{extreport}
+
+\usepackage{phdthesis}
+\usepackage{titlepage_moa}
+\usepackage{amsthm}
+%%%FONTS
+%\usepackage{palatino}
+%\usepackage{euler}
+%\usepackage[urw-garamond]{mathdesign}
+\usepackage[bitstream-charter]{mathdesign}
+%\usepackage{charter}
+%\usepackage[light,math]{iwona}%{newcent}%{utopia}%{bookman}
+%%%%%%
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{tikz} 
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{rotating}
+%\usepackage{times}
+\usepackage{hyperref}
+\definecolor{nicered}{rgb}{0.0,0.0,0.4}%{.647,.129,.149}
+%\arrayrulecolor{nicered}
+\usepackage[inner=40mm,outer=30mm,top=25mm,bottom=25mm,a4paper,includehead]{geometry}
+\usepackage{setspace}
+\usepackage{algorithm,algorithmic}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{wallpaper}
+
+
+\hypersetup{
+    bookmarks=true,         % show bookmarks bar?
+    unicode=false,          % non-Latin characters in Acrobat’s bookmarks
+    pdftoolbar=true,        % show Acrobat’s toolbar?
+    pdfmenubar=true,        % show Acrobat’s menu?
+    pdffitwindow=false,     % window fit to page when opened
+    pdfstartview={FitV},    % fits the width of the page to the window
+    pdftitle={DATA STREAM MINING},    % title
+    pdfauthor={Albert Bifet, Geoff Holmes, Richard Kirkby and Bernhard Pfahringer},     % author
+    pdfsubject={},   % subject of the document
+    pdfcreator={Albert Bifet, Geoff Holmes, Richard Kirkby and Bernhard Pfahringer},   % creator of the document
+    pdfproducer={Albert Bifet, Geoff Holmes, Richard Kirkby and Bernhard Pfahringer}, % producer of the document
+    pdfkeywords={}, % list of keywords
+    pdfnewwindow=true,      % links in new window
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=nicered,          % color of internal links
+    citecolor=blue,        % color of links to bibliography
+    filecolor=magenta,      % color of file links
+    urlcolor=cyan           % color of external links
+}
+
+\usepackage{graphicx}
+\usepackage{clrscode}
+\usepackage{epsfig}
+\usepackage{tikz} 
+\usetikzlibrary{shapes}
+\usepackage{tabularx}
+\setlength{\tabcolsep}{1.3mm}
+
+\long\def\BEGINOMIT#1\ENDOMIT{\relax}  % to omit large portions of text
+%\newtheorem{definition}{Definition}{}
+\title{
+%\includegraphics[height=3cm]{LogoMOA.jpg} \\
+%\includegraphics[height=4cm]{Waikato.jpg} \\ \vspace{2cm}
+%\includegraphics[height=2cm]{LogoMOA.jpg} \\
+\textbf{DATA STREAM MINING\\ A Practical Approach} %\\ Manual 
+ }
+\author{Albert Bifet, Geoff Holmes, Richard Kirkby and Bernhard Pfahringer}
+\date{May 2011}%{August 2009 }%\\ \vspace{3cm} \includegraphics[height=1cm]{cosi_logo.png} }
+
+\begin{document}
+\ThisULCornerWallPaper{1}{figures/Title.jpg}
+\lstset{language=Java,basicstyle=\tiny,numbers=left}
+
+
+
+\pdfbookmark[0]{Titlepage}{title} 
+\maketitle
+\pagenumbering{roman}
+\thispagestyle{empty}
+\cleardoublepage
+%\ENDOMIT
+\thispagestyle{empty}
+%\setcounter{page}{1}
+\pdfbookmark[0]{Contents}{contents}
+\tableofcontents
+\cleardoublepage
+%\listoffigures
+%\listoftables
+\pagenumbering{arabic}
+
+%--- Macros -----------------------
+\def\adwin{{\tt ADWIN }}
+\def\thesis{text }
+\def\thesisc{text}
+\input{ConMacros}
+
+%--- Chapters -----------------------
+%\pagestyle{headings}
+%\pagenumbering{arabic}
+\chapter*{Introduction}
+\pdfbookmark[0]{Introduction}{introduction}
+\thispagestyle{empty}
+
+{\bf M}assive {\bf O}nline {\bf A}nalysis (MOA) is a %framework 
+software environment for implementing algorithms and running experiments
+for online learning from %continuous supplies of examples, such as 
+evolving data streams.
+%The data stream evaluation framework and all algorithms evaluated in this paper
+%were implemented in the Java programming language extending the MOA software. %framework.
+
+\begin{center}
+\includegraphics[height=2cm]{figures/LogoMOA.jpg} \end{center}
+
+MOA includes a collection of offline and online methods as well as tools for evaluation. 
+In particular, it implements boosting, bagging, and Hoeffding Trees, all %both 
+with and without Na{\"\i}ve Bayes classifiers at the leaves. 
+%MOA  graphical user interface is shown in Figure~\ref{fig:moagui}.
+%However, a command line interface is also available.
+
+%\begin{figure}[t]
+%\begin{center} 
+%\epsfig{file=MOATL, scale=0.3}
+%\end{center} 
+%\caption{MOA Graphical User Interface}
+%\label{fig:moagui}
+%\end{figure} 
+
+MOA is related to WEKA, the Waikato
+Environment for Knowledge Analysis, which is an award-winning open-source 
+workbench containing implementations of a wide range of batch machine 
+learning methods. WEKA is also written in Java. The main benefits
+of Java are portability, where applications can be run on any platform with
+an appropriate Java virtual machine, and the strong and well-developed support 
+libraries. Use of the language is widespread, and features such as the
+automatic garbage collection help to reduce programmer burden and error.
+
+This text explains the theoretical and practical foundations of the methods and streams available in MOA.
+The moa and the weka are both birds native to New Zealand. The weka is a cheeky bird of similar size to a chicken. The moa was a large ostrich-like bird, an order of magnitude larger than a weka, that was hunted to extinction.
+
+\BEGINOMIT
+    One of the key data structures used in MOA is the description of an example
+from a data stream. This structure borrows from WEKA, where an example is
+represented by an array of double precision floating point values. This provides
+freedom to store all necessary types of value \--- numeric attribute values can be
+stored directly, and discrete attribute values and class labels are represented
+by integer index values that are stored as floating point values in the array.
+Double precision floating point values require storage space of 64 bits, or 8
+bytes. This detail can have implications for memory usage. %utilization.
+\ENDOMIT
+
+\part{Introduction and Preliminaries} 
+\include{introduction} %\cleardoublepage{}
+\input{experimentalsetting} 
+\input{ExpSetting}%\cleardoublepage{}
+\part{Stationary Data Stream Learning} 
+\include{hoeffdingtrees} %\cleardoublepage{}
+\include{numerichandling} %\cleardoublepage{}
+\include{predstrat} %\cleardoublepage{}
+\include{improvebackground} %\cleardoublepage{}
+%\include{improvecompare} \cleardoublepage{}
+%\include{conclusions} \cleardoublepage{}
+\part{Evolving Data Stream Learning} 
+\input{MiningDataStreams}
+\input{ConceptDrift}
+
+\input{Adwin}
+\input{DecisionTrees}
+\input{EnsembleMethods}
+\input{Stacking}
+\input{Leveraging}
+\input{TwitterMining}
+%--- Bibliography -------------------
+%\addcontentsline{toc}{chapter}{\bibname}
+\cleardoublepage
+
+%\bibliography{thesis}
+
+%\bibliographystyle{alpha}%plain}
+\phantomsection % Ensures that a PDF bookmark is set here
+\addcontentsline{toc}{part}{Bibliography}
+\bibliographystyle{plain}
+\bibliography{thesis}
+
+\end{document}

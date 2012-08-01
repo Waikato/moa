@@ -1,0 +1,638 @@
+% Technical.tex
+% Description of setting, ADWIN, and ADWIN2
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Maintaining Updated Windows of Varying Length}
+\label{SMain}
+In %\cite{bif-gav}
+this section we describe algorithms 
+for dynamically adjusting the length
+of a data window, make a formal claim about its performance, and 
+derive an efficient variation.
+%evaluate it experimentally to confirm the theoretical predictions. 
+
+We will use Hoeffding's bound in order to obtain formal guarantees, and %to be able to design 
+a streaming algorithm.
+However, other tests computing differences between window distributions may be used.
+ 
+
+\BEGINOMIT
+Machine learning algorithms that detect change, usually compare statistics of two windows.
+There have been in the literature, some different window management strategies:
+\begin{itemize}
+\item Equal \& fixed size subwindows: Kifer et al.~\cite{kifer-detecting} compares one window of older data with a window with the same size keeping the most recent data.
+\item Equal size adjacent subwindows: Dasu et al.~\cite{Dasu} compares two adjacent windows of the same size of recent data.
+\item Total window against subwindow: Gama et al.~\cite{Gama} compares the window that contains all the data with a subwindow of data from the beginning until it detects that the accuracy of the algorithm decreases.
+\end{itemize}
+
+Figure~\ref{Fig:wms} shows these strategies.
+Our proposal is to compare all the adjacent subwindows in which is possible to partition the window containing all the data.
+It seems that this procedure may be the most accurate, since it looks at all possible subwindows partitions. On the other hand, time cost is the main disadvantage of this method. Considering this, we provided another version working in the strict conditions of the Data Stream model, namely low
+memory and low processing per item.
+
+\begin{figure}[ht]
+Let $W= \fbox{101010110111111}$
+\begin{itemize}
+\item {Equal \& fixed size subwindows:} $ \fbox{1010}1011011\fbox{1111}$
+%{\sl D. Kifer, S. Ben-David, and J. Gehrke}. Detecting change in data streams. 2004
+%\hline
+
+\item {Equal size adjacent subwindows:} $ 1010101\fbox{1011}\fbox{1111}$ 
+%{\sl Dasu et al.}
+%\hline
+
+\item { Total window against subwindow:}
+$ \fbox{\fbox{10101011011}1111}$
+%{\sl J. Gama, P. Medas, G. Castillo, and P. Rodrigues.} Learning with drift detection. 2004
+
+%\hline
+%\end{columns}
+
+\item {{\tt ADWIN:}  All adjacent subwindows:}
+\begin{eqnarray*}
+\fbox{1} \fbox{01010110111111} \\
+\fbox{1010} \fbox{10110111111} \\
+\fbox{1010101} \fbox{10111111} \\
+\fbox{1010101101} \fbox{11111} \\
+\fbox{10101011011111} \fbox{1} \\
+\end{eqnarray*}
+
+\end{itemize}
+\caption{Different window management strategies}
+\label{Fig:wms}
+\end{figure}
+\ENDOMIT
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Setting}%{Description}
+
+The inputs to the algorithms are a confidence value $\delta\in (0,1)$ 
+and a (possibly infinite) sequence of real values 
+$x_1$, $x_2$, $x_3$, \dots, $x_t$, \dots{} 
+The value of $x_t$ is available only at time $t$.
+Each $x_t$ is generated according to some distribution~$D_t$, 
+independently for every $t$. 
+We denote with $\mu_t$ and $\sigma^2_t$ 
+the expected value and the variance of  $x_t$ when it is drawn according to $D_t$. 
+We assume that $x_t$ is always in $[0,1]$; by an easy
+rescaling, we can handle any case in which we know an interval 
+$[a,b]$ such that $a \le x_t \le b$ with probability $1$. 
+Nothing else is known about the sequence of 
+distributions $D_t$; in particular, 
+$\mu_t$ and $\sigma_t^2$ are unknown for all $t$. 
+
+\def\adwinz{{\tt ADWIN0 }}
+\def\adwinzz{{\tt ADWIN0}}
+\def\adwintwo{{\tt ADWIN }}
+\def\adwintwoz{{\tt ADWIN}}
+\subsection{First algorithm: \adwinz}
+\label{Adwin0}
+The first algorithm keeps a sliding window $W$ with the most recently read 
+$x_i$. Let~$n$ denote the length of~$W$, 
+$\hmu_W$ the (observed) average of the elements in~$W$, 
+and~$\mu_W$ the (unknown) average of~$\mu_t$ for~$t\in W$. 
+Strictly speaking, these quantities should be indexed by~$t$, 
+but in general~$t$ will be clear from the context. 
+
+Since the values of $\mu_t$ can oscillate wildly, 
+there is no guarantee that~$\mu_{W}$ or~$\hmu_W$ will be anywhere close 
+to the instantaneous value~$\mu_t$, even for long~$W$.  
+However, $\mu_{W}$ is the expected value of $\hmu_{W}$, so 
+$\mu_{W}$ and $\hmu_{W}$ {\em do} get close as~$W$ grows. 
+
+Algorithm \adwinz is presented in Figure \ref{blnAlgorithm}. 
+The idea is simple: whenever two ``large enough'' 
+subwindows of $W$ exhibit ``distinct enough'' averages, 
+one can conclude that the corresponding expected values
+are different, and the older portion of the window is dropped.
+In other words, $W$ is kept as long as possible
+while the null hypothesis ``$\mu_t$ has remained
+constant in $W$'' is sustainable up to confidence $\delta$.%
+\footnote{It would easy to use instead the null hypothesis 
+``there has been no change greater than $\epsilon$'', 
+for a user-specified~$\epsilon$ expressing the smallest change 
+that deserves reaction.}
+``Large enough'' and ``distinct enough'' above are made precise
+by choosing an appropriate statistical test for distribution change, 
+which in general involves 
+the value of $\delta$, the lengths of the subwindows, 
+and their contents. We choose one particular statistical
+test for our implementation, but this is not the essence 
+of our proposal -- many other tests could be used. 
+At every step, \adwinz simply outputs the value of $\hmu_W$
+as an approximation to $\mu_W$. 
+%It could additionally output some uncertainty margin for 
+%$\hmu_W$, which would be useful in many applications, but we
+%do not develop this possibility.  
+%and a value $\eps_t$ which is a uncertainty margin for $\hmu_W$.  
+%This margin, which is useful to know in many applications, 
+%will be computed (and argued about) independently of $\epsc$. 
+
+The value of $\epsc$ for a partition $W_0\cdot W_1$ of $W$ 
+is computed as follows: Let $n_0$ and $n_1$ be the lengths
+of $W_0$ and $W_1$ and $n$ be the length of $W$, so $n=n_0+n_1$. 
+Let $\hmu_{W_0}$ and $\hmu_{W_1}$ be the averages of the values
+in $W_0$ and $W_1$, and $\mu_{W_0}$ and $\mu_{W_1}$
+their expected values. 
+To obtain totally rigorous performance guarantees we define:
+%
+\begin{eqnarray*}
+m &=& \frac{1}{1/n_0 + 1/n_1} \mbox{ (harmonic mean of $n_0$ and $n_1$),} \\
+\delta'&=&\frac{\delta}{n}, \mbox{ and } \quad
+\epsc = \sqrt{\frac{1}{2m} \cdot \ln\frac{4}{\delta'}} \;.
+\end{eqnarray*}
+%
+Our statistical test for different distributions in~$W_0$ and~$W_1$ 
+simply checks whether the observed average in both subwindows differs 
+by more than the threshold~$\epsc$.
+The role of $\delta'$ is to avoid problems with multiple hypothesis
+testing (since we will be testing $n$ different possibilities 
+for~$W_0$ and~$W_1$ and we want global error below~$\delta$). 
+Later we will provide a more sensitive test based on the normal approximation 
+that, although not 100\% rigorous, is perfectly valid in practice. 
+
+\begin{figure}
+
+\centering
+
+\begin{codebox}
+\Procname{$\proc{\adwinzz: Adaptive Windowing Algorithm}$}
+\li Initialize Window $W$
+\li \For each $t >0$ %
+\li \Do $W \gets W \cup \{x_t\}$ (i.e., add $x_t$ to the head of $W$)
+\li \Repeat Drop elements from the tail of $W$ 
+\li \Until $|\hmu_{W_0}-\hmu_{W_1}|  < \epsc$ holds %\geq
+\li \quad\quad for every split of $W$ into $W=W_0 \cdot W_1$ 
+\li output $\hmu_{W}$ % the pair $\hmu_{W}$ and $\eps_t$ (as in the Theorem)
+\end{codebox}
+\caption{Algorithm \adwinzz.}\label{blnAlgorithm}
+\end{figure}
+
+Now we state our main technical result about the performance of \adwinzz:
+
+\begin{theorem}
+\label{ThBV}
+At every time step we have 
+
+\begin{enumerate}
+\item {\em (False positive rate bound).} If $\mu_t$ remains constant within $W$, 
+the probability that \adwinz shrinks the window 
+at this step is at most $\delta$.
+
+\item {\em (False negative rate bound).} 
+Suppose that for {\em some} partition of $W$ in two parts $W_0W_1$ 
+(where $W_1$ contains the most recent items) 
+we have $|\mu_{W_0}-\mu_{W_1}| > 2\epsc$. 
+Then with probability $1-\delta$ \adwinz
+shrinks $W$ to $W_1$, or shorter.
+\end{enumerate}
+\end{theorem}
+
+\noindent
+%The proof of the theorem is given in Appendix A. 
+\input{ConAppendix}
+
+%\hline
+
+In practice, the definition of $\epsc$ as above is too conservative. 
+Indeed, it is based on the Hoeffding bound, 
+which is valid for all distributions but greatly overestimates the
+probability of large deviations for distributions of small variance;
+in fact, it is equivalent to assuming always the worst-case variance
+$\sigma^2=1/4$. 
+In practice, one can observe that 
+$\mu_{W_0}-\mu_{W_1}$ tends to a normal distribution
+for large window sizes, and use 
+%
+\begin{equation}
+\label{Enewepsilon}
+\epsc= \sqrt{\frac{2}{m} \cdot \sigma^2_W  \cdot \ln\frac{2}{\delta'} }
+       \; + \; \frac{2}{3\,m} \, \ln\frac{2}{\delta'},
+\end{equation}
+%
+where $\sigma^2_W$ is the observed variance of the elements in window~$W$. 
+Thus, the term with the square root is essentially equivalent 
+to setting~$\epsc$ to~$k$ times the standard deviation, for~$k$ depending
+on the desired confidence~$\delta$, as is done in~\cite{Gama}. 
+The extra additive term protects the
+cases where the window sizes are too small to apply the normal approximation, 
+as an alternative to the traditional use of requiring, say, 
+sample size at least~$30$; 
+it can be formally derived from the so-called Bernstein bound. 
+Additionally, one (somewhat involved) argument shows that 
+setting $\delta'=\delta/(\ln n)$ is enough in this context 
+to protect from the multiple hypothesis testing problem; anyway, 
+in the actual algorithm that we will run (\adwintwoz), 
+only $O(\log n)$ subwindows are checked, 
+which justifies using  $\delta'=\delta/(\ln n)$. %this value for~$\delta'$. 
+Theorem \ref{ThBV} holds for this new value of $\epsc$, 
+up to the error introduced by the normal approximation.
+We have used these better bounds in all our implementations. 
+
+\BEGINOMIT
+One can justify, with a smaller degree of formality,
+that the claims above should hold for all settings of the 
+parameters that occur in practice if one sets the smaller values
+$d=3+\ln(2/\delta)$ and 
+$$
+\epsc= \sqrt{\min\left\{{n \over 2 n_0 n_1},
+             \frac{6 n \cdot (\min\{\hmu_W,1-\hmu_W\} + \theta)}{n_0 n_1} \right\}
+             \cdot d}.
+$$
+in the definition of $\epsc$. 
+We have used this variation in all our implementations.
+\ENDOMIT 
+
+%{\bf [THIS SECTION WILL BE EXTENDED AND FINISHED IN THE FINAL VERSION OF THIS THESIS]}
+
+Let us consider how \adwinz behaves in two special cases: sudden (but infrequent)
+changes, and slow gradual changes. Suppose that for a long time $\mu_t$ has remained
+fixed at a value $\mu$, and that it suddenly jumps to a value $\mu'=\mu+\epsilon$. 
+%TODO.........................................................
+%{\tt 
+%- grafiques per a adwin1, ilustrant the above.
+%} 
+\begin{figure}[t]
+      \begin{center}
+        \input{Graph1E}
+      \end{center}
+\caption{Output of algorithm \adwinz with abrupt change.} 
+  \label{fig:ADWIN-E}
+\end{figure}
+By part (2) of Theorem \ref{ThBV} and Equation \ref{Enewepsilon}, one can derive that 
+the window will start shrinking after $O(\mu \ln(1/\delta) / \epsilon^2)$ steps, and 
+in fact will be shrunk to the point where only $O(\mu \ln(1/\delta) / \epsilon^2)$ examples
+prior to the change are left. From then on, if no further changes occur, no more examples
+will be dropped so the window will expand unboundedly.
+
+
+In case of a gradual change with slope $\alpha$ following
+a long stationary period at $\mu$, 
+\begin{figure}[t]
+	\begin{center}
+		\input{Graph1R}
+	\end{center}
+\caption{Output of algorithm \adwinz with slow gradual changes.}
+  \label{fig:ADWIN-R} 
+\end{figure}
+observe that the average of $W_1$ after $n_1$ steps
+is $\mu + \alpha n_1 /2$; we have $\epsilon (=\alpha n_1/2) \ge O(\sqrt{\mu \ln(1/\delta) /n_1})$
+iff $n_1 = O(\mu \ln(1/\delta) / \alpha^{2})^{1/3}$. So $n_1$ steps after the change
+the window will start shrinking, and will remain at approximately size $n_1$ from then on. 
+A dependence on $\alpha$ of the form $O(\alpha^{-2/3})$ may seem odd at first, but one can show
+that this window length is actually optimal in this setting, even if $\alpha$ is known: 
+it minimizes the sum of variance error (due to short window) and 
+error due to out-of-date data (due to long windows in the presence of change). 
+Thus, in this setting, \adwinz provably adjusts automatically
+the window setting to its optimal value, up to multiplicative constants. 
+
+Figures \ref{fig:ADWIN-E} and \ref{fig:ADWIN-R} illustrate these behaviors. 
+In Figure~\ref{fig:ADWIN-E}, a sudden change from $\mu_{t-1}=0.8$ to $\mu_t=0.4$ occurs, 
+at $t=1000$. 
+One can see that the window size grows linearly up to $t=1000$, 
+that \adwinz cuts the window severely $10$ steps later (at $t=1010$), and
+that the window expands again linearly after time $t=1010$. 
+In Figure \ref{fig:ADWIN-R}, $\mu_t$ gradually descends from $0.8$ to $0.2$
+in the range $t\in [1000..2000]$. In this case, \adwinz cuts the window sharply 
+at $t$ around $1200$ (i.e., 200 steps after the slope starts), keeps the window length
+bounded (with some random fluctuations) while the slope lasts, and starts growing
+it linearly again after that. As predicted by theory, detecting the
+change is harder in slopes than in abrupt changes. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{\adwinz for Poisson processes}
+\label{Spoisson}
+
+A Poisson process %, named after the French mathematician Siméon-Denis Poisson (1781 -- 1840), 
+is the stochastic process in which events occur continuously and independently of one another. A well-known example is radioactive decay of atoms. Many processes are not exactly Poisson processes, but similar enough that for certain types of analysis they can be regarded as such; e.g., telephone calls arriving at a switchboard, webpage requests to a search engine, or rainfall.
+
+Using the Chernoff bound for Poisson processes~\cite{mayers02} 
+$$
+\Pr\{ X \geq cE[X]\} \leq \exp( -( c \ln(c) +1-c) E[X])
+$$
+we find a similar $\epsilon_{cut}$ for Poisson processes.
+
+First, we look for a simpler form of this bound. Let $c=1 +\epsilon$ then
+
+$$c \ln(c) -c + 1 = ( 1 +\epsilon) \cdot \ln(1+\epsilon) -\epsilon$$
+
+Using the Taylor expansion of $\ln(x)$
+   $$\ln(1+x)= \sum (-1)^{n+1} \cdot \frac{x^n}{n} = x -\frac{x^2}{2} + \frac{x^3}{3} - \cdots $$
+we get the following simpler expression:
+
+$$\Pr\{ X \geq (1+\epsilon)E[X]\} \leq \exp( -\epsilon^2 E[X] /2)$$
+
+Now, let $S_n$ be the sum of n Poisson processes. As $S_n$ is also a Poisson process
+
+$$E[S_n] =\lambda_{S_n} = n E[X] = n \cdot \lambda_X$$
+
+and then we obtain
+
+$$\Pr\{ S_n \geq (1+\epsilon)E[S_n]\} \leq \exp( -\epsilon^2 E[S_n] /2)$$
+
+In order to obtain a formula for $\epsilon_{cut}$, let $Y=S_n/n$
+
+$$\Pr\{ Y \geq (1+\epsilon)E[Y]\} \leq \exp( -\epsilon^2 \cdot n \cdot E[Y] /2)$$
+
+And finally, with this bound we get the following $\epsilon_{cut}$ for \adwinz
+
+$$\epsilon_{cut} = \sqrt{ \frac{2 \lambda}{m} \ln \frac{2}{\delta}}$$
+
+where $1/m=1/n_0 + 1/n_1$, and $\lambda$ is the mean of the window data.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Improving time and memory requirements}
+\label{Sadwin2}
+%
+The first version of \adwinz is computationally expensive, 
+because it checks exhaustively all ``large enough'' subwindows
+of the current window for possible cuts. 
+Furthermore, the contents of the window is kept explicitly, 
+with the corresponding memory cost as the window grows. 
+To reduce these costs we present a new version \adwintwo
+using ideas developed in data stream algorithmics
+\cite{BBD02,MUT03,babcock-sampling,datar02}
+to find a good cutpoint quickly.
+Figure~\ref{blnAdwin2} shows the \adwintwo algorithm.
+ We next 
+provide a sketch of how this algorithm and these data structures work. 
+
+
+\begin{figure}
+
+\centering
+
+\begin{codebox}
+\Procname{$\proc{\adwintwoz: Adaptive Windowing Algorithm}$}
+\li Initialize $W$ as an empty list of buckets
+\li Initialize WIDTH, VARIANCE and TOTAL
+\li \For each $t >0$ %
+\li \Do $\proc{setInput}( x_t, W)$ %\End 
+%\li output $\hmu_{W}$ as TOTAL/WIDTH % the pair $\hmu_{W}$ and $\eps_t$ (as in the Theorem)
+\li output $\hmu_{W}$ as TOTAL/WIDTH and ChangeAlarm % the pair $\hmu_{W}$ and $\eps_t$ (as in the Theorem)
+
+\end{codebox}
+
+\begin{codebox}
+\Procname{$\proc{setInput}$(item e, List W)}
+\li  $\proc{insertElement}(e,W)$
+\li \Repeat $\proc{deleteElement}(W)$ 
+\li \Until $|\hmu_{W_0}-\hmu_{W_1}|  < \epsc$ holds %\geq
+\li \quad\quad for every split of $W$ into $W=W_0 \cdot W_1$ 
+%\li output $\hmu_{W}$ and ChangeAlarm % the pair $\hmu_{W}$ and $\eps_t$ (as in the Theorem)
+\end{codebox}
+
+\begin{codebox}
+\Procname{$\proc{insertElement}$(item e, List W)}
+\li create a new bucket $b$ with content $e$ and capacity $1$
+\li $W \gets W \cup \{b\}$ (i.e., add $e$ to the head of $W$)
+\li update WIDTH, VARIANCE and TOTAL
+\li $\proc{compressBuckets}(W)$
+\end{codebox}
+
+\begin{codebox}
+\Procname{$\proc{deleteElement}$(List W)}
+\li remove a bucket from tail of List W
+\li update WIDTH, VARIANCE and TOTAL
+\li ChangeAlarm $ \gets $ {\bf true}	
+\end{codebox}
+
+\begin{codebox}
+\Procname{$\proc{compressBuckets}$(List W)}
+ \li   Traverse the list of buckets in increasing order
+ \li    \Do If there are more than $M$ buckets of the same capacity %size
+\li      \Do merge buckets 	
+ \li    $\proc{compressBuckets}$(sublist of W not traversed)
+\end{codebox}
+
+\caption{Algorithm \adwintwoz.}\label{blnAdwin2}
+\end{figure}
+
+
+Our data structure is a variation of exponential histograms \cite{datar02},
+a data structure that maintains an approximation of the number of
+$1$'s in a sliding window of length $W$ with logarithmic memory 
+and update time. 
+We adapt this data structure in a way that can provide this approximation
+simultaneously for about $O(\log W)$ subwindows 
+whose lengths follow a geometric law, {\em with no memory overhead}
+with respect to keeping the count for a single window. 
+That is, our data structure will be able to give 
+the number of $1$s among the most recently $t-1$, $t-\lfloor c\rfloor$, 
+$t-\lfloor c^2\rfloor$ ,\dots, $t-\lfloor c^i\rfloor$, \dots read bits, 
+with the same amount of memory required to keep an approximation 
+for the whole $W$. Note that keeping exact counts for a fixed-window
+size is provably impossible in sublinear memory. 
+We go around this problem by shrinking or enlarging the window strategically 
+so that what would otherwise be an approximate count happens to be exact. 
+
+More precisely, to design the algorithm one chooses a parameter $M$. 
+This parameter controls both 
+1) the amount of memory used (it will be $O(M \log W/M$) words, and 2)
+the closeness of the cutpoints checked (the basis $c$ 
+of the geometric series above, which will be about $c=1+1/M$).
+Note that the choice of $M$ does {\em not} reflect 
+any assumption about the time-scale of change: Since points
+are checked at a geometric rate anyway, this policy is essentially
+scale-independent. 
+
+More precisely, in the boolean case, the information on the number of $1$'s 
+is kept as a series of buckets whose size is always a power of $2$. We keep 
+at most $M$ buckets of each size $2^i$, where $M$ is a design parameter. 
+For each bucket we record two (integer) elements: {\em capacity} and {\em content }(size, 
+or number of $1$s it contains). 
+
+Thus, we use about $M \cdot \log (W/M)$ buckets to maintain our data stream sliding window.
+\adwintwo checks as a possible cut every border of a bucket, i.e., 
+window lengths of the form $M (1+2+\dots+2^{i-1})+ j \cdot 2^i$, 
+for $0 \le j \le M$. It can be seen that these $M \cdot \log (W/M)$ 
+points follow approximately a geometric law of basis $\cong 1+1/M$. 
+
+Let's look at an example: a sliding window with 14 elements. We register it as:
+
+\medskip
+\hspace{10pt} \fbox{$1010101$}  \fbox{$101$} \fbox{$11$} \fbox{$1$} \fbox{$1$}
+\smallskip
+
+\nopagebreak
+Content: \hspace{.2pt} $4$ \hspace{10pt} $2$ \hspace{10pt} $2$ \hspace{6pt} $1$ \hspace{3pt} $1$
+\smallskip
+
+\nopagebreak
+Capacity:  $7$ \hspace{10pt} $3$ \hspace{10pt} $2$ \hspace{6pt} $1$ \hspace{3pt} $1$
+\medskip
+
+\noindent
+Each time a new element arrives, 
+%the timestamp increases and 
+if the element is "1", we create a new bucket of {\em content} 1 and {\em capacity}
+the number of elements arrived since the last "1". 
+After that we compress the rest of buckets: When there are $M+1$ buckets of size $2^i$, 
+we merge the two oldest ones (adding its capacity) into a bucket of size $2^{i+1}$. 
+So, we use %$O(\2(M-1) \log^2 W/M)$ bits of memory -- i.e. 
+$O(M \cdot\log W/M)$ memory words if we assume that a word can contain a number up to $W$. 
+In \cite{datar02}, the window is kept at a fixed size $W$. The information missing
+about the last bucket is responsible for the approximation error. 
+Here, each time we detect change, we reduce the window's length deleting the last bucket, 
+instead of (conceptually) dropping a single element as in a typical sliding window framework.
+This lets us keep an exact counting, since when throwing away a whole bucket 
+we know that we are dropping exactly $2^i$ "1"s.
+
+We summarize these results with the following theorem.
+
+\begin{theorem}
+The \adwintwo algorithm maintains a data structure with the following properties: 
+\label{ThAdwin2}
+\begin{itemize}
+\item 
+It uses $O(M \cdot \log (W/M))$ memory words
+(assuming a memory word can contain numbers up to $W$). 
+\item 
+It can process the arrival of a new element in $O(1)$ amortized time 
+and $O(\log W)$ worst-case time.
+\item 
+It can provide the exact counts of $1$'s
+for all the subwindows whose lengths are of the form 
+$\lfloor(1+1/M)^i\rfloor$, in $O(1)$ time per query.
+\end{itemize}
+\end{theorem}
+%
+Since \adwintwo tries $O(\log W)$ cutpoints,
+the total processing time per example is $O(\log W)$ (amortized) 
+and $O(\log W)$ (worst-case). 
+
+In our example, suppose $M=2$, if a new element "$1$" arrives then
+
+\medskip
+\hspace{10pt} \fbox{$1010101$}  \fbox{$101$} \fbox{$11$} \fbox{$1$} \fbox{$1$} \fbox{$1$}
+\smallskip
+
+\nopagebreak
+Content: \hspace{.2pt} $4$ \hspace{10pt} $2$ \hspace{10pt} $2$ \hspace{6pt} $1$ \hspace{3pt} $1$ \hspace{3pt} $1$
+\smallskip
+
+\nopagebreak
+Capacity: $7$ \hspace{10pt} $3$ \hspace{10pt} $2$ \hspace{6pt} $1$  \hspace{3pt} $1$ \hspace{3pt} $1$
+\medskip
+
+\noindent
+There are $3$ buckets of $1$, so we compress it:
+
+\medskip
+\hspace{10pt} \fbox{$1010101$}  \fbox{$101$} \fbox{$11$} \fbox{$11$} \fbox{$1$} 
+\smallskip
+
+\nopagebreak
+Content: \hspace{.2pt} $4$ \hspace{10pt} $2$ \hspace{12pt} $2$ \hspace{6pt} $2$ \hspace{5pt} $1$
+\smallskip
+
+\nopagebreak
+Capacity:  $7$ \hspace{10pt} $3$ \hspace{12pt} $2$ \hspace{6pt} $2$  \hspace{5pt} $1$ 
+\medskip
+
+\noindent
+and now as we have $3$ buckets of size $2$, we compress it again
+
+\medskip
+\hspace{10pt} \fbox{$1010101$}  \fbox{$10111$}  \fbox{$11$} \fbox{$1$} 
+\smallskip
+
+\nopagebreak
+Content: \hspace{.2pt} $4$ \hspace{14pt} $4$  \hspace{16pt} $2$ \hspace{6pt} $1$
+\smallskip
+
+\nopagebreak
+Capacity:  $7$ \hspace{14pt} $5$  \hspace{16pt} $2$  \hspace{6pt} $1$ 
+\medskip
+
+\noindent
+And finally, if we detect change, we reduce the size of our sliding window deleting the last bucket:
+
+\medskip
+\hspace{30pt}  \fbox{$10111$}  \fbox{$11$} \fbox{$1$} 
+\smallskip
+
+\nopagebreak
+Content: \hspace{.2pt} $4$  \hspace{16pt} $2$ \hspace{6pt} $1$
+\smallskip
+
+\nopagebreak
+Capacity:   $5$  \hspace{16pt} $2$  \hspace{6pt} $1$ 
+\medskip
+
+\noindent
+In the case of real values, we also maintain buckets of two elements: 
+{\em capacity} and {\em content}.
+We store at {\em content} the sum of the real numbers we want to summarize.
+We restrict {\em capacity} to be a power of two. As in the boolean case,
+we use $O(\log W)$ buckets, and check $O(\log W)$ possible cuts. The memory requirement for each
+bucket is $ \log W + R + \log \log W$ bits per bucket, where $R$ is number of bits used to store
+a real number. 
+
+Figure \ref{fig:ADWIN2-E} shows  the output of \adwintwo to a sudden change, 
+and Figure \ref{fig:ADWIN2-R} to a slow gradual change.
+The main difference with \adwintwo output is that as \adwinz reduces 
+one element by one each time it detects changes, 
+\adwintwo deletes an entire bucket, which yields a slightly more jagged
+graph in the case of a gradual change. The difference in approximation 
+power between \adwinz and \adwintwo is almost negligible, so we 
+use \adwintwo exclusively for our experiments. 
+
+
+\begin{figure}[t]
+	\begin{center}
+		\input{Graph2E}
+	\end{center}
+	\caption{Output of algorithm \adwintwo with abrupt change} 
+\label{fig:ADWIN2-E}
+\end{figure}
+
+\begin{figure}[h]
+	\begin{center}
+		\input{Graph2R}
+	\end{center}
+\caption{Output of algorithm \adwintwo with slow gradual changes} 
+\label{fig:ADWIN2-R}
+\end{figure}
+
+Finally, we state our main technical result about the performance of \adwintwoz, in a similar way to the Theorem~\ref{ThBV}:
+
+\begin{theorem}
+\label{ThBV2}
+At every time step we have 
+
+\begin{enumerate}
+\item {\em (False positive rate bound).} If $\mu_t$ remains constant within $W$, 
+the probability that \adwintwo shrinks the window 
+at this step is at most $ M/n  \cdot \log (n/M) \cdot \delta$.
+
+\item {\em (False negative rate bound).} 
+Suppose that for {\em some} partition of $W$ in two parts $W_0W_1$ 
+(where $W_1$ contains the most recent items) 
+we have $|\mu_{W_0}-\mu_{W_1}| > 2\epsc$. 
+Then with probability $1-\delta$ \adwintwo
+shrinks $W$ to $W_1$, or shorter.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+
+{\bf{Part 1)}}
+Assume $\muz=\muu=\mu_W$ as null hypothesis. We have shown in the proof of Theorem~\ref{ThBV} that for any partition
+$W$ as $W_0W_1$ we have probability at most $\delta/n$ that \adwinz
+decides to shrink $W$ to $W_1$, or equivalently,
+\begin{eqnarray*}
+%\label{Edecomposeprobs0}
+\Pr [\, |\hmuu - \hmuz| \ge  \epsc\, ] \le \delta/n.
+\end{eqnarray*}
+%
+Since \adwintwo checks at most  $M \log (n/M)$ partitions $W_0 W_1$, the claim follows.
+
+{\bf{Part 2)}}
+The proof is similar to the proof of Part 2 of Theorem~\ref{ThBV}.
+\end{proof}

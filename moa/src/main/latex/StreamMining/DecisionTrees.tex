@@ -1,0 +1,1106 @@
+
+
+\chapter{Adaptive Hoeffding Trees}
+\label{ch:decisiontrees}
+%\begin{abstract}
+In this chapter we propose and illustrate a method for developing decision trees algorithms that
+can adaptively learn from data streams that change over time.
+%As an example, 
+We take the Hoeffding Tree learner, an incremental decision tree inducer for data streams, 
+and use as a basis it to build two new methods that can deal with distribution
+and concept drift: a sliding window-based algorithm, Hoeffding Window Tree, 
+and an adaptive method, Hoeffding Adaptive Tree.
+Our methods are based on the methodology explained in Chapter~\ref{ch:conceptdrift}.
+%change detectors and estimator modules 
+%at the right places;
+We choose {\tt ADWIN} as an implementation with theoretical guarantees 
+in order to extend such guarantees to the resulting adaptive learning
+algorithm. A main advantage of our methods is that they require no guess about 
+how fast or how often the stream will change; other methods typically have
+several user-defined parameters to this effect.
+
+%In our experiments, the new methods never do worse, 
+%and in some cases do much better, than CVFDT, a well-known
+%method for tree induction on data streams with drift.
+
+\BEGINOMIT
+We take a recently proposed algorithm (\adwinb) for detecting change
+and keeping updated statistics from a data stream, and use it as a black-box
+in place or counters or accumulators in algorithms initially not designed for drifting
+data. 
+
+Since \adwin has rigorous performance guarantees, this
+opens the possibility of extending such guarantees to the resulting learning
+algorithm. We illustrate the methodology with two examples. First, we
+give a version of the Hulten-Spencer-Domingos's CVFDT algorithm
+for decision-tree learning that 1) has rigorous performance guarantees
+2) requires no guess about how fast or how often the stream will change (CVFDT
+has at least 4 parameters to this effect) and 3) performs systematically
+as well as, and often much better than, CVFDT. The second example are
+versions of the boosting and bagging algorithms in the MOA (Massive Online Analysis) system;
+the emphasis here is on the extremely small effort required to obtain 
+an algorithm that handles concept and distribution drift from
+one that does not.
+\ENDOMIT
+%\end{abstract}
+
+% A category with the (minimum) three required fields
+%\category{H.4}{Information Systems Applications}{Miscellaneous}
+%A category including the fourth, optional field follows...
+%\category{D.2.8}{Software Engineering}{Metrics}[complexity measures, performance measures]
+
+%\terms{Delphi theory}
+
+%\keywords{data streams, tracking, drift, decision trees, boosting, bagging} % NOT required for Proceedings
+
+
+%------------------------------------------------------------------------- 
+\Section{Introduction}
+\BEGINOMIT
+Data streams pose several challenges on data mining algorithm design. 
+Limited use of resources (time and memory) is one. The necessity of dealing
+with data whose nature or distribution changes over time is another
+fundamental one. Dealing with time-changing data requires in turn 
+strategies for detecting and quantifying change, forgetting stale examples, 
+and for model revision. Fairly generic strategies exist for detecting
+change and deciding when examples are no longer relevant. Model revision
+strategies, on the other hand, are in most cases method-specific.
+
+Most strategies for dealing with time change contain hardwired constants, 
+or else require input parameters, concerning the expected speed or frequency 
+of the change; some examples are {\em a priori} definitions of sliding window
+lengths, values of decay or forgetting parameters, explicit bounds on maximum drift, etc. 
+%\BEGINOMIT
+These choices represent preconceptions 
+on how fast or how often the data are going to evolve and, of course, they 
+may be completely wrong. Even more, no fixed 
+choice may be right, since the stream may experience any combination 
+of abrupt changes, gradual ones, and long stationary periods. 
+More in general, an approach based on fixed parameters will be caught in the following tradeoff: 
+the user would like to use large parameters to have more accurate statistics 
+(hence, more precision) during periods of stability, but at the same time use small parameters 
+to be able to quickly react to changes, when they occur. 
+%\ENDOMIT
+
+We believe that, compared to any previous approaches, our approach better isolates different
+concerns when designing new data mining algorithms, therefore reducing design time,
+increasing modularity, and facilitating analysis. Furthermore, since we crisply identify
+the nuclear problem in dealing with drift, and use a well-optimized algorithmic solution to tackle it,
+the resulting algorithms more accurate, adaptive, and time- and memory-efficient than other
+ad-hoc approaches. % starting from scratch. 
+%We have given evidence for this superiority in \cite{bif-gav,Kbif-gav,KDD08}
+%and we demonstrate this idea again here.
+
+Many ad-hoc methods have been used to deal with drift, often tied to particular algorithms. 
+%In Section~\ref{Sframework} %
+In this paper, we propose a more general approach based on using two primitive design 
+elements: change detectors and estimators. 
+The idea is to 
+encapsulate all the statistical calculations having to do with detecting change and keeping
+updated statistics from a stream an abstract data type that can then be used to replace, 
+in a black-box way, the counters and accumulators that typically all machine learning
+and data mining algorithms use to make their decisions, including when change has occurred. 
+\ENDOMIT
+
+We apply the framework presented in Chapter~\ref{ch:conceptdrift} %this idea 
+to give two %two general frameworks %nstances of a possibly more general method  for designing 
+decision tree learning algorithms that can cope with concept and distribution drift on data streams: 
+Hoeffding Window Trees in Section~\ref{HWTree} and Hoeffding Adaptive Trees in Section~\ref{HATree}.
+Decision trees are among the most common and well-studied classifier models. 
+Classical methods such as C4.5 are not apt for data streams, as they assume all training
+data are available simultaneously in main memory, allowing for an unbounded number of passes,
+and certainly do not deal with data that changes over time. 
+In the data stream context, a reference work on learning decision trees
+is %are till those by Domingos' group in the early 2000's: 
+the Hoeffding Tree %or Very Fast Decision Tree method %(VFDT) 
+for fast, incremental learning \cite{vfdt}. The Hoeffding Tree was
+described in Chapter~\ref{chap:hoeffdingtrees}. %Section~\ref{ssec:Classification}.
+The methods we propose
+are based on VFDT, enriched with the change detection and estimation building blocks
+mentioned above. 
+
+We try several such building blocks, although the best suited for our purposes
+is the \adwin algorithm, described in 
+Chapter~\ref{ch:adwin}. This algorithm is parameter-free in that it automatically and continuously detects 
+the rate of change in the data streams rather than using apriori guesses, 
+thus allowing the client algorithm to react adaptively to the data stream it is processing. 
+Additionally, \adwin has rigorous guarantees of performance (Theorem~\ref{ThBV} in Section~\ref{Adwin0}). We show
+that these guarantees can be transferred to decision tree learners 
+as follows: if a change is followed by a long enough stable period,
+the classification error of the learner
+will tend, and the same rate, to the error 
+rate of VFDT.  
+
+
+\BEGINOMIT
+With this tool, we present a new decision-tree learning algorithm, 
+the Adaptive Hoeffding Trees or \adwindtb, 
+based on Hulten-Spencer-Domingos's CVFDT that overcomes some of its shortcomings, 
+specifically, the dependence on user-entered parameters telling how often the model should be revised. %Our algorithm 
+\adwindt detects the dynamicity of the change as it is occurring in the data
+and adapts its behavior automatically. In other words, the rate at which it forgets obsolete
+data and revises the current model depends on how fast data is actually changing, 
+rather than an {\em a priori} guess by the user or hardwired constants as in CVFDT. 
+
+It is conceptually simple to combine CVFDT 
+with \adwinb, as CVFDT is based on using counters to maintain updated
+statistics from the stream. We think of it as replacing these traditional counters (integers)
+with more ``intelligent'' counters that autonomously drop counts when they become stale. 
+%-- one the points made in \cite{bif-gav}
+%is that \adwin helps the design of data mining algorithms because
+%it encapsulates, as a black box, all the computation and statistics necessary
+%to detect change and maintain a sample of the currently relevant data. 
+Additionally, \adwin has rigorous guarantees of performance (a theorem). We show
+that these guarantees can be transferred to our decision tree learner \adwindt 
+in the following way: in a period of data stability after a change, 
+the classification error of \adwindt %our algorithm 
+will decrease as it reads more data 
+at the same rate as that of VFDT. 
+
+%\ENDOMIT
+%(which assumes no error change), after a transient whose
+%length depends solely on the magnitude of change and not on any 
+%user-guessed parameter. 
+%In Section 3 we recall the relevant facts about \adwin from \cite{bif-gav}, 
+%and in Section 4 how to use it to produce \adwindtb, an adaptive version of CVFDT.  
+
+
+We test on Section~\ref{sExperiments} our methods with synthetic datasets, 
+using the SEA concepts, 
+introduced in%\cite{sea} and a  rotating hyperplane 
+as described in Section~\ref{hyperplane},  %\cite{hulten-mining},
+ and two sets from the UCI repository, Adult and Poker-Hand. 
+We compare our methods among themselves but also with CVFDT, another concept-adapting variant of 
+VFDT proposed by Domingos, Spencer, and Hulten \cite{hulten-mining}.
+A one-line conclusion of our experiments would be that, because of its self-adapting property, 
+we can present datasets where our algorithm performs much better than CVFDT
+and we never do much worse. 
+Some comparison of time and memory usage of our methods and CVFDT is included. 
+
+\ENDOMIT
+%We conclude the paper by comparing the running time and memory usage of our algorithm
+%with that of CVFDT, and making some concluding remarks and describing future work. 
+
+%With the hyperplane dataset we perform two types of experiments, with abrupt and gradual concept drift. 
+%Also, we test \adwindt with two UCI datasets, the Adult dataset~\cite{Adult} from the UCI repository of machine learning databases. This dataset has no drift, and \adwindt shows its robustness to false positives by not detecting any.
+%We simulate concept drift by ordering the UCI Adult dataset by one of it attributes. These experiments are described in %Section~\ref{experiments}.
+\BEGINOMIT
+We also present very preliminary work on using our method to derive 
+versions of boosting and bagging that can deal with drifting data streams. 
+More precisely, we have very easily built such algorithms from the bagging and boosting
+implementation in the MOA system \cite{MOA}, which can originally handle data streams
+without drift only. The results are encouraging, but, contrary to Adaptive Hoeffding Trees, 
+we do not claim that these algorithms can compete with state-of-the-art ones. 
+Our point was rather illustrating how our extremely easy and natural the derivation was. 
+
+
+%\Section{Previous Work}
+
+%\subsection{Hoeffding Trees, VFDT, and CVFDT}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{A Methodology for Adaptive Stream Mining}%General Methodology for Adaptive Algorithms}
+\label{Sframework}
+
+The starting point of our work is the following observation: 
+In the data stream mining literature, %and more specifically data streams mining,
+most algorithms incorporate one or more of the following ingredients: 
+windows to remember recent examples; methods for detecting distribution change in the input; 
+and methods for keeping updated estimations for some statistics of the input. 
+We see them as the basis for solving the three central problems of
+
+\begin{itemize}
+ \item  what to remember or forget,
+ \item  when to do the model upgrade, and  
+ \item  how to do the model upgrade.
+\end{itemize}
+
+Our claim is that by basing mining algorithms on well-designed, well-encapsulated
+modules for these tasks, one can often get more generic and more efficient solutions
+than by using ad-hoc techniques as required.  
+Similarly, we will argue that our methods for inducing decision trees are simpler to describe, 
+adapt better to the data, perform better or much better, and use less memory than the ad-hoc designed
+CVFDT algorithm, even though they are all derived from the same VFDT mining algorithm. 
+%A similar approach was taken, for example, in \cite{KDD08} to give simple adaptive closed-tree 
+%mining adaptive algorithms. 
+\ENDOMIT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection{Time Change Detectors and Predictors}
+%\label{Sframework}
+\BEGINOMIT
+To choose a change detector or an estimator, we will review briefly all the different
+types of change detectors and estimators, in order to justify the election of one of them for our algorithms.
+Most approaches for predicting and detecting change in streams of data
+can be discussed as systems consisting of
+three modules: a Memory module, an Estimator Module, and a
+Change Detector or Alarm Generator module. These three modules 
+interact as shown in Figure~\ref{fig:FrameworkDetector}, which 
+is analogous to Figure 8 in \cite{SchonEG:05}.
+
+\begin{figure}
+\begin{picture}(200,140)
+\put(10,110){\vector(1,0){30}}
+\put(10,120){\makebox(0,0){$x_t$}}
+\put(40,80){\framebox(50,50){Estimator}}
+\put(90,90){\vector(1,0){40}}
+
+\put(170,90){\vector(1,0){40}}
+\put(210,100){\makebox(0,0){Alarm}}
+\put(130,60){\framebox(40,50){}}
+\put(130,65){\makebox(40,50){Change}}
+\put(130,55){\makebox(40,50){Detector}}
+\put(90,125){\vector(1,0){120}}
+\put(220,135){\makebox(0,0){Estimation}}
+
+\put(60,10){\framebox(120,30){Memory}}
+\put(20,0){\framebox(170,150)}
+
+\put(30,110){\line(0,-1){80}}
+\put(30,30){\vector(1,0){30}}	
+%\put(180,30){\vector(1,0){100}}
+%\put(280,40){\makebox(0,0){$x_l$}}	
+\put(80,40){\vector(0,1){40}}
+\put(140,40){\vector(0,1){20}}
+\put(140,60){\vector(0,-1){20}}	
+\end{picture}
+    \caption{Change Detector and Estimator System}
+	\label{fig:FrameworkDetector}
+\end{figure}
+
+In general, the input to this algorithm is a sequence 
+$x_1, x_2, \ldots, x_t, \ldots$ of data items whose distribution varies
+over time in an unknown way. The outputs of the algorithm are, 
+at each time step
+
+\begin{itemize}
+\item an estimation of some important parameters of the input distribution, and
+\item a signal alarm indicating that distribution change has recently occurred.
+\end{itemize}
+
+We consider a specific, but very frequent case, of this setting: that in which 
+all the $x_t$ are real values. 
+The desired estimation in the sequence of $x_i$ is usually the expected value of the 
+current $x_t$, and less often another distribution statistics such as the variance. 
+The only assumption on the distribution is that each $x_t$ is drawn independently from each other.
+Note therefore that we deal with one-dimensional items. 
+While the data streams often consist of structured items, most
+mining algorithms are not interested in the items themselves, but on
+a bunch of real-valued (sufficient) statistics derived from the items; we thus imagine
+our input data stream as decomposed into possibly many concurrent data streams 
+of real values, which will be combined by the mining algorithm somehow. 
+
+Memory is the component where the algorithm stores the sample data or summary that considers
+relevant at current time, that is, its description of the current data distribution. 
+
+The Estimator component is an algorithm that estimates the desired statistics on the input data, which
+may change over time. The algorithm may or may not use the data contained in the Memory. 
+The simplest Estimator algorithm for the expected is the {\em linear estimator,}
+which simply returns the average of the data items contained in the Memory. 
+Other examples of efficient estimators are 
+Auto-Regressive, Auto Regressive Moving Average, and Kalman filters. 
+
+The change detector component outputs an alarm signal when it detects change in the input data distribution. 
+It uses the output of the Estimator, and may or may not in addition use the contents of Memory. 
+
+We classify these predictors in four classes, depending on whether 
+Change Detector and Memory modules exist:
+
+\begin{itemize}
+\item {\em Type I: Estimator only.} The simplest one is modelled by 
+$$
+\hat{x}_k= (1-\alpha)\hat{x}_{k-1}+\alpha \cdot x_k.
+$$ 
+The linear estimator corresponds to using  $\alpha=1/N$ where $N$ is the width of a virtual window 
+containing the last $N$ elements we want to consider.
+Otherwise, we can give more weight to the last elements with an appropriate constant value of~$\alpha$. 
+The Kalman filter tries to optimize the estimation using a non-constant $\alpha$ (the $K$ value)
+which varies at each discrete time interval. 
+
+\item {\em Type II: Estimator with Change Detector.} 
+An example is the Kalman Filter together with a CUSUM test change detector algorithm, 
+see for example~\cite{jacob-04}.
+
+\item {\em Type III: Estimator with Memory.} We add Memory to improve 
+the results of the Estimator. For example, 
+one can build an Adaptive Kalman Filter that uses the data in Memory to 
+compute adequate values for process and measure variances.  
+% eliminats noms Q i R que aqui no es fan servir.
+%In particular, one can use the sum of the last elements stored into a memory window to model 
+%the $Q$ parameter and the difference of the last two elements to estimate parameter $R$.  
+
+\item {\em Type IV: Estimator with Memory and Change Detector.} 
+This is the most complete type. Two examples of this type, from the literature, are:
+%
+\begin{itemize}
+\item A Kalman filter with a CUSUM test and fixed-length window memory, as proposed in \cite{SchonEG:05}. 
+Only the Kalman filter has access to the memory.
+\item A linear Estimator over fixed-length windows that flushes when change is detected \cite{kifer-detecting}, 
+and a change detector that compares the running windows with a reference window. 
+\end{itemize}
+\end{itemize}
+%
+
+\Section{Incremental Decision Trees: Hoeffding Trees}
+%\BEGINOMIT
+Decision trees are classifier algorithms~\cite{cart94,Quinlan}. Each internal node of a tree $DT$
+contains a test on an attribute, each branch from a node corresponds to a possible outcome of the test,
+and each leaf contains a class prediction. The label $y = DT(x)$ for an example $x$ is obtained
+by passing the example down from the root to a leaf, testing the appropriate attribute at
+each node and following the branch corresponding to the attribute's value in the example.
+Extended models where the nodes contain more complex tests and leaves contain 
+more complex classification rules are also possible. 
+
+A decision tree is learned top-down by recursively replacing leaves by test nodes, starting at the
+root. The attribute to test at a node is chosen by comparing all the available attributes and
+choosing the best one according to some heuristic measure.
+
+%\ENDOMIT
+
+Classical decision tree learners such as ID3, %C4.5, and CART
+ C4.5~\cite{Quinlan}, and CART~\cite{cart94} 
+assume that all training examples can be stored simultaneously in main memory, and are thus severely 
+limited in the number of examples they can learn from.
+In particular, they are not applicable to data streams, where potentially there is no 
+bound on number of examples and these arrive sequentially. 
+
+Domingos and Hulten \cite{vfdt} developed Hoeffding trees,
+an incremental, anytime decision tree induction
+algorithm that is capable of learning from massive data streams, assuming that 
+the distribution generating examples does not change over time.
+
+Hoeffding trees exploit the fact that a small sample can often be enough to choose 
+an optimal splitting attribute. This idea is supported mathematically by the Hoeffding bound,
+which quantifies the number of observations (in our case, examples) needed to estimate
+some statistics within a prescribed precision (in our case, the goodness of an attribute). 
+%\BEGINOMIT
+More precisely, the Hoeffding bound states that with probability $1 - \delta$, the true mean of
+a random variable of range $R$ will not differ from the estimated mean after $n$
+independent observations by more than:
+$$ 
+\epsilon = \sqrt{\frac{R^2 \ln(1/\delta)}{2n}}.
+$$
+%\ENDOMIT
+A theoretically appealing feature of Hoeffding Trees not shared by other 
+incremental decision tree learners
+is that it has sound guarantees of performance. 
+Using the Hoeffding bound
+% and the concept of intensional disagreement 
+one can show that its output is asymptotically nearly identical 
+to that of a non-incremental learner using infinitely many examples.
+See \cite{vfdt} for details. 
+\ENDOMIT
+\BEGINOMIT
+The {\em intensional disagreement} $\Delta_i$ between
+two decision trees $DT_1$ and $DT_2$ is the probability that the
+path of an example through $DT_1$ will differ from its path
+through $DT_2$.% Hoeffding Trees have the following theoretical guarantee:
+
+\begin{theorem} 
+If $HT_\delta$ is the tree produced by the Hoeffding
+tree algorithm with desired probability $\delta$ given infinite examples,
+ $DT∗$ is the asymptotic batch tree, and $p$ is
+the leaf probability, then $E[\Delta_i (HT_\delta , DT∗ )] \leq \delta/p$.
+\end{theorem}
+%\ENDOMIT
+
+\begin{figure}
+\begin{codebox}
+\Procname{$\proc{VFDT}(Stream,\delta)$}
+\li Let HT be a tree with a single leaf(root) 
+\li  Init counts $n_{ijk}$ at root
+\li \For each example $(x,y)$ in Stream 
+\li \Do 
+$\proc{VFDTGrow} ((x,y),HT, \delta)$ 
+\End  \End
+\end{codebox}
+
+\begin{codebox}
+\Procname{$\proc{VFDTGrow} ((x,y),HT, \delta)$}
+\li  Sort $(x,y)$ to leaf $l$ using $HT$ 
+\li  Update counts $n_{ijk}$ at leaf $l$
+
+%\li \If examples seen so far at $l$ are not all of the same class 
+%\li \Then  
+\li  Compute $G$ for each attribute from counts $n_{i,j,k}$
+\li \If $G$(Best Attr.)$ - G$(2nd best) $> \epsilon(\delta,\dots)$ 
+\li \Then
+\li  Split leaf $l$ on best attribute
+\li \For each branch
+\li    \Do   Initialize new leaf counts at $l$
+\End  \End %\End
+\end{codebox}
+\caption{The VFDT algorithm}
+\label{fig:VFDT}
+\end{figure}
+
+VFDT (Very Fast Decision Trees) is the implementation of Hoeffding 
+trees, with a few heuristics added, described in \cite{vfdt}; 
+we basically identify both in this paper. 
+The pseudo-code of VFDT is shown in Figure \ref{fig:VFDT}. 
+Counts $n_{ijk}$ are the sufficient statistics needed to choose splitting attributes, 
+in particular the information gain function $G$ implemented in VFDT.
+Function $\epsilon(\delta,\dots)$ in line 4 
+is given by the Hoeffding bound and guarantees that
+whenever $best$ and $2nd\ best$ attributes satisfy this condition, 
+we can confidently conclude that $best$ indeed has maximal gain. 
+%It depends on $\delta$ and other values (and we do not specify it here).
+The sequence of examples $S$ may be infinite, in which case the procedure
+never terminates, and at any point in time a parallel procedure can use the current tree 
+to make class predictions.
+\ENDOMIT
+%\Section{Hoeffding Window Trees}
+\Section{Decision Trees on Sliding Windows}%: General FrameWork}
+\label{HWTree}
+
+We propose a general method for building incrementally a decision tree based on
+a  sliding window keeping the last instances on the stream.
+To specify one such method, we specify how to: 
+
+\begin{itemize}
+ \item place one or more change detectors at every node that will
+raise a hand whenever something worth attention happens at the node
+ \item create, manage, switch and delete alternate trees
+ \item maintain estimators of only relevant statistics at the nodes of the current sliding window
+\end{itemize}
+
+We call {\em Hoeffding Window Tree} any decision tree 
+that uses Hoeffding bounds, maintains a sliding window of instances, 
+and that can be included in this general framework.
+Figure~\ref{AVFDT2} shows the pseudo-code of $\proc{Hoeffding}$ $\proc{Window Tree}$.
+Note that $\delta'$ should be the {\em Bonferroni correction} of $\delta$ to account 
+for the fact that many tests are performed and we want all of them to be simultaneously
+correct with probability $1-\delta$. It is enough e.g. to divide $\delta$ by the number
+of tests performed so far. The need for this correction is also acknowledged 
+in \cite{vfdt}, although in experiments the more convenient option of
+using a lower $\delta$ was taken. We have followed the same option in our experiments
+for fair comparison.
+
+
+\begin{figure}%[ht]
+\begin{codebox}
+\Procname{$\proc{Hoeffding Window Tree}(Stream,\delta)$}
+\li  Let HT be a tree with a single leaf(root) 
+\li  Init estimators $A_{ijk}$ at root
+%\li \hspace{.3cm} or counts $n_{ijk}$ at root
+\li \For each example $(x,y)$ in Stream 
+%\li \Do Add, Remove and Forget Examples
+\li \Do $\proc{\hwt Grow} ((x,y),HT, \delta)$
+%\li $\proc{CheckSplitValidity} (HT,n, \delta)$ 
+\End  \End
+\end{codebox}
+%\caption{The new \adwindt algorithm}
+%\label{AVFDT1}
+%\end{figure}
+
+%\begin{figure}%[h]
+\begin{codebox}
+\Procname{$\proc{\hwt Grow} ((x,y),HT, \delta)$}
+\li  Sort $(x,y)$ to leaf $l$ using $HT$ 
+\li  Update estimators $A_{ijk}$ %or counts $n_{ijk}$
+\li  \hspace{.3cm} at leaf $l$ and nodes traversed in the sort
+\li \If current node $l$ has an alternate tree $T_{alt}$
+\li \hspace{.3cm} $\proc{\hwt{}Grow} ((x,y),T_{alt}, \delta)$ \End
+%\li \If examples seen so far at $l$ are not all of the same class 
+%\li \Then  
+\li  Compute $G$ for each attribute
+\zi \Comment Evaluate condition for splitting leaf $l$
+\li \If $G$(Best Attr.)$ - G$(2nd best) $> \epsilon(\delta', \dots)$ 
+%\footnote{
+%Here $\delta'$ should be the {\em Bonferroni correction} of $\delta$ to account 
+%for the fact that many tests are performed and we want all of them to be simultaneously
+%correct with probability $1-\delta$. It is enough e.g. to divide $\delta$ by the number
+%of tests performed so far. The need for this correction is also acknowledged 
+%in \cite{Domingos}, although in experiments the more convenient option of
+%using a lower $\delta$ was taken. We have followed the same option in our experiments
+%for fair comparison.}
+\li \Then Split leaf on best attribute
+\li \For each branch of the split
+\li    \Do   Start new leaf 
+\li  \hspace{.3cm} and initialize estimators %counts
+\End  
+\End %\End
+\li \If one change detector has detected change
+\li \Then Create an alternate subtree $T_{alt}$ at leaf $l$ if there is none
+\End
+\li \If existing alternate tree $T_{alt}$ is more accurate
+\li \Then replace current node $l$ with alternate tree $T_{alt}$ 
+\End
+\end{codebox}
+%\caption{The new \adwindtb Grow procedure}
+\caption{Hoeffding Window Tree algorithm}
+\label{AVFDT2}
+\end{figure}
+
+\subsection{\HWTAdwin: Hoeffding Window Tree using \adwin}
+
+%Recently, Bifet and Gavald\`a \cite{bif-gav} proposed an algorithm termed \adwin (for 
+%Adaptive Windowing) that is an estimator with memory and change detector of type IV.
+We use \adwin to design \HWTAdwinb, a new Hoeffding Window Tree 
+that uses \adwin as a change detector.
+%with theoretical guarantees of performance.
+%We propose \HWTAdwin , a Hoeffding Window Tree that uses \adwin as a change detector.
+The main advantage of using a change detector as \adwin is that it has theoretical guarantees, and
+we can extend this guarantees to the learning algorithms.
+\BEGINOMIT
+\subsubsection{The \adwin algorithm}
+\label{sAdwin}
+
+\adwin is a change detector and estimator that solves in a well-specified way the problem
+of tracking the average of a stream of bits or real-valued numbers.
+\adwin keeps a variable-length window of recently seen items, with the property 
+that the window has the maximal length statistically consistent 
+with the hypothesis ``there has been no change in the average value inside the window". 
+
+%\BEGINOMIT
+More precisely, an older fragment of the window is dropped if and only if 
+there is enough evidence that its average value differs from that of 
+the rest of the window. 
+This has two consequences: one, that change reliably declared whenever
+the window shrinks; and two, that at any time the average over the existing
+window can be reliably taken as an estimation of the current average in the stream
+(barring a very small or very recent change that is still not statistically 
+visible).% A formal and quantitative statement of these two points (a theorem)
+%appears in \cite{bif-gav}. 
+
+
+\Section{The \adwin Algorithm}
+\label{Sadwin}
+
+In this section we review \adwinb, an algorithm for %estimating, 
+detecting change%, 
+and dynamically adjusting the length of a data window. For details see \cite{bif-gav}.
+%\ENDOMIT
+The inputs to \adwin are a confidence value $\delta\in (0,1)$ 
+and a (possibly infinite) sequence of real values 
+$x_1$, $x_2$, $x_3$, \dots, $x_t$, \dots{} 
+The value of $x_t$ is available only at time $t$.
+Each $x_t$ is generated according to some distribution~$D_t$, 
+independently for every $t$. 
+We denote with $\mu_t$ 
+%and $\sigma^2_t$ 
+the expected value 
+%and the variance 
+of 
+$x_t$ when it is drawn according to $D_t$. 
+We assume that $x_t$ is always in $[0,1]$; by an easy
+rescaling, we can handle any case in which we know an interval 
+$[a,b]$ such that $a \le x_t \le b$ with probability $1$. 
+Nothing else is known about the sequence of 
+distributions $D_t$; in particular, 
+$\mu_t$ 
+%and $\sigma_t^2$ are 
+is unknown for all $t$. 
+
+Algorithm \adwin uses a sliding window $W$ with the most recently read 
+$x_i$. Let~%$n$ denote the length of $W$, 
+$\hmu_W$ denote the (known) average of the elements in~$W$, 
+and~$\mu_W$ the (unknown) average of~$\mu_t$ for~$t\in W$. 
+%Note that these quantities should be indexed by~$t$, 
+%but in general~$t$ will be clear from the context. 
+We use $|W|$ to denote the length of a (sub)window $W$. 
+
+%Since the values of $\mu_t$ can oscillate wildly, 
+%there is no guarantee that~$\mu_{W}$ or~$\hmu_W$ will be anywhere close 
+%to the instantaneous value~$\mu_t$, even for long~$W$.  
+%However, $\mu_{W}$ is the expected value of $\hmu_{W}$, so 
+%$\mu_{W}$ and $\hmu_{W}$ {\em do} get close as~$W$ grows. 
+
+Algorithm \adwin is presented in Figure \ref{blnAlgorithm}. 
+%\ENDOMIT
+The idea of \adwin method is simple: whenever two ``large enough'' 
+subwindows of $W$ exhibit ``distinct enough'' averages, 
+one can conclude that the corresponding expected values
+are different, and the older portion of the window is dropped.
+%In other words, $W$ is kept as long as possible
+%while the null hypothesis ``$\mu_t$ has remained
+%constant in $W$'' is sustainable up to confidence $\delta$.%
+%``Large enough'' and ``distinct enough'' above are made precise
+%by choosing an appropriate statistical test for distribution change, 
+%which in general involves 
+%the value of $\delta$, the lengths of the subwindows, 
+%and their contents. We choose one particular statistical
+%test for our implementation, but this is not the essence 
+%of our proposal -- many other tests could be used. 
+%At every step, \adwin simply outputs the value of the average of the 
+%values in the window, $\hmu_W$, 
+%as an approximation to the current (unknown) value average $\mu_W$. 
+The meaning of ``large enough'' and ``distinct enough''
+can be made precise again by using the Hoeffding bound. The 
+test eventually boils down to whether the average of the two subwindows
+is larger than a variable value $\epsc$ 
+computed as follows
+%
+\begin{eqnarray*}
+m &:=& \frac{2}{1/|W_0| +1/|W_1|}\\ %\mbox{ (harmonic mean of $|W_0|$ and $|W_1|$),} \\
+\epsc &:=& \sqrt{ \frac{1}{2m} \cdot \ln\frac{4|W|}{\delta}} \;.
+\end{eqnarray*}
+where $m$ is the harmonic mean of $|W_0|$ and $|W_1|$.
+
+%In \cite{bif-gav} we describe a more sensitive test
+%based on the normal distribution which, although not 100\% rigorous, 
+%is perfectly valid in practice; we omit its description here.
+%\BEGINOMIT
+\begin{figure}
+
+\centering
+
+\begin{codebox}
+\Procname{$\proc{\adwinb: Adaptive Windowing Algorithm}$}
+\li Initialize Window $W$
+\li \For each $t >0$ %
+\li \Do $W \gets W \cup \{x_t\}$ (i.e., add $x_t$ to the head of $W$)
+\li \Repeat Drop elements from the tail of $W$ 
+\li \Until $|\hmu_{W_0}-\hmu_{W_1}| < \epsc$ holds
+\li \quad\quad for every split of $W$ into $W=W_0 \cdot W_1$ 
+\li output $\hmu_{W}$ % the pair $\hmu_{W}$ and $\eps_t$ (as in the Theorem)
+\end{codebox}
+\caption{Algorithm \adwinb.}\label{blnAlgorithm}
+\end{figure}
+%\ENDOMIT
+
+The main technical result in \cite{bif-gav} about the performance of \adwin is
+the following theorem, that provides bounds on the rate of false
+positives and false negatives for \adwinb: 
+
+\begin{theorem}
+\label{ThBV}
+With $\epsc$ defined as above, 
+at every time step we have:
+
+\begin{enumerate}
+\item {\em (False positive rate bound).} If $\mu_t$ has remained constant within $W$, 
+the probability that \adwin shrinks the window 
+at this step is at most $\delta$.
+
+\item {\em (False negative rate bound).} 
+Suppose that for {\em some} partition of $W$ in two parts $W_0W_1$ 
+(where $W_1$ contains the most recent items) 
+we have $|\mu_{W_0}-\mu_{W_1}| > 2\epsc$. 
+Then with probability $1-\delta$ \adwin
+shrinks $W$ to $W_1$, or shorter.
+\end{enumerate}
+\end{theorem}
+
+\noindent
+This theorem justifies us in using \adwin in two ways: 
+
+\begin{itemize}
+\item as a {\em change detector}, since \adwin shrinks its window
+if and only if there has been a significant change in recent times
+(with high probability)
+\item as an {\em estimator} for the current average of the
+sequence it is reading since, with high probability, older parts of the window
+with a significantly different average are automatically dropped. 
+\end{itemize}
+
+\noindent
+%We will see three variants of our decision tree builder based on 
+%using \adwin in the first way, the second way, or both. 
+
+
+\adwin is parameter- and assumption-free in the sense that 
+it automatically detects and adapts to the current rate of change. 
+Its only parameter is a confidence bound $\delta$,
+indicating how confident we want to be in the algorithm's output, 
+inherent to all algorithms dealing with random processes. 
+
+Also important for our purposes, \adwin does not maintain the window
+explicitly, but compresses it using a variant of the exponential histogram
+technique in \cite{babcock-sampling}. This means that it keeps a window of length $W$
+using only $O(\log W)$ memory and $O(\log W)$ processing time per item, 
+rather than the $O(W)$ one expects from a na{\"\i}ve implementation. 
+\ENDOMIT
+
+\subsubsection{Example of performance Guarantee}
+
+%\Section{Theoretical Performance Guarantee}
+Let \HWTsAdwin be a variation of \HWTAdwin with the following condition:
+every time a node decides to create an alternate tree, 
+an alternate tree is also started at the root. 
+In this section we show an example of performance guarantee about
+the error rate of \HWTsAdwinb. Informally speaking, it states
+that after a change followed by a stable period, 
+\HWTsAdwinb's error rate will decrease at the same rate
+as that of VFDT, after a transient period that depends only
+on the magnitude of the change. 
+
+We consider the following scenario: 
+Let $C$ and $D$ be arbitrary concepts, that can differ both in example
+distribution and label assignments.
+Suppose the input data sequence $S$ is generated according to concept $C$ 
+up to time $t_0$, that it abruptly changes to concept $D$ at time $t_0 + 1$, 
+and remains stable after that. Let \HWTsAdwin be run on sequence $S$, and 
+$e_1$ be error(\HWTsAdwinb,$S$,$t_0$), and $e_2$ be error(\HWTsAdwinb,$S$,$t_0+1$), 
+so that $e_2-e_1$ measures how much worse the error of \HWTsAdwin has become after the
+concept change. 
+
+Here error(\HWTsAdwinb,$S$,$t$) denotes the classification error
+of the tree kept by \HWTsAdwin at time $t$ on $S$. 
+Similarly, error(VFDT,$D$,$t$) denotes the expected error rate of the tree
+kept by VFDT after being fed with $t$ random examples coming from concept $D$. 
+%The proof of the following theorem can be found in the full version of the paper. 
+
+\begin{theorem}
+Let $S$, $t_0$, $e_1$, and $e_2$ be as described above, 
+and suppose $t_0$ is sufficiently large w.r.t. $e_2-e_1$.
+Then for every time $t>t_0$, we have
+$$
+\mbox{error(\HWTsAdwinb},S,t) \le \min\{\, e_2, e_{{VFDT}}\,\}
+$$
+with probability at least $1-\delta$, 
+where
+\begin{itemize}
+ \item $e_{{VFDT}}= \mbox{error}(VFDT, D,t-t0-g(e_2-e_1)) +O(\frac{1}{\sqrt{t-t_0}})$
+ \item $g(e_2-e_1) = 8 /(e_2-e_1)^2 \ln(4t_0/\delta)$
+%\item $f(t)$ is a function that grows like $1+1/\sqrt{t}$.
+\end{itemize}
+
+\end{theorem}
+
+The following corollary is a direct consequence, since $O(1/\sqrt{t-t_0})$
+tends to $0$ as $t$ grows. 
+
+\begin{corollary}
+If error(VFDT,$D$,$t$) tends to some quantity $\epsilon\le e_2$
+as $t$ tends to infinity,
+then error(\HWTsAdwin,$S$,$t$) 
+tends to $\epsilon$ too. % as $t$ tends to infinity.
+\end{corollary}
+
+%{\em Note: The proof is not included in this version.}
+%\BEGINOMIT
+\begin{proof}
+%{\em Note: The proof is only sketched in this version.}
+We know by the \adwin False negative rate bound that with probability 
+$1- \delta$, the \adwin instance monitoring the error rate at the root 
+shrinks at time $t_0+n$ if
+$$
+|e_2-e_1|> 2 \epsc = \sqrt{2/m \ln(4(t-t_0)/\delta)}
+$$
+where $m$ is the harmonic mean of the lengths of the subwindows 
+corresponding to data before and after the change. 
+This condition is equivalent to 
+$$
+m > 4/(e_1-e_2)^2 \ln(4(t-t_0)/\delta)
+$$
+If $t_0$ is sufficiently large w.r.t. the quantity on the right
+hand side, one can show that $m$ is, say, less than $n/2$
+by definition of the harmonic mean. 
+Then some calculations show that for $n \ge g(e_2-e_1)$ 
+the condition is fulfilled, and therefore by time $t_0+n$
+\adwin will detect change. 
+
+After that, \HWTsAdwin will start an alternative tree at the root.
+This tree will from then on grow as in VFDT, 
+because \HWTsAdwin{} behaves as VFDT when there is no concept change. 
+While it does not switch to the alternate tree, the error will
+remain at $e_2$.
+If at any time $t_0+g(e_1-e_2)+n$ the error of the alternate tree is sufficiently below 
+$e_2$, with probability $1-\delta$ the two \adwin instances
+at the root will signal this fact, and \HWTsAdwin will switch to the alternate
+tree, and hence the tree will behave as the one built by 
+VFDT with $t$ examples. It can be shown, again by using
+the False Negative Bound on \adwin, that 
+the switch will occur when the VFDT error 
+goes below $e_2-O(1/\sqrt{n})$, and the theorem follows 
+after some calculation. 
+\end{proof}
+%\ENDOMIT
+
+%Hoeffding Window Trees are decision trees that uses
+
+%\begin{itemize}
+% \item change detectors on the nodes. When a change is detected a new alternate tree is build
+% \item estimators on the nodes monitoring statistics of only the current data on the sliding window
+%\end{itemize}
+
+\subsection{CVFDT}
+
+As an extension of VFDT to deal with concept change Hulten, Spencer, and Domingos presented Concept-adapting 
+Very Fast Decision Trees CVFDT \cite{hulten-mining} algorithm. We have presented it on Section~\ref{CVFDT}. 
+We review it here briefly and 
+compare it to our method.
+%Its pseudocode is shown in Figure \ref{CVFDT}.
+
+CVFDT works by keeping its model consistent
+with respect to a sliding window of data from the data stream, and creating and replacing 
+alternate decision subtrees when it detects that the distribution of data is changing at a node.
+When new data arrives, CVFDT updates the sufficient statistics at its nodes by incrementing the counts $n_{ijk}$ corresponding to the new examples and decrementing the counts $n_{ijk}$ corresponding to the oldest example in the window,
+which is effectively forgotten.
+CVFDT is a Hoeffding Window Tree as it is included in the general method previously presented. %framework
+
+Two external differences among CVFDT and our method is that CVFDT has no 
+theoretical guarantees (as far as we know), and 
+that it uses  %it needs a high number of parameters
+%which are fixed for a given execution, and that the
+%correct values for these parameters may depen on the dataset requiring 
+%an experimented user to decide them.  
+%\BEGINOMIT
+a number of parameters, with default values that can be changed by the user - but
+which are fixed for a given execution. Besides the example window length, it needs:  
+
+\begin{enumerate}
+%\item $W$: is the example window size. 
+
+\item $T_0$: after each $T_0$ examples, CVFDT traverses all the decision tree, and checks at each node 
+if the splitting attribute is still the best. If there is a better splitting attribute, it starts growing 
+an alternate tree rooted at this node, and it splits on the currently best attribute 
+according to the statistics in the node.
+\item $T_1$: after an alternate tree is created, the following $T_1$ examples are used to build the alternate tree.
+\item $T_2$: after the arrival of $T_1$ examples, the following $T_2$ examples are used to test the accuracy of the alternate tree. If the alternate tree is more accurate than the current one, 
+CVDFT replaces it with this alternate tree (we say that the alternate tree is promoted). 
+\end{enumerate}
+
+The default values are %$W=50,000$, 
+$T_0=10,000$, $T_1=9,000$, and $T_2=1,000$.
+One can interpret these figures as the preconception that often about the last $50,000$ examples 
+are likely to be relevant, and that change is not likely to occur faster than every $10,000$ examples.
+These preconceptions may or may not be right for a given data source. 
+
+%\subsubsection{ CVFDT and \HWTAdwin summary}
+
+The main internal differences of \HWTAdwin respect CVFDT are: % the following:
+\begin{itemize}
+
+\item  The alternates trees are created as soon as change is detected, without having 
+to wait that a fixed number of examples arrives after the change. Furthermore,  
+the more abrupt the change is, the faster a new alternate tree will be created. 
+
+%4)
+\item \HWTAdwin replaces the old trees by the new alternates trees as soon as  
+there is evidence that they are more accurate, rather than having to wait
+for another fixed number of examples. 
+\end{itemize}
+
+\noindent
+These two effects can be summarized saying that \HWTAdwin %our algorithm
+adapts to the scale of time change in the data, rather than
+having to rely on the {\em a priori} guesses by the user. 
+%All in all, the four points above explain how we get rid of 
+%the four user-chosen parameters $T_0$, $T_1$, and $T_2$ in CVFDT. 
+
+
+\BEGINOMIT
+
+To conclude, let us remark that \cite{vfdt} shows theoretical guarantees on the error 
+rate of VFDT: under some technical conditions, one can show that 
+the tree learned by VFDT on a finite sample is very similar to a subtree
+of the one that would be produced by using an infinite sample. 
+By contrast, no similar guarantees are shown for CVFDT in \cite{hulten-mining}.
+%, and in any case they would depend on the user-chosen parameters. 
+%As mentioned, we can give performance guarantees
+%for our algorithm, in the sense that in stable periods our tree will
+%quickly tend to that produced by VFDT. 
+
+\subsection{MOA}
+
+\{M\}assive \{O\}nline \{A\}nalysis~\cite{MOA} is a
+framework for online learning from continuous supplies of examples, such as data streams.
+It is closely related to the well-known WEKA project, and it includes 
+a collection of offline and online as well as tools for evaluation. 
+In particular, MOA implements boosting, bagging, and Hoeffding Trees, both 
+with and without Na{\"\i}ve Bayes classifiers at the leaves. 
+
+\subsection{The ADWIN algorithm}
+
+Recently, Bifet and Gavald\`a \cite{bif-gav} proposed an algorithm termed \adwin (for 
+Adaptive Windowing) that solves in a well-specified way the problem
+of tracking the average of a stream of bits or real-valued numbers.
+\adwin keeps a variable-length window of recently seen items, with the property 
+that the window has the maximal length statistically consistent 
+with the hypothesis ``there has been no change in the average value inside the window". 
+
+More precisely, an older fragment of the window is dropped if and only if 
+there is enough evidence that its average value differs from that of 
+the rest of the window. 
+This has two consequences: one, that change reliably declared whenever
+the window shrinks; and two, that at any time the average over the existing
+window can be reliably taken as an estimation of the current average in the stream
+(barring a very small or very recent change that is still not statistically 
+visible). A formal and quantitative statement of these two points (a theorem)
+appears in \cite{bif-gav}. 
+
+\adwin is parameter- and assumption-free in the sense that 
+it automatically detects and adapts to the current rate of change. 
+Its only parameter is a confidence bound $\delta$,
+indicating how confident we want to be in the algorithm's output, 
+inherent to all algorithms dealing with random processes. 
+
+Also important for our purposes, \adwin does not maintain the window
+explicitly, but compresses it using a variant of the exponential histogram
+technique in \cite{babcock-sampling}. This means that it keeps a window of length $W$
+using only $O(\log W)$ memory and $O(\log W)$ processing time per item, 
+rather than the $O(W)$ one expects from a na{\"\i}ve implementation. 
+\ENDOMIT
+%------------------------------------------------------------------------- 
+
+\Section{Hoeffding Adaptive Trees}
+\label{HATree}
+
+In this section we present Hoeffding Adaptive Tree as a new method 
+that evolving from Hoeffding Window Tree, adaptively learn from data streams that change over time
+without needing a fixed size of sliding window. The optimal size of the
+sliding window is a very difficult parameter to guess for users, since it depends
+on the rate of change of the distribution of the dataset.
+
+In order to avoid to choose a size parameter, we propose a new method for managing
+ statistics at the nodes. The general idea is simple: 
+we place instances of estimators of frequency
+statistics at every node, that is, replacing each $n_{ijk}$ counters in the Hoeffding Window Tree
+with an instance $A_{ijk}$ of an estimator. 
+
+More precisely, we present three variants of a {\em Hoeffding Adaptive Tree} or HAT, depending on
+the estimator used:
+
+\begin{itemize}
+ \item HAT-INC: it uses a linear incremental estimator
+ \item HAT-EWMA: it uses an Exponential Weight Moving Average (EWMA)
+ \item HAT-\adwin: it uses an \adwin estimator. As the \adwin instances
+are also change detectors, they will give an alarm 
+when a change in the attribute-class statistics at that node 
+is detected, which indicates also a possible concept change. 
+\end{itemize}
+
+
+\BEGINOMIT
+In either case, when any instance of \adwin at a node detects change, we create
+a new alternate tree without splitting any attribute. 
+Using two \adwin instances at every node, we monitor the average error of the decision 
+subtree rooted at this node and the average error of the new alternate subtree. 
+When there is enough evidence (as witnessed by \adwinb) that the new alternate tree 
+is doing better than the original decision subtree, 
+we replace the original decision subtree by the new alternate subtree. 
+
+Figure~\ref{AVFDT2} shows the pseudo-code of \adwindtb.
+\ENDOMIT
+
+The main advantages of this new method over a Hoeffding Window Tree are:
+\begin{itemize}
+%1)
+\item All relevant statistics from the examples are kept in the nodes. 
+There is no need of an optimal size of sliding window for all nodes. Each node
+can decide which of the last instances are currently relevant for it.
+%In particular, statistics at the leaves are used at every node to 
+%choose the dominant class at that leaf. 
+There is no need for an additional window to store current examples.
+For medium window sizes, this factor substantially reduces our memory
+consumption with respect to a Hoeffding Window Tree.
+
+%2)
+\item  A Hoeffding Window Tree, as CVFDT for example, stores in main memory only a bounded part of the window. The 
+rest (most of it, for large window sizes) is stored in disk. 
+For example, CVFDT has one parameter that indicates the amount of main memory used to store the window
+(default is 10,000).
+Hoeffding Adaptive Trees keeps all its data in main memory. %Additionally, there is no need 
+%to recheck the whole tree at given intervals, 
+%because whenever a node undergoes change, the associated change detector will call for
+%attention. %As we will see, these two effects compensate
+%to a large extent the overhead in running time associated to 
+%updating the estimator instances. 
+
+%3)
+\end{itemize}
+
+\subsection{Example of performance Guarantee}
+
+In this subsection we show a performance guarantee on
+the error rate of \HATAdwin on a simple situation. 
+Roughly speaking, it states that after a distribution and concept change 
+in the data stream, followed by a stable period, \HATAdwin will start,
+in reasonable time, growing a tree identical to the one that 
+VFDT would grow if starting afresh from the new stable distribution. 
+Statements for more complex scenarios are possible, 
+including some with slow, gradual, changes.%, but require more space than 
+%available here. 
+
+\begin{theorem}
+Let $D_0$ and $D_1$ be two distributions on labelled examples.
+Let $S$ be a data stream that contains examples following $D_0$ for a time $T$,
+then suddenly changes to using $D_1$. 
+Let $t$ be the time that until VFDT running on a (stable) stream with distribution $D_1$
+takes to perform a split at the node. Assume also that 
+VFDT on $D_0$ and $D_1$ builds trees that differ on the attribute tested at the root. 
+Then with probability at least $1-\delta$:
+
+\begin{itemize}
+\item By time $t'=T+c\cdot V^2\cdot t \log (tV)$, \HATAdwin will 
+create at the root an alternate tree labelled with the same attribute 
+as VFDT($D_1$). Here $c\le 20$ is an absolute constant, and $V$ the number
+of values of the attributes.\footnote{This value of $t'$
+is a very large overestimate, as indicated by our experiments.  
+We are working on an improved analysis, and hope to be able to
+reduce $t'$ to $T + c \cdot t$, for $c<4$.}
+\item this alternate tree will evolve from then on identically as
+does that of VFDT($D_1$), and will eventually be promoted to be the current
+tree if and only if its error on $D_1$ is smaller than that of the
+tree built by time $T$. 
+\end{itemize}
+\end{theorem}
+
+If the two trees do not differ at the roots, the corresponding 
+statement can be made for a pair of deeper nodes. 
+
+%We cannot present the full proof due to the space restrictions. Let us state
+%only the key lemma, which determines how the estimates 
+%provided by the \adwin instances at the nodes increase in accuracy over time. 
+%Its proof in turn uses the theoretical guarantees on the accuracy of \adwinb,
+%stated as Theorem 3.1 in \cite{bif-gav}.
+
+\begin{lemma}
+In the situation above, at every time $t+T>T$, with probability $1-\delta$ 
+we have at every node and for every counter (instance of \adwinb) $A_{i,j,k}$
+$$
+|A_{i,j,k}-P_{i,j,k}| \le \sqrt{\frac{\ln(1/\delta')\,T}{t (t+T)}}
+$$
+where $P_{i,j,k}$ is the probability that an example arriving at the node 
+has value $j$ in its $i$th attribute and class $k$. 
+\end{lemma}
+
+Observe that for fixed $\delta'$ and $T$ this bound tends to $0$ as $t$ grows.
+
+%\BEGINOMIT 
+To prove the theorem, use this lemma
+to prove high-confidence bounds on the estimation of $G(a)$ for all attributes
+at the root, and show that the attribute $best$ chosen by VFDT on $D_1$ 
+will also have maximal $G(best)$ at some point, so it will be placed
+at the root of an alternate tree. Since this new alternate tree will
+be grown exclusively with fresh examples from $D_1$, it will evolve as 
+a tree grown by VFDT on $D_1$. 
+
+\BEGINOMIT
+Note that, unlike in CVFDT, the theorem depends only on 
+one user-defined parameter, the confidence $\delta$. 
+The rest of the quantities ($e_1$, $e_2$, $t_0$, $\epsilon$) 
+are defined from the input sequence. 
+\ENDOMIT
+
+\subsection{Memory Complexity Analysis}
+\label{sComplexity}
+
+Let us compare the memory complexity Hoeffding Adaptive Trees and Hoeffding Window Trees. We take CVFDT as an example
+of Hoeffding Window Tree. Denote with 
+%$E$ the size of an example, $A$ the number of attributes, $V$
+%the maximum number of values for an attribute, $C$ the number of classes, 
+%and $T$ the number of nodes in the current tree. 
+%
+%\BEGINOMIT
+\begin{itemize}
+\item E : size of an example
+\item A : number of attributes
+\item V : maximum number of values for an attribute
+\item C : number of classes
+\item T : number of nodes %of the decision tree, 
+\end{itemize}
+%\ENDOMIT
+%
+A Hoeffding Window Tree as CVFDT uses memory $O(WE +TAVC)$, because it uses a window $W$
+with $E$ examples, and each node in the tree uses $AVC$ counters. 
+A Hoeffding Adaptive Tree does not need to store a window of examples, 
+but uses instead memory $O(\log W)$ at each node as it uses an \adwin as a change detector, so its memory requirement is 
+$O(TAVC+T\log W)$. For medium-size $W$, the $O(WE)$ in CVFDT can often dominate.
+\HATAdwin %also as an estimator of node statistics,
+has a complexity of $O(TAVC\log W)$. 
+
+%------------------------------------------------------------------------- 
+
+
+%------------------------------------------------------------------------- 
