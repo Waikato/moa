@@ -43,7 +43,7 @@ public class BinaryTreeNumericAttributeClassObserver extends AbstractOptionHandl
 
     private static final long serialVersionUID = 1L;
 
-    protected class Node implements Serializable {
+    public class Node implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -83,7 +83,7 @@ public class BinaryTreeNumericAttributeClassObserver extends AbstractOptionHandl
         }
     }
 
-    protected Node root = null;
+    public Node root = null;
 
     @Override
     public void observeAttributeClass(double attVal, int classVal, double weight) {

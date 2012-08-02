@@ -52,7 +52,6 @@ public class NaiveBayes extends AbstractClassifier {
     public String getPurposeString() {
         return "Naive Bayes classifier: performs classic bayesian prediction while making naive assumption that all inputs are independent.";
     }
-
     protected DoubleVector observedClassDistribution;
 
     protected AutoExpandVector<AttributeClassObserver> attributeObservers;
@@ -147,6 +146,35 @@ public class NaiveBayes extends AbstractClassifier {
         }
         // TODO: need logic to prevent underflow?
         return votes;
+    }
+
+    // Naive Bayes Prediction using log10 for VFDR rules 
+    public static double[] doNaiveBayesPredictionLog(Instance inst,
+            DoubleVector observedClassDistribution,
+            AutoExpandVector<AttributeClassObserver> observers, AutoExpandVector<AttributeClassObserver> observers2) {
+        AttributeClassObserver obs;
+        double[] votes = new double[observedClassDistribution.numValues()];
+        double observedClassSum = observedClassDistribution.sumOfValues();
+        for (int classIndex = 0; classIndex < votes.length; classIndex++) {
+            votes[classIndex] = Math.log10(observedClassDistribution.getValue(classIndex)
+                    / observedClassSum);
+            for (int attIndex = 0; attIndex < inst.numAttributes() - 1; attIndex++) {
+                int instAttIndex = modelAttIndexToInstanceAttIndex(attIndex,
+                        inst);
+                if (inst.attribute(instAttIndex).isNominal()) {
+                    obs = observers.get(attIndex);
+                } else {
+                    obs = observers2.get(attIndex);
+                }
+
+                if ((obs != null) && !inst.isMissing(instAttIndex)) {
+                    votes[classIndex] += Math.log10(obs.probabilityOfAttributeValueGivenClass(inst.value(instAttIndex), classIndex));
+
+                }
+            }
+        }
+        return votes;
+
     }
 
     public void manageMemory(int currentByteSize, int maxByteSize) {
