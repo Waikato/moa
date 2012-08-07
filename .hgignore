@@ -7,6 +7,8 @@ target/
 /.project
 .settings/
 /.settings/
+.externalToolBuilders
+/.externalToolBuilders/
 
 syntax: glob
 
@@ -14,6 +16,7 @@ syntax: glob
 *.swp
 *.backup
 *~
+outputClustering.csv
 
 # for latex
 *.aux
