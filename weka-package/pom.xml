@@ -59,8 +59,8 @@
   </parent>
 
   <scm>
-    <connection>scm:hg:http://code.google.com/p/moa/weka-package/</connection>
-    <developerConnection>scm:hg:http://code.google.com/p/moa/weka-package/</developerConnection>
+    <connection>scm:hg:http://code.google.com/p/moa/</connection>
+    <developerConnection>scm:hg:http://code.google.com/p/moa/</developerConnection>
     <url>http://code.google.com/p/moa</url>
   </scm>
 
@@ -99,12 +99,6 @@
       <groupId>nz.ac.waikato.cms.moa</groupId>
       <artifactId>moa</artifactId>
       <version>[2012.03,)</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.scm</groupId>
-      <artifactId>maven-scm-provider-hg</artifactId>
-      <version>1.7</version>
     </dependency>
   </dependencies>
 
