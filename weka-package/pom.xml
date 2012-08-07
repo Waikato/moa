@@ -100,6 +100,12 @@
       <artifactId>moa</artifactId>
       <version>[2012.03,)</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.scm</groupId>
+      <artifactId>maven-scm-provider-hg</artifactId>
+      <version>1.7</version>
+    </dependency>
   </dependencies>
 
   <properties>
