@@ -128,6 +128,7 @@
           <version>2.1</version>
           <configuration>
             <useReleaseProfile>false</useReleaseProfile>
+            <arguments>-f moa/pom.xml</arguments>
           </configuration>
         </plugin>
 

@@ -116,6 +116,7 @@
           <version>2.1</version>
           <configuration>
             <useReleaseProfile>false</useReleaseProfile>
+            <arguments>-f weka-package/pom.xml</arguments>
           </configuration>
         </plugin>
       </plugins>
