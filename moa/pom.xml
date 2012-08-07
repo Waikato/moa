@@ -58,8 +58,8 @@
   </mailingLists>
   
   <scm>
-    <connection>scm:hg:http://code.google.com/p/moa/</connection>
-    <developerConnection>scm:hg:http://code.google.com/p/moa/</developerConnection>
+    <connection>scm:hg:http://code.google.com/p/moa/moa/</connection>
+    <developerConnection>scm:hg:http://code.google.com/p/moa/moa/</developerConnection>
     <url>http://code.google.com/p/moa</url>
   </scm>
 
