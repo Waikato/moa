@@ -4,7 +4,7 @@
   <groupId>nz.ac.waikato.cms.moa</groupId>
   <artifactId>moa-pom</artifactId>
   <packaging>pom</packaging>
-  <version>2012.08</version>
+  <version>2012.09-SNAPSHOT</version>
 
   <name>MOA: meta-package</name>
   <description>
@@ -61,7 +61,7 @@
     <connection>scm:hg:https://code.google.com/p/moa/</connection>
     <developerConnection>scm:hg:https://code.google.com/p/moa/</developerConnection>
     <url>http://code.google.com/p/moa</url>
-    <tag>moa-pom-2012.08</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <dependencyManagement>
