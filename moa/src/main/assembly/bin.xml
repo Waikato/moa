@@ -33,7 +33,7 @@
 
     <fileSet>
       <directory>${project.build.directory}</directory>
-      <outputDirectory>docs/pdf</outputDirectory>
+      <outputDirectory>doc/pdf</outputDirectory>
       <includes>
         <include>*.pdf</include>
       </includes>
@@ -44,6 +44,14 @@
       <outputDirectory>examples</outputDirectory>
       <includes>
         <include>**/*</include>
+      </includes>
+    </fileSet>
+
+    <fileSet>
+      <directory>${project.build.directory}/sources</directory>
+      <outputDirectory>/src</outputDirectory>
+      <includes>
+        <include>*.jar</include>
       </includes>
     </fileSet>
   </fileSets>

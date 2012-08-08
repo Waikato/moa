@@ -1,10 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>nz.ac.waikato.cms.moa</groupId>
+  <parent>
+    <groupId>nz.ac.waikato.cms.moa</groupId>
+    <artifactId>moa-pom</artifactId>
+    <version>2012.08-SNAPSHOT</version>
+  </parent>
+
   <artifactId>moa</artifactId>
   <packaging>jar</packaging>
-  <version>2012.08-SNAPSHOT</version>
 
   <name>MOA: Massive Online Analysis</name>
   <description>
@@ -26,17 +30,11 @@
     </license>
   </licenses>
 
-  <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>7</version>
-  </parent>
-
   <developers>
     <developer>
       <id>abifet</id>
       <name>Albert Bifet</name>
-      <email>abifet@cs.waikato.ac.nz</email>
+      <email>abifet@waikato.ac.nz</email>
     </developer>
     <developer>
       <id>rkirkby</id>
@@ -44,116 +42,29 @@
     </developer>
   </developers>
 
-  <mailingLists>
-    <mailingList>
-      <name>moa-users</name>
-      <subscribe>http://groups.google.com/group/moa-users</subscribe>
-      <unsubscribe>http://groups.google.com/group/moa-users</unsubscribe>
-    </mailingList>
-    <mailingList>
-      <name>moa-development</name>
-      <subscribe>http://groups.google.com/group/moa-development</subscribe>
-      <unsubscribe>http://groups.google.com/group/moa-development</unsubscribe>
-    </mailingList>
-  </mailingLists>
-  
-  <scm>
-    <connection>scm:hg:https://code.google.com/p/moa/</connection>
-    <developerConnection>scm:hg:https://code.google.com/p/moa/</developerConnection>
-    <url>http://code.google.com/p/moa</url>
-  </scm>
-
   <dependencies>
     <dependency>
       <groupId>nz.ac.waikato.cms.weka</groupId>
       <artifactId>weka-dev</artifactId>
-      <version>[3.7.5,)</version>
     </dependency>
 
     <dependency>
       <groupId>com.googlecode.sizeofag</groupId>
       <artifactId>sizeofag</artifactId>
-      <version>1.0.0</version>
     </dependency>
 
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.8.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
-  <profiles>
-    <profile>
-      <id>release-sign-artifacts</id>
-      <activation>
-        <property>
-          <name>performRelease</name>
-          <value>true</value>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.1</version>
-            <executions>
-              <execution>
-                <id>sign-artifacts</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-  </properties>
-
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>2.3.2</version>
-          <configuration>
-            <useReleaseProfile>false</useReleaseProfile>
-            <localCheckout>true</localCheckout>
-            <pushChanges>false</pushChanges>
-            <commitByProject>true</commitByProject>
-          </configuration>
-        </plugin>
-
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.7.2</version>
-          <configuration>
-            <includes>
-              <include>**/*Test.java</include>
-            </includes>
-            <disableXmlReport>true</disableXmlReport>
-            <redirectTestOutputToFile>true</redirectTestOutputToFile>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.0.2</version>
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
@@ -163,87 +74,26 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.3.2</version>
-        <!-- uncomment once unit tests are being used:
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
-        -->
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.8.1</version>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <show>protected</show>
-          <nohelp>true</nohelp>
-          <!-- avoids "-SNAPSHOT" in title when using the release.xml configuration -->
-          <doctitle>${project.name}</doctitle>
-        </configuration>
       </plugin>
       
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
-        <version>1.0</version>
-        <executions>
-          <execution>
-            <id>add-third-party</id>
-            <goals>
-              <goal>add-third-party</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>latex-maven-plugin</artifactId>
-        <version>1.1</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>latex</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2</version>
-        <configuration>
-          <descriptors>
-            <descriptor>src/main/assembly/sources.xml</descriptor>
-            <!-- uncomment once unit tests are available:
-            <descriptor>src/main/assembly/test-sources.xml</descriptor>
-            -->
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
