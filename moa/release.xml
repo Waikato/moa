@@ -1,9 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>nz.ac.waikato.cms.moa</groupId>
+  <parent>
+    <groupId>nz.ac.waikato.cms.moa</groupId>
+    <artifactId>moa-pom</artifactId>
+    <version>2012.08-SNAPSHOT</version>  <!-- adjust -->
+  </parent>
+
   <artifactId>moa-release</artifactId>
-  <version>2012.08</version><!-- adjust -->
   <packaging>pom</packaging>
 
   <name>MOA: Massive Online Analysis (release)</name>
@@ -19,7 +23,7 @@
   upcoming relase (search for "adjust"), save the file and check it in.
 
   Second, perform the release of the MOA artifacts:
-    mvn release:clean release:prepare release:perform
+    mvn release:clean release:prepare release:perform -Dusername=google-code-user -Dpassword=google-code-pw
 
   Finally, once the new MOA artifacts are available from Maven Central, you can
   generate a release archive as follows:
@@ -42,7 +46,7 @@
     <developer>
       <id>abifet</id>
       <name>Albert Bifet</name>
-      <email>abifet@cs.waikato.ac.nz</email>
+      <email>abifet@waikato.ac.nz</email>
     </developer>
     <developer>
       <id>rkirkby</id>
@@ -71,32 +75,45 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
-        <version>1.1</version>
-        <executions>
-          <execution>
-            <id>add-third-party</id>
-            <goals>
-              <goal>add-third-party</goal>
-            </goals>
-            <configuration>
-              <acceptPomPackaging>true</acceptPomPackaging>
-              <excludedGroups>nz.ac.waikato.cms.moa</excludedGroups>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <!-- generate documentation -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>latex-maven-plugin</artifactId>
-        <version>1.1</version>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
         <executions>
+          <!-- get all source jars -->
           <execution>
-            <phase>package</phase>
+            <id>sources</id>
+            <phase>prepare-package</phase>
             <goals>
-              <goal>latex</goal>
+              <goal>copy-dependencies</goal>
             </goals>
+            <configuration>
+              <classifier>sources</classifier>
+              <failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>
+              <outputDirectory>${project.build.directory}/sources</outputDirectory>
+              <includeGroupIds>${project.groupId}</includeGroupIds>
+            </configuration>
+          </execution>
+          <!-- get all test source jars -->
+          <execution>
+            <id>test-sources</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <classifier>test-sources</classifier>
+              <failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>
+              <outputDirectory>${project.build.directory}/sources</outputDirectory>
+              <includeGroupIds>${project.groupId}</includeGroupIds>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -104,21 +121,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2</version>
         <configuration>
           <descriptors>
             <descriptor>src/main/assembly/bin.xml</descriptor>
           </descriptors>
         </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
