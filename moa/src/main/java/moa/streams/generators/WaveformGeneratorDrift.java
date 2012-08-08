@@ -2,6 +2,7 @@
  *    WaveformGeneratorDrift.java
  *    Copyright (C) 2008 University of Waikato, Hamilton, New Zealand
  *    @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
+ *    @author Christophe Salperwyck
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -60,9 +61,11 @@ public class WaveformGeneratorDrift extends WaveformGenerator {
         //Change atributes
         int randomInt = this.instanceRandom.nextInt(numAtts);
         int offset = this.instanceRandom.nextInt(numAtts);
+        int swap;
         for (int i = 0; i < this.numberAttributesDriftOption.getValue(); i++) {
+            swap = this.numberAttribute[(i + randomInt) % numAtts];
             this.numberAttribute[(i + randomInt) % numAtts] = (i + offset) % numAtts;
-            this.numberAttribute[(i + offset) % numAtts] = (i + randomInt) % numAtts;
+            this.numberAttribute[(i + offset) % numAtts] = swap;
         }
     }
 
