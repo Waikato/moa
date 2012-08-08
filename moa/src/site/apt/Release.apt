@@ -1,5 +1,6 @@
 Release
 
+  * Ensure that the version numbers of all pom.xml files match the year/month of release
   * Make sure all changes are checked in and pushed out (as well as pulled/merged)
   * Update version tag in <<<moa/release.xml>>> to upcoming release and check in changes:
 
@@ -8,7 +9,8 @@ Release
   hg push
 +---
 
-  * Performing the actual release (use your GoogleCode credentials):
+  * Performing the actual release (use your GoogleCode credentials; you can accept
+    all the default prompts regarding version numbers usually):
 
 +---
   mvn release:clean release:prepare release:perform -Dusername=google-code-user -Dpassword=google-code-pw
