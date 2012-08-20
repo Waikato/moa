@@ -21,6 +21,7 @@
 
 package moa.classifiers.rules;
 
+import java.util.*; 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.core.attributeclassobservers.*;
 import moa.classifiers.core.attributeclassobservers.BinaryTreeNumericAttributeClassObserver.Node;
@@ -34,7 +35,6 @@ import moa.options.IntOption;
 import moa.options.MultiChoiceOption;
 import weka.core.Instance;
 import weka.core.Utils;
-import java.util.*; 
 
 
 /**
@@ -825,6 +825,7 @@ public class RuleClassifier extends AbstractClassifier{
 			classDistrib = new ArrayList<Double>();
 			int instAttIndex = modelAttIndexToInstanceAttIndex(z, inst);
 			if (inst.attribute(instAttIndex).isNumeric()) {
+				if(observerss.get(z)!=null){
 				Node rootNode = ((BinaryTreeNumericAttributeClassObserver) observerss.get(z)).root;
 				if (rootNode != null) {
 					double sum;
@@ -834,7 +835,9 @@ public class RuleClassifier extends AbstractClassifier{
 						}
 					break;
 					}
+				}
 				} else {
+					if(observerss.get(z)!=null){
 					AutoExpandVector<DoubleVector> atribNominal = ((NominalAttributeClassObserver) observerss.get(z)).attValDistPerClass;
 					for (int d = 0; d < atribNominal.size(); d++) {
 						double sumValue = 0;
@@ -848,6 +851,7 @@ public class RuleClassifier extends AbstractClassifier{
 						}
 					break;
 					}
+				}
 			}
 		return classDistrib;
 	}
