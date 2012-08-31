@@ -1,5 +1,5 @@
 /*
- *    AccuracyUpdatedEnsemble.java
+ *    AccuracyUpdatedEnsemble1.java
  *    Copyright (C) 2010 Poznan University of Technology, Poznan, Poland
  *    @author Dariusz Brzezinski (dariusz.brzezinski@cs.put.poznan.pl)
  *
@@ -21,21 +21,30 @@ package moa.classifiers.meta;
 
 import moa.classifiers.Classifier;
 import moa.core.ObjectRepository;
+import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 import weka.core.Instances;
 
 /**
  * The Accuracy Updated Ensemble classifier as proposed by Brzezinski and
  * Stefanowski in "Accuracy Updated Ensemble for Data Streams with Concept
- * Drift", HAIS 2011.
+ * Drift", HAIS 2011.  A newer/revised version of this algorithm exists and 
+ * is called AccuracyUpdatedEnsemble2.
  */
-public class AccuracyUpdatedEnsemble extends AccuracyWeightedEnsemble {
+public class AccuracyUpdatedEnsemble1 extends AccuracyWeightedEnsemble {
 
     private static final long serialVersionUID = 1L;
 
+    public AccuracyUpdatedEnsemble1()
+    {
+    	this.learnerOption = new ClassOption("learner", 'l', "Classifier to train.", Classifier.class, "trees.HoeffdingTree -e 1000 -g 100 -c 0.01");
+    }
+    
     @Override
     public String getPurposeString() {
-        return "Accuracy Updated Ensemble classifier as proposed by Brzezinski and Stefanowski in 'Accuracy Updated Ensemble for Data Streams with Concept Drift'";
+        return "Accuracy Updated Ensemble classifier as proposed by Brzezinski and Stefanowski in " +
+        		"'Accuracy Updated Ensemble for Data Streams with Concept Drift', HAIS 2011. A newer/revised " +
+        		"version of this algorithm exists and is called AccuracyUpdatedEnsemble2.";
     }
 
     @Override
