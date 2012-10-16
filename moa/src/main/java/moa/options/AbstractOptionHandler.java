@@ -112,7 +112,7 @@ public abstract class AbstractOptionHandler extends AbstractMOAObject implements
         for (Field field : fields) {
             String fName = field.getName();
             Class<?> fType = field.getType();
-            if (fName.endsWith("Option")) {
+            if (fType.getName().endsWith("Option")) {
                 if (Option.class.isAssignableFrom(fType)) {
                     Option oVal = null;
                     try {
