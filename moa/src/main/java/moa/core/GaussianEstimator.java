@@ -47,8 +47,10 @@ public class GaussianEstimator extends AbstractMOAObject {
         if (this.weightSum > 0.0) {
             this.weightSum += weight;
             double lastMean = this.mean;
-            this.mean += (value - lastMean) / this.weightSum;
-            this.varianceSum += (value - lastMean) * (value - this.mean);
+            //this.mean += (value - lastMean) / this.weightSum;
+            //this.varianceSum += (value - lastMean) * (value - this.mean);
+            this.mean += weight * (value - lastMean) / this.weightSum; 
+            this.varianceSum += weight * (value - lastMean) * (value - this.mean);
         } else {
             this.mean = value;
             this.weightSum = weight;
@@ -57,8 +59,9 @@ public class GaussianEstimator extends AbstractMOAObject {
 
     public void addObservations(GaussianEstimator obs) {
         if ((this.weightSum > 0.0) && (obs.weightSum > 0.0)) {
-            this.mean = (this.mean * (this.weightSum / (this.weightSum + obs.weightSum)))
-                    + (obs.mean * (obs.weightSum / (this.weightSum + obs.weightSum)));
+            //this.mean = (this.mean * (this.weightSum / (this.weightSum + obs.weightSum)))
+            //        + (obs.mean * (obs.weightSum / (this.weightSum + obs.weightSum)));
+            this.mean += obs.weightSum * (obs.mean - this.mean) / (this.weightSum + obs.weightSum); 
             this.weightSum += obs.weightSum;
             this.varianceSum += obs.varianceSum;
         }
