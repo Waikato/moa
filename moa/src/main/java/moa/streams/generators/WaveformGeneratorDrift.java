@@ -64,7 +64,7 @@ public class WaveformGeneratorDrift extends WaveformGenerator {
         int swap;
         for (int i = 0; i < this.numberAttributesDriftOption.getValue(); i++) {
             swap = this.numberAttribute[(i + randomInt) % numAtts];
-            this.numberAttribute[(i + randomInt) % numAtts] = (i + offset) % numAtts;
+            this.numberAttribute[(i + randomInt) % numAtts] = this.numberAttribute[(i + offset) % numAtts];
             this.numberAttribute[(i + offset) % numAtts] = swap;
         }
     }
