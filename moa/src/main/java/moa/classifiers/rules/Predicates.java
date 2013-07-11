@@ -28,12 +28,13 @@ package moa.classifiers.rules;
  * <p>Learning Decision Rules from Data Streams, IJCAI 2011, J. Gama,  P. Kosina </p>
  *
  * @author P. Kosina, E. Almeida, J. Gama
- * @version $Revision: 1 $
+ * @version $Revision: 2 $
  * 
  */
 
 import moa.AbstractMOAObject;
 import weka.core.Instance;
+//import samoa.instances.Instance;
 
 public class Predicates extends AbstractMOAObject{
 	
@@ -77,7 +78,7 @@ public class Predicates extends AbstractMOAObject{
 
 	 public boolean evaluate(Instance inst) {
 	    boolean result = false;
-	    double attributeValue = inst.value(inst.attribute((int) this.attributeValue));
+	    double attributeValue = inst.value((int) this.attributeValue);
 	    if (this.symbol == 0.0 && attributeValue == this.value) {
 	        result = true;
 	    } else if (this.symbol == -1.0 && attributeValue <= this.value) {

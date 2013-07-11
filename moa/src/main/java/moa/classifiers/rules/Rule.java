@@ -28,18 +28,19 @@ package moa.classifiers.rules;
  * <p>Learning Decision Rules from Data Streams, IJCAI 2011, J. Gama,  P. Kosina </p>
  *
  * @author P. Kosina, E. Almeida, J. Gama
- * @version $Revision: 1 $
+ * @version $Revision: 2 $
  * 
  * 
  */
 
 import java.util.ArrayList;
-
 import moa.AbstractMOAObject;
 import moa.classifiers.core.attributeclassobservers.*;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import weka.core.Instance;
+//import samoa.instances.Instance;
+//import moa.core.Utils;
 
 public class Rule extends AbstractMOAObject{
 	
@@ -47,14 +48,60 @@ public class Rule extends AbstractMOAObject{
 	
     protected  ArrayList<Predicates> predicateSet = new ArrayList<Predicates>();
     
-	protected AutoExpandVector<AttributeClassObserver> observers = new AutoExpandVector<AttributeClassObserver>(); //statistics
+	protected AutoExpandVector<AttributeClassObserver> observers = new AutoExpandVector<AttributeClassObserver>(); //Statistics.
 	
-	protected AutoExpandVector<AttributeClassObserver> observersGauss = new AutoExpandVector<AttributeClassObserver>(); //statistics
+	protected AutoExpandVector<AttributeClassObserver> observersGauss = new AutoExpandVector<AttributeClassObserver>(); //Statistics.
 	
-	protected DoubleVector obserClassDistrib = new DoubleVector();
+    protected ArrayList<ArrayList<Double>> attributeStatisticsSupervised = new ArrayList<ArrayList<Double>>();
 	
-	public boolean ruleEvaluate(Instance inst) {
-		int countTrue = 0;
+	protected ArrayList<ArrayList<Double>> squaredAttributeStatisticsSupervised = new ArrayList<ArrayList<Double>>();
+	
+	protected double[] weightAttribute; // The Perception weights. 
+    
+    protected DoubleVector attributeStatistics = new DoubleVector(); // Statistics used for error calculations.
+    
+    protected DoubleVector attributesProbability = new DoubleVector(); // Probalility of each attribute.
+    
+    protected DoubleVector squaredAttributeStatistics = new DoubleVector();
+    
+    protected DoubleVector obserClassDistrib = new DoubleVector();
+    
+    protected DoubleVector attributeMissingValues = new DoubleVector(); // for each attribute counts the number of missing values.
+    
+    protected int instancesSeen = 0;  // The number of instances contributing to this model.
+    
+    protected int instancesSeenTest = 0;  // The number of instances test seen by the rule.
+    
+    protected boolean reset=true; // If the model should be reset or not.
+    
+ // Statistics used for normalize actualClass and predictedClass.
+    protected double actualClassStatistics = 0.0;
+    
+    protected double squaredActualClassStatistics = 0.0;
+    
+    protected double PHmT = 0; //The cumulative sum of the errors.
+    
+    protected double PHMT = Double.MAX_VALUE; // The minimum error value seen so far.
+    
+    protected double XiSum = 0;  //Absolute error.
+    
+    protected double ValorTargetRule=0; // Target value of the rule.
+	
+	
+	public Rule(Rule x) {
+		for (int i = 0; i < x.predicateSet.size(); i++) {
+			Predicates pred = new Predicates(x.predicateSet.get(i).getAttributeValue(), x.predicateSet.get(i).getSymbol(), x.predicateSet.get(i).getValue());
+			this.predicateSet.add(pred);
+		}
+		
+	}
+	
+	public Rule() {
+		
+	}
+    
+    public boolean ruleEvaluate(Instance inst) {
+    	int countTrue = 0;
 		boolean ruleEvalu = false;
 		for (int i = 0; i < predicateSet.size(); i++) {
 			if (predicateSet.get(i).evaluate(inst) == true) {

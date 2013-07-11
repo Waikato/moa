@@ -72,4 +72,9 @@ public class NullAttributeClassObserver extends AbstractOptionHandler implements
     protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
     }
+
+    @Override
+    public void observeAttributeTarget(double attVal, double target) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

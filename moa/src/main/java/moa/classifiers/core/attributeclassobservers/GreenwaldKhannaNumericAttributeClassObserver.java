@@ -118,4 +118,9 @@ public class GreenwaldKhannaNumericAttributeClassObserver extends AbstractOption
     protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
     }
+
+    @Override
+    public void observeAttributeTarget(double attVal, double target) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

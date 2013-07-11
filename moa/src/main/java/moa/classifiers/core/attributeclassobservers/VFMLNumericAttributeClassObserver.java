@@ -46,6 +46,11 @@ public class VFMLNumericAttributeClassObserver extends AbstractOptionHandler
 
     private static final long serialVersionUID = 1L;
 
+    @Override
+    public void observeAttributeTarget(double attVal, double target) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
     protected class Bin implements Serializable {
 
         private static final long serialVersionUID = 1L;

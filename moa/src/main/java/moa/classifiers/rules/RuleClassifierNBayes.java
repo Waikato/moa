@@ -23,15 +23,16 @@ package moa.classifiers.rules;
 
 import java.util.ArrayList;
 import java.util.Collections;
+//import samoa.instances.Instance;
 import weka.core.Instance;
 import moa.classifiers.bayes.NaiveBayes;
 import moa.options.IntOption;
 
 /**
  * This classifier learn ordered and unordered rule set from data stream with naive Bayes learners.
+ * <p> This algorithm also does the detection of anomalies.
  * 
  * <p>Learning Decision Rules from Data Streams, IJCAI 2011, J. Gama,  P. Kosina </p>
- *
  * 
  * <p>Parameters:</p>
  * <ul>
@@ -45,7 +46,7 @@ import moa.options.IntOption;
  * </ul>
  * 
  * @author P. Kosina, E. Almeida, J. Gama
- * @version $Revision: 1 $
+ * @version $Revision: 2 $
  */
 public class RuleClassifierNBayes extends RuleClassifier {
 	
@@ -59,7 +60,7 @@ public class RuleClassifierNBayes extends RuleClassifier {
 	
 	@Override
 	public double[] getVotesForInstance(Instance inst) {
-		double[] votes = new double[observedClassDistribution.numValues()];
+		double[] votes = new double[numClass];
 		switch (super.predictionFunctionOption.getChosenIndex()) {
         case 0:
         	votes = firstHitNB(inst);
@@ -78,18 +79,18 @@ public class RuleClassifierNBayes extends RuleClassifier {
 	protected double[] firstHitNB(Instance inst) {
 		int countFired = 0;
 		boolean fired = false;
-		double[] votes = new double[observedClassDistribution.numValues()];
-		for (int j = 0; j < ruleSet.size(); j++) {
-			if (ruleSet.get(j).ruleEvaluate(inst) == true) {
+		double[] votes = new double[this.numClass];
+		for (int j = 0; j < this.ruleSet.size(); j++) {
+			if (this.ruleSet.get(j).ruleEvaluate(inst) == true) {
 				countFired = countFired + 1;
-				if (ruleSet.get(j).obserClassDistrib.sumOfValues() >= this.nbThresholdOption.getValue()) {
-					votes = NaiveBayes.doNaiveBayesPredictionLog(inst, ruleSet.get(j).obserClassDistrib, ruleSet.get(j).observers, ruleSet.get(j).observersGauss);
+				if (this.ruleSet.get(j).obserClassDistrib.sumOfValues() >= this.nbThresholdOption.getValue()) {
+					votes = NaiveBayes.doNaiveBayesPredictionLog(inst, this.ruleSet.get(j).obserClassDistrib, this.ruleSet.get(j).observers, this.ruleSet.get(j).observersGauss);
 		    	    votes = exponential(votes);
 		    	    votes = normalize(votes);
 		    	    } else {
-		    	    	for (int z = 0; z < majority.get(j).size(); z++) {
-		    	    		votes[z] = ruleSet.get(j).obserClassDistrib.getValue(z) 
-		    	    				/ ruleSet.get(j).obserClassDistrib.sumOfValues();
+		    	    	for (int z = 0; z < this.numClass; z++) {
+		    	    		votes[z] = this.ruleSet.get(j).obserClassDistrib.getValue(z) 
+		    	    				/ this.ruleSet.get(j).obserClassDistrib.sumOfValues();
 		    	    		}
 		    	    	}
 				break;
@@ -106,7 +107,7 @@ public class RuleClassifierNBayes extends RuleClassifier {
 				votes = exponential(votes);
 				votes = normalize(votes);
 				} else {
-					votes = super.oberversDistribProb(inst, this.attributeObservers);
+					votes = super.oberversDistribProb(inst, this.observedClassDistribution);
 					}
 			}
 		return votes;
@@ -117,22 +118,22 @@ public class RuleClassifierNBayes extends RuleClassifier {
 		int count = 0;
 		boolean fired = false;
 		double highest = 0.0;
-		double[] votes = new double[observedClassDistribution.numValues()];
+		double[] votes = new double[this.numClass];
 		ArrayList<Double> ruleSetVotes = new ArrayList<Double>();
 		ArrayList<ArrayList<Double>> majorityProb = new ArrayList<ArrayList<Double>>();
-		for (int j = 0; j < ruleSet.size(); j++) {
+		for (int j = 0; j < this.ruleSet.size(); j++) {
 			ArrayList<Double> ruleClassDistribProb=new ArrayList<Double>();
-			if(ruleSet.get(j).ruleEvaluate(inst) == true) {
+			if(this.ruleSet.get(j).ruleEvaluate(inst) == true) {
 				countFired = countFired + 1;
-				if (ruleSet.get(j).obserClassDistrib.sumOfValues() >= this.nbThresholdOption.getValue()) {
-					votes = NaiveBayes.doNaiveBayesPredictionLog(inst, ruleSet.get(j).obserClassDistrib, ruleSet.get(j).observers, ruleSet.get(j).observersGauss);
+				if (this.ruleSet.get(j).obserClassDistrib.sumOfValues() >= this.nbThresholdOption.getValue()) {
+					votes = NaiveBayes.doNaiveBayesPredictionLog(inst, this.ruleSet.get(j).obserClassDistrib, this.ruleSet.get(j).observers, this.ruleSet.get(j).observersGauss);
 					votes = exponential(votes);
 		    	    votes = normalize(votes);
 		    	    } else {
 		    	    	count = count + 1;
-		    	    	for (int z = 0; z < majority.get(j).size(); z++){
-		    	    		ruleSetVotes.add(ruleSet.get(j).obserClassDistrib.getValue(z) / ruleSet.get(j).obserClassDistrib.sumOfValues());
-		    	    		ruleClassDistribProb.add(ruleSet.get(j).obserClassDistrib.getValue(z) / ruleSet.get(j).obserClassDistrib.sumOfValues());
+		    	    	for (int z = 0; z < this.numClass; z++){
+		    	    		ruleSetVotes.add(this.ruleSet.get(j).obserClassDistrib.getValue(z) / this.ruleSet.get(j).obserClassDistrib.sumOfValues());
+		    	    		ruleClassDistribProb.add(this.ruleSet.get(j).obserClassDistrib.getValue(z) / this.ruleSet.get(j).obserClassDistrib.sumOfValues());
 		    	    		}
 		    	    	majorityProb.add(ruleClassDistribProb);
 		    	    	}
@@ -163,7 +164,7 @@ public class RuleClassifierNBayes extends RuleClassifier {
 				votes = exponential(votes);
 				votes = normalize(votes);
 				} else {
-					votes = super.oberversDistribProb(inst, this.attributeObservers);
+					votes = super.oberversDistribProb(inst, this.observedClassDistribution);
 					}
 			}
 		return votes;
@@ -173,21 +174,21 @@ public class RuleClassifierNBayes extends RuleClassifier {
 		int countFired = 0;
 		int count = 0;
 		boolean fired = false;
-		double[] votes = new double[observedClassDistribution.numValues()];
+		double[] votes = new double[this.numClass];
 		ArrayList<Double> weightSum = new ArrayList<Double>();
 		ArrayList<ArrayList<Double>> majorityProb = new ArrayList<ArrayList<Double>>();
-		for ( int j = 0; j < ruleSet.size(); j++) {
+		for ( int j = 0; j < this.ruleSet.size(); j++) {
 			ArrayList<Double> ruleClassDistribProb=new ArrayList<Double>();
-			if (ruleSet.get(j).ruleEvaluate(inst) == true) {
+			if (this.ruleSet.get(j).ruleEvaluate(inst) == true) {
 				countFired = countFired + 1;
-				if (ruleSet.get(j).obserClassDistrib.sumOfValues() >= this.nbThresholdOption.getValue()) {
-					votes = NaiveBayes.doNaiveBayesPredictionLog(inst, ruleSet.get(j).obserClassDistrib, ruleSet.get(j).observers, ruleSet.get(j).observersGauss);
+				if (this.ruleSet.get(j).obserClassDistrib.sumOfValues() >= this.nbThresholdOption.getValue()) {
+					votes = NaiveBayes.doNaiveBayesPredictionLog(inst, this.ruleSet.get(j).obserClassDistrib, ruleSet.get(j).observers, this.ruleSet.get(j).observersGauss);
 	    	        votes = exponential(votes);
 	    	        votes = normalize(votes);
 	    	        } else {
 	    	        	count=count+1;
-	    	        	for (int z = 0; z < majority.get(j).size(); z++) {
-	    	        		ruleClassDistribProb.add(ruleSet.get(j).obserClassDistrib.getValue(z) / ruleSet.get(j).obserClassDistrib.sumOfValues());
+	    	        	for (int z = 0; z < this.numClass; z++) {
+	    	        		ruleClassDistribProb.add(this.ruleSet.get(j).obserClassDistrib.getValue(z) / this.ruleSet.get(j).obserClassDistrib.sumOfValues());
 	    	        		}
 	    	        	majorityProb.add(ruleClassDistribProb);
 	    	        	}
@@ -216,7 +217,7 @@ public class RuleClassifierNBayes extends RuleClassifier {
 			  	 votes = exponential(votes);
 	  		 	 votes = normalize(votes);
 	  		 	 } else {
-	  		 		 votes = super.oberversDistribProb(inst, this.attributeObservers);
+	  		 		 votes = super.oberversDistribProb(inst, this.observedClassDistribution);
 	  		 		 }
 			 }
 		 return votes;

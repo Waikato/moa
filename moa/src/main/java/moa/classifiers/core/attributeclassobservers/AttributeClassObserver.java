@@ -66,4 +66,7 @@ public interface AttributeClassObserver extends OptionHandler {
             SplitCriterion criterion, double[] preSplitDist, int attIndex,
             boolean binaryOnly);
 
+
+    public void observeAttributeTarget(double attVal, double target);
+    
 }

@@ -170,4 +170,9 @@ public class NominalAttributeClassObserver extends AbstractOptionHandler impleme
         // TODO Auto-generated method stub
     }
 
+    @Override
+    public void observeAttributeTarget(double attVal, double target) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }
