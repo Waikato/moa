@@ -1,33 +1,21 @@
-/*
- *    EvaluateClustering.java
- *    Copyright (C) 2009 University of Waikato, Hamilton, New Zealand
- *    @author Albert Bifet (abifet@cs.waikato.ac.nz)
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+/**
+ * EvaluateClustering.java
+ * 
+ * @author Albert Bifet (abifet@cs.waikato.ac.nz)
+ * @editor Yunsu Kim
+ * 
+ * Last edited: 2013/06/02
  */
 package moa.tasks;
 
+import moa.clusterers.AbstractClusterer;
 import moa.core.ObjectRepository;
 import moa.evaluation.LearningCurve;
+import moa.gui.BatchCmd;
 import moa.options.ClassOption;
 import moa.options.FileOption;
 import moa.options.IntOption;
-import moa.gui.BatchCmd;
-import moa.clusterers.AbstractClusterer;
 import moa.streams.clustering.ClusteringStream;
-import moa.streams.clustering.RandomRBFGeneratorEvents;
 
 /**
  * Task for evaluating a clusterer on a stream.
@@ -83,7 +71,7 @@ public class EvaluateClustering extends MainTask {
     "How many instances between memory bound checks.", 100000, 0,
     Integer.MAX_VALUE);*/
     public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
-            "File to append intermediate csv reslts to.", "outputClustering.csv", "csv", true);
+            "File to append intermediate csv reslts to.", "dumpClustering.csv", "csv", true);
 
     @Override
     public Class<?> getTaskResultType() {
@@ -99,8 +87,8 @@ public class EvaluateClustering extends MainTask {
                 (int) this.instanceLimitOption.getValue(),
                 (String) dumpFileOption.getValue());
 
-        LearningCurve learningCurve = new LearningCurve(
-                "learning evaluation instances");
+        LearningCurve learningCurve = new LearningCurve("EvaluateClustering does not support custom output file (> [filename]).\n" +
+        												"Check out the dump file to see the results (if you haven't specified, dumpClustering.csv by default).");
         //System.out.println(learner.toString());
         return learningCurve;
     }

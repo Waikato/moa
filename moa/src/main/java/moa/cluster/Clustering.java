@@ -1,21 +1,12 @@
-/*
- *    CFCluster.java
- *    Copyright (C) 2010 RWTH Aachen University, Germany
- *    @author Jansen (moa@cs.rwth-aachen.de)
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+/**
+ * Clustering.java
+ * 
+ * Represents a collection of clusters.
+ * 
+ * @author Timm Jansen (moa@cs.rwth-aachen.de)
+ * @editor Yunsu Kim
+ * 
+ * Last edited: 2013/06/02
  */
 
 package moa.cluster;
@@ -23,14 +14,13 @@ package moa.cluster;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import moa.AbstractMOAObject;
 import moa.core.AutoExpandVector;
 import moa.gui.visualization.DataPoint;
+import weka.core.Attribute;
 import weka.core.Instance;
 
-/**
- * Represents a collection of clusters.
- */
 public class Clustering extends AbstractMOAObject{
 
     private AutoExpandVector<Cluster> clusters;
@@ -51,6 +41,15 @@ public class Clustering extends AbstractMOAObject{
         int dim = points.get(0).dataset().numAttributes()-1;
 
         int numClasses = labelMap.size();
+        int noiseLabel;
+        
+        Attribute classLabel = points.get(0).dataset().classAttribute();
+        int lastLabelIndex = classLabel.numValues() - 1;
+        if (classLabel.value(lastLabelIndex) == "noise") {
+        	noiseLabel = lastLabelIndex;
+        } else {
+        	noiseLabel = -1;
+        }
 
         ArrayList<Instance>[] sorted_points = (ArrayList<Instance>[]) new ArrayList[numClasses];
         for (int i = 0; i < numClasses; i++) {
@@ -58,7 +57,7 @@ public class Clustering extends AbstractMOAObject{
         }
         for (Instance point : points) {
             int clusterid = (int)point.classValue();
-            if(clusterid == -1) continue;
+            if(clusterid == noiseLabel) continue;
             sorted_points[labelMap.get(clusterid)].add((Instance)point);
         }
         this.clusters = new AutoExpandVector<Cluster>();

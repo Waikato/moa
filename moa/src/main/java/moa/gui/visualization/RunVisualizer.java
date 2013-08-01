@@ -21,7 +21,6 @@
 package moa.gui.visualization;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
@@ -31,25 +30,27 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import moa.cluster.Cluster;
-import moa.clusterers.ClusterGenerator;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
+import moa.clusterers.ClusterGenerator;
 import moa.evaluation.MeasureCollection;
 import moa.gui.TextViewerPanel;
+import moa.gui.clustertab.ClusteringSetupTab;
 import moa.gui.clustertab.ClusteringVisualEvalPanel;
 import moa.gui.clustertab.ClusteringVisualTab;
 import moa.streams.clustering.ClusterEvent;
-import weka.core.Instance;
-import moa.gui.clustertab.ClusteringSetupTab;
 import moa.streams.clustering.ClusterEventListener;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.FastVector;
+import weka.core.Instance;
 import weka.core.Instances;
 
 public class RunVisualizer implements Runnable, ActionListener, ClusterEventListener{
@@ -349,7 +350,7 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
         evaluateClustering(evalClustering0, gtClustering0, points0, true);
         evaluateClustering(evalClustering1, gtClustering1, points1, false);
 
-        drawClusterings();
+        drawClusterings(points0, points1);
     }
 
     private void evaluateClustering(Clustering found_clustering, Clustering trueClustering, ArrayList<DataPoint> points, boolean algorithm0){
@@ -391,21 +392,21 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
         m_graphcanvas.updateCanvas();
     }
 
-    public void drawClusterings(){
+    public void drawClusterings(List<DataPoint> points0, List<DataPoint> points1){
         if(macro0!= null && macro0.size() > 0)
-                m_streampanel0.drawMacroClustering(macro0, Color.BLUE);
+                m_streampanel0.drawMacroClustering(macro0, points0, Color.RED);
         if(micro0!= null && micro0.size() > 0)
-                m_streampanel0.drawMicroClustering(micro0, Color.GREEN);
+                m_streampanel0.drawMicroClustering(micro0, points0, Color.GREEN);
         if(gtClustering0!= null && gtClustering0.size() > 0)
-            m_streampanel0.drawGTClustering(gtClustering0, Color.BLACK);
+            m_streampanel0.drawGTClustering(gtClustering0, points0, Color.BLACK);
 
         if(m_clusterer1!=null){
             if(macro1!= null && macro1.size() > 0)
-                    m_streampanel1.drawMacroClustering(macro1, Color.BLUE);
+                    m_streampanel1.drawMacroClustering(macro1, points1, Color.BLUE);
             if(micro1!= null && micro1.size() > 0)
-                    m_streampanel1.drawMicroClustering(micro1, Color.GREEN);
+                    m_streampanel1.drawMicroClustering(micro1, points1, Color.GREEN);
             if(gtClustering1!= null && gtClustering1.size() > 0)
-                m_streampanel1.drawGTClustering(gtClustering1, Color.BLACK);
+                m_streampanel1.drawGTClustering(gtClustering1, points1, Color.BLACK);
         }
     }
 

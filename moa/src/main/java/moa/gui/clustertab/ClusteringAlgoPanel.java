@@ -58,7 +58,7 @@ public class ClusteringAlgoPanel extends javax.swing.JPanel implements ActionLis
                "Algorithm to use.", Clusterer.class, "ClusterGenerator");
 
    private ClassOption algorithmOption1 = new ClassOption("Algorithm1", 'c',
-               "Comparison algorithm", Clusterer.class, "", "clustream.Clustream");
+               "Comparison algorithm", Clusterer.class, "", "clustream.WithKmeans");
    
 
     public ClusteringAlgoPanel() {

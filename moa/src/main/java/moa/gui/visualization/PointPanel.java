@@ -1,21 +1,10 @@
-/*
- *    PointPanel.java
- *    Copyright (C) 2010 RWTH Aachen University, Germany
- *    @author Jansen (moa@cs.rwth-aachen.de)
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+/**
+ * PointPanel.java
+ * 
+ * @author Timm Jansen (moa@cs.rwth-aachen.de)
+ * @editor Yunsu Kim
+ * 
+ * Last edited: 2013/06/02
  */
 
 package moa.gui.visualization;
@@ -23,10 +12,16 @@ package moa.gui.visualization;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+
 import javax.swing.JPanel;
 
 public class PointPanel extends JPanel{
-    static final int POINTSIZE = 4;
+	
+	private static final long serialVersionUID = 1L;
+	
+	static final int POINTSIZE = 4;
     DataPoint point;
 
     protected int x_dim = 0;
@@ -40,36 +35,69 @@ public class PointPanel extends JPanel{
 
     protected double decayRate;
     protected double decayThreshold;
+    
+    protected int type;
+    protected final int TYPE_PLAIN = 0;
+    protected final int TYPE_CLUSTERED = 1;
+    
+    protected StreamPanel sp;
 
 
-    /** Creates new form ObjectPanel */
-    public PointPanel(DataPoint point, double decayRate, double decayThreshold) {
-        this.point = point;
-        this.col = Color.BLACK;
+    /**
+     * Type 1: Possibly be decayed, colored by class label.
+     * 
+     * @param point
+     * @param streamPanel
+     * @param decayRate
+     * @param decayThreshold
+     */
+    public PointPanel(DataPoint point, StreamPanel streamPanel, double decayRate, double decayThreshold) {
+    	this.point = point;
         this.panel_size = POINTSIZE;
         this.decayRate = decayRate;
         this.decayThreshold = decayThreshold;
         this.col = default_color;
+        this.sp = streamPanel;
+        this.type = TYPE_PLAIN;
 
         setVisible(true);
         setOpaque(false);
-        setSize(new Dimension(1,1));
-        setLocation(0,0);
+        setSize(new Dimension(1, 1));
+        setLocation(0, 0);
         initComponents();
-
     }
 
+    /**
+     * Type 2: Never be decayed, single color.
+     * 
+     * @param point
+     * @param streamPanel
+     * @param color
+     */
+    public PointPanel(DataPoint point, StreamPanel streamPanel, Color color) {
+        this.point = point;
+        this.panel_size = POINTSIZE;
+        this.decayRate = 0;			// Never be decayed
+        this.decayThreshold = 0;
+        this.col = color;
+        this.sp = streamPanel;
+        this.type = TYPE_CLUSTERED;
 
+        setVisible(true);
+        setOpaque(false);
+        setSize(new Dimension(1, 1));
+        setLocation(0,0);
+        initComponents();
+    }
 
     public void updateLocation(){
-        window_size = Math.min(this.getParent().getWidth(),this.getParent().getHeight());
+    	window_size = Math.min(sp.getWidth(), sp.getHeight());
 
-        StreamPanel sp = (StreamPanel)getParent().getParent();
         x_dim = sp.getActiveXDim();
         y_dim = sp.getActiveYDim();
 
-        setSize(new Dimension(panel_size+1,panel_size+1));
-        setLocation((int)(point.value(x_dim)*window_size-(panel_size/2)),(int)(point.value(y_dim)*window_size-(panel_size/2)));
+        setSize(new Dimension(panel_size + 1, panel_size + 1));
+        setLocation((int)(point.value(x_dim) * window_size - (panel_size / 2)), (int)(point.value(y_dim) * window_size - (panel_size / 2)));
     }
 
     /** This method is called from within the constructor to
@@ -95,30 +123,46 @@ public class PointPanel extends JPanel{
 
     @Override
     protected void paintComponent(Graphics g) {
-        point.updateWeight(RunVisualizer.getCurrentTimestamp(), decayRate);
-        if(point.weight() < decayThreshold){
-            getParent().remove(this);
-            return;
+    	if (type == TYPE_PLAIN) {
+	    	point.updateWeight(RunVisualizer.getCurrentTimestamp(), decayRate);
+	        if (point.weight() < decayThreshold) {
+	            getParent().remove(this);
+	            return;
+	        }
         }
 
         Color color = getColor();
-        Color errcolor = getErrorColor();
-        if(errcolor == null){
-            errcolor = color;
+      //Color errcolor = getErrorColor();
+        //if (errcolor == null) {
+        //    errcolor = color;
             panel_size = POINTSIZE;
-        }
-        else{
-            panel_size = POINTSIZE+2;
-        }
+        //} else {
+        //    panel_size = POINTSIZE + 2;
+        //}
         
         updateLocation();
-        g.setColor(errcolor);
+        
+        /*g.setColor(errcolor);
         g.drawOval(0, 0, panel_size, panel_size);
         g.setColor(color);
-        g.fillOval(0, 0, panel_size, panel_size);
+        g.fillOval(0, 0, panel_size, panel_size);*/
+        
+        if (type == TYPE_PLAIN) {
+        	g.setColor(color);
+        	if (point.isNoise()) {
+        		g.setFont(g.getFont().deriveFont(9.0f));
+        		g.drawChars(new char[] {'x'}, 0, 1, 0, panel_size);
+        	} else {
+		        g.drawOval(0, 0, panel_size, panel_size);
+		        g.setColor(color);
+		        g.fillOval(0, 0, panel_size, panel_size);
+        	}
+        } else if (type == TYPE_CLUSTERED) {
+        	g.setColor(color);
+        	g.drawOval(0, 0, panel_size, panel_size);
+        }
 
         setToolTipText(point.getInfo(x_dim, y_dim));
-
     }
 
             
@@ -143,32 +187,44 @@ public class PointPanel extends JPanel{
     private Color getColor(){
         Color color = null;
 
-        if(getParent() instanceof StreamPanel){
-            StreamPanel sp = (StreamPanel) getParent();
+        if (type == TYPE_PLAIN) {
             ClusterPanel cp = sp.getHighlightedClusterPanel();
-            if(cp !=null){
-                if(cp.getClusterLabel()==point.classValue()){
+            
+            if (cp != null) {
+                if (cp.getClusterLabel() == point.classValue()) {
                     color = Color.BLUE;
                 }
             }
-        }
+            
+            if (color == null) {
+                int alpha = (int)(point.weight() * 200 + 55);
+                float numCl = 10;
+                
+                Color c;
+                if (point.isNoise()) {
+                	c = Color.GRAY;
+                } else {
+                	c = getPointColorbyClass(point, numCl);
+                }
 
-        if(color == null){
-            int alpha = (int)(point.weight()*200+55);
-            float numCl = 10;
-            Color c = getPointColorbyClass((int)point.classValue(), numCl);
-
-            color = new Color(c.getRed(),c.getGreen(),c.getBlue(),alpha);
+                color = new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha);
+            }
+        } else if (type == TYPE_CLUSTERED) {
+        	color = this.col;
         }
+                
         return color;
     }
 
-    public static Color getPointColorbyClass(int classValue, float numClasses){
+    public static Color getPointColorbyClass(DataPoint point, float numClasses){
         Color c;
-        if(classValue != -1)
+        int classValue = (int)point.classValue();
+        
+        if (classValue != point.noiseLabel) {
             c = new Color(Color.HSBtoRGB((float)((classValue+1)/numClasses), 1f, 240f/240));
-        else
+        } else {
             c = Color.GRAY;
+        }
         return c;
     }
 
@@ -213,4 +269,14 @@ public class PointPanel extends JPanel{
         return out.toString();
     }
 
+    public void drawOnCanvas(Graphics2D imageGraphics) {
+    	Point location = getLocation();
+    	
+        if (type == TYPE_PLAIN) {
+	        imageGraphics.drawOval(location.x, location.y, panel_size, panel_size);
+	        imageGraphics.fillOval(location.x, location.y, panel_size, panel_size);
+        } else if (type == TYPE_CLUSTERED) {
+        	imageGraphics.drawOval(location.x, location.y, panel_size, panel_size);
+        }
+    }
 }

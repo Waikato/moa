@@ -1,21 +1,11 @@
-/*
- *    DataPoint.java
- *    Copyright (C) 2010 RWTH Aachen University, Germany
- *    @author Jansen (moa@cs.rwth-aachen.de)
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+/**
+ * [DataPoint.java]
+ * 
+ * @author Timm Jansen (moa@cs.rwth-aachen.de)
+ * @editor Yunsu Kim
+ * 
+ * Last edited: 2013/06/02
+ * Data Management and Data Exploration Group, RWTH Aachen University
  */
 
 package moa.gui.visualization;
@@ -23,12 +13,19 @@ package moa.gui.visualization;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
+
+import weka.core.Attribute;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 
 public class DataPoint extends DenseInstance{
-    protected int timestamp;
+    
+	private static final long serialVersionUID = 1L;
+	
+	protected int timestamp;
     private HashMap<String, String> measure_values;
+    
+    protected int noiseLabel;
 
     public DataPoint(Instance nextInstance, Integer timestamp) {
         super(nextInstance);
@@ -36,6 +33,8 @@ public class DataPoint extends DenseInstance{
         this.timestamp = timestamp;
         measure_values = new HashMap<String, String>();
         
+        Attribute classLabel = dataset().classAttribute();
+        noiseLabel = classLabel.indexOfValue("noise");		// -1 returned if there is no noise
     }
 
     public void updateWeight(int cur_timestamp, double decay_rate){
@@ -113,4 +112,12 @@ public class DataPoint extends DenseInstance{
         return Math.sqrt(distance);
     }
 
+    
+    public boolean isNoise() {
+		return (int)classValue() == noiseLabel;
+	}
+    
+    public double getNoiseLabel() {
+    	return noiseLabel;
+    }
 }

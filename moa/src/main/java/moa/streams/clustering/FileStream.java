@@ -1,21 +1,11 @@
-/*
- *    ClusteringStream.java
- *    Copyright (C) 2010 RWTH Aachen University, Germany
- *    @author Jansen (moa@cs.rwth-aachen.de)
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+/**
+ * [FileStream.java]
+ * 
+ * @author Timm Jansen
+ * @editor Yunsu Kim
+ * 
+ * Last Edited: 2013/06/27
+ * Data Management and Data Exploration Group, RWTH Aachen University
  */
 
 package moa.streams.clustering;
@@ -53,7 +43,7 @@ public class FileStream extends ClusteringStream{
 	private static final long serialVersionUID = 1L;
 
 
-    String defaultfile = "";
+    String defaultfile = "/Users/kokomo40/Dropbox/BT Kim/Datasets/KDDCUP99/KDDCup99.arff";
 
 	public FileOption arffFileOption = new FileOption("arffFile", 'f',
 			"ARFF file to load.", defaultfile, "arff", false);
@@ -229,11 +219,13 @@ public class FileStream extends ClusteringStream{
 				//set adjusted dataset for instance
 				rawInstance.setDataset(filteredDataset);
 
-				if(normalizeOption.isSet() && valuesMinMaxDiff!=null){
+				if (normalizeOption.isSet() && valuesMinMaxDiff != null) {
 					for (int i = 0; i < rawInstance.numAttributes() ; i++) {
-						if(valuesMinMaxDiff.get(i)[2]!=1 && i!=rawInstance.classIndex()){
+						if (valuesMinMaxDiff.get(i)[2] != 1 &&		// Already normalized
+							valuesMinMaxDiff.get(i)[2] != 0 &&		// Max. value is 0 (unable to be normalized)
+							i != rawInstance.classIndex()) {		// Class label is not subject to be normalized
 							double v = rawInstance.value(i);
-							v = (v - valuesMinMaxDiff.get(i)[0])/valuesMinMaxDiff.get(i)[2];
+							v = (v - valuesMinMaxDiff.get(i)[0]) / valuesMinMaxDiff.get(i)[2];
 							rawInstance.setValue(i, v);
 						}
 					}

@@ -1,21 +1,10 @@
-/*
- *    BatchCmd.java
- *    Copyright (C) 2010 RWTH Aachen University, Germany
- *    @author Jansen (moa@cs.rwth-aachen.de)
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+/**
+ * BatchCmd.java
+ * 
+ * @author Timm Jansen (moa@cs.rwth-aachen.de)
+ * @editor Yunsu Kim
+ * 
+ * Last edited: 2013/06/02
  */
 
 package moa.gui;
@@ -28,25 +17,26 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import moa.clusterers.ClusterGenerator;
+
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
-import moa.clusterers.clustream.Clustream;
+import moa.clusterers.ClusterGenerator;
+import moa.clusterers.clustream.WithKmeans;
+import moa.evaluation.EntropyCollection;
 import moa.evaluation.F1;
 import moa.evaluation.General;
 import moa.evaluation.MeasureCollection;
 import moa.evaluation.SSQ;
 import moa.evaluation.SilhouetteCoefficient;
 import moa.evaluation.StatisticalCollection;
-import moa.evaluation.EntropyCollection;
 import moa.gui.visualization.DataPoint;
 import moa.gui.visualization.RunVisualizer;
 import moa.streams.clustering.ClusterEvent;
-import weka.core.Instance;
 import moa.streams.clustering.ClusterEventListener;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
 import weka.core.DenseInstance;
+import weka.core.Instance;
 
 public class BatchCmd implements ClusterEventListener{
 
@@ -97,7 +87,7 @@ public class BatchCmd implements ClusterEventListener{
 	/* TODO read args from command line */
 	public static void main(String[] args){
 		RandomRBFGeneratorEvents stream = new RandomRBFGeneratorEvents();
-		AbstractClusterer clusterer = new Clustream();
+		AbstractClusterer clusterer = new WithKmeans();
 		int measureCollectionType = 0;
 		int amountInstances = 20000;
 		String testfile = "d:\\data\\test.csv";
@@ -218,27 +208,24 @@ public class BatchCmd implements ClusterEventListener{
 	public static void exportCSV(String filepath, ArrayList<ClusterEvent> clusterEvents, MeasureCollection[] measures, int horizon) {
 		PrintWriter out = null;
 		try {
-			if(!filepath.endsWith(".csv"))
-				filepath+=".csv";
-			out = new PrintWriter(new BufferedWriter(new FileWriter(filepath)));
-			String del = ";";
-
-			Iterator<ClusterEvent> eventIt = null;
-			ClusterEvent event = null;
-			if(clusterEvents.size() > 0){
-				eventIt = clusterEvents.iterator();
-				event = eventIt.next();
+			// Prepare an output file			
+			if (!filepath.endsWith(".csv")) {
+				filepath += ".csv";
 			}
+			out = new PrintWriter(new BufferedWriter(new FileWriter(filepath)));
+			
+			
+			String delimiter = ";";
 
+			// Header
 			int numValues = 0;
-			//header
-			out.write("Nr"+del);
-			out.write("Event"+del);
-			for (int m = 0; m < 1; m++) {
+			out.write("Nr" + delimiter);
+			out.write("Event" + delimiter);
+			for (int m = 0; m < 1; m++) {	// TODO: Multiple group of measures
 				for (int i = 0; i < measures.length; i++) {
 					for (int j = 0; j < measures[i].getNumMeasures(); j++) {
-						if(measures[i].isEnabled(j)){
-							out.write(measures[i].getName(j)+del);
+						if (measures[i].isEnabled(j)) {
+							out.write(measures[i].getName(j) + delimiter);
 							numValues = measures[i].getNumberOfValues(j);
 						}
 					}
@@ -246,37 +233,47 @@ public class BatchCmd implements ClusterEventListener{
 			}
 			out.write("\n");
 
-
-			//rows
-			for (int v = 0; v < numValues; v++){
-				//Nr
-				out.write(v+del);
-
-				//events
-				if(event!=null && event.getTimestamp()<=horizon){
-					out.write(event.getType()+del);
-					if(eventIt!= null && eventIt.hasNext()){
-						event=eventIt.next();
-					}
-					else
-						event = null;
+			// Rows
+			Iterator<ClusterEvent> eventIt = null;
+			ClusterEvent event = null;
+			if (clusterEvents != null) {
+				if (clusterEvents.size() > 0) {
+					eventIt = clusterEvents.iterator();
+					event = eventIt.next();
 				}
-				else
-					out.write(del);
+			}
+			
+			for (int v = 0; v < numValues; v++){
+				// Nr
+				out.write(v + delimiter);
 
-				//values
-				for (int m = 0; m < 1; m++) {
+				// Events
+				if (event != null && event.getTimestamp() <= horizon) {
+					out.write(event.getType() + delimiter);
+					if (eventIt != null && eventIt.hasNext()) {
+						event = eventIt.next();
+					} else {
+						event = null;
+					}
+				} else {
+					out.write(delimiter);
+				}
+
+				// Values
+				for (int m = 0; m < 1; m++) {	// TODO: Multiple group of measures
 					for (int i = 0; i < measures.length; i++) {
 						for (int j = 0; j < measures[i].getNumMeasures(); j++) {
-							if(measures[i].isEnabled(j)){
-								out.write(measures[i].getValue(j, v)+del);
+							if (measures[i].isEnabled(j)) {
+								out.write(measures[i].getValue(j, v) + delimiter);
 							}
 						}
 					}
 				}
 				out.write("\n");
 			}
+			
 			out.close();
+			
 		} catch (IOException ex) {
 			Logger.getLogger(RunVisualizer.class.getName()).log(Level.SEVERE, null, ex);
 		} finally {

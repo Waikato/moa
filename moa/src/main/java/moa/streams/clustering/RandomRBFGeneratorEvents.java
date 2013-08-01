@@ -1,30 +1,11 @@
 /**
- *    RandomRBFGenerator.java
-
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
- *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * RandomRBFGeneratorEvents.java
  *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
- */
-
-/**
- * based on RandomRBFGenerator by Richard Kirkby
- * @author Jansen (moa@cs.rwth-aachen.de)
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz) - RandomRBFGenerator 
+ * 		   Timm Jansen (moa@cs.rwth-aachen.de) - Events
+ * @editor Yunsu Kim
  * 
- * 
- * 
+ * Last edited: 2013/06/02
  */
 package moa.streams.clustering;
 
@@ -34,6 +15,7 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Vector;
+
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.core.AutoExpandVector;
@@ -47,7 +29,6 @@ import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 import weka.core.Attribute;
 import weka.core.DenseInstance;
-import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -497,19 +478,21 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
             initKernels();
     }
 	
-    protected void generateHeader() {
-            FastVector attributes = new FastVector();
-            for (int i = 0; i < this.numAttsOption.getValue(); i++) {
-                    attributes.addElement(new Attribute("att" + (i + 1)));
-            }
-            FastVector classLabels = new FastVector();
-            for (int i = 0; i < this.numClusterOption.getValue(); i++) {
-                    classLabels.addElement("class" + (i + 1));
-            }
-            attributes.addElement(new Attribute("class", classLabels));
-            streamHeader = new InstancesHeader(new Instances(
-                            getCLICreationString(InstanceStream.class), attributes, 0));
-            streamHeader.setClassIndex(streamHeader.numAttributes()-1);
+    protected void generateHeader() {	// 2013/06/02: Noise label
+        ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+        for (int i = 0; i < this.numAttsOption.getValue(); i++) {
+            attributes.add(new Attribute("att" + (i + 1)));
+        }
+        
+        ArrayList<String> classLabels = new ArrayList<String>();
+        for (int i = 0; i < this.numClusterOption.getValue(); i++) {
+            classLabels.add("class" + (i + 1));
+        }
+        if (noiseLevelOption.getValue() > 0) classLabels.add("noise");	// The last label = "noise"
+        
+        attributes.add(new Attribute("class", classLabels));
+        streamHeader = new InstancesHeader(new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
+        streamHeader.setClassIndex(streamHeader.numAttributes() - 1);
     }
 
         
@@ -548,7 +531,10 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         Instance inst = new DenseInstance(1.0, values_new);
         inst.setDataset(getHeader());
         if(clusterChoice == -1){
-            inst.setClassValue(-1);
+        	// 2013/06/02 (Yunsu Kim)
+        	// Noise instance has the last class value instead of "-1"
+        	// Preventing ArrayIndexOutOfBoundsException in WriteStreamToARFFFile
+            inst.setClassValue(numClusterOption.getValue());
         }
         else{
             inst.setClassValue(kernels.get(clusterChoice).generator.getId());
@@ -782,7 +768,6 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         String message = kernels.get(id).splitKernel();
 
         return message;
-        //TODO generateHeader(); does that do anything? Ref on dataset in instances?
     }
 
     private String mergeKernels(int steps){

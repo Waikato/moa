@@ -1,41 +1,18 @@
-/*
- *    CMM.java
- *    Copyright (C) 2010 RWTH Aachen University, Germany
- *    @author Jansen (moa@cs.rwth-aachen.de)
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
- */
-
-
 /**
- * Based on: 
- * "An Effective Evaluation Measure for Clustering on Evolving Data Streams"
- * by Kremer H., Kranen P., Jansen T., Seidl T., Bifet A., Holmes G., Pfahringer B.
- * in Proceedings of the 17th ACM SIGKDD international conference on Knowledge discovery and data mining (2011), pp. 868-876
- *
- * http://dl.acm.org/citation.cfm?id=2020555
- *
- *
+ * [CMM.java]
  * 
+ * CMM: Main class
  * 
- * This class calculates error values for the found clustering, based on the "ground truth analysis" 
+ * Reference: Kremer et al., "An Effective Evaluation Measure for Clustering on Evolving Data Streams", KDD, 2011
  * 
+ * @author Timm jansen
+ * Data Management and Data Exploration Group, RWTH Aachen University
  */
+
 package moa.evaluation;
 
 import java.util.ArrayList;
+
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
@@ -44,7 +21,11 @@ import moa.gui.visualization.DataPoint;
 
 
 public class CMM extends MeasureCollection{
-    /**
+    
+	
+	private static final long serialVersionUID = 1L;
+
+	/**
      * found clustering
      */
 	private Clustering clustering;
