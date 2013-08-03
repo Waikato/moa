@@ -277,12 +277,12 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         gridBagConstraints.weighty = 1.0;
         topWrapper.add(panelVisualWrapper, gridBagConstraints);
 
-        panelControl.setMinimumSize(new java.awt.Dimension(600, 52));
-        panelControl.setPreferredSize(new java.awt.Dimension(600, 52));
+        panelControl.setMinimumSize(new java.awt.Dimension(600, 76));
+        panelControl.setPreferredSize(new java.awt.Dimension(2000, 76));
         panelControl.setLayout(new java.awt.GridBagLayout());
 
         buttonRun.setText("Start");
-        buttonRun.setPreferredSize(new java.awt.Dimension(90, 23));
+        buttonRun.setPreferredSize(new java.awt.Dimension(70, 33));
         buttonRun.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 buttonRunMouseClicked(evt);
@@ -300,7 +300,7 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         panelControl.add(buttonRun, gridBagConstraints);
 
         buttonStop.setText("Stop");
-        buttonStop.setPreferredSize(new java.awt.Dimension(90, 23));
+        buttonStop.setPreferredSize(new java.awt.Dimension(70, 33));
         buttonStop.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 buttonStopActionPerformed(evt);
@@ -323,11 +323,12 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(3, 5, 1, 5);
-        panelControl.add(buttonScreenshot, gridBagConstraints);
+        // ### panelControl.add(buttonScreenshot, gridBagConstraints);
 
         speedSlider.setValue(100);
         speedSlider.setBorder(javax.swing.BorderFactory.createTitledBorder("Visualisation Speed"));
-        speedSlider.setPreferredSize(new java.awt.Dimension(120, 48));
+        speedSlider.setMinimumSize(new java.awt.Dimension(150, 68));
+        speedSlider.setPreferredSize(new java.awt.Dimension(160, 68));
         speedSlider.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
                 speedSliderMouseDragged(evt);
@@ -345,7 +346,7 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        panelControl.add(jLabel1, gridBagConstraints);
+        panelControl.add(jLabel1, gridBagConstraints);        
 
         comboX.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Dim 1", "Dim 2", "Dim 3", "Dim 4" }));
         comboX.addActionListener(new java.awt.event.ActionListener() {
@@ -471,13 +472,14 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
 
         numPauseAfterPoints.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         numPauseAfterPoints.setText(Integer.toString(RunVisualizer.initialPauseInterval));
-        numPauseAfterPoints.setPreferredSize(new java.awt.Dimension(70, 20));
+        numPauseAfterPoints.setMinimumSize(new java.awt.Dimension(70, 25));
+        numPauseAfterPoints.setPreferredSize(new java.awt.Dimension(70, 25));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 8;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelControl.add(numPauseAfterPoints, gridBagConstraints);
-
+        
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

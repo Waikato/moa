@@ -50,19 +50,21 @@ public class ClassOption extends AbstractClassOption {
     public String getValueAsCLIString() {
         if ((this.currentValue == null) && (this.nullString != null)) {
             return this.nullString;
+        } else if (this.currentValue == null) {
+            return "None";
         }
         return objectToCLIString(this.currentValue, this.requiredType);
     }
 
     @Override
     public void setValueViaCLIString(String s) {
-        if ((this.nullString != null)
-                && ((s == null) || (s.length() == 0) || s.equals(this.nullString))) {
+        if ((this.nullString != null) && ((s == null) || (s.length() == 0) || s.equals(this.nullString))) {
+            this.currentValue = null;
+        } else if ((s != null) && (s.equalsIgnoreCase("None"))) {
             this.currentValue = null;
         } else {
             try {
-                this.currentValue = cliStringToObject(s, this.requiredType,
-                        null);
+                this.currentValue = cliStringToObject(s, this.requiredType, null);
             } catch (Exception e) {
                 throw new IllegalArgumentException("Problems with option: " + getName(), e);
             }
