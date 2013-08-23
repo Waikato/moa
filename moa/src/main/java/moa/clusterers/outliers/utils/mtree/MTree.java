@@ -14,7 +14,7 @@
  *    
  */
 
-package moa.clusterers.utils.mtree;
+package moa.clusterers.outliers.utils.mtree;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -24,7 +24,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.PriorityQueue;
 import java.util.Set;
-import moa.clusterers.utils.mtree.SplitFunction.SplitResult;
+import moa.clusterers.outliers.utils.mtree.SplitFunction.SplitResult;
+
 
 
 /**

@@ -14,7 +14,7 @@
  *    
  */
 
-package moa.clusterers.utils.mtree;
+package moa.clusterers.outliers.utils.mtree;
 
 /**
  * An object that can calculate the distance between two data objects.

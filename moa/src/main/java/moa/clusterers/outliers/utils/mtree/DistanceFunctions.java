@@ -14,7 +14,7 @@
  *    
  */
 
-package moa.clusterers.utils.mtree;
+package moa.clusterers.outliers.utils.mtree;
 
 import java.util.HashMap;
 import java.util.List;

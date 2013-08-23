@@ -38,6 +38,10 @@ public class AutoExpandVector<T> extends ArrayList<T> implements MOAObject {
     public AutoExpandVector() {
         super(0);
     }
+    
+    public AutoExpandVector(int size) {
+        super(size);
+    }
 
     @Override
     public void add(int pos, T obj) {

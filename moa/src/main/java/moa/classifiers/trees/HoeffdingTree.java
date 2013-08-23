@@ -251,7 +251,7 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
 
         protected InstanceConditionalTest splitTest;
 
-        protected AutoExpandVector<Node> children = new AutoExpandVector<Node>();
+        protected AutoExpandVector<Node> children; // = new AutoExpandVector<Node>();
 
         @Override
         public int calcByteSize() {
@@ -271,10 +271,19 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
         }
 
         public SplitNode(InstanceConditionalTest splitTest,
+                double[] classObservations, int size) {
+            super(classObservations);
+            this.splitTest = splitTest;
+            this.children = new AutoExpandVector<Node>(size);
+        }
+        
+        public SplitNode(InstanceConditionalTest splitTest,
                 double[] classObservations) {
             super(classObservations);
             this.splitTest = splitTest;
+            this.children = new AutoExpandVector<Node>();
         }
+
 
         public int numChildren() {
             return this.children.size();
@@ -379,10 +388,13 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
         protected double weightSeenAtLastSplitEvaluation;
 
         protected AutoExpandVector<AttributeClassObserver> attributeObservers = new AutoExpandVector<AttributeClassObserver>();
+        
+        protected boolean isInitialized;
 
         public ActiveLearningNode(double[] initialClassObservations) {
             super(initialClassObservations);
             this.weightSeenAtLastSplitEvaluation = getWeightSeen();
+            this.isInitialized = false;
         }
 
         @Override
@@ -393,6 +405,10 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
 
         @Override
         public void learnFromInstance(Instance inst, HoeffdingTree ht) {
+            if (this.isInitialized == false) {
+                this.attributeObservers = new AutoExpandVector<AttributeClassObserver>(inst.numAttributes());
+                this.isInitialized = true;
+            }
             this.observedClassDistribution.addToValue((int) inst.classValue(),
                     inst.weight());
             for (int i = 0; i < inst.numAttributes() - 1; i++) {
@@ -583,9 +599,15 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
 
     //Procedure added for Hoeffding Adaptive Trees (ADWIN)
     protected SplitNode newSplitNode(InstanceConditionalTest splitTest,
+            double[] classObservations, int size) {
+        return new SplitNode(splitTest, classObservations, size);
+    }
+    
+    protected SplitNode newSplitNode(InstanceConditionalTest splitTest,
             double[] classObservations) {
         return new SplitNode(splitTest, classObservations);
     }
+    
 
     protected AttributeClassObserver newNominalClassObserver() {
         AttributeClassObserver nominalClassObserver = (AttributeClassObserver) getPreparedClassOption(this.nominalEstimatorOption);
@@ -655,7 +677,7 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
                     deactivateLearningNode(node, parent, parentIndex);
                 } else {
                     SplitNode newSplit = newSplitNode(splitDecision.splitTest,
-                            node.getObservedClassDistribution());
+                            node.getObservedClassDistribution(),splitDecision.numSplits() );
                     for (int i = 0; i < splitDecision.numSplits(); i++) {
                         Node newChild = newLearningNode(splitDecision.resultingClassDistributionFromSplit(i));
                         newSplit.setChild(i, newChild);
