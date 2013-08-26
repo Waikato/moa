@@ -19,21 +19,22 @@
  */
 package moa.streams.generators;
 
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
+import samoa.instances.Attribute;
+import samoa.instances.DenseInstance;
+import moa.core.FastVector;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
+import moa.core.InstanceExample;
 
-import moa.core.InstancesHeader;
+import samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import moa.options.FloatOption;
-import moa.options.IntOption;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
@@ -144,7 +145,7 @@ public class RandomTreeGenerator extends AbstractOptionHandler implements
     }
 
     @Override
-    public Instance nextInstance() {
+    public InstanceExample nextInstance() {
         double[] attVals = new double[this.numNominalsOption.getValue()
                 + this.numNumericsOption.getValue()];
         InstancesHeader header = getHeader();
@@ -156,7 +157,7 @@ public class RandomTreeGenerator extends AbstractOptionHandler implements
         }
         inst.setDataset(header);
         inst.setClassValue(classifyInstance(this.treeRoot, attVals));
-        return inst;
+        return new InstanceExample(inst);
     }
 
     protected int classifyInstance(Node node, double[] attVals) {

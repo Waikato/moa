@@ -29,9 +29,9 @@ import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;
-import moa.options.IntOption;
-import weka.core.DenseInstance;
-import weka.core.Instance;
+import javacliparser.IntOption;
+import samoa.instances.DenseInstance;
+import samoa.instances.Instance;
 
 /** Citation: CluStream: Charu C. Aggarwal, Jiawei Han, Jianyong Wang, Philip S. Yu:
  * A Framework for Clustering Evolving Data Streams. VLDB 2003: 81-92

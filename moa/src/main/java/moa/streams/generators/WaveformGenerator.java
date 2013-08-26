@@ -19,19 +19,20 @@
  */
 package moa.streams.generators;
 
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
+import samoa.instances.Attribute;
+import samoa.instances.DenseInstance;
+import moa.core.FastVector;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 
 import java.util.Random;
+import moa.core.InstanceExample;
 
-import moa.core.InstancesHeader;
+import samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import moa.options.FlagOption;
-import moa.options.IntOption;
+import javacliparser.FlagOption;
+import javacliparser.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
@@ -115,7 +116,7 @@ public class WaveformGenerator extends AbstractOptionHandler implements
     }
 
     @Override
-    public Instance nextInstance() {
+    public InstanceExample nextInstance() {
         InstancesHeader header = getHeader();
         Instance inst = new DenseInstance(header.numAttributes());
         inst.setDataset(header);
@@ -149,7 +150,7 @@ public class WaveformGenerator extends AbstractOptionHandler implements
             }
         }
         inst.setClassValue(waveform);
-        return inst;
+        return new InstanceExample(inst);
     }
 
     @Override

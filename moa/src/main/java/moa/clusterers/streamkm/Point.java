@@ -3,7 +3,7 @@ package moa.clusterers.streamkm;
 import moa.cluster.Cluster;
 import moa.cluster.SphereCluster;
 
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 /**
  *

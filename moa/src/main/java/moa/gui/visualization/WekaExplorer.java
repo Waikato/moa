@@ -36,7 +36,8 @@ import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
-import weka.core.Instances;
+import samoa.instances.Instances;
+import samoa.instances.SamoaToWekaInstanceConverter;
 
 
 public class WekaExplorer {
@@ -73,7 +74,8 @@ public class WekaExplorer {
             jf.setIconImage(icon);
 
             if(instances !=null){
-                m_explorer.getPreprocessPanel().setInstances(instances);
+                SamoaToWekaInstanceConverter instanceConverter = new SamoaToWekaInstanceConverter();
+                m_explorer.getPreprocessPanel().setInstances(instanceConverter.wekaInstances(instances));
             }
 
             Thread memMonitor = new Thread() {

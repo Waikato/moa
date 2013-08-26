@@ -21,9 +21,10 @@ package moa.evaluation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.utils.EvalUtils;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 /**
  * Multilabel Window Classification Performance Evaluator.
@@ -61,7 +62,8 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
      * more info in x)
      */
     @Override
-    public void addResult(Instance x, double[] y) {
+    public void addResult(Example<Instance> example, double[] y) {
+        Instance x = example.getData();
         if (y.length <= 2) {
             System.err.println("y.length too short (" + y.length + "). We've lost track of L at some point, unable to continue");
             System.exit(1);

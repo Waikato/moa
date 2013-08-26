@@ -5,9 +5,9 @@ import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.core.TimingUtils;
 import moa.options.ClassOption;
-import moa.options.FlagOption;
-import moa.options.IntOption;
-import moa.options.Option;
+import javacliparser.FlagOption;
+import javacliparser.IntOption;
+import javacliparser.Option;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
@@ -52,7 +52,7 @@ public class SimpleClusterTest extends TestCase {
             System.out.println();
             System.out.println("No task specified.");
         } else {
-            if (moa.DoTask.isJavaVersionOK() == false || moa.DoTask.isWekaVersionOK() == false) {
+            if (moa.DoTask.isJavaVersionOK() == false || moa.core.WekaUtils.isWekaVersionOK() == false) {
                 return;
             }
             // create standard options

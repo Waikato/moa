@@ -19,20 +19,21 @@
  */
 package moa.streams.generators;
 
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
+import samoa.instances.Attribute;
+import samoa.instances.DenseInstance;
+import moa.core.FastVector;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 
 import java.io.Serializable;
 import java.util.Random;
+import moa.core.InstanceExample;
 
-import moa.core.InstancesHeader;
+import samoa.instances.InstancesHeader;
 import moa.core.MiscUtils;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import moa.options.IntOption;
+import javacliparser.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
@@ -122,7 +123,7 @@ public class RandomRBFGenerator extends AbstractOptionHandler implements
     }
 
     @Override
-    public Instance nextInstance() {
+    public InstanceExample nextInstance() {
         Centroid centroid = this.centroids[MiscUtils.chooseRandomIndexBasedOnWeights(this.centroidWeights,
                 this.instanceRandom)];
         int numAtts = this.numAttsOption.getValue();
@@ -144,7 +145,7 @@ public class RandomRBFGenerator extends AbstractOptionHandler implements
         Instance inst = new DenseInstance(1.0, attVals);
         inst.setDataset(getHeader());
         inst.setClassValue(centroid.classLabel);
-        return inst;
+        return new InstanceExample(inst);
     }
 
     protected void generateHeader() {

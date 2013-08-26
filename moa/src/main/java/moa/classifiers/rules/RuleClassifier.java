@@ -20,9 +20,17 @@
 
 package moa.classifiers.rules;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.util.*; 
+import java.util.*;
+import javacliparser.FlagOption; 
 
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
+import javacliparser.MultiChoiceOption;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.core.attributeclassobservers.*;
 import moa.classifiers.core.attributeclassobservers.BinaryTreeNumericAttributeClassObserver.Node;
@@ -30,15 +38,8 @@ import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
-import moa.options.FlagOption;
-import moa.options.FloatOption;
-import moa.options.IntOption;
-import moa.options.MultiChoiceOption;
-//import samoa.instances.Instance;
-import weka.core.Instance;
-import weka.core.Utils;
-//import moa.core.Utils;
-import java.io.*;
+import moa.core.Utils;
+import samoa.instances.Instance;
 
 
 

@@ -20,11 +20,9 @@
 package moa.options;
 
 import java.io.File;
-
-import javax.swing.JComponent;
-
+import javacliparser.AbstractOption;
+import javacliparser.SerializeUtils;
 import moa.core.ObjectRepository;
-import moa.core.SerializeUtils;
 import moa.tasks.Task;
 import moa.tasks.TaskMonitor;
 
@@ -218,8 +216,8 @@ public abstract class AbstractClassOption extends AbstractOption {
     @Override
     public abstract void setValueViaCLIString(String s);
 
-    @Override
-    public abstract JComponent getEditComponent();
+    //@Override
+    //public abstract JComponent getEditComponent();
 
     /**
      * Gets the class name without its package name prefix.

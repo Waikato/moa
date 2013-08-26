@@ -19,10 +19,15 @@
  */
 package moa.classifiers.meta;
 
+import javacliparser.IntOption;
+import javacliparser.FloatOption;
+import javacliparser.FlagOption;
+import moa.options.ClassOption;
+import javacliparser.MultiChoiceOption;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 import moa.core.DoubleVector;
 import moa.core.Measurement;

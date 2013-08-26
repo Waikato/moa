@@ -24,13 +24,13 @@ import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.core.TimingUtils;
 import moa.options.ClassOption;
-import moa.options.FlagOption;
-import moa.options.IntOption;
-import moa.options.Option;
+import javacliparser.FlagOption;
+import javacliparser.IntOption;
+import javacliparser.Option;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
-import weka.core.Version;
+import moa.core.WekaUtils;
 
 /**
  * Class for running a MOA task from the command line.
@@ -68,27 +68,7 @@ public class DoTask {
         return isJavaVersionOK;
     }
 
-    /**
-     * Checks if the Weka version is recent enough to run MOA.
-     * For example, if the Weka version is not recent, there may be problems
-     * due to the fact that <code>Instance</code> was a class before 3.7.1 and
-     * now is an interface.
-     *
-     * @return true if the Weka version is recent.
-     */
-    public static boolean isWekaVersionOK() {
-        Version version = new Version();
-        if (version.isOlder("3.7.1")) {
-            System.err.println();
-            System.err.println(Globals.getWorkbenchInfoString());
-            System.err.println();
-            System.err.print("Weka 3.7.1 or higher is required to run MOA. ");
-            System.err.println("Weka version " + Version.VERSION + " found");
-            return false;
-        } else {
-            return true;
-        }
-    }
+   
 
     /**
      * Main method for running tasks from the command line.
@@ -103,7 +83,7 @@ public class DoTask {
                 System.err.println();
                 System.err.println("No task specified.");
             } else {
-                if (isJavaVersionOK() == false || isWekaVersionOK() == false) {
+                if (isJavaVersionOK() == false || WekaUtils.isWekaVersionOK() == false) {
                     return;
                 }
                 // create standard options

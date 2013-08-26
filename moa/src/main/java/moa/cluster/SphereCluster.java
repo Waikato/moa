@@ -23,8 +23,8 @@ package moa.cluster;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import weka.core.DenseInstance;
-import weka.core.Instance;
+import samoa.instances.DenseInstance;
+import samoa.instances.Instance;
 
 /**
  * A simple implementation of the <code>Cluster</code> interface representing

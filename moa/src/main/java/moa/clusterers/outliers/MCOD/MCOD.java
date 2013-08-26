@@ -26,9 +26,10 @@ import java.util.Vector;
 import moa.clusterers.outliers.MCOD.ISBIndex.ISBNode;
 import moa.clusterers.outliers.MCOD.ISBIndex.ISBNode.NodeType;
 import moa.clusterers.outliers.MCOD.ISBIndex.ISBSearchResult;
-import moa.options.FloatOption;
-import moa.options.IntOption;
-import weka.core.Instance;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
+import samoa.instances.Instance;
+
 
 //The algorithm is described in 
 // M. Kontaki, A. Gounaris, A. N. Papadopoulos, K. Tsichlas, and Y. Manolopoulos. 

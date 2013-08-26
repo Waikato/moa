@@ -25,17 +25,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-
+import javacliparser.FileOption;
+import javacliparser.IntOption;
 import moa.core.InputStreamProgressMonitor;
-import moa.core.InstancesHeader;
+import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import moa.options.FileOption;
-import moa.options.IntOption;
 import moa.tasks.TaskMonitor;
-
-import weka.core.Instance;
-import weka.core.Instances;
+import samoa.instances.Instances;
+import samoa.instances.InstancesHeader;
 
 /**
  * Stream reader of ARFF files.
@@ -68,7 +66,7 @@ public class ArffFileStream extends AbstractOptionHandler implements
 
     protected boolean hitEndOfFile;
 
-    protected Instance lastInstanceRead;
+    protected InstanceExample lastInstanceRead;
 
     protected int numInstancesRead;
 
@@ -109,8 +107,8 @@ public class ArffFileStream extends AbstractOptionHandler implements
     }
 
     @Override
-    public Instance nextInstance() {
-        Instance prevInstance = this.lastInstanceRead;
+    public InstanceExample nextInstance() {
+        InstanceExample prevInstance = this.lastInstanceRead;
         this.hitEndOfFile = !readNextInstanceFromFile();
         return prevInstance;
     }
@@ -131,7 +129,7 @@ public class ArffFileStream extends AbstractOptionHandler implements
                     fileStream);
             this.fileReader = new BufferedReader(new InputStreamReader(
                     this.fileProgressMonitor));
-            this.instances = new Instances(this.fileReader, 1);
+            this.instances = new Instances(this.fileReader, 1, this.classIndexOption.getValue());
             if (this.classIndexOption.getValue() < 0) {
                 this.instances.setClassIndex(this.instances.numAttributes() - 1);
             } else if (this.classIndexOption.getValue() > 0) {
@@ -148,7 +146,7 @@ public class ArffFileStream extends AbstractOptionHandler implements
     protected boolean readNextInstanceFromFile() {
         try {
             if (this.instances.readInstance(this.fileReader)) {
-                this.lastInstanceRead = this.instances.instance(0);
+                this.lastInstanceRead = new InstanceExample(this.instances.instance(0));
                 this.instances.delete(); // keep instances clean
                 this.numInstancesRead++;
                 return true;

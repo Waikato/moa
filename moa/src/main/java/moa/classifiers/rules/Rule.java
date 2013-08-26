@@ -37,9 +37,7 @@ import moa.AbstractMOAObject;
 import moa.classifiers.core.attributeclassobservers.*;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
-import weka.core.Instance;
-//import samoa.instances.Instance;
-//import moa.core.Utils;
+import samoa.instances.Instance;
 
 public class Rule extends AbstractMOAObject{
 	

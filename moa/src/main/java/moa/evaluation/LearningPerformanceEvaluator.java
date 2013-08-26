@@ -20,22 +20,40 @@
 package moa.evaluation;
 
 import moa.MOAObject;
+import moa.core.Example;
 import moa.core.Measurement;
 
 /**
  * Interface implemented by learner evaluators to monitor
  * the results of the learning process.
  *
- * @author Albert Bifet (abifet@cs.waikato.ac.nz)
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public interface LearningPerformanceEvaluator extends MOAObject {
+public interface LearningPerformanceEvaluator<E extends Example> extends MOAObject {
 
+    /**
+     * Resets this evaluator. It must be similar to
+     * starting a new evaluator from scratch.
+     *
+     */
 	public void reset();
 
-	public void addLearningAttempt(int trueClass, double[] classVotes,
-			double weight);
+   /**
+     * Adds a learning result to this evaluator.
+     *
+     * @param example the example to be classified
+     * @param classVotes an array containing the estimated membership
+     * probabilities of the test instance in each class
+     * @return an array of measurements monitored in this evaluator
+     */
+    public void addResult(E example, double[] classVotes);
 
+    /**
+     * Gets the current measurements monitored by this evaluator.
+     *
+     * @return an array of measurements monitored by this evaluator
+     */
 	public Measurement[] getPerformanceMeasurements();
 
 }

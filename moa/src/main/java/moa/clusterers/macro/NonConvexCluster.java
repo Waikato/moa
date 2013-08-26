@@ -28,7 +28,7 @@ import java.util.Vector;
 
 import moa.cluster.CFCluster;
 import moa.cluster.Clustering;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 public class NonConvexCluster extends CFCluster implements IDenseMacroCluster {
 

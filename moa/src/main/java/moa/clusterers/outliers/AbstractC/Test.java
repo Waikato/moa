@@ -22,7 +22,7 @@
 package moa.clusterers.outliers.AbstractC;
 
 import moa.streams.clustering.RandomRBFGeneratorEvents;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 public class Test {    
     public static void main(String[] args) throws Exception 
@@ -46,7 +46,7 @@ public class Test {
         int numberSamples = 0;  
         int w = myOutlierDetector.windowSizeOption.getValue();      
         while (stream.hasMoreInstances() && (numberSamples < numInstances)) {
-            Instance newInst = stream.nextInstance();
+            Instance newInst = stream.nextInstance().getData();
             myOutlierDetector.processNewInstanceImpl(newInst);            
             numberSamples++;
             if (numberSamples % 100 == 0) {

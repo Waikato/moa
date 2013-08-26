@@ -22,9 +22,9 @@ package moa.classifiers.multilabel.meta;
 import moa.classifiers.Classifier;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.classifiers.meta.OzaBagAdwin;
-import moa.core.InstancesHeader;
+import samoa.instances.InstancesHeader;
 import moa.core.MiscUtils;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 /**
  * MLOzaBagAdwin: Changes the way to compute accuracy as an input for Adwin

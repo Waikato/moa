@@ -22,10 +22,9 @@ package moa.classifiers.rules;
 
 import java.util.ArrayList;
 import java.util.Collections;
-//import samoa.instances.Instance;
-import weka.core.Instance;
+import javacliparser.IntOption;
 import moa.classifiers.bayes.NaiveBayes;
-import moa.options.IntOption;
+import samoa.instances.Instance;
 
 /**
  * This classifier learn ordered and unordered rule set from data stream with naive Bayes learners.

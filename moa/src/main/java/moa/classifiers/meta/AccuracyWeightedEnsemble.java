@@ -26,12 +26,12 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
-import moa.options.FloatOption;
-import moa.options.IntOption;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.Utils;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
+import moa.core.Utils;
 
 /**
  * The Accuracy Weighted Ensemble classifier as proposed by Wang et al. in

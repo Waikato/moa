@@ -25,14 +25,14 @@ import java.util.List;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 
-import weka.core.Instance;
-import weka.core.Utils;
+import samoa.instances.Instance;
+import moa.core.Utils;
 
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.options.ClassOption;
-import moa.options.FloatOption;
-import moa.options.MultiChoiceOption;
+import javacliparser.FloatOption;
+import javacliparser.MultiChoiceOption;
 
 /**
  * Active learning setting for evolving data streams.

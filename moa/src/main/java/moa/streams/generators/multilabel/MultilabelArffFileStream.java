@@ -20,9 +20,9 @@
 package moa.streams.generators.multilabel;
 
 import moa.streams.ArffFileStream;
-import moa.core.InstancesHeader;
+import samoa.instances.InstancesHeader;
 import moa.core.MultilabelInstancesHeader;
-import moa.options.IntOption;
+import javacliparser.IntOption;
 
 /**
  * Stream reader for ARFF files of multilabel data.

@@ -21,9 +21,10 @@
 package moa.evaluation;
 
 import moa.AbstractMOAObject;
+import moa.core.Example;
 import moa.core.Measurement;
-import weka.core.Utils;
-import weka.core.Instance;
+import moa.core.Utils;
+import samoa.instances.Instance;
 
 /**
  * Classification evaluator that performs basic incremental evaluation.
@@ -33,7 +34,7 @@ import weka.core.Instance;
  * @version $Revision: 7 $
  */
 public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
-        implements ClassificationPerformanceEvaluator {
+        implements LearningPerformanceEvaluator<Example<Instance>> {
 
     private static final long serialVersionUID = 1L;
 
@@ -65,7 +66,8 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
     }
 
     @Override
-    public void addResult(Instance inst, double[] classVotes) {
+    public void addResult(Example<Instance> example, double[] classVotes) {
+        Instance inst = example.getData();
         double weight = inst.weight();
         int trueClass = (int) inst.classValue();
         if (weight > 0.0) {

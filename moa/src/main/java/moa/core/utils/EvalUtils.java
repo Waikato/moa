@@ -22,8 +22,8 @@ package moa.core.utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import weka.core.Instance;
-import weka.core.Utils;
+import samoa.instances.Instance;
+import moa.core.Utils;
 
 /**
  * Evaluation Utilities.

@@ -27,7 +27,7 @@ import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 /**
  * Naive Bayes incremental learner.

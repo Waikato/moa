@@ -20,7 +20,7 @@
 package moa.clusterers.denstream;
 
 import moa.cluster.CFCluster;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 public class MicroCluster extends CFCluster {
 

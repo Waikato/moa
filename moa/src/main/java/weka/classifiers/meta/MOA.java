@@ -37,6 +37,7 @@ import java.util.Vector;
 import moa.classifiers.Classifier;
 import moa.classifiers.trees.DecisionStump;
 import moa.options.ClassOption;
+import samoa.instances.WekaToSamoaInstanceConverter;
 
 /**
  <!-- globalinfo-start -->
@@ -78,6 +79,9 @@ public class MOA
 			Classifier.class, m_ActualClassifier.getClass().getName().replace("moa.classifiers.", ""),
 			m_ActualClassifier.getClass().getName());
 
+        
+        protected WekaToSamoaInstanceConverter instanceConverter;
+        
   /**
    * Returns a string describing the classifier.
    *
@@ -229,6 +233,9 @@ public class MOA
    * generated successfully
    */
   public void buildClassifier(Instances data) throws Exception {
+
+
+        this.instanceConverter = new WekaToSamoaInstanceConverter();
   	getCapabilities().testWithFail(data);
 
   	data = new Instances(data);
@@ -237,6 +244,7 @@ public class MOA
   	m_ActualClassifier.resetLearning();
   	for (int i = 0; i < data.numInstances(); i++)
   		updateClassifier(data.instance(i));
+        
   }
 
   /**
@@ -247,7 +255,7 @@ public class MOA
    * successfully
    */
   public void updateClassifier(Instance instance) throws Exception {
-		m_ActualClassifier.trainOnInstance(instance);
+		m_ActualClassifier.trainOnInstance(instanceConverter.samoaInstance(instance));
   }
 
   /**
@@ -267,7 +275,7 @@ public class MOA
   public double[] distributionForInstance(Instance instance) throws Exception {
   	double[]	result;
 
-  	result = m_ActualClassifier.getVotesForInstance(instance);
+  	result = m_ActualClassifier.getVotesForInstance(instanceConverter.samoaInstance(instance));
         // ensure that the array has as many elements as there are
         // class values!
         if (result.length < instance.numClasses()) {

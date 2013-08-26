@@ -20,8 +20,8 @@
 package moa.classifiers.trees;
 
 import moa.classifiers.bayes.NaiveBayes;
-import weka.core.Instance;
-import weka.core.Utils;
+import moa.core.Utils;
+import samoa.instances.Instance;
 
 /**
  * Adaptive decision option tree for streaming data with adaptive Naive

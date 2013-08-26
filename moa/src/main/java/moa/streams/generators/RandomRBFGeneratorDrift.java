@@ -20,10 +20,11 @@
 package moa.streams.generators;
 
 import java.util.Random;
+import moa.core.InstanceExample;
 
-import moa.options.IntOption;
-import moa.options.FloatOption;
-import weka.core.Instance;
+import javacliparser.IntOption;
+import javacliparser.FloatOption;
+import samoa.instances.Instance;
 
 /**
  * Stream generator for a random radial basis function stream with drift.
@@ -49,7 +50,7 @@ public class RandomRBFGeneratorDrift extends RandomRBFGenerator {
     protected double[][] speedCentroids;
 
     @Override
-    public Instance nextInstance() {
+    public InstanceExample nextInstance() {
         //Update Centroids with drift
         int len = this.numDriftCentroidsOption.getValue();
         if (len > this.centroids.length) {

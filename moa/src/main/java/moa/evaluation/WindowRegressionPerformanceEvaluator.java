@@ -19,12 +19,13 @@
  */
 package moa.evaluation;
 
+import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import moa.options.IntOption;
+import javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 /**
  * Regression evaluator that updates evaluation results using a sliding window.
@@ -33,7 +34,7 @@ import weka.core.Instance;
  * @version $Revision: 7 $
  */
 public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
-        implements ClassificationPerformanceEvaluator {
+        implements LearningPerformanceEvaluator<Example<Instance>> {
 
     private static final long serialVersionUID = 1L;
 
@@ -101,7 +102,8 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
     }
 
     @Override
-    public void addResult(Instance inst, double[] prediction) {
+    public void addResult(Example<Instance> example, double[] prediction) {
+        Instance inst = example.getData();
         double weight = inst.weight();
         if (weight > 0.0) {
             if (TotalweightObserved == 0) {

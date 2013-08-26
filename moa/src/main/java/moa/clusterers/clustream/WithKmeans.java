@@ -38,9 +38,9 @@ import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;
-import moa.options.IntOption;
-import weka.core.DenseInstance;
-import weka.core.Instance;
+import javacliparser.IntOption;
+import samoa.instances.DenseInstance;
+import samoa.instances.Instance;
 
 public class WithKmeans extends AbstractClusterer {
 	

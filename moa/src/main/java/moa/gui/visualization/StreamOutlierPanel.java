@@ -268,9 +268,10 @@ public class StreamOutlierPanel extends JPanel implements ComponentListener {
 
     private void drawOutliers(JPanel layer, Vector<Outlier> outliers, Color color){        
         layer.removeAll();
-        for (Outlier outlier : outliers) {            
-            double[] center = new double[outlier.inst.numValues() - 1]; // last value is the class
-            for (int i = 0; i < outlier.inst.numValues() - 1; i++) {
+        for (Outlier outlier : outliers) {  
+            int length = outlier.inst.numValues(); // -1
+            double[] center = new double[length]; // last value is the class
+            for (int i = 0; i < length; i++) {
                 center[i] = outlier.inst.value(i);                
             }            
             SphereCluster cluster = new SphereCluster(center, 0);                

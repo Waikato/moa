@@ -19,9 +19,8 @@
  */
 package moa.streams;
 
-import moa.MOAObject;
-import moa.core.InstancesHeader;
-import weka.core.Instance;
+import moa.core.Example;
+import samoa.instances.Instance;
 
 /**
  * Interface representing a data stream of instances. 
@@ -29,50 +28,9 @@ import weka.core.Instance;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $ 
  */
-public interface InstanceStream extends MOAObject {
+public interface InstanceStream extends ExampleStream<Example<Instance>> {
 
-    /**
-     * Gets the header of this stream.
-     * This is useful to know attributes and classes.
-     * InstancesHeader is an extension of weka.Instances.
-     *
-     * @return the header of this stream
-     */
-    public InstancesHeader getHeader();
 
-    /**
-     * Gets the estimated number of remaining instances in this stream
-     *
-     * @return the estimated number of instances to get from this stream
-     */
-    public long estimatedRemainingInstances();
 
-    /**
-     * Gets whether this stream has more instances to output.
-     * This is useful when reading streams from files.
-     *
-     * @return true if this stream has more instances to output
-     */
-    public boolean hasMoreInstances();
 
-    /**
-     * Gets the next instance from this stream.
-     *
-     * @return the next instance of this stream
-     */
-    public Instance nextInstance();
-
-    /**
-     * Gets whether this stream can restart.
-     *
-     * @return true if this stream can restart
-     */
-    public boolean isRestartable();
-
-    /**
-     * Restarts this stream. It must be similar to
-     * starting a new stream from scratch.
-     *
-     */
-    public void restart();
 }

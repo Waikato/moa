@@ -20,7 +20,7 @@
  */
 package moa.classifiers.core.splitcriteria;
 
-import weka.core.Utils;
+import moa.core.Utils;
 
 /**
  * Class for computing splitting criteria using information gain with respect to

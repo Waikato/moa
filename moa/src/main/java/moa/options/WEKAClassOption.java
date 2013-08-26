@@ -20,15 +20,16 @@
  */
 package moa.options;
 
+import javacliparser.Option;
 import weka.core.Utils;
 
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import javax.swing.JComponent;
+//import javax.swing.JComponent;
 
-import moa.gui.WEKAClassOptionEditComponent;
+//import moa.gui.WEKAClassOptionEditComponent;
 import moa.tasks.Task;
 
 /**
@@ -185,8 +186,8 @@ public class WEKAClassOption extends AbstractClassOption {
 		return classInstance;
 	}
 
-	@Override
-	public JComponent getEditComponent() {
-		return new WEKAClassOptionEditComponent(this);
-	}
+	//@Override
+	//public JComponent getEditComponent() {
+	//	return new WEKAClassOptionEditComponent(this);
+	//}
 }

@@ -21,8 +21,9 @@ package moa.classifiers.functions;
 
 import moa.classifiers.AbstractClassifier;
 import moa.core.Measurement;
-import moa.options.FloatOption;
-import weka.core.Instance;
+import moa.core.Utils;
+import javacliparser.FloatOption;
+import samoa.instances.Instance;
 
 /**
  * Single perceptron classifier.
@@ -130,7 +131,7 @@ public class Perceptron extends AbstractClassifier {
                 votes[i] = prediction(inst, i);
             }
             try {
-                weka.core.Utils.normalize(votes);
+                Utils.normalize(votes);
             } catch (Exception e) {
                 // ignore all zero votes error
             }

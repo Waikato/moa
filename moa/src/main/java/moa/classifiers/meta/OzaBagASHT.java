@@ -23,10 +23,10 @@ import moa.classifiers.Classifier;
 import moa.classifiers.trees.ASHoeffdingTree;
 import moa.core.DoubleVector;
 import moa.core.MiscUtils;
-import moa.options.IntOption;
-import moa.options.FlagOption;
-import weka.core.Instance;
-import weka.core.Utils;
+import javacliparser.IntOption;
+import javacliparser.FlagOption;
+import samoa.instances.Instance;
+import moa.core.Utils;
 
 /**
  * Bagging using trees of different size.

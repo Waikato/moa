@@ -35,17 +35,18 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import moa.core.InputStreamProgressMonitor;
-import moa.core.InstancesHeader;
+import moa.core.InstanceExample;
+import samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
-import moa.options.FileOption;
-import moa.options.FlagOption;
-import moa.options.IntOption;
-import moa.options.ListOption;
-import moa.options.Option;
+import javacliparser.FileOption;
+import javacliparser.FlagOption;
+import javacliparser.IntOption;
+import javacliparser.ListOption;
+import javacliparser.Option;
 import moa.tasks.TaskMonitor;
 
-import weka.core.Instance;
-import weka.core.Instances;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 
 public class FileStream extends ClusteringStream{
 
@@ -95,14 +96,16 @@ public class FileStream extends ClusteringStream{
 
 	protected boolean hitEndOfFile;
 
-	protected Instance lastInstanceRead;
+    protected InstanceExample lastInstanceRead;
 
 	protected int numInstancesRead;
 
 	protected InputStreamProgressMonitor fileProgressMonitor;
 	
 	private Integer[] removeAttributes = null;
+    
 	private Instances filteredDataset = null;
+    
 	private ArrayList<Double[]> valuesMinMaxDiff = null;
 
 	
@@ -134,8 +137,8 @@ public class FileStream extends ClusteringStream{
 		return !this.hitEndOfFile;
 	}
 
-	public Instance nextInstance() {
-		Instance prevInstance = this.lastInstanceRead;
+    public InstanceExample nextInstance() {
+        InstanceExample prevInstance = this.lastInstanceRead;
 		this.hitEndOfFile = !readNextInstanceFromFile();
 		return prevInstance;
 	}
@@ -152,7 +155,7 @@ public class FileStream extends ClusteringStream{
 			InputStream fileStream = new FileInputStream(arffFileOption.getFile());
 			fileProgressMonitor = new InputStreamProgressMonitor(fileStream);
 			fileReader = new BufferedReader(new InputStreamReader(fileProgressMonitor));
-			instances = new Instances(fileReader, 1);
+            instances = new Instances(fileReader, 1, this.classIndexOption.getValue());
 			if (classIndexOption.getValue() < 0) {
 				instances.setClassIndex(instances.numAttributes() - 1);
 			} else if (classIndexOption.getValue() > 0) {
@@ -245,7 +248,7 @@ public class FileStream extends ClusteringStream{
 					}
 				}
 				
-				this.lastInstanceRead = rawInstance;
+                this.lastInstanceRead = new InstanceExample(rawInstance);
 				this.instances.delete(); // keep instances clean
 				this.numInstancesRead++;
 				return true;
@@ -275,7 +278,7 @@ public class FileStream extends ClusteringStream{
 			InputStream fileStream = new FileInputStream(arffFileOption.getFile());
 			InputStreamProgressMonitor fileProgressMonitor = new InputStreamProgressMonitor(fileStream);
 			Reader fileReader = new BufferedReader(new InputStreamReader(fileProgressMonitor));
-			Instances instances = new Instances(fileReader, 1);
+            Instances instances = new Instances(fileReader, 1, this.classIndexOption.getValue());
 
 			valuesMinMaxDiff = new ArrayList<Double[]>();
 			for (int i = 0; i < instances.numAttributes()-ignoredAttributes.size(); i++) {

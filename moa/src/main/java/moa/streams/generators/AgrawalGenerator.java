@@ -19,20 +19,23 @@
  */
 package moa.streams.generators;
 
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
+import samoa.instances.Attribute;
+import samoa.instances.DenseInstance;
+import moa.core.FastVector;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 
 import java.util.Random;
+import moa.core.Example;
+import moa.core.InstanceExample;
 
-import moa.core.InstancesHeader;
+import samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import moa.options.FlagOption;
-import moa.options.FloatOption;
-import moa.options.IntOption;
+import javacliparser.FlagOption;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
+import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
@@ -330,7 +333,7 @@ public class AgrawalGenerator extends AbstractOptionHandler implements
     }
 
     @Override
-    public Instance nextInstance() {
+    public InstanceExample nextInstance() {
         double salary = 0, commission = 0, hvalue = 0, loan = 0;
         int age = 0, elevel = 0, car = 0, zipcode = 0, hyears = 0, group = 0;
         boolean desiredClassFound = false;
@@ -389,7 +392,7 @@ public class AgrawalGenerator extends AbstractOptionHandler implements
         inst.setValue(8, loan);
         inst.setDataset(header);
         inst.setClassValue(group);
-        return inst;
+        return new InstanceExample(inst);
     }
 
     protected double perturbValue(double val, double min, double max) {

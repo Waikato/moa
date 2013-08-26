@@ -25,7 +25,7 @@ import moa.classifiers.core.conditionaltests.NominalAttributeMultiwayTest;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
-import weka.core.Utils;
+import moa.core.Utils;
 
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;

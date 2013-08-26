@@ -20,15 +20,15 @@
 
 package moa.classifiers.bayes;
 
-import moa.core.Measurement;
-import moa.core.StringUtils;
-import moa.options.FloatOption;
-
-import weka.core.*;
-
-import java.util.*;
+import java.util.Arrays;
+import javacliparser.FloatOption;
 import moa.classifiers.AbstractClassifier;
 import moa.core.DoubleVector;
+import moa.core.Measurement;
+import moa.core.StringUtils;
+import moa.core.Utils;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 
 /**
  * <!-- globalinfo-start --> Class for building and using a multinomial Naive
@@ -66,7 +66,7 @@ public class NaiveBayesMultinomial extends AbstractClassifier {
 
     @Override
     public String getPurposeString() {
-        return "AMultinomial Naive Bayes classifier: performs classic bayesian prediction while making naive assumption that all inputs are independent.";
+        return "Multinomial Naive Bayes classifier: performs classic bayesian prediction while making naive assumption that all inputs are independent.";
     }
 
     /**
@@ -129,7 +129,7 @@ public class NaiveBayesMultinomial extends AbstractClassifier {
         }
         // Update classifier
         int classIndex = inst.classIndex();
-        int classValue = (int) inst.value(classIndex);
+        int classValue = (int) inst.classValue();//value(classIndex);
 
         double w = inst.weight();
         m_probOfClass[classValue] += w;

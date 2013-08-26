@@ -21,9 +21,9 @@ package moa.classifiers.multilabel;
 
 import java.util.HashMap;
 import moa.classifiers.AbstractClassifier;
-import moa.core.InstancesHeader;
+import samoa.instances.InstancesHeader;
 import moa.core.Measurement;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 /**
  * Majority Labelset classifier. Each labelset combination of relevances, e.g.

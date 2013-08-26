@@ -26,12 +26,12 @@ import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.core.Measurement;
 import moa.core.StringUtils;
-import moa.options.FloatOption;
-import moa.options.IntOption;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
+import moa.core.FastVector;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 import weka.core.AttributeStats;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
 import weka.experiment.Stats;
 import weka.filters.unsupervised.attribute.Add;
 

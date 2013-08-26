@@ -19,21 +19,20 @@
  */
 package moa.streams.generators;
 
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
-
 import java.util.Random;
-
-import moa.core.InstancesHeader;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
+import moa.core.FastVector;
+import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import moa.options.FloatOption;
-import moa.options.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
+import samoa.instances.Attribute;
+import samoa.instances.DenseInstance;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
+import samoa.instances.InstancesHeader;
 
 /**
  * Stream generator for Hyperplane data stream.
@@ -128,7 +127,7 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
     }
 
     @Override
-    public Instance nextInstance() {
+    public InstanceExample nextInstance() {
 
         int numAtts = this.numAttsOption.getValue();
         double[] attVals = new double[numAtts + 1];
@@ -154,7 +153,7 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
         inst.setDataset(getHeader());
         inst.setClassValue(classLabel);
         addDrift();
-        return inst;
+        return new InstanceExample(inst);
     }
 
     private void addDrift() {

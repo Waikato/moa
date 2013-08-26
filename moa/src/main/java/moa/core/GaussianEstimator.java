@@ -104,7 +104,7 @@ public class GaussianEstimator extends AbstractMOAObject {
             double value) {
         double equalToWeight = probabilityDensity(value) * this.weightSum;
         double stdDev = getStdDev();
-        double lessThanWeight = stdDev > 0.0 ? weka.core.Statistics.normalProbability((value - getMean()) / stdDev)
+        double lessThanWeight = stdDev > 0.0 ? moa.core.Statistics.normalProbability((value - getMean()) / stdDev)
                 * this.weightSum - equalToWeight
                 : (value < getMean() ? this.weightSum - equalToWeight : 0.0);
         double greaterThanWeight = this.weightSum - equalToWeight

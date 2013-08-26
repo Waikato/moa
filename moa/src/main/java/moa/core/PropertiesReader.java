@@ -21,10 +21,9 @@
  */
 package moa.core;
 
-import weka.core.Utils;
-import java.util.Properties;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Properties;
 
 /**
  * Class implementing some properties reader utility methods.

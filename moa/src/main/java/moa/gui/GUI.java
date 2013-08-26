@@ -26,6 +26,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import moa.DoTask;
+import moa.core.WekaUtils;
 
 /**
  * The main class for the MOA gui. Lets the user configure
@@ -71,7 +72,7 @@ public class GUI extends JPanel {
 
     public static void main(String[] args) {
         try {
-            if (DoTask.isJavaVersionOK() == false || DoTask.isWekaVersionOK() == false) {
+            if (DoTask.isJavaVersionOK() == false || WekaUtils.isWekaVersionOK() == false) {
                 return;
             }
             javax.swing.SwingUtilities.invokeLater(new Runnable() {

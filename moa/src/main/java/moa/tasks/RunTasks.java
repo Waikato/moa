@@ -22,8 +22,8 @@ package moa.tasks;
 
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
-import moa.options.FloatOption;
-import moa.options.StringOption;
+import javacliparser.FloatOption;
+import javacliparser.StringOption;
 
 /**
  * Task for running several experiments modifying values of parameters.

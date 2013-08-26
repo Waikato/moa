@@ -20,9 +20,9 @@
 package moa.classifiers.core.splitcriteria;
 
 import moa.core.ObjectRepository;
+import moa.core.Utils;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
-import weka.core.Utils;
 
 /**
  * Class for computing splitting criteria using Gini

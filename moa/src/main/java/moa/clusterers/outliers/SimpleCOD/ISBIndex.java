@@ -20,8 +20,17 @@
 
 package moa.clusterers.outliers.SimpleCOD;
 
-import java.util.*;
-import weka.core.Instance;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+import samoa.instances.Instance;
 
 public class ISBIndex {    
     public static class ISBNode implements Comparable<ISBNode> {        

@@ -20,16 +20,16 @@
 package moa.classifiers.multilabel;
 
 import moa.classifiers.meta.WEKAClassifier;
-import moa.core.InstancesHeader;
+import samoa.instances.InstancesHeader;
 import weka.classifiers.UpdateableClassifier;
-import weka.core.Instance;
-import weka.core.Instances;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 
 /**
- * Class for using a MEKA classifier.
- * NOTE: This class only exists to adjust the classIndex by +1
- * We can use the standard WEKAClassifier if we set -c L where, L = the number of labels + 1
- * (Because MOA understands that L specified on the command line is the (L-1)th index).
+ * Class for using a MEKA classifier. NOTE: This class only exists to adjust the
+ * classIndex by +1 We can use the standard WEKAClassifier if we set -c L where,
+ * L = the number of labels + 1 (Because MOA understands that L specified on the
+ * command line is the (L-1)th index).
  *
  * @author Jesse Read (jesse@tsc.uc3m.es)
  * @version $Revision: 1 $
@@ -37,43 +37,41 @@ import weka.core.Instances;
 public class MEKAClassifier extends WEKAClassifier {
 
     private static final long serialVersionUID = 1L;
-
     protected int m_L = -1;
 
-	@Override
-	public void setModelContext(InstancesHeader raw_header) {
-		m_L = (m_L < 0 ? raw_header.classIndex()+1 : m_L);
-		super.setModelContext(raw_header);
-	}
+    @Override
+    public void setModelContext(InstancesHeader raw_header) {
+        m_L = (m_L < 0 ? raw_header.classIndex() + 1 : m_L);
+        super.setModelContext(raw_header);
+    }
 
-	@Override
-    public void trainOnInstanceImpl(Instance inst) {
-		if (m_L < 0) {
-			m_L = inst.classIndex()+1;
-		}
+    @Override
+    public void trainOnInstanceImpl(Instance samoaInstance) {
+        weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
+        if (m_L < 0) {
+            m_L = inst.classIndex() + 1;
+        }
 
         try {
             if (numberInstances < 1) { // INIT 
-				Instances D = inst.dataset();
-				D.setClassIndex(m_L);
-                this.instancesBuffer = new Instances(D);
+                weka.core.Instances D = inst.dataset();
+                D.setClassIndex(m_L);
+                this.instancesBuffer = new weka.core.Instances(D);
                 if (classifier instanceof UpdateableClassifier) {
-					this.instancesBuffer.setClassIndex(m_L);
+                    this.instancesBuffer.setClassIndex(m_L);
                     this.classifier.buildClassifier(instancesBuffer);
                     this.isClassificationEnabled = true;
                 } else {
-                   System.err.println("Only suports UpdateableClassifiers for now.");
-				   System.exit(1);
+                    System.err.println("Only suports UpdateableClassifiers for now.");
+                    System.exit(1);
                 }
+            } else { // UPDATE
+                ((UpdateableClassifier) classifier).updateClassifier(inst);
             }
-			else { // UPDATE
-				((UpdateableClassifier) classifier).updateClassifier(inst);
-			}
-			numberInstances++;
+            numberInstances++;
         } catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+            e.printStackTrace();
+            System.exit(1);
         }
     }
-
 }

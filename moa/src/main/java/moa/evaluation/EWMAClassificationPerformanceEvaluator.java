@@ -19,14 +19,15 @@
  */
 package moa.evaluation;
 
+import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
-import moa.options.FloatOption;
+import javacliparser.FloatOption;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
-import weka.core.Instance;
-import weka.core.Utils;
+import samoa.instances.Instance;
+import moa.core.Utils;
 
 /**
  * Classification evaluator that updates evaluation results using an Exponential Weighted Moving Average.
@@ -35,7 +36,7 @@ import weka.core.Utils;
  * @version $Revision: 7 $
  */
 public class EWMAClassificationPerformanceEvaluator extends AbstractOptionHandler
-        implements ClassificationPerformanceEvaluator {
+        implements LearningPerformanceEvaluator<Example<Instance>> {
 
     private static final long serialVersionUID = 1L;
 
@@ -77,7 +78,8 @@ public class EWMAClassificationPerformanceEvaluator extends AbstractOptionHandle
     }
 
     @Override
-    public void addResult(Instance inst, double[] classVotes) {
+    public void addResult(Example<Instance> example, double[] classVotes) {
+        Instance inst = example.getData();
         double weight = inst.weight();
         int trueClass = (int) inst.classValue();
         if (weight > 0.0) {

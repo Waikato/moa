@@ -22,14 +22,14 @@ package moa.classifiers.core.attributeclassobservers;
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
-import weka.core.Utils;
+import moa.core.Utils;
 
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.GreenwaldKhannaQuantileSummary;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import moa.options.IntOption;
+import javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 
 /**

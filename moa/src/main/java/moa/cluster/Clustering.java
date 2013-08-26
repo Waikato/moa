@@ -28,12 +28,11 @@ package moa.cluster;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import moa.AbstractMOAObject;
 import moa.core.AutoExpandVector;
 import moa.gui.visualization.DataPoint;
-import weka.core.Attribute;
-import weka.core.Instance;
+import samoa.instances.Attribute;
+import samoa.instances.Instance;
 
 public class Clustering extends AbstractMOAObject{
 

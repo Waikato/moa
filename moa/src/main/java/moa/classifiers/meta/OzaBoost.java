@@ -21,14 +21,14 @@ package moa.classifiers.meta;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;
-import moa.options.FlagOption;
-import moa.options.IntOption;
+import javacliparser.FlagOption;
+import javacliparser.IntOption;
 
 /**
  * Incremental on-line boosting of Oza and Russell.

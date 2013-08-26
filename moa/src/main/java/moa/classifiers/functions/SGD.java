@@ -31,10 +31,10 @@ import moa.classifiers.AbstractClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
-import moa.options.FloatOption;
-import moa.options.MultiChoiceOption;
-import weka.core.Instance;
-import weka.core.Utils;
+import javacliparser.FloatOption;
+import javacliparser.MultiChoiceOption;
+import samoa.instances.Instance;
+import moa.core.Utils;
 
 /**
 <!-- globalinfo-start -->

@@ -27,8 +27,8 @@ import moa.clusterers.clustree.util.*;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;
-import moa.options.IntOption;
-import weka.core.Instance;
+import javacliparser.IntOption;
+import samoa.instances.Instance;
 
 /**
  * Citation: ClusTree: Philipp Kranen, Ira Assent, Corinna Baldauf, Thomas Seidl:
@@ -142,7 +142,7 @@ public class ClusTree extends AbstractClusterer{
         
         //TODO check if instance contains label
         if(root == null){
-            numberDimensions = instance.numAttributes();
+            numberDimensions = instance.numAttributes()-1; //Added -1 for new instances
             root = new Node(numberDimensions, 0);
         }
         else{

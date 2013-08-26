@@ -21,8 +21,8 @@ package moa.classifiers.trees;
 
 import moa.classifiers.bayes.NaiveBayes;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
-import weka.core.Instance;
-import weka.core.Utils;
+import moa.core.Utils;
+import samoa.instances.Instance;
 
 /**
  * Random decision trees for data streams.

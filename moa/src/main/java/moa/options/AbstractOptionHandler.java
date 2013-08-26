@@ -19,14 +19,8 @@
  */
 package moa.options;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
+import javacliparser.Options;
 import moa.AbstractMOAObject;
-import moa.clusterers.AbstractClusterer;
 import moa.core.ObjectRepository;
 import moa.tasks.NullMonitor;
 import moa.tasks.TaskMonitor;
@@ -44,10 +38,10 @@ public abstract class AbstractOptionHandler extends AbstractMOAObject implements
     private static final long serialVersionUID = 1L;
 
     /** Options to handle */
-    protected Options options;
+    //protected Options options;
 
     /** Dictionary with option texts and objects */
-    protected Map<String, Object> classOptionNamesToPreparedObjects;
+    //protected Map<String, Object> classOptionNamesToPreparedObjects;
 
     @Override
     public String getPurposeString() {
@@ -56,14 +50,23 @@ public abstract class AbstractOptionHandler extends AbstractMOAObject implements
 
     @Override
     public Options getOptions() {
-        if (this.options == null) {
+        /*if (this.options == null) {
             this.options = new Options();
-            Option[] myOptions = discoverOptionsViaReflection();
+            if (this.config== null) {
+                this.config = new OptionsHandler(this, "");
+                this.config.prepareForUse();
+            }
+            Option[] myOptions = this.config.discoverOptionsViaReflection();
             for (Option option : myOptions) {
                 this.options.addOption(option);
             }
         }
-        return this.options;
+        return this.options;*/
+        if ( this.config == null){
+            this.config = new OptionsHandler(this, "");
+            //this.config.prepareForUse(monitor, repository);
+        }
+        return this.config.getOptions();
     }
 
     @Override
@@ -71,9 +74,15 @@ public abstract class AbstractOptionHandler extends AbstractMOAObject implements
         prepareForUse(new NullMonitor(), null);
     }
 
+    protected OptionsHandler config; 
+    
     @Override
     public void prepareForUse(TaskMonitor monitor, ObjectRepository repository) {
-        prepareClassOptions(monitor, repository);
+        //prepareClassOptions(monitor, repository);
+        if ( this.config == null){
+            this.config = new OptionsHandler(this, "");
+            this.config.prepareForUse(monitor, repository);
+        }
         prepareForUseImpl(monitor, repository);
     }
 
@@ -106,14 +115,14 @@ public abstract class AbstractOptionHandler extends AbstractMOAObject implements
      *
      * @return an array of options
      */
-    protected Option[] discoverOptionsViaReflection() {
+ /*   protected Option[] discoverOptionsViaReflection() {
         Class<? extends AbstractOptionHandler> c = this.getClass();
         Field[] fields = c.getFields();
         List<Option> optList = new LinkedList<Option>();
         for (Field field : fields) {
             String fName = field.getName();
             Class<?> fType = field.getType();
-            if (fName.endsWith("Option")) {
+            if (fType.getName().endsWith("Option")) {
                 if (Option.class.isAssignableFrom(fType)) {
                     Option oVal = null;
                     try {
@@ -129,7 +138,7 @@ public abstract class AbstractOptionHandler extends AbstractMOAObject implements
             }
         }
         return optList.toArray(new Option[optList.size()]);
-    }
+    }*/
 
     /**
      * Prepares the options of this class.
@@ -139,6 +148,8 @@ public abstract class AbstractOptionHandler extends AbstractMOAObject implements
      */
     protected void prepareClassOptions(TaskMonitor monitor,
             ObjectRepository repository) {
+       this.config.prepareClassOptions(monitor, repository); 
+    }/*
         this.classOptionNamesToPreparedObjects = null;
         Option[] optionArray = getOptions().getOptionArray();
         for (Option option : optionArray) {
@@ -165,50 +176,17 @@ public abstract class AbstractOptionHandler extends AbstractMOAObject implements
                 }
                 this.classOptionNamesToPreparedObjects.put(option.getName(),
                         optionObj);
-            } else if (option instanceof ClassOptionWithNames) {
-                ClassOptionWithNames classOption = (ClassOptionWithNames) option;
-                monitor.setCurrentActivity("Materializing option "
-                        + classOption.getName() + "...", -1.0);
-                Object optionObj = classOption.materializeObject(monitor,
-                        repository);
-                if (monitor.taskShouldAbort()) {
-                    return;
-                }
-                if (optionObj instanceof OptionHandler) {
-                    monitor.setCurrentActivity("Preparing option "
-                            + classOption.getName() + "...", -1.0);
-                    ((OptionHandler) optionObj).prepareForUse(monitor,
-                            repository);
-                    if (monitor.taskShouldAbort()) {
-                        return;
-                    }
-                }
-                if (this.classOptionNamesToPreparedObjects == null) {
-                    this.classOptionNamesToPreparedObjects = new HashMap<String, Object>();
-                }
-                this.classOptionNamesToPreparedObjects.put(option.getName(),
-                        optionObj);
             }
         }
-    }
+    }*/
 
     /**
-     * Gets a prepared option of this class.
+     *  Gets a prepared option of this class.
      *
      * @param opt the class option to get
      * @return an option stored in the dictionary
      */
     protected Object getPreparedClassOption(ClassOption opt) {
-        return this.classOptionNamesToPreparedObjects.get(opt.getName());
+        return this.config.getPreparedClassOption(opt);
     }
-    
-    /**
-     * Gets a prepared option of this class.
-     * 
-     * @param opt - ClassOptionWithNames
-     * @return an option stored in the dictionary
-     */
-    protected Object getPreparedClassOption(ClassOptionWithNames opt) {
-		return this.classOptionNamesToPreparedObjects.get(opt.getName());
-	}
 }

@@ -34,9 +34,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import moa.clusterers.outliers.MyBaseOutlierDetector;
 import moa.gui.GUIUtils;
-import moa.gui.OptionEditComponent;
 import moa.options.ClassOption;
-import moa.options.Option;
+import javacliparser.Option;
+import javacliparser.gui.OptionEditComponent;
+import javacliparser.gui.OptionsConfigurationPanel;
 import moa.streams.clustering.ClusteringStream;
 
 public class OutlierAlgoPanel extends javax.swing.JPanel implements ActionListener{
@@ -90,7 +91,7 @@ public class OutlierAlgoPanel extends javax.swing.JPanel implements ActionListen
         JLabel labelStream = new JLabel("Stream");
         labelStream.setToolTipText("Stream to use.");
         optionsPanel.add(labelStream, gbcLabel);
-        JComponent editorStream = streamOption.getEditComponent();
+        JComponent editorStream = getEditComponent(streamOption);
         labelStream.setLabelFor(editorStream);
         editComponents.add((OptionEditComponent) editorStream);
         optionsPanel.add(editorStream, gbcOption);
@@ -100,7 +101,7 @@ public class OutlierAlgoPanel extends javax.swing.JPanel implements ActionListen
         labelAlgo0.setForeground(Color.RED);
         labelAlgo0.setToolTipText("Algorithm to use.");
         optionsPanel.add(labelAlgo0, gbcLabel);
-        JComponent editorAlgo0 = algorithmOption0.getEditComponent();
+        JComponent editorAlgo0 = getEditComponent(algorithmOption0);
         labelAlgo0.setLabelFor(editorAlgo0);
         editComponents.add((OptionEditComponent) editorAlgo0);
         optionsPanel.add(editorAlgo0, gbcOption);    
@@ -110,7 +111,7 @@ public class OutlierAlgoPanel extends javax.swing.JPanel implements ActionListen
         labelAlgo1.setForeground(Color.BLUE);
         labelAlgo1.setToolTipText("Algorithm to use.");
         optionsPanel.add(labelAlgo1, gbcLabel);
-        JComponent editorAlgo1 = algorithmOption1.getEditComponent();
+        JComponent editorAlgo1 = getEditComponent(algorithmOption1);
         labelAlgo1.setLabelFor(editorAlgo1);
         editComponents.add((OptionEditComponent) editorAlgo1);
         optionsPanel.add(editorAlgo1, gbcOption);  
@@ -129,6 +130,10 @@ public class OutlierAlgoPanel extends javax.swing.JPanel implements ActionListen
         optionsPanel.add(clearButton, gbcClearButton);  
             
         add(optionsPanel);
+    }
+    
+    public JComponent getEditComponent(Option option){
+        return OptionsConfigurationPanel.getEditComponent(option);
     }
 
     @Override

@@ -21,8 +21,10 @@ package moa.tasks;
 
 import moa.classifiers.Classifier;
 import moa.core.ObjectRepository;
+import moa.learners.Learner;
 import moa.options.ClassOption;
-import moa.options.IntOption;
+import javacliparser.IntOption;
+import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 
 /**
@@ -41,10 +43,10 @@ public class LearnModel extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Classifier to train.", Classifier.class, "bayes.NaiveBayes");
+            "Classifier to train.", Learner.class, "moa.classifiers.bayes.NaiveBayes");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", InstanceStream.class,
+            "Stream to learn from.", ExampleStream.class,
             "generators.RandomTreeGenerator");
 
     public IntOption maxInstancesOption = new IntOption("maxInstances", 'm',
@@ -78,8 +80,8 @@ public class LearnModel extends MainTask {
 
     @Override
     public Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-        Classifier learner = (Classifier) getPreparedClassOption(this.learnerOption);
-        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
+        Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
+        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
         learner.setModelContext(stream.getHeader());
         int numPasses = this.numPassesOption.getValue();
         int maxInstances = this.maxInstancesOption.getValue();

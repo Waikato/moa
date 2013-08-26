@@ -21,11 +21,11 @@ package moa.clusterers;
 
 import moa.MOAObject;
 import moa.cluster.Clustering;
-import moa.core.InstancesHeader;
+import samoa.instances.InstancesHeader;
 import moa.core.Measurement;
 import moa.gui.AWTRenderable;
 import moa.options.OptionHandler;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 public interface Clusterer extends MOAObject, OptionHandler, AWTRenderable {
 

@@ -11,11 +11,13 @@
 
 package moa.options;
 
+import javacliparser.Options;
+import javacliparser.Option;
 import java.io.File;
 
 import javax.swing.JComponent;
 
-import moa.gui.ClassOptionWithNamesEditComponent;
+import javacliparser.gui.ClassOptionWithNamesEditComponent;
 import moa.tasks.Task;
 
 public class ClassOptionWithNames extends AbstractClassOption {
@@ -157,10 +159,10 @@ public class ClassOptionWithNames extends AbstractClassOption {
         return classInstance;
     }
 
-    @Override
-    public JComponent getEditComponent() {
-        return new ClassOptionWithNamesEditComponent(this);
-    }
+//    @Override
+//    public JComponent getEditComponent() {
+//        return new ClassOptionWithNamesEditComponent(this);
+//    }
     
     public String[] getClassNames() {
     	return this.names;

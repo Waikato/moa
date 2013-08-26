@@ -19,7 +19,8 @@
  */
 package moa.core;
 
-import weka.core.Instances;
+import samoa.instances.Instances;
+import samoa.instances.InstancesHeader;
 
 /**
  * Class for storing the header or context of a multilabel data stream.

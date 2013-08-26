@@ -23,13 +23,13 @@ package moa.clusterers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.core.Measurement;
 import moa.gui.visualization.DataPoint;
-import moa.options.FloatOption;
-import moa.options.IntOption;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 public class ClusterGenerator extends AbstractClusterer{
 

@@ -25,13 +25,13 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
-import moa.options.FlagOption;
-import moa.options.FloatOption;
-import moa.options.ListOption;
-import moa.options.Option;
+import javacliparser.FlagOption;
+import javacliparser.FloatOption;
+import javacliparser.ListOption;
+import javacliparser.Option;
 import moa.tasks.TaskMonitor;
-import weka.core.Instance;
-import weka.core.Utils;
+import samoa.instances.Instance;
+import moa.core.Utils;
 
 /**
  * Weighted majority algorithm for data streams.

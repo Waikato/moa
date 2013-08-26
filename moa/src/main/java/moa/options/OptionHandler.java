@@ -19,6 +19,8 @@
  */
 package moa.options;
 
+import javacliparser.Configurable;
+import javacliparser.Options;
 import moa.MOAObject;
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
@@ -29,7 +31,7 @@ import moa.tasks.TaskMonitor;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $ 
  */
-public interface OptionHandler extends MOAObject {
+public interface OptionHandler extends MOAObject, Configurable {
 
     /**
      * Gets the purpose of this object
@@ -64,6 +66,7 @@ public interface OptionHandler extends MOAObject {
      *
      * @return a copy of this object
      */
+    @Override
     public OptionHandler copy();
 
     /**

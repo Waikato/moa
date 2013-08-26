@@ -20,7 +20,8 @@
  */
 package moa.gui;
 
-import weka.core.Utils;
+import javacliparser.gui.OptionEditComponent;
+import moa.core.Utils;
 import weka.gui.GenericObjectEditor;
 import weka.gui.PropertyDialog;
 import weka.gui.GenericObjectEditor.GOEPanel;
@@ -33,7 +34,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import moa.options.Option;
+import javacliparser.Option;
 import moa.options.WEKAClassOption;
 
 /**
@@ -55,7 +56,8 @@ public class WEKAClassOptionEditComponent
 
     protected JButton editButton = new JButton("Edit");
 
-    public WEKAClassOptionEditComponent(WEKAClassOption option) {
+    public WEKAClassOptionEditComponent(Option opt) {
+        WEKAClassOption option = (WEKAClassOption) opt;
         this.editedOption = option;
         this.textField.setEditable(false);
         setLayout(new BorderLayout());

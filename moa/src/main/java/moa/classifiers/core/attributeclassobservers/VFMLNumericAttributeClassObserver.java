@@ -19,7 +19,7 @@
  */
 package moa.classifiers.core.attributeclassobservers;
 
-import weka.core.Utils;
+import moa.core.Utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import moa.options.IntOption;
+import javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 
 /**

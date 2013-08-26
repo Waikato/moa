@@ -19,7 +19,7 @@
  */
 package moa.streams.filters;
 
-import moa.streams.InstanceStream;
+import moa.streams.ExampleStream;
 
 /**
  * Interface representing a stream filter. 
@@ -27,12 +27,12 @@ import moa.streams.InstanceStream;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $ 
  */
-public interface StreamFilter extends InstanceStream {
+public interface StreamFilter extends ExampleStream {
 
     /**
      * Sets the input stream to the filter
      *
      * @param stream the input stream to the filter
      */
-    public void setInputStream(InstanceStream stream);
+    public void setInputStream(ExampleStream stream);
 }

@@ -22,12 +22,13 @@ package moa.classifiers.meta;
 
 import moa.classifiers.AbstractClassifier;
 import moa.core.Measurement;
-import moa.options.IntOption;
+import javacliparser.IntOption;
 import moa.options.WEKAClassOption;
 import weka.classifiers.Classifier;
 import weka.classifiers.UpdateableClassifier;
-import weka.core.Instance;
-import weka.core.Instances;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
+import samoa.instances.SamoaToWekaInstanceConverter;
 
 /**
  * Class for using a classifier from WEKA.
@@ -40,6 +41,8 @@ public class WEKAClassifier
         extends AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
+
+    protected SamoaToWekaInstanceConverter instanceConverter;
 
     @Override
     public String getPurposeString() {
@@ -64,7 +67,7 @@ public class WEKAClassifier
 
     protected int numberInstances;
 
-    protected Instances instancesBuffer;
+    protected weka.core.Instances instancesBuffer;
 
     protected boolean isClassificationEnabled;
 
@@ -83,13 +86,15 @@ public class WEKAClassifier
         numberInstances = 0;
         isClassificationEnabled = false;
         this.isBufferStoring = true;
+        this.instanceConverter = new SamoaToWekaInstanceConverter();
     }
 
     @Override
-    public void trainOnInstanceImpl(Instance inst) {
+    public void trainOnInstanceImpl(Instance samoaInstance) {
+        weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
         try {
             if (numberInstances == 0) {
-                this.instancesBuffer = new Instances(inst.dataset());
+                this.instancesBuffer = new weka.core.Instances(inst.dataset());
                 if (classifier instanceof UpdateableClassifier) {
                     classifier.buildClassifier(instancesBuffer);
                     this.isClassificationEnabled = true;
@@ -136,7 +141,7 @@ public class WEKAClassifier
                         //Build Classifier
                         buildClassifier();
                         isClassificationEnabled = true;
-                        this.instancesBuffer = new Instances(inst.dataset());
+                        this.instancesBuffer = new weka.core.Instances(inst.dataset());
                     }
                 }
             }
@@ -159,7 +164,8 @@ public class WEKAClassifier
     }
 
     @Override
-    public double[] getVotesForInstance(Instance inst) {
+    public double[] getVotesForInstance(Instance samoaInstance) {
+        weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
         double[] votes = new double[inst.numClasses()];
         if (isClassificationEnabled == false) {
             for (int i = 0; i < inst.numClasses(); i++) {

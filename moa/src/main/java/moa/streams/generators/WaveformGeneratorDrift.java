@@ -20,12 +20,13 @@
  */
 package moa.streams.generators;
 
-import weka.core.DenseInstance;
-import weka.core.Instance;
+import moa.core.InstanceExample;
+import samoa.instances.DenseInstance;
+import samoa.instances.Instance;
 
-import moa.core.InstancesHeader;
+import samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
-import moa.options.IntOption;
+import javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 
 /**
@@ -70,7 +71,7 @@ public class WaveformGeneratorDrift extends WaveformGenerator {
     }
 
     @Override
-    public Instance nextInstance() {
+    public InstanceExample nextInstance() {
         InstancesHeader header = getHeader();
         Instance inst = new DenseInstance(header.numAttributes());
         inst.setDataset(header);
@@ -104,7 +105,7 @@ public class WaveformGeneratorDrift extends WaveformGenerator {
             }
         }
         inst.setClassValue(waveform);
-        return inst;
+        return new InstanceExample(inst);
     }
 
     @Override

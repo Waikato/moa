@@ -33,18 +33,20 @@ import java.util.Vector;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.core.AutoExpandVector;
-import moa.core.InstancesHeader;
+import moa.core.InstanceExample;
+import samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.gui.visualization.DataPoint;
-import moa.options.FlagOption;
-import moa.options.FloatOption;
-import moa.options.IntOption;
+import javacliparser.FlagOption;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.Instance;
-import weka.core.Instances;
+import samoa.instances.Attribute;
+import samoa.instances.DenseInstance;
+import moa.core.FastVector;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 
 
 public class RandomRBFGeneratorEvents extends ClusteringStream {
@@ -519,12 +521,12 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         normalizeWeights();
     }
 
-    public Instance nextInstance() {
+    public InstanceExample nextInstance() {
         numGeneratedInstances++;
         eventScheduler();
 
         //make room for the classlabel
-        double[] values_new = new double [numAttsOption.getValue()+1];
+        double[] values_new = new double [numAttsOption.getValue()]; //+1
         double[] values = null;
         int clusterChoice = -1;
 
@@ -558,7 +560,7 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         }
 //        System.out.println(numGeneratedInstances+": Overlap is"+updateOverlaps());
         
-        return inst;
+        return new InstanceExample(inst);
     }
 
 

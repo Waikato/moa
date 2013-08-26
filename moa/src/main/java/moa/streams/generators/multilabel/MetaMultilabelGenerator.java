@@ -20,16 +20,22 @@
 package moa.streams.generators.multilabel;
 
 import java.util.*;
-import moa.core.InstancesHeader;
+import moa.core.InstanceExample;
 import moa.core.MultilabelInstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
-import moa.options.FloatOption;
-import moa.options.IntOption;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
-import weka.core.*;
+import samoa.instances.Attribute;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
+import samoa.instances.InstancesHeader;
+import samoa.instances.SparseInstance;
+import moa.core.FastVector;
+import moa.core.Utils;
 
 /**
  * Stream generator for multilabel data.
@@ -198,7 +204,7 @@ public class MetaMultilabelGenerator extends AbstractOptionHandler implements In
         if (queue[i].size() <= 0) {
             int c = -1;
             while (lim-- > 0) {
-                Instance tinst = this.m_BinaryGenerator.nextInstance();
+                Instance tinst = this.m_BinaryGenerator.nextInstance().getData();
                 c = (int) Math.round(tinst.classValue());
                 if (i == c) {
                     return tinst;
@@ -218,8 +224,8 @@ public class MetaMultilabelGenerator extends AbstractOptionHandler implements In
      * GenerateML. Generates a multi-label example.
      */
     @Override
-    public Instance nextInstance() {
-        return generateMLInstance(generateSet());
+    public InstanceExample nextInstance() {
+        return new InstanceExample(generateMLInstance(generateSet()));
     }
 
     /**

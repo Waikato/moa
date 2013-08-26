@@ -19,16 +19,18 @@
  */
 package moa.streams;
 
-import moa.core.InstancesHeader;
+import moa.core.Example;
+import moa.core.InstanceExample;
+import samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
-import moa.options.ListOption;
-import moa.options.Option;
+import javacliparser.ListOption;
+import javacliparser.Option;
 import moa.options.OptionHandler;
 import moa.streams.filters.StreamFilter;
 import moa.tasks.TaskMonitor;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 /**
  * Class for representing a stream that is filtered.
@@ -37,7 +39,7 @@ import weka.core.Instance;
  * @version $Revision: 7 $
  */
 public class FilteredStream extends AbstractOptionHandler implements
-        InstanceStream {
+        ExampleStream {
 
     @Override
     public String getPurposeString() {
@@ -47,7 +49,7 @@ public class FilteredStream extends AbstractOptionHandler implements
     private static final long serialVersionUID = 1L;
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to filter.", InstanceStream.class,
+            "Stream to filter.", ExampleStream.class,
             "generators.RandomTreeGenerator");
 
     public ListOption filtersOption = new ListOption("filters", 'f',
@@ -55,7 +57,7 @@ public class FilteredStream extends AbstractOptionHandler implements
             "Stream filter.", StreamFilter.class, "AddNoiseFilter"),
             new Option[0], ',');
 
-    protected InstanceStream filterChain;
+    protected ExampleStream filterChain;
 
     @Override
     public void prepareForUseImpl(TaskMonitor monitor,
@@ -78,7 +80,7 @@ public class FilteredStream extends AbstractOptionHandler implements
                 }
             }
         }
-        InstanceStream chain = (InstanceStream) getPreparedClassOption(this.streamOption);
+        ExampleStream chain = (ExampleStream) getPreparedClassOption(this.streamOption);
         for (int i = 0; i < filters.length; i++) {
             filters[i].setInputStream(chain);
             chain = filters[i];
@@ -107,7 +109,7 @@ public class FilteredStream extends AbstractOptionHandler implements
     }
 
     @Override
-    public Instance nextInstance() {
+    public Example nextInstance() {
         return this.filterChain.nextInstance();
     }
 

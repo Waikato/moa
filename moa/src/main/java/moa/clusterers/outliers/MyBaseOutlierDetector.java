@@ -32,8 +32,8 @@ import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;
-import moa.options.IntOption;
-import weka.core.Instance;
+import javacliparser.IntOption;
+import samoa.instances.Instance;
 
 public abstract class MyBaseOutlierDetector extends AbstractClusterer { 
     public static class Outlier implements Comparable<Outlier> {
@@ -107,8 +107,9 @@ public abstract class MyBaseOutlierDetector extends AbstractClusterer {
     }
     
     public double[] getInstanceValues(Instance inst) {
-        double[] values = new double[inst.numValues() - 1]; // last attribute is the class
-        for (int i = 0; i < inst.numValues() - 1; i++) {
+        int length = inst.numValues(); // -1
+        double[] values = new double[length]; // last attribute is the class
+        for (int i = 0; i < length; i++) {
             values[i] = inst.value(i);
         }
         return values;
@@ -116,7 +117,7 @@ public abstract class MyBaseOutlierDetector extends AbstractClusterer {
     
     public void PrintInstance(Instance inst) {
         Print("instance: [ ");
-        for (int i = 0; i < inst.numValues() - 1; i++) { // last value is the class
+        for (int i = 0; i < inst.numValues(); i++) { // -1 last value is the class
             Printf("%.2f ", inst.value(i));
         }
         Print("] ");

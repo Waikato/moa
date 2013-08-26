@@ -21,8 +21,8 @@
 package moa.classifiers.meta;
 
 import moa.classifiers.trees.LimAttHoeffdingTree;
-import weka.core.Instance;
-import weka.core.Utils;
+import samoa.instances.Instance;
+import moa.core.Utils;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -32,9 +32,9 @@ import moa.classifiers.Classifier;
 
 import moa.core.Measurement;
 import moa.options.ClassOption;
-import moa.options.FlagOption;
-import moa.options.FloatOption;
-import moa.options.IntOption;
+import javacliparser.FlagOption;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
 
 /**
  * Ensemble Combining Restricted Hoeffding Trees using Stacking.

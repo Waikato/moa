@@ -44,14 +44,15 @@ import moa.gui.clustertab.ClusteringSetupTab;
 import moa.gui.clustertab.ClusteringVisualEvalPanel;
 import moa.gui.clustertab.ClusteringVisualTab;
 import moa.streams.clustering.ClusterEvent;
+import samoa.instances.Instance;
+import moa.gui.clustertab.ClusteringSetupTab;
 import moa.streams.clustering.ClusterEventListener;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
+import samoa.instances.Attribute;
+import samoa.instances.DenseInstance;
+import moa.core.FastVector;
+import samoa.instances.Instances;
 
 public class RunVisualizer implements Runnable, ActionListener, ClusterEventListener{
 
@@ -206,7 +207,7 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
                     m_visualPanel.setProcessedPointsCounter(timestamp);
                 }
 
-                Instance next0 = m_stream0.nextInstance();
+                Instance next0 = m_stream0.nextInstance().getData();
                 DataPoint point0 = new DataPoint(next0,timestamp);
 
                 pointBuffer0.add(point0);

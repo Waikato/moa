@@ -25,23 +25,23 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import moa.classifiers.Classifier;
+import javacliparser.FileOption;
+import javacliparser.FlagOption;
+import javacliparser.IntOption;
+import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.StringUtils;
 import moa.core.TimingUtils;
-import moa.evaluation.ClassificationPerformanceEvaluator;
 import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
+import moa.evaluation.LearningPerformanceEvaluator;
+import moa.learners.Learner;
 import moa.options.ClassOption;
-import moa.options.FileOption;
-import moa.options.FlagOption;
-import moa.options.IntOption;
 import moa.streams.CachedInstancesStream;
-import moa.streams.InstanceStream;
-import weka.core.Instance;
-import weka.core.Instances;
+import moa.streams.ExampleStream;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 
 /**
  * Task for evaluating a classifier on a stream by periodically testing on a heldout set.
@@ -59,15 +59,15 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
+            "Classifier to train.", Learner.class, "moa.classifiers.trees.HoeffdingTree");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", InstanceStream.class,
+            "Stream to learn from.", ExampleStream.class,
             "generators.RandomTreeGenerator");
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
-            "Classification performance evaluation method.",
-            ClassificationPerformanceEvaluator.class,
+            "Learning performance evaluation method.",
+            LearningPerformanceEvaluator.class,
             "BasicClassificationPerformanceEvaluator");
 
     public IntOption testSizeOption = new IntOption("testSize", 'n',
@@ -94,9 +94,9 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
 
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-        Classifier learner = (Classifier) getPreparedClassOption(this.learnerOption);
-        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
-        ClassificationPerformanceEvaluator evaluator = (ClassificationPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
+        Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
+        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+        LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         learner.setModelContext(stream.getHeader());
         long instancesProcessed = 0;
         LearningCurve learningCurve = new LearningCurve("evaluation instances");
@@ -117,14 +117,14 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
             }
         }
         boolean firstDump = true;
-        InstanceStream testStream = null;
+        ExampleStream testStream = null;
         int testSize = this.testSizeOption.getValue();
         if (this.cacheTestOption.isSet()) {
             monitor.setCurrentActivity("Caching test examples...", -1.0);
             Instances testInstances = new Instances(stream.getHeader(),
                     this.testSizeOption.getValue());
             while (testInstances.numInstances() < testSize) {
-                testInstances.add(stream.nextInstance());
+                testInstances.add((Instance) stream.nextInstance().getData());
                 if (testInstances.numInstances()
                         % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
                     if (monitor.taskShouldAbort()) {
@@ -186,11 +186,11 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
 				if (stream.hasMoreInstances() == false) {
 					break;
 				}
-                Instance testInst = (Instance) testStream.nextInstance().copy();
-                double trueClass = testInst.classValue();
-                testInst.setClassMissing();
+                Example testInst = (Example) testStream.nextInstance(); //.copy();
+                double trueClass = ((Instance) testInst.getData()).classValue();
+                //testInst.setClassMissing();
                 double[] prediction = learner.getVotesForInstance(testInst);
-                testInst.setClassValue(trueClass);
+                //testInst.setClassValue(trueClass);
                 evaluator.addResult(testInst, prediction);
                 testInstancesProcessed++;
                 if (testInstancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {

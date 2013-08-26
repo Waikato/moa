@@ -21,7 +21,7 @@
 package moa.gui;
 
 import moa.core.PropertiesReader;
-import weka.core.Utils;
+import moa.core.Utils;
 
 import java.io.Serializable;
 import java.util.Collections;

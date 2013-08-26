@@ -19,7 +19,7 @@
  */
 package moa.core;
 
-import weka.core.SparseInstance;
+import samoa.instances.SingleLabelInstance;
 
 /**
  * Multilabel instance.
@@ -27,7 +27,14 @@ import weka.core.SparseInstance;
  * @author Jesse Read (jmr30@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class MultilabelInstance extends SparseInstance {
+public class MultilabelInstance extends SingleLabelInstance {
+
+    public MultilabelInstance(double d, double[] res) {
+         super(d,res);
+    }
+    public MultilabelInstance(SingleLabelInstance inst) {
+        super(inst);
+    }
 
     int L = -1;
 

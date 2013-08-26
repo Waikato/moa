@@ -19,8 +19,8 @@
  */
 package moa.classifiers.core.conditionaltests;
 
-import moa.core.InstancesHeader;
-import weka.core.Instance;
+import samoa.instances.InstancesHeader;
+import samoa.instances.Instance;
 
 /**
  * Nominal multi way conditional test for instances to use to split nodes in Hoeffding trees.
@@ -40,8 +40,8 @@ public class NominalAttributeMultiwayTest extends InstanceConditionalTest {
 
     @Override
     public int branchForInstance(Instance inst) {
-        int instAttIndex = this.attIndex < inst.classIndex() ? this.attIndex
-                : this.attIndex + 1;
+        int instAttIndex = this.attIndex  ; //< inst.classIndex() ? this.attIndex
+                //: this.attIndex + 1;
         return inst.isMissing(instAttIndex) ? -1 : (int) inst.value(instAttIndex);
     }
 

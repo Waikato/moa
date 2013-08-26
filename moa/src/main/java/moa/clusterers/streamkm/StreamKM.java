@@ -1,12 +1,10 @@
 package moa.clusterers.streamkm;
 
-import moa.cluster.Cluster;
+import javacliparser.IntOption;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;
-import moa.options.IntOption;
-
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 /**
  *

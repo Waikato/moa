@@ -23,7 +23,7 @@ import moa.classifiers.Classifier;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
-import weka.core.Instances;
+import samoa.instances.Instances;
 
 /**
  * The Accuracy Updated Ensemble classifier as proposed by Brzezinski and

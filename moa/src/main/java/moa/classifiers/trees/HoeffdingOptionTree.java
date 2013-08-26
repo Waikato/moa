@@ -19,9 +19,6 @@
  */
 package moa.classifiers.trees;
 
-import weka.core.Instance;
-import weka.core.Utils;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -31,24 +28,30 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
+import javacliparser.FileOption;
+import javacliparser.FlagOption;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
+import javacliparser.MultiChoiceOption;
 import moa.AbstractMOAObject;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.bayes.NaiveBayes;
-import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.AttributeSplitSuggestion;
+import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.DiscreteAttributeClassObserver;
-import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.classifiers.core.attributeclassobservers.NullAttributeClassObserver;
-import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
 import moa.classifiers.core.attributeclassobservers.NumericAttributeClassObserver;
+import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
+import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.SizeOf;
 import moa.core.StringUtils;
-import moa.options.*;
+import moa.core.Utils;
+import moa.options.ClassOption;
+import samoa.instances.Instance;
 
 /**
  * Hoeffding Option Tree.

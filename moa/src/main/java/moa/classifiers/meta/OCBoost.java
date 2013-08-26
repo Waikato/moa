@@ -21,13 +21,13 @@ package moa.classifiers.meta;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
-import weka.core.Instance;
-import weka.core.Utils;
+import samoa.instances.Instance;
+import moa.core.Utils;
 
 import moa.core.Measurement;
 import moa.options.ClassOption;
-import moa.options.FloatOption;
-import moa.options.IntOption;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
 
 /**
  * Online Coordinate boosting for two classes evolving data streams. 

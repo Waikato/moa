@@ -23,18 +23,22 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import moa.classifiers.Classifier;
+import moa.core.Example;
+import moa.core.InstanceExample;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
-import moa.evaluation.ClassificationPerformanceEvaluator;
 import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
+import moa.evaluation.LearningPerformanceEvaluator;
+import moa.learners.Learner;
 import moa.options.ClassOption;
-import moa.options.FileOption;
-import moa.options.IntOption;
+import javacliparser.FileOption;
+import javacliparser.IntOption;
+import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
-import weka.core.Instance;
-import weka.core.Instances;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 
 public class EvaluateInterleavedChunks extends MainTask {
 
@@ -49,21 +53,21 @@ public class EvaluateInterleavedChunks extends MainTask {
 	 * Allows to select the trained classifier.
 	 */
 	public ClassOption learnerOption = new ClassOption("learner", 'l',
-			"Classifier to train.", Classifier.class, "bayes.NaiveBayes");
+			"Classifier to train.", Learner.class, "moa.classifiers.bayes.NaiveBayes");
 
 	/**
 	 * Allows to select the stream the classifier will learn. 
 	 */
 	public ClassOption streamOption = new ClassOption("stream", 's',
-			"Stream to learn from.", InstanceStream.class,
+			"Stream to learn from.", ExampleStream.class,
 			"generators.RandomTreeGenerator");
 
 	/**
 	 * Allows to select the classifier performance evaluation method.
 	 */
 	public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
-			"Classification performance evaluation method.",
-			ClassificationPerformanceEvaluator.class,
+            "Learning performance evaluation method.",
+            LearningPerformanceEvaluator.class,
 			"BasicClassificationPerformanceEvaluator");
 
 	/**
@@ -125,9 +129,9 @@ public class EvaluateInterleavedChunks extends MainTask {
 
 	@Override
 	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-		Classifier learner = (Classifier) getPreparedClassOption(this.learnerOption);
-		InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
-		ClassificationPerformanceEvaluator evaluator = (ClassificationPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
+		Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
+		ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+		LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
 		learner.setModelContext(stream.getHeader());
 		int maxInstances = this.instanceLimitOption.getValue();
 		int chunkSize = this.chunkSizeOption.getValue();
@@ -168,7 +172,7 @@ public class EvaluateInterleavedChunks extends MainTask {
 			Instances chunkInstances = new Instances(stream.getHeader(), chunkSize);
 			
 			while (stream.hasMoreInstances() && chunkInstances.numInstances() < chunkSize) {
-				chunkInstances.add(stream.nextInstance());
+				chunkInstances.add((Instance) stream.nextInstance().getData());
 				if (chunkInstances.numInstances()
 						% INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
 					if (monitor.taskShouldAbort()) {
@@ -193,7 +197,7 @@ public class EvaluateInterleavedChunks extends MainTask {
 			if(!firstChunk)
 			{
 				for (int i=0; i< chunkInstances.numInstances(); i++) {
-					Instance testInst = (Instance) chunkInstances.instance(i).copy();
+					Example testInst = new InstanceExample((Instance) chunkInstances.instance(i));
 					//testInst.setClassMissing();
 					double[] prediction = learner.getVotesForInstance(testInst);
 					evaluator.addResult(testInst, prediction);
@@ -210,7 +214,7 @@ public class EvaluateInterleavedChunks extends MainTask {
 			long trainStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
 			
 			for (int i=0; i< chunkInstances.numInstances(); i++) {
-				learner.trainOnInstance(chunkInstances.instance(i));
+				learner.trainOnInstance(new InstanceExample(chunkInstances.instance(i)));
 				instancesProcessed++;
 		    }
 			

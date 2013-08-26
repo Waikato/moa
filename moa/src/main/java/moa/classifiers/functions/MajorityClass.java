@@ -23,7 +23,7 @@ import moa.classifiers.AbstractClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 /**
  * Majority class learner. This is the simplest classifier.

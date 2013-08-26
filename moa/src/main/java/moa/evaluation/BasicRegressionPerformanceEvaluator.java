@@ -20,8 +20,9 @@
 package moa.evaluation;
 
 import moa.AbstractMOAObject;
+import moa.core.Example;
 import moa.core.Measurement;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 /**
  * Regression evaluator that performs basic incremental evaluation.
@@ -30,7 +31,7 @@ import weka.core.Instance;
  * @version $Revision: 7 $
  */
 public class BasicRegressionPerformanceEvaluator extends AbstractMOAObject
-        implements ClassificationPerformanceEvaluator {
+        implements LearningPerformanceEvaluator<Example<Instance>> {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,7 +49,8 @@ public class BasicRegressionPerformanceEvaluator extends AbstractMOAObject
     }
 
     @Override
-    public void addResult(Instance inst, double[] prediction) {
+    public void addResult(Example<Instance> example, double[] prediction) {
+	Instance inst = example.getData();
         if (inst.weight() > 0.0) {
             this.weightObserved += inst.weight();
             if (prediction.length > 0 && this.weightObserved != inst.weight()) {

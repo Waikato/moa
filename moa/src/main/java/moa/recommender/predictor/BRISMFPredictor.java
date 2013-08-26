@@ -24,8 +24,8 @@ import java.util.List;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
-import moa.options.FloatOption;
-import moa.options.IntOption;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
 import moa.recommender.data.RecommenderData;
 import moa.tasks.TaskMonitor;
 

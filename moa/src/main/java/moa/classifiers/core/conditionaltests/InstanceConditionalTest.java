@@ -20,8 +20,8 @@
 package moa.classifiers.core.conditionaltests;
 
 import moa.AbstractMOAObject;
-import moa.core.InstancesHeader;
-import weka.core.Instance;
+import samoa.instances.InstancesHeader;
+import samoa.instances.Instance;
 
 /**
  * Abstract conditional test for instances to use to split nodes in Hoeffding trees.

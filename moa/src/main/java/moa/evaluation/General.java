@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.gui.visualization.DataPoint;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 public class General extends MeasureCollection{
     private int numPoints;

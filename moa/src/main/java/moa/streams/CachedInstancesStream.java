@@ -20,9 +20,10 @@
 package moa.streams;
 
 import moa.AbstractMOAObject;
-import moa.core.InstancesHeader;
-import weka.core.Instance;
-import weka.core.Instances;
+import moa.core.InstanceExample;
+import samoa.instances.InstancesHeader;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 
 /**
  * Stream generator for representing a stream that is cached in memory.
@@ -61,8 +62,8 @@ public class CachedInstancesStream extends AbstractMOAObject implements
 	}
 
     @Override
-	public Instance nextInstance() {
-		return this.toStream.instance(this.streamPos++);
+	public InstanceExample nextInstance() {
+		return new InstanceExample(this.toStream.instance(this.streamPos++));
 	}
 
     @Override

@@ -21,6 +21,7 @@ package moa.streams.filters;
 
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
+import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
@@ -34,10 +35,10 @@ public abstract class AbstractStreamFilter extends AbstractOptionHandler
         implements StreamFilter {
 
     /** The input stream to this filter. */
-    protected InstanceStream inputStream;
+    protected ExampleStream inputStream;
 
     @Override
-    public void setInputStream(InstanceStream stream) {
+    public void setInputStream(ExampleStream stream) {
         this.inputStream = stream;
         prepareForUse();
     }

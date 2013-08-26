@@ -26,9 +26,10 @@ import java.util.Iterator;
 import java.util.Vector;
 import moa.clusterers.outliers.Angiulli.ISBIndex.ISBNode;
 import moa.clusterers.outliers.Angiulli.ISBIndex.ISBSearchResult;
-import moa.options.FloatOption;
-import moa.options.IntOption;
-import weka.core.Instance;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
+import samoa.instances.Instance;
+
 
 // The algorithm is presented in "Distance-based outlier queries in data streams: the novel task and algorithms.
 //Data Mining and Knowledge Discovery, 20(2):290–324,2010.

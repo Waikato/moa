@@ -56,7 +56,7 @@ public abstract class AbstractTask extends AbstractOptionHandler implements
         monitor.setCurrentActivity("Doing task " + getTaskName() + "...", -1.0);
         Object result = doTaskImpl(monitor, repository);
         monitor.setCurrentActivity("Task " + getTaskName() + " complete.", 1.0);
-        this.classOptionNamesToPreparedObjects = null; // clean up refs
+        //this.classOptionNamesToPreparedObjects = null; // clean up refs
         return result;
     }
 

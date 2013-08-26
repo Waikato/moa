@@ -39,7 +39,7 @@ import java.util.Iterator;
 import moa.cluster.Clustering;
 import moa.core.AutoExpandVector;
 import moa.gui.visualization.DataPoint;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 public class CMM_GTAnalysis{
 	

@@ -26,10 +26,10 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
-import moa.options.IntOption;
+import javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
-import weka.core.Instance;
-import weka.core.Instances;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 
 /**
  * The revised version of the Accuracy Updated Ensemble as proposed by

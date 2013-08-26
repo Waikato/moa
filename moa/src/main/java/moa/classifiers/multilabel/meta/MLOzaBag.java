@@ -21,8 +21,8 @@ package moa.classifiers.multilabel.meta;
 
 import moa.classifiers.Classifier;
 import moa.classifiers.meta.OzaBag;
-import moa.core.InstancesHeader;
-import weka.core.Instance;
+import samoa.instances.InstancesHeader;
+import samoa.instances.Instance;
 
 /**
  * OzaBag for Multi-label data.

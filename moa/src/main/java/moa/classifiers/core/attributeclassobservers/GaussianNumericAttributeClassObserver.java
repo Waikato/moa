@@ -21,7 +21,7 @@ package moa.classifiers.core.attributeclassobservers;
 
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
-import weka.core.Utils;
+import moa.core.Utils;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -33,7 +33,7 @@ import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.GaussianEstimator;
 import moa.options.AbstractOptionHandler;
-import moa.options.IntOption;
+import javacliparser.IntOption;
 
 /**
  * Class for observing the class data distribution for a numeric attribute using gaussian estimators.

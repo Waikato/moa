@@ -24,7 +24,8 @@ import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
 import moa.evaluation.LearningEvaluation;
 import moa.options.ClassOption;
-import moa.options.IntOption;
+import javacliparser.IntOption;
+import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 
 /**
@@ -43,7 +44,7 @@ public class MeasureStreamSpeed extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to measure.", InstanceStream.class,
+            "Stream to measure.", ExampleStream.class,
             "generators.RandomTreeGenerator");
 
     public IntOption generateSizeOption = new IntOption("generateSize", 'g',
@@ -53,7 +54,7 @@ public class MeasureStreamSpeed extends MainTask {
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         TimingUtils.enablePreciseTiming();
         int numInstances = 0;
-        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
+        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
         long genStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
         while (numInstances < this.generateSizeOption.getValue()) {
             stream.nextInstance();

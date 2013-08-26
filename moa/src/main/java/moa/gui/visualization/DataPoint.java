@@ -28,9 +28,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.Instance;
+import samoa.instances.Attribute;
+import samoa.instances.DenseInstance;
+import samoa.instances.Instance;
 
 public class DataPoint extends DenseInstance{
     
@@ -84,7 +84,7 @@ public class DataPoint extends DenseInstance{
         StringBuffer sb = new StringBuffer();
         sb.append("<html><table>");
         sb.append("<tr><td>Point</td><td>"+timestamp+"</td></tr>");
-        for (int i = 0; i < m_AttValues.length-1; i++) {
+        for (int i = 0; i < numAttributes() - 1; i++) { //m_AttValues.length
             String label = "Dim "+i;
             if(i == x_dim)
                  label = "<b>X</b>";

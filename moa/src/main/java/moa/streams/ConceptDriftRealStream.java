@@ -19,20 +19,21 @@
  */
 package moa.streams;
 
-import weka.core.Attribute;
-import weka.core.DenseInstance;
-import weka.core.FastVector;
-import weka.core.Instance;
-import weka.core.Instances;
+import samoa.instances.Attribute;
+import samoa.instances.DenseInstance;
+import moa.core.FastVector;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 
 import java.util.Random;
+import moa.core.InstanceExample;
 
-import moa.core.InstancesHeader;
+import samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
-import moa.options.FloatOption;
-import moa.options.IntOption;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 
 /**
@@ -64,11 +65,11 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
     private static final long serialVersionUID = 1L;
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to add concept drift.", InstanceStream.class,
+            "Stream to add concept drift.", ExampleStream.class,
             "generators.RandomTreeGenerator");
 
     public ClassOption driftstreamOption = new ClassOption("driftstream", 'd',
-            "Concept drift Stream.", InstanceStream.class,
+            "Concept drift Stream.", ExampleStream.class,
             "generators.RandomTreeGenerator");
 
     public FloatOption alphaOption = new FloatOption("alpha",
@@ -157,7 +158,7 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
     }
 
     @Override
-    public Instance nextInstance() {
+    public InstanceExample nextInstance() {
         numberInstanceStream++;
         double numclass = 0.0;
         double x = -4.0 * (double) (numberInstanceStream - this.positionOption.getValue()) / (double) this.widthOption.getValue();
@@ -166,13 +167,13 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
             if (this.inputStream.hasMoreInstances() == false) {
                 this.inputStream.restart();
             }
-            this.inputInstance = this.inputStream.nextInstance();
+            this.inputInstance = this.inputStream.nextInstance().getData();
             numclass = this.inputInstance.classValue();
         } else {
             if (this.driftStream.hasMoreInstances() == false) {
                 this.driftStream.restart();
             }
-            this.driftInstance = this.driftStream.nextInstance();
+            this.driftInstance = this.driftStream.nextInstance().getData();
             numclass = this.driftInstance.classValue();
         }
         int m = 0;
@@ -188,7 +189,7 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
         Instance inst = new DenseInstance(1.0, newVals);
         inst.setDataset(this.getHeader());
         inst.setClassValue(numclass);
-        return inst;
+        return new InstanceExample(inst);
 
     }
 
@@ -197,8 +198,8 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
         this.inputStream.restart();
         this.driftStream.restart();
         numberInstanceStream = 0;
-        this.inputInstance = this.inputStream.nextInstance();
-        this.driftInstance = this.driftStream.nextInstance();
+        this.inputInstance = this.inputStream.nextInstance().getData();
+        this.driftInstance = this.driftStream.nextInstance().getData();
     }
 
     @Override

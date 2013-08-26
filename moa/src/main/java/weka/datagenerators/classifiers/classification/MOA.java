@@ -38,6 +38,8 @@ import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
 import moa.streams.InstanceStream;
 import moa.streams.generators.LEDGenerator;
+import samoa.instances.SamoaToWekaInstanceConverter;
+import samoa.instances.WekaToSamoaInstanceConverter;
 
 /**
  <!-- globalinfo-start -->
@@ -87,6 +89,8 @@ public class MOA
 
   /** for manipulating the generator through the GUI. */
   protected ClassOption m_Generator = new ClassOption("InstanceStream", 'B', "The MOA instance stream generator to use from within WEKA.", InstanceStream.class, m_ActualGenerator.getClass().getName());
+  
+  protected SamoaToWekaInstanceConverter instanceConverter;
   
   /**
    * Returns a string describing this data generator.
@@ -235,7 +239,8 @@ public class MOA
   	
   	m_ActualGenerator = (InstanceStream) MOAUtils.fromOption(m_Generator);
   	((AbstractOptionHandler) m_ActualGenerator).prepareForUse();
-    m_DatasetFormat = new Instances(m_ActualGenerator.getHeader());
+     this.instanceConverter = new SamoaToWekaInstanceConverter();   
+    m_DatasetFormat = new Instances(instanceConverter.wekaInstances(m_ActualGenerator.getHeader()));
 
     // determine number of instances to generate
     numExamples = getNumExamples();
@@ -257,10 +262,11 @@ public class MOA
    * which means in non single mode
    */
   public Instance generateExample() throws Exception {
-  	if (m_ActualGenerator.hasMoreInstances())
-  		return m_ActualGenerator.nextInstance();
-  	else
+  	if (m_ActualGenerator.hasMoreInstances()) {
+  		return instanceConverter.wekaInstance(m_ActualGenerator.nextInstance().getData());
+        } else {
   		return null;
+  }
   }
 
   /**

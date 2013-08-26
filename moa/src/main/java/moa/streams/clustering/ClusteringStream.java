@@ -21,8 +21,8 @@
 package moa.streams.clustering;
 
 import moa.options.AbstractOptionHandler;
-import moa.options.FloatOption;
-import moa.options.IntOption;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
 import moa.streams.InstanceStream;
 
 public abstract class ClusteringStream extends AbstractOptionHandler implements InstanceStream{

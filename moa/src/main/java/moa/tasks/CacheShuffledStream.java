@@ -21,10 +21,10 @@ package moa.tasks;
 
 import java.util.Random;
 
-import weka.core.Instances;
+import samoa.instances.Instances;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
-import moa.options.IntOption;
+import javacliparser.IntOption;
 import moa.streams.CachedInstancesStream;
 import moa.streams.InstanceStream;
 
@@ -62,7 +62,7 @@ public class CacheShuffledStream extends AbstractTask {
         monitor.setCurrentActivity("Caching instances...", -1.0);
         while ((cache.numInstances() < this.maximumCacheSizeOption.getValue())
                 && stream.hasMoreInstances()) {
-            cache.add(stream.nextInstance());
+            cache.add(stream.nextInstance().getData());
             if (cache.numInstances()
                     % MainTask.INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
                 if (monitor.taskShouldAbort()) {

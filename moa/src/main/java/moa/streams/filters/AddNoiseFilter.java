@@ -24,10 +24,11 @@ import java.util.Random;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.GaussianEstimator;
-import moa.core.InstancesHeader;
-import moa.options.FloatOption;
-import moa.options.IntOption;
-import weka.core.Instance;
+import moa.core.InstanceExample;
+import samoa.instances.InstancesHeader;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
+import samoa.instances.Instance;
 
 /**
  * Filter for adding random noise to examples in a stream.
@@ -70,8 +71,8 @@ public class AddNoiseFilter extends AbstractStreamFilter {
     }
 
     @Override
-    public Instance nextInstance() {
-        Instance inst = (Instance) this.inputStream.nextInstance().copy();
+    public InstanceExample nextInstance() {
+        Instance inst = (Instance) ((Instance) this.inputStream.nextInstance().getData()).copy();
         for (int i = 0; i < inst.numAttributes(); i++) {
             double noiseFrac = i == inst.classIndex() ? this.classNoiseFractionOption.getValue()
                     : this.attNoiseFractionOption.getValue();
@@ -103,7 +104,7 @@ public class AddNoiseFilter extends AbstractStreamFilter {
                         * obs.getStdDev() * noiseFrac);
             }
         }
-        return inst;
+        return new InstanceExample(inst);
     }
 
     @Override

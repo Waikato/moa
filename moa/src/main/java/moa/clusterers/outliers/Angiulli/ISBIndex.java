@@ -25,7 +25,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import weka.core.Instance;
+import samoa.instances.Instance;
+
 
 public class ISBIndex {    
     public abstract static class ISBNode {

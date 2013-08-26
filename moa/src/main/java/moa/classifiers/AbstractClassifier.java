@@ -17,33 +17,30 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
+
 package moa.classifiers;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import moa.core.InstancesHeader;
+import moa.MOAObject;
+import moa.core.Example;
+import samoa.instances.InstancesHeader;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.StringUtils;
 import moa.gui.AWTRenderer;
+import moa.learners.Learner;
 import moa.options.AbstractOptionHandler;
-import moa.options.IntOption;
+import javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.Utils;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
+import moa.core.Utils;
 
-/**
- * Abstract Classifier. All learners for nominal prediction in
- * MOA extend this class.
- *
- * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $
- */
 public abstract class AbstractClassifier extends AbstractOptionHandler
-        implements Classifier {
+        implements Classifier { //Learner<Example<Instance>> {
 
     @Override
     public String getPurposeString() {
@@ -60,7 +57,7 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     protected int randomSeed = 1;
 
     /** Option for randomizable learners to change the random seed */
-    public IntOption randomSeedOption;
+    protected IntOption randomSeedOption;
 
     /** Random Generator used in randomizable learners  */
     public Random classifierRandom;
@@ -86,6 +83,15 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
             resetLearning();
         }
     }
+
+	
+    @Override
+    public double[] getVotesForInstance(Example<Instance> example){
+		return getVotesForInstance(example.getData());
+	}
+
+    @Override
+    public abstract double[] getVotesForInstance(Instance inst);
 
     @Override
     public void setModelContext(InstancesHeader ih) {
@@ -155,10 +161,10 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
             measurementList.addAll(Arrays.asList(modelMeasurements));
         }
         // add average of sub-model measurements
-        Classifier[] subModels = getSubClassifiers();
+        Learner[] subModels = getSublearners();
         if ((subModels != null) && (subModels.length > 0)) {
             List<Measurement[]> subMeasurements = new LinkedList<Measurement[]>();
-            for (Classifier subModel : subModels) {
+            for (Learner subModel : subModels) {
                 if (subModel != null) {
                     subMeasurements.add(subModel.getModelMeasurements());
                 }
@@ -187,14 +193,32 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     }
 
     @Override
+    public Learner[] getSublearners() {
+        return null;
+    }
+    
+    
+    @Override
     public Classifier[] getSubClassifiers() {
         return null;
     }
-
+    
+    
     @Override
     public Classifier copy() {
         return (Classifier) super.copy();
     }
+
+   
+    @Override
+    public MOAObject getModel(){
+        return this;
+    };
+    
+    @Override
+    public void trainOnInstance(Example<Instance> example){
+		trainOnInstance(example.getData());
+	}
 
     @Override
     public boolean correctlyClassifies(Instance inst) {
@@ -365,7 +389,7 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
      */
     protected static int modelAttIndexToInstanceAttIndex(int index,
             Instance inst) {
-        return inst.classIndex() > index ? index : index + 1;
+        return index; //inst.classIndex() > index ? index : index + 1;
     }
 
     /**
@@ -378,6 +402,6 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
      */
     protected static int modelAttIndexToInstanceAttIndex(int index,
             Instances insts) {
-        return insts.classIndex() > index ? index : index + 1;
+        return index; //insts.classIndex() > index ? index : index + 1;
     }
 }

@@ -15,12 +15,15 @@ import java.awt.Rectangle;
 import java.beans.PropertyEditorSupport;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import moa.gui.ClassOptionEditComponent;
+import javacliparser.gui.ClassOptionEditComponent;
+import javacliparser.gui.OptionsConfigurationPanel;
 import moa.options.ClassOption;
+import javacliparser.Option;
 
 /**
  * An editor for MOA ClassOption objects.
@@ -77,7 +80,7 @@ public class MOAClassOptionEditor
 
 		panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-		m_EditComponent = (ClassOptionEditComponent) ((ClassOption) getValue()).getEditComponent();
+		m_EditComponent = (ClassOptionEditComponent) getEditComponent((ClassOption) getValue());
 		m_EditComponent.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				m_EditComponent.applyState();
@@ -88,6 +91,10 @@ public class MOAClassOptionEditor
 
 		return panel;
 	}
+
+        public JComponent getEditComponent(Option option){
+             return OptionsConfigurationPanel.getEditComponent(option);
+        }
 
 	/**
 	 * Gets the custom editor component.

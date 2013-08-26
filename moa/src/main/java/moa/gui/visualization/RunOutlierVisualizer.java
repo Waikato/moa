@@ -34,7 +34,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -46,10 +45,10 @@ import moa.clusterers.outliers.MyBaseOutlierDetector;
 import moa.clusterers.outliers.MyBaseOutlierDetector.Outlier;
 import moa.clusterers.outliers.MyBaseOutlierDetector.OutlierNotifier;
 import moa.clusterers.outliers.MyBaseOutlierDetector.PrintMsg;
+import moa.core.FastVector;
 import moa.evaluation.MeasureCollection;
 import moa.evaluation.OutlierPerformance;
 import moa.gui.TextViewerPanel;
-import moa.gui.clustertab.ClusteringVisualEvalPanel;
 import moa.gui.outliertab.OutlierSetupTab;
 import moa.gui.outliertab.OutlierVisualEvalPanel;
 import moa.gui.outliertab.OutlierVisualTab;
@@ -57,7 +56,10 @@ import moa.streams.clustering.ClusterEvent;
 import moa.streams.clustering.ClusterEventListener;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
-import weka.core.*;
+import samoa.instances.Attribute;
+import samoa.instances.DenseInstance;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 
 public class RunOutlierVisualizer implements Runnable, ActionListener, ClusterEventListener{	
     /** the pause interval, being read from the gui at startup */
@@ -317,7 +319,7 @@ public class RunOutlierVisualizer implements Runnable, ActionListener, ClusterEv
             if (timestamp % 100 == 0) 
                 m_visualPanel.setProcessedPointsCounter(timestamp);
 
-            Instance nextStreamObj0 = m_stream0.nextInstance();
+            Instance nextStreamObj0 = m_stream0.nextInstance().getData();
             DataPoint point0 = new DataPoint(nextStreamObj0,timestamp);
 
             pointBuffer0.add(point0);

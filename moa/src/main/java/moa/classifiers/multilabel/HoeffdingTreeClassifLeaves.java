@@ -27,7 +27,7 @@ import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.classifiers.trees.HoeffdingTree;
 import moa.options.ClassOption;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 /**
  * Hoeffding Tree that have a classifier at the leaves.

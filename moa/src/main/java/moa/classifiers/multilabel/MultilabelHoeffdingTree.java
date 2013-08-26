@@ -24,10 +24,10 @@ import java.util.List;
 import moa.classifiers.Classifier;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.trees.HoeffdingTree;
-import moa.core.InstancesHeader;
 import moa.core.utils.Converter;
-import weka.core.Instance;
-import weka.core.Instances;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
+import samoa.instances.InstancesHeader;
 
 /**
  * Hoeffding Tree for classifying multi-label data.

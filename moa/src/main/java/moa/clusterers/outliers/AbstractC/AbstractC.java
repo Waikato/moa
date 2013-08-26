@@ -23,10 +23,10 @@ package moa.clusterers.outliers.AbstractC;
 import java.util.Vector;
 import moa.clusterers.outliers.AbstractC.ISBIndex.ISBNode;
 import moa.clusterers.outliers.AbstractC.ISBIndex.ISBSearchResult;
-import moa.options.FlagOption;
-import moa.options.FloatOption;
-import moa.options.IntOption;
-import weka.core.Instance;
+import javacliparser.FlagOption;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
+import samoa.instances.Instance;
 
 //The algorithm is presented in:
 //D. Yang, E. Rundensteiner, and M. Ward.

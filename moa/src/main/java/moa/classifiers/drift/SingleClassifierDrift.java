@@ -27,8 +27,8 @@ import moa.classifiers.Classifier;
 import moa.classifiers.core.driftdetection.DriftDetectionMethod;
 import moa.core.Measurement;
 import moa.options.ClassOption;
-import weka.core.Instance;
-import weka.core.Utils;
+import samoa.instances.Instance;
+import moa.core.Utils;
 
 /**
  * Class for handling concept drift datasets with a wrapper on a

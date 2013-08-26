@@ -19,8 +19,8 @@
  */
 package moa.classifiers.core.conditionaltests;
 
-import moa.core.InstancesHeader;
-import weka.core.Instance;
+import samoa.instances.InstancesHeader;
+import samoa.instances.Instance;
 
 /**
  * Numeric binary conditional test for instances to use to split nodes in Hoeffding trees.
@@ -47,8 +47,8 @@ public class NumericAttributeBinaryTest extends InstanceConditionalBinaryTest {
 
     @Override
     public int branchForInstance(Instance inst) {
-        int instAttIndex = this.attIndex < inst.classIndex() ? this.attIndex
-                : this.attIndex + 1;
+        int instAttIndex = this.attIndex ; // < inst.classIndex() ? this.attIndex
+               // : this.attIndex + 1;
         if (inst.isMissing(instAttIndex)) {
             return -1;
         }

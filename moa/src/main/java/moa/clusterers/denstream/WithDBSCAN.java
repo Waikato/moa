@@ -31,10 +31,10 @@ import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
 import moa.clusterers.macro.dbscan.DBScan;
 import moa.core.Measurement;
-import moa.options.FloatOption;
-import moa.options.IntOption;
-import weka.core.DenseInstance;
-import weka.core.Instance;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
+import samoa.instances.DenseInstance;
+import samoa.instances.Instance;
 
 public class WithDBSCAN extends AbstractClusterer {
 	

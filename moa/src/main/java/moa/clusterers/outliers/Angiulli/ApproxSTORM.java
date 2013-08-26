@@ -28,9 +28,10 @@ import java.util.Set;
 import java.util.Vector;
 import moa.clusterers.outliers.Angiulli.ISBIndex.ISBNode;
 import moa.clusterers.outliers.Angiulli.ISBIndex.ISBSearchResult;
-import moa.options.FloatOption;
-import moa.options.IntOption;
-import weka.core.Instance;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
+import samoa.instances.Instance;
+
 
 public class ApproxSTORM extends STORMBase {
     public class ISBNodeAppr extends ISBNode {

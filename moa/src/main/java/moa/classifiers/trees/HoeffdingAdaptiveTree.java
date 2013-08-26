@@ -27,9 +27,8 @@ import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.core.DoubleVector;
 import moa.core.MiscUtils;
-import moa.options.MultiChoiceOption;
-import weka.core.Instance;
-import weka.core.Utils;
+import moa.core.Utils;
+import samoa.instances.Instance;
 
 /**
  * Hoeffding Adaptive Tree for evolving data streams.

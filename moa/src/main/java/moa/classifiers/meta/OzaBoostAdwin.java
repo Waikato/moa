@@ -26,10 +26,10 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;
-import moa.options.FlagOption;
-import moa.options.FloatOption;
-import moa.options.IntOption;
-import weka.core.Instance;
+import javacliparser.FlagOption;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
+import samoa.instances.Instance;
 
 /**
  * Boosting for evolving data streams using ADWIN.

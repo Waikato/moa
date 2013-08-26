@@ -19,7 +19,7 @@
  */
 package moa.classifiers.trees;
 
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 /**
  * Adaptive Size Hoeffding Tree used in Bagging using trees of different size.

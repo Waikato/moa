@@ -24,17 +24,20 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 import moa.classifiers.Classifier;
+import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
-import moa.evaluation.ClassificationPerformanceEvaluator;
 import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
+import moa.evaluation.LearningPerformanceEvaluator;
+import moa.learners.Learner;
 import moa.options.ClassOption;
-import moa.options.FileOption;
-import moa.options.IntOption;
+import javacliparser.FileOption;
+import javacliparser.IntOption;
+import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 /**
  * Task for evaluating a classifier on a stream by testing then training with each example in sequence.
@@ -51,16 +54,16 @@ public class EvaluateInterleavedTestThenTrain extends MainTask {
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Classifier to train.", Classifier.class, "bayes.NaiveBayes");
+     public ClassOption learnerOption = new ClassOption("learner", 'l',
+            "Learner to train.", Learner.class, "moa.classifiers.bayes.NaiveBayes");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", InstanceStream.class,
+            "Stream to learn from.", ExampleStream.class,
             "generators.RandomTreeGenerator");
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
             "Classification performance evaluation method.",
-            ClassificationPerformanceEvaluator.class,
+            LearningPerformanceEvaluator.class,
             "BasicClassificationPerformanceEvaluator");
 
     public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
@@ -91,9 +94,9 @@ public class EvaluateInterleavedTestThenTrain extends MainTask {
 
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-        Classifier learner = (Classifier) getPreparedClassOption(this.learnerOption);
-        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
-        ClassificationPerformanceEvaluator evaluator = (ClassificationPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
+        Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
+        ExampleStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
+        LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         learner.setModelContext(stream.getHeader());
         int maxInstances = this.instanceLimitOption.getValue();
         long instancesProcessed = 0;
@@ -126,9 +129,9 @@ public class EvaluateInterleavedTestThenTrain extends MainTask {
         while (stream.hasMoreInstances()
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))
                 && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
-            Instance trainInst = stream.nextInstance();
-            Instance testInst = (Instance) trainInst.copy();
-            int trueClass = (int) trainInst.classValue();
+            Example trainInst = stream.nextInstance();
+            Example testInst = trainInst; //.copy();
+            //int trueClass = (int) trainInst.classValue();
             //testInst.setClassMissing();
             double[] prediction = learner.getVotesForInstance(testInst);
             //evaluator.addClassificationAttempt(trueClass, prediction, testInst

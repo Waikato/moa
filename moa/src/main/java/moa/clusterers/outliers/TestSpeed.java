@@ -25,7 +25,7 @@ import moa.clusterers.outliers.Angiulli.ExactSTORM;
 import moa.clusterers.outliers.MCOD.MCOD;
 import moa.clusterers.outliers.SimpleCOD.SimpleCOD;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 public class TestSpeed {    
     public static void main(String[] args) throws Exception 
@@ -58,7 +58,7 @@ public class TestSpeed {
         
         int numberSamples = 0;     
         while (stream.hasMoreInstances() && (numberSamples < numInstances)) {               
-            Instance newInst = stream.nextInstance();
+            Instance newInst = stream.nextInstance().getData();
             
             //scod.processNewInstanceImpl(newInst);  
             mcod.processNewInstanceImpl(newInst);  

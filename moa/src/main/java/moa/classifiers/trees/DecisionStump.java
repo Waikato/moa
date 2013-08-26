@@ -19,9 +19,11 @@
  */
 package moa.classifiers.trees;
 
+import javacliparser.FlagOption;
+import javacliparser.IntOption;
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.AttributeSplitSuggestion;
+import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.GaussianNumericAttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.NominalAttributeClassObserver;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
@@ -29,9 +31,7 @@ import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.options.ClassOption;
-import moa.options.FlagOption;
-import moa.options.IntOption;
-import weka.core.Instance;
+import samoa.instances.Instance;
 
 /**
  * Decision trees of one level.<br />

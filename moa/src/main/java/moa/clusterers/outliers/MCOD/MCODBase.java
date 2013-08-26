@@ -20,7 +20,11 @@
 
 package moa.clusterers.outliers.MCOD;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Vector;
 import moa.clusterers.outliers.MCOD.ISBIndex.ISBNode;
 import moa.clusterers.outliers.MCOD.ISBIndex.ISBNode.NodeType;
 import moa.clusterers.outliers.MyBaseOutlierDetector;

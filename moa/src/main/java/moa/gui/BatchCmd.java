@@ -46,11 +46,11 @@ import moa.evaluation.StatisticalCollection;
 import moa.gui.visualization.DataPoint;
 import moa.gui.visualization.RunVisualizer;
 import moa.streams.clustering.ClusterEvent;
+import samoa.instances.Instance;
 import moa.streams.clustering.ClusterEventListener;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
-import weka.core.DenseInstance;
-import weka.core.Instance;
+import samoa.instances.DenseInstance;
 
 public class BatchCmd implements ClusterEventListener{
 
@@ -141,7 +141,7 @@ public class BatchCmd implements ClusterEventListener{
 		while(m_timestamp < totalInstances && stream.hasMoreInstances()){
 			m_timestamp++;
 			counter--;
-			Instance next = stream.nextInstance();
+			Instance next = stream.nextInstance().getData();
 			DataPoint point0 = new DataPoint(next,m_timestamp);
 			pointBuffer0.add(point0);
 

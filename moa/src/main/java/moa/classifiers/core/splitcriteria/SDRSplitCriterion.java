@@ -2,11 +2,7 @@ package moa.classifiers.core.splitcriteria;
 
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import moa.options.FloatOption;
 import moa.tasks.TaskMonitor;
-//import weka.core.Utils;
-//import samoa.instances.Instance;
-import weka.core.Instance;
 
 public class SDRSplitCriterion extends AbstractOptionHandler implements SplitCriterion {
 

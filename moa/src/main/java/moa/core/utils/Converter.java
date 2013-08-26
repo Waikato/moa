@@ -22,8 +22,8 @@ package moa.core.utils;
 import java.util.LinkedList;
 import java.util.List;
 import moa.AbstractMOAObject;
-import weka.core.Instance;
-import weka.core.Instances;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 
 /**
  * Converter. This class can be used to convert a multi-label instance into a

@@ -31,6 +31,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import javacliparser.FlagOption;
+import javacliparser.FloatOption;
+import javacliparser.IntOption;
 import moa.AbstractMOAObject;
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
@@ -40,10 +43,7 @@ import moa.classifiers.core.splitcriteria.SDRSplitCriterion;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.core.DoubleVector;
 import moa.options.ClassOption;
-import moa.options.FlagOption;
-import moa.options.FloatOption;
-import moa.options.IntOption;
-import weka.core.Instance;
+import samoa.instances.Instance;
  
 /*
  * Implementation of FIMTDD, regresion tree for data streams.

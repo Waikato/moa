@@ -24,17 +24,17 @@ import java.util.List;
 import java.util.Random;
 import moa.cluster.Clustering;
 
-import moa.core.InstancesHeader;
+import samoa.instances.InstancesHeader;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.StringUtils;
 import moa.gui.AWTRenderer;
 import moa.options.AbstractOptionHandler;
-import moa.options.FlagOption;
-import moa.options.IntOption;
+import javacliparser.FlagOption;
+import javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
-import weka.core.Instance;
-import weka.core.Instances;
+import samoa.instances.Instance;
+import samoa.instances.Instances;
 
 public abstract class AbstractClusterer extends AbstractOptionHandler
 		implements Clusterer {
