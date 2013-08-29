@@ -551,8 +551,10 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
                 leafNode = foundNode.parent;
             }
             return leafNode.getClassVotes(inst, this);
-        }
-        return new double[0];
+          } else {
+            int numClasses = inst.dataset().numClasses();
+            return new double[numClasses];
+          }
     }
 
     @Override

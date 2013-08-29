@@ -23,6 +23,7 @@
  */
 package moa.streams.clustering;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -121,7 +122,7 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
 
 
 
-    private class GeneratorCluster{
+    private class GeneratorCluster implements Serializable{
         //TODO: points is redundant to microclusterpoints, we need to come 
         //up with a good strategy that microclusters get updated and 
         //rebuild if needed. Idea: Sort microclusterpoints by timestamp and let 
@@ -129,6 +130,8 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         //microcluster gets kicked, then we rebuild... or maybe not... could be
         //same as searching for point to be kicked. more likely is we rebuild 
         //fewer times then insert.
+        
+        private static final long serialVersionUID = -6301649898961112942L;
         
         SphereCluster generator;
         int kill = -1;

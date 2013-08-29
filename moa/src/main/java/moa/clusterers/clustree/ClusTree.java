@@ -146,7 +146,7 @@ public class ClusTree extends AbstractClusterer{
             root = new Node(numberDimensions, 0);
         }
         else{
-            if(numberDimensions!=instance.numAttributes())
+            if(numberDimensions!=instance.numAttributes()-1)
                 System.out.println("Wrong dimensionality, expected:"+numberDimensions+ "found:"+instance.numAttributes());
         }
 
