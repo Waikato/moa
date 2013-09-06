@@ -41,6 +41,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import moa.evaluation.Accuracy;
 import moa.evaluation.MeasureCollection;
+import moa.evaluation.RegressionAccuracy;
 
 /**
  * This panel displays text. Used to output the results of tasks.
@@ -64,7 +65,14 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
     private javax.swing.JSplitPane jSplitPane1;
 
+    private boolean isRegression;
+
     public TaskTextViewerPanel() {
+        this(false);
+    }
+    
+    public TaskTextViewerPanel(boolean isRegression) {
+        this.isRegression = isRegression;
         java.awt.GridBagConstraints gridBagConstraints;
 
         jSplitPane1 = new javax.swing.JSplitPane();
@@ -253,9 +261,9 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         gridBagConstraints.weighty = 1.0;
         add(jSplitPane1, gridBagConstraints);
 
-        acc1[0] = new Accuracy();
+        acc1[0] = newAccuracy();
 
-        acc2[0] = new Accuracy();
+        acc2[0] = newAccuracy();
         clusteringVisualEvalPanel1.setMeasures(acc1, acc2, this);
         this.graphCanvas.setGraph(acc1[0], acc2[0], 0, 1000);
 
@@ -285,7 +293,7 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
          double processFrequency = 1000;
         if (preview != null && !preview.equals("")) {
             MeasureCollection oldAccuracy = acc1[0];
-            acc1[0] = new Accuracy();
+            acc1[0] = newAccuracy();
             Scanner scanner = new Scanner(preview);
             String firstLine = scanner.nextLine();
             boolean isSecondLine = true;
@@ -340,12 +348,12 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
                     }
                 }
             } else {
-                 this.acc2[0] = new Accuracy();
+                 this.acc2[0] = newAccuracy();
             }
             
         } else {
-            this.acc1[0] = new Accuracy();
-            this.acc2[0] = new Accuracy();
+            this.acc1[0] = newAccuracy();
+            this.acc2[0] = newAccuracy();
         }
         this.graphCanvas.setGraph(acc1[0], acc2[0], this.graphCanvas.getMeasureSelected(), (int) processFrequency);
         this.graphCanvas.updateCanvas();
@@ -481,4 +489,9 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         }
         this.graphCanvas.setGraph(acc1[m_select], acc2[m_select], m_select_offset, this.graphCanvas.getProcessFrequency());
     }
+    
+    protected Accuracy newAccuracy() {
+        return this.isRegression == false ? new Accuracy() : new RegressionAccuracy();
+}
+    
 }

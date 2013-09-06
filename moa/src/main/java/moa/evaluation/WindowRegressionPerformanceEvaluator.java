@@ -34,7 +34,7 @@ import samoa.instances.Instance;
  * @version $Revision: 7 $
  */
 public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
-        implements LearningPerformanceEvaluator<Example<Instance>> {
+        implements RegressionPerformanceEvaluator {
 
     private static final long serialVersionUID = 1L;
 

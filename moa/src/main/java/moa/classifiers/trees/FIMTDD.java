@@ -35,6 +35,7 @@ import javacliparser.FlagOption;
 import javacliparser.FloatOption;
 import javacliparser.IntOption;
 import moa.AbstractMOAObject;
+import moa.classifiers.Regressor;
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;
@@ -49,7 +50,7 @@ import samoa.instances.Instance;
  * Implementation of FIMTDD, regresion tree for data streams.
  */
  
-public class FIMTDD extends HoeffdingTree {
+public class FIMTDD extends HoeffdingTree implements Regressor{
 
 	private static final long serialVersionUID = 1L;
 

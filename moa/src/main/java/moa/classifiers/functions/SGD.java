@@ -33,6 +33,7 @@ import moa.core.Measurement;
 import moa.core.StringUtils;
 import javacliparser.FloatOption;
 import javacliparser.MultiChoiceOption;
+import moa.classifiers.Regressor;
 import samoa.instances.Instance;
 import moa.core.Utils;
 
@@ -43,7 +44,7 @@ import moa.core.Utils;
 <!-- globalinfo-end -->
  *
  */
-public class SGD extends AbstractClassifier {
+public class SGD extends AbstractClassifier implements Regressor{
 
     /** For serialization */
     private static final long serialVersionUID = -3732968666673530290L;

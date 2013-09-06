@@ -58,11 +58,19 @@ public class PreviewPanel extends JPanel implements ResultPreviewListener {
 
     protected JComboBox autoRefreshComboBox = new JComboBox(autoFreqStrings);
 
-    protected TaskTextViewerPanel textViewerPanel = new TaskTextViewerPanel();
+    protected TaskTextViewerPanel textViewerPanel; // = new TaskTextViewerPanel();
 
     protected javax.swing.Timer autoRefreshTimer;
 
+    protected boolean isRegression;
+
     public PreviewPanel() {
+        this(false);
+    }
+    
+    public PreviewPanel(boolean isRegression) {
+        this.isRegression = isRegression;
+        this.textViewerPanel = new TaskTextViewerPanel(isRegression);
         this.autoRefreshComboBox.setSelectedIndex(1); // default to 1 sec
         JPanel controlPanel = new JPanel();
         controlPanel.add(this.previewLabel);
