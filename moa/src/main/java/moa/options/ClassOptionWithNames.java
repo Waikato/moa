@@ -11,13 +11,13 @@
 
 package moa.options;
 
-import javacliparser.Options;
-import javacliparser.Option;
+import com.github.javacliparser.Options;
+import com.github.javacliparser.Option;
 import java.io.File;
 
 import javax.swing.JComponent;
 
-import javacliparser.gui.ClassOptionWithNamesEditComponent;
+import com.github.javacliparser.gui.ClassOptionWithNamesEditComponent;
 import moa.tasks.Task;
 
 public class ClassOptionWithNames extends AbstractClassOption {

@@ -23,8 +23,8 @@ import moa.classifiers.Classifier;
 import moa.classifiers.trees.ASHoeffdingTree;
 import moa.core.DoubleVector;
 import moa.core.MiscUtils;
-import javacliparser.IntOption;
-import javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.FlagOption;
 import samoa.instances.Instance;
 import moa.core.Utils;
 

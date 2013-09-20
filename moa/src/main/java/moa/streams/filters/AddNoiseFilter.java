@@ -26,8 +26,8 @@ import moa.core.DoubleVector;
 import moa.core.GaussianEstimator;
 import moa.core.InstanceExample;
 import samoa.instances.InstancesHeader;
-import javacliparser.FloatOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 import samoa.instances.Instance;
 
 /**

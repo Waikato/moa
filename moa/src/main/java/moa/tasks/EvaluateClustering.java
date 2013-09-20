@@ -13,8 +13,8 @@ import moa.core.ObjectRepository;
 import moa.evaluation.LearningCurve;
 import moa.gui.BatchCmd;
 import moa.options.ClassOption;
-import javacliparser.FileOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.FileOption;
+import com.github.javacliparser.IntOption;
 import moa.streams.clustering.ClusteringStream;
 
 /**

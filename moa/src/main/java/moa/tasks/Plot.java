@@ -27,12 +27,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import moa.core.ObjectRepository;
-import javacliparser.FileOption;
-import javacliparser.FlagOption;
-import javacliparser.IntOption;
-import javacliparser.ListOption;
-import javacliparser.MultiChoiceOption;
-import javacliparser.StringOption;
+import com.github.javacliparser.FileOption;
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.ListOption;
+import com.github.javacliparser.MultiChoiceOption;
+import com.github.javacliparser.StringOption;
 
 /**
  * A task allowing to create and plot gnuplot scripts.

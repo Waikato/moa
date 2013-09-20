@@ -1,5 +1,5 @@
 /*
- *    FloatOptionEditComponent.java
+ *    IntOptionEditComponent.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  *
@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package javacliparser.gui;
+package com.github.javacliparser.gui;
 
 import java.awt.GridLayout;
 
@@ -28,77 +28,58 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import javacliparser.FloatOption;
-import javacliparser.Option;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.Option;
 
 /**
- * An OptionEditComponent that lets the user edit a float option.
+ * An OptionEditComponent that lets the user edit an integer option.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class FloatOptionEditComponent extends JPanel implements
+public class IntOptionEditComponent extends JPanel implements
         OptionEditComponent {
 
     private static final long serialVersionUID = 1L;
 
-    public static final int SLIDER_RESOLUTION = 100000;
-
-    protected FloatOption editedOption;
+    protected IntOption editedOption;
 
     protected JSpinner spinner;
 
     protected JSlider slider;
 
-    public FloatOptionEditComponent(Option opt) {
-        FloatOption option = (FloatOption) opt;
+    public IntOptionEditComponent(Option opt) {
+        IntOption option = (IntOption) opt;
         this.editedOption = option;
-        double minVal = option.getMinValue();
-        double maxVal = option.getMaxValue();
+        int minVal = option.getMinValue();
+        int maxVal = option.getMaxValue();
         setLayout(new GridLayout(1, 0));
         this.spinner = new JSpinner(new SpinnerNumberModel(option.getValue(),
-                minVal, maxVal, 0.001));
+                minVal, maxVal, 1));
         add(this.spinner);
-        if ((minVal > Double.NEGATIVE_INFINITY)
-                && (maxVal < Double.POSITIVE_INFINITY)) {
-            this.slider = new JSlider(0, SLIDER_RESOLUTION,
-                    floatValueToSliderValue(option.getValue()));
+        if ((minVal > Integer.MIN_VALUE) && (maxVal < Integer.MAX_VALUE)) {
+            this.slider = new JSlider(minVal, maxVal, option.getValue());
             add(this.slider);
             this.slider.addChangeListener(new ChangeListener() {
 
                 @Override
                 public void stateChanged(ChangeEvent e) {
-                    FloatOptionEditComponent.this.spinner.setValue(sliderValueToFloatValue(FloatOptionEditComponent.this.slider.getValue()));
+                    IntOptionEditComponent.this.spinner.setValue(IntOptionEditComponent.this.slider.getValue());
                 }
             });
             this.spinner.addChangeListener(new ChangeListener() {
 
                 @Override
                 public void stateChanged(ChangeEvent e) {
-                    FloatOptionEditComponent.this.slider.setValue(floatValueToSliderValue(((Double) FloatOptionEditComponent.this.spinner.getValue()).doubleValue()));
+                    IntOptionEditComponent.this.slider.setValue(((Integer) IntOptionEditComponent.this.spinner.getValue()).intValue());
                 }
             });
         }
     }
 
-    protected int floatValueToSliderValue(double floatValue) {
-        double minVal = this.editedOption.getMinValue();
-        double maxVal = this.editedOption.getMaxValue();
-        return (int) Math.round((floatValue - minVal) / (maxVal - minVal)
-                * SLIDER_RESOLUTION);
-    }
-
-    protected double sliderValueToFloatValue(int sliderValue) {
-        double minVal = this.editedOption.getMinValue();
-        double maxVal = this.editedOption.getMaxValue();
-        return minVal
-                + (((double) sliderValue / SLIDER_RESOLUTION) * (maxVal - minVal));
-    }
-
     @Override
     public void applyState() {
-        this.editedOption.setValue(((Double) this.spinner.getValue()).doubleValue());
-        // this.editedOption.setValue(Double.parseDouble(this.spinner.getValue().toString()));
+        this.editedOption.setValue(((Integer) this.spinner.getValue()).intValue());
     }
 
     @Override
@@ -108,6 +89,6 @@ public class FloatOptionEditComponent extends JPanel implements
 
     @Override
     public void setEditState(String cliString) {
-        this.spinner.setValue(FloatOption.cliStringToDouble(cliString));
+        this.spinner.setValue(IntOption.cliStringToInt(cliString));
     }
 }

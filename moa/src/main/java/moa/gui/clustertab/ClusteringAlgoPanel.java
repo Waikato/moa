@@ -40,10 +40,10 @@ import javax.swing.JPanel;
 import moa.clusterers.AbstractClusterer;
 import moa.clusterers.Clusterer;
 import moa.gui.GUIUtils;
-import javacliparser.gui.OptionEditComponent;
-import javacliparser.gui.OptionsConfigurationPanel;
+import com.github.javacliparser.gui.OptionEditComponent;
+import com.github.javacliparser.gui.OptionsConfigurationPanel;
 import moa.options.ClassOption;
-import javacliparser.Option;
+import com.github.javacliparser.Option;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.generators.RandomRBFGenerator;
 

@@ -22,8 +22,8 @@ package moa.streams.generators;
 import java.util.Random;
 import moa.core.InstanceExample;
 
-import javacliparser.IntOption;
-import javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.FloatOption;
 import samoa.instances.Instance;
 
 /**

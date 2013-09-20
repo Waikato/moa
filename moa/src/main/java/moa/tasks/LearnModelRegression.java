@@ -23,7 +23,7 @@ import moa.classifiers.Classifier;
 import moa.core.ObjectRepository;
 import moa.learners.Learner;
 import moa.options.ClassOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.IntOption;
 import moa.classifiers.Regressor;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;

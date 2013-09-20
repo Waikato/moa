@@ -19,8 +19,8 @@
  */
 package moa.classifiers.trees;
 
-import javacliparser.FlagOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;

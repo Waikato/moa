@@ -20,7 +20,7 @@
  */
 package moa.options;
 
-import javacliparser.Option;
+import com.github.javacliparser.Option;
 import weka.core.Utils;
 
 import java.io.File;

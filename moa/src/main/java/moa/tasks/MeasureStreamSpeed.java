@@ -24,7 +24,7 @@ import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
 import moa.evaluation.LearningEvaluation;
 import moa.options.ClassOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.IntOption;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 

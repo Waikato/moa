@@ -10,7 +10,7 @@
 
 package moa.gui;
 
-import javacliparser.gui.OptionsConfigurationPanel;
+import com.github.javacliparser.gui.OptionsConfigurationPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Window;

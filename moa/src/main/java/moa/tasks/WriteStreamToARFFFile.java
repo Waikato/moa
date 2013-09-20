@@ -26,9 +26,9 @@ import java.io.Writer;
 
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
-import javacliparser.FileOption;
-import javacliparser.FlagOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.FileOption;
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
 import moa.streams.InstanceStream;
 
 /**

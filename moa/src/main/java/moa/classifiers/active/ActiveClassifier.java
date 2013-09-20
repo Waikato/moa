@@ -31,8 +31,8 @@ import moa.core.Utils;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.options.ClassOption;
-import javacliparser.FloatOption;
-import javacliparser.MultiChoiceOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.MultiChoiceOption;
 
 /**
  * Active learning setting for evolving data streams.

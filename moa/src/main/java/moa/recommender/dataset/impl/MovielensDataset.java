@@ -31,7 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import javacliparser.FileOption;
+import com.github.javacliparser.FileOption;
 import moa.tasks.TaskMonitor;
 
 public class MovielensDataset extends AbstractOptionHandler implements Dataset {

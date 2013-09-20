@@ -25,7 +25,7 @@ import java.io.Serializable;
 
 import moa.core.ObjectRepository;
 import moa.core.SerializeUtils;
-import javacliparser.FileOption;
+import com.github.javacliparser.FileOption;
 
 /**
  * Abstract Main Task. All tasks that want to write their result 

@@ -19,8 +19,8 @@
  */
 package moa.options;
 
-import javacliparser.Configurable;
-import javacliparser.Options;
+import com.github.javacliparser.Configurable;
+import com.github.javacliparser.Options;
 import moa.MOAObject;
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;

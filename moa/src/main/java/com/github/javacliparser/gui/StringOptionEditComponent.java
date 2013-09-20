@@ -17,11 +17,11 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package javacliparser.gui;
+package com.github.javacliparser.gui;
 
 import javax.swing.JTextField;
 
-import javacliparser.Option;
+import com.github.javacliparser.Option;
 
 /**
  * An OptionEditComponent that lets the user edit a string option.

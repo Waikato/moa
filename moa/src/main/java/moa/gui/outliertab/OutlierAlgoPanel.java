@@ -35,9 +35,9 @@ import javax.swing.JPanel;
 import moa.clusterers.outliers.MyBaseOutlierDetector;
 import moa.gui.GUIUtils;
 import moa.options.ClassOption;
-import javacliparser.Option;
-import javacliparser.gui.OptionEditComponent;
-import javacliparser.gui.OptionsConfigurationPanel;
+import com.github.javacliparser.Option;
+import com.github.javacliparser.gui.OptionEditComponent;
+import com.github.javacliparser.gui.OptionsConfigurationPanel;
 import moa.streams.clustering.ClusteringStream;
 
 public class OutlierAlgoPanel extends javax.swing.JPanel implements ActionListener{

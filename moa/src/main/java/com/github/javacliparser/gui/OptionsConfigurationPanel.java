@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package javacliparser.gui;
+package com.github.javacliparser.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -49,9 +49,9 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 
 import moa.classifiers.trees.HoeffdingTree;
-import javacliparser.Option;
+import com.github.javacliparser.Option;
 import moa.options.OptionHandler;
-import javacliparser.Options;
+import com.github.javacliparser.Options;
 import moa.gui.GUIUtils;
 
 /**

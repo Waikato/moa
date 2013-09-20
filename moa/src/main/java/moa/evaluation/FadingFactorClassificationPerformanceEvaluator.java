@@ -22,7 +22,7 @@ package moa.evaluation;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
-import javacliparser.FloatOption;
+import com.github.javacliparser.FloatOption;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 

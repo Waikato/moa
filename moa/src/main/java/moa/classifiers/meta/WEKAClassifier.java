@@ -22,7 +22,7 @@ package moa.classifiers.meta;
 
 import moa.classifiers.AbstractClassifier;
 import moa.core.Measurement;
-import javacliparser.IntOption;
+import com.github.javacliparser.IntOption;
 import moa.options.WEKAClassOption;
 import weka.classifiers.Classifier;
 import weka.classifiers.UpdateableClassifier;

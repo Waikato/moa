@@ -20,8 +20,8 @@
 package moa.options;
 
 import java.io.File;
-import javacliparser.Option;
-import javacliparser.Options;
+import com.github.javacliparser.Option;
+import com.github.javacliparser.Options;
 import moa.options.OptionHandler;
 import moa.tasks.Task;
 

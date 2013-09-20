@@ -24,7 +24,7 @@ import moa.core.ObjectRepository;
 import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
 import moa.options.ClassOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.IntOption;
 import moa.recommender.dataset.Dataset;
 import moa.recommender.predictor.RatingPredictor;
 import moa.recommender.rc.data.RecommenderData;

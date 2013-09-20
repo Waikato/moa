@@ -28,7 +28,7 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.IntOption;
 
 /**
  * Bagging for evolving data streams using ADWIN.

@@ -22,7 +22,7 @@ package moa.classifiers.functions;
 import moa.classifiers.AbstractClassifier;
 import moa.core.Measurement;
 import moa.core.Utils;
-import javacliparser.FloatOption;
+import com.github.javacliparser.FloatOption;
 import samoa.instances.Instance;
 
 /**

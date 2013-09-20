@@ -23,7 +23,7 @@ import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import javacliparser.IntOption;
+import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 import samoa.instances.Instance;
 

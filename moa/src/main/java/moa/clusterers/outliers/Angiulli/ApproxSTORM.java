@@ -28,8 +28,8 @@ import java.util.Set;
 import java.util.Vector;
 import moa.clusterers.outliers.Angiulli.ISBIndex.ISBNode;
 import moa.clusterers.outliers.Angiulli.ISBIndex.ISBSearchResult;
-import javacliparser.FloatOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 import samoa.instances.Instance;
 
 

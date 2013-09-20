@@ -26,11 +26,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.*;
-import javacliparser.FlagOption; 
+import com.github.javacliparser.FlagOption; 
 
-import javacliparser.FloatOption;
-import javacliparser.IntOption;
-import javacliparser.MultiChoiceOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.MultiChoiceOption;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.core.attributeclassobservers.*;
 import moa.classifiers.core.attributeclassobservers.BinaryTreeNumericAttributeClassObserver.Node;

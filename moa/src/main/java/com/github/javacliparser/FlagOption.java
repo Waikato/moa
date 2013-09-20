@@ -15,49 +15,62 @@
  * License.  
  */
 
-package javacliparser;
+package com.github.javacliparser;
 
 /**
- * String option.
+ * Flag option.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class StringOption extends AbstractOption {
+public class FlagOption extends AbstractOption {
 
     private static final long serialVersionUID = 1L;
 
-    protected String currentVal;
+    protected boolean isSet = false;
 
-    protected String defaultVal;
-
-    public StringOption(String name, char cliChar, String purpose,
-            String defaultVal) {
+    public FlagOption(String name, char cliChar, String purpose) {
         super(name, cliChar, purpose);
-        this.defaultVal = defaultVal;
-        resetToDefault();
     }
 
-    public void setValue(String v) {
-        this.currentVal = v;
+    public void setValue(boolean v) {
+        this.isSet = v;
     }
 
-    public String getValue() {
-        return this.currentVal;
+    public void set() {
+        setValue(true);
+    }
+
+    public void unset() {
+        setValue(false);
+    }
+
+    public boolean isSet() {
+        return this.isSet;
     }
 
     @Override
     public String getDefaultCLIString() {
-        return this.defaultVal;
+        return null;
     }
 
     @Override
     public String getValueAsCLIString() {
-        return this.currentVal;
+        return this.isSet ? "" : null;
     }
 
     @Override
     public void setValueViaCLIString(String s) {
-        setValue(s);
+        this.isSet = (s != null);
     }
+
+    @Override
+    public String getStateString() {
+        return this.isSet ? "true" : "false";
+    }
+
+    //@Override
+    //public JComponent getEditComponent() {
+    //    return new FlagOptionEditComponent(this);
+    //}
 }

@@ -32,9 +32,9 @@ import moa.classifiers.Classifier;
 
 import moa.core.Measurement;
 import moa.options.ClassOption;
-import javacliparser.FlagOption;
-import javacliparser.FloatOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 
 /**
  * Ensemble Combining Restricted Hoeffding Trees using Stacking.

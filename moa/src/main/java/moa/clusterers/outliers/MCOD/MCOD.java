@@ -26,8 +26,8 @@ import java.util.Vector;
 import moa.clusterers.outliers.MCOD.ISBIndex.ISBNode;
 import moa.clusterers.outliers.MCOD.ISBIndex.ISBNode.NodeType;
 import moa.clusterers.outliers.MCOD.ISBIndex.ISBSearchResult;
-import javacliparser.FloatOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 import samoa.instances.Instance;
 
 

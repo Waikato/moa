@@ -38,11 +38,11 @@ import moa.core.InputStreamProgressMonitor;
 import moa.core.InstanceExample;
 import samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
-import javacliparser.FileOption;
-import javacliparser.FlagOption;
-import javacliparser.IntOption;
-import javacliparser.ListOption;
-import javacliparser.Option;
+import com.github.javacliparser.FileOption;
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.ListOption;
+import com.github.javacliparser.Option;
 import moa.tasks.TaskMonitor;
 
 import samoa.instances.Instance;

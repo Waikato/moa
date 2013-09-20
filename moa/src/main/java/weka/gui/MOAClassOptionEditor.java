@@ -20,10 +20,10 @@ import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import javacliparser.gui.ClassOptionEditComponent;
-import javacliparser.gui.OptionsConfigurationPanel;
+import com.github.javacliparser.gui.ClassOptionEditComponent;
+import com.github.javacliparser.gui.OptionsConfigurationPanel;
 import moa.options.ClassOption;
-import javacliparser.Option;
+import com.github.javacliparser.Option;
 
 /**
  * An editor for MOA ClassOption objects.

@@ -19,11 +19,11 @@
  */
 package moa.classifiers.meta;
 
-import javacliparser.IntOption;
-import javacliparser.FloatOption;
-import javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.FlagOption;
 import moa.options.ClassOption;
-import javacliparser.MultiChoiceOption;
+import com.github.javacliparser.MultiChoiceOption;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;

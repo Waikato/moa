@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package javacliparser;
+package com.github.javacliparser;
 
 import java.io.File;
 //import moa.options.OptionHandler;

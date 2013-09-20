@@ -28,8 +28,8 @@ package moa.classifiers.functions;
 import moa.classifiers.AbstractClassifier;
 import moa.core.Measurement;
 import moa.core.StringUtils;
-import javacliparser.FloatOption;
-import javacliparser.MultiChoiceOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.MultiChoiceOption;
 import samoa.instances.Instance;
 import moa.core.Utils;
 

@@ -20,8 +20,8 @@
 package moa.streams.generators;
 
 import java.util.Random;
-import javacliparser.FloatOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 import moa.core.FastVector;
 import moa.core.InstanceExample;
 import moa.core.ObjectRepository;

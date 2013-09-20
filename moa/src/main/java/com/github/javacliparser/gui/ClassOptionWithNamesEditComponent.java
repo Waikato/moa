@@ -1,23 +1,14 @@
-/*
- *    ClassOptionEditComponent.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
- *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+/**
+ * [ClassOptionWithNamesEditComponent.java]
+ * 
+ * ClassOptionWithNames: Editing window
+ * 
+ * @author Yunsu Kim
+ * 		   based on the implementation of Richard Kirkby
+ * Data Management and Data Exploration Group, RWTH Aachen University
  */
-package javacliparser.gui;
+
+package com.github.javacliparser.gui;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -32,22 +23,15 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import moa.options.ClassOption;
-import javacliparser.Option;
-import moa.gui.ClassOptionSelectionPanel;
+import moa.options.ClassOptionWithNames;
+import com.github.javacliparser.Option;
+import moa.gui.ClassOptionWithNamesSelectionPanel;
 
-/**
- * An OptionEditComponent that lets the user edit a class option.
- *
- * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $
- */
-public class ClassOptionEditComponent extends JPanel implements
-        OptionEditComponent {
+public class ClassOptionWithNamesEditComponent extends JPanel implements OptionEditComponent {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    protected ClassOption editedOption;
+    protected ClassOptionWithNames editedOption;
 
     protected JTextField textField = new JTextField();
 
@@ -56,60 +40,53 @@ public class ClassOptionEditComponent extends JPanel implements
     /** listeners that listen to changes to the chosen option. */
     protected HashSet<ChangeListener> changeListeners = new HashSet<ChangeListener>();
 
-    public ClassOptionEditComponent(Option opt) {
-        ClassOption option = (ClassOption) opt;
+    public ClassOptionWithNamesEditComponent(ClassOptionWithNames option) {
         this.editedOption = option;
         this.textField.setEditable(false);
         this.textField.getDocument().addDocumentListener(new DocumentListener() {
 
-            @Override
             public void removeUpdate(DocumentEvent e) {
                 notifyChangeListeners();
             }
 
-            @Override
             public void insertUpdate(DocumentEvent e) {
                 notifyChangeListeners();
             }
 
-            @Override
             public void changedUpdate(DocumentEvent e) {
                 notifyChangeListeners();
             }
         });
+        
         setLayout(new BorderLayout());
         add(this.textField, BorderLayout.CENTER);
         add(this.editButton, BorderLayout.EAST);
         this.editButton.addActionListener(new ActionListener() {
-
-            @Override
             public void actionPerformed(ActionEvent arg0) {
                 editObject();
             }
         });
+        
         setEditState(this.editedOption.getValueAsCLIString());
     }
 
-    @Override
     public void applyState() {
         this.editedOption.setValueViaCLIString(this.textField.getText());
     }
 
-    @Override
     public Option getEditedOption() {
         return this.editedOption;
     }
 
-    @Override
     public void setEditState(String cliString) {
         this.textField.setText(cliString);
     }
 
     public void editObject() {
-        setEditState(ClassOptionSelectionPanel.showSelectClassDialog(this,
+        setEditState(ClassOptionWithNamesSelectionPanel.showSelectClassDialog(this,
                 "Editing option: " + this.editedOption.getName(),
                 this.editedOption.getRequiredType(), this.textField.getText(),
-                this.editedOption.getNullString()));
+                this.editedOption.getNullString(), this.editedOption.getClassNames()));
     }
 
     /**

@@ -30,7 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import javacliparser.FileOption;
+import com.github.javacliparser.FileOption;
 
 import moa.recommender.dataset.Dataset;
 import moa.tasks.TaskMonitor;

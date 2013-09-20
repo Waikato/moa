@@ -32,7 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import javacliparser.FileOption;
+import com.github.javacliparser.FileOption;
 import moa.tasks.TaskMonitor;
 
 public class JesterDataset extends AbstractOptionHandler implements Dataset {

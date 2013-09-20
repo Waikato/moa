@@ -15,34 +15,33 @@
  * License.  
  */
 
-package javacliparser;
+package com.github.javacliparser;
 
 /**
- * Float option.
+ * Int option.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class FloatOption extends AbstractOption {
+public class IntOption extends AbstractOption {
 
     private static final long serialVersionUID = 1L;
 
-    protected double currentVal;
+    protected int currentVal;
 
-    protected double defaultVal;
+    protected int defaultVal;
 
-    protected double minVal;
+    protected int minVal;
 
-    protected double maxVal;
+    protected int maxVal;
 
-    public FloatOption(String name, char cliChar, String purpose,
-            double defaultVal) {
-        this(name, cliChar, purpose, defaultVal, Double.NEGATIVE_INFINITY,
-                Double.POSITIVE_INFINITY);
+    public IntOption(String name, char cliChar, String purpose, int defaultVal) {
+        this(name, cliChar, purpose, defaultVal, Integer.MIN_VALUE,
+                Integer.MAX_VALUE);
     }
 
-    public FloatOption(String name, char cliChar, String purpose,
-            double defaultVal, double minVal, double maxVal) {
+    public IntOption(String name, char cliChar, String purpose, int defaultVal,
+            int minVal, int maxVal) {
         super(name, cliChar, purpose);
         this.defaultVal = defaultVal;
         this.minVal = minVal;
@@ -50,7 +49,7 @@ public class FloatOption extends AbstractOption {
         resetToDefault();
     }
 
-    public void setValue(double v) {
+    public void setValue(int v) {
         if (v < this.minVal) {
             throw new IllegalArgumentException("Option " + getName()
                     + " cannot be less than " + this.minVal
@@ -64,43 +63,43 @@ public class FloatOption extends AbstractOption {
         this.currentVal = v;
     }
 
-    public double getValue() {
+    public int getValue() {
         return this.currentVal;
     }
 
-    public double getMinValue() {
+    public int getMinValue() {
         return this.minVal;
     }
 
-    public double getMaxValue() {
+    public int getMaxValue() {
         return this.maxVal;
     }
 
     @Override
     public String getDefaultCLIString() {
-        return doubleToCLIString(this.defaultVal);
+        return intToCLIString(this.defaultVal);
     }
 
     @Override
     public String getValueAsCLIString() {
-        return doubleToCLIString(this.currentVal);
+        return intToCLIString(this.currentVal);
     }
 
     @Override
     public void setValueViaCLIString(String s) {
-        setValue(cliStringToDouble(s));
+        setValue(cliStringToInt(s));
     }
 
-    public static double cliStringToDouble(String s) {
-        return Double.parseDouble(s.trim());
+    public static int cliStringToInt(String s) {
+        return Integer.parseInt(s.trim());
     }
 
-    public static String doubleToCLIString(double d) {
-        return Double.toString(d);
+    public static String intToCLIString(int i) {
+        return Integer.toString(i);
     }
 
     //@Override
     //public JComponent getEditComponent() {
-    //    return new FloatOptionEditComponent(this);
+    //    return new IntOptionEditComponent(this);
     //}
 }

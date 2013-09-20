@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package javacliparser.gui;
+package com.github.javacliparser.gui;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -29,8 +29,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import javacliparser.FileOption;
-import javacliparser.Option;
+import com.github.javacliparser.FileOption;
+import com.github.javacliparser.Option;
 import moa.gui.FileExtensionFilter;
 
 /**

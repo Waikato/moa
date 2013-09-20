@@ -26,9 +26,9 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;
-import javacliparser.FlagOption;
-import javacliparser.FloatOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 import samoa.instances.Instance;
 
 /**

@@ -21,7 +21,7 @@
 package moa.classifiers.bayes;
 
 import java.util.Arrays;
-import javacliparser.FloatOption;
+import com.github.javacliparser.FloatOption;
 import moa.classifiers.AbstractClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;

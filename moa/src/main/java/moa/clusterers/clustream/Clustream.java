@@ -29,7 +29,7 @@ import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;
-import javacliparser.IntOption;
+import com.github.javacliparser.IntOption;
 import samoa.instances.DenseInstance;
 import samoa.instances.Instance;
 

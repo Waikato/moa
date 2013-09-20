@@ -22,7 +22,7 @@ package moa.classifiers.rules;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import javacliparser.IntOption;
+import com.github.javacliparser.IntOption;
 import moa.classifiers.bayes.NaiveBayes;
 import samoa.instances.Instance;
 

@@ -31,8 +31,8 @@ import moa.core.InstanceExample;
 import samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import javacliparser.FlagOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 

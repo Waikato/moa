@@ -17,9 +17,9 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package javacliparser.gui;
+package com.github.javacliparser.gui;
 
-import javacliparser.Option;
+import com.github.javacliparser.Option;
 
 /**
  * Interface representing a component to edit an option. 

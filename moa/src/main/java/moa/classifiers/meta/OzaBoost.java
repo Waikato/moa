@@ -27,8 +27,8 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;
-import javacliparser.FlagOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
 
 /**
  * Incremental on-line boosting of Oza and Russell.

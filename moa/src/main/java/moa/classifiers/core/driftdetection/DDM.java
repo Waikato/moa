@@ -21,7 +21,7 @@ package moa.classifiers.core.driftdetection;
 
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import javacliparser.IntOption;
+import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 
 /**

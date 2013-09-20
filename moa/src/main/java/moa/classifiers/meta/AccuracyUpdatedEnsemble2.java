@@ -26,7 +26,7 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 import samoa.instances.Instance;
 import samoa.instances.Instances;

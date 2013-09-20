@@ -29,7 +29,7 @@ import moa.core.DoubleVector;
 import moa.core.GreenwaldKhannaQuantileSummary;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import javacliparser.IntOption;
+import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 
 /**

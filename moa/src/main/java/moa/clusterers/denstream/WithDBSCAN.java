@@ -31,8 +31,8 @@ import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
 import moa.clusterers.macro.dbscan.DBScan;
 import moa.core.Measurement;
-import javacliparser.FloatOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 import samoa.instances.DenseInstance;
 import samoa.instances.Instance;
 

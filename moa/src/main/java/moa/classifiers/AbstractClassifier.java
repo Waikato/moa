@@ -33,7 +33,7 @@ import moa.core.StringUtils;
 import moa.gui.AWTRenderer;
 import moa.learners.Learner;
 import moa.options.AbstractOptionHandler;
-import javacliparser.IntOption;
+import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 import samoa.instances.Instance;
 import samoa.instances.Instances;

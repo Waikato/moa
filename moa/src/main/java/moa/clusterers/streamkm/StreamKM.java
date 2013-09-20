@@ -1,6 +1,6 @@
 package moa.clusterers.streamkm;
 
-import javacliparser.IntOption;
+import com.github.javacliparser.IntOption;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;

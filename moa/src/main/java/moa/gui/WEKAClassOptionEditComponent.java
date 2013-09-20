@@ -20,7 +20,7 @@
  */
 package moa.gui;
 
-import javacliparser.gui.OptionEditComponent;
+import com.github.javacliparser.gui.OptionEditComponent;
 import moa.core.Utils;
 import weka.gui.GenericObjectEditor;
 import weka.gui.PropertyDialog;
@@ -34,7 +34,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import javacliparser.Option;
+import com.github.javacliparser.Option;
 import moa.options.WEKAClassOption;
 
 /**

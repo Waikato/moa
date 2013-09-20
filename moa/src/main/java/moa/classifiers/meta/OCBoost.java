@@ -26,8 +26,8 @@ import moa.core.Utils;
 
 import moa.core.Measurement;
 import moa.options.ClassOption;
-import javacliparser.FloatOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 
 /**
  * Online Coordinate boosting for two classes evolving data streams. 

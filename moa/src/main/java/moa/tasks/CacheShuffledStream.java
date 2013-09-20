@@ -24,7 +24,7 @@ import java.util.Random;
 import samoa.instances.Instances;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
-import javacliparser.IntOption;
+import com.github.javacliparser.IntOption;
 import moa.streams.CachedInstancesStream;
 import moa.streams.InstanceStream;
 

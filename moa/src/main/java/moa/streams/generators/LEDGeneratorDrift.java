@@ -25,7 +25,7 @@ import samoa.instances.Instance;
 
 import samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
-import javacliparser.IntOption;
+import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 
 /**

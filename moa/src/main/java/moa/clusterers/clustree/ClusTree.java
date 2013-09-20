@@ -27,7 +27,7 @@ import moa.clusterers.clustree.util.*;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;
-import javacliparser.IntOption;
+import com.github.javacliparser.IntOption;
 import samoa.instances.Instance;
 
 /**
