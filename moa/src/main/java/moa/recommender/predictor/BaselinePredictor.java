@@ -37,7 +37,7 @@ public class BaselinePredictor extends AbstractOptionHandler implements moa.reco
     protected moa.recommender.rc.predictor.impl.BaselinePredictor rp;
     
     public ClassOption dataOption = new ClassOption("data", 'd',
-            "Data", moa.recommender.data.RecommenderData.class, "moa.recommender.data.DiskRecommenderData");
+            "Data", moa.recommender.data.RecommenderData.class, "moa.recommender.data.MemRecommenderData");
 
     @Override
     protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {

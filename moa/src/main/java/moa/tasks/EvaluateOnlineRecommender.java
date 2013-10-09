@@ -87,6 +87,10 @@ public class EvaluateOnlineRecommender extends MainTask {
         int n = 0;
         //ArrayList<TestMetric> metrics = new ArrayList<TestMetric>();
         int sampleFrequency = this.sampleFrequencyOption.getValue();
+        int count = 0;
+        while (d.next())
+          ++count;
+        d.reset();
         while (d.next()) {
             Integer user = d.curUserID();
             Integer item = d.curItemID();
@@ -100,7 +104,10 @@ public class EvaluateOnlineRecommender extends MainTask {
             //if (n++%100 == 99) metrics.add(new TestMetric("RMSE (" + n +")", Math.sqrt(sum/(double)n)));
             n++;
             if (n%sampleFrequency == sampleFrequency-1) {
-//                monitor.setLatestResultPreview("RMSE " + Math.sqrt(sum/(double)n));
+               if (monitor.taskShouldAbort()) {
+                    return null;
+                }
+                monitor.setCurrentActivityFractionComplete((double)n/(double)count);
                 learningCurve.insertEntry(new LearningEvaluation(
                         new Measurement[]{
                             new Measurement(
@@ -117,6 +124,10 @@ public class EvaluateOnlineRecommender extends MainTask {
                             (int)(evalTime/1000))
                         }
                          ));
+                if (monitor.resultPreviewRequested()) {
+                    monitor.setLatestResultPreview(learningCurve.headerToString() + "\n" +
+                      learningCurve.entryToString(learningCurve.numEntries() - 1));
+                }
             }
         }
         //System.out.println(n + " " + Math.sqrt(sum/(double)n));

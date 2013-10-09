@@ -78,7 +78,7 @@ public class BRISMFPredictor extends AbstractOptionHandler implements RatingPred
             100, 0, Integer.MAX_VALUE);
 
     public ClassOption dataOption = new ClassOption("data", 'd',
-            "Data", RecommenderData.class, "moa.recommender.data.DiskRecommenderData");
+            "Data", RecommenderData.class, "moa.recommender.data.MemRecommenderData");
      
     
     @Override

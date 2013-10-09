@@ -327,16 +327,16 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
                     String[] tokens = line.split(",");
-                    this.acc1[0].addValue(0, round(Double.parseDouble(tokens[accuracyColumn])));
-                    this.acc1[0].addValue(1, round(Double.parseDouble(tokens[kappaColumn])));
+                    this.acc1[0].addValue(0, round(parseDouble(tokens[accuracyColumn])));
+                    this.acc1[0].addValue(1, round(parseDouble(tokens[kappaColumn])));
                     if (!isHoldOut) {
-                        this.acc1[0].addValue(2, Math.abs(Double.parseDouble(tokens[RamColumn])));
+                        this.acc1[0].addValue(2, Math.abs(parseDouble(tokens[RamColumn])));
                     }
-                    this.acc1[0].addValue(3, round(Double.parseDouble(tokens[timeColumn])));
-                    this.acc1[0].addValue(4, round(Double.parseDouble(tokens[memoryColumn]) / (1024 * 1024)));
+                    this.acc1[0].addValue(3, round(parseDouble(tokens[timeColumn])));
+                    this.acc1[0].addValue(4, round(parseDouble(tokens[memoryColumn]) / (1024 * 1024)));
 
                     if (isSecondLine == true) {
-                        processFrequency = Math.abs(Double.parseDouble(tokens[0]));
+                        processFrequency = Math.abs(parseDouble(tokens[0]));
                         isSecondLine = false;
                         if (acc1[0].getValue(0, 0) != oldAccuracy.getValue(0, 0)) { //(!line.equals(secondLine)) {
                             //If we are in a new task, compare with the previous
@@ -360,6 +360,14 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         this.clusteringVisualEvalPanel1.update();
 
 
+    }
+    
+    private double parseDouble(String s) {
+        double ret = 0;
+        if (s.equals("?") == false) {
+            ret = Double.parseDouble(s);
+        }   
+        return ret;
     }
 
     private void scrollPane0MouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_scrollPane0MouseWheelMoved
