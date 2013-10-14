@@ -468,7 +468,7 @@ public class FIMTDD extends HoeffdingTree implements Regressor{
 							}
 						
 						// Compute the Qi statistics
-						double Qi = Math.log((lOrg + (ht.AlternateTreeFadingFactorOption.getValue() * sOrg))/(lAlt + (ht.AlternateTreeFadingFactorOption.getValue() * lOrg)));
+						double Qi = Math.log((lOrg + (ht.AlternateTreeFadingFactorOption.getValue() * sOrg))/(lAlt + (ht.AlternateTreeFadingFactorOption.getValue() * sAlt)));
 						double previousQiAverage = lossStatistics.getValue(1) / lossStatistics.getValue(0);
 						lossStatistics.addToValue(0,1);
 						lossStatistics.addToValue(1,Qi);
@@ -764,9 +764,9 @@ public class FIMTDD extends HoeffdingTree implements Regressor{
 			    }
 			}
 
-			if (this.trainingWeightSeenByModel% this.memoryEstimatePeriodOption.getValue() == 0) {
+			/*if (this.trainingWeightSeenByModel% this.memoryEstimatePeriodOption.getValue() == 0) {
 			    estimateModelByteSizes();
-			}
+			}*/
 		}
 	    }
 	    
