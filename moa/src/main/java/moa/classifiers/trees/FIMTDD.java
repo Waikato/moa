@@ -215,7 +215,7 @@ public class FIMTDD extends HoeffdingTree implements Regressor{
 				double mean = nodeStatistics.getValue(1) / nodeStatistics.getValue(0);
 		    	nodeStatistics.addToValue(3, Math.abs(((inst.classValue()-mean)/sd) - ((learningModel.prediction(inst)-mean)/sd)));
 		    	// sum of squared errors
-		    	nodeStatistics.addToValue(4, Math.pow(this.getError(inst), 2));
+		    	nodeStatistics.setValue(4, Math.pow(this.getError(inst), 2) + nodeStatistics.getValue(4) * ((FIMTDD) ht).AlternateTreeFadingFactorOption.getValue());
 		    	
 		    	
 		    learningModel.trainOnInstanceImpl(inst, (FIMTDD)ht);
@@ -448,27 +448,25 @@ public class FIMTDD extends HoeffdingTree implements Regressor{
 						// Update the loss statistics for the alternate tree
 						FoundNode foundNode = this.alternateTree.treeRoot.filterInstanceToLeaf(inst,null,-1);
 						Node leaf = foundNode.node;
-						double sAlt = 0.0;
-						double lAlt = 0.0;
-							if(leaf instanceof FIMTDDActiveLearningNode)
-							{
-								sAlt = ((FIMTDDActiveLearningNode)leaf).getSquaredError();
-								lAlt = Math.pow(((FIMTDDActiveLearningNode)leaf).getError(inst),2);
-							}
-						
-						// Update the loss statistics for the current tree
-						foundNode = this.getChild(this.instanceChildIndex(inst)).filterInstanceToLeaf(inst,null,-1);
-						leaf = foundNode.node;
-						double sOrg = 0.0;
-						double lOrg = 0.0;
-							if(leaf instanceof FIMTDDActiveLearningNode)
-							{
-								sOrg = ((FIMTDDActiveLearningNode)leaf).getSquaredError();
-								lOrg = Math.pow(((FIMTDDActiveLearningNode)leaf).getError(inst),2);
-							}
-						
-						// Compute the Qi statistics
-						double Qi = Math.log((lOrg + (ht.AlternateTreeFadingFactorOption.getValue() * sOrg))/(lAlt + (ht.AlternateTreeFadingFactorOption.getValue() * sAlt)));
+                                                double squaresAlternate= 0.0;
+                                                if(leaf instanceof FIMTDDActiveLearningNode)
+                                                {
+                                                    squaresAlternate = ((FIMTDDActiveLearningNode)leaf).getSquaredError();
+
+                                                }
+
+                                                // Update the loss statistics for the current tree
+                                                foundNode = this.getChild(this.instanceChildIndex(inst)).filterInstanceToLeaf(inst,null,-1);
+                                                leaf = foundNode.node;
+                                                double squaresOriginal = 0.0;
+                                                if(leaf instanceof FIMTDDActiveLearningNode)
+                                                {
+                                                   squaresOriginal = ((FIMTDDActiveLearningNode)leaf).getSquaredError();
+
+                                                }
+
+                                                // Compute the Qi statistics
+                                                double Qi = Math.log(squaresOriginal /squaresAlternate);
 						double previousQiAverage = lossStatistics.getValue(1) / lossStatistics.getValue(0);
 						lossStatistics.addToValue(0,1);
 						lossStatistics.addToValue(1,Qi);
