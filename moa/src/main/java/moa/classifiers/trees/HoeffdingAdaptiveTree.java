@@ -119,7 +119,13 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
             }
             return byteSize;
         }
-
+        
+        public AdaSplitNode(InstanceConditionalTest splitTest,
+                double[] classObservations, int size) {
+            super(splitTest, classObservations, size);
+            this.classifierRandom = new Random(this.randomSeed);
+        }
+        
         public AdaSplitNode(InstanceConditionalTest splitTest,
                 double[] classObservations) {
             super(splitTest, classObservations);
@@ -443,7 +449,12 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
         return new AdaLearningNode(initialClassObservations);
     }
 
-    //@Override
+   @Override
+    protected SplitNode newSplitNode(InstanceConditionalTest splitTest,
+            double[] classObservations, int size) {
+        return new AdaSplitNode(splitTest, classObservations, size);
+    }
+   
     @Override
     protected SplitNode newSplitNode(InstanceConditionalTest splitTest,
             double[] classObservations) {
