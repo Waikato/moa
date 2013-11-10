@@ -48,6 +48,10 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
 
     protected int numClasses;
 
+    private double weightCorrectNoChangeClassifier;
+
+    private int lastSeenClass;
+
     @Override
     public void reset() {
         reset(this.numClasses);
@@ -63,6 +67,8 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
         }
         this.weightObserved = 0.0;
         this.weightCorrect = 0.0;
+        this.weightCorrectNoChangeClassifier = 0.0;
+        this.lastSeenClass = 0;
     }
 
     @Override
@@ -82,17 +88,24 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
             this.rowKappa[predictedClass] += weight;
             this.columnKappa[trueClass] += weight;
         }
+        if (this.lastSeenClass == trueClass) {
+            this.weightCorrectNoChangeClassifier += weight;
+        }
+        this.lastSeenClass = trueClass;
     }
 
     @Override
     public Measurement[] getPerformanceMeasurements() {
         return new Measurement[]{
-                    new Measurement("classified instances",
-                    getTotalWeightObserved()),
-                    new Measurement("classifications correct (percent)",
-                    getFractionCorrectlyClassified() * 100.0),
-                    new Measurement("Kappa Statistic (percent)",
-                    getKappaStatistic() * 100.0)};
+            new Measurement("classified instances",
+            getTotalWeightObserved()),
+            new Measurement("classifications correct (percent)",
+            getFractionCorrectlyClassified() * 100.0),
+            new Measurement("Kappa Statistic (percent)",
+            getKappaStatistic() * 100.0),
+            new Measurement("Kappa Temporal Statistic (percent)",
+            getKappaTemporalStatistic() * 100.0)
+        };
 
     }
 
@@ -117,6 +130,17 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
                 pc += (this.rowKappa[i] / this.weightObserved)
                         * (this.columnKappa[i] / this.weightObserved);
             }
+            return (p0 - pc) / (1.0 - pc);
+        } else {
+            return 0;
+        }
+    }
+
+    public double getKappaTemporalStatistic() {
+        if (this.weightObserved > 0.0) {
+            double p0 = this.weightCorrect / this.weightObserved;
+            double pc = this.weightCorrectNoChangeClassifier / this.weightObserved;
+
             return (p0 - pc) / (1.0 - pc);
         } else {
             return 0;

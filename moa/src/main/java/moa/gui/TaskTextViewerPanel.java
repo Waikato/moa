@@ -70,7 +70,7 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
     public TaskTextViewerPanel() {
         this(false);
     }
-    
+
     public TaskTextViewerPanel(boolean isRegression) {
         this.isRegression = isRegression;
         java.awt.GridBagConstraints gridBagConstraints;
@@ -140,7 +140,6 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
         //topWrapper.setPreferredSize(new java.awt.Dimension(688, 500));
         //topWrapper.setLayout(new java.awt.GridBagLayout());
-
         jSplitPane1.setLeftComponent(topWrapper);
 
         panelEvalOutput.setBorder(javax.swing.BorderFactory.createTitledBorder("Evaluation"));
@@ -155,8 +154,6 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weighty = 1.0;
         panelEvalOutput.add(clusteringVisualEvalPanel1, gridBagConstraints);
-
-
 
         graphPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Plot"));
         graphPanel.setPreferredSize(new java.awt.Dimension(530, 115));
@@ -267,7 +264,6 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         clusteringVisualEvalPanel1.setMeasures(acc1, acc2, this);
         this.graphCanvas.setGraph(acc1[0], acc2[0], 0, 1000);
 
-
     }
 
     public void setText(String newText) {
@@ -290,14 +286,14 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
     public void setGraph(String preview) {
         //Change the graph when there is change in the text
-         double processFrequency = 1000;
+        double processFrequency = 1000;
         if (preview != null && !preview.equals("")) {
             MeasureCollection oldAccuracy = acc1[0];
             acc1[0] = newAccuracy();
             Scanner scanner = new Scanner(preview);
             String firstLine = scanner.nextLine();
             boolean isSecondLine = true;
-           
+
             boolean isPrequential = firstLine.startsWith("learning evaluation instances,evaluation time");
             boolean isHoldOut = firstLine.startsWith("evaluation instances,to");
             if (isPrequential || isHoldOut) {
@@ -306,6 +302,7 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
                 int RamColumn = 2;
                 int timeColumn = 1;
                 int memoryColumn = 7;
+                int kappaTempColumn = 5;
                 String[] tokensFirstLine = firstLine.split(",");
                 int i = 0;
                 for (String s : tokensFirstLine) {
@@ -314,6 +311,8 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
                         accuracyColumn = i;
                     } else if (s.equals("Kappa Statistic (percent)")) {
                         kappaColumn = i;
+                    } else if (s.equals("Kappa Temporal Statistic (percent)")) {
+                        kappaTempColumn = i;
                     } else if (s.equals("model cost (RAM-Hours)")) {
                         RamColumn = i;
                     } else if (s.equals("evaluation time (cpu seconds)")
@@ -329,11 +328,12 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
                     String[] tokens = line.split(",");
                     this.acc1[0].addValue(0, round(parseDouble(tokens[accuracyColumn])));
                     this.acc1[0].addValue(1, round(parseDouble(tokens[kappaColumn])));
+                    this.acc1[0].addValue(2, round(parseDouble(tokens[kappaTempColumn])));
                     if (!isHoldOut) {
-                        this.acc1[0].addValue(2, Math.abs(parseDouble(tokens[RamColumn])));
+                        this.acc1[0].addValue(3, Math.abs(parseDouble(tokens[RamColumn])));
                     }
-                    this.acc1[0].addValue(3, round(parseDouble(tokens[timeColumn])));
-                    this.acc1[0].addValue(4, round(parseDouble(tokens[memoryColumn]) / (1024 * 1024)));
+                    this.acc1[0].addValue(4, round(parseDouble(tokens[timeColumn])));
+                    this.acc1[0].addValue(5, round(parseDouble(tokens[memoryColumn]) / (1024 * 1024)));
 
                     if (isSecondLine == true) {
                         processFrequency = Math.abs(parseDouble(tokens[0]));
@@ -348,9 +348,9 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
                     }
                 }
             } else {
-                 this.acc2[0] = newAccuracy();
+                this.acc2[0] = newAccuracy();
             }
-            
+
         } else {
             this.acc1[0] = newAccuracy();
             this.acc2[0] = newAccuracy();
@@ -359,14 +359,13 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         this.graphCanvas.updateCanvas();
         this.clusteringVisualEvalPanel1.update();
 
-
     }
-    
+
     private double parseDouble(String s) {
         double ret = 0;
         if (s.equals("?") == false) {
             ret = Double.parseDouble(s);
-        }   
+        }
         return ret;
     }
 
@@ -497,9 +496,9 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         }
         this.graphCanvas.setGraph(acc1[m_select], acc2[m_select], m_select_offset, this.graphCanvas.getProcessFrequency());
     }
-    
+
     protected Accuracy newAccuracy() {
         return this.isRegression == false ? new Accuracy() : new RegressionAccuracy();
-}
-    
+    }
+
 }

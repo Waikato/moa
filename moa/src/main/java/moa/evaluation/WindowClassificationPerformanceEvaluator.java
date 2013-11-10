@@ -29,7 +29,8 @@ import moa.core.Utils;
 import samoa.instances.Instance;
 
 /**
- * Classification evaluator that updates evaluation results using a sliding window.
+ * Classification evaluator that updates evaluation results using a sliding
+ * window.
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
@@ -48,9 +49,15 @@ public class WindowClassificationPerformanceEvaluator extends AbstractOptionHand
 
     protected Estimator weightCorrect;
 
+    protected Estimator weightCorrectNoChangeClassifier;
+
+    protected double lastSeenClass;
+
     protected Estimator[] columnKappa;
 
     protected Estimator[] rowKappa;
+
+    protected Estimator[] classAccuracy;
 
     protected int numClasses;
 
@@ -70,6 +77,7 @@ public class WindowClassificationPerformanceEvaluator extends AbstractOptionHand
             window = new double[sizeWindow];
             SizeWindow = sizeWindow;
             posWindow = 0;
+            lenWindow = 0;
         }
 
         public void add(double value) {
@@ -80,17 +88,25 @@ public class WindowClassificationPerformanceEvaluator extends AbstractOptionHand
             if (posWindow == SizeWindow) {
                 posWindow = 0;
             }
+            if (lenWindow < SizeWindow) {
+                lenWindow++;
+            }
         }
 
         public double total() {
             return sum;
         }
+
+        public double length() {
+            return lenWindow;
+        }
+
     }
 
     /*   public void setWindowWidth(int w) {
-    this.width = w;
-    reset();
-    }*/
+     this.width = w;
+     reset();
+     }*/
     @Override
     public void reset() {
         reset(this.numClasses);
@@ -100,13 +116,17 @@ public class WindowClassificationPerformanceEvaluator extends AbstractOptionHand
         this.numClasses = numClasses;
         this.rowKappa = new Estimator[numClasses];
         this.columnKappa = new Estimator[numClasses];
+        this.classAccuracy = new Estimator[numClasses];
         for (int i = 0; i < this.numClasses; i++) {
             this.rowKappa[i] = new Estimator(this.widthOption.getValue());
             this.columnKappa[i] = new Estimator(this.widthOption.getValue());
+            this.classAccuracy[i] = new Estimator(this.widthOption.getValue());
         }
         this.weightCorrect = new Estimator(this.widthOption.getValue());
+        this.weightCorrectNoChangeClassifier = new Estimator(this.widthOption.getValue());
         this.weightObserved = new Estimator(this.widthOption.getValue());
         this.TotalweightObserved = 0;
+        this.lastSeenClass = 0;
     }
 
     @Override
@@ -131,41 +151,28 @@ public class WindowClassificationPerformanceEvaluator extends AbstractOptionHand
                 this.rowKappa[i].add(i == predictedClass ? weight : 0);
                 this.columnKappa[i].add(i == trueClass ? weight : 0);
             }
-
+            if (this.lastSeenClass == trueClass) {
+                this.weightCorrectNoChangeClassifier.add(weight);
+            } else {
+                this.weightCorrectNoChangeClassifier.add(0);
+            }
+            this.classAccuracy[trueClass].add(predictedClass == trueClass ? weight : 0.0);
+            this.lastSeenClass = trueClass;
         }
     }
 
-    /*	public void addClassificationAttempt(int trueClass, double[] classVotes,
-    double weight) {
-    if (weight > 0.0) {
-    if (TotalweightObserved == 0) {
-    reset(classVotes.length>1?classVotes.length:2);
-    }
-    this.TotalweightObserved += weight;
-    this.weightObserved.add(weight);
-    int predictedClass = Utils.maxIndex(classVotes);
-    if (predictedClass == trueClass) {
-    this.weightCorrect.add(weight);
-    } else {
-    this.weightCorrect.add(0);
-    }
-    //Add Kappa statistic information
-    for (int i = 0; i < this.numClasses; i++) {
-    this.rowKappa[i].add( i == predictedClass ? weight : 0);
-    this.columnKappa[i].add( i == trueClass ? weight : 0);
-    }
-
-    }
-    }*/
     @Override
     public Measurement[] getPerformanceMeasurements() {
         return new Measurement[]{
-                    new Measurement("classified instances",
-                    this.TotalweightObserved),
-                    new Measurement("classifications correct (percent)",
-                    getFractionCorrectlyClassified() * 100.0),
-                    new Measurement("Kappa Statistic (percent)",
-                    getKappaStatistic() * 100.0)};
+            new Measurement("classified instances",
+            this.TotalweightObserved),
+            new Measurement("classifications correct (percent)",
+            getFractionCorrectlyClassified() * 100.0),
+            new Measurement("Kappa Statistic (percent)",
+            getKappaStatistic() * 100.0),
+            new Measurement("Kappa Temporal Statistic (percent)",
+            getKappaTemporalStatistic() * 100.0)
+        };
 
     }
 
@@ -186,6 +193,17 @@ public class WindowClassificationPerformanceEvaluator extends AbstractOptionHand
                 pc += (this.rowKappa[i].total() / this.weightObserved.total())
                         * (this.columnKappa[i].total() / this.weightObserved.total());
             }
+            return (p0 - pc) / (1 - pc);
+        } else {
+            return 0;
+        }
+    }
+
+    public double getKappaTemporalStatistic() {
+        if (this.weightObserved.total() > 0.0) {
+            double p0 = this.weightCorrect.total() / this.weightObserved.total();
+            double pc = this.weightCorrectNoChangeClassifier.total() / this.weightObserved.total();
+
             return (p0 - pc) / (1 - pc);
         } else {
             return 0;

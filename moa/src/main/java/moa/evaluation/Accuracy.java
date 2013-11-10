@@ -17,14 +17,14 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-
 package moa.evaluation;
 
 import java.util.ArrayList;
 import moa.cluster.Clustering;
 import moa.gui.visualization.DataPoint;
 
-public class Accuracy extends MeasureCollection implements ClassificationMeasureCollection{
+public class Accuracy extends MeasureCollection implements ClassificationMeasureCollection {
+
     private boolean debug = false;
 
     public Accuracy() {
@@ -33,22 +33,18 @@ public class Accuracy extends MeasureCollection implements ClassificationMeasure
 
     @Override
     public String[] getNames() {
-        String[] names = {"Accuracy","Kappa","Ram-Hours","Time","Memory"};
+        String[] names = {"Accuracy", "Kappa", "Kappa Temp", "Ram-Hours", "Time", "Memory"};
         return names;
     }
-    
-  @Override
-  protected boolean[] getDefaultEnabled() {
-      boolean [] defaults = {true,true,true,true,true};
-      return defaults;
-  }
-    
+
+    @Override
+    protected boolean[] getDefaultEnabled() {
+        boolean[] defaults = {true, true, true, true, true, true};
+        return defaults;
+    }
+
     public void evaluateClustering(Clustering clustering, Clustering trueClsutering, ArrayList<DataPoint> points) {
 
     }
-
-
-
-
 
 }
