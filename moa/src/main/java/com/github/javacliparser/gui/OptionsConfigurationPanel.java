@@ -214,7 +214,7 @@ public class OptionsConfigurationPanel extends JPanel {
         JComponent ret = null;
         String className="";
         try {
-            className = "javacliparser.gui."+option.getClass().getSimpleName()+"EditComponent";
+            className = "com.github.javacliparser.gui."+option.getClass().getSimpleName()+"EditComponent";
             classObject = Class.forName(className);
             ctor = classObject.getConstructor(Option.class);
             ret = (JComponent) ctor.newInstance(option);
