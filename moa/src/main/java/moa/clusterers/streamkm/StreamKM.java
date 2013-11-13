@@ -4,7 +4,7 @@ import com.github.javacliparser.IntOption;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  *

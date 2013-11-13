@@ -37,7 +37,7 @@ import java.util.Vector;
 import moa.classifiers.Classifier;
 import moa.classifiers.trees.DecisionStump;
 import moa.options.ClassOption;
-import samoa.instances.WekaToSamoaInstanceConverter;
+import com.yahoo.labs.samoa.instances.WekaToSamoaInstanceConverter;
 
 /**
  <!-- globalinfo-start -->

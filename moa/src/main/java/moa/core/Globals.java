@@ -29,11 +29,11 @@ public class Globals {
 
     public static final String workbenchTitle = "{M}assive {O}nline {A}nalysis";
 
-    public static final String versionString = "13.08 August 2013";
+    public static final String versionString = "13.12 December 2013 New Developer Version";
 
     public static final String copyrightNotice = "(C) 2007-2013 University of Waikato, Hamilton, New Zealand";
 
-    public static final String webAddress = "http://moa.cs.waikato.ac.nz/";
+    public static final String webAddress = "http://moa.cms.waikato.ac.nz/";
 
     public static String getWorkbenchInfoString() {
         StringBuilder result = new StringBuilder();

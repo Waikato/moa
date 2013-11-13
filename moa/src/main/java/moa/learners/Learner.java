@@ -21,7 +21,7 @@ package moa.learners;
 
 import moa.MOAObject;
 import moa.core.Example;
-import samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.Measurement;
 import moa.gui.AWTRenderable;
 import moa.options.OptionHandler;

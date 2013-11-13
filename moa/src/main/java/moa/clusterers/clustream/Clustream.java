@@ -30,8 +30,8 @@ import moa.cluster.SphereCluster;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;
 import com.github.javacliparser.IntOption;
-import samoa.instances.DenseInstance;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /** Citation: CluStream: Charu C. Aggarwal, Jiawei Han, Jianyong Wang, Philip S. Yu:
  * A Framework for Clustering Evolving Data Streams. VLDB 2003: 81-92

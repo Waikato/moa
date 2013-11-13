@@ -30,10 +30,10 @@ import moa.classifiers.Classifier;
 import moa.core.Measurement;
 import moa.core.Utils;
 import moa.options.ClassOption;
-import samoa.instances.Attribute;
-import samoa.instances.DenseInstance;
-import samoa.instances.Instance;
-import samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.Attribute;
+import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
 
 /**
  * Include labels of previous instances into the training data

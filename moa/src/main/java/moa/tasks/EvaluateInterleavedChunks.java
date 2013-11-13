@@ -37,8 +37,8 @@ import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
-import samoa.instances.Instance;
-import samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
 
 public class EvaluateInterleavedChunks extends MainTask {
 

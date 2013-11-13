@@ -26,9 +26,9 @@ import com.github.javacliparser.IntOption;
 import moa.options.WEKAClassOption;
 import weka.classifiers.Classifier;
 import weka.classifiers.UpdateableClassifier;
-import samoa.instances.Instance;
-import samoa.instances.Instances;
-import samoa.instances.SamoaToWekaInstanceConverter;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 
 /**
  * Class for using a classifier from WEKA.

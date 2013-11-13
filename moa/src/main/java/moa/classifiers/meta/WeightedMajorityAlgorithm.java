@@ -30,7 +30,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.ListOption;
 import com.github.javacliparser.Option;
 import moa.tasks.TaskMonitor;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.Utils;
 
 /**

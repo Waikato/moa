@@ -27,7 +27,7 @@ import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
 import moa.core.Utils;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Classification evaluator that updates evaluation results using a fading factor.

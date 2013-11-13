@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Random;
 import moa.MOAObject;
 import moa.core.Example;
-import samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.StringUtils;
@@ -35,8 +35,8 @@ import moa.learners.Learner;
 import moa.options.AbstractOptionHandler;
 import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
-import samoa.instances.Instance;
-import samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
 import moa.core.Utils;
 
 public abstract class AbstractClassifier extends AbstractOptionHandler

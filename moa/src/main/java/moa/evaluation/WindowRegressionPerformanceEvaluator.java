@@ -25,7 +25,7 @@ import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Regression evaluator that updates evaluation results using a sliding window.

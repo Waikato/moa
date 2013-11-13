@@ -27,7 +27,7 @@ import moa.classifiers.Classifier;
 import moa.classifiers.core.driftdetection.DriftDetectionMethod;
 import moa.core.Measurement;
 import moa.options.ClassOption;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.Utils;
 
 /**

@@ -32,8 +32,8 @@ import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
-import samoa.instances.Instances;
-import samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Stream reader of ARFF files.

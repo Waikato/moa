@@ -28,9 +28,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import samoa.instances.Attribute;
-import samoa.instances.DenseInstance;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Attribute;
+import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 public class DataPoint extends DenseInstance{
     

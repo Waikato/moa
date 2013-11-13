@@ -34,7 +34,7 @@ import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Task for evaluating a static model on a stream.

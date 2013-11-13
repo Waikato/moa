@@ -25,7 +25,7 @@ import moa.clusterers.outliers.Angiulli.ExactSTORM;
 import moa.clusterers.outliers.MCOD.MCOD;
 import moa.clusterers.outliers.SimpleCOD.SimpleCOD;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 public class TestSpeed {    
     public static void main(String[] args) throws Exception 

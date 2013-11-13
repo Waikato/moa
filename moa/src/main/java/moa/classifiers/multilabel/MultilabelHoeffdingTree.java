@@ -25,9 +25,9 @@ import moa.classifiers.Classifier;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.trees.HoeffdingTree;
 import moa.core.utils.Converter;
-import samoa.instances.Instance;
-import samoa.instances.Instances;
-import samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Hoeffding Tree for classifying multi-label data.

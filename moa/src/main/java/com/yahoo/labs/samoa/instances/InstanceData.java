@@ -14,7 +14,7 @@
  * License.  
  */
 
-package samoa.instances;
+package com.yahoo.labs.samoa.instances;
 
 import java.io.Serializable;
 

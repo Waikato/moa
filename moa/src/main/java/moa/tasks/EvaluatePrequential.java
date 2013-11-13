@@ -42,7 +42,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.Utils;
 
 /**

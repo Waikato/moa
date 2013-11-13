@@ -29,11 +29,11 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
-import samoa.instances.Attribute;
-import samoa.instances.Instance;
-import samoa.instances.Instances;
-import samoa.instances.InstancesHeader;
-import samoa.instances.SparseInstance;
+import com.yahoo.labs.samoa.instances.Attribute;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.SparseInstance;
 import moa.core.FastVector;
 import moa.core.Utils;
 

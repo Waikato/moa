@@ -36,7 +36,7 @@ import java.util.HashSet;
 
 import moa.core.InputStreamProgressMonitor;
 import moa.core.InstanceExample;
-import samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.FlagOption;
@@ -45,8 +45,8 @@ import com.github.javacliparser.ListOption;
 import com.github.javacliparser.Option;
 import moa.tasks.TaskMonitor;
 
-import samoa.instances.Instance;
-import samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
 
 public class FileStream extends ClusteringStream{
 

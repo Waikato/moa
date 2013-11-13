@@ -20,7 +20,7 @@
 
 package moa.cluster;
 import java.util.Arrays;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /* micro cluster, as defined by Aggarwal et al, On Clustering Massive Data Streams: A Summarization Praradigm 
  * in the book Data streams : models and algorithms, by Charu C Aggarwal

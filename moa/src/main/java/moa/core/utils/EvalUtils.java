@@ -22,7 +22,7 @@ package moa.core.utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.Utils;
 
 /**

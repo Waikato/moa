@@ -30,7 +30,7 @@ import moa.clusterers.outliers.Angiulli.ISBIndex.ISBNode;
 import moa.clusterers.outliers.Angiulli.ISBIndex.ISBSearchResult;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 
 public class ApproxSTORM extends STORMBase {

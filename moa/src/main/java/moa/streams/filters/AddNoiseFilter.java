@@ -25,10 +25,10 @@ import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.GaussianEstimator;
 import moa.core.InstanceExample;
-import samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Filter for adding random noise to examples in a stream.

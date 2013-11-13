@@ -13,39 +13,63 @@
  * language governing permissions and limitations under the
  * License.  
  */
-package samoa.instances;
+
+package com.yahoo.labs.samoa.instances;
 
 /**
- * The Class SingleClassInstanceData.
- *
- * @author abifet
+ * The Class DenseInstanceData.
  */
-public class SingleClassInstanceData implements InstanceData {
+public class DenseInstanceData implements InstanceData{
 
-    /** The class value. */
-    protected double classValue;
+    /**
+     * Instantiates a new dense instance data.
+     *
+     * @param array the array
+     */
+    public DenseInstanceData(double[] array) {
+       this.attributeValues = array;
+    }
     
+    /**
+     * Instantiates a new dense instance data.
+     *
+     * @param length the length
+     */
+    public DenseInstanceData(int length) {
+       this.attributeValues = new double[length];
+    }
+    
+    /**
+     * Instantiates a new dense instance data.
+     */
+    public DenseInstanceData() {
+       this(0);
+    }
+    
+    /** The attribute values. */
+    protected double[] attributeValues;
+
     /**
      * Num attributes.
      *
      * @return the int
-     */    
+     */
     @Override
     public int numAttributes() {
-        return 1;
+        return this.attributeValues.length;
     }
-    
+
     /**
      * Value.
      *
-     * @param instAttIndex the inst att index
+     * @param indexAttribute the index attribute
      * @return the double
      */
     @Override
-    public double value(int instAttIndex) {
-        return classValue;
+    public double value(int indexAttribute) {
+        return this.attributeValues[indexAttribute];
     }
-    
+
     /**
      * Checks if is missing.
      *
@@ -54,9 +78,9 @@ public class SingleClassInstanceData implements InstanceData {
      */
     @Override
     public boolean isMissing(int indexAttribute) {
-        return Double.isNaN(this.value(indexAttribute));
+       return Double.isNaN(this.value(indexAttribute));
     }
-    
+
     /**
      * Num values.
      *
@@ -64,31 +88,31 @@ public class SingleClassInstanceData implements InstanceData {
      */
     @Override
     public int numValues() {
-        return 1;
+        return numAttributes();
     }
-    
+
     /**
      * Index.
      *
-     * @param i the i
+     * @param indexAttribute the index attribute
      * @return the int
      */
     @Override
-    public int index(int i) {
-        return 0;
+    public int index(int indexAttribute) {
+        return indexAttribute;
     }
-    
+
     /**
      * Value sparse.
      *
-     * @param i the i
+     * @param indexAttribute the index attribute
      * @return the double
      */
     @Override
-    public double valueSparse(int i) {
-        return value(i);
+    public double valueSparse(int indexAttribute) {
+        return value(indexAttribute);
     }
-    
+
     /**
      * Checks if is missing sparse.
      *
@@ -97,8 +121,13 @@ public class SingleClassInstanceData implements InstanceData {
      */
     @Override
     public boolean isMissingSparse(int indexAttribute) {
-        return Double.isNaN(this.value(indexAttribute));
+        return isMissing(indexAttribute);
     }
+
+    /*@Override
+    public double value(Attribute attribute) {
+        return value(attribute.index());
+    }*/
 
     /**
      * To double array.
@@ -107,19 +136,18 @@ public class SingleClassInstanceData implements InstanceData {
      */
     @Override
     public double[] toDoubleArray() {
-        double[] array = {this.classValue};
-        return array;
+        return attributeValues.clone();
     }
-    
+
     /**
      * Sets the value.
      *
-     * @param m_numAttributes the m_num attributes
+     * @param attributeIndex the attribute index
      * @param d the d
      */
     @Override
-    public void setValue(int m_numAttributes, double d) {
-        this.classValue = d;
+    public void setValue(int attributeIndex, double d) {
+        this.attributeValues[attributeIndex] = d;
     }
     
 }

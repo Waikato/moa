@@ -22,7 +22,7 @@
 package moa.clusterers.outliers.AbstractC;
 
 import moa.streams.clustering.RandomRBFGeneratorEvents;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 public class Test {    
     public static void main(String[] args) throws Exception 

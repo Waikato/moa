@@ -21,7 +21,7 @@ package moa.classifiers.functions;
 
 import moa.classifiers.AbstractClassifier;
 import moa.core.Measurement;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * NoChange class classifier. It always predicts the last class seen.

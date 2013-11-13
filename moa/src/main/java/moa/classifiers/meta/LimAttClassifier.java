@@ -21,7 +21,7 @@
 package moa.classifiers.meta;
 
 import moa.classifiers.trees.LimAttHoeffdingTree;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.Utils;
 
 import java.math.BigInteger;

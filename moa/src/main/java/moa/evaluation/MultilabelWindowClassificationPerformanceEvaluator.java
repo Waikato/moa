@@ -24,7 +24,7 @@ import java.util.HashMap;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.utils.EvalUtils;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Multilabel Window Classification Performance Evaluator.

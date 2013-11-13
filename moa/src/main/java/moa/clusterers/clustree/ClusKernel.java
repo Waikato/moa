@@ -24,7 +24,7 @@ import moa.clusterers.clustree.util.*;
 import java.util.Arrays;
 import moa.cluster.CFCluster;
 import moa.cluster.Cluster;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Representation of an Entry in the tree

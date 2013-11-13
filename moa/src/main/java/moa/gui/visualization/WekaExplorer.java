@@ -36,8 +36,8 @@ import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
-import samoa.instances.Instances;
-import samoa.instances.SamoaToWekaInstanceConverter;
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 
 
 public class WekaExplorer {

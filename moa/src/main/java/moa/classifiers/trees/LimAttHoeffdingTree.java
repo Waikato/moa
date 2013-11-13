@@ -22,7 +22,7 @@ package moa.classifiers.trees;
 import moa.classifiers.bayes.NaiveBayes;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.core.Utils;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Hoeffding decision trees with a restricted number of attributes for data

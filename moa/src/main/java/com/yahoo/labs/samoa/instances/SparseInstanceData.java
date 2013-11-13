@@ -12,7 +12,7 @@
  * language governing permissions and limitations under the
  * License.  
  */
-package samoa.instances;
+package com.yahoo.labs.samoa.instances;
 
 /**
  * The Class SparseInstanceData.

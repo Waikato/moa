@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Random;
 import moa.cluster.Clustering;
 
-import samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.StringUtils;
@@ -33,8 +33,8 @@ import moa.options.AbstractOptionHandler;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
-import samoa.instances.Instance;
-import samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
 
 public abstract class AbstractClusterer extends AbstractOptionHandler
 		implements Clusterer {

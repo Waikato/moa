@@ -20,7 +20,7 @@
 package moa.streams.generators.multilabel;
 
 import moa.streams.ArffFileStream;
-import samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.MultilabelInstancesHeader;
 import com.github.javacliparser.IntOption;
 

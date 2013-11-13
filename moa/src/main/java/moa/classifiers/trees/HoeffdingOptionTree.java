@@ -51,7 +51,7 @@ import moa.core.SizeOf;
 import moa.core.StringUtils;
 import moa.core.Utils;
 import moa.options.ClassOption;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Hoeffding Option Tree.

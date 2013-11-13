@@ -43,7 +43,7 @@ import com.github.javacliparser.IntOption;
 import moa.classifiers.Regressor;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.Utils;
 import moa.evaluation.RegressionPerformanceEvaluator;
 

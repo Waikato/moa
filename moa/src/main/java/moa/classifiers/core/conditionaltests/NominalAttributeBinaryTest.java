@@ -19,8 +19,8 @@
  */
 package moa.classifiers.core.conditionaltests;
 
-import samoa.instances.InstancesHeader;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Nominal binary conditional test for instances to use to split nodes in Hoeffding trees.

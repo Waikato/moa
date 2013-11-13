@@ -21,9 +21,9 @@ package moa.streams;
 
 import moa.AbstractMOAObject;
 import moa.core.InstanceExample;
-import samoa.instances.InstancesHeader;
-import samoa.instances.Instance;
-import samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
 
 /**
  * Stream generator for representing a stream that is cached in memory.

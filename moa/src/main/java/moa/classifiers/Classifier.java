@@ -21,7 +21,7 @@ package moa.classifiers;
 
 import moa.core.Example;
 import moa.learners.Learner;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Classifier interface for incremental classification models.

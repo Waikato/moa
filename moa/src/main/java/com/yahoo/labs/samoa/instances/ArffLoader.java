@@ -14,7 +14,7 @@
  * language governing permissions and limitations under the
  * License.  
  */
-package samoa.instances;
+package com.yahoo.labs.samoa.instances;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

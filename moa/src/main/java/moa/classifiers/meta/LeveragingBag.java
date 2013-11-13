@@ -27,7 +27,7 @@ import com.github.javacliparser.MultiChoiceOption;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.core.DoubleVector;
 import moa.core.Measurement;

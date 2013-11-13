@@ -3,7 +3,7 @@ package moa.clusterers.streamkm;
 import moa.cluster.Cluster;
 import moa.cluster.SphereCluster;
 
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  *

@@ -33,7 +33,7 @@ import moa.cluster.SphereCluster;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;
 import com.github.javacliparser.IntOption;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 public abstract class MyBaseOutlierDetector extends AbstractClusterer { 
     public static class Outlier implements Comparable<Outlier> {

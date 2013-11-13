@@ -26,7 +26,7 @@ import moa.clusterers.outliers.AbstractC.ISBIndex.ISBSearchResult;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 //The algorithm is presented in:
 //D. Yang, E. Rundensteiner, and M. Ward.

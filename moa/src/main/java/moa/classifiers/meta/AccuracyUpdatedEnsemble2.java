@@ -28,8 +28,8 @@ import moa.core.ObjectRepository;
 import moa.options.ClassOption;
 import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
-import samoa.instances.Instance;
-import samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
 
 /**
  * The revised version of the Accuracy Updated Ensemble as proposed by

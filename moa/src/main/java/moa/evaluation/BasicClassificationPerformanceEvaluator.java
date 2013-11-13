@@ -24,7 +24,7 @@ import moa.AbstractMOAObject;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.Utils;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Classification evaluator that performs basic incremental evaluation.

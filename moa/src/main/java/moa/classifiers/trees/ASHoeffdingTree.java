@@ -19,7 +19,7 @@
  */
 package moa.classifiers.trees;
 
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Adaptive Size Hoeffding Tree used in Bagging using trees of different size.

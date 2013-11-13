@@ -25,7 +25,7 @@ import java.util.List;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.Utils;
 
 import moa.core.DoubleVector;

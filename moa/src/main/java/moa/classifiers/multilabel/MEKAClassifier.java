@@ -20,10 +20,10 @@
 package moa.classifiers.multilabel;
 
 import moa.classifiers.meta.WEKAClassifier;
-import samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import weka.classifiers.UpdateableClassifier;
-import samoa.instances.Instance;
-import samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
 
 /**
  * Class for using a MEKA classifier. NOTE: This class only exists to adjust the

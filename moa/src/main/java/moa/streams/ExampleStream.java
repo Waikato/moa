@@ -21,8 +21,8 @@ package moa.streams;
 
 import moa.MOAObject;
 import moa.core.Example;
-import samoa.instances.InstancesHeader;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Interface representing a data stream of examples. 

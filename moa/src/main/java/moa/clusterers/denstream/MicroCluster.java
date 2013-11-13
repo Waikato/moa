@@ -20,7 +20,7 @@
 package moa.clusterers.denstream;
 
 import moa.cluster.CFCluster;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 public class MicroCluster extends CFCluster {
 

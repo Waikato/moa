@@ -44,7 +44,7 @@ import moa.classifiers.core.splitcriteria.SDRSplitCriterion;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.core.DoubleVector;
 import moa.options.ClassOption;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
  
 /*
  * Implementation of FIMTDD, regresion tree for data streams.

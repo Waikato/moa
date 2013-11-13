@@ -28,7 +28,7 @@ import moa.clusterers.outliers.MCOD.ISBIndex.ISBNode.NodeType;
 import moa.clusterers.outliers.MCOD.ISBIndex.ISBSearchResult;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 
 //The algorithm is described in 

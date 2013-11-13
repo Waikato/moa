@@ -13,7 +13,7 @@
  * License.  
  */
 
-package samoa.instances;
+package com.yahoo.labs.samoa.instances;
 
 /**
  * The Class SparseInstance.

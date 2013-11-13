@@ -56,10 +56,10 @@ import moa.streams.clustering.ClusterEvent;
 import moa.streams.clustering.ClusterEventListener;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
-import samoa.instances.Attribute;
-import samoa.instances.DenseInstance;
-import samoa.instances.Instance;
-import samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.Attribute;
+import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
 
 public class RunOutlierVisualizer implements Runnable, ActionListener, ClusterEventListener{	
     /** the pause interval, being read from the gui at startup */

@@ -21,9 +21,9 @@ package moa.classifiers.multilabel;
 
 import java.util.HashMap;
 import moa.classifiers.AbstractClassifier;
-import samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.Measurement;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Majority Labelset classifier. Each labelset combination of relevances, e.g.

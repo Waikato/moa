@@ -22,7 +22,7 @@ package moa.evaluation;
 import moa.AbstractMOAObject;
 import moa.core.Example;
 import moa.core.Measurement;
-import samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Regression evaluator that performs basic incremental evaluation.
