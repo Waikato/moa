@@ -192,6 +192,9 @@ public class WithKmeans extends AbstractClusterer {
 	
 	@Override
 	public Clustering getClusteringResult() {
+                if (!initialized) {
+                    return new Clustering(new Cluster[0]);
+		}
 		return kMeans_rand(kOption.getValue(), getMicroClusteringResult());
 	}
 	
