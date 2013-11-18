@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-import moa.classifiers.Classifier;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
@@ -42,9 +41,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import moa.classifiers.Regressor;
 import moa.streams.ExampleStream;
-import moa.streams.InstanceStream;
 import com.yahoo.labs.samoa.instances.Instance;
-import moa.core.Utils;
 import moa.evaluation.RegressionPerformanceEvaluator;
 
 /**
@@ -198,7 +195,7 @@ public class EvaluatePrequentialRegression extends RegressionMainTask {
             double[] prediction = learner.getVotesForInstance(testInst);
             // Output prediction
             if (outputPredictionFile != null) {
-                int trueClass = (int) ((Instance) trainInst.getData()).classValue();
+                double trueClass = ((Instance) trainInst.getData()).classValue();
                 outputPredictionResultStream.println(prediction[0] + "," + trueClass);
             }
 
