@@ -124,7 +124,7 @@ public class EvaluateModelRegression extends RegressionMainTask {
             //evaluator.addClassificationAttempt(trueClass, prediction, testInst
             //		.weight());
             if (outputPredictionFile != null) {
-                outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," + trueClass);
+                outputPredictionResultStream.println(prediction[0] + "," + trueClass);
             }
             evaluator.addResult(testInst, prediction);
             instancesProcessed++;
