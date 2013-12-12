@@ -433,10 +433,6 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
         }
     }
 
-    protected int activeLeafNodeCount;
-
-    protected int inactiveLeafNodeCount;
-
     protected int alternateTrees;
 
     protected int prunedAlternateTrees;
