@@ -109,6 +109,10 @@ public class Measurement extends AbstractMOAObject {
     public void getDescription(StringBuilder sb, int indent) {
         sb.append(getName());
         sb.append(" = ");
-        sb.append(StringUtils.doubleToString(getValue(), 3));
+        if (getValue()>.001) {
+                sb.append(StringUtils.doubleToString(getValue(),3));
+        } else {
+                sb.append(getValue());
+        }
     }
 }

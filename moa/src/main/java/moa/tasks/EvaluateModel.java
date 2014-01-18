@@ -142,13 +142,13 @@ public class EvaluateModel extends MainTask {
                         / (double) (instancesProcessed + estimatedRemainingInstances));
                 if (monitor.resultPreviewRequested()) {
                     monitor.setLatestResultPreview(new LearningEvaluation(
-                            evaluator.getPerformanceMeasurements()));
+                            evaluator, model));
                 }
             }
         }
         if (outputPredictionResultStream != null) {
             outputPredictionResultStream.close();
         }
-        return new LearningEvaluation(evaluator.getPerformanceMeasurements());
+        return new LearningEvaluation(evaluator, model);
     }
 }

@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -90,21 +91,22 @@ public class RegressionTaskManagerPanel extends JPanel {
             setStringPainted(true);
         }
 
-        @Override
+         @Override
         public Component getTableCellRendererComponent(JTable table,
                 Object value, boolean isSelected, boolean hasFocus, int row,
                 int column) {
+            double frac = -1.0;
             if (value instanceof Double) {
-                double frac = ((Double) value).doubleValue();
-                if (frac >= 0.0) {
-                    setIndeterminate(false);
-                    setValue((int) (frac * 10000.0));
-                    setString(StringUtils.doubleToString(frac * 100.0, 2, 2));
-                } else {
-                    setValue(0);
-                    setIndeterminate(true);
-                    setString("?");
-                }
+                frac = ((Double) value).doubleValue();
+            }
+            if (frac >= 0.0) {
+                setIndeterminate(false);
+                setValue((int) (frac * 10000.0));
+                setString(StringUtils.doubleToString(frac * 100.0, 2, 2));
+            } else {
+                setValue(0);
+                setIndeterminate(true);
+                setString("?");
             }
             return this;
         }
@@ -207,9 +209,20 @@ public class RegressionTaskManagerPanel extends JPanel {
 
     protected PreviewPanel previewPanel;
 
+    private Preferences prefs;
+    
+    private final String PREF_NAME = "currentTask";
+    
     public RegressionTaskManagerPanel() {
-        this.taskDescField.setText(this.currentTask.getCLICreationString(RegressionMainTask.class));
+        // Read current task preference
+        prefs = Preferences.userRoot().node(this.getClass().getName());
+        currentTask = new EvaluatePrequentialRegression();
+        String taskText = this.currentTask.getCLICreationString(RegressionMainTask.class);
+        String propertyValue = prefs.get(PREF_NAME, taskText);
+        //this.taskDescField.setText(propertyValue);
+        setTaskString(propertyValue, false); //Not store preference
         this.taskDescField.setEditable(false);
+        
         final Component comp = this.taskDescField;
         this.taskDescField.addMouseListener(new MouseAdapter() {
 
@@ -359,10 +372,19 @@ public class RegressionTaskManagerPanel extends JPanel {
     }
 
     public void setTaskString(String cliString) {
+        setTaskString(cliString, true);
+    }
+    
+    public void setTaskString(String cliString, boolean storePreference) {    
         try {
             this.currentTask = (RegressionMainTask) ClassOption.cliStringToObject(
                     cliString, RegressionMainTask.class, null);
-            this.taskDescField.setText(this.currentTask.getCLICreationString(RegressionMainTask.class));
+            String taskText = this.currentTask.getCLICreationString(RegressionMainTask.class);
+            this.taskDescField.setText(taskText);
+            if (storePreference == true){
+            //Save task text as a preference
+            prefs.put(PREF_NAME, taskText);
+            }
         } catch (Exception ex) {
             GUIUtils.showExceptionDialog(this, "Problem with task", ex);
         }

@@ -1,5 +1,5 @@
 /*
- *    AccuracyUpdatedEnsemble2.java
+ *    AccuracyUpdatedEnsemble.java
  *    Copyright (C) 2010 Poznan University of Technology, Poznan, Poland
  *    @author Dariusz Brzezinski (dariusz.brzezinski@cs.put.poznan.pl)
  *
@@ -36,7 +36,7 @@ import com.yahoo.labs.samoa.instances.Instances;
  * Brzezinski and Stefanowski in "Reacting to Different Types of Concept Drift:
  * The Accuracy Updated Ensemble Algorithm", IEEE Trans. Neural Netw, 2013.
  */
-public class AccuracyUpdatedEnsemble2 extends AbstractClassifier {
+public class AccuracyUpdatedEnsemble extends AbstractClassifier {
 
 	private static final long serialVersionUID = 1L;
 
