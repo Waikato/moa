@@ -16,7 +16,7 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package moa.drift;
+package moa.classifiers.core.driftdetection;
 
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.ListOption;

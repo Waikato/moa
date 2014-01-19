@@ -15,27 +15,23 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
  */
 package moa.classifiers.core.driftdetection;
 
 import moa.core.ObjectRepository;
-import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
-
 
 /**
  * Drift detection method based in EDDM method of Manuel Baena et al.
- * 
+ *
  * <p>Early Drift Detection Method. Manuel Baena-Garcia, Jose Del Campo-Avila,
- * Raúl Fidalgo, Albert Bifet, Ricard Gavalda, Rafael Morales-Bueno.
- * In Fourth International Workshop on Knowledge Discovery from Data Streams,
- * 2006.</p>
+ * Raúl Fidalgo, Albert Bifet, Ricard Gavalda, Rafael Morales-Bueno. In Fourth
+ * International Workshop on Knowledge Discovery from Data Streams, 2006.</p>
  *
  * @author Manuel Baena (mbaena@lcc.uma.es)
  * @version $Revision: 7 $
  */
-public class EDDM extends AbstractOptionHandler implements DriftDetectionMethod {
+public class EDDM extends AbstractChangeDetector {
 
     /**
      *
@@ -67,10 +63,11 @@ public class EDDM extends AbstractOptionHandler implements DriftDetectionMethod 
     private int m_lastLevel;
 
     public EDDM() {
-        initialize();
+        resetLearning();
     }
 
-    private void initialize() {
+    @Override
+    public void resetLearning() {
         m_n = 1;
         m_numErrors = 0;
         m_d = 0;
@@ -78,20 +75,31 @@ public class EDDM extends AbstractOptionHandler implements DriftDetectionMethod 
         m_mean = 0.0;
         m_stdTemp = 0.0;
         m_m2smax = 0.0;
-        m_lastLevel = DDM_INCONTROL_LEVEL;
+        //m_lastLevel = DDM_INCONTROL_LEVEL;
+        this.estimation = 0.0;
     }
 
     @Override
-    public int computeNextVal(boolean prediction) {
+    public void input(double prediction) {
+        // prediction must be 1 or 0
+        // It monitors the error rate
         // System.out.print(prediction + " " + m_n + " " + probability + " ");
+        if (this.isChangeDetected == true) {
+            resetLearning();
+        }
+        this.isChangeDetected = false;
+        
         m_n++;
-        if (prediction == false) {
+        if (prediction == 1.0) {
+            this.isWarningZone = false;
+            this.delay = 0;
             m_numErrors += 1;
             m_lastd = m_d;
             m_d = m_n - 1;
             int distance = m_d - m_lastd;
             double oldmean = m_mean;
             m_mean = m_mean + ((double) distance - m_mean) / m_numErrors;
+            this.estimation = m_mean;
             m_stdTemp = m_stdTemp + (distance - m_mean) * (distance - oldmean);
             double std = Math.sqrt(m_stdTemp / m_numErrors);
             double m2s = m_mean + 2 * std;
@@ -103,25 +111,28 @@ public class EDDM extends AbstractOptionHandler implements DriftDetectionMethod 
                 if (m_n > FDDM_MINNUMINSTANCES) {
                     m_m2smax = m2s;
                 }
-                m_lastLevel = DDM_INCONTROL_LEVEL;
+                //m_lastLevel = DDM_INCONTROL_LEVEL;
                 // System.out.print(1 + " ");
             } else {
                 double p = m2s / m_m2smax;
                 // System.out.print(p + " ");
                 if (m_n > FDDM_MINNUMINSTANCES && m_numErrors > m_minNumErrors
                         && p < FDDM_OUTCONTROL) {
-                    System.out.println(m_mean + ",D");
-                    initialize();
-                    return DDM_OUTCONTROL_LEVEL;
+                    //System.out.println(m_mean + ",D");
+                    this.isChangeDetected = true;
+                    //resetLearning();
+                    //return DDM_OUTCONTROL_LEVEL;
                 } else if (m_n > FDDM_MINNUMINSTANCES
                         && m_numErrors > m_minNumErrors && p < FDDM_WARNING) {
-                    System.out.println(m_mean + ",W");
-                    m_lastLevel = DDM_WARNING_LEVEL;
-                    return DDM_WARNING_LEVEL;
+                    //System.out.println(m_mean + ",W");
+                    //m_lastLevel = DDM_WARNING_LEVEL;
+                    this.isWarningZone = true;
+                    //return DDM_WARNING_LEVEL;
                 } else {
-                    System.out.println(m_mean + ",N");
-                    m_lastLevel = DDM_INCONTROL_LEVEL;
-                    return DDM_INCONTROL_LEVEL;
+                    this.isWarningZone = false;
+                    //System.out.println(m_mean + ",N");
+                    //m_lastLevel = DDM_INCONTROL_LEVEL;
+                    //return DDM_INCONTROL_LEVEL;
                 }
             }
         } else {
@@ -131,7 +142,6 @@ public class EDDM extends AbstractOptionHandler implements DriftDetectionMethod 
             // System.out.print(((m_mean +
             // 2*Math.sqrt(m_stdTemp/m_numErrors))/m_m2smax) + " ");
         }
-        return m_lastLevel;
     }
 
     @Override
@@ -143,10 +153,5 @@ public class EDDM extends AbstractOptionHandler implements DriftDetectionMethod 
     protected void prepareForUseImpl(TaskMonitor monitor,
             ObjectRepository repository) {
         // TODO Auto-generated method stub
-    }
-
-    @Override
-    public DriftDetectionMethod copy() {
-        return (DriftDetectionMethod) super.copy();
     }
 }

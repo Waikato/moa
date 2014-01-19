@@ -105,8 +105,8 @@ public class RegressionTaskManagerPanel extends JPanel {
                 setString(StringUtils.doubleToString(frac * 100.0, 2, 2));
             } else {
                 setValue(0);
-                setIndeterminate(true);
-                setString("?");
+                //setIndeterminate(true);
+                //setString("?");
             }
             return this;
         }

@@ -1,5 +1,5 @@
 /*
- *    DDM.java
+ *    EWMAChartDM.java
  *    Copyright (C) 2008 University of Waikato, Hamilton, New Zealand
  *    @author Manuel Baena (mbaena@lcc.uma.es)
  *
@@ -16,22 +16,22 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package moa.drift;
+package moa.classifiers.core.driftdetection;
 
+import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
 
 /**
- *  Drift detection method based in DDM method of Joao Gama SBIA 2004.
+ * Drift detection method based in EWMA Charts of Ross, Adams, Tasoulis and Hand
+ * 2012
  *
- *  <p>João Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues: Learning
- * with Drift Detection. SBIA 2004: 286-295 </p>
  *
- *  @author Manuel Baena (mbaena@lcc.uma.es)
- *  @version $Revision: 7 $
+ * @author Manuel Baena (mbaena@lcc.uma.es)
+ * @version $Revision: 7 $
  */
-public class DDM extends AbstractChangeDetector {
+public class EWMAChartDM extends AbstractChangeDetector {
 
     private static final long serialVersionUID = -3518369648142099719L;
 
@@ -41,30 +41,34 @@ public class DDM extends AbstractChangeDetector {
             'n',
             "The minimum number of instances before permitting detecting change.",
             30, 0, Integer.MAX_VALUE);
-    private int m_n;
 
+    public FloatOption lambdaOption = new FloatOption("lambda", 'l',
+            "Lambda parameter of the EWMA Chart Method", 0.2, 0.0, Float.MAX_VALUE);
+
+    private double m_n;
+
+    private double m_sum;
+    
     private double m_p;
-
+    
     private double m_s;
+    
+    private double lambda;
+    
+    private double z_t;
 
-    private double m_psmin;
-
-    private double m_pmin;
-
-    private double m_smin;
-
-    public DDM() {
+    public EWMAChartDM() {
         resetLearning();
     }
 
     @Override
     public void resetLearning() {
-        m_n = 1;
-        m_p = 1;
-        m_s = 0;
-        m_psmin = Double.MAX_VALUE;
-        m_pmin = Double.MAX_VALUE;
-        m_smin = Double.MAX_VALUE;
+        m_n = 1.0;
+        m_sum = 0.0;
+        m_p = 0.0;
+        m_s = 0.0;
+        z_t = 0.0;
+        lambda = this.lambdaOption.getValue();
     }
 
     @Override
@@ -74,10 +78,20 @@ public class DDM extends AbstractChangeDetector {
         if (this.isChangeDetected == true) {
             resetLearning();
         }
-        m_p = m_p + (prediction - m_p) / (double) m_n;
-        m_s = Math.sqrt(m_p * (1 - m_p) / (double) m_n);
+
+        m_sum += prediction;
+        
+        m_p = m_sum/m_n; // m_p + (prediction - m_p) / (double) (m_n+1);
+
+        m_s = Math.sqrt(  m_p * (1.0 - m_p)* lambda * (1.0 - Math.pow(1.0 - lambda, 2.0 * m_n)) / (2.0 - lambda));
 
         m_n++;
+
+        z_t += lambda * (prediction - z_t);
+
+        //double L_t = 2.76 - 6.23 * m_p + 18.12 * Math.pow(m_p, 3) - 312.45 * Math.pow(m_p, 5) + 1002.18 * Math.pow(m_p, 7); //%1 FP
+        double L_t = 3.97 - 6.56 * m_p + 48.73 * Math.pow(m_p, 3) - 330.13 * Math.pow(m_p, 5) + 848.18 * Math.pow(m_p, 7); //%1 FP
+        //double L_t = 1.17 + 7.56 * m_p - 21.24 * Math.pow(m_p, 3) + 112.12 * Math.pow(m_p, 5) - 987.23 * Math.pow(m_p, 7); //%1 FP
 
         // System.out.print(prediction + " " + m_n + " " + (m_p+m_s) + " ");
         this.estimation = m_p;
@@ -88,18 +102,12 @@ public class DDM extends AbstractChangeDetector {
         if (m_n < this.minNumInstancesOption.getValue()) {
             return;
         }
-
-        if (m_p + m_s <= m_psmin) {
-            m_pmin = m_p;
-            m_smin = m_s;
-            m_psmin = m_p + m_s;
-        }
-
-        if (m_n > this.minNumInstancesOption.getValue() && m_p + m_s > m_pmin + 3 * m_smin) {
+            
+        if (m_n > this.minNumInstancesOption.getValue() && z_t > m_p + L_t * m_s) {
             //System.out.println(m_p + ",D");
             this.isChangeDetected = true;
             //resetLearning();
-        } else if (m_p + m_s > m_pmin + 2 * m_smin) {
+        } else if (z_t > m_p + 0.5 *  L_t * m_s) {
             //System.out.println(m_p + ",W");
             this.isWarningZone = true;
         } else {

@@ -15,34 +15,32 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
  */
 package moa.classifiers.core.driftdetection;
 
-import moa.core.ObjectRepository;
-import moa.options.AbstractOptionHandler;
 import com.github.javacliparser.IntOption;
+import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
 
 /**
- * Drift detection method based in DDM method of Joao Gama SBIA 2004.
+ *  Drift detection method based in DDM method of Joao Gama SBIA 2004.
  *
- * <p>João Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues: Learning
+ *  <p>João Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues: Learning
  * with Drift Detection. SBIA 2004: 286-295 </p>
  *
- * @author Manuel Baena (mbaena@lcc.uma.es)
- * @version $Revision: 7 $
+ *  @author Manuel Baena (mbaena@lcc.uma.es)
+ *  @version $Revision: 7 $
  */
-public class DDM extends AbstractOptionHandler implements DriftDetectionMethod {
+public class DDM extends AbstractChangeDetector {
 
     private static final long serialVersionUID = -3518369648142099719L;
 
+    //private static final int DDM_MINNUMINST = 30;
     public IntOption minNumInstancesOption = new IntOption(
             "minNumInstances",
             'n',
             "The minimum number of instances before permitting detecting change.",
             30, 0, Integer.MAX_VALUE);
-
     private int m_n;
 
     private double m_p;
@@ -56,10 +54,11 @@ public class DDM extends AbstractOptionHandler implements DriftDetectionMethod {
     private double m_smin;
 
     public DDM() {
-        initialize();
+        resetLearning();
     }
 
-    private void initialize() {
+    @Override
+    public void resetLearning() {
         m_n = 1;
         m_p = 1;
         m_s = 0;
@@ -69,20 +68,25 @@ public class DDM extends AbstractOptionHandler implements DriftDetectionMethod {
     }
 
     @Override
-    public int computeNextVal(boolean prediction) {
-        if (prediction == false) {
-            m_p = m_p + (1.0 - m_p) / (double) m_n;
-        } else {
-            m_p = m_p - (m_p) / (double) m_n;
+    public void input(double prediction) {
+        // prediction must be 1 or 0
+        // It monitors the error rate
+        if (this.isChangeDetected == true) {
+            resetLearning();
         }
+        m_p = m_p + (prediction - m_p) / (double) m_n;
         m_s = Math.sqrt(m_p * (1 - m_p) / (double) m_n);
 
         m_n++;
 
         // System.out.print(prediction + " " + m_n + " " + (m_p+m_s) + " ");
+        this.estimation = m_p;
+        this.isChangeDetected = false;
+        this.isWarningZone = false;
+        this.delay = 0;
 
-        if (m_n < minNumInstancesOption.getValue()) {
-            return DDM_INCONTROL_LEVEL;
+        if (m_n < this.minNumInstancesOption.getValue()) {
+            return;
         }
 
         if (m_p + m_s <= m_psmin) {
@@ -91,18 +95,16 @@ public class DDM extends AbstractOptionHandler implements DriftDetectionMethod {
             m_psmin = m_p + m_s;
         }
 
-
-
-        if (m_n > minNumInstancesOption.getValue() && m_p + m_s > m_pmin + 3 * m_smin) {
-            System.out.println(m_p + ",D");
-            initialize();
-            return DDM_OUTCONTROL_LEVEL;
+        if (m_n > this.minNumInstancesOption.getValue() && m_p + m_s > m_pmin + 3 * m_smin) {
+            //System.out.println(m_p + ",D");
+            this.isChangeDetected = true;
+            //resetLearning();
         } else if (m_p + m_s > m_pmin + 2 * m_smin) {
-            System.out.println(m_p + ",W");
-            return DDM_WARNING_LEVEL;
+            //System.out.println(m_p + ",W");
+            this.isWarningZone = true;
         } else {
-            System.out.println(m_p + ",N");
-            return DDM_INCONTROL_LEVEL;
+            this.isWarningZone = false;
+            //System.out.println(m_p + ",N");
         }
     }
 
@@ -115,10 +117,5 @@ public class DDM extends AbstractOptionHandler implements DriftDetectionMethod {
     protected void prepareForUseImpl(TaskMonitor monitor,
             ObjectRepository repository) {
         // TODO Auto-generated method stub
-    }
-
-    @Override
-    public DriftDetectionMethod copy() {
-        return (DriftDetectionMethod) super.copy();
     }
 }

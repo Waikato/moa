@@ -1,5 +1,5 @@
 /*
- *    ChangeDetector.java
+ *    AbstractChangeDetector.java
  *    Copyright (C) 2011 University of Waikato, Hamilton, New Zealand
  *    @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  *
@@ -16,24 +16,52 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package moa.drift;
+package moa.classifiers.core.driftdetection;
 
-import moa.options.OptionHandler;
+import moa.options.AbstractOptionHandler;
 
 /**
- *  Change Detector interface to implement methods that detects change.
+ * Abstract Change Detector. All change detectors in MOA extend this class.
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public interface ChangeDetector extends OptionHandler {
+public abstract class AbstractChangeDetector extends AbstractOptionHandler
+        implements ChangeDetector {
+
+
+
+    /**
+     * Change was detected
+     */
+    protected boolean isChangeDetected;
+
+    /**
+     * Warning Zone: after a warning and before a change 
+     */
+    protected boolean isWarningZone;
+
+    /**
+     * Prediction for the next value based in previous seen values
+     */
+    protected double estimation;
+
+    /**
+     * Delay in detecting change
+     */
+    protected double delay;
 
     /**
      * Resets this change detector. It must be similar to starting a new change
      * detector from scratch.
      *
      */
-    public void resetLearning();
+    public void resetLearning() {
+        this.isChangeDetected = false;
+        this.isWarningZone = false;
+        this.estimation = 0.0;
+        this.delay = 0.0;
+    }
 
     /**
      * Adding a numeric value to the change detector<br><br>
@@ -43,35 +71,44 @@ public interface ChangeDetector extends OptionHandler {
      *
      * @param inputValue the number to insert into the change detector
      */
-    public void input(double inputValue);
+    public abstract void input(double inputValue);
 
     /**
      * Gets whether there is change detected.
      *
      * @return true if there is change
      */
-    public boolean getChange();
+    public boolean getChange() {
+        return this.isChangeDetected;
+    }
 
     /**
-     * Gets whether the change detector is in the warning zone, after a warning alert and before a change alert.
+     * Gets whether the change detector is in the warning zone, after a warning
+     * alert and before a change alert.
      *
      * @return true if the change detector is in the warning zone
      */
-    public boolean getWarningZone();
+    public boolean getWarningZone() {
+        return this.isWarningZone;
+    }
 
     /**
      * Gets the prediction of next values.
      *
      * @return a prediction of the next value
      */
-    public double getEstimation();
+    public double getEstimation() {
+        return this.estimation;
+    }
 
     /**
      * Gets the length of the delay in the change detected.
      *
      * @return he length of the delay in the change detected
      */
-    public double getDelay();
+    public double getDelay() {
+        return this.delay;
+    }
 
     /**
      * Gets the output state of the change detection.
@@ -79,7 +116,10 @@ public interface ChangeDetector extends OptionHandler {
      * @return an array with the number of change detections, number of
      * warnings, delay, and estimation.
      */
-    public double[] getOutput();
+    public double[] getOutput() {
+        double[] res = {this.isChangeDetected ? 1 : 0, this.isWarningZone ? 1 : 0, this.delay, this.estimation};
+        return res;
+    }
 
     /**
      * Returns a string representation of the model.
@@ -88,13 +128,15 @@ public interface ChangeDetector extends OptionHandler {
      * @param indent	the number of characters to indent
      */
     @Override
-    public void getDescription(StringBuilder sb, int indent);
+    public abstract void getDescription(StringBuilder sb, int indent);
 
     /**
-     * Produces a copy of this drift detection method
+     * Produces a copy of this change detector method
      *
-     * @return the copy of this drift detection method
+     * @return the copy of this change detector method
      */
     @Override
-    public ChangeDetector copy();
+    public ChangeDetector copy() {
+        return (ChangeDetector) super.copy();
+    }
 }
