@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.JButton;
@@ -42,6 +43,10 @@ import javax.swing.JTextArea;
 import moa.evaluation.Accuracy;
 import moa.evaluation.MeasureCollection;
 import moa.evaluation.RegressionAccuracy;
+import moa.gui.PreviewPanel.TypePanel;
+import moa.gui.conceptdrift.CDTaskManagerPanel;
+import moa.streams.clustering.ClusterEvent;
+import moa.tasks.ConceptDriftMainTask;
 
 /**
  * This panel displays text. Used to output the results of tasks.
@@ -65,16 +70,34 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
     private javax.swing.JSplitPane jSplitPane1;
 
-    private boolean isRegression;
-
-    public TaskTextViewerPanel() {
-        this(false);
+   //Added for stream events
+    protected CDTaskManagerPanel taskManagerPanel;
+    
+    protected TypePanel typePanel;
+    
+    public void initVisualEvalPanel() {
+        acc1[0] = getNewMeasureCollection();
+        acc2[0] = getNewMeasureCollection();
+        if (clusteringVisualEvalPanel1 != null) {
+            panelEvalOutput.remove(clusteringVisualEvalPanel1);
+        }
+        clusteringVisualEvalPanel1 = new moa.gui.clustertab.ClusteringVisualEvalPanel();
+        clusteringVisualEvalPanel1.setMeasures(acc1, acc2, this);
+        this.graphCanvas.setGraph(acc1[0], acc2[0], 0, 1000); 
+        this.graphCanvas.forceAddEvents();
+        clusteringVisualEvalPanel1.setMinimumSize(new java.awt.Dimension(280, 118));
+        clusteringVisualEvalPanel1.setPreferredSize(new java.awt.Dimension(290, 115));
+         panelEvalOutput.add(clusteringVisualEvalPanel1, gridBagConstraints);
     }
-
-    public TaskTextViewerPanel(boolean isRegression) {
-        this.isRegression = isRegression;
-        java.awt.GridBagConstraints gridBagConstraints;
-
+        public TaskTextViewerPanel() {
+           this(TypePanel.CLASSIFICATION, null);
+        }
+        
+        public java.awt.GridBagConstraints gridBagConstraints;
+        
+        public TaskTextViewerPanel(PreviewPanel.TypePanel typePanel, CDTaskManagerPanel taskManagerPanel) { 
+        this.typePanel = typePanel;
+        this.taskManagerPanel = taskManagerPanel;
         jSplitPane1 = new javax.swing.JSplitPane();
         topWrapper = new javax.swing.JPanel();
 
@@ -121,7 +144,7 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         //topWrapper.add(buttonPanel);
 
         panelEvalOutput = new javax.swing.JPanel();
-        clusteringVisualEvalPanel1 = new moa.gui.clustertab.ClusteringVisualEvalPanel();
+        //clusteringVisualEvalPanel1 = new moa.gui.clustertab.ClusteringVisualEvalPanel();
         graphPanel = new javax.swing.JPanel();
         graphPanelControlTop = new javax.swing.JPanel();
         buttonZoomInY = new javax.swing.JButton();
@@ -129,6 +152,11 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         labelEvents = new javax.swing.JLabel();
         graphScrollPanel = new javax.swing.JScrollPane();
         graphCanvas = new moa.gui.visualization.GraphCanvas();
+        // New EventClusters
+        //clusterEvents = new  ArrayList<ClusterEvent>();
+        //clusterEvents.add(new ClusterEvent(this,100,"Change", "Drift"));
+        //graphCanvas.setClusterEventsList(clusterEvents);
+
         graphPanelControlBottom = new javax.swing.JPanel();
         buttonZoomInX = new javax.swing.JButton();
         buttonZoomOutX = new javax.swing.JButton();
@@ -140,20 +168,23 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
         //topWrapper.setPreferredSize(new java.awt.Dimension(688, 500));
         //topWrapper.setLayout(new java.awt.GridBagLayout());
+
         jSplitPane1.setLeftComponent(topWrapper);
 
         panelEvalOutput.setBorder(javax.swing.BorderFactory.createTitledBorder("Evaluation"));
         panelEvalOutput.setLayout(new java.awt.GridBagLayout());
 
-        clusteringVisualEvalPanel1.setMinimumSize(new java.awt.Dimension(280, 118));
-        clusteringVisualEvalPanel1.setPreferredSize(new java.awt.Dimension(290, 115));
+        //clusteringVisualEvalPanel1.setMinimumSize(new java.awt.Dimension(280, 118));
+        //clusteringVisualEvalPanel1.setPreferredSize(new java.awt.Dimension(290, 115));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weighty = 1.0;
-        panelEvalOutput.add(clusteringVisualEvalPanel1, gridBagConstraints);
+        //panelEvalOutput.add(clusteringVisualEvalPanel1, gridBagConstraints);
+        initVisualEvalPanel();
+
 
         graphPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Plot"));
         graphPanel.setPreferredSize(new java.awt.Dimension(530, 115));
@@ -258,11 +289,11 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         gridBagConstraints.weighty = 1.0;
         add(jSplitPane1, gridBagConstraints);
 
-        acc1[0] = newAccuracy();
+       // acc1[0] = getNewMeasureCollection();
 
-        acc2[0] = newAccuracy();
-        clusteringVisualEvalPanel1.setMeasures(acc1, acc2, this);
-        this.graphCanvas.setGraph(acc1[0], acc2[0], 0, 1000);
+        //acc2[0] = getNewMeasureCollection();
+        //clusteringVisualEvalPanel1.setMeasures(acc1, acc2, this);
+        //this.graphCanvas.setGraph(acc1[0], acc2[0], 0, 1000);
 
     }
 
@@ -284,25 +315,46 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         return Math.abs(Math.rint(d * 100) / 100);
     }
 
+    protected MeasureCollection getNewMeasureCollection() {
+        /*if (this.taskManagerPanel != null) {
+            return new ChangeDetectionMeasures();
+        } else {
+            return new Accuracy();
+        }*/
+        return this.typePanel.getMeasureCollection();
+    }
+
     public void setGraph(String preview) {
         //Change the graph when there is change in the text
         double processFrequency = 1000;
         if (preview != null && !preview.equals("")) {
             MeasureCollection oldAccuracy = acc1[0];
-            acc1[0] = newAccuracy();
+            acc1[0] = getNewMeasureCollection();
             Scanner scanner = new Scanner(preview);
             String firstLine = scanner.nextLine();
             boolean isSecondLine = true;
 
             boolean isPrequential = firstLine.startsWith("learning evaluation instances,evaluation time");
             boolean isHoldOut = firstLine.startsWith("evaluation instances,to");
-            if (isPrequential || isHoldOut) {
-                int accuracyColumn = 4;
-                int kappaColumn = 5;
-                int RamColumn = 2;
-                int timeColumn = 1;
-                int memoryColumn = 7;
-                int kappaTempColumn = 5;
+            int accuracyColumn = 6;
+            int kappaColumn = 4;
+            int RamColumn = 2;
+            int timeColumn = 1;
+            int memoryColumn = 9;
+            int kappaTempColumn = 5;
+            if (this.taskManagerPanel instanceof CDTaskManagerPanel) {
+                accuracyColumn = 6;
+                kappaColumn = 4;
+                RamColumn = 2;
+                timeColumn = 1;
+                memoryColumn = 9;
+            } else if (isPrequential || isHoldOut) {
+                accuracyColumn = 4;
+                kappaColumn = 5;
+                RamColumn = 2;
+                timeColumn = 1;
+                memoryColumn = 7;
+                kappaTempColumn = 5;
                 String[] tokensFirstLine = firstLine.split(",");
                 int i = 0;
                 for (String s : tokensFirstLine) {
@@ -323,6 +375,8 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
                     }
                     i++;
                 }
+            }
+            if (isPrequential || isHoldOut || this.taskManagerPanel instanceof CDTaskManagerPanel) {
                 while (scanner.hasNextLine()) {
                     String line = scanner.nextLine();
                     String[] tokens = line.split(",");
@@ -348,15 +402,23 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
                     }
                 }
             } else {
-                this.acc2[0] = newAccuracy();
+                this.acc2[0] = getNewMeasureCollection();
             }
 
         } else {
-            this.acc1[0] = newAccuracy();
-            this.acc2[0] = newAccuracy();
+            this.acc1[0] = getNewMeasureCollection();
+            this.acc2[0] = getNewMeasureCollection();
+        }
+
+
+        if (this.taskManagerPanel instanceof CDTaskManagerPanel) {
+            ConceptDriftMainTask cdTask = this.taskManagerPanel.getSelectedCurrenTask();
+            ArrayList<ClusterEvent> clusterEvents = cdTask.getEventsList();
+            this.graphCanvas.setClusterEventsList(clusterEvents);
         }
         this.graphCanvas.setGraph(acc1[0], acc2[0], this.graphCanvas.getMeasureSelected(), (int) processFrequency);
-        this.graphCanvas.updateCanvas();
+        this.graphCanvas.updateCanvas(true);
+        this.graphCanvas.forceAddEvents();
         this.clusteringVisualEvalPanel1.update();
 
     }
@@ -495,10 +557,6 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
             }
         }
         this.graphCanvas.setGraph(acc1[m_select], acc2[m_select], m_select_offset, this.graphCanvas.getProcessFrequency());
+        this.graphCanvas.forceAddEvents();
     }
-
-    protected Accuracy newAccuracy() {
-        return this.isRegression == false ? new Accuracy() : new RegressionAccuracy();
-    }
-
 }

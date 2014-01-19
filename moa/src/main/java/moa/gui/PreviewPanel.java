@@ -29,6 +29,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import moa.core.StringUtils;
+import moa.evaluation.Accuracy;
+import moa.evaluation.ChangeDetectionMeasures;
+import moa.evaluation.MeasureCollection;
+import moa.evaluation.RegressionAccuracy;
+import moa.gui.conceptdrift.CDTaskManagerPanel;
 import moa.tasks.ResultPreviewListener;
 import moa.tasks.TaskThread;
 
@@ -61,16 +66,32 @@ public class PreviewPanel extends JPanel implements ResultPreviewListener {
     protected TaskTextViewerPanel textViewerPanel; // = new TaskTextViewerPanel();
 
     protected javax.swing.Timer autoRefreshTimer;
-
-    protected boolean isRegression;
+    
+    public enum TypePanel {
+        CLASSIFICATION(new Accuracy()),
+        REGRESSION(new RegressionAccuracy()),
+        CONCEPT_DRIFT(new ChangeDetectionMeasures());
+        private final MeasureCollection measureCollection;
+        //Constructor
+        TypePanel(MeasureCollection measureCollection){
+            this.measureCollection = measureCollection;
+        }
+        
+        public MeasureCollection getMeasureCollection(){
+            return (MeasureCollection) this.measureCollection.copy();
+        }
+    }
 
     public PreviewPanel() {
-        this(false);
+        this(TypePanel.CLASSIFICATION, null);
     }
     
-    public PreviewPanel(boolean isRegression) {
-        this.isRegression = isRegression;
-        this.textViewerPanel = new TaskTextViewerPanel(isRegression);
+    public PreviewPanel(TypePanel typePanel) {
+        this(typePanel, null);
+    }
+    
+    public PreviewPanel(TypePanel typePanel, CDTaskManagerPanel taskManagerPanel) {
+        this.textViewerPanel = new TaskTextViewerPanel(typePanel,taskManagerPanel); 
         this.autoRefreshComboBox.setSelectedIndex(1); // default to 1 sec
         JPanel controlPanel = new JPanel();
         controlPanel.add(this.previewLabel);

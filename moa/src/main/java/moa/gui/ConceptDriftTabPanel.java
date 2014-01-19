@@ -1,5 +1,5 @@
 /*
- *    RegressionTabPanel.java
+ *    ConceptDriftTabPanel.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  *
@@ -21,6 +21,7 @@ package moa.gui;
 
 import java.awt.BorderLayout;
 import moa.gui.PreviewPanel.TypePanel;
+import moa.gui.conceptdrift.CDTaskManagerPanel;
 
 /**
  * This panel allows the user to select and configure a task, and run it.
@@ -28,17 +29,17 @@ import moa.gui.PreviewPanel.TypePanel;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class RegressionTabPanel extends AbstractTabPanel {
+public class ConceptDriftTabPanel extends AbstractTabPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	protected RegressionTaskManagerPanel taskManagerPanel;
+	protected CDTaskManagerPanel taskManagerPanel;
 
 	protected PreviewPanel previewPanel;
 
-	public RegressionTabPanel() {
-		this.taskManagerPanel = new RegressionTaskManagerPanel();
-		this.previewPanel = new PreviewPanel(TypePanel.REGRESSION);
+	public ConceptDriftTabPanel() {
+		this.taskManagerPanel = new CDTaskManagerPanel();
+		this.previewPanel = new PreviewPanel(TypePanel.CONCEPT_DRIFT, this.taskManagerPanel);
 		this.taskManagerPanel.setPreviewPanel(this.previewPanel);
 		setLayout(new BorderLayout());
 		add(this.taskManagerPanel, BorderLayout.NORTH);
@@ -48,13 +49,13 @@ public class RegressionTabPanel extends AbstractTabPanel {
 	//returns the string to display as title of the tab
     @Override
 	public String getTabTitle() {
-		return "Regression";
+		return "Concept Drift";
 	}
 
 	//a short description (can be used as tool tip) of the tab, or contributor, etc.
     @Override
 	public String getDescription(){
-		return "MOA Regression";
+		return "MOA Concept Drift";
 	}
 
 }
