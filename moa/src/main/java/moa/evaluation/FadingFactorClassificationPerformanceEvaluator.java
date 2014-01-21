@@ -95,13 +95,15 @@ public class FadingFactorClassificationPerformanceEvaluator extends AbstractOpti
     public void addResult(Example<Instance> example, double[] classVotes) {
         Instance inst = example.getData();
         double weight = inst.weight();
-        int trueClass = (int) inst.classValue();
-        if (weight > 0.0) {
-            this.TotalweightObserved += weight;
-            if (Utils.maxIndex(classVotes) == trueClass) {
-                this.weightCorrect.add(1);
-            } else {
-                this.weightCorrect.add(0);
+        if (inst.classIsMissing() == false){
+            int trueClass = (int) inst.classValue();
+            if (weight > 0.0) {
+                this.TotalweightObserved += weight;
+                if (Utils.maxIndex(classVotes) == trueClass) {
+                    this.weightCorrect.add(1);
+                } else {
+                    this.weightCorrect.add(0);
+                }
             }
         }
     }

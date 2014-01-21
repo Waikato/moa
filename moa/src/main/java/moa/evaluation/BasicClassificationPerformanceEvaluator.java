@@ -75,23 +75,25 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
     public void addResult(Example<Instance> example, double[] classVotes) {
         Instance inst = example.getData();
         double weight = inst.weight();
-        int trueClass = (int) inst.classValue();
-        if (weight > 0.0) {
-            if (this.weightObserved == 0) {
-                reset(inst.dataset().numClasses());
+        if (inst.classIsMissing() == false){
+            int trueClass = (int) inst.classValue();
+            if (weight > 0.0) {
+                if (this.weightObserved == 0) {
+                    reset(inst.dataset().numClasses());
+                }
+                this.weightObserved += weight;
+                int predictedClass = Utils.maxIndex(classVotes);
+                if (predictedClass == trueClass) {
+                    this.weightCorrect += weight;
+                }
+                this.rowKappa[predictedClass] += weight;
+                this.columnKappa[trueClass] += weight;
             }
-            this.weightObserved += weight;
-            int predictedClass = Utils.maxIndex(classVotes);
-            if (predictedClass == trueClass) {
-                this.weightCorrect += weight;
+            if (this.lastSeenClass == trueClass) {
+                this.weightCorrectNoChangeClassifier += weight;
             }
-            this.rowKappa[predictedClass] += weight;
-            this.columnKappa[trueClass] += weight;
+            this.lastSeenClass = trueClass;
         }
-        if (this.lastSeenClass == trueClass) {
-            this.weightCorrectNoChangeClassifier += weight;
-        }
-        this.lastSeenClass = trueClass;
     }
 
     @Override

@@ -133,31 +133,33 @@ public class WindowClassificationPerformanceEvaluator extends AbstractOptionHand
     public void addResult(Example<Instance> example, double[] classVotes) {
         Instance inst = example.getData();
         double weight = inst.weight();
-        int trueClass = (int) inst.classValue();
-        if (weight > 0.0) {
-            if (TotalweightObserved == 0) {
-                reset(inst.dataset().numClasses());
+        if (inst.classIsMissing() == false){
+            int trueClass = (int) inst.classValue();
+            if (weight > 0.0) {
+                if (TotalweightObserved == 0) {
+                    reset(inst.dataset().numClasses());
+                }
+                this.TotalweightObserved += weight;
+                this.weightObserved.add(weight);
+                int predictedClass = Utils.maxIndex(classVotes);
+                if (predictedClass == trueClass) {
+                    this.weightCorrect.add(weight);
+                } else {
+                    this.weightCorrect.add(0);
+                }
+                //Add Kappa statistic information
+                for (int i = 0; i < this.numClasses; i++) {
+                    this.rowKappa[i].add(i == predictedClass ? weight : 0);
+                    this.columnKappa[i].add(i == trueClass ? weight : 0);
+                }
+                if (this.lastSeenClass == trueClass) {
+                    this.weightCorrectNoChangeClassifier.add(weight);
+                } else {
+                    this.weightCorrectNoChangeClassifier.add(0);
+                }
+                this.classAccuracy[trueClass].add(predictedClass == trueClass ? weight : 0.0);
+                this.lastSeenClass = trueClass;
             }
-            this.TotalweightObserved += weight;
-            this.weightObserved.add(weight);
-            int predictedClass = Utils.maxIndex(classVotes);
-            if (predictedClass == trueClass) {
-                this.weightCorrect.add(weight);
-            } else {
-                this.weightCorrect.add(0);
-            }
-            //Add Kappa statistic information
-            for (int i = 0; i < this.numClasses; i++) {
-                this.rowKappa[i].add(i == predictedClass ? weight : 0);
-                this.columnKappa[i].add(i == trueClass ? weight : 0);
-            }
-            if (this.lastSeenClass == trueClass) {
-                this.weightCorrectNoChangeClassifier.add(weight);
-            } else {
-                this.weightCorrectNoChangeClassifier.add(0);
-            }
-            this.classAccuracy[trueClass].add(predictedClass == trueClass ? weight : 0.0);
-            this.lastSeenClass = trueClass;
         }
     }
 
