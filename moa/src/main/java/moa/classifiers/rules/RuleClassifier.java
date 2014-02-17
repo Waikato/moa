@@ -47,7 +47,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * This classifier learn ordered and unordered rule set from data stream.
  * This algorithm also does the detection of anomalies.
  * 
- * <p>Learning Decision Rules from Data Streams, IJCAI 2011, J. Gama,  P. Kosina </p>
+ * <p>Learning Decision RuleClassifications from Data Streams, IJCAI 2011, J. Gama,  P. Kosina </p>
  *
  * 
  * <p>Parameters:</p>
@@ -93,10 +93,10 @@ public class RuleClassifier extends AbstractClassifier{
 	  
 	  protected ArrayList<Double> saveTheBest = new ArrayList<Double>();		// Contains the best attribute. 
 	  
-	  protected ArrayList<Rule> ruleSet = new ArrayList<Rule>();
+	  protected ArrayList<RuleClassification> ruleSet = new ArrayList<RuleClassification>();
 	  
 	 //   protected DoubleVector ruleClassIndexAnomalis = new DoubleVector();
-	  protected  ArrayList<Rule> ruleSetAnomalies = new ArrayList<Rule>();
+	  protected  ArrayList<RuleClassification> ruleSetAnomalies = new ArrayList<RuleClassification>();
 		
 	  protected ArrayList<Integer> ruleAnomaliesIndex = new ArrayList<Integer>();
 	
@@ -104,7 +104,7 @@ public class RuleClassifier extends AbstractClassifier{
 	  
 	  protected ArrayList<ArrayList<ArrayList<Double>>> ruleAttribAnomalyStatistics = new ArrayList<ArrayList<ArrayList<Double>>>();
 	  
-	  protected  ArrayList<Rule> ruleSetAnomaliesSupervised = new ArrayList<Rule>();
+	  protected  ArrayList<RuleClassification> ruleSetAnomaliesSupervised = new ArrayList<RuleClassification>();
 	  
 	  protected ArrayList<Integer> ruleAnomaliesIndexSupervised = new ArrayList<Integer>();
 	  
@@ -552,7 +552,7 @@ public void printAnomaliesSupervised(StringBuilder out, int indent) { // Get Mod
 	
 	
 	//This function initializes the statistics of a rule 
-	public void initializeRuleStatistics(Rule rl, Predicates pred, Instance inst) {
+	public void initializeRuleStatistics(RuleClassification rl, Predicates pred, Instance inst) {
 		rl.predicateSet.add(pred);
 		rl.obserClassDistrib=new DoubleVector();
 		rl.observers=new AutoExpandVector<AttributeClassObserver>();
@@ -566,7 +566,7 @@ public void printAnomaliesSupervised(StringBuilder out, int indent) { // Get Mod
 	}
 	
 	// Update rule statistics
-	public void updateRuleAttribStatistics(Instance inst, Rule rl, int ruleIndex){
+	public void updateRuleAttribStatistics(Instance inst, RuleClassification rl, int ruleIndex){
 		rl.instancesSeen++; 
 		if(rl.squaredAttributeStatisticsSupervised.size() == 0 && rl.attributeStatisticsSupervised.size() == 0){
 			for (int s = 0; s < inst.numAttributes() -1; s++) {
@@ -601,7 +601,7 @@ public void printAnomaliesSupervised(StringBuilder out, int indent) { // Get Mod
 		}
 	
 	//Compute anomalies unsupervised
-	public double computeAnomalyUnsupervised(Rule rl, int ruleIndex, Instance inst) { //Unsupervised
+	public double computeAnomalyUnsupervised(RuleClassification rl, int ruleIndex, Instance inst) { //Unsupervised
 		ArrayList<Integer> caseAnomalyTemp = new ArrayList<Integer>();
 	    ArrayList<ArrayList<Double>> AttribAnomalyStatisticTemp2 = new ArrayList<ArrayList<Double>>();
 	    double D = 0.0;
@@ -663,7 +663,7 @@ public void printAnomaliesSupervised(StringBuilder out, int indent) { // Get Mod
 			double val = anomaly * 100;
 			caseAnomalyTemp.add((int)val);
 			this.caseAnomaly.add(caseAnomalyTemp);
-			Rule x = new Rule(this.ruleSet.get(ruleIndex));
+			RuleClassification x = new RuleClassification(this.ruleSet.get(ruleIndex));
 			this.ruleSetAnomalies.add(x);
 			this.ruleAnomaliesIndex.add(ruleIndex + 1);
 			this.ruleAttribAnomalyStatistics.add(AttribAnomalyStatisticTemp2);
@@ -676,7 +676,7 @@ public void printAnomaliesSupervised(StringBuilder out, int indent) { // Get Mod
 	
 	
 	//Compute anomalies unsupervised
-		public double computeAnomalySupervised(Rule rl, int ruleIndex, Instance inst) { //Not supervised
+		public double computeAnomalySupervised(RuleClassification rl, int ruleIndex, Instance inst) { //Not supervised
 			ArrayList<Integer> caseAnomalyTemp = new ArrayList<Integer>();
 		    ArrayList<ArrayList<Double>> AttribAnomalyStatisticTemp2 = new ArrayList<ArrayList<Double>>();
 		    double D = 0.0;
@@ -730,7 +730,7 @@ public void printAnomaliesSupervised(StringBuilder out, int indent) { // Get Mod
 				double val = anomaly * 100;
 				caseAnomalyTemp.add((int)val);
 				this.caseAnomalySupervised.add(caseAnomalyTemp);
-				Rule y = new Rule(this.ruleSet.get(ruleIndex));
+				RuleClassification y = new RuleClassification(this.ruleSet.get(ruleIndex));
 				this.ruleSetAnomaliesSupervised.add(y);
 				this.ruleAnomaliesIndexSupervised.add(ruleIndex + 1);
 				this.ruleAttribAnomalyStatisticsSupervised.add(AttribAnomalyStatisticTemp2);
@@ -786,7 +786,7 @@ public void printAnomaliesSupervised(StringBuilder out, int indent) { // Get Mod
     			double symbol = this.saveTheBest.get(2);		// =, <=, > : (0.0, -1.0, 1.0).
     			double value = this.saveTheBest.get(0);		// Value of the attribute
     			this.pred = new Predicates(attributeValue, symbol, value);
-    			Rule Rl = new Rule();		// Create Rule.
+    			RuleClassification Rl = new RuleClassification();		// Create RuleClassification.
     			Rl.predicateSet.add(pred);
     			this.ruleSet.add(Rl);
     			if (Rl.predicateSet.get(0).getSymbol() == -1.0 ||Rl.predicateSet.get(0).getSymbol() == 1.0) {
@@ -803,7 +803,7 @@ public void printAnomaliesSupervised(StringBuilder out, int indent) { // Get Mod
 	}
 	
 	//This function This expands the rule
-	public void expandeRule(Rule rl, Instance inst, int ruleIndex) {
+	public void expandeRule(RuleClassification rl, Instance inst, int ruleIndex) {
 		int remainder = (int)Double.MAX_VALUE;
 		int numInstanciaObservers = (int)rl.obserClassDistrib.sumOfValues();		// Number of instances for this rule observers.
 		this.updateRuleAttribStatistics(inst, rl, ruleIndex);
@@ -1160,7 +1160,7 @@ public void printAnomaliesSupervised(StringBuilder out, int indent) { // Get Mod
 	}
 	
 	//Get rule majority class index	
-	protected double getRuleMajorityClassIndex(Rule r) {
+	protected double getRuleMajorityClassIndex(RuleClassification r) {
 		double maxvalue = 0.0;
 		int posMaxValue = 0;
 		for (int i = 0; i < r.obserClassDistrib.numValues(); i++) {
