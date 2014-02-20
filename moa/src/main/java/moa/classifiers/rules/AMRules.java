@@ -113,7 +113,7 @@ public class AMRules extends AbstractClassifier implements Regressor{
 			"pageHinckleyAlpha",
 			'a',
 			"The alpha value to use in the Page Hinckley change detection tests.",
-			0.005, 0.0, 1.0); 
+			0.5, 0.0, 1.0); 
 	
 	public IntOption pageHinckleyThresholdOption = new IntOption(
 			"pageHinckleyThreshold",
