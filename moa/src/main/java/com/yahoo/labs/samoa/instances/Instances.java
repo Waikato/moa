@@ -45,9 +45,9 @@ public class Instances implements Serializable{
      *
      * @param modelContext the model context
      */
-    public Instances(InstancesHeader modelContext) {
+    /*public Instances(InstancesHeader modelContext) {
         throw new UnsupportedOperationException("Not yet implemented");
-    }
+    }*/
 
     /**
      * Instantiates a new instances.
@@ -58,7 +58,11 @@ public class Instances implements Serializable{
         this.instanceInformation = chunk.instanceInformation();
         //this.relationName = chunk.relationName;
         //this.attributes = chunk.attributes;
-        this.instances = chunk.instances;
+        if (chunk.instances != null) {
+            this.instances = chunk.instances;
+        } else {
+            this.instances = new ArrayList<Instance>();
+        }
     }
     
     /**
