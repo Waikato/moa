@@ -164,10 +164,14 @@ public class ClusteringEvalPanel extends javax.swing.JPanel {
         setLayout(new java.awt.GridBagLayout());
 
         scrollPane.setBorder(null);
-        scrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setPreferredSize(new java.awt.Dimension(100, 225));
-
+        scrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);       
+        scrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        if(java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight() > 650) {
+            scrollPane.setPreferredSize(new java.awt.Dimension(100, 225));
+        } else {
+            scrollPane.setPreferredSize(new java.awt.Dimension(100, 115));
+        }        
+ 
         contentPanel.setLayout(new java.awt.GridBagLayout());
         scrollPane.setViewportView(contentPanel);
 
