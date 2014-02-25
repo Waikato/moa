@@ -286,7 +286,7 @@ public class ClusKernel extends CFCluster{
     }
 
 
-    private double[] getVarianceVector() {
+    public double[] getVarianceVector() {
         double[] res = new double[this.LS.length];
         for (int i = 0; i < this.LS.length; i++) {
             double ls = this.LS[i];
