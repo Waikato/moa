@@ -55,14 +55,8 @@ public class Instances implements Serializable{
      * @param chunk the chunk
      */
     public Instances(Instances chunk) {
-        this.instanceInformation = chunk.instanceInformation();
-        //this.relationName = chunk.relationName;
-        //this.attributes = chunk.attributes;
-        if (chunk.instances != null) {
-            this.instances = chunk.instances;
-        } else {
-            this.instances = new ArrayList<Instance>();
-        }
+        this(chunk, chunk.numInstances());
+        chunk.copyInstances(0, this, chunk.numInstances());
     }
     
     /**
@@ -95,7 +89,14 @@ public class Instances implements Serializable{
      * @param capacity the capacity
      */
     public Instances(Instances chunk, int capacity) {
-        this(chunk);
+        this.instanceInformation = chunk.instanceInformation();
+        if (capacity < 0)
+            capacity = 0;
+       // if (chunk.instances != null) {
+       //     this.instances = chunk.instances;
+       // } else {
+            this.instances = new ArrayList<Instance>(capacity);
+        //}
     }
 
     /**
@@ -113,13 +114,19 @@ public class Instances implements Serializable{
      * Instantiates a new instances.
      *
      * @param chunk the chunk
-     * @param i the i
-     * @param j the j
+     * @param first the first instance
+     * @param toCopy the j
      */
-    public Instances(Instances chunk, int i, int j) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
+   public Instances(Instances chunk, int first, int toCopy) {
+    
+    this(chunk, toCopy);
 
+    if ((first < 0) || ((first + toCopy) > chunk.numInstances())) {
+      throw new IllegalArgumentException("Parameters first and/or toCopy out "+
+                                         "of range");
+    }
+    chunk.copyInstances(first, this, toCopy);
+  }
     /**
      * Instantiates a new instances.
      *
@@ -270,31 +277,106 @@ public class Instances implements Serializable{
      * @param numFolds the num folds
      */
     public void stratify(int numFolds) {
-        throw new UnsupportedOperationException("Not yet implemented");
+  
+    if (classAttribute().isNominal()) {
+
+      // sort by class
+      int index = 1;
+      while (index < numInstances()) {
+	Instance instance1 = instance(index - 1);
+	for (int j = index; j < numInstances(); j++) {
+	  Instance instance2 = instance(j);
+	  if ((instance1.classValue() == instance2.classValue()) ||
+	      (instance1.classIsMissing() && 
+	       instance2.classIsMissing())) {
+	    swap(index,j);
+	    index++;
+	  }
+	}
+	index++;
+      }
+      stratStep(numFolds);
     }
+  }
+    protected void stratStep (int numFolds){ 
+    ArrayList<Instance> newVec = new ArrayList<Instance>(this.instances.size());
+    int start = 0, j;
+
+    // create stratified batch
+    while (newVec.size() < numInstances()) {
+      j = start;
+      while (j < numInstances()) {
+	newVec.add(instance(j));
+	j = j + numFolds;
+      }
+      start++;
+    }
+    this.instances = newVec;
+  }
+  
 
     /**
      * Train cv.
      *
      * @param numFolds the num folds
+     * @param numFold
      * @param n the n
      * @param random the random
      * @return the instances
      */
-    public Instances trainCV(int numFolds, int n, Random random) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public Instances trainCV(int numFolds, int numFold, Random random) {   
+        Instances train = trainCV(numFolds, numFold);
+        train.randomize(random);
+        return train;
+    }
+    
+    public Instances trainCV(int numFolds, int numFold){
+        int numInstForFold, first, offset;
+        Instances train;
+
+        numInstForFold = numInstances() / numFolds;
+        if (numFold < numInstances() % numFolds) {
+          numInstForFold++;
+          offset = numFold;
+        }else
+          offset = numInstances() % numFolds;
+        train = new Instances(this, numInstances() - numInstForFold);
+        first = numFold * (numInstances() / numFolds) + offset;
+        copyInstances(0, train, first);
+        copyInstances(first + numInstForFold, train,
+                      numInstances() - first - numInstForFold);
+        return train;
     }
 
+   protected void copyInstances(int from, Instances dest, int num) {
+        for (int i = 0; i < num; i++) {
+          dest.add(instance(from + i));
+        }
+  }
+  
     /**
      * Test cv.
      *
      * @param numFolds the num folds
-     * @param n the n
+     * @param numFold the num fold
      * @return the instances
      */
-    public Instances testCV(int numFolds, int n) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
+    public Instances testCV(int numFolds, int numFold) {
+
+       int numInstForFold, first, offset;
+       Instances test;
+
+       numInstForFold = numInstances() / numFolds;
+       if (numFold < numInstances() % numFolds){
+         numInstForFold++;
+         offset = numFold;
+       }else
+         offset = numInstances() % numFolds;
+       test = new Instances(this, numInstForFold);
+       first = numFold * (numInstances() / numFolds) + offset;
+       copyInstances(first, test, numInstForFold);
+       return test;
+     }
 
     /*  public Instances dataset() {
      throw new UnsupportedOperationException("Not yet implemented");
