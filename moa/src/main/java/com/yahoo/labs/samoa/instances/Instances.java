@@ -447,4 +447,16 @@ public class Instances implements Serializable{
     }
     return null;
   }
+
+    public int size() {
+        return this.numInstances();
+    }
+
+    public void set(int i, Instance inst) {
+      this.instances.set(i, inst);
+    }
+
+    public Instance get(int k) {
+      return this.instance(k);
+    }
 }
