@@ -17,10 +17,11 @@
  *    
  *    
  */
-package moa.classifiers.rules;
+package moa.classifiers.rules.core.conditionaltests;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.core.conditionaltests.NominalAttributeBinaryTest;
+import moa.classifiers.rules.core.Predicate;
 
 /**
  * Nominal binary conditional test for instances to use to split nodes in rules.

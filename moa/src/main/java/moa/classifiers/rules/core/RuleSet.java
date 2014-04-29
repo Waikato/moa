@@ -1,5 +1,5 @@
 /*
- *    Predicate.java
+ *    RuleSet.java
  *    Copyright (C) 2013 University of Porto, Portugal
  *    @author E. Almeida, A. Carvalho, J. Gama
  *
@@ -17,12 +17,12 @@
  *    
  *    
  */
-package moa.classifiers.rules;
+package moa.classifiers.rules.core;
 
-import com.yahoo.labs.samoa.instances.Instance;
+import java.util.ArrayList;
 
-public interface Predicate {
+public class RuleSet extends ArrayList<Rule> {
+
+	private static final long serialVersionUID = 1L;
 	
-	 public boolean evaluate(Instance instance);
-	 
 }

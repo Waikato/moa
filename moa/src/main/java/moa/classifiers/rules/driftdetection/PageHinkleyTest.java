@@ -1,7 +1,7 @@
 /*
- *    PageHinckeyTest.java
- *    Copyright (C) 2013 University of Porto, Portugal
- *    @author E. Almeida, A. Carvalho, J. Gama
+ *    SDRSplitCriterionAMRules.java
+ *    Copyright (C) 2014 University of Porto, Portugal
+ *    @author A. Bifet, J. Duarte, J. Gama
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -17,21 +17,31 @@
  *    
  *    
  */
-package moa.classifiers.rules;
+package moa.classifiers.rules.driftdetection;
 
 import java.io.Serializable;
 
-public class PageHinckeyTest implements Serializable {
+public class PageHinkleyTest implements Serializable {
 
     private static final long serialVersionUID = 1L;
     protected double cumulativeSum;
-    protected double minimumValue;
+    
+    public double getCumulativeSum() {
+		return cumulativeSum;
+	}
+
+	public double getMinimumValue() {
+		return minimumValue;
+	}
+
+
+	protected double minimumValue;
     protected double sumAbsolutError;
     protected long phinstancesSeen;
     protected double threshold;
     protected double alpha;
 
-    public PageHinckeyTest(double threshold, double alpha) {
+    public PageHinkleyTest(double threshold, double alpha) {
         this.threshold = threshold;
         this.alpha = alpha;
         this.reset();
@@ -44,18 +54,21 @@ public class PageHinckeyTest implements Serializable {
         this.phinstancesSeen = 0;
     }
 
-    //Compute Page-Hinckley test
+    //Compute Page-Hinkley test
     public boolean update(double error) {
 
         this.phinstancesSeen++;
         double absolutError = Math.abs(error);
         this.sumAbsolutError = this.sumAbsolutError + absolutError;
-        double mT = absolutError - (this.sumAbsolutError / this.phinstancesSeen) - this.alpha;
-        this.cumulativeSum = this.cumulativeSum + mT; // Update the cumulative mT sum
-        if (this.cumulativeSum < this.minimumValue) { // Update the minimum mT value if the new mT is smaller than the current minimum
-            this.minimumValue = this.cumulativeSum;
+        if (this.phinstancesSeen > 30) {
+        	double mT = absolutError - (this.sumAbsolutError / this.phinstancesSeen) - this.alpha;
+        	this.cumulativeSum = this.cumulativeSum + mT; // Update the cumulative mT sum
+        	if (this.cumulativeSum < this.minimumValue) { // Update the minimum mT value if the new mT is smaller than the current minimum
+        		this.minimumValue = this.cumulativeSum;
+        	}
+        	return (((this.cumulativeSum - this.minimumValue) > this.threshold));
         }
-        return (((this.cumulativeSum - this.minimumValue) > this.threshold));
+        return false;
     }
 
 }

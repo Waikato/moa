@@ -21,10 +21,13 @@
 package moa.gui;
 
 import java.awt.BorderLayout;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
 import moa.DoTask;
 import moa.core.WekaUtils;
 
@@ -84,10 +87,27 @@ public class GUI extends JPanel {
                     JFrame frame = new JFrame("MOA Graphical User Interface");
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-                    try {
+                  /*  try {
 
-						javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+		    javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
                     } catch (Exception e) {
+                    }*/
+                    
+                    try {
+                        /*for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                            if ("Nimbus".equals(info.getName())) {
+                                UIManager.setLookAndFeel(info.getClassName());
+                                break;
+                            }
+                        }*/
+                        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    } catch (Exception e) {
+                        try {
+                            // If Nimbus is not available, you can set the GUI to another look and feel.
+                            javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+                        } catch (Exception ex) {
+                        }
+                    
                     }
 
                     GUI gui = new GUI();

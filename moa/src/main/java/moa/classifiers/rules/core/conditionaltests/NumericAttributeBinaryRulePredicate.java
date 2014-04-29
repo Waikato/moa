@@ -17,11 +17,13 @@
  *    
  *    
  */
-package moa.classifiers.rules;
+package moa.classifiers.rules.core.conditionaltests;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.classifiers.core.conditionaltests.InstanceConditionalBinaryTest;
+import moa.classifiers.rules.core.Predicate;
+
 
 
 /**
@@ -116,8 +118,7 @@ public class NumericAttributeBinaryRulePredicate extends InstanceConditionalBina
             return "x" + this.attIndex
                     + ' '
                     + compareChar
-                    //+ (branch == equalsBranch ? "= " : " ")
-                    + ' ' // AC 20-01-2014
+                    + ' ' 
                     + this.attValue;
         }
         throw new IndexOutOfBoundsException();

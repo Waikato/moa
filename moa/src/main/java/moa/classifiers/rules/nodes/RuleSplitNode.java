@@ -17,10 +17,11 @@
  *    
  *    
  */
-package moa.classifiers.rules;
+package moa.classifiers.rules.nodes;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
+import moa.classifiers.rules.core.Predicate;
 import moa.classifiers.trees.HoeffdingTree.SplitNode;
 
 /**
