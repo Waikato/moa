@@ -41,21 +41,36 @@ public class BasicRegressionPerformanceEvaluator extends AbstractMOAObject
 
     protected double averageError;
 
+    protected double sumTarget;
+    
+    protected double squareTargetError;
+    
+    protected double averageTargetError;
+
     @Override
     public void reset() {
         this.weightObserved = 0.0;
         this.squareError = 0.0;
         this.averageError = 0.0;
+        this.sumTarget = 0.0;
+        this.averageTargetError = 0.0;
+        this.squareTargetError = 0.0;
+        
     }
 
     @Override
     public void addResult(Example<Instance> example, double[] prediction) {
 	Instance inst = example.getData();
         if (inst.weight() > 0.0) {
-            this.weightObserved += inst.weight();
             if (prediction.length > 0) {
+                double meanTarget = this.weightObserved != 0 ? 
+                            this.sumTarget / this.weightObserved : 0.0;
                 this.squareError += (inst.classValue() - prediction[0]) * (inst.classValue() - prediction[0]);
                 this.averageError += Math.abs(inst.classValue() - prediction[0]);
+                this.squareTargetError += (inst.classValue() - meanTarget) * (inst.classValue() - meanTarget);
+                this.averageTargetError += Math.abs(inst.classValue() - meanTarget);
+                this.sumTarget += inst.classValue();
+                this.weightObserved += inst.weight();
             }
             //System.out.println(inst.classValue()+", "+prediction[0]);
         }
@@ -69,7 +84,12 @@ public class BasicRegressionPerformanceEvaluator extends AbstractMOAObject
                     new Measurement("mean absolute error",
                     getMeanError()),
                     new Measurement("root mean squared error",
-                    getSquareError())};
+                    getSquareError()),
+                    new Measurement("relative mean absolute error",
+                    getRelativeMeanError()),
+                    new Measurement("relative root mean squared error",
+                    getRelativeSquareError())
+        };
     }
 
     public double getTotalWeightObserved() {
@@ -86,9 +106,33 @@ public class BasicRegressionPerformanceEvaluator extends AbstractMOAObject
                 / this.weightObserved : 0.0);
     }
 
+    public double getTargetMeanError() {
+        return this.weightObserved > 0.0 ? this.averageTargetError
+                / this.weightObserved : 0.0;
+    }
+
+    public double getTargetSquareError() {
+        return Math.sqrt(this.weightObserved > 0.0 ? this.squareTargetError
+                / this.weightObserved : 0.0);
+    }
+
     @Override
     public void getDescription(StringBuilder sb, int indent) {
         Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
                 sb, indent);
+    }
+
+    private double getRelativeMeanError() {
+        //double targetMeanError = getTargetMeanError();
+        //return targetMeanError > 0 ? getMeanError()/targetMeanError : 0.0;
+        return this.averageTargetError> 0 ?
+                this.averageError/this.averageTargetError : 0.0;
+}
+
+    private double getRelativeSquareError() {
+        //double targetSquareError = getTargetSquareError();
+        //return targetSquareError > 0 ? getSquareError()/targetSquareError : 0.0;
+    return Math.sqrt(this.squareTargetError> 0 ?
+                this.squareError/this.squareTargetError : 0.0);
     }
 }
