@@ -86,24 +86,11 @@ public class GUI extends JPanel {
                     // Create and set up the window.
                     JFrame frame = new JFrame("MOA Graphical User Interface");
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-                  /*  try {
-
-		    javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-                    } catch (Exception e) {
-                    }*/
                     
                     try {
-                        /*for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                            if ("Nimbus".equals(info.getName())) {
-                                UIManager.setLookAndFeel(info.getClassName());
-                                break;
-                            }
-                        }*/
                         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                     } catch (Exception e) {
                         try {
-                            // If Nimbus is not available, you can set the GUI to another look and feel.
                             javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
                         } catch (Exception ex) {
                         }
