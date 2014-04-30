@@ -20,6 +20,7 @@
 package moa.streams;
 
 import com.github.javacliparser.FileOption;
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import java.io.BufferedReader;
@@ -28,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader; 
-import com.github.javacliparser.RangeOption;  // jesse
 import moa.core.InputStreamProgressMonitor;
 import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
@@ -54,11 +54,11 @@ public class ArffFileStream extends AbstractOptionHandler implements
     public FileOption arffFileOption = new FileOption("arffFile", 'f',
             "ARFF file to load.", null, "arff", false);
 
-    public RangeOption classIndexOption = new RangeOption(
+    public IntOption classIndexOption = new IntOption(
             "classIndex",
             'c',
-            "Class indices of data. 0 for none or -1 for last attribute in file. For example, 1,2,4-5,-1 for the first, second, fourth and fifth, and final attributes.",
-			"-1");
+            "Class index of data. 0 for none or -1 for last attribute in file.",
+            -1, -1, Integer.MAX_VALUE);
 
     protected Instances instances;
 
@@ -75,20 +75,11 @@ public class ArffFileStream extends AbstractOptionHandler implements
     public ArffFileStream() {
     }
 
-	// jesse
-    public ArffFileStream(String arffFileName, String classIndices) {
-		this.arffFileOption.setValue(arffFileName);
-		this.classIndexOption.setValue(classIndices);
-		restart();
-    }
-
-	/*
     public ArffFileStream(String arffFileName, int classIndex) {
         this.arffFileOption.setValue(arffFileName);
         this.classIndexOption.setValue(classIndex);
         restart();
     }
-	*/
 
     @Override
     public void prepareForUseImpl(TaskMonitor monitor,
@@ -138,22 +129,13 @@ public class ArffFileStream extends AbstractOptionHandler implements
                     fileStream);
             this.fileReader = new BufferedReader(new InputStreamReader(
                     this.fileProgressMonitor));
-			// jesse -----
-			int cs[] = this.classIndexOption.getRange(); 
-			if (cs.length == 1) {
-				// single label
-				int c = cs[0]; 
-				this.instances = new Instances(this.fileReader, 1, c);
-				if (c < 0) {
-					this.instances.setClassIndex(this.instances.numAttributes() - 1);
-				} else if (c > 0) {
-					this.instances.setClassIndex(c - 1);
+            int classIndex = this.classIndexOption.getValue();
+            this.instances = new Instances(this.fileReader, 1, classIndex);
+            if (classIndex < 0) {
+		this.instances.setClassIndex(this.instances.numAttributes() - 1);
+            } else if (this.classIndexOption.getValue() > 0) {
+                this.instances.setClassIndex(this.classIndexOption.getValue() - 1);
 				}
-			}
-			else {
-				// multi-label since cs[] contains _multipe_ class indices, e.g., cs[] = {9,10,11} 
-				// what to do here?
-			}
             this.numInstancesRead = 0;
             this.lastInstanceRead = null;
             this.hitEndOfFile = !readNextInstanceFromFile();
