@@ -21,6 +21,8 @@
 package moa.classifiers.rules.core;
 
 import com.yahoo.labs.samoa.instances.Instance;
+
+import java.sql.PreparedStatement;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -294,8 +296,9 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 
 		// splitConfidence. Hoeffding Bound test parameter.
 		// tieThreshold. Hoeffding Bound test parameter.
-		SplitCriterion splitCriterion = new SDRSplitCriterionAMRules(); 
+		//SplitCriterion splitCriterion = new SDRSplitCriterionAMRules(); 
 			//SplitCriterion splitCriterion = new SDRSplitCriterionAMRulesNode();//JD for assessing only best branch
+		SplitCriterion splitCriterion=(SplitCriterion)((SplitCriterion) ((AMRulesRegressor)this.amRules).splitCriterionOption.getPreMaterializedObject()).copy();
 
 		// Using this criterion, find the best split per attribute and rank the results
 		AttributeSplitSuggestion[] bestSplitSuggestions
