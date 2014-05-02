@@ -35,6 +35,7 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -45,6 +46,7 @@ import moa.classifiers.rules.core.RuleSet;
 import moa.classifiers.rules.core.Rule.Builder;
 import moa.classifiers.rules.core.attributeclassobservers.FIMTDDNumericAttributeClassLimitObserver;
 import moa.classifiers.rules.core.voting.ErrorWeightedVote;
+import moa.classifiers.rules.core.voting.Vote;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
@@ -268,40 +270,7 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 	 */
 	@Override
 	public double[] getVotesForInstance(Instance instance) {
-		ErrorWeightedVote errorWeightedVote=newErrorWeightedVote();
-		//DoubleVector combinedVote = new DoubleVector();
-		debug("Test",3);    
-		int numberOfRulesCovering = 0;
-
-		VerboseToConsole(instance); // Verbose to console Dataset name.
-		for (Rule rule: ruleSet) {
-			if (rule.isCovering(instance) == true){
-				numberOfRulesCovering++;
-				//DoubleVector vote = new DoubleVector(rule.getPrediction(instance));
-				double [] vote=rule.getPrediction(instance);
-				double error= rule.getCurrentError();
-				debug("Rule No"+ rule.getRuleNumberID() + " Vote: " + Arrays.toString(vote) + " Error: " + error + " Y: " + instance.classValue(),3); //predictionValueForThisRule);
-				errorWeightedVote.addVote(vote,error);
-				//combinedVote.addValues(vote);
-				if (!this.unorderedRulesOption.isSet()) { // Ordered Rules Option.
-					break; // Only one rule cover the instance.
-				}
-			}
-		}
-
-		if (numberOfRulesCovering == 0) {
-			//combinedVote = new DoubleVector(defaultRule.getPrediction(instance));
-			double [] vote=defaultRule.getPrediction(instance);
-			double error= defaultRule.getCurrentError();
-			errorWeightedVote.addVote(vote,error);
-			
-			debug("Default Rule Vote " + Arrays.toString(vote) + " Error " + error + "  Y: " + instance.classValue(),3);
-		} 	
-		double[] weightedVote=errorWeightedVote.computeWeightedVote();
-		double weightedError=errorWeightedVote.getWeightedError();
-		
-		debug("Weighted Rule - Vote: " + Arrays.toString(weightedVote) + " Weighted Error: " + weightedError + " Y:" + instance.classValue(),3);
-		return weightedVote;
+		return getVotes(instance).getVote();
 	}
 
 	/**
@@ -409,6 +378,50 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 	
 	abstract public ErrorWeightedVote newErrorWeightedVote(); 
 
+	
+	/**
+	 * getVotes extension of the instance method getVotesForInstance 
+	 * in moa.classifier.java
+	 * returns the prediction of the instance.
+	 * Called in WeightedRandomRules
+	 */
+	public Vote getVotes(Instance instance) {
+		ErrorWeightedVote errorWeightedVote=newErrorWeightedVote();
+		//DoubleVector combinedVote = new DoubleVector();
+		debug("Test",3);    
+		int numberOfRulesCovering = 0;
+
+		VerboseToConsole(instance); // Verbose to console Dataset name.
+		for (Rule rule: ruleSet) {
+			if (rule.isCovering(instance) == true){
+				numberOfRulesCovering++;
+				//DoubleVector vote = new DoubleVector(rule.getPrediction(instance));
+				double [] vote=rule.getPrediction(instance);
+				double error= rule.getCurrentError();
+				debug("Rule No"+ rule.getRuleNumberID() + " Vote: " + Arrays.toString(vote) + " Error: " + error + " Y: " + instance.classValue(),3); //predictionValueForThisRule);
+				errorWeightedVote.addVote(vote,error);
+				//combinedVote.addValues(vote);
+				if (!this.unorderedRulesOption.isSet()) { // Ordered Rules Option.
+					break; // Only one rule cover the instance.
+				}
+			}
+		}
+
+		if (numberOfRulesCovering == 0) {
+			//combinedVote = new DoubleVector(defaultRule.getPrediction(instance));
+			double [] vote=defaultRule.getPrediction(instance);
+			double error= defaultRule.getCurrentError();
+			errorWeightedVote.addVote(vote,error);
+			
+			debug("Default Rule Vote " + Arrays.toString(vote) + " Error " + error + "  Y: " + instance.classValue(),3);
+		} 	
+		double[] weightedVote=errorWeightedVote.computeWeightedVote();
+		double weightedError=errorWeightedVote.getWeightedError();
+		
+		debug("Weighted Rule - Vote: " + Arrays.toString(weightedVote) + " Weighted Error: " + weightedError + " Y:" + instance.classValue(),3);
+		return new Vote(weightedVote, weightedError);
+	}
+	
 
 
 }
