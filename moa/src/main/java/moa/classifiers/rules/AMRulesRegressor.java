@@ -108,7 +108,7 @@ public class AMRulesRegressor extends AbstractAMRules implements Regressor{
 	public ClassOption splitCriterionOption = new ClassOption("splitCriterionOption",
 			'S', "Split Criterion", 
 			VarianceReductionSplitCriterion.class,
-			"moa.classifiers.rules.core.splitcriteria.SDRSplitCriterionAMRules");
+			"VarianceReductionSplitCriterion");
 
 	//============================= END SET OPTIONS ==============================//
 

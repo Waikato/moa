@@ -88,7 +88,7 @@ public class WeightedRandomRules extends RandomRules implements Regressor {
 	public double[] getVotesForInstance(Instance inst) {
 		double [] votes=null;
 		//ErrorWeightedVote combinedVote = (ErrorWeightedVote)((ErrorWeightedVote) votingTypeOption.getPreMaterializedObject()).copy();
-		ErrorWeightedVote combinedVote = (ErrorWeightedVote) getPreparedClassOption(this.votingTypeOption);
+		ErrorWeightedVote combinedVote = (ErrorWeightedVote)((ErrorWeightedVote) getPreparedClassOption(this.votingTypeOption)).copy();
 		StringBuilder sb = null;
 		if (VerbosityOption.getValue()>1)
 			sb=new StringBuilder();
