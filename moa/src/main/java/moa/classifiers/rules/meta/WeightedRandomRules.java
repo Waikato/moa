@@ -97,7 +97,7 @@ public class WeightedRandomRules extends RandomRules implements Regressor {
 			// transformInstance method visibility changed from private to protected in RandomRules
 			Vote v = ((AbstractAMRules) this.ensemble[i]).getVotes(transformInstance(inst,i));
 			if (VerbosityOption.getValue()>1)
-					sb.append(Arrays.toString(v.getVote()) + ", ");
+					sb.append(Arrays.toString(v.getVote()) + ", " + " E: " + v.getError() + " ");
 			if (this.isRegression == false && v.sumVoteDistrib() != 0.0){
 				v.normalize();
 			}
