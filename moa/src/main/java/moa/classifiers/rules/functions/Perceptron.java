@@ -19,9 +19,12 @@
  */
 package moa.classifiers.rules.functions;
 
+import java.util.Random;
+
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Regressor;
 import moa.core.DoubleVector;
@@ -162,6 +165,7 @@ public class Perceptron extends AbstractClassifier implements Regressor{
 		// Initialise Perceptron if necessary   
 		if (this.initialisePerceptron == true) {
 			this.fadingFactor=this.fadingFactorOption.getValue();
+			this.classifierRandom=new Random();
 			this.classifierRandom.setSeed(randomSeedOption.getValue()); 
 			this.initialisePerceptron = false; // not in resetLearningImpl() because it needs Instance!
 			this.weightAttribute = new double[inst.numAttributes()];
