@@ -113,10 +113,26 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 			'z', "Numeric observer.", 
 			FIMTDDNumericAttributeClassLimitObserver.class,
 			"FIMTDDNumericAttributeClassLimitObserver");
-		
+	
+
+	protected double attributesPercentage;
+	
+	public double getAttributesPercentage() {
+		return attributesPercentage;
+	}
+
+	public void setAttributesPercentage(double attributesPercentage) {
+		this.attributesPercentage = attributesPercentage;
+	}
 
 	public AbstractAMRules() {
 		super();
+		attributesPercentage=100;
+	}
+	
+	public AbstractAMRules(double attributesPercentage) {
+		this();
+		this.attributesPercentage=attributesPercentage;
 	}
 
 	/**
@@ -392,7 +408,7 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 		int numberOfRulesCovering = 0;
 
 		VerboseToConsole(instance); // Verbose to console Dataset name.
-		for (Rule rule: ruleSet) {
+		for (Rule rule : ruleSet) {
 			if (rule.isCovering(instance) == true){
 				numberOfRulesCovering++;
 				//DoubleVector vote = new DoubleVector(rule.getPrediction(instance));
@@ -420,6 +436,14 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 		
 		debug("Weighted Rule - Vote: " + Arrays.toString(weightedVote) + " Weighted Error: " + weightedError + " Y:" + instance.classValue(),3);
 		return new Vote(weightedVote, weightedError);
+	}
+	
+	public void setRandomSeed(int randomSeed){
+		this.randomSeed=randomSeed;
+	}
+	
+	public int getRandomSeed(){
+		return this.randomSeed;
 	}
 	
 

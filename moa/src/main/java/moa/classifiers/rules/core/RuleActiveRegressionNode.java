@@ -23,7 +23,10 @@ package moa.classifiers.rules.core;
 import com.yahoo.labs.samoa.instances.Instance;
 
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -371,7 +374,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 		nodeStatistics.addToValue(1, inst.classValue());
 		// sum of squared y values
 		nodeStatistics.addToValue(2, inst.classValue()*inst.classValue());
-
+		/*
 		for (int i = 0; i < inst.numAttributes() - 1; i++) {
 			int instAttIndex = AbstractAMRules.modelAttIndexToInstanceAttIndex(i, inst);
 
@@ -387,7 +390,45 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 			if (obs != null) {
 				((FIMTDDNumericAttributeClassObserver) obs).observeAttributeClass(inst.value(instAttIndex), inst.classValue(), inst.weight());
 			}
+		}*/
+		//if was of attributes was not created so far, generate one and create perceptron
+		if (attributesMask==null)
+		{
+			numAttributesSelected=(int)Math.round((inst.numAttributes()-1)*this.amRules.getAttributesPercentage())/100;
+			
+			attributesMask=new boolean[inst.numAttributes()];
+			ArrayList<Integer> indices = new ArrayList<Integer>();
+			for(int i=0; i<inst.numAttributes() && i!=inst.classIndex(); i++)
+				indices.add(i);
+			indices.add(inst.classIndex());
+			
+			Collections.shuffle(indices, this.amRules.classifierRandom);
+			
+			for (int i=0; i<numAttributesSelected;++i)
+				attributesMask[indices.get(i)]=true;
+			
+			//this.perceptron=new Perceptron(attributesMask);
 		}
+		
+		for (int i = 0, ct=0; i < attributesMask.length; i++) {
+			if(attributesMask[i])
+			{
+			AttributeClassObserver obs = this.attributeObservers.get(ct);
+			if (obs == null) {
+				// At this stage all nominal attributes are ignored
+				if (inst.attribute(ct).isNumeric()) //instAttIndex
+				{
+					obs = newNumericClassObserver();
+					this.attributeObservers.set(ct, obs);
+				}
+			}
+			if (obs != null) {
+				((FIMTDDNumericAttributeClassObserver) obs).observeAttributeClass(inst.value(i), inst.classValue(), inst.weight());
+			}
+			++ct;
+			}
+		}
+		
 	}
 
 	public AttributeSplitSuggestion[] getBestSplitSuggestions(SplitCriterion criterion) {
