@@ -165,9 +165,9 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 	 * Method for updating (training) the AMRules model using a new instance
 	 */
 
-	private int numChangesDetected; //Just for statistics 
-	private int numAnomaliesDetected; //Just for statistics 
-	private int numInstances; ////Just for statistics
+	private double numChangesDetected; //Just for statistics 
+	private double numAnomaliesDetected; //Just for statistics 
+	private double numInstances; ////Just for statistics
 
 	@Override
 	public void trainOnInstanceImpl(Instance instance) {
@@ -194,7 +194,7 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 					//Expand default rule and add it to the set of rules
 					//Reset the default rule
 		 */
-		++numInstances;
+		numInstances+=instance.weight();
 		debug("Train",3);
 		debug("Nº instance "+numInstances + " - " + instance.toString(),3);
 		boolean rulesCoveringInstance = false;
@@ -211,7 +211,7 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 						debug("I) Drift Detected. Exa. : " +  this.numInstances + " (" + rule.getInstancesSeen() +") Remove Rule: " +rule.getRuleNumberID(),1);
 
 						ruleIterator.remove();
-						this.numChangesDetected++;  //Just for statistics 
+						this.numChangesDetected+=instance.weight();  //Just for statistics 
 					} else {
 						rule.updateStatistics(instance);
 						if (rule.getInstancesSeen()  % this.gracePeriodOption.getValue() == 0.0) {
@@ -228,7 +228,7 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 				}
 				else {
 					debug("Anomaly Detected: " + this.numInstances + " Rule: " +rule.getRuleNumberID() ,1);
-					this.numAnomaliesDetected++;//Just for statistics
+					this.numAnomaliesDetected=+instance.weight();//Just for statistics
 				}
 
 			}

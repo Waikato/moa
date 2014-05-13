@@ -182,11 +182,15 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 	}
 
 
-	public double computeSD(double squaredVal, double val, long size) {
+	public double computeSD(double squaredVal, double val, double size) {
 		if (size > 1) {
 			return Math.sqrt((squaredVal - ((val * val) / size)) / (size - 1.0));
 		}
 		return 0.0;
+	}
+	public double computeSD(double squaredVal, double val, long size) {
+
+		return computeSD(squaredVal, val, (double)size);
 	}
 
 
@@ -200,7 +204,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 			double multiVariateAnomalyProbabilityThreshold,
 			int numberOfInstanceesForAnomaly) {
 		//AMRUles is equipped with anomaly detection. If on, compute the anomaly value.
-		long perceptronIntancesSeen=this.perceptron.getInstancesSeen();
+		double perceptronIntancesSeen=this.perceptron.getInstancesSeen();
 		if ( perceptronIntancesSeen>= numberOfInstanceesForAnomaly) {
 			double atribSum = 0.0;
 			double atribSquredSum = 0.0;
@@ -369,11 +373,11 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 
 		// Update the statistics for this node
 		// number of instances passing through the node
-		nodeStatistics.addToValue(0, 1);
+		nodeStatistics.addToValue(0, inst.weight());
 		// sum of y values
-		nodeStatistics.addToValue(1, inst.classValue());
+		nodeStatistics.addToValue(1, inst.classValue()*inst.weight());
 		// sum of squared y values
-		nodeStatistics.addToValue(2, inst.classValue()*inst.classValue());
+		nodeStatistics.addToValue(2, inst.classValue()*inst.classValue()*inst.weight());
 		/*
 		for (int i = 0; i < inst.numAttributes() - 1; i++) {
 			int instAttIndex = AbstractAMRules.modelAttIndexToInstanceAttIndex(i, inst);

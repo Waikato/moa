@@ -26,6 +26,7 @@ import moa.options.ClassOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
@@ -66,19 +67,34 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 	public FlagOption useBaggingOption = new FlagOption("useBagging", 'p',
 			"Use Bagging.");
 	
-	public ClassOption votingTypeOption = new ClassOption("votingType",
+	public ClassOption votingFunctionOption = new ClassOption("votingType",
 			'V', "Voting Type.", 
 			ErrorWeightedVote.class,
 			"InverseErrorWeightedVote");
 
-
+	public MultiChoiceOption votingTypeOption = new MultiChoiceOption(
+			"votingTypeOption", 'C', "Select whether the base learner error is computed as the overall error os only the error of the rules that cover the example.", new String[]{
+					"Overall","Only rules covered"}, new String[]{
+					"Overall","Covered"}, 1);
+	
+	public FloatOption fadingErrorFactorOption = new FloatOption(
+			"fadingErrorFactor", 'e', 
+			"Fading error factor for the accumulated error", 0.99, 0, 1);
+	
 	protected Classifier[] ensemble;
+	protected double[] sumError;
+	protected double[] nError;
 
 	protected boolean isRegression;
 
 	@Override
 	public void resetLearningImpl() {
-		this.ensemble = new Classifier[this.ensembleSizeOption.getValue()];
+		int n=this.ensembleSizeOption.getValue();
+		this.ensemble = new Classifier[n];
+		
+		sumError=new double[n];
+		nError=new double[n];
+		
 		//Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
 		AbstractAMRules baseLearner = (AbstractAMRules) getPreparedClassOption(this.baseLearnerOption);
 		baseLearner.setAttributesPercentage(numAttributesPercentageOption.getValue());
@@ -91,8 +107,10 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 	}
 
 	@Override
-	public void trainOnInstanceImpl(Instance inst) {
+	public void trainOnInstanceImpl(Instance instance) {
+		double factor=this.fadingErrorFactorOption.getValue();
 		for (int i = 0; i < this.ensemble.length; i++) {
+			Instance inst=instance.copy();
 			int k = 1;
 			if ( this.useBaggingOption.isSet()) {
 				k = MiscUtils.poisson(1.0, this.classifierRandom);
@@ -100,6 +118,12 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 			if (k > 0) {
 				//Instance weightedInst = transformInstance(inst,i);
 				inst.setWeight(inst.weight() * k);
+				
+				//estimate error
+				double error = Math.abs(inst.classValue()-ensemble[i].getVotesForInstance(inst)[0]);
+				sumError[i]=error+sumError[i]*factor*inst.weight();
+				nError[i]=1+nError[i]*factor*inst.weight();		
+				//train learner
 				this.ensemble[i].trainOnInstance(inst);
 			}
 		}
@@ -109,7 +133,7 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 	public double[] getVotesForInstance(Instance inst) {
 		double [] votes=null;
 		//ErrorWeightedVote combinedVote = (ErrorWeightedVote)((ErrorWeightedVote) votingTypeOption.getPreMaterializedObject()).copy();
-		ErrorWeightedVote combinedVote = (ErrorWeightedVote)((ErrorWeightedVote) getPreparedClassOption(this.votingTypeOption)).copy();
+		ErrorWeightedVote combinedVote = (ErrorWeightedVote)((ErrorWeightedVote) getPreparedClassOption(this.votingFunctionOption)).copy();
 		StringBuilder sb = null;
 		if (VerbosityOption.getValue()>1)
 			sb=new StringBuilder();
@@ -162,4 +186,5 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 	public String getPurposeString() {
 		return "WeightedRandomRules";
 	}
+	
 }

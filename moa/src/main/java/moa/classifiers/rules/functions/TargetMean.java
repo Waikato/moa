@@ -37,7 +37,7 @@ public class TargetMean extends AbstractClassifier implements Regressor {
 	/**
 	 * 
 	 */
-	protected long n;
+	protected double n;
 	protected double sum;
 	protected double errorSum;
 	protected double nError;
@@ -75,15 +75,15 @@ public class TargetMean extends AbstractClassifier implements Regressor {
 	@Override
 	public void trainOnInstanceImpl(Instance inst) {
 		updateAccumulatedError(inst);
-		++this.n;
-		this.sum+=inst.classValue();
+		this.n+=inst.weight();
+		this.sum+=inst.classValue()*inst.weight();
 	}
 	protected void updateAccumulatedError(Instance inst){
 		double mean=0;
-		nError=1+fadingErrorFactor*nError;
+		nError=inst.weight()+fadingErrorFactor*nError;
 		if(n>0)
 			mean=sum/n;			
-		errorSum=Math.abs(inst.classValue()-mean)+fadingErrorFactor*errorSum;	
+		errorSum=Math.abs(inst.classValue()-mean)*inst.weight()+fadingErrorFactor*errorSum;	
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class TargetMean extends AbstractClassifier implements Regressor {
 	/* JD
 	 * Resets the learner but initializes with a starting point 
 	 * */
-	public void reset(double currentMean, long numberOfInstances) {
+	public void reset(double currentMean, double numberOfInstances) {
 		this.sum=currentMean*numberOfInstances;
 		this.n=numberOfInstances;
 		this.resetError();

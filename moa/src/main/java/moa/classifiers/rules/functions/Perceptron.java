@@ -67,8 +67,8 @@ public class Perceptron extends AbstractClassifier implements Regressor{
 	public DoubleVector squaredperceptronattributeStatistics = new DoubleVector();
 
 	// The number of instances contributing to this model
-	protected int perceptronInstancesSeen;
-	protected int perceptronYSeen;
+	protected double perceptronInstancesSeen;
+	protected double perceptronYSeen;
 
 	protected double accumulatedError;
 
@@ -123,7 +123,7 @@ public class Perceptron extends AbstractClassifier implements Regressor{
 	
 
 
-	public int getInstancesSeen() {
+	public double getInstancesSeen() {
 		return perceptronInstancesSeen;
 	}
 
@@ -160,8 +160,8 @@ public class Perceptron extends AbstractClassifier implements Regressor{
 	 * Update the model using the provided instance
 	 */
 	public void trainOnInstanceImpl(Instance inst) {
-		accumulatedError= Math.abs(this.prediction(inst)-inst.classValue()) + fadingFactor*accumulatedError;
-		nError=1+fadingFactor*nError;
+		accumulatedError= Math.abs(this.prediction(inst)-inst.classValue())*inst.weight() + fadingFactor*accumulatedError;
+		nError=inst.weight()+fadingFactor*nError;
 		// Initialise Perceptron if necessary   
 		if (this.initialisePerceptron == true) {
 			this.fadingFactor=this.fadingFactorOption.getValue();
@@ -179,17 +179,17 @@ public class Perceptron extends AbstractClassifier implements Regressor{
 		}
 
 		// Update attribute statistics
-		this.perceptronInstancesSeen++;
-		this.perceptronYSeen++;
+		this.perceptronInstancesSeen+=inst.weight();
+		this.perceptronYSeen+=inst.weight();
 		
 		
 		for(int j = 0; j < inst.numAttributes() -1; j++)
 		{
-			perceptronattributeStatistics.addToValue(j, inst.value(j));	
-			squaredperceptronattributeStatistics.addToValue(j, inst.value(j)*inst.value(j));
+			perceptronattributeStatistics.addToValue(j, inst.value(j)*inst.weight());	
+			squaredperceptronattributeStatistics.addToValue(j, inst.value(j)*inst.value(j)*inst.weight());
 		}
-		this.perceptronsumY += inst.classValue();
-		this.squaredperceptronsumY += inst.classValue() * inst.classValue();
+		this.perceptronsumY += inst.classValue()*inst.weight();
+		this.squaredperceptronsumY += inst.classValue() * inst.classValue()*inst.weight();
 
 		if(constantLearningRatioDecayOption.isSet()==false){
 			learningRatio = learningRatioOption.getValue() / (1+ perceptronInstancesSeen*learningRateDecay); 
@@ -262,14 +262,14 @@ public class Perceptron extends AbstractClassifier implements Regressor{
 		return normalizedInstance;
 	}
 
-	public  double computeSD(double squaredVal, double val, int size) {
+	public  double computeSD(double squaredVal, double val, double size) {
 		if (size > 1) {
 			return  Math.sqrt((squaredVal - ((val * val) / size)) / (size - 1.0));
 		}
 		return 0.0;
 	}
 
-	public double updateWeights(Instance inst, double learningRatio ){
+	public void updateWeights(Instance inst, double learningRatio ){
 		// Normalize Instance
 		double[] normalizedInstance = normalizedInstance(inst); 
 		// Compute the Normalized Prediction of Perceptron
@@ -281,11 +281,11 @@ public class Perceptron extends AbstractClassifier implements Regressor{
 		for (int j = 0; j < inst.numAttributes() - 1; j++) {
 			int instAttIndex = modelAttIndexToInstanceAttIndex(j, inst);
 			if(inst.attribute(instAttIndex).isNumeric()) {
-				this.weightAttribute[j] += learningRatio * delta * normalizedInstance[j];
+				this.weightAttribute[j] += learningRatio * delta * normalizedInstance[j]*inst.weight();
 				sumWeights += Math.abs(this.weightAttribute[j]);
 			}
 		}
-		this.weightAttribute[inst.numAttributes() - 1] += learningRatio * delta;
+		this.weightAttribute[inst.numAttributes() - 1] += learningRatio * delta*inst.weight();
 		sumWeights += Math.abs(this.weightAttribute[inst.numAttributes() - 1]);
 		if (sumWeights > inst.numAttributes()) { // Lasso regression
 			for (int j = 0; j < inst.numAttributes() - 1; j++) {
@@ -297,7 +297,7 @@ public class Perceptron extends AbstractClassifier implements Regressor{
 			this.weightAttribute[inst.numAttributes() - 1]  = this.weightAttribute[inst.numAttributes() - 1] / sumWeights;
 		}
 
-		return denormalizedPrediction(normalizedPredict);
+		//return denormalizedPrediction(normalizedPredict);
 	}
 
 	public void normalizeWeights(){
