@@ -70,18 +70,18 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 	public ClassOption votingFunctionOption = new ClassOption("votingType",
 			'V', "Voting Type.", 
 			ErrorWeightedVote.class,
-			"InverseErrorWeightedVote");
+			"UniformWeightedVote");
 
 	public MultiChoiceOption votingTypeOption = new MultiChoiceOption(
 			"votingTypeOption", 'C', "Select whether the base learner error is computed as the overall error os only the error of the rules that cover the example.", new String[]{
 					"Overall","Only rules covered"}, new String[]{
-					"Overall","Covered"}, 1);
+					"Overall","Covered"}, 0);
 	
 	public FloatOption fadingErrorFactorOption = new FloatOption(
 			"fadingErrorFactor", 'e', 
 			"Fading error factor for the accumulated error", 0.99, 0, 1);
 	
-	protected Classifier[] ensemble;
+	protected AbstractAMRules[] ensemble;
 	protected double[] sumError;
 	protected double[] nError;
 
@@ -90,8 +90,7 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 	@Override
 	public void resetLearningImpl() {
 		int n=this.ensembleSizeOption.getValue();
-		this.ensemble = new Classifier[n];
-		
+		this.ensemble= new AbstractAMRules[n];
 		sumError=new double[n];
 		nError=new double[n];
 		
@@ -100,7 +99,7 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 		baseLearner.setAttributesPercentage(numAttributesPercentageOption.getValue());
 		baseLearner.resetLearning();
 		for (int i = 0; i < this.ensemble.length; i++) {
-			this.ensemble[i] = baseLearner.copy();
+			this.ensemble[i] = (AbstractAMRules) baseLearner.copy();
 			this.ensemble[i].setRandomSeed(this.classifierRandom.nextInt());
 		}
 		this.isRegression = (baseLearner instanceof Regressor);
@@ -146,7 +145,11 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 			if (this.isRegression == false && v.sumVoteDistrib() != 0.0){
 				v.normalize();
 			}
-			combinedVote.addVote(v.getVote(), v.getError());
+			if(this.votingTypeOption.getChosenIndex()==0){//Overall error estimation
+				combinedVote.addVote(v.getVote(),this.sumError[i]/this.nError[i]);
+			}
+			else //Error estimation over the rules that cover the example
+				combinedVote.addVote(v.getVote(), v.getError());
 		}
 		votes=combinedVote.computeWeightedVote();
 		if (VerbosityOption.getValue()>1){
@@ -168,8 +171,29 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 
 	@Override
 	protected Measurement[] getModelMeasurementsImpl() {
-		return new Measurement[]{new Measurement("ensemble size",
-				this.ensemble != null ? this.ensemble.length : 0)};
+
+		Measurement [] baseLearnerMeasurements=((AbstractAMRules) getPreparedClassOption(this.baseLearnerOption)).getModelMeasurements();
+		int nMeasurements=baseLearnerMeasurements.length;
+		Measurement [] m=new Measurement[nMeasurements+1];
+
+		for(int i=0; i<baseLearnerMeasurements.length; i++)
+			m[i+1]=baseLearnerMeasurements[i];
+		
+		int ensembleSize=0;
+		if(this.ensemble !=null){	
+			ensembleSize=this.ensemble.length;
+			for(int i=0; i<nMeasurements; i++){
+				double value=0;
+				for (int j=0; j<ensembleSize; ++j){
+					value+=baseLearnerMeasurements[i].getValue();
+				}
+				m[i+1]= new Measurement("Avg " + baseLearnerMeasurements[i].getName(), value/nMeasurements);
+			}
+		}
+	
+		m[0]=new Measurement("ensemble size", ensembleSize);
+		
+		return m;
 	}
 
 	@Override
