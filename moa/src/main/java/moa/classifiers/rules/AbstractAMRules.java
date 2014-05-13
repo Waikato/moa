@@ -374,7 +374,7 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 
 	@Override
 	public void resetLearningImpl() {
-		// TODO Auto-generated method stub
+		
 
 	}
 
@@ -439,12 +439,13 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 	}
 	
 	public void setRandomSeed(int randomSeed){
-		this.randomSeed=randomSeed;
+		//this.randomSeed=randomSeed;
+		this.classifierRandom.setSeed(randomSeed);
 	}
 	
-	public int getRandomSeed(){
-		return this.randomSeed;
-	}
+	//public int getRandomSeed(){
+		//return this.randomSeed;
+	//}
 	
 
 

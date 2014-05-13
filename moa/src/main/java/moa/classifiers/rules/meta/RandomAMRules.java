@@ -85,6 +85,7 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 		baseLearner.resetLearning();
 		for (int i = 0; i < this.ensemble.length; i++) {
 			this.ensemble[i] = baseLearner.copy();
+			this.ensemble[i].setRandomSeed(this.classifierRandom.nextInt());
 		}
 		this.isRegression = (baseLearner instanceof Regressor);
 	}
@@ -156,57 +157,7 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 	protected int numAttributes;
 	protected InstancesHeader[] dataset;
 
-	protected Instance transformInstance(Instance inst, int classifierIndex) {
-		if (this.listAttributes == null) {
-			//  this.numAttributes = (int) (this.numAttributesPercentageOption.getValue() * inst.numAttributes()/100.0); // JD: number of attributes should not consider class
-			this.numAttributes = (int) (this.numAttributesPercentageOption.getValue() * (inst.numAttributes()-1)/100.0);
-			this.listAttributes = new int[this.numAttributes][this.ensemble.length];
-			this.dataset = new InstancesHeader[this.ensemble.length];
-			for (int ensembleIndex = 0; ensembleIndex < this.ensemble.length; ensembleIndex++) {
-				for (int attributeIndex = 0; attributeIndex < this.numAttributes; attributeIndex++) {
-					boolean isUnique = false;
-					while (isUnique == false) {
-						this.listAttributes[attributeIndex][ensembleIndex] = this.classifierRandom.nextInt(inst.numAttributes() - 1);
-						isUnique = true;
-						for (int k = 0; k < attributeIndex; k++) {
-							if (this.listAttributes[attributeIndex][ensembleIndex] == this.listAttributes[k][ensembleIndex]) {
-								isUnique = false;
-								break;
-							}
-						}
-					}
-					//this.listAttributes[attributeIndex][ensembleIndex] = attributeIndex;
-				}
-				//Create Header
-				FastVector attributes = new FastVector();
-				for (int attributeIndex = 0; attributeIndex < this.numAttributes; attributeIndex++) {
-					attributes.addElement(inst.attribute(this.listAttributes[attributeIndex][ensembleIndex]));
-					System.out.print(this.listAttributes[attributeIndex][ensembleIndex]);
-				}
-				//System.out.println("Number of attributes: "+this.numAttributes+ ","+inst.numAttributes()); //JD
-				System.out.println("Number of attributes: "+this.numAttributes+ ","+(inst.numAttributes()-1));
-				attributes.addElement(inst.classAttribute());
-				this.dataset[ensembleIndex] =  new InstancesHeader(new Instances(
-						getCLICreationString(InstanceStream.class), attributes, 0));
-				this.dataset[ensembleIndex].setClassIndex(this.numAttributes);
-				this.ensemble[ensembleIndex].setModelContext(this.dataset[ensembleIndex]);
-			}
-		}
-		//Instance instance = new DenseInstance(this.numAttributes+1);
-		//instance.setDataset(dataset[classifierIndex]);
-		double[] attVals = new double[this.numAttributes + 1];
-		for (int attributeIndex = 0; attributeIndex < this.numAttributes; attributeIndex++) {
-			//instance.setValue(attributeIndex, inst.value(this.listAttributes[attributeIndex][classifierIndex]));
-			attVals[attributeIndex] = inst.value(this.listAttributes[attributeIndex][classifierIndex]);
-		}
-		Instance instance = new DenseInstance(1.0, attVals);
-		instance.setDataset(dataset[classifierIndex]);
-		instance.setClassValue(inst.classValue());
-		// System.out.println(inst.toString());
-		// System.out.println(instance.toString());
-		// System.out.println("============");
-		return instance;
-	}
+
 	
 	public String getPurposeString() {
 		return "WeightedRandomRules";

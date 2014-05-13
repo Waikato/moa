@@ -400,14 +400,11 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 			ArrayList<Integer> indices = new ArrayList<Integer>();
 			for(int i=0; i<inst.numAttributes() && i!=inst.classIndex(); i++)
 				indices.add(i);
-			indices.add(inst.classIndex());
-			
 			Collections.shuffle(indices, this.amRules.classifierRandom);
+			indices.add(inst.classIndex()); // add class index only after shuffle
 			
 			for (int i=0; i<numAttributesSelected;++i)
 				attributesMask[indices.get(i)]=true;
-			
-			//this.perceptron=new Perceptron(attributesMask);
 		}
 		
 		for (int i = 0, ct=0; i < attributesMask.length; i++) {
