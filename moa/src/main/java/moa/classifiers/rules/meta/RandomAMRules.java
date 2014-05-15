@@ -185,9 +185,9 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 			for(int i=0; i<nMeasurements; i++){
 				double value=0;
 				for (int j=0; j<ensembleSize; ++j){
-					value+=baseLearnerMeasurements[i].getValue();
+					value+=ensemble[j].getModelMeasurements()[i].getValue();
 				}
-				m[i+1]= new Measurement("Avg " + baseLearnerMeasurements[i].getName(), value/nMeasurements);
+				m[i+1]= new Measurement("Avg " + baseLearnerMeasurements[i].getName(), value/ensembleSize);
 			}
 		}
 	

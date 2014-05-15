@@ -228,7 +228,7 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 				}
 				else {
 					debug("Anomaly Detected: " + this.numInstances + " Rule: " +rule.getRuleNumberID() ,1);
-					this.numAnomaliesDetected=+instance.weight();//Just for statistics
+					this.numAnomaliesDetected+=instance.weight();//Just for statistics
 				}
 
 			}
