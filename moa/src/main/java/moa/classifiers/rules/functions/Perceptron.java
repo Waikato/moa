@@ -170,7 +170,8 @@ public class Perceptron extends AbstractClassifier implements Regressor{
 			this.initialisePerceptron = false; // not in resetLearningImpl() because it needs Instance!
 			this.weightAttribute = new double[inst.numAttributes()];
 			for (int j = 0; j < inst.numAttributes(); j++) {
-				weightAttribute[j] = 2 * this.classifierRandom.nextDouble() - 1;
+				if (inst.attribute(j).isNumeric())
+					weightAttribute[j] = 2 * this.classifierRandom.nextDouble() - 1;
 			}
 			// Update Learning Rate
 			learningRatio = learningRatioOption.getValue();
@@ -344,14 +345,14 @@ public class Perceptron extends AbstractClassifier implements Regressor{
 		if(this.weightAttribute!=null){
 			for(int i=0; i< this.weightAttribute.length-1; ++i)
 			{
-				if(this.weightAttribute[i]>=0 && i>0)
+				if(this.weightAttribute[i]>0 && i>0)
 					out.append(" +" + Math.round(this.weightAttribute[i]*1000)/1000.0 + " X" + i );
-				else
+				else if(this.weightAttribute[i]<0 || i==0)
 					out.append(" " + Math.round(this.weightAttribute[i]*1000)/1000.0 + " X" + i );
 			}
 			if(this.weightAttribute[this.weightAttribute.length-1]>=0 )
 				out.append(" +" + Math.round(this.weightAttribute[this.weightAttribute.length-1]*1000)/1000.0);
-			else
+			else 
 				out.append(" " + Math.round(this.weightAttribute[this.weightAttribute.length-1]*1000)/1000.0);
 		}	
 	}
