@@ -67,8 +67,8 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 	public FlagOption useBaggingOption = new FlagOption("useBagging", 'p',
 			"Use Bagging.");
 	
-	public ClassOption votingFunctionOption = new ClassOption("votingType",
-			'V', "Voting Type.", 
+	public ClassOption votingFunctionOption = new ClassOption("votingFunction",
+			'V', "Voting Function.", 
 			ErrorWeightedVote.class,
 			"UniformWeightedVote");
 
@@ -81,6 +81,8 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 			"fadingErrorFactor", 'e', 
 			"Fading error factor for the accumulated error", 0.99, 0, 1);
 	
+	public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
+            "Seed for random behaviour of the classifier.", 1);
 	protected AbstractAMRules[] ensemble;
 	protected double[] sumError;
 	protected double[] nError;
@@ -89,6 +91,7 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 
 	@Override
 	public void resetLearningImpl() {
+		this.classifierRandom.setSeed(this.randomSeedOption.getValue());
 		int n=this.ensembleSizeOption.getValue();
 		this.ensemble= new AbstractAMRules[n];
 		sumError=new double[n];
@@ -120,8 +123,8 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 				
 				//estimate error
 				double error = Math.abs(inst.classValue()-ensemble[i].getVotesForInstance(inst)[0]);
-				sumError[i]=error+sumError[i]*factor*inst.weight();
-				nError[i]=1+nError[i]*factor*inst.weight();		
+				sumError[i]=error*inst.weight()+sumError[i]*factor;
+				nError[i]=inst.weight()+nError[i]*factor;		
 				//train learner
 				this.ensemble[i].trainOnInstance(inst);
 			}
@@ -171,7 +174,6 @@ public class RandomAMRules extends AbstractClassifier implements Regressor {
 
 	@Override
 	protected Measurement[] getModelMeasurementsImpl() {
-
 		Measurement [] baseLearnerMeasurements=((AbstractAMRules) getPreparedClassOption(this.baseLearnerOption)).getModelMeasurements();
 		int nMeasurements=baseLearnerMeasurements.length;
 		Measurement [] m=new Measurement[nMeasurements+1];
