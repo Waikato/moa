@@ -226,10 +226,10 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
                         // Erase alternate tree
                         if (this.alternateTree instanceof ActiveLearningNode) {
                             this.alternateTree = null;
-                            ht.activeLeafNodeCount--;
+                            //ht.activeLeafNodeCount--;
                         } else if (this.alternateTree instanceof InactiveLearningNode) {
                             this.alternateTree = null;
-                            ht.inactiveLeafNodeCount--;
+                            //ht.inactiveLeafNodeCount--;
                         } else {
                             ((AdaSplitNode) this.alternateTree).killTreeChilds(ht);
                         }
