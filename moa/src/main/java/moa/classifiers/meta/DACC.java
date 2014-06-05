@@ -27,8 +27,6 @@ import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
-import moa.core.ObjectRepository;
-import moa.tasks.TaskMonitor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -79,7 +77,7 @@ public class DACC extends AbstractClassifier {
     /**
      * Combination functions: MAX and WVD (MAX leads to a faster reactivity to the change, WVD is more robust to noise) 
      */
-    public MultiChoiceOption combinationOption= new MultiChoiceOption("cmb", 'c', "The combination function",
+    public MultiChoiceOption combinationOption= new MultiChoiceOption("cmb", 'c', "The combination function.",
             new String[]{"MAX","WVD"} , new String[] {"Maximum","Weighted Vote of the best"},
             0);
     /**
@@ -103,6 +101,7 @@ public class DACC extends AbstractClassifier {
      */
     protected int nbInstances = 0;
     
+
     /**
      * Initializes the method variables
      */
@@ -114,42 +113,17 @@ public class DACC extends AbstractClassifier {
     }
     
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
-    
-    	initVariables();
-    	
-        Classifier learner = (Classifier) getPreparedClassOption(this.learnerOption);
-
-        for (int i = 0; i < this.ensemble.length; i++) {
-         
-        	monitor.setCurrentActivity("Materializing learner " + (i + 1)
-                    + "...", -1.0);        
-            
-            this.ensemble[i] = learner.copy();
-            this.ensemble[i].resetLearning();
-            
-            if (monitor.taskShouldAbort()) 
-                return;
-            
-            monitor.setCurrentActivity("Preparing learner " + (i + 1) + "...",
-                    -1.0);
-            
-            this.ensemble[i].prepareForUse(monitor, repository);
-            
-            if (monitor.taskShouldAbort()) 
-                return;
-            
-        }
-        super.prepareForUseImpl(monitor, repository);
-    }
-
-    @Override
     public void resetLearningImpl() {
+    
+        Classifier learner = (Classifier) getPreparedClassOption(this.learnerOption);
+        learner.resetLearning();
+
+        initVariables();
+         
         this.ensembleWeights = new Pair[this.ensemble.length];
         
         for (int i = 0; i < this.ensemble.length; i++) {
-            this.ensemble[i].resetLearning();
+            this.ensemble[i] = learner.copy();
             this.ensembleAges[i] = 0;
             this.ensembleWeights[i] = new Pair(0.0,i);
             this.ensembleWindows[i] = new int[(int)this.evaluationSizeOption.getValue()];
@@ -159,9 +133,7 @@ public class DACC extends AbstractClassifier {
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
-
     	trainAndClassify(inst);
-
     }
 
     @Override 
@@ -177,6 +149,7 @@ public class DACC extends AbstractClassifier {
         else
         	arr = getWVDIndexes();
         
+     
         if (this.trainingWeightSeenByModel > 0.0) {
 
             for (int i = 0; i < arr.size(); i++) {
@@ -192,7 +165,6 @@ public class DACC extends AbstractClassifier {
                 }
             }
         }
-        
         return combinedVote.getArrayRef();
     }
 
