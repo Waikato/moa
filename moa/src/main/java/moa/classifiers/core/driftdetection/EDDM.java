@@ -84,9 +84,11 @@ public class EDDM extends AbstractChangeDetector {
         // prediction must be 1 or 0
         // It monitors the error rate
         // System.out.print(prediction + " " + m_n + " " + probability + " ");
-        if (this.isChangeDetected == true) {
+        if (this.isChangeDetected == true || this.isInitialized == false) {
             resetLearning();
+            this.isInitialized = true;
         }
+        
         this.isChangeDetected = false;
         
         m_n++;

@@ -71,8 +71,9 @@ public class DDM extends AbstractChangeDetector {
     public void input(double prediction) {
         // prediction must be 1 or 0
         // It monitors the error rate
-        if (this.isChangeDetected == true) {
+        if (this.isChangeDetected == true || this.isInitialized == false) {
             resetLearning();
+            this.isInitialized = true;
         }
         m_p = m_p + (prediction - m_p) / (double) m_n;
         m_s = Math.sqrt(m_p * (1 - m_p) / (double) m_n);

@@ -75,8 +75,9 @@ public class EWMAChartDM extends AbstractChangeDetector {
     public void input(double prediction) {
         // prediction must be 1 or 0
         // It monitors the error rate
-        if (this.isChangeDetected == true) {
+         if (this.isChangeDetected == true || this.isInitialized == false) {
             resetLearning();
+            this.isInitialized = true;
         }
 
         m_sum += prediction;
