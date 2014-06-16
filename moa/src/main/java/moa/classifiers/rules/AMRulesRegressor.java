@@ -69,6 +69,7 @@ import moa.classifiers.rules.core.Rule;
 import moa.classifiers.rules.core.RuleActiveLearningNode;
 import moa.classifiers.rules.core.RuleActiveRegressionNode;
 import moa.classifiers.rules.core.Rule.Builder;
+import moa.classifiers.rules.core.splitcriteria.AMRulesSplitCriterion;
 import moa.classifiers.rules.core.voting.ErrorWeightedVote;
 import moa.classifiers.rules.functions.Perceptron;
 import moa.core.StringUtils;
@@ -107,8 +108,8 @@ public class AMRulesRegressor extends AbstractAMRules implements Regressor{
 	
 	public ClassOption splitCriterionOption = new ClassOption("splitCriterionOption",
 			'S', "Split Criterion", 
-			VarianceReductionSplitCriterion.class,
-			"VarianceReductionSplitCriterion");
+			AMRulesSplitCriterion.class,
+			"VRSplitCriterion");
 
 	//============================= END SET OPTIONS ==============================//
 

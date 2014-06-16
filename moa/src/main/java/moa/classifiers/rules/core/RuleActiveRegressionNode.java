@@ -36,6 +36,7 @@ import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassO
 import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.classifiers.rules.AMRulesRegressor;
 import moa.classifiers.rules.AbstractAMRules;
+import moa.classifiers.rules.core.splitcriteria.AMRulesSplitCriterion;
 import moa.classifiers.rules.core.splitcriteria.SDRSplitCriterionAMRules;
 import moa.classifiers.rules.functions.Perceptron;
 import moa.classifiers.rules.functions.TargetMean;
@@ -305,7 +306,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 		// tieThreshold. Hoeffding Bound test parameter.
 		//SplitCriterion splitCriterion = new SDRSplitCriterionAMRules(); 
 			//SplitCriterion splitCriterion = new SDRSplitCriterionAMRulesNode();//JD for assessing only best branch
-		SplitCriterion splitCriterion=(SplitCriterion)((SplitCriterion) ((AMRulesRegressor)this.amRules).splitCriterionOption.getPreMaterializedObject()).copy();
+		AMRulesSplitCriterion splitCriterion=(AMRulesSplitCriterion)((AMRulesSplitCriterion) ((AMRulesRegressor)this.amRules).splitCriterionOption.getPreMaterializedObject()).copy();
 
 		// Using this criterion, find the best split per attribute and rank the results
 		AttributeSplitSuggestion[] bestSplitSuggestions
@@ -352,7 +353,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 		if (shouldSplit == true) {
 			AttributeSplitSuggestion splitDecision = bestSplitSuggestions[bestSplitSuggestions.length - 1];
 			double minValue = Double.MAX_VALUE;
-			 double[] branchMerits = SDRSplitCriterionAMRules.computeBranchSplitMerits(bestSuggestion.resultingClassDistributions);
+			 double[] branchMerits = splitCriterion.computeBranchSplitMerits(bestSuggestion.resultingClassDistributions);
 
 			for (int i = 0; i < bestSuggestion.numSplits(); i++) {
 				double value = branchMerits[i];
