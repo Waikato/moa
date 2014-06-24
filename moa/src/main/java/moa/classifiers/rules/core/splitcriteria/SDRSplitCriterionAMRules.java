@@ -23,7 +23,7 @@ import moa.classifiers.core.splitcriteria.SDRSplitCriterion;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
 
 
-public class SDRSplitCriterionAMRules extends SDRSplitCriterion implements SplitCriterion {
+public class SDRSplitCriterionAMRules extends SDRSplitCriterion implements AMRulesSplitCriterion {
 
 	private static final long serialVersionUID = 1L;
 
@@ -61,7 +61,7 @@ public class SDRSplitCriterionAMRules extends SDRSplitCriterion implements Split
 		return 1;
 	}
 
-	public static double[] computeBranchSplitMerits(double[][] postSplitDists) {
+	public double[] computeBranchSplitMerits(double[][] postSplitDists) {
 		double[] SDR = new double[postSplitDists.length];
 		double N = 0;
 

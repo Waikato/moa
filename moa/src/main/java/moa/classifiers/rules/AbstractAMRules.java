@@ -35,6 +35,7 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -45,6 +46,7 @@ import moa.classifiers.rules.core.RuleSet;
 import moa.classifiers.rules.core.Rule.Builder;
 import moa.classifiers.rules.core.attributeclassobservers.FIMTDDNumericAttributeClassLimitObserver;
 import moa.classifiers.rules.core.voting.ErrorWeightedVote;
+import moa.classifiers.rules.core.voting.Vote;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
@@ -111,10 +113,26 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 			'z', "Numeric observer.", 
 			FIMTDDNumericAttributeClassLimitObserver.class,
 			"FIMTDDNumericAttributeClassLimitObserver");
-		
+	
+
+	protected double attributesPercentage;
+	
+	public double getAttributesPercentage() {
+		return attributesPercentage;
+	}
+
+	public void setAttributesPercentage(double attributesPercentage) {
+		this.attributesPercentage = attributesPercentage;
+	}
 
 	public AbstractAMRules() {
 		super();
+		attributesPercentage=100;
+	}
+	
+	public AbstractAMRules(double attributesPercentage) {
+		this();
+		this.attributesPercentage=attributesPercentage;
 	}
 
 	/**
@@ -147,9 +165,9 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 	 * Method for updating (training) the AMRules model using a new instance
 	 */
 
-	private int numChangesDetected; //Just for statistics 
-	private int numAnomaliesDetected; //Just for statistics 
-	private int numInstances; ////Just for statistics
+	private double numChangesDetected; //Just for statistics 
+	private double numAnomaliesDetected; //Just for statistics 
+	private double numInstances; ////Just for statistics
 
 	@Override
 	public void trainOnInstanceImpl(Instance instance) {
@@ -176,7 +194,7 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 					//Expand default rule and add it to the set of rules
 					//Reset the default rule
 		 */
-		++numInstances;
+		numInstances+=instance.weight();
 		debug("Train",3);
 		debug("Nº instance "+numInstances + " - " + instance.toString(),3);
 		boolean rulesCoveringInstance = false;
@@ -193,7 +211,7 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 						debug("I) Drift Detected. Exa. : " +  this.numInstances + " (" + rule.getInstancesSeen() +") Remove Rule: " +rule.getRuleNumberID(),1);
 
 						ruleIterator.remove();
-						this.numChangesDetected++;  //Just for statistics 
+						this.numChangesDetected+=instance.weight();  //Just for statistics 
 					} else {
 						rule.updateStatistics(instance);
 						if (rule.getInstancesSeen()  % this.gracePeriodOption.getValue() == 0.0) {
@@ -210,7 +228,7 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 				}
 				else {
 					debug("Anomaly Detected: " + this.numInstances + " Rule: " +rule.getRuleNumberID() ,1);
-					this.numAnomaliesDetected++;//Just for statistics
+					this.numAnomaliesDetected+=instance.weight();//Just for statistics
 				}
 
 			}
@@ -268,40 +286,7 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 	 */
 	@Override
 	public double[] getVotesForInstance(Instance instance) {
-		ErrorWeightedVote errorWeightedVote=newErrorWeightedVote();
-		//DoubleVector combinedVote = new DoubleVector();
-		debug("Test",3);    
-		int numberOfRulesCovering = 0;
-
-		VerboseToConsole(instance); // Verbose to console Dataset name.
-		for (Rule rule: ruleSet) {
-			if (rule.isCovering(instance) == true){
-				numberOfRulesCovering++;
-				//DoubleVector vote = new DoubleVector(rule.getPrediction(instance));
-				double [] vote=rule.getPrediction(instance);
-				double error= rule.getCurrentError();
-				debug("Rule No"+ rule.getRuleNumberID() + " Vote: " + Arrays.toString(vote) + " Error: " + error + " Y: " + instance.classValue(),3); //predictionValueForThisRule);
-				errorWeightedVote.addVote(vote,error);
-				//combinedVote.addValues(vote);
-				if (!this.unorderedRulesOption.isSet()) { // Ordered Rules Option.
-					break; // Only one rule cover the instance.
-				}
-			}
-		}
-
-		if (numberOfRulesCovering == 0) {
-			//combinedVote = new DoubleVector(defaultRule.getPrediction(instance));
-			double [] vote=defaultRule.getPrediction(instance);
-			double error= defaultRule.getCurrentError();
-			errorWeightedVote.addVote(vote,error);
-			
-			debug("Default Rule Vote " + Arrays.toString(vote) + " Error " + error + "  Y: " + instance.classValue(),3);
-		} 	
-		double[] weightedVote=errorWeightedVote.computeWeightedVote();
-		double weightedError=errorWeightedVote.getWeightedError();
-		
-		debug("Weighted Rule - Vote: " + Arrays.toString(weightedVote) + " Weighted Error: " + weightedError + " Y:" + instance.classValue(),3);
-		return weightedVote;
+		return getVotes(instance).getVote();
 	}
 
 	/**
@@ -389,7 +374,7 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 
 	@Override
 	public void resetLearningImpl() {
-		// TODO Auto-generated method stub
+		
 
 	}
 
@@ -409,6 +394,59 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 	
 	abstract public ErrorWeightedVote newErrorWeightedVote(); 
 
+	
+	/**
+	 * getVotes extension of the instance method getVotesForInstance 
+	 * in moa.classifier.java
+	 * returns the prediction of the instance.
+	 * Called in WeightedRandomRules
+	 */
+	public Vote getVotes(Instance instance) {
+		ErrorWeightedVote errorWeightedVote=newErrorWeightedVote();
+		//DoubleVector combinedVote = new DoubleVector();
+		debug("Test",3);    
+		int numberOfRulesCovering = 0;
+
+		VerboseToConsole(instance); // Verbose to console Dataset name.
+		for (Rule rule : ruleSet) {
+			if (rule.isCovering(instance) == true){
+				numberOfRulesCovering++;
+				//DoubleVector vote = new DoubleVector(rule.getPrediction(instance));
+				double [] vote=rule.getPrediction(instance);
+				double error= rule.getCurrentError();
+				debug("Rule No"+ rule.getRuleNumberID() + " Vote: " + Arrays.toString(vote) + " Error: " + error + " Y: " + instance.classValue(),3); //predictionValueForThisRule);
+				errorWeightedVote.addVote(vote,error);
+				//combinedVote.addValues(vote);
+				if (!this.unorderedRulesOption.isSet()) { // Ordered Rules Option.
+					break; // Only one rule cover the instance.
+				}
+			}
+		}
+
+		if (numberOfRulesCovering == 0) {
+			//combinedVote = new DoubleVector(defaultRule.getPrediction(instance));
+			double [] vote=defaultRule.getPrediction(instance);
+			double error= defaultRule.getCurrentError();
+			errorWeightedVote.addVote(vote,error);
+			
+			debug("Default Rule Vote " + Arrays.toString(vote) + " Error " + error + "  Y: " + instance.classValue(),3);
+		} 	
+		double[] weightedVote=errorWeightedVote.computeWeightedVote();
+		double weightedError=errorWeightedVote.getWeightedError();
+		
+		debug("Weighted Rule - Vote: " + Arrays.toString(weightedVote) + " Weighted Error: " + weightedError + " Y:" + instance.classValue(),3);
+		return new Vote(weightedVote, weightedError);
+	}
+	
+	public void setRandomSeed(int randomSeed){
+		//this.randomSeed=randomSeed;
+		this.classifierRandom.setSeed(randomSeed);
+	}
+	
+	//public int getRandomSeed(){
+		//return this.randomSeed;
+	//}
+	
 
 
 }

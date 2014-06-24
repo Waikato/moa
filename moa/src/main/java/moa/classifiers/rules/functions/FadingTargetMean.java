@@ -38,8 +38,8 @@ public class FadingTargetMean extends TargetMean {
 	@Override
 	public void trainOnInstanceImpl(Instance inst) {
 		updateAccumulatedError(inst);
-		nD=1+fadingFactor*nD;
-		sum=inst.classValue()+fadingFactor*sum;	
+		nD=inst.weight()+fadingFactor*nD;
+		sum=inst.classValue()*inst.weight()+fadingFactor*sum;	
 	}	
 	@Override
 	public void resetLearningImpl() {

@@ -44,6 +44,10 @@ public abstract class RuleActiveLearningNode extends ActiveLearningNode {
     protected boolean changeDetection;
 
     protected Rule owner;
+    
+    protected boolean [] attributesMask;
+    protected int numAttributesSelected;
+    
 
     private static final long serialVersionUID = 9129659494380381126L;
 
@@ -78,6 +82,7 @@ public abstract class RuleActiveLearningNode extends ActiveLearningNode {
         this.amRules = builder.amRules;
         this.predictionFunction = builder.predictionFunction;
         this.owner=builder.getOwner();
+        
     }
 
 

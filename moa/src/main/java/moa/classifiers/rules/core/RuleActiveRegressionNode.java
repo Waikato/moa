@@ -21,7 +21,12 @@
 package moa.classifiers.rules.core;
 
 import com.yahoo.labs.samoa.instances.Instance;
+
+import java.sql.PreparedStatement;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,6 +36,7 @@ import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassO
 import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.classifiers.rules.AMRulesRegressor;
 import moa.classifiers.rules.AbstractAMRules;
+import moa.classifiers.rules.core.splitcriteria.AMRulesSplitCriterion;
 import moa.classifiers.rules.core.splitcriteria.SDRSplitCriterionAMRules;
 import moa.classifiers.rules.functions.Perceptron;
 import moa.classifiers.rules.functions.TargetMean;
@@ -177,11 +183,15 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 	}
 
 
-	public double computeSD(double squaredVal, double val, long size) {
+	public double computeSD(double squaredVal, double val, double size) {
 		if (size > 1) {
 			return Math.sqrt((squaredVal - ((val * val) / size)) / (size - 1.0));
 		}
 		return 0.0;
+	}
+	public double computeSD(double squaredVal, double val, long size) {
+
+		return computeSD(squaredVal, val, (double)size);
 	}
 
 
@@ -195,7 +205,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 			double multiVariateAnomalyProbabilityThreshold,
 			int numberOfInstanceesForAnomaly) {
 		//AMRUles is equipped with anomaly detection. If on, compute the anomaly value.
-		long perceptronIntancesSeen=this.perceptron.getInstancesSeen();
+		double perceptronIntancesSeen=this.perceptron.getInstancesSeen();
 		if ( perceptronIntancesSeen>= numberOfInstanceesForAnomaly) {
 			double atribSum = 0.0;
 			double atribSquredSum = 0.0;
@@ -294,8 +304,9 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 
 		// splitConfidence. Hoeffding Bound test parameter.
 		// tieThreshold. Hoeffding Bound test parameter.
-		SplitCriterion splitCriterion = new SDRSplitCriterionAMRules(); 
+		//SplitCriterion splitCriterion = new SDRSplitCriterionAMRules(); 
 			//SplitCriterion splitCriterion = new SDRSplitCriterionAMRulesNode();//JD for assessing only best branch
+		AMRulesSplitCriterion splitCriterion=(AMRulesSplitCriterion)((AMRulesSplitCriterion) ((AMRulesRegressor)this.amRules).splitCriterionOption.getPreMaterializedObject()).copy();
 
 		// Using this criterion, find the best split per attribute and rank the results
 		AttributeSplitSuggestion[] bestSplitSuggestions
@@ -342,7 +353,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 		if (shouldSplit == true) {
 			AttributeSplitSuggestion splitDecision = bestSplitSuggestions[bestSplitSuggestions.length - 1];
 			double minValue = Double.MAX_VALUE;
-			 double[] branchMerits = SDRSplitCriterionAMRules.computeBranchSplitMerits(bestSuggestion.resultingClassDistributions);
+			 double[] branchMerits = splitCriterion.computeBranchSplitMerits(bestSuggestion.resultingClassDistributions);
 
 			for (int i = 0; i < bestSuggestion.numSplits(); i++) {
 				double value = branchMerits[i];
@@ -363,12 +374,12 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 
 		// Update the statistics for this node
 		// number of instances passing through the node
-		nodeStatistics.addToValue(0, 1);
+		nodeStatistics.addToValue(0, inst.weight());
 		// sum of y values
-		nodeStatistics.addToValue(1, inst.classValue());
+		nodeStatistics.addToValue(1, inst.classValue()*inst.weight());
 		// sum of squared y values
-		nodeStatistics.addToValue(2, inst.classValue()*inst.classValue());
-
+		nodeStatistics.addToValue(2, inst.classValue()*inst.classValue()*inst.weight());
+		/*
 		for (int i = 0; i < inst.numAttributes() - 1; i++) {
 			int instAttIndex = AbstractAMRules.modelAttIndexToInstanceAttIndex(i, inst);
 
@@ -384,7 +395,42 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 			if (obs != null) {
 				((FIMTDDNumericAttributeClassObserver) obs).observeAttributeClass(inst.value(instAttIndex), inst.classValue(), inst.weight());
 			}
+		}*/
+		//if was of attributes was not created so far, generate one and create perceptron
+		if (attributesMask==null)
+		{
+			numAttributesSelected=(int)Math.round((inst.numAttributes()-1)*this.amRules.getAttributesPercentage())/100;
+			
+			attributesMask=new boolean[inst.numAttributes()];
+			ArrayList<Integer> indices = new ArrayList<Integer>();
+			for(int i=0; i<inst.numAttributes() && i!=inst.classIndex(); i++)
+				indices.add(i);
+			Collections.shuffle(indices, this.amRules.classifierRandom);
+			indices.add(inst.classIndex()); // add class index only after shuffle
+			
+			for (int i=0; i<numAttributesSelected;++i)
+				attributesMask[indices.get(i)]=true;
 		}
+		
+		for (int i = 0, ct=0; i < attributesMask.length; i++) {
+			if(attributesMask[i])
+			{
+			AttributeClassObserver obs = this.attributeObservers.get(ct);
+			if (obs == null) {
+				// At this stage all nominal attributes are ignored
+				if (inst.attribute(ct).isNumeric()) //instAttIndex
+				{
+					obs = newNumericClassObserver();
+					this.attributeObservers.set(ct, obs);
+				}
+			}
+			if (obs != null) {
+				((FIMTDDNumericAttributeClassObserver) obs).observeAttributeClass(inst.value(i), inst.classValue(), inst.weight());
+			}
+			++ct;
+			}
+		}
+		
 	}
 
 	public AttributeSplitSuggestion[] getBestSplitSuggestions(SplitCriterion criterion) {

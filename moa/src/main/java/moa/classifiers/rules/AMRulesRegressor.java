@@ -62,11 +62,14 @@ package moa.classifiers.rules;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.MultiChoiceOption;
+
 import moa.classifiers.Regressor;
+import moa.classifiers.core.splitcriteria.VarianceReductionSplitCriterion;
 import moa.classifiers.rules.core.Rule;
 import moa.classifiers.rules.core.RuleActiveLearningNode;
 import moa.classifiers.rules.core.RuleActiveRegressionNode;
 import moa.classifiers.rules.core.Rule.Builder;
+import moa.classifiers.rules.core.splitcriteria.AMRulesSplitCriterion;
 import moa.classifiers.rules.core.voting.ErrorWeightedVote;
 import moa.classifiers.rules.functions.Perceptron;
 import moa.core.StringUtils;
@@ -102,6 +105,11 @@ public class AMRulesRegressor extends AbstractAMRules implements Regressor{
 			'V', "Voting Type.", 
 			ErrorWeightedVote.class,
 			"InverseErrorWeightedVote");
+	
+	public ClassOption splitCriterionOption = new ClassOption("splitCriterionOption",
+			'S', "Split Criterion", 
+			AMRulesSplitCriterion.class,
+			"VRSplitCriterion");
 
 	//============================= END SET OPTIONS ==============================//
 
