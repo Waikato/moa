@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import weka.core.Range;
+
 /**
  * The Class Instances.
  *
@@ -30,7 +32,11 @@ import java.util.Random;
  */
 public class Instances implements Serializable{
 
-    /** The instance information. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8110510475535581577L;
+	/** The instance information. */
     protected InstanceInformation instanceInformation;
     /**
      * The instances.
@@ -85,6 +91,21 @@ public class Instances implements Serializable{
     /**
      * Instantiates a new instances.
      *
+     * @param reader the reader
+     * @param range 
+     * @param size the size
+     * @param classAttribute the class attribute
+     */
+    public Instances(Reader reader, Range range) {
+        this.arff = new MultiTargetArffLoader(reader, range);
+        this.instanceInformation = arff.getStructure();
+        this.instances = new ArrayList<Instance>();
+    }
+
+    
+    /**
+     * Instantiates a new instances.
+     *
      * @param chunk the chunk
      * @param capacity the capacity
      */
@@ -107,7 +128,7 @@ public class Instances implements Serializable{
      * @param capacity the capacity
      */
     public Instances(String st, List<Attribute> v, int capacity) {
-        this.instanceInformation = new InstanceInformation(st,v);
+        this.instanceInformation = new InstanceInformation(st,v, null);
     }
 
     /**

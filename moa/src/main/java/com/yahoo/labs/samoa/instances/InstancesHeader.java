@@ -95,5 +95,19 @@ public class InstancesHeader extends Instances {
         }
         return Double.toString(value);
     }
+	public Attribute inputAttribute(int w) {
+        return this.instanceInformation.inputAttribute(w);
+    }
 
+	public Attribute outputAttribute(int w) {
+        return this.instanceInformation.outputAttribute(w);
+    }
+
+	public int numInputAttributes() {
+		return this.instanceInformation.inputInstanceInformation.numAttributes();
+	}
+	
+	public int numOutputAttributes() {
+		return this.instanceInformation.outputInstanceInformation.numAttributes();
+	}
 }

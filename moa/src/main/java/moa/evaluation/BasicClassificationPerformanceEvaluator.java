@@ -24,7 +24,9 @@ import moa.AbstractMOAObject;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.Utils;
+
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceData;
 
 /**
  * Classification evaluator that performs basic incremental evaluation.
@@ -153,5 +155,10 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
     public void getDescription(StringBuilder sb, int indent) {
         Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
                 sb, indent);
+    }
+
+	@Override
+    public void addResult(Example<Instance> example, InstanceData classVotes) {
+    	addResult(example,classVotes.toDoubleArray());
     }
 }
