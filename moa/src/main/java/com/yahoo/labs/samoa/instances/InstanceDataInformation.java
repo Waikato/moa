@@ -17,7 +17,6 @@
 package com.yahoo.labs.samoa.instances;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,28 +24,15 @@ import java.util.List;
  *
  * @author abifet
  */
-public class InstanceInformation implements Serializable{
+public class InstanceDataInformation implements Serializable, InstanceInformationInterface{
     
-    
-	protected InstanceDataInformation inputInstanceInformation;
-	
-	protected InstanceDataInformation outputInstanceInformation;
-	
-	public Attribute inputAttribute(int w) {
-        return this.inputInstanceInformation.attributes.get(w);
-    }
-
-	public Attribute outputAttribute(int w) {
-        return this.outputInstanceInformation.attributes.get(w);
-    }
-	
-	
+    //Should we split Instances as a List of Instances, and InformationInstances
     
   /** The dataset's name. */
   protected String relationName;         
 
   /** The attribute information. */
-  //protected List<Attribute> attributes;
+  protected List<Attribute> attributes;
   
   /** The class index. */
   protected int classIndex;
@@ -58,11 +44,9 @@ public class InstanceInformation implements Serializable{
      *
      * @param chunk the chunk
      */
-    public InstanceInformation(InstanceInformation chunk) {
+    public InstanceDataInformation(InstanceDataInformation chunk) {
         this.relationName = chunk.relationName;
-        //this.attributes = chunk.attributes;
-        this.inputInstanceInformation = chunk.inputInstanceInformation;
-        this.outputInstanceInformation = chunk.outputInstanceInformation;
+        this.attributes = chunk.attributes;
         this.classIndex = chunk.classIndex;
     }
     
@@ -72,19 +56,17 @@ public class InstanceInformation implements Serializable{
      * @param st the st
      * @param v the v
      */
-    public InstanceInformation(String st, List<Attribute> input, List<Attribute> output) {
+    public InstanceDataInformation(String st, List<Attribute> v) {
         this.relationName = st;
-        this.inputInstanceInformation = new InstanceDataInformation(st,input);
-        this.outputInstanceInformation = new InstanceDataInformation(st,output);
-        //this.attributes = v;
+        this.attributes = v;
     }
     
     /**
      * Instantiates a new instance information.
      */
-    public InstanceInformation() {
+    public InstanceDataInformation() {
         this.relationName = null;
-        //this.attributes = null;
+        this.attributes = null;
     }
     
     
@@ -93,7 +75,7 @@ public class InstanceInformation implements Serializable{
     /* (non-Javadoc)
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#setRelationName(java.lang.String)
 	 */
-
+    @Override
 	public void setRelationName(String string) {
         this.relationName = string;
     }
@@ -101,6 +83,7 @@ public class InstanceInformation implements Serializable{
     /* (non-Javadoc)
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#getRelationName()
 	 */
+    @Override
 	public String getRelationName() {
         return this.relationName;
     }
@@ -108,6 +91,7 @@ public class InstanceInformation implements Serializable{
     /* (non-Javadoc)
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#classIndex()
 	 */
+    @Override
 	public int classIndex() {
         return classIndex; 
     }
@@ -115,18 +99,15 @@ public class InstanceInformation implements Serializable{
     /* (non-Javadoc)
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#setClassIndex(int)
 	 */
+    @Override
 	public void setClassIndex(int classIndex) {
         this.classIndex = classIndex;
-        Attribute classAtribute = this.inputAttribute(classIndex);
-        List<Attribute> listAttribute = new ArrayList<Attribute>();
-        listAttribute.add(classAtribute);
-        this.outputInstanceInformation.setAttributes(listAttribute);
-        this.inputInstanceInformation.attributes.remove(classAtribute);
     }
   
     /* (non-Javadoc)
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#classAttribute()
 	 */
+    @Override
 	public Attribute classAttribute() {
         return this.attribute(this.classIndex());
     }
@@ -134,33 +115,31 @@ public class InstanceInformation implements Serializable{
     /* (non-Javadoc)
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#numAttributes()
 	 */
+    @Override
 	public int numAttributes() {
-        return this.inputInstanceInformation.attributes.size() + this.outputInstanceInformation.attributes.size();
+        return this.attributes.size();
     }
 
     /* (non-Javadoc)
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#attribute(int)
 	 */
+    @Override
 	public Attribute attribute(int w) {
-    	//TODO: check for single label instances
-    	int offset = this.inputInstanceInformation.attributes.size();
-    	if (w < offset) { 
-    		return this.inputInstanceInformation.attributes.get(w);
-    	} else {
-    		return this.outputInstanceInformation.attributes.get(w-offset);
-    	}
+        return this.attributes.get(w);
     }
     
     /* (non-Javadoc)
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#numClasses()
 	 */
+    @Override
 	public int numClasses() {
-        return this.outputInstanceInformation.attributes.get(this.classIndex()).numValues();
+        return this.attributes.get(this.classIndex()).numValues();
     }
     
     /* (non-Javadoc)
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#deleteAttributeAt(java.lang.Integer)
 	 */
+    @Override
 	public void deleteAttributeAt(Integer integer) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
@@ -168,6 +147,7 @@ public class InstanceInformation implements Serializable{
     /* (non-Javadoc)
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#insertAttributeAt(com.yahoo.labs.samoa.instances.Attribute, int)
 	 */
+    @Override
 	public void insertAttributeAt(Attribute attribute, int i) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
@@ -175,10 +155,10 @@ public class InstanceInformation implements Serializable{
     /* (non-Javadoc)
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#setAttributes(java.util.List)
 	 */
-   /* @Override
+    @Override
 	public void setAttributes(List<Attribute> v) {
         this.attributes = v;
-    }*/
+    }
     
     
 }

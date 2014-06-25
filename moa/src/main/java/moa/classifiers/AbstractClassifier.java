@@ -24,19 +24,28 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+
 import moa.MOAObject;
 import moa.core.Example;
+
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.StringUtils;
 import moa.gui.AWTRenderer;
 import moa.learners.Learner;
 import moa.options.AbstractOptionHandler;
+
 import com.github.javacliparser.IntOption;
+
 import moa.tasks.TaskMonitor;
+
+import com.yahoo.labs.samoa.instances.DenseInstanceData;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.Instances;
+
 import moa.core.Utils;
 
 public abstract class AbstractClassifier extends AbstractOptionHandler
@@ -93,6 +102,17 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     @Override
     public abstract double[] getVotesForInstance(Instance inst);
 
+    @Override
+    public InstanceData getPredictionForInstance(Example<Instance> example){
+		return getPredictionForInstance(example.getData());
+	}
+
+    @Override
+    public InstanceData getPredictionForInstance(Instance inst){
+    	return new DenseInstanceData(getVotesForInstance(inst));
+    }
+
+    
     @Override
     public void setModelContext(InstancesHeader ih) {
         if ((ih != null) && (ih.classIndex() < 0)) {

@@ -30,7 +30,7 @@ public class Test {
         //if (true) return;
         
         int numInstances = 30;
-        moa.streams.ArffFileStream stream = new ArffFileStream("./datasets/debug_1.txt", -1);
+        moa.streams.ArffFileStream stream = new ArffFileStream("./datasets/debug_1.txt", "-1");
         //RandomRBFGeneratorEvents stream = new RandomRBFGeneratorEvents();
         stream.prepareForUse();
         

@@ -19,16 +19,21 @@ package com.yahoo.labs.samoa.instances;
 /**
  * The Class DenseInstance.
  */
-public class DenseInstance extends SingleLabelInstance {
+public class DenseMultiLabelInstance extends MultiLabelInstance {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = -615967841180047599L;
+
+	/**
      * Instantiates a new dense instance.
      *
      * @param weight the weight
      * @param res the res
      */
-    public DenseInstance(double weight, double[] res) {
-         super(weight,res);
+    public DenseMultiLabelInstance(double weight, double[] res, double[] out) {
+         super(weight,res, out);
     }
     
     /**
@@ -36,7 +41,7 @@ public class DenseInstance extends SingleLabelInstance {
      *
      * @param inst the inst
      */
-    public DenseInstance(SingleLabelInstance inst) {
+    public DenseMultiLabelInstance(MultiLabelInstance inst) {
         super(inst);
     }
     
@@ -45,8 +50,8 @@ public class DenseInstance extends SingleLabelInstance {
      *
      * @param inst the inst
      */
-    public DenseInstance(Instance inst) {
-        super((SingleLabelInstance) inst);
+    public DenseMultiLabelInstance(Instance inst) {
+        super((MultiLabelInstance) inst);
     }
     
     /**
@@ -54,20 +59,7 @@ public class DenseInstance extends SingleLabelInstance {
      *
      * @param numberAttributes the number attributes
      */
-    public DenseInstance(double numberAttributes) {
-         super((int) numberAttributes);
-         //super(1, new double[(int) numberAttributes-1]); 
-         //Add missing values
-         //for (int i = 0; i < numberAttributes-1; i++) {
-          //   //this.setValue(i, Double.NaN);
-        //}
+    public DenseMultiLabelInstance(double numberAttributes, double numberOutputAttributes) {
+         super((int) numberAttributes, (int) numberOutputAttributes);
     }
-
-	public DenseInstance(MultiLabelInstance inst, int outputAttribute) {
-		// We create a dense instance from a multilabel
-		/*super(inst.weight(), inst.instanceData);
-		this.setClassValue(inst.classValue(outputAttribute));
-		this.instanceInformation = inst.instanceInformation;*/
-		super(inst.weight(), inst.instanceData.toDoubleArray());
-	}
 }

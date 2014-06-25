@@ -41,7 +41,7 @@ import moa.tasks.TaskMonitor;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class ArffFileStream extends AbstractOptionHandler implements
+public class MultiTargetArffFileStream extends AbstractOptionHandler implements
         InstanceStream {
 
     @Override
@@ -72,11 +72,11 @@ public class ArffFileStream extends AbstractOptionHandler implements
 
     protected InputStreamProgressMonitor fileProgressMonitor;
 
-    public ArffFileStream() {
+    public MultiTargetArffFileStream() {
     }
 
 	// jesse
-    public ArffFileStream(String arffFileName, String classIndices) {
+    public MultiTargetArffFileStream(String arffFileName, String classIndices) {
 		this.arffFileOption.setValue(arffFileName);
 		this.classIndexOption.setValue(classIndices);
 		restart();
@@ -139,7 +139,7 @@ public class ArffFileStream extends AbstractOptionHandler implements
             this.fileReader = new BufferedReader(new InputStreamReader(
                     this.fileProgressMonitor));
 			// jesse -----
-			int cs[] = this.classIndexOption.getRange().getSelection(); 
+			/*int cs[] = this.classIndexOption.getRange(); 
 			if (cs.length == 1) {
 				// single label
 				int c = cs[0]; 
@@ -150,10 +150,11 @@ public class ArffFileStream extends AbstractOptionHandler implements
 					this.instances.setClassIndex(c - 1);
 				}
 			}
-			else {
+			else {*/
 				// multi-label since cs[] contains _multipe_ class indices, e.g., cs[] = {9,10,11} 
 				// what to do here?
-			}
+			this.instances = new Instances(this.fileReader, this.classIndexOption.getRange());
+			//}
             this.numInstancesRead = 0;
             this.lastInstanceRead = null;
             this.hitEndOfFile = !readNextInstanceFromFile();
