@@ -149,5 +149,5 @@ public class DenseInstanceData implements InstanceData{
     public void setValue(int attributeIndex, double d) {
         this.attributeValues[attributeIndex] = d;
     }
-    
+       
 }

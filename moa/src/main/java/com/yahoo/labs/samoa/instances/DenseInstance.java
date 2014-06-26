@@ -62,4 +62,12 @@ public class DenseInstance extends SingleLabelInstance {
           //   //this.setValue(i, Double.NaN);
         //}
     }
+
+	public DenseInstance(MultiLabelInstance inst, int outputAttribute) {
+		// We create a dense instance from a multilabel
+		/*super(inst.weight(), inst.instanceData);
+		this.setClassValue(inst.classValue(outputAttribute));
+		this.instanceInformation = inst.instanceInformation;*/
+		super(inst.weight(), inst.instanceData.toDoubleArray());
+	}
 }
