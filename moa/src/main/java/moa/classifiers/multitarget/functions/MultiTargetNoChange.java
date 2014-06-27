@@ -1,14 +1,13 @@
 package moa.classifiers.multitarget.functions;
 
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Regressor;
-import moa.core.Measurement;
 
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.DenseInstanceData;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.MultiTargetLearner;
+import moa.core.Measurement;
 
 /**
  * MultiTargetNoChange class regressor. It always predicts the last target values seen.
@@ -16,7 +15,7 @@ import com.yahoo.labs.samoa.instances.MultiLabelInstance;
  * @author Albert Bifet (abifet@cs.waikato.ac.nz)
  * @version $Revision: 1 $
  */
-public class MultiTargetNoChange extends AbstractClassifier implements Regressor {
+public class MultiTargetNoChange extends AbstractClassifier implements MultiTargetLearner {
 
     private static final long serialVersionUID = 1L;
 
