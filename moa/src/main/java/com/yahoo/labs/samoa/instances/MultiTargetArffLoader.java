@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import weka.core.Range;
 
 public class MultiTargetArffLoader extends ArffLoader {
 
@@ -29,7 +28,7 @@ public class MultiTargetArffLoader extends ArffLoader {
 	@Override
     protected Instance newDenseInstance(int i) {
 		this.range.setUpper(this.instanceInformation.numAttributes());
-		int numberOuputAttributes = range.getSelection().length;
+		int numberOuputAttributes = range.getSelectionLength();
  		
 		return new DenseMultiLabelInstance(i-numberOuputAttributes, numberOuputAttributes);
 	}

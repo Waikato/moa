@@ -18,7 +18,7 @@
 package com.github.javacliparser;
 
 import java.util.Arrays;
-import weka.core.Range;
+import com.yahoo.labs.samoa.instances.Range;
 
 /**
  * Range option.

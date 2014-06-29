@@ -36,6 +36,7 @@ import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
+import moa.streams.MultiTargetInstanceStream;
 
 /**
  * Task for evaluating a static model on a stream.
@@ -56,8 +57,8 @@ public class EvaluateModelMultiTarget extends MultiTargetMainTask {
             "Learner to evaluate.", MultiTargetLearner.class, "LearnModelMultiTarget");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to evaluate on.", ExampleStream.class,
-            "generators.RandomTreeGenerator");
+            "Stream to learn from.", MultiTargetInstanceStream.class,
+            "MultiTargetArffFileStream");
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
             "Classification performance evaluation method.",

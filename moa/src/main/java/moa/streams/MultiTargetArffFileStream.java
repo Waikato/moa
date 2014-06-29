@@ -42,7 +42,7 @@ import moa.tasks.TaskMonitor;
  * @version $Revision: 7 $
  */
 public class MultiTargetArffFileStream extends AbstractOptionHandler implements
-        InstanceStream {
+        MultiTargetInstanceStream {
 
     @Override
     public String getPurposeString() {
@@ -54,10 +54,10 @@ public class MultiTargetArffFileStream extends AbstractOptionHandler implements
     public FileOption arffFileOption = new FileOption("arffFile", 'f',
             "ARFF file to load.", null, "arff", false);
 
-    public RangeOption classIndexOption = new RangeOption(
-            "classIndex",
+    public RangeOption outputAttributesOption = new RangeOption(
+            "outputAttributes",
             'c',
-            "Class indices of data. 0 for none or -1 for last attribute in file. For example, 1,2,4-5,-1 for the first, second, fourth and fifth, and final attributes.",
+            "Output attributes:  n for first n attributes,  -n for last n attributes  For example, 2 for the two first attributes, -2 for the two last attributes.",
 			"-1");
 
     protected Instances instances;
@@ -78,14 +78,14 @@ public class MultiTargetArffFileStream extends AbstractOptionHandler implements
 	// jesse
     public MultiTargetArffFileStream(String arffFileName, String classIndices) {
 		this.arffFileOption.setValue(arffFileName);
-		this.classIndexOption.setValue(classIndices);
+		this.outputAttributesOption.setValue(classIndices);
 		restart();
     }
 
 	/*
     public ArffFileStream(String arffFileName, int classIndex) {
         this.arffFileOption.setValue(arffFileName);
-        this.classIndexOption.setValue(classIndex);
+        this.outputAttributesOption.setValue(classIndex);
         restart();
     }
 	*/
@@ -139,7 +139,7 @@ public class MultiTargetArffFileStream extends AbstractOptionHandler implements
             this.fileReader = new BufferedReader(new InputStreamReader(
                     this.fileProgressMonitor));
 			// jesse -----
-			/*int cs[] = this.classIndexOption.getRange(); 
+			/*int cs[] = this.outputAttributesOption.getRange(); 
 			if (cs.length == 1) {
 				// single label
 				int c = cs[0]; 
@@ -153,7 +153,7 @@ public class MultiTargetArffFileStream extends AbstractOptionHandler implements
 			else {*/
 				// multi-label since cs[] contains _multipe_ class indices, e.g., cs[] = {9,10,11} 
 				// what to do here?
-			this.instances = new Instances(this.fileReader, this.classIndexOption.getRange());
+			this.instances = new Instances(this.fileReader, this.outputAttributesOption.getRange());
 			//}
             this.numInstancesRead = 0;
             this.lastInstanceRead = null;

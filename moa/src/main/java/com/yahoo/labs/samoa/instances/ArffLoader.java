@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import weka.core.Range;
+import com.yahoo.labs.samoa.instances.Range;
 
 /**
  * The Class ArffLoader. Loads an Arff file with sparse or dense format.

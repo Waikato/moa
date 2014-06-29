@@ -28,6 +28,7 @@ import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
+import moa.streams.MultiTargetInstanceStream;
 
 /**
  * Task for learning a model without any evaluation.
@@ -48,8 +49,8 @@ public class LearnModelMultiTarget extends MultiTargetMainTask {
             "Learner to train.", MultiTargetLearner.class, "moa.classifiers.multitarget.functions.MultiTargetNoChange");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", ExampleStream.class,
-            "generators.RandomTreeGenerator");
+            "Stream to learn from.", MultiTargetInstanceStream.class,
+            "MultiTargetArffFileStream");
 
     public IntOption maxInstancesOption = new IntOption("maxInstances", 'm',
             "Maximum number of instances to train on per pass over the data.",

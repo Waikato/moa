@@ -19,7 +19,6 @@ package com.yahoo.labs.samoa.instances;
 import java.io.Serializable;
 import java.util.List;
 
-import weka.core.Range;
 
 /**
  * The Class InstanceInformation.

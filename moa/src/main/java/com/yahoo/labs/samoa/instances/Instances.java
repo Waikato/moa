@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import weka.core.Range;
+import com.yahoo.labs.samoa.instances.Range;
 
 /**
  * The Class Instances.
