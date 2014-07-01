@@ -74,7 +74,7 @@ public class BasicRegressionPerformanceEvaluator extends AbstractMOAObject
                 this.sumTarget += inst.classValue();
                 this.weightObserved += inst.weight();
             }
-            //System.out.println(inst.classValue()+", "+prediction[0]);
+           //System.out.println(inst.classValue()+", "+prediction[0]);
         }
     }
 

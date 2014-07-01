@@ -60,7 +60,7 @@ public class MultiTargetRegressor extends AbstractClassifier implements MultiTar
     	MultiLabelInstance instance = (MultiLabelInstance) inst;
     	if (this.hasStarted == false){ 
     		return new double[0];
-    	};
+    	}
         DoubleVector combinedVote = new DoubleVector();
         for (int i = 0; i < this.ensemble.length; i++) {
                 combinedVote.setValue(i,this.ensemble[i].getVotesForInstance(transformInstance(instance,i))[0]); 
@@ -90,8 +90,8 @@ protected InstancesHeader[] header;
         //Instance instance = new DenseInstance(this.numAttributes+1);
         //instance.setDataset(dataset[classifierIndex]);
         int numAttributes = this.header[outputIndex].numInputAttributes();
-        double[] attVals = new double[numAttributes + 1];
-        for (int attributeIndex = 0; attributeIndex < numAttributes - 1; attributeIndex++) {
+        double[] attVals = new double[numAttributes];
+        for (int attributeIndex = 0; attributeIndex < numAttributes; attributeIndex++) {
         		attVals[attributeIndex] = inst.valueInputAttribute(attributeIndex);
         }
         Instance instance = new DenseInstance(1.0, attVals);

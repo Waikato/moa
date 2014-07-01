@@ -23,6 +23,8 @@ import moa.AbstractMOAObject;
 import moa.core.Example;
 import moa.core.Measurement;
 
+import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.DenseInstanceData;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
@@ -44,7 +46,7 @@ public class BasicMultiTargetPerformanceEvaluator extends AbstractMOAObject
 
     protected double averageError;
     
-    protected double numberOutputs;
+    protected int numberOutputs;
 
     @Override
     public void reset() {
@@ -62,8 +64,10 @@ public class BasicMultiTargetPerformanceEvaluator extends AbstractMOAObject
     }
         if (inst.weight() > 0.0) {
             this.weightObserved += inst.weight();
-            if (prediction != null && prediction.numAttributes() > 0) {
-            	for (int i = 0; i< inst.numberOutputTargets();i++){
+            if(prediction.numAttributes() == 0) //Learner returned empty prediction
+            	prediction=new DenseInstanceData(numberOutputs);
+            if (prediction != null ) {
+            	for (int i = 0; i< numberOutputs;i++){
             		double err = inst.classValue(i) - prediction.value(i);
 	                this.squareError += (err) * (err);
 	                this.averageError += Math.abs(err);

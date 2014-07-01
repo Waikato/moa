@@ -8,7 +8,7 @@ public class Range {
     //Only works for ranges "start-end"
     
     private int start = 0;
-    private int end = 0;
+	private int end = 0;
     private int upperLimit = 0;
     private final String rangeText;
 
@@ -86,5 +86,14 @@ public class Range {
         this.upperLimit = attributeNumber;   
         this.setRange(this.rangeText);
     }
+    
+    //JD
+    public int getStart() {
+		return start;
+	}
+    //JD
+	public int getEnd() {
+		return end;
+	}
     
 }

@@ -434,5 +434,21 @@ public class MultiLabelInstance implements Instance {
 		return this.classData.value(attributeIndex);
 	}
 
+    /**
+     * Text representation of a MultiLabelInstance.
+     */
+    public String toString()
+    {
+    	double [] aux = this.instanceData.toDoubleArray();
+    	StringBuffer str= new StringBuffer();
+    	for (int i=0; i<aux.length;i++)
+    		str.append(aux[i]+" ");
+    	str.append("- ");
+    	aux = this.classData.toDoubleArray();
+    	for (int i=0; i<aux.length;i++)
+    		str.append(aux[i]+" ");
+    	
+    	return str.toString();
+    }
 
 }

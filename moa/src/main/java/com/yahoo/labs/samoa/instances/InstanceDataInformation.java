@@ -117,7 +117,7 @@ public class InstanceDataInformation implements Serializable, InstanceInformatio
 	 */
     @Override
 	public int numAttributes() {
-        return this.attributes.size();
+        return (this.attributes==null)? 0 : this.attributes.size();
     }
 
     /* (non-Javadoc)

@@ -1,5 +1,5 @@
 /*
- *    FadingTargetMean.java
+ *    Perceptron.java
  *    Copyright (C) 2014 University of Porto, Portugal
  *    @author A. Bifet, J. Duarte, J. Gama
  *
@@ -186,11 +186,14 @@ public class Perceptron extends AbstractClassifier implements Regressor{
 		
 		for(int j = 0; j < inst.numAttributes() -1; j++)
 		{
-			perceptronattributeStatistics.addToValue(j, inst.value(j)*inst.weight());	
-			squaredperceptronattributeStatistics.addToValue(j, inst.value(j)*inst.value(j)*inst.weight());
+			int instAttIndex = modelAttIndexToInstanceAttIndex(j, inst);
+			double value=inst.value(instAttIndex);
+			perceptronattributeStatistics.addToValue(j, value*inst.weight());	
+			squaredperceptronattributeStatistics.addToValue(j, value*value*inst.weight());
 		}
-		this.perceptronsumY += inst.classValue()*inst.weight();
-		this.squaredperceptronsumY += inst.classValue() * inst.classValue()*inst.weight();
+		double value=inst.classValue();
+		this.perceptronsumY += value*inst.weight();
+		this.squaredperceptronsumY += value * value*inst.weight();
 
 		if(constantLearningRatioDecayOption.isSet()==false){
 			learningRatio = learningRatioOption.getValue() / (1+ perceptronInstancesSeen*learningRateDecay); 

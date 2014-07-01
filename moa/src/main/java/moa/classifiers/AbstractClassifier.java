@@ -414,7 +414,7 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
      */
     protected static int modelAttIndexToInstanceAttIndex(int index,
             Instance inst) {
-        return index; //inst.classIndex() > index ? index : index + 1;
+        return inst.classIndex() > index ? index : index + 1;
     }
 
     /**
@@ -427,6 +427,6 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
      */
     protected static int modelAttIndexToInstanceAttIndex(int index,
             Instances insts) {
-        return index; //insts.classIndex() > index ? index : index + 1;
+        return insts.classIndex() > index ? index : index + 1;
     }
 }
