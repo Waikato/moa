@@ -1,7 +1,7 @@
 /*
- *    UniformWeightedVote.java
+ *    AbstractErrorWeightedVote.java
  *    Copyright (C) 2014 University of Porto, Portugal
- *    @author A. Bifet, J. Duarte, J. Gama
+ *    @author J. Duarte, J. Gama
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.

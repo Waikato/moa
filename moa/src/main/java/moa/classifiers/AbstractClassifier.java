@@ -45,6 +45,8 @@ import com.yahoo.labs.samoa.instances.DenseInstanceData;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.core.Utils;
 
@@ -103,13 +105,15 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     public abstract double[] getVotesForInstance(Instance inst);
 
     @Override
-    public InstanceData getPredictionForInstance(Example<Instance> example){
+    public Prediction getPredictionForInstance(Example<Instance> example){
 		return getPredictionForInstance(example.getData());
 	}
 
     @Override
-    public InstanceData getPredictionForInstance(Instance inst){
-    	return new DenseInstanceData(getVotesForInstance(inst));
+    public Prediction getPredictionForInstance(Instance inst){
+    	Prediction prediction= new MultiLabelPrediction(1);
+    	prediction.setVotes(getVotesForInstance(inst));
+    	return prediction;
     }
 
     

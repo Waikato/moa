@@ -127,7 +127,6 @@ public class RandomRules extends AbstractClassifier implements Regressor {
 
 	@Override
 	public void getModelDescription(StringBuilder out, int indent) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override

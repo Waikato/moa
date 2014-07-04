@@ -5,8 +5,11 @@ import com.yahoo.labs.samoa.instances.DenseInstanceData;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
+import com.yahoo.labs.samoa.instances.Prediction;
+
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.MultiTargetLearner;
+import moa.classifiers.MultiTargetRegressor;
 import moa.core.Measurement;
 
 /**
@@ -15,7 +18,7 @@ import moa.core.Measurement;
  * @author Albert Bifet (abifet@cs.waikato.ac.nz)
  * @version $Revision: 1 $
  */
-public class MultiTargetNoChange extends AbstractClassifier implements MultiTargetLearner {
+public class MultiTargetNoChange extends AbstractClassifier implements MultiTargetRegressor {
 
     private static final long serialVersionUID = 1L;
 
@@ -24,8 +27,9 @@ public class MultiTargetNoChange extends AbstractClassifier implements MultiTarg
         return "Weather Forecast class classifier: always predicts the last class seen.";
     }
 
-    protected InstanceData lastSeenClasses;
-
+    //protected InstanceData lastSeenClasses;
+    Prediction lastSeenClasses;
+    
     @Override
     public void resetLearningImpl() {
         this.lastSeenClasses = null;
@@ -33,16 +37,17 @@ public class MultiTargetNoChange extends AbstractClassifier implements MultiTarg
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
-    	MultiLabelInstance instance = (MultiLabelInstance) inst;
-        this.lastSeenClasses = instance.classValues();
+    	//MultiLabelInstance instance = (MultiLabelInstance) inst;
+       // this.lastSeenClasses = instance.classValues();
+    	
     }
 
-    public InstanceData getPredictionForInstance(Instance i) {
-        return (lastSeenClasses!=null) ? this.lastSeenClasses : new DenseInstanceData();
+    public Prediction getPredictionForInstance(Instance i) {
+        return (lastSeenClasses!=null) ? this.lastSeenClasses : new MultiLabelPrediction();
     }
     
     public double[] getVotesForInstance(Instance i) {
-        return this.getPredictionForInstance(i).toDoubleArray();
+        return this.getPredictionForInstance(i).getVotes(0);
     }
     
     

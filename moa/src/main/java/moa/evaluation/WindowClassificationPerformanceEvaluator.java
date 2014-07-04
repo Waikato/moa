@@ -31,6 +31,7 @@ import moa.core.Utils;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Classification evaluator that updates evaluation results using a sliding
@@ -230,9 +231,12 @@ public class WindowClassificationPerformanceEvaluator extends AbstractOptionHand
     public void prepareForUseImpl(TaskMonitor monitor,
             ObjectRepository repository) {
     }
+
+	@Override
+	public void addResult(Example<Instance> testInst, Prediction prediction) {
+		// TODO Auto-generated method stub
+		
+	}
     
-    @Override
-    public void addResult(Example<Instance> example, InstanceData classVotes) {
-    	addResult(example,classVotes.toDoubleArray());
-    }
+
 }

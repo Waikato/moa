@@ -32,7 +32,7 @@ import moa.core.Measurement;
 import moa.core.StringUtils;
 
 
-public class TargetMean extends AbstractClassifier implements Regressor {
+public class TargetMean extends AbstractClassifier implements AMRulesRegressorFunction {
 
 	/**
 	 * 

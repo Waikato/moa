@@ -27,6 +27,7 @@ import moa.core.Utils;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Classification evaluator that performs basic incremental evaluation.
@@ -157,8 +158,11 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
                 sb, indent);
     }
 
+
+
 	@Override
-    public void addResult(Example<Instance> example, InstanceData classVotes) {
-    	addResult(example,classVotes.toDoubleArray());
-    }
+	public void addResult(Example<Instance> testInst, Prediction prediction) {
+		// TODO Auto-generated method stub
+		
+	}
 }

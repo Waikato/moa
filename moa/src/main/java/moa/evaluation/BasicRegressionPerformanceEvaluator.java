@@ -25,6 +25,7 @@ import moa.core.Measurement;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Regression evaluator that performs basic incremental evaluation.
@@ -139,7 +140,7 @@ public class BasicRegressionPerformanceEvaluator extends AbstractMOAObject
     }
     
     @Override
-    public void addResult(Example<Instance> example, InstanceData classVotes) {
-    	addResult(example,classVotes.toDoubleArray());
+    public void addResult(Example<Instance> example, Prediction prediction) {
+    	addResult(example,prediction.getVotes(0));
     }
 }

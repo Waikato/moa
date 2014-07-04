@@ -10,7 +10,7 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
-import moa.classifiers.MultiTargetLearner;
+import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.Regressor;
 import moa.core.DoubleVector;
 import moa.core.FastVector;
@@ -20,7 +20,7 @@ import moa.options.ClassOption;
 import moa.streams.InstanceStream;
 
 
-public class MultiTargetRegressor extends AbstractClassifier implements MultiTargetLearner{
+public class BasicMultiTargetRegressor extends AbstractClassifier implements MultiTargetRegressor{
 	
 
 	private static final long serialVersionUID = 1L;

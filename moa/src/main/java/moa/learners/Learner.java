@@ -24,6 +24,7 @@ import moa.core.Example;
 
 import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.core.Measurement;
 import moa.gui.AWTRenderable;
@@ -133,7 +134,7 @@ public interface Learner<E extends Example> extends MOAObject, OptionHandler, AW
      */
     public InstancesHeader getModelContext();
 
-	public InstanceData getPredictionForInstance(E testInst);
+	public Prediction getPredictionForInstance(E testInst);
     
 }
 

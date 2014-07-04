@@ -470,7 +470,6 @@ public class ArffLoader {
     }
     
     protected Instance newSparseInstance(double d, double[] res) {
- 		// TODO Auto-generated method stub
  		return new SparseInstance(d, res) ;
  	}
     

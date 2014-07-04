@@ -30,7 +30,7 @@ import moa.classifiers.Regressor;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 
-public class Perceptron extends AbstractClassifier implements Regressor{
+public class Perceptron extends AbstractClassifier implements AMRulesRegressorFunction{
 
 	private final double SD_THRESHOLD = 0.0000001; //THRESHOLD for normalizing attribute and target values
 

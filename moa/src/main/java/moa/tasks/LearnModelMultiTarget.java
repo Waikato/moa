@@ -21,8 +21,7 @@ package moa.tasks;
 
 import com.github.javacliparser.IntOption;
 import moa.classifiers.Classifier;
-import moa.classifiers.MultiTargetLearner;
-import moa.classifiers.multitarget.MultiTargetRegressor;
+import moa.classifiers.MultiTargetRegressor;
 import moa.core.ObjectRepository;
 import moa.learners.Learner;
 import moa.options.ClassOption;
@@ -46,7 +45,7 @@ public class LearnModelMultiTarget extends MultiTargetMainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Learner to train.", MultiTargetLearner.class, "moa.classifiers.multitarget.functions.MultiTargetNoChange");
+            "Learner to train.", MultiTargetRegressor.class, "moa.classifiers.multitarget.functions.MultiTargetNoChange");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", MultiTargetInstanceStream.class,
