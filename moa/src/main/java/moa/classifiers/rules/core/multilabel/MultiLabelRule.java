@@ -19,6 +19,7 @@ public class MultiLabelRule extends AbstractMOAObject {
 	protected List<Literal> literalList = new LinkedList<Literal>();
 
 	protected LearningLiteral learningLiteral;
+	protected boolean [] outputsCoveredMask;
 	
 
 	protected int ruleNumberID;
@@ -40,6 +41,10 @@ public class MultiLabelRule extends AbstractMOAObject {
 			}
 		}
 		return isCovering;
+	}
+	
+	public boolean[] getOutputsCoveredMask(MultiLabelInstance inst) {
+		return outputsCoveredMask;
 	}
 	
 	
@@ -95,8 +100,8 @@ public class MultiLabelRule extends AbstractMOAObject {
 		return(out.toString());
 	}
 
-	public double getCurrentError() {
-		return 0;//learner.getCurrentError();
+	public double [] getCurrentErrors() {
+		return null;//learner.getCurrentError();
 	}
 
 	public  Prediction getPredictionForInstance(MultiLabelInstance instance) {

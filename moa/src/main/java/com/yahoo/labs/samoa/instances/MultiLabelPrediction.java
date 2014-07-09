@@ -15,7 +15,6 @@ public class MultiLabelPrediction implements Prediction {
 			prediction[i]= new DoubleVector();
 	}
 	
-
 	@Override
 	public int numOutputAttributes() {
 		return prediction.length;
@@ -65,10 +64,17 @@ public class MultiLabelPrediction implements Prediction {
 			sb.append("Out " + i + ": ");
 			for (int c=0; c<prediction[i].numValues(); c++)
 			{
-				sb.append(((int)(prediction[i].getValue(c)*1000)/1000)+ " ");
+				sb.append(((int)(prediction[i].getValue(c)*1000)/1000.0)+ " ");
 			}
 		}
 		return sb.toString();
+	}
+
+	@Override
+	public boolean hasVotesForAttribute(int outputAttributeIndex) {
+		if(prediction.length<(outputAttributeIndex+1))
+				return false;
+		return (prediction[outputAttributeIndex]==null) ? false : true;
 	}
 
 }

@@ -9,6 +9,7 @@ import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
 import moa.core.Measurement;
 
@@ -18,7 +19,7 @@ import moa.core.Measurement;
  * @author Albert Bifet (abifet@cs.waikato.ac.nz)
  * @version $Revision: 1 $
  */
-public class MultiTargetNoChange extends AbstractClassifier implements MultiTargetRegressor {
+public class MultiTargetNoChange extends AbstractMultiLabelLearner implements MultiTargetRegressor {
 
     private static final long serialVersionUID = 1L;
 
@@ -36,9 +37,14 @@ public class MultiTargetNoChange extends AbstractClassifier implements MultiTarg
     }
 
     @Override
-    public void trainOnInstanceImpl(Instance inst) {
-    	//MultiLabelInstance instance = (MultiLabelInstance) inst;
-       // this.lastSeenClasses = instance.classValues();
+    public void trainOnInstanceImpl(MultiLabelInstance inst) {
+    	int numOutputs = inst.numberOutputTargets();
+    	Prediction prediction = new MultiLabelPrediction(numOutputs);
+    	
+    	for(int i=0; i<numOutputs;i++)
+    		prediction.setVotes(i,new double[]{inst.classValue(i)});
+    	
+        this.lastSeenClasses = prediction;
     	
     }
 

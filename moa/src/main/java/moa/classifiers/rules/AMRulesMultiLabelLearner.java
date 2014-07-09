@@ -42,10 +42,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.MultiLabelLearner;
+import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.rules.core.Rule;
 import moa.classifiers.rules.core.RuleActiveLearningNode;
 import moa.classifiers.rules.core.RuleSet;
 import moa.classifiers.rules.core.Rule.Builder;
+import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
 import moa.classifiers.rules.core.attributeclassobservers.FIMTDDNumericAttributeClassLimitObserver;
 import moa.classifiers.rules.core.multilabel.MultiLabelRule;
 import moa.classifiers.rules.core.multilabel.MultiLabelRuleSet;
@@ -57,7 +60,7 @@ import moa.core.StringUtils;
 import moa.options.ClassOption;
 
 
-public abstract class AMRulesMultiLabel extends AbstractClassifier {
+public abstract class AMRulesMultiLabelLearner extends AbstractClassifier implements MultiLabelLearner{
 
 	private static final long serialVersionUID = 1L;
 	protected MultiLabelRuleSet ruleSet = new MultiLabelRuleSet();
@@ -76,6 +79,7 @@ public abstract class AMRulesMultiLabel extends AbstractClassifier {
 	public IntOption gracePeriodOption = new IntOption("gracePeriod",
 			'g', "Hoeffding Bound Parameter. The number of instances a leaf should observe between split attempts.",
 			200, 1, Integer.MAX_VALUE);
+	/*
 	public FlagOption DriftDetectionOption = new FlagOption("DoNotDetectChanges", 'H',
 			"Drift Detection. Page-Hinkley.");
 	public FloatOption pageHinckleyAlphaOption = new FloatOption(
@@ -88,7 +92,14 @@ public abstract class AMRulesMultiLabel extends AbstractClassifier {
 			'l',
 			"The threshold value (Lambda) to be used in the Page Hinckley change detection tests.",
 			35, 0, Integer.MAX_VALUE);
-	public FlagOption noAnomalyDetectionOption = new FlagOption("noAnomalyDetection", 'A',
+	*/
+	public ClassOption changeDetector = new ClassOption("changeDetector",
+			'H', "Change Detector.", 
+			ChangeDetector.class,
+			"moa.classifiers.rules.core.changedetection.NoChangeDetection");
+	
+	
+	/*public FlagOption noAnomalyDetectionOption = new FlagOption("noAnomalyDetection", 'A',
 			"Disable anomaly Detection.");
 	public FloatOption multivariateAnomalyProbabilityThresholdOption = new FloatOption(
 			"multivariateAnomalyProbabilityThresholdd",
@@ -105,19 +116,28 @@ public abstract class AMRulesMultiLabel extends AbstractClassifier {
 			'n',
 			"The threshold value of anomalies to be used in the anomaly detection.",
 			30, 0, Integer.MAX_VALUE);
+			*/
+	
+	public ClassOption anomalyDetector = new ClassOption("anomalyDetector",
+			'A', "Anomaly Detector.", 
+			AnomalyDetector.class,
+			"moa.classifiers.rules.core.anomalydetection.NoAnomalyDetection");
+	
+	
 	public FlagOption unorderedRulesOption = new FlagOption("setUnorderedRulesOn", 'U',
 			"unorderedRules.");
 
-	public IntOption VerbosityOption = new IntOption(
-			"verbosity",
-			'v',
-			"Output Verbosity Control Level. 1 (Less) to 5 (More)",
-			1, 1, 5);
 
 	public ClassOption numericObserverOption = new ClassOption("numericObserver",
 			'z', "Numeric observer.", 
 			FIMTDDNumericAttributeClassLimitObserver.class,
 			"FIMTDDNumericAttributeClassLimitObserver");
+	
+	public IntOption VerbosityOption = new IntOption(
+			"verbosity",
+			'v',
+			"Output Verbosity Control Level. 1 (Less) to 5 (More)",
+			1, 1, 5);
 	
 
 	protected double attributesPercentage;
@@ -130,12 +150,12 @@ public abstract class AMRulesMultiLabel extends AbstractClassifier {
 		this.attributesPercentage = attributesPercentage;
 	}
 
-	public AMRulesMultiLabel() {
+	public AMRulesMultiLabelLearner() {
 		super();
 		attributesPercentage=100;
 	}
 	
-	public AMRulesMultiLabel(double attributesPercentage) {
+	public AMRulesMultiLabelLearner(double attributesPercentage) {
 		this();
 		this.attributesPercentage=attributesPercentage;
 	}
@@ -217,12 +237,12 @@ public abstract class AMRulesMultiLabel extends AbstractClassifier {
 					} else {
 						rule.trainOnInstance(instance);
 						if (rule.getWeightSeenSinceExpansion()  % this.gracePeriodOption.getValue() == 0.0) {
-							if (rule.tryToExpand(this.splitConfidenceOption.getValue(), this.tieThresholdOption.getValue()) ) 
+							/*if (rule.tryToExpand(this.splitConfidenceOption.getValue(), this.tieThresholdOption.getValue()) ) 
 							{
 								rule.split();
 								debug("Rule Expanded:",2);
 								debug(rule.toString(),2);
-							}	
+							}	*/
 						}
 					}
 					if (!this.unorderedRulesOption.isSet()) 
@@ -240,7 +260,7 @@ public abstract class AMRulesMultiLabel extends AbstractClassifier {
 			defaultRule.trainOnInstance(instance);
 			if (defaultRule.getWeightSeenSinceExpansion() % this.gracePeriodOption.getValue() == 0.0) {
 				debug("Nr. examples "+defaultRule.getWeightSeenSinceExpansion(), 4);
-
+/*
 				if (defaultRule.tryToExpand(this.splitConfidenceOption.getValue(), this.tieThresholdOption.getValue()) == true) {
 					Rule newDefaultRule=newRule(defaultRule.getRuleNumberID(),defaultRule.getLearningNode(),defaultRule.getLearningNode().getStatisticsOtherBranchSplit()); //other branch
 					defaultRule.split();
@@ -254,6 +274,7 @@ public abstract class AMRulesMultiLabel extends AbstractClassifier {
 					defaultRule=newDefaultRule();
 
 				}
+				*/
 			}
 		}
 	}
@@ -315,7 +336,7 @@ public abstract class AMRulesMultiLabel extends AbstractClassifier {
 			StringUtils.appendIndented(out, indent, "Method Unordered");
 			StringUtils.appendNewline(out);
 		}
-		if(this.DriftDetectionOption.isSet()){
+	/*	if(this.DriftDetectionOption.isSet()){
 			StringUtils.appendIndented(out, indent, "Change Detection OFF");
 			StringUtils.appendNewline(out);
 		}else{
@@ -328,7 +349,7 @@ public abstract class AMRulesMultiLabel extends AbstractClassifier {
 		}else{
 			StringUtils.appendIndented(out, indent, "Anomaly Detection ON");
 			StringUtils.appendNewline(out);
-		}
+		}*/
 		StringUtils.appendIndented(out, indent, "Number of Rules: " + (this.ruleSet.size()+1));
 		StringUtils.appendNewline(out);		
 	}
@@ -358,12 +379,12 @@ public abstract class AMRulesMultiLabel extends AbstractClassifier {
 
 	public void PrintRuleSet() {    	
 		debug("Rule in RuleSet:",2);
-		for (Rule rule: ruleSet) {
-			debug(rule.printRule(),2);
+		for (MultiLabelRule rule: ruleSet) {
+			debug(rule.toString(),2);
 		}
 
 		debug("Default rule :",2);
-		debug(this.defaultRule.printRule(),2);
+		debug(this.defaultRule.toString(),2);
 	}
 
 	abstract public RuleActiveLearningNode newRuleActiveLearningNode(Builder builder);
@@ -399,9 +420,9 @@ public abstract class AMRulesMultiLabel extends AbstractClassifier {
 				numberOfRulesCovering++;
 				//DoubleVector vote = new DoubleVector(rule.getPrediction(instance));
 				Prediction vote=rule.getPredictionForInstance(instance);
-				double error= rule.getCurrentError();
-				debug("Rule No"+ rule.getRuleNumberID() + " Vote: " + vote.toString() + " Error: " + error + " Y: " + instance.classValue(),3); //predictionValueForThisRule);
-				errorWeightedVote.addVote(vote,error);
+				double [] errors= rule.getCurrentErrors();
+				debug("Rule No"+ rule.getRuleNumberID() + " Vote: " + vote.toString() + " Error: " + errors + " Y: " + instance.classValue(),3); //predictionValueForThisRule);
+				errorWeightedVote.addVote(vote,errors);
 				//combinedVote.addValues(vote);
 				if (!this.unorderedRulesOption.isSet()) { // Ordered Rules Option.
 					break; // Only one rule cover the instance.
@@ -412,10 +433,10 @@ public abstract class AMRulesMultiLabel extends AbstractClassifier {
 		if (numberOfRulesCovering == 0) {
 			//combinedVote = new DoubleVector(defaultRule.getPrediction(instance));
 			Prediction vote=defaultRule.getPredictionForInstance(instance);
-			double error= defaultRule.getCurrentError();
-			errorWeightedVote.addVote(vote,error);
+			double [] errors= defaultRule.getCurrentErrors();
+			errorWeightedVote.addVote(vote,errors);
 			
-			debug("Default Rule Vote " + vote.toString() + "\n Error " + error + "  Y: " + instance,3);
+			debug("Default Rule Vote " + vote.toString() + "\n Error " + errors + "  Y: " + instance,3);
 		} 	
 		Prediction weightedVote=errorWeightedVote.computeWeightedVote();
 		double weightedError=errorWeightedVote.getWeightedError();

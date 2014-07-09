@@ -8,21 +8,18 @@ public class RootMeanSquaredErrorMT extends MultiLabelErrorMeasurement {
 	/**
 	 * 
 	 */
-	private double weightSeen=0;
-	private double sumSquaredError=0;
+	private double weightSeen;
+	private double [] sumSquaredError;
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void addPrediction(Prediction prediction, MultiLabelInstance inst) {
-		double error=0;
 		int numOutputs=inst.numOutputAttributes();
 
 		for(int i=0; i<numOutputs;i++){
 			double errorOutput=prediction.getVote(i, 0)-inst.valueOutputAttribute(i);
-			error=errorOutput*errorOutput;
+			sumSquaredError[i]=errorOutput*errorOutput+fadingErrorFactor*sumSquaredError[i];
 		}
-		
-		sumSquaredError=error*inst.weight()/numOutputs+fadingErrorFactor*sumSquaredError;
 		weightSeen=inst.weight()+fadingErrorFactor*weightSeen;
 	}
 
@@ -31,7 +28,18 @@ public class RootMeanSquaredErrorMT extends MultiLabelErrorMeasurement {
 		if(weightSeen==0)
 			return Double.MAX_VALUE;
 		else
-			return sumSquaredError/weightSeen;
+		{
+			double sum=0;
+			int numOutputs=sumSquaredError.length;
+			for (int i=0; i<numOutputs; i++)
+				sum+=sumSquaredError[i];
+			return Math.sqrt(sum/(weightSeen*numOutputs));
+		}
+	}
+
+	@Override
+	public double getCurrentError(int index) {
+		return Math.sqrt(sumSquaredError[index]/weightSeen);
 	}
 
 }

@@ -164,7 +164,7 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
 
 	@Override
 	public void addResult(Example<Instance> testInst, Prediction prediction) {
-		// TODO Auto-generated method stub
+		addResult(testInst, prediction.getVotes());
 		
 	}
 }

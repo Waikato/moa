@@ -4,7 +4,7 @@ import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 
-public class NoAnomalyDetector extends AbstractAnomalyDetector{
+public class NoAnomalyDetection extends AbstractAnomalyDetector{
 
 	/**
 	 * 

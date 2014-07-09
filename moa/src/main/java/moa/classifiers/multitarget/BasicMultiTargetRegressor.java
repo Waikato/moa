@@ -8,7 +8,9 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.Regressor;
@@ -20,7 +22,7 @@ import moa.options.ClassOption;
 import moa.streams.InstanceStream;
 
 
-public class BasicMultiTargetRegressor extends AbstractClassifier implements MultiTargetRegressor{
+public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner implements MultiTargetRegressor{
 	
 
 	private static final long serialVersionUID = 1L;
@@ -38,8 +40,7 @@ public class BasicMultiTargetRegressor extends AbstractClassifier implements Mul
     }
 
     @Override
-    public void trainOnInstanceImpl(Instance inst) {
-    	MultiLabelInstance instance = (MultiLabelInstance) inst;
+    public void trainOnInstanceImpl(MultiLabelInstance instance) {
     	if (this.hasStarted == false){		
     		this.ensemble = new Classifier[instance.numberOutputTargets()];
             Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);

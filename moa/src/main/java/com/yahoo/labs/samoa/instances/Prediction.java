@@ -63,6 +63,13 @@ public interface Prediction {
      * @return the votes for the first output attribute outputAttributeIndex.
      */
 	double[] getVotes();
+	
+    /**
+     * Checks if there are votes for a given output attribute
+     *
+     * @return the votes for the first output attribute outputAttributeIndex.
+     */
+	boolean hasVotesForAttribute(int outputAttributeIndex);
 		
 
 }

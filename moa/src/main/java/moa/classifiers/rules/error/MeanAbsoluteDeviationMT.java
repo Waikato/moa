@@ -8,18 +8,16 @@ public class MeanAbsoluteDeviationMT extends MultiLabelErrorMeasurement {
 	/**
 	 * 
 	 */
-	private double weightSeen=0;
-	private double sumError=0;
+	private double weightSeen;
+	private double [] sumError;
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void addPrediction(Prediction prediction, MultiLabelInstance inst) {
-		double error=0;
 		int numOutputs=inst.numOutputAttributes();
 		for(int i=0; i<numOutputs;i++)
-			error+=Math.abs(prediction.getVote(i, 0)-inst.valueOutputAttribute(i));
-		
-		sumError+=error/numOutputs*inst.weight();
+			sumError[i]=Math.abs(prediction.getVote(i, 0)-inst.valueOutputAttribute(i))*inst.weight()+fadingErrorFactor*sumError[i];
+		weightSeen=inst.weight()+fadingErrorFactor*weightSeen;
 	}
 
 	@Override
@@ -27,7 +25,18 @@ public class MeanAbsoluteDeviationMT extends MultiLabelErrorMeasurement {
 		if(weightSeen==0)
 			return Double.MAX_VALUE;
 		else
-			return sumError/weightSeen;
+		{
+			double sum=0;
+			int numOutputs=sumError.length;
+			for (int i=0; i<numOutputs; i++)
+				sum+=sumError[i];
+			return sum/(weightSeen*numOutputs);
+		}
+	}
+
+	@Override
+	public double getCurrentError(int index) {
+		return sumError[index]/weightSeen;
 	}
 
 }

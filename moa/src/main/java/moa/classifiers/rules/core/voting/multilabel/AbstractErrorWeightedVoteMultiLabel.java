@@ -26,6 +26,7 @@ import java.util.List;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.AbstractMOAObject;
+import moa.core.DoubleVector;
 
 /**
  * AbstractErrorWeightedVote class for weighted votes based on estimates of errors. 
@@ -39,20 +40,29 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 	 */
 	private static final long serialVersionUID = 1;
 	protected List<Prediction> votes;
-	protected List<Double> errors;
-	protected double[] weights;
-	
-	
+	protected List<double[]> errors;
+	protected double[][] weights;
+	protected int [] outputAttributesCount;
+
+
 
 	public AbstractErrorWeightedVoteMultiLabel() {
 		super();
 		votes = new ArrayList<Prediction>();
-		errors = new ArrayList<Double>();
+		errors = new ArrayList<double[]>();
 	}
 
 
 	@Override
-	public void addVote(Prediction vote, double error) {
+	public void addVote(Prediction vote, double [] error) {
+		int numOutputs=vote.numOutputAttributes();
+		if(outputAttributesCount==null)
+			outputAttributesCount=new int[numOutputs];
+
+		for(int i=0; i<numOutputs; i++)
+			if(vote.hasVotesForAttribute(i))
+				outputAttributesCount[i]++;
+
 		votes.add(vote);
 		errors.add(error);
 	}
@@ -64,26 +74,59 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 	@Override
 	public double getWeightedError()
 	{
-		double weightedError=0;
-		if (weights!=null && weights.length==errors.size())
-		{
-			for (int i=0; i<weights.length; ++i)
-				weightedError+=errors.get(i)*weights[i];
-		}
-		else
-			weightedError=-1;
-		return weightedError;
+		int numOutputs=outputAttributesCount.length;
+		double error=0;
+		double [] errors=getOutputAttributesErrors();
+		
+		for (int i=0; i<numOutputs;i++)
+			error+=errors[i];
+		
+		return error/numOutputs;
+		
 	}
-	
-	
+
+
 	@Override
-	public double [] getWeights() {
+	public double[][] getWeights() {
 		return weights;
 	}
 
 	@Override
 	public int getNumberVotes() {
 		return votes.size();
+	}
+
+
+	@Override
+	public int getNumberVotes(int outputAttribute) {
+		return outputAttributesCount[outputAttribute];
+	}
+
+
+	@Override
+	public double[] getOutputAttributesErrors() {
+		double [] weightedError;
+		if (weights!=null && weights.length==errors.size())
+		{
+			int numOutputs=outputAttributesCount.length;
+			int numVotes=weights.length;
+			weightedError=new double[numOutputs];
+			//For all votes
+			for (int i=0; i<numVotes; ++i){
+				//For each output attribute
+				for (int j=0; j<numOutputs; j++){
+					weightedError[j]+=errors.get(i)[j]*weights[i][j];
+				}
+			}
+			return weightedError;
+		}
+		else
+			//weightedError=-1; 
+			return null;
+	}
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {
+		
 	}
 	
 }

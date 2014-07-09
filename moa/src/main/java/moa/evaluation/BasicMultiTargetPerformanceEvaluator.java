@@ -67,7 +67,7 @@ public class BasicMultiTargetPerformanceEvaluator extends AbstractMOAObject
             this.weightObserved += inst.weight();
             if (prediction != null ) {
             	for (int i = 0; i< numberOutputs;i++){
-            		double err = inst.classValue(i) - prediction.getVote(i,0);
+            		double err = inst.classValue(i) - ((prediction.numOutputAttributes()==0) ? 0.0 : prediction.getVote(i,0));
 	                this.squareError += (err) * (err);
 	                this.averageError += Math.abs(err);
             	}

@@ -20,6 +20,8 @@
 
 package moa.classifiers.rules.core.voting.multilabel;
 
+import java.util.ArrayList;
+
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
@@ -38,33 +40,32 @@ public class UniformWeightedVoteMultiLabel extends AbstractErrorWeightedVoteMult
 	@Override
 	public Prediction computeWeightedVote() {
 		int n=votes.size();
-		weights=new double[n];
+		int numOutputs=outputAttributesCount.length;
+		
+		weights=new double[n][numOutputs];
 		Prediction weightedVote=null;
 		if (n>0){
-			int numOutputs=votes.get(0).numOutputAttributes();
 			weightedVote=new MultiLabelPrediction(numOutputs);
-			//For each vote
-			for (int i=0; i<n; i++)
-			{
-				weights[i]=1.0/n;
+
 				//For each output attribute
 				for (int o=1;o<numOutputs;o++)
 				{
 					int numClasses=votes.get(0).numClasses(o);
+					//For each vote
+					for (int i=0; i<n; i++)
+					{
+						if(votes.get(i).hasVotesForAttribute(o));
+							weights[i][o]=1.0/outputAttributesCount[o];
+						//else takes value 0
+
 					//For each class
 					for(int j=0; j<numClasses; j++){
-						weightedVote.setVote(o, j, weightedVote.getVote(o, j)+votes.get(i).getVote(o, j)*weights[i]);
+						weightedVote.setVote(o, j, weightedVote.getVote(o, j)+votes.get(i).getVote(o, j)*weights[i][o]);
 					}
 				}
 			}
 		}
 		return weightedVote;
-	}
-
-	@Override
-	public void getDescription(StringBuilder sb, int indent) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

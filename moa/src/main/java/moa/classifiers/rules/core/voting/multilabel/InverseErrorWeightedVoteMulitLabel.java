@@ -28,7 +28,7 @@ import com.yahoo.labs.samoa.instances.Prediction;
  * @author João Duarte (jmduarte@inescporto.pt)
  * @version $Revision: 1 $
  */
-public class InverseErrorWeightedVoteMuliLabel extends AbstractErrorWeightedVoteMultiLabel {
+public class InverseErrorWeightedVoteMulitLabel extends AbstractErrorWeightedVoteMultiLabel {
 
 	/**
 	 * 
@@ -38,10 +38,12 @@ public class InverseErrorWeightedVoteMuliLabel extends AbstractErrorWeightedVote
 
 	@Override
 	public Prediction computeWeightedVote() {
+		int numOutputs=outputAttributesCount.length;
+		Prediction weightedVote=new MultiLabelPrediction(numOutputs);
+		//TODO: JD
+		/*
 		int n=votes.size();
 		weights=new double[n];
-		int numOutputs=votes.get(0).numOutputAttributes();
-		Prediction weightedVote=new MultiLabelPrediction(numOutputs);
 		if (n>0){
 			double sumError=0;
 
@@ -89,14 +91,9 @@ public class InverseErrorWeightedVoteMuliLabel extends AbstractErrorWeightedVote
 					}
 				}
 			}
-		}
+		}*/
 		return weightedVote;
 	}
 
-	@Override
-	public void getDescription(StringBuilder sb, int indent) {
-		// TODO Auto-generated method stub
-
-	}
 
 }

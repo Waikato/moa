@@ -20,6 +20,8 @@
 
 package moa.classifiers.rules.core.voting.multilabel;
 
+import java.util.List;
+
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.MOAObject;
@@ -38,7 +40,7 @@ public interface ErrorWeightedVoteMultiLabel {
 	 * @param  vote - a vote returned by a classifier
 	 * @param  error - the error associated to the vote
 	 */
-	public void addVote(Prediction prediction, double error);
+	public void addVote(Prediction prediction, double [] error);
 	
 	/**
 	 * Computes the weighted vote.
@@ -57,12 +59,20 @@ public interface ErrorWeightedVoteMultiLabel {
 	public double getWeightedError();
 	
 	/**
+	 * Returns the weighted error.
+	 * 
+	 * @pre computeWeightedVote()
+	 * @return      the weighted error for each output attribute
+	 */
+	public double[] getOutputAttributesErrors();
+	
+	/**
 	 * Return the weights error.
 	 * 
 	 * @pre computeWeightedVote()
-	 * @return      the weights
+	 * @return      the weights for each output attribute
 	 */
-	public double []  getWeights();
+	public double[][]  getWeights();
 	
 	
 	/**
@@ -71,6 +81,16 @@ public interface ErrorWeightedVoteMultiLabel {
 	 * @return      the number of votes
 	 */
 	public int getNumberVotes();
+	
+	
+	/**
+	 * The number of votes for a given output attribute.
+	 * 
+	 * @param outputAttribute the index of the output attribute
+	 * 
+	 * @return      the number of votes
+	 */
+	public int getNumberVotes(int outputAttribute);
 	
 	/**
 	 * Creates a copy of the object

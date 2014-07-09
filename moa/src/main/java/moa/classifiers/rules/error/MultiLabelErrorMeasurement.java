@@ -27,6 +27,8 @@ public abstract class MultiLabelErrorMeasurement extends AbstractMOAObject{
 	
 	abstract public double getCurrentError();
 	
+	abstract public double getCurrentError(int index);
+	
 	public MultiLabelErrorMeasurement(){
 		fadingErrorFactor=fadingErrorFactorOption.getValue();
 	}
