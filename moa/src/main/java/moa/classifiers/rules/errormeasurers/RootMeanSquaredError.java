@@ -1,4 +1,4 @@
-package moa.classifiers.rules.error;
+package moa.classifiers.rules.errormeasurers;
 
 import com.yahoo.labs.samoa.instances.SingleLabelInstance;
 

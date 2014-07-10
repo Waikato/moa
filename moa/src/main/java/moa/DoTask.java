@@ -23,14 +23,15 @@ import moa.core.Globals;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.core.TimingUtils;
+import moa.core.WekaUtils;
 import moa.options.ClassOption;
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.IntOption;
-import com.github.javacliparser.Option;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
-import moa.core.WekaUtils;
+
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.Option;
 
 /**
  * Class for running a MOA task from the command line.

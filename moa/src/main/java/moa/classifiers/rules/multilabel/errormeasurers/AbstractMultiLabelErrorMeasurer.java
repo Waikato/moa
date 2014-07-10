@@ -1,16 +1,14 @@
-package moa.classifiers.rules.error;
+package moa.classifiers.rules.multilabel.errormeasurers;
 
-import java.util.List;
+import moa.core.ObjectRepository;
+import moa.options.AbstractOptionHandler;
+import moa.tasks.TaskMonitor;
 
 import com.github.javacliparser.FloatOption;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
-import moa.AbstractMOAObject;
-
-public abstract class MultiLabelErrorMeasurement extends AbstractMOAObject{
+public abstract class AbstractMultiLabelErrorMeasurer extends AbstractOptionHandler{
 
 	/**
 	 * 
@@ -18,10 +16,16 @@ public abstract class MultiLabelErrorMeasurement extends AbstractMOAObject{
 	private static final long serialVersionUID = 1L;
 	
 	public FloatOption fadingErrorFactorOption = new FloatOption(
-			"fadingErrorFactor", 'e', 
+			"fadingErrorFactor", 'f', 
 			"Fading factor for the error", 0.99, 0, 1);
 	
 	protected double fadingErrorFactor;
+	
+	abstract public void addPrediction(Prediction prediction, Prediction trueClass, double weight);
+	
+	public void addPrediction(Prediction prediction, Prediction trueClass){
+		addPrediction(prediction, trueClass);
+	}
 	
 	abstract public void addPrediction(Prediction prediction, MultiLabelInstance inst);
 	
@@ -29,12 +33,17 @@ public abstract class MultiLabelErrorMeasurement extends AbstractMOAObject{
 	
 	abstract public double getCurrentError(int index);
 	
-	public MultiLabelErrorMeasurement(){
+	public AbstractMultiLabelErrorMeasurer() {
 		fadingErrorFactor=fadingErrorFactorOption.getValue();
 	}
 	
 	@Override
 	public void getDescription(StringBuilder sb, int indent) {
+		
+	}
+	@Override
+	protected void prepareForUseImpl(TaskMonitor monitor,
+			ObjectRepository repository) {
 		
 	}
 

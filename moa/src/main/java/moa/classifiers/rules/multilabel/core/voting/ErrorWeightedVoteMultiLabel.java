@@ -18,7 +18,7 @@
  *    
  */
 
-package moa.classifiers.rules.core.voting.multilabel;
+package moa.classifiers.rules.multilabel.core.voting;
 
 import java.util.List;
 

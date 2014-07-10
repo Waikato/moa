@@ -15,7 +15,7 @@ public class AnomalinessScore extends AbstractAnomalyDetector {
 
 
 	@Override
-	public boolean updateAndCheck(MultiLabelInstance instance) {
+	public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance) {
 		
 		
 		// TODO JD

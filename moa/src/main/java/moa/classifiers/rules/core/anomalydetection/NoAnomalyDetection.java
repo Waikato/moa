@@ -17,7 +17,7 @@ public class NoAnomalyDetection extends AbstractAnomalyDetector{
 	}
 
 	@Override
-	public boolean updateAndCheck(MultiLabelInstance instance) {
+	public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance) {
 		return false;
 	}
 

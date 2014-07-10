@@ -1,4 +1,4 @@
-package moa.classifiers.rules.core.multilabel;
+package moa.classifiers.rules.multilabel.core;
 
 import com.yahoo.labs.samoa.instances.Instance;
 

@@ -1,4 +1,4 @@
-package moa.classifiers.rules.core.multilabel;
+package moa.classifiers.rules.multilabel.core;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -55,11 +55,11 @@ public class MultiLabelRule extends AbstractMOAObject {
 	}
 
 	public boolean updateChangeDetection(MultiLabelInstance instance) {
-		return this.learningLiteral.updateChangeDetection(instance);
+		return this.learningLiteral.updateAndCheckChange(instance);
 	}
 
 	public boolean updateAnomalyDetection(MultiLabelInstance instance) {
-		return this.learningLiteral.updateAnomalyDetection(instance);
+		return this.learningLiteral.updateAndCheckAnomalyDetection(instance);
 	}
 
 	public void trainOnInstance(MultiLabelInstance instance) {

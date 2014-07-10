@@ -17,7 +17,7 @@
  *    
  *    
  */
-package moa.classifiers.rules.core.voting.multilabel;
+package moa.classifiers.rules.multilabel.core.voting;
 
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;

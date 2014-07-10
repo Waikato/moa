@@ -18,7 +18,7 @@ public interface AnomalyDetector extends OptionHandler {
      *
      * @return true if anomaly is detected and false otherwise
      */
-    public boolean updateAndCheck(MultiLabelInstance instance);
+    public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance);
 
     
     @Override

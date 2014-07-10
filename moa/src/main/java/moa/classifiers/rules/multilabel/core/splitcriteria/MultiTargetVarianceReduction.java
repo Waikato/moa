@@ -1,4 +1,4 @@
-package moa.classifiers.rules.core.splitcriteria.multilabel;
+package moa.classifiers.rules.multilabel.core.splitcriteria;
 
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;

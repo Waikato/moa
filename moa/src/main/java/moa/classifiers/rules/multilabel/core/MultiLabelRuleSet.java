@@ -17,11 +17,11 @@
  *    
  *    
  */
-package moa.classifiers.rules.core.multilabel;
+package moa.classifiers.rules.multilabel.core;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
-public class MultiLabelRuleSet extends ArrayList<MultiLabelRule> {
+public class MultiLabelRuleSet extends LinkedList<MultiLabelRule> {
 
 	private static final long serialVersionUID = 1L;
 	

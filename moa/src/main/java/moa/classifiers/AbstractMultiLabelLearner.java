@@ -12,6 +12,7 @@ import com.github.javacliparser.Options;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 public abstract class AbstractMultiLabelLearner extends AbstractClassifier implements MultiLabelLearner {
@@ -23,10 +24,27 @@ public abstract class AbstractMultiLabelLearner extends AbstractClassifier imple
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public abstract void  trainOnInstanceImpl(MultiLabelInstance instance);
+	abstract public void  trainOnInstanceImpl(MultiLabelInstance instance);
 	
 	public void  trainOnInstanceImpl(Instance instance){
-		this.trainOnInstanceImpl((MultiLabelInstance)instance);
+		trainOnInstanceImpl((MultiLabelInstance)instance);
+	}
+	
+	
+    public Prediction getPredictionForInstance(Example<Instance> example){
+		return getPredictionForInstance(example.getData());
+	}
+
+    @Override
+    public Prediction getPredictionForInstance(Instance inst){
+    	return getPredictionForInstance((MultiLabelInstance) inst);
+    }
+    
+    abstract public Prediction getPredictionForInstance(MultiLabelInstance inst);
+    
+	@Override
+	public double[] getVotesForInstance(Instance inst) {
+		return getPredictionForInstance(inst).getVotes();
 	}
 
 }

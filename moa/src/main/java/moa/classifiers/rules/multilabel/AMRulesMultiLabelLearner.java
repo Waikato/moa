@@ -18,7 +18,7 @@
  *    
  */
 
-package moa.classifiers.rules;
+package moa.classifiers.rules.multilabel;
 /**
  * Adaptive Model Rules for MultiLabel problems(AMRulesML), the streaming rule learning algorithm.
  * 
@@ -31,6 +31,24 @@ package moa.classifiers.rules;
  * 
  **/
 
+import java.util.Iterator;
+
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.AbstractMultiLabelLearner;
+import moa.classifiers.MultiLabelLearner;
+import moa.classifiers.core.driftdetection.ChangeDetector;
+import moa.classifiers.rules.core.Rule.Builder;
+import moa.classifiers.rules.core.RuleActiveLearningNode;
+import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
+import moa.classifiers.rules.core.attributeclassobservers.FIMTDDNumericAttributeClassLimitObserver;
+import moa.classifiers.rules.multilabel.core.MultiLabelRule;
+import moa.classifiers.rules.multilabel.core.MultiLabelRuleSet;
+import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
+import moa.classifiers.rules.multilabel.core.voting.MultiLabelVote;
+import moa.core.Measurement;
+import moa.core.StringUtils;
+import moa.options.ClassOption;
+
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
@@ -38,29 +56,8 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
-import java.util.Arrays;
-import java.util.Iterator;
 
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.MultiLabelLearner;
-import moa.classifiers.core.driftdetection.ChangeDetector;
-import moa.classifiers.rules.core.Rule;
-import moa.classifiers.rules.core.RuleActiveLearningNode;
-import moa.classifiers.rules.core.RuleSet;
-import moa.classifiers.rules.core.Rule.Builder;
-import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
-import moa.classifiers.rules.core.attributeclassobservers.FIMTDDNumericAttributeClassLimitObserver;
-import moa.classifiers.rules.core.multilabel.MultiLabelRule;
-import moa.classifiers.rules.core.multilabel.MultiLabelRuleSet;
-import moa.classifiers.rules.core.voting.ErrorWeightedVote;
-import moa.classifiers.rules.core.voting.multilabel.ErrorWeightedVoteMultiLabel;
-import moa.classifiers.rules.core.voting.multilabel.MultiLabelVote;
-import moa.core.Measurement;
-import moa.core.StringUtils;
-import moa.options.ClassOption;
-
-
-public abstract class AMRulesMultiLabelLearner extends AbstractClassifier implements MultiLabelLearner{
+public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner implements MultiLabelLearner{
 
 	private static final long serialVersionUID = 1L;
 	protected MultiLabelRuleSet ruleSet = new MultiLabelRuleSet();
@@ -160,18 +157,57 @@ public abstract class AMRulesMultiLabelLearner extends AbstractClassifier implem
 		this.attributesPercentage=attributesPercentage;
 	}
 
+	
+	@Override
+	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
+		return getVotes(inst).getVote();
+	}
+
 	/**
-	 * description of the Methods used.
-	 * isRandomizable
-	 * resetLearningImpl
-	 * newRule // to build an object with the parameters.
-	 * trainOnInstanceImpl
-	 * isAnomaly
-	 * getVotesForInstance
-	 * getModelMeasurementsImpl
-	 * getModelDescription // to printout to MOA GUI
-	 * debug // use debug('string') to printout to console
+	 * getVotes extension of the instance method getVotesForInstance 
+	 * in moa.classifier.java
+	 * returns the prediction of the instance.
+	 * Called in WeightedRandomRules
 	 */
+	public MultiLabelVote getVotes(MultiLabelInstance instance) {
+		ErrorWeightedVoteMultiLabel errorWeightedVote=newErrorWeightedVote();
+		//DoubleVector combinedVote = new DoubleVector();
+		debug("Test",3);    
+		int numberOfRulesCovering = 0;
+
+		VerboseToConsole(instance); // Verbose to console Dataset name.
+		for (MultiLabelRule rule : ruleSet) {
+			if (rule.isCovering(instance) == true){
+				numberOfRulesCovering++;
+				//DoubleVector vote = new DoubleVector(rule.getPrediction(instance));
+				Prediction vote=rule.getPredictionForInstance(instance);
+				double [] errors= rule.getCurrentErrors();
+				debug("Rule No"+ rule.getRuleNumberID() + " Vote: " + vote.toString() + " Error: " + errors + " Y: " + instance.classValue(),3); //predictionValueForThisRule);
+				errorWeightedVote.addVote(vote,errors);
+				//combinedVote.addValues(vote);
+				if (!this.unorderedRulesOption.isSet()) { // Ordered Rules Option.
+					break; // Only one rule cover the instance.
+				}
+			}
+		}
+
+		if (numberOfRulesCovering == 0) {
+			//combinedVote = new DoubleVector(defaultRule.getPrediction(instance));
+			Prediction vote=defaultRule.getPredictionForInstance(instance);
+			double [] errors= defaultRule.getCurrentErrors();
+			errorWeightedVote.addVote(vote,errors);
+			
+			debug("Default Rule Vote " + vote.toString() + "\n Error " + errors + "  Y: " + instance,3);
+		} 	
+		Prediction weightedVote=errorWeightedVote.computeWeightedVote();
+		double weightedError=errorWeightedVote.getWeightedError();
+		
+		debug("Weighted Rule - Vote: " + weightedVote.toString() + " Weighted Error: " + weightedError + " Y:" + instance.classValue(),3);
+		
+		//return new MultiLabelVote(weightedVote, weightedError); //TODO: return MultiLabelVote
+		return null;
+	}
+	
 	@Override
 	public abstract boolean isRandomizable();
 
@@ -301,16 +337,6 @@ public abstract class AMRulesMultiLabelLearner extends AbstractClassifier implem
 		return isAnomaly;
 	}*/
 
-	/**
-	 * getVotesForInstance extension of the instance method getVotesForInstance 
-	 * in moa.classifier.java
-	 * returns the prediction of the instance.
-	 * Called in EvaluateModelRegression
-	 */
-	@Override
-	public double[] getVotesForInstance(Instance instance) {
-		return getPredictionForInstance(instance).getVotes();
-	}
 
 	/**
 	 * print GUI evaluate model	
@@ -402,60 +428,11 @@ public abstract class AMRulesMultiLabelLearner extends AbstractClassifier implem
 	abstract public ErrorWeightedVoteMultiLabel newErrorWeightedVote(); 
 
 	
-	/**
-	 * getVotes extension of the instance method getVotesForInstance 
-	 * in moa.classifier.java
-	 * returns the prediction of the instance.
-	 * Called in WeightedRandomRules
-	 */
-	public MultiLabelVote getVotes(MultiLabelInstance instance) {
-		ErrorWeightedVoteMultiLabel errorWeightedVote=newErrorWeightedVote();
-		//DoubleVector combinedVote = new DoubleVector();
-		debug("Test",3);    
-		int numberOfRulesCovering = 0;
-
-		VerboseToConsole(instance); // Verbose to console Dataset name.
-		for (MultiLabelRule rule : ruleSet) {
-			if (rule.isCovering(instance) == true){
-				numberOfRulesCovering++;
-				//DoubleVector vote = new DoubleVector(rule.getPrediction(instance));
-				Prediction vote=rule.getPredictionForInstance(instance);
-				double [] errors= rule.getCurrentErrors();
-				debug("Rule No"+ rule.getRuleNumberID() + " Vote: " + vote.toString() + " Error: " + errors + " Y: " + instance.classValue(),3); //predictionValueForThisRule);
-				errorWeightedVote.addVote(vote,errors);
-				//combinedVote.addValues(vote);
-				if (!this.unorderedRulesOption.isSet()) { // Ordered Rules Option.
-					break; // Only one rule cover the instance.
-				}
-			}
-		}
-
-		if (numberOfRulesCovering == 0) {
-			//combinedVote = new DoubleVector(defaultRule.getPrediction(instance));
-			Prediction vote=defaultRule.getPredictionForInstance(instance);
-			double [] errors= defaultRule.getCurrentErrors();
-			errorWeightedVote.addVote(vote,errors);
-			
-			debug("Default Rule Vote " + vote.toString() + "\n Error " + errors + "  Y: " + instance,3);
-		} 	
-		Prediction weightedVote=errorWeightedVote.computeWeightedVote();
-		double weightedError=errorWeightedVote.getWeightedError();
-		
-		debug("Weighted Rule - Vote: " + weightedVote.toString() + " Weighted Error: " + weightedError + " Y:" + instance.classValue(),3);
-		
-		//return new MultiLabelVote(weightedVote, weightedError); //TODO: return MultiLabelVote
-		return null;
-	}
+	
 	
 	public void setRandomSeed(int randomSeed){
-		//this.randomSeed=randomSeed;
 		this.classifierRandom.setSeed(randomSeed);
 	}
-	
-	//public int getRandomSeed(){
-		//return this.randomSeed;
-	//}
-	
 
 
 }

@@ -47,15 +47,7 @@ public class MultiTargetNoChange extends AbstractMultiLabelLearner implements Mu
         this.lastSeenClasses = prediction;
     	
     }
-
-    public Prediction getPredictionForInstance(Instance i) {
-        return (lastSeenClasses!=null) ? this.lastSeenClasses : new MultiLabelPrediction();
-    }
-    
-    public double[] getVotesForInstance(Instance i) {
-        return this.getPredictionForInstance(i).getVotes(0);
-    }
-    
+   
     
 
     @Override
@@ -71,5 +63,10 @@ public class MultiTargetNoChange extends AbstractMultiLabelLearner implements Mu
     public boolean isRandomizable() {
         return false;
     }
+
+	@Override
+	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
+		return (lastSeenClasses!=null) ? this.lastSeenClasses : new MultiLabelPrediction();
+	}
 
 }
