@@ -97,8 +97,7 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 
 	@Override
 	protected Measurement[] getModelMeasurementsImpl() {
-		return new Measurement[]{
-				new Measurement("perceptron (number)", this.ensemble.length)}; // AC rules + default rule
+		return ensemble[0].getModelMeasurements(); //TODO: JD - get measurements for all outputs
 	}
 
 

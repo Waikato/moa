@@ -24,5 +24,6 @@ import com.yahoo.labs.samoa.instances.Instance;
 public interface Predicate {
 	
 	 public boolean evaluate(Instance instance);
+	 public void negateCondition();
 	 
 }

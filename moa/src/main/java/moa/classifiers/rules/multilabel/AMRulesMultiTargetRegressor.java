@@ -1,11 +1,18 @@
 package moa.classifiers.rules.multilabel;
 
+import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.rules.core.Rule.Builder;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
+import moa.classifiers.rules.core.attributeclassobservers.FIMTDDNumericAttributeClassLimitObserver;
 import moa.classifiers.rules.core.RuleActiveLearningNode;
+import moa.classifiers.rules.multilabel.core.MultiLabelRule;
+import moa.classifiers.rules.multilabel.core.MultiLabelRuleRegression;
+import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
+import moa.classifiers.rules.multilabel.errormeasurers.AbstractMultiTargetErrorMeasurer;
+import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.options.ClassOption;
 
 import com.yahoo.labs.samoa.instances.Instance;
@@ -19,32 +26,36 @@ public class AMRulesMultiTargetRegressor extends AMRulesMultiLabelLearner implem
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	public  AMRulesMultiTargetRegressor(){
+		splitCriterionOption = new ClassOption("splitCriterionOption", 's',
+				"Split criterion used to assess the merit of a split", MultiLabelSplitCriterion.class, "MultiTargetVarianceRatio") ;
 
+		 weightedVoteOption = new ClassOption("weightedVoteOption",
+					'w', "Weighted vote type", 
+					ErrorWeightedVoteMultiLabel.class,
+					"UniformWeightedVoteMultiLabel");
+		 
+		 learnerOption = new ClassOption("learnerOption",
+					'L', "Learner", 
+					MultiLabelLearner.class,
+					"moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor");
+		 
+		 errorMeasurerOption = new ClassOption("errorMeasurer", 'e',
+					"Measure of error for deciding which learner should predict.", MultiLabelErrorMeasurer.class, "MeanAbsoluteDeviationMT") ;
 
-	@Override
-	public RuleActiveLearningNode newRuleActiveLearningNode(Builder builder) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public RuleActiveLearningNode newRuleActiveLearningNode(
-			double[] initialClassObservations) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ErrorWeightedVoteMultiLabel newErrorWeightedVote() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 	@Override
-	public boolean isRandomizable() {
-		// TODO Auto-generated method stub
-		return false;
+	public ErrorWeightedVoteMultiLabel newErrorWeightedVote(){
+		return (ErrorWeightedVoteMultiLabel)((ErrorWeightedVoteMultiLabel) getPreparedClassOption(weightedVoteOption)).copy();
+		
+	}
+
+	@Override
+	protected MultiLabelRule newDefaultRule() {
+		return new MultiLabelRuleRegression(1);
 	}
 
 
+	
 }

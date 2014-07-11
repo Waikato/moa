@@ -43,7 +43,7 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 
 	public FloatOption learningRatioOption = new FloatOption(
 			"learningRatio", 'l', 
-			"Constante Learning Ratio to use for training the Perceptrons in the leaves.", 0.01);
+			"Constante Learning Ratio to use for training the Perceptrons in the leaves.", 0.025);
 	
 	public FloatOption learningRateDecayOption = new FloatOption(
 			"learningRateDecay", 'm', 

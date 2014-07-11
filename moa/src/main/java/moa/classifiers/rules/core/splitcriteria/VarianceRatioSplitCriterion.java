@@ -21,6 +21,7 @@ public class VarianceRatioSplitCriterion extends AbstractOptionHandler implement
 		for(int i = 0; i < postSplitDists.length; i++)
 		{
 			double Ni = postSplitDists[i][0];
+			//SDR[i] = Ni/N*VarianceReductionSplitCriterion.computeSD(postSplitDists[i]);
 			SDR[i] = VarianceReductionSplitCriterion.computeSD(postSplitDists[i]);
 		}
 		return SDR;
@@ -29,7 +30,7 @@ public class VarianceRatioSplitCriterion extends AbstractOptionHandler implement
 	
 	@Override
 	public double getMeritOfSplit(double[] preSplitDist, double[][] postSplitDists) {
-		 double SDR=0.0;
+
 	    	double N = preSplitDist[0];
 	    	int count = 0; 
 	    	
@@ -42,16 +43,20 @@ public class VarianceRatioSplitCriterion extends AbstractOptionHandler implement
 	    	}
 	    	
 	    	if(count == postSplitDists.length){
-	    		SDR = VarianceReductionSplitCriterion.computeSD(preSplitDist);
+	    		double SDR = VarianceReductionSplitCriterion.computeSD(preSplitDist);
 	    		double sumPostSDR=0;
 	    		for(int i = 0; i < postSplitDists.length; i++)
 	        	{
 	        		double Ni = postSplitDists[i][0];
 	        		sumPostSDR += (Ni/N)*VarianceReductionSplitCriterion.computeSD(postSplitDists[i]);
+	        		//sumPostSDR += VarianceReductionSplitCriterion.computeSD(postSplitDists[i]);
 	        	}
-	    		SDR=1-sumPostSDR/SDR;
+	    		//SDR=1-(sumPostSDR)/SDR;
+	    		return (1-(sumPostSDR/postSplitDists.length)/SDR);
 	    	}
-	    	return SDR;
+	    	else
+	    		return Double.MIN_VALUE;
+	    	
 	}
 
 	@Override

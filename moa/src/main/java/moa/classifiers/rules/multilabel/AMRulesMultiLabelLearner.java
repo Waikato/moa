@@ -33,18 +33,22 @@ package moa.classifiers.rules.multilabel;
 
 import java.util.Iterator;
 
-import moa.classifiers.AbstractClassifier;
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiLabelLearner;
+import moa.classifiers.core.attributeclassobservers.NumericAttributeClassObserver;
 import moa.classifiers.core.driftdetection.ChangeDetector;
-import moa.classifiers.rules.core.Rule.Builder;
-import moa.classifiers.rules.core.RuleActiveLearningNode;
+import moa.classifiers.core.driftdetection.PageHinkleyDM;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
 import moa.classifiers.rules.core.attributeclassobservers.FIMTDDNumericAttributeClassLimitObserver;
+import moa.classifiers.rules.errormeasurers.ErrorMeasurement;
+import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.rules.multilabel.core.MultiLabelRule;
 import moa.classifiers.rules.multilabel.core.MultiLabelRuleSet;
+import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
 import moa.classifiers.rules.multilabel.core.voting.MultiLabelVote;
+import moa.classifiers.rules.multilabel.errormeasurers.AbstractMultiTargetErrorMeasurer;
+import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
@@ -52,7 +56,6 @@ import moa.options.ClassOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
@@ -76,6 +79,12 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	public IntOption gracePeriodOption = new IntOption("gracePeriod",
 			'g', "Hoeffding Bound Parameter. The number of instances a leaf should observe between split attempts.",
 			200, 1, Integer.MAX_VALUE);
+
+	public ClassOption learnerOption;
+
+	public FlagOption unorderedRulesOption = new FlagOption("setUnorderedRulesOn", 'U',
+			"unorderedRules.");
+
 	/*
 	public FlagOption DriftDetectionOption = new FlagOption("DoNotDetectChanges", 'H',
 			"Drift Detection. Page-Hinkley.");
@@ -89,13 +98,15 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			'l',
 			"The threshold value (Lambda) to be used in the Page Hinckley change detection tests.",
 			35, 0, Integer.MAX_VALUE);
-	*/
+	 */
 	public ClassOption changeDetector = new ClassOption("changeDetector",
 			'H', "Change Detector.", 
 			ChangeDetector.class,
-			"moa.classifiers.rules.core.changedetection.NoChangeDetection");
-	
-	
+			"PageHinkleyDM");
+			//"moa.classifiers.rules.core.changedetection.NoChangeDetection");
+
+
+
 	/*public FlagOption noAnomalyDetectionOption = new FlagOption("noAnomalyDetection", 'A',
 			"Disable anomaly Detection.");
 	public FloatOption multivariateAnomalyProbabilityThresholdOption = new FloatOption(
@@ -113,32 +124,35 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			'n',
 			"The threshold value of anomalies to be used in the anomaly detection.",
 			30, 0, Integer.MAX_VALUE);
-			*/
-	
+	 */
+
 	public ClassOption anomalyDetector = new ClassOption("anomalyDetector",
 			'A', "Anomaly Detector.", 
 			AnomalyDetector.class,
 			"moa.classifiers.rules.core.anomalydetection.NoAnomalyDetection");
-	
-	
-	public FlagOption unorderedRulesOption = new FlagOption("setUnorderedRulesOn", 'U',
-			"unorderedRules.");
+
+	public ClassOption splitCriterionOption;
+
+	public ClassOption errorMeasurerOption;
+
+	public ClassOption weightedVoteOption;
+
 
 
 	public ClassOption numericObserverOption = new ClassOption("numericObserver",
 			'z', "Numeric observer.", 
-			FIMTDDNumericAttributeClassLimitObserver.class,
-			"FIMTDDNumericAttributeClassLimitObserver");
-	
+			NumericStatisticsObserver.class,
+			"MultiLabelBSTree");
+
 	public IntOption VerbosityOption = new IntOption(
 			"verbosity",
 			'v',
 			"Output Verbosity Control Level. 1 (Less) to 5 (More)",
 			1, 1, 5);
-	
+
 
 	protected double attributesPercentage;
-	
+
 	public double getAttributesPercentage() {
 		return attributesPercentage;
 	}
@@ -151,16 +165,20 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		super();
 		attributesPercentage=100;
 	}
-	
+
 	public AMRulesMultiLabelLearner(double attributesPercentage) {
 		this();
 		this.attributesPercentage=attributesPercentage;
 	}
 
-	
+
 	@Override
 	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
-		return getVotes(inst).getVote();
+		MultiLabelVote vote=getVotes(inst);
+		if(vote!=null)	
+			return vote.getVote();
+		else
+			return null;
 	}
 
 	/**
@@ -181,35 +199,42 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 				numberOfRulesCovering++;
 				//DoubleVector vote = new DoubleVector(rule.getPrediction(instance));
 				Prediction vote=rule.getPredictionForInstance(instance);
-				double [] errors= rule.getCurrentErrors();
-				debug("Rule No"+ rule.getRuleNumberID() + " Vote: " + vote.toString() + " Error: " + errors + " Y: " + instance.classValue(),3); //predictionValueForThisRule);
-				errorWeightedVote.addVote(vote,errors);
+				if (vote!=null){ //should only happen for first instance
+					double [] errors= rule.getCurrentErrors();
+					debug("Rule No"+ rule.getRuleNumberID() + " Vote: " + vote.toString() + " Error: " + errors + " Y: " + instance.classValue(),3); //predictionValueForThisRule);
+					errorWeightedVote.addVote(vote,errors);
+				}
 				//combinedVote.addValues(vote);
-				if (!this.unorderedRulesOption.isSet()) { // Ordered Rules Option.
+				if (!this.unorderedRulesOption.isSet()) { // Ordered Rules Option. //TODO: Only break if all outputs have values assigned.Complete Prediction only with the missing values
 					break; // Only one rule cover the instance.
 				}
 			}
 		}
 
-		if (numberOfRulesCovering == 0) {
+		if (numberOfRulesCovering == 0) { //TODO: Change to "if all outputs have a value assigned. Complete Prediction only with the missing values
 			//combinedVote = new DoubleVector(defaultRule.getPrediction(instance));
 			Prediction vote=defaultRule.getPredictionForInstance(instance);
-			double [] errors= defaultRule.getCurrentErrors();
-			errorWeightedVote.addVote(vote,errors);
-			
-			debug("Default Rule Vote " + vote.toString() + "\n Error " + errors + "  Y: " + instance,3);
+			if (vote!=null){ //should only happen for first instance
+				double [] errors= defaultRule.getCurrentErrors();
+				errorWeightedVote.addVote(vote,errors);
+				debug("Default Rule Vote " + vote.toString() + "\n Error " + errors + "  Y: " + instance,3);
+			}
 		} 	
 		Prediction weightedVote=errorWeightedVote.computeWeightedVote();
-		double weightedError=errorWeightedVote.getWeightedError();
-		
-		debug("Weighted Rule - Vote: " + weightedVote.toString() + " Weighted Error: " + weightedError + " Y:" + instance.classValue(),3);
-		
-		//return new MultiLabelVote(weightedVote, weightedError); //TODO: return MultiLabelVote
-		return null;
+		if(weightedVote!=null){
+			double weightedError=errorWeightedVote.getWeightedError();
+			debug("Weighted Rule - Vote: " + weightedVote.toString() + " Weighted Error: " + weightedError + " Y:" + instance.classValue(),3);
+			return new MultiLabelVote(weightedVote, weightedError);
+		}
+		else 
+			return new MultiLabelVote(null , Double.MAX_VALUE);
+
 	}
-	
+
 	@Override
-	public abstract boolean isRandomizable();
+	public boolean isRandomizable(){
+		return true;
+	}
 
 
 
@@ -264,21 +289,21 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			MultiLabelRule rule = ruleIterator.next();
 			if (rule.isCovering(instance) == true) {
 				rulesCoveringInstance = true;
-				if (rule.updateAnomalyDetection(instance) == false) {
-					if (rule.updateChangeDetection(instance) == true) {
+				if (!rule.updateAnomalyDetection(instance)) {
+					if (rule.updateChangeDetection(instance)) {
 						debug("I) Drift Detected. Exa. : " +  this.numInstances + " (" + rule.getWeightSeenSinceExpansion() +") Remove Rule: " +rule.getRuleNumberID(),1);
-
 						ruleIterator.remove();
 						this.numChangesDetected+=instance.weight();  //Just for statistics 
 					} else {
 						rule.trainOnInstance(instance);
 						if (rule.getWeightSeenSinceExpansion()  % this.gracePeriodOption.getValue() == 0.0) {
-							/*if (rule.tryToExpand(this.splitConfidenceOption.getValue(), this.tieThresholdOption.getValue()) ) 
+							if (rule.tryToExpand(this.splitConfidenceOption.getValue(), this.tieThresholdOption.getValue()) ) 
 							{
-								rule.split();
+								setRuleOptions(rule);
+								//rule.split();
 								debug("Rule Expanded:",2);
 								debug(rule.toString(),2);
-							}	*/
+							}	
 						}
 					}
 					if (!this.unorderedRulesOption.isSet()) 
@@ -296,21 +321,28 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			defaultRule.trainOnInstance(instance);
 			if (defaultRule.getWeightSeenSinceExpansion() % this.gracePeriodOption.getValue() == 0.0) {
 				debug("Nr. examples "+defaultRule.getWeightSeenSinceExpansion(), 4);
-/*
+
 				if (defaultRule.tryToExpand(this.splitConfidenceOption.getValue(), this.tieThresholdOption.getValue()) == true) {
-					Rule newDefaultRule=newRule(defaultRule.getRuleNumberID(),defaultRule.getLearningNode(),defaultRule.getLearningNode().getStatisticsOtherBranchSplit()); //other branch
-					defaultRule.split();
-					defaultRule.setRuleNumberID(++ruleNumberID);
-					this.ruleSet.add(this.defaultRule);
+					//Rule newDefaultRule=newRule(defaultRule.getRuleNumberID(),defaultRule.getLearningNode(),defaultRule.getLearningNode().getStatisticsOtherBranchSplit()); //other branch
+					//defaultRule.split();
+					//create new default rule
+					MultiLabelRule newDefaultRule=defaultRule.getNewRuleFromOtherBranch();
+					newDefaultRule.setRuleNumberID(++ruleNumberID);
+					setRuleOptions(newDefaultRule);
+					
+					//Add expanded rule to ruleset
+					setRuleOptions(defaultRule);
+					ruleSet.add(this.defaultRule);
+					
 
 					debug("Default rule expanded! New Rule:",2);
 					debug(defaultRule.toString(),2);
 					debug("New default rule:", 3);	
-					debug(newDefaultRule.printRule(),3);
-					defaultRule=newDefaultRule();
+					debug(newDefaultRule.toString(),3);
+					defaultRule=newDefaultRule;
 
 				}
-				*/
+
 			}
 		}
 	}
@@ -338,6 +370,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	}*/
 
 
+
 	/**
 	 * print GUI evaluate model	
 	 */
@@ -362,7 +395,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			StringUtils.appendIndented(out, indent, "Method Unordered");
 			StringUtils.appendNewline(out);
 		}
-	/*	if(this.DriftDetectionOption.isSet()){
+		/*	if(this.DriftDetectionOption.isSet()){
 			StringUtils.appendIndented(out, indent, "Change Detection OFF");
 			StringUtils.appendNewline(out);
 		}else{
@@ -413,23 +446,35 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		debug(this.defaultRule.toString(),2);
 	}
 
-	abstract public RuleActiveLearningNode newRuleActiveLearningNode(Builder builder);
+	//	abstract public RuleActiveLearningNode newRuleActiveLearningNode(Builder builder);
 
-	abstract public RuleActiveLearningNode newRuleActiveLearningNode(double[] initialClassObservations);
+	//	abstract public RuleActiveLearningNode newRuleActiveLearningNode(double[] initialClassObservations);
 
 
 
 	@Override
 	public void resetLearningImpl() {
-		
-
+		defaultRule=newDefaultRule();
+		defaultRule.setLearner((MultiLabelLearner)((MultiLabelLearner)getPreparedClassOption(learnerOption)).copy());
+		setRuleOptions(defaultRule);
 	}
 	
+
+	protected void setRuleOptions(MultiLabelRule rule){
+		rule.setSplitCriterion((MultiLabelSplitCriterion)((MultiLabelSplitCriterion)getPreparedClassOption(splitCriterionOption)).copy());
+		rule.setChangeDetector((ChangeDetector)((ChangeDetector)getPreparedClassOption(changeDetector)).copy());
+		rule.setAnomalyDetector((AnomalyDetector)((AnomalyDetector)getPreparedClassOption(anomalyDetector)).copy());
+		rule.setNumericObserverOption((NumericStatisticsObserver)((NumericStatisticsObserver)getPreparedClassOption(numericObserverOption)).copy());
+		rule.setErrorMeasurer((MultiLabelErrorMeasurer)((MultiLabelErrorMeasurer)getPreparedClassOption(errorMeasurerOption)).copy());
+		
+	}
+
+	abstract protected MultiLabelRule newDefaultRule();
+
 	abstract public ErrorWeightedVoteMultiLabel newErrorWeightedVote(); 
 
-	
-	
-	
+
+
 	public void setRandomSeed(int randomSeed){
 		this.classifierRandom.setSeed(randomSeed);
 	}

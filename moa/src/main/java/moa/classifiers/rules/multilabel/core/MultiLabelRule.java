@@ -7,6 +7,18 @@ import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.AbstractMOAObject;
+import moa.classifiers.MultiLabelLearner;
+import moa.classifiers.core.attributeclassobservers.NumericAttributeClassObserver;
+import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
+import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
+import moa.classifiers.core.driftdetection.ChangeDetector;
+import moa.classifiers.rules.core.RuleActiveLearningNode;
+import moa.classifiers.rules.core.RuleSplitNode;
+import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
+import moa.classifiers.rules.core.conditionaltests.NumericAttributeBinaryRulePredicate;
+import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
+import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
+import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 
 
 public class MultiLabelRule extends AbstractMOAObject {
@@ -19,11 +31,25 @@ public class MultiLabelRule extends AbstractMOAObject {
 	protected List<Literal> literalList = new LinkedList<Literal>();
 
 	protected LearningLiteral learningLiteral;
-	protected boolean [] outputsCoveredMask;
 	
 
 	protected int ruleNumberID;
 	
+	protected MultiLabelRule otherBranchRule;
+	
+	public MultiLabelRule(LearningLiteral learningLiteral) {
+		this.learningLiteral=learningLiteral; //copy()?
+	}
+
+	public MultiLabelRule() {
+		
+	}
+	
+	public MultiLabelRule(int id) {
+		this();
+		ruleNumberID=id;
+	}
+
 	public int getRuleNumberID() {
 		return ruleNumberID;
 	}
@@ -43,8 +69,8 @@ public class MultiLabelRule extends AbstractMOAObject {
 		return isCovering;
 	}
 	
-	public boolean[] getOutputsCoveredMask(MultiLabelInstance inst) {
-		return outputsCoveredMask;
+	public int[] getOutputsCovered() {
+		return learningLiteral.getOutputsToLearn();
 	}
 	
 	
@@ -73,6 +99,29 @@ public class MultiLabelRule extends AbstractMOAObject {
 	public LearningLiteral getLearningNode() {
 		return learningLiteral;
 	}
+
+	public double [] getCurrentErrors() {
+		return learningLiteral.getErrors();
+	}
+
+	public  Prediction getPredictionForInstance(MultiLabelInstance instance) {
+		return learningLiteral.getPredictionForInstance(instance);
+	}
+	
+	public boolean tryToExpand(double splitConfidence, double tieThresholdOption) {
+		boolean hasExpanded=learningLiteral.tryToExpand(splitConfidence,tieThresholdOption);
+		if(hasExpanded){
+			otherBranchRule=new MultiLabelRule(learningLiteral.getOtherBranchLearningLiteral());
+			this.literalList.add(new Literal(learningLiteral.getBestSuggestion().getPredicate()));
+			learningLiteral=learningLiteral.getExpandedLearningLiteral();
+			
+		}
+		return hasExpanded;
+	}
+	
+	public MultiLabelRule getNewRuleFromOtherBranch(){
+		return otherBranchRule;
+	}
 	
 	@Override
 	public String toString()
@@ -100,12 +149,35 @@ public class MultiLabelRule extends AbstractMOAObject {
 		return(out.toString());
 	}
 
-	public double [] getCurrentErrors() {
-		return null;//learner.getCurrentError();
+	public void setSplitCriterion(MultiLabelSplitCriterion splitCriterion) {
+		learningLiteral.setSplitCriterion(splitCriterion);
+		
 	}
 
-	public  Prediction getPredictionForInstance(MultiLabelInstance instance) {
-		return learningLiteral.getPredictionForInstance(instance);
+	public void setChangeDetector(ChangeDetector changeDetector) {
+		learningLiteral.setChangeDetector(changeDetector);
+		
+	}
+
+	public void setAnomalyDetector(AnomalyDetector anomalyDetector) {
+		learningLiteral.setAnomalyDetector(anomalyDetector);
+		
+	}
+
+	public void setNumericObserverOption(
+			NumericStatisticsObserver numericStatisticsObserver) {
+		learningLiteral.setNumericObserverOption(numericStatisticsObserver);
+		
+	}
+
+	public void setLearner(MultiLabelLearner learner) {
+		learningLiteral.setLearner(learner);
+		
+	}
+
+	public void setErrorMeasurer(MultiLabelErrorMeasurer errorMeasurer) {
+		learningLiteral.setErrorMeasurer(errorMeasurer);
+		
 	}
 
 }

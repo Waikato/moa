@@ -2,15 +2,17 @@ package moa.classifiers.rules.multilabel.functions;
 
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
+import moa.classifiers.rules.multilabel.errormeasurers.AbstractMultiTargetErrorMeasurer;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiTargetErrorMeasurer;
 import moa.core.Measurement;
+import moa.learners.Learner;
 import moa.options.ClassOption;
 
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 public class AdaptiveMultiTargetRegressor extends AbstractMultiLabelLearner
-implements MultiTargetRegressor {
+implements MultiTargetRegressor, AMRulesFunction {
 
 	/**
 	 * 
@@ -20,13 +22,13 @@ implements MultiTargetRegressor {
 	private static final int NUM_LEARNERS=2;
 
 	public ClassOption baseLearnerOption1 = new ClassOption("baseLearner1", 'l',
-			"First base learner.", MultiTargetRegressor.class, "moa.classifiers.rules.functions.multilabel.MultiLabelTargetMeanRegressor") ;
+			"First base learner.", MultiTargetRegressor.class, "moa.classifiers.rules.multilabel.functions.MultiLabelTargetMeanRegressor") ;
 
 	public ClassOption baseLearnerOption2 = new ClassOption("baseLearner2", 'm',
-			"Second base learner.", MultiTargetRegressor.class, "moa.classifiers.rules.functions.multilabel.MultiLabelPerceptronRegressor") ;
+			"Second base learner.", MultiTargetRegressor.class, "moa.classifiers.rules.multilabel.functions.MultiLabelPerceptronRegressor") ;
 
 	public ClassOption errorMeasurerOption = new ClassOption("errorMeasurer", 'e',
-			"Measure of error for deciding which learner should predict.", MultiTargetErrorMeasurer.class, "MeanAbsoluteDeviationMT") ;
+			"Measure of error for deciding which learner should predict.", AbstractMultiTargetErrorMeasurer.class, "MeanAbsoluteDeviationMT") ;
 
 	protected boolean hasStarted;
 
@@ -45,8 +47,8 @@ implements MultiTargetRegressor {
 			for (int i=0; i<NUM_LEARNERS; i++){
 				baseLearner[i].resetLearning();
 				errorMeasurer[i]=(MultiTargetErrorMeasurer)((MultiTargetErrorMeasurer) getPreparedClassOption(this.errorMeasurerOption)).copy();
-				this.hasStarted = true;
 			}
+			this.hasStarted = true;
 		}
 		for (int i=0; i<NUM_LEARNERS; i++){
 			//Update online errors
@@ -103,6 +105,17 @@ implements MultiTargetRegressor {
 		return "Learns two regressors and uses the regressor with less error to predict.";
 	}
 
+	@Override
+	public void resetWithMemory() {
+		if(errorMeasurer==null)
+			errorMeasurer=new MultiTargetErrorMeasurer[NUM_LEARNERS];
+		for (int i=0; i<NUM_LEARNERS; i++){
+			errorMeasurer[i]=(MultiTargetErrorMeasurer)((MultiTargetErrorMeasurer) getPreparedClassOption(this.errorMeasurerOption)).copy();
+			if(baseLearner[i] instanceof AMRulesFunction)
+				((AMRulesFunction)baseLearner[i]).resetWithMemory();
+		}
+	}
+	
 
 
 

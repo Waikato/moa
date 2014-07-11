@@ -8,7 +8,7 @@ import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
-public abstract class AbstractMultiLabelErrorMeasurer extends AbstractOptionHandler{
+public abstract class AbstractMultiLabelErrorMeasurer  extends AbstractOptionHandler implements MultiTargetErrorMeasurer{
 
 	/**
 	 * 
@@ -33,6 +33,8 @@ public abstract class AbstractMultiLabelErrorMeasurer extends AbstractOptionHand
 	
 	abstract public double getCurrentError(int index);
 	
+	abstract public double [] getCurrentErrors();
+	
 	public AbstractMultiLabelErrorMeasurer() {
 		fadingErrorFactor=fadingErrorFactorOption.getValue();
 	}
@@ -42,8 +44,7 @@ public abstract class AbstractMultiLabelErrorMeasurer extends AbstractOptionHand
 		
 	}
 	@Override
-	protected void prepareForUseImpl(TaskMonitor monitor,
-			ObjectRepository repository) {
+	protected void prepareForUseImpl(TaskMonitor monitor,ObjectRepository repository) {
 		
 	}
 
