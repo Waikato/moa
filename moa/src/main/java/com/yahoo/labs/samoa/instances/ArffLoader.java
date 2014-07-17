@@ -117,7 +117,7 @@ public class ArffLoader {
       this.instanceInformation = this.getHeader();
       
       if (range != null) { //is MultiLabel
-          this.instanceInformation.setClassIndex(this.instanceInformation.inputInstanceInformation.numAttributes()-1);
+          this.instanceInformation.setClassIndex(Integer.MAX_VALUE);
       }
     
       
