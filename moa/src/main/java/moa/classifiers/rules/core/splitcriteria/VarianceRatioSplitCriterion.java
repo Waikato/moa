@@ -37,7 +37,7 @@ public class VarianceRatioSplitCriterion extends AbstractOptionHandler implement
 	    	for(int i = 0; i < postSplitDists.length; i++)
 	    	{
 	    		double Ni = postSplitDists[i][0];
-	    		if(Ni >=5.0){
+	    		if(Ni >=0.05*preSplitDist[0]){
 	    			count = count +1;
 	    		}
 	    	}

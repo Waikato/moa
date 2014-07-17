@@ -13,6 +13,7 @@ import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatistic
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.errormeasurers.AbstractMultiTargetErrorMeasurer;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
+import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.options.AbstractOptionHandler;
@@ -31,7 +32,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 
 	protected AutoExpandVector<AttributeStatisticsObserver> attributeObservers ;
 
-	protected DoubleVector[] nodeStatistics;
+	protected DoubleVector[] literalStatistics;
 
 	protected int[] outputsToLearn;
 
@@ -50,15 +51,13 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 
 	protected double weightSeen;
 
-	protected int[] newOutputsToLearn;
-
 	protected boolean hasStarted;
 
 	protected LearningLiteral expandedLearningLiteral;
 
 	protected LearningLiteral otherBranchLearningLiteral;
 
-	protected AttributeExpansionSuggestion bestSuggestion=null;
+	protected AttributeExpansionSuggestion bestSuggestion;
 
 
 	//public ClassOption changeDetectorOption;
@@ -66,6 +65,8 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	//public ClassOption anomalyDetectorOption;
 
 	protected NumericStatisticsObserver numericStatisticsObserver;
+
+	protected OutputAttributesSelector outputSelector;
 
 
 	// Maintain statistics for input and output attributes for standard deviation computation?
@@ -175,6 +176,12 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 			double n) {
 		return Math.sqrt(((range * range) * Math.log(1.0 / confidence))
 				/ (2.0 * n));
+	}
+
+	public void setOutputAttributesSelector(
+			OutputAttributesSelector outputSelector) {
+		this.outputSelector=outputSelector;
+		
 	}
 
 	//	abstract public void resetLearning();

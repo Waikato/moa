@@ -2,22 +2,12 @@ package moa.classifiers.rules.multilabel;
 
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
-import moa.classifiers.core.driftdetection.ChangeDetector;
-import moa.classifiers.rules.core.Rule.Builder;
-import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
-import moa.classifiers.rules.core.attributeclassobservers.FIMTDDNumericAttributeClassLimitObserver;
-import moa.classifiers.rules.core.RuleActiveLearningNode;
 import moa.classifiers.rules.multilabel.core.MultiLabelRule;
 import moa.classifiers.rules.multilabel.core.MultiLabelRuleRegression;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
-import moa.classifiers.rules.multilabel.errormeasurers.AbstractMultiTargetErrorMeasurer;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.options.ClassOption;
-
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-import com.yahoo.labs.samoa.instances.Prediction;
 
 public class AMRulesMultiTargetRegressor extends AMRulesMultiLabelLearner implements MultiTargetRegressor{
 

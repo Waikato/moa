@@ -14,6 +14,7 @@ import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
+import moa.classifiers.rules.core.Utils;
 import moa.classifiers.rules.multilabel.attributeclassobservers.AttributeStatisticsObserver;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
@@ -66,29 +67,21 @@ public class LearningLiteralRegression extends LearningLiteral {
 		double [] errors= new double[outputsToLearn.length];
 
 		for (int i=0; i<outputsToLearn.length;i++){
-			double predY=normalizeOutputValue(outputsToLearn[i],prediction.getVote(outputsToLearn[i], 0));
-			double trueY=normalizeOutputValue(outputsToLearn[i],classValues.value(outputsToLearn[i]));
+			double predY=normalizeOutputValue(i,prediction.getVote(outputsToLearn[i], 0));
+			double trueY=normalizeOutputValue(i,classValues.value(outputsToLearn[i]));
 			errors[i]=Math.abs(predY-trueY);
 		}
 		return errors;
 	}
 
-	private double normalizeOutputValue(int outputAttributeIndex, double value) {
-		double meanY = this.nodeStatistics[outputAttributeIndex].getValue(1)/this.nodeStatistics[outputAttributeIndex].getValue(0);
-		double sdY = computeSD(this.nodeStatistics[outputAttributeIndex].getValue(2), this.nodeStatistics[outputAttributeIndex].getValue(1), this.nodeStatistics[outputAttributeIndex].getValue(0));
+	private double normalizeOutputValue(int outputToLearnIndex, double value) {
+		double meanY = this.literalStatistics[outputToLearnIndex].getValue(1)/this.literalStatistics[outputToLearnIndex].getValue(0);
+		double sdY = Utils.computeSD(this.literalStatistics[outputToLearnIndex].getValue(2), this.literalStatistics[outputToLearnIndex].getValue(1), this.literalStatistics[outputToLearnIndex].getValue(0));
 		double normalizedY = 0.0;
 		if (sdY > 0.0000001) {
 			normalizedY = (value - meanY) / (sdY);
 		}
 		return normalizedY;
-	}
-
-
-	public static double computeSD(double squaredSum, double sum, double weightSeen) {
-		if (weightSeen > 1) {
-			return Math.sqrt((squaredSum - ((sum * sum) / weightSeen)) / (weightSeen - 1.0));
-		}
-		return 0.0;
 	}
 
 
@@ -111,7 +104,7 @@ public class LearningLiteralRegression extends LearningLiteral {
 			bestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1];
 		} // Otherwise, consider which of the splits proposed may be worth trying
 		else {
-			double hoeffdingBound = computeHoeffdingBound(1, splitConfidence, weightSeen);
+			double hoeffdingBound = computeHoeffdingBound(splitCriterion.getRangeOfMerit(this.literalStatistics), splitConfidence, weightSeen);
 			//debug("Hoeffding bound " + hoeffdingBound, 4);
 			// Determine the top two ranked splitting suggestions
 			bestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1];
@@ -130,19 +123,24 @@ public class LearningLiteralRegression extends LearningLiteral {
 			DoubleVector[][] resultingStatistics=bestSuggestion.getResultingNodeStatistics();
 			//if not or higher is better, change predicate (negate condition)
 			double [] branchMerits=splitCriterion.getBranchesSplitMerits(resultingStatistics);
-			if(branchMerits[1]>branchMerits[0])
+			DoubleVector[] newLiteralStatistics;
+			if(branchMerits[1]>branchMerits[0]){
 				bestSuggestion.getPredicate().negateCondition();
-
-
+				newLiteralStatistics=getBranchStatistics(resultingStatistics,1);
+			}else{
+				newLiteralStatistics=getBranchStatistics(resultingStatistics,0);
+			}
+			//
+			int [] newOutputs=outputSelector.getNextOutputIndices(newLiteralStatistics,literalStatistics, outputsToLearn);
 			//set expanding branch
 			if(learner instanceof AMRulesFunction){
 				((AMRulesFunction) learner).resetWithMemory();;
 			}
-			expandedLearningLiteral=new LearningLiteralRegression();
+			expandedLearningLiteral=new LearningLiteralRegression(newOutputs);
 			expandedLearningLiteral.setLearner((MultiLabelLearner)this.learner.copy());
 
 			//set other branch (used if default rule expands)
-			otherBranchLearningLiteral=new LearningLiteralRegression();
+			otherBranchLearningLiteral=new LearningLiteralRegression(newOutputs);
 			otherBranchLearningLiteral.setLearner((MultiLabelLearner)learner.copy());
 
 		}
@@ -151,13 +149,20 @@ public class LearningLiteralRegression extends LearningLiteral {
 
 
 
+	private DoubleVector[] getBranchStatistics(DoubleVector[][] resultingStatistics, int indexBranch) {
+		DoubleVector[] selBranchStats=new DoubleVector[resultingStatistics.length];
+		for(int i=0; i<resultingStatistics.length;i++)
+			selBranchStats[i]=resultingStatistics[i][indexBranch];
+		return selBranchStats;
+	}
+
 	private AttributeExpansionSuggestion[] getBestSplitSuggestions(MultiLabelSplitCriterion criterion) {
 		List<AttributeExpansionSuggestion> bestSuggestions = new LinkedList<AttributeExpansionSuggestion>();
 		for (int i = 0; i < this.attributeObservers.size(); i++) {
 			AttributeStatisticsObserver obs = this.attributeObservers.get(i);
 			if (obs != null) {
 				AttributeExpansionSuggestion bestSuggestion = null;
-				bestSuggestion = obs.getBestEvaluatedSplitSuggestion(criterion, nodeStatistics, i);
+				bestSuggestion = obs.getBestEvaluatedSplitSuggestion(criterion, literalStatistics, i);
 
 				if (bestSuggestion != null) {
 					bestSuggestions.add(bestSuggestion);
@@ -180,20 +185,20 @@ public class LearningLiteralRegression extends LearningLiteral {
 					outputsToLearn[i]=i;
 				}
 			}
-			nodeStatistics= new DoubleVector[outputsToLearn.length];
-			for(int i:outputsToLearn)
-				nodeStatistics[i]=new DoubleVector(new double[3]);
+			literalStatistics= new DoubleVector[outputsToLearn.length];
+			for(int i=0; i<outputsToLearn.length; i++)
+				literalStatistics[i]=new DoubleVector(new double[3]);
 
 			hasStarted=true;
 		}
 		double weight=instance.weight();
 		DoubleVector []exampleStatistics=new DoubleVector[outputsToLearn.length];
-		for (int i:outputsToLearn){
-			double target=instance.valueOutputAttribute(i);
+		for (int i=0; i<outputsToLearn.length; i++){
+			double target=instance.valueOutputAttribute(outputsToLearn[i]);
 			double sum=weight*target;
 			double squaredSum=weight*target*target;
 			exampleStatistics[i]= new DoubleVector(new double[]{weight,sum, squaredSum});
-			nodeStatistics[i].addValues(exampleStatistics[i].getArrayRef());
+			literalStatistics[i].addValues(exampleStatistics[i].getArrayRef());
 		}
 
 		if(this.attributeObservers==null)

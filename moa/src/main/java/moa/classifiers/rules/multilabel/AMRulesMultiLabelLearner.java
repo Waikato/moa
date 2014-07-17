@@ -1,7 +1,7 @@
 /*
  *    AMRulesMultiLabel.java
  *    Copyright (C) 2014 University of Porto, Portugal
- *    @author A. Bifet, J. Duarte, J. Gama
+ *    @author J. Duarte, J. Gama
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -35,20 +35,16 @@ import java.util.Iterator;
 
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiLabelLearner;
-import moa.classifiers.core.attributeclassobservers.NumericAttributeClassObserver;
 import moa.classifiers.core.driftdetection.ChangeDetector;
-import moa.classifiers.core.driftdetection.PageHinkleyDM;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
-import moa.classifiers.rules.core.attributeclassobservers.FIMTDDNumericAttributeClassLimitObserver;
-import moa.classifiers.rules.errormeasurers.ErrorMeasurement;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.rules.multilabel.core.MultiLabelRule;
 import moa.classifiers.rules.multilabel.core.MultiLabelRuleSet;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
 import moa.classifiers.rules.multilabel.core.voting.MultiLabelVote;
-import moa.classifiers.rules.multilabel.errormeasurers.AbstractMultiTargetErrorMeasurer;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
+import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
@@ -149,6 +145,11 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			'v',
 			"Output Verbosity Control Level. 1 (Less) to 5 (More)",
 			1, 1, 5);
+	
+	public ClassOption outputSelectorOption = new ClassOption("outputSelector",
+			'O', "Output attributes selector", 
+			OutputAttributesSelector.class,
+			"SelectAllOutputs");
 
 
 	protected double attributesPercentage;
@@ -466,7 +467,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		rule.setAnomalyDetector((AnomalyDetector)((AnomalyDetector)getPreparedClassOption(anomalyDetector)).copy());
 		rule.setNumericObserverOption((NumericStatisticsObserver)((NumericStatisticsObserver)getPreparedClassOption(numericObserverOption)).copy());
 		rule.setErrorMeasurer((MultiLabelErrorMeasurer)((MultiLabelErrorMeasurer)getPreparedClassOption(errorMeasurerOption)).copy());
-		
+		rule.setOutputAttributesSelector((OutputAttributesSelector)((OutputAttributesSelector)getPreparedClassOption(outputSelectorOption)).copy());
 	}
 
 	abstract protected MultiLabelRule newDefaultRule();

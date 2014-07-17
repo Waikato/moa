@@ -1,5 +1,6 @@
 package moa.classifiers.rules.multilabel.core.splitcriteria;
 
+import moa.classifiers.rules.core.Utils;
 import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
@@ -26,7 +27,7 @@ public class MultiTargetVarianceRatio extends AbstractOptionHandler implements M
 	public double[] getBranchSplitVarianceOutput(DoubleVector[] postSplitDists) {
 		double[] variances = new double[postSplitDists.length];
 		for(int i = 0; i < postSplitDists.length; i++)
-			variances[i]=computeVariance(postSplitDists[i]);
+			variances[i]=Utils.computeVariance(postSplitDists[i]);
 		return variances;
 
 	}
@@ -82,7 +83,7 @@ public class MultiTargetVarianceRatio extends AbstractOptionHandler implements M
 				count = count +1;
 		//Consider split if all branches have required weight seen
 		if(count == postSplitDists.length){
-			double varPreSplit=computeVariance(preSplitDist);
+			double varPreSplit=Utils.computeVariance(preSplitDist);
 			double sumVarPostSplit=0;
 			double weightTotal=0;
 			for (int i=0; i<postSplitDists.length;i++){
@@ -97,19 +98,10 @@ public class MultiTargetVarianceRatio extends AbstractOptionHandler implements M
 		return merit;
 	}
 
-	public double getRangeOfMerit(DoubleVector preSplitDist) {
+	public double getRangeOfMerit(DoubleVector [] preSplitDist) {
 		return 1;
 	}
 
-	protected double computeVariance(double count, double sum, double sumSquares)
-	{
-		return (sumSquares - ((sum * sum)/count))/count;
-	}
-
-	protected double computeVariance(DoubleVector statistics)
-	{
-		return computeVariance(statistics.getValue(0),statistics.getValue(1),statistics.getValue(2));
-	}
 
 
 	@Override
