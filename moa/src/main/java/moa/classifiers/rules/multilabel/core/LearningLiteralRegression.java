@@ -33,6 +33,7 @@ public class LearningLiteralRegression extends LearningLiteral {
 	private static final long serialVersionUID = 1L;
 
 	public LearningLiteralRegression() {
+		super();
 	}
 
 	public LearningLiteralRegression(int [] outputsToLearn) {

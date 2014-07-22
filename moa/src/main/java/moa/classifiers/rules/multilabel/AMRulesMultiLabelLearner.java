@@ -81,51 +81,15 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	public FlagOption unorderedRulesOption = new FlagOption("setUnorderedRulesOn", 'U',
 			"unorderedRules.");
 
-	/*
-	public FlagOption DriftDetectionOption = new FlagOption("DoNotDetectChanges", 'H',
-			"Drift Detection. Page-Hinkley.");
-	public FloatOption pageHinckleyAlphaOption = new FloatOption(
-			"pageHinckleyAlpha",
-			'a',
-			"The alpha value to use in the Page Hinckley change detection tests.",
-			0.005, 0.0, 1.0);
-	public IntOption pageHinckleyThresholdOption = new IntOption(
-			"pageHinckleyThreshold",
-			'l',
-			"The threshold value (Lambda) to be used in the Page Hinckley change detection tests.",
-			35, 0, Integer.MAX_VALUE);
-	 */
 	public ClassOption changeDetector = new ClassOption("changeDetector",
 			'H', "Change Detector.", 
 			ChangeDetector.class,
 			"PageHinkleyDM");
-			//"moa.classifiers.rules.core.changedetection.NoChangeDetection");
-
-
-
-	/*public FlagOption noAnomalyDetectionOption = new FlagOption("noAnomalyDetection", 'A',
-			"Disable anomaly Detection.");
-	public FloatOption multivariateAnomalyProbabilityThresholdOption = new FloatOption(
-			"multivariateAnomalyProbabilityThresholdd",
-			'm',
-			"Multivariate anomaly threshold value.",
-			0.99, 0.0, 1.0);
-	public FloatOption univariateAnomalyprobabilityThresholdOption = new FloatOption(
-			"univariateAnomalyprobabilityThreshold",
-			'u',
-			"Univariate anomaly threshold value.",
-			0.10, 0.0, 1.0);
-	public IntOption anomalyNumInstThresholdOption = new IntOption(
-			"anomalyThreshold",
-			'n',
-			"The threshold value of anomalies to be used in the anomaly detection.",
-			30, 0, Integer.MAX_VALUE);
-	 */
 
 	public ClassOption anomalyDetector = new ClassOption("anomalyDetector",
 			'A', "Anomaly Detector.", 
 			AnomalyDetector.class,
-			"moa.classifiers.rules.core.anomalydetection.NoAnomalyDetection");
+			"moa.classifiers.rules.core.anomalydetection.AnomalinessScore");
 
 	public ClassOption splitCriterionOption;
 
@@ -307,13 +271,13 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 							}	
 						}
 					}
-					if (!this.unorderedRulesOption.isSet()) 
-						break;
 				}
 				else {
 					debug("Anomaly Detected: " + this.numInstances + " Rule: " +rule.getRuleNumberID() ,1);
 					this.numAnomaliesDetected+=instance.weight();//Just for statistics
 				}
+				if (!this.unorderedRulesOption.isSet()) 
+					break;
 
 			}
 		}	

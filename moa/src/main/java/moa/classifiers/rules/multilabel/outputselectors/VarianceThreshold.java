@@ -23,10 +23,6 @@ public class VarianceThreshold extends AbstractOptionHandler implements
 			0.5, 0.0, 1.0);
 
 
-	public VarianceThreshold() {
-
-	}
-	
 	public int[] getNextOutputIndices(DoubleVector[] resultingStatistics, DoubleVector[] currentLiteralStatistics, int[] currentIndices) {
 		int numCurrentOutputs=resultingStatistics.length;
 		double [] normalizedVariances= new double [numCurrentOutputs];
