@@ -43,29 +43,8 @@ public class LearningLiteralRegression extends LearningLiteral {
 
 
 
-	public boolean updateAndCheckChange(MultiLabelInstance instance) {
-		boolean hasChanged=false;
-		if (hasStarted){
-			if (changeDetectors==null){
-				changeDetectors=new ChangeDetector[outputsToLearn.length]; 
-				for (int i=0; i<outputsToLearn.length; i++){
-					changeDetectors[i]=changeDetector.copy();
-				}
-			}
-			Prediction prediction=getPredictionForInstance(instance);
-			double []normalizedErrors=getNormalizedErrors(prediction, instance.classValues());
-			for (int i=0; i<outputsToLearn.length;i++){
-				changeDetectors[i].input(normalizedErrors[i]);
-				if(changeDetectors[i].getChange()){
-					hasChanged=true;
-					break;
-				}
-			}
-		}
-		return hasChanged;
-	}
 
-	private double [] getNormalizedErrors(Prediction prediction, InstanceData classValues) {
+	protected double [] getNormalizedErrors(Prediction prediction, InstanceData classValues) {
 		double [] errors= new double[outputsToLearn.length];
 
 		for (int i=0; i<outputsToLearn.length;i++){

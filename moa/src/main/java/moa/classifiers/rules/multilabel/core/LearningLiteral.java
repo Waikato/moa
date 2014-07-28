@@ -20,6 +20,7 @@ import moa.core.DoubleVector;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
 
+import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
@@ -94,8 +95,31 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 
 	public abstract boolean tryToExpand(double splitConfidence, double tieThresholdOption);
 
-	public abstract boolean updateAndCheckChange(MultiLabelInstance instance);
+	public boolean updateAndCheckChange(MultiLabelInstance instance) {
+		boolean hasChanged=false;
+		if (hasStarted){
+			if (changeDetectors==null){
+				changeDetectors=new ChangeDetector[outputsToLearn.length]; 
+				for (int i=0; i<outputsToLearn.length; i++){
+					changeDetectors[i]=changeDetector.copy();
+				}
+			}
+			Prediction prediction=getPredictionForInstance(instance);
+			double []normalizedErrors=getNormalizedErrors(prediction, instance.classValues());
+			for (int i=0; i<outputsToLearn.length;i++){
+				changeDetectors[i].input(normalizedErrors[i]);
+				if(changeDetectors[i].getChange()){
+					hasChanged=true;
+					break;
+				}
+			}
+		}
+		return hasChanged;
+	}
 
+
+	protected abstract double[] getNormalizedErrors(Prediction prediction,
+			InstanceData classValues);
 
 	public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance) {
 		if(hasStarted)
@@ -190,6 +214,9 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	public void setNominalObserverOption(NominalStatisticsObserver nominalStatisticsObserver) {
 		this.nominalStatisticsObserver=nominalStatisticsObserver;
 	}
+	
+
+	
 
 	//	abstract public void resetLearning();
 }
