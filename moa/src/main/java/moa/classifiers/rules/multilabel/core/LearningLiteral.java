@@ -9,6 +9,7 @@ import moa.classifiers.core.attributeclassobservers.NumericAttributeClassObserve
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
 import moa.classifiers.rules.multilabel.attributeclassobservers.AttributeStatisticsObserver;
+import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatisticsObserver;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.errormeasurers.AbstractMultiTargetErrorMeasurer;
@@ -65,6 +66,8 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	//public ClassOption anomalyDetectorOption;
 
 	protected NumericStatisticsObserver numericStatisticsObserver;
+	
+	protected NominalStatisticsObserver nominalStatisticsObserver;
 
 	protected OutputAttributesSelector outputSelector;
 
@@ -182,6 +185,10 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 			OutputAttributesSelector outputSelector) {
 		this.outputSelector=outputSelector;
 		
+	}
+
+	public void setNominalObserverOption(NominalStatisticsObserver nominalStatisticsObserver) {
+		this.nominalStatisticsObserver=nominalStatisticsObserver;
 	}
 
 	//	abstract public void resetLearning();

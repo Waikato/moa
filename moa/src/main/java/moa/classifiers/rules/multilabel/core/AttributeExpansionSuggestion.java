@@ -64,13 +64,7 @@ public class AttributeExpansionSuggestion extends AbstractMOAObject implements
 
 	public AttributeExpansionSuggestion(Predicate predicate,  DoubleVector[][] resultingNodeStatistics, double merit) {
         this.predicate = predicate;
-        this.resultingNodeStatistics = new DoubleVector[resultingNodeStatistics.length][];
-        for (int i=0; i<resultingNodeStatistics.length; i++){
-        	this.resultingNodeStatistics[i]=new DoubleVector[resultingNodeStatistics[i].length];
-        	for (int j=0; j<resultingNodeStatistics[i].length; j++){
-        		this.resultingNodeStatistics[i][j]=new DoubleVector(resultingNodeStatistics[i][j]);
-        	}
-        }
+        this.resultingNodeStatistics = resultingNodeStatistics;
         this.merit = merit;
     }
 

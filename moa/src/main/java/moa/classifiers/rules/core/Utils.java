@@ -26,4 +26,18 @@ public final class Utils {
 		return computeSD(statistics.getValue(0),statistics.getValue(1),statistics.getValue(2));
 	}
 
+	public static DoubleVector[][] copy(DoubleVector[][] toCopy) {
+		DoubleVector[][] copy = new DoubleVector[toCopy.length][];
+        for (int i=0; i<toCopy.length; i++)
+        	copy[i]=Utils.copy(toCopy[i]);
+        return copy;
+	}
+	
+	public static DoubleVector[]copy(DoubleVector[] toCopy) {
+		DoubleVector[] copy = new DoubleVector[toCopy.length];
+        	for (int i=0; i<toCopy.length; i++)
+        		copy[i]=new DoubleVector(toCopy[i]);
+        return copy;
+	}
+
 }

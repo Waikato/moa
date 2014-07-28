@@ -16,6 +16,7 @@ import moa.classifiers.rules.core.RuleActiveLearningNode;
 import moa.classifiers.rules.core.RuleSplitNode;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
 import moa.classifiers.rules.core.conditionaltests.NumericAttributeBinaryRulePredicate;
+import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatisticsObserver;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
@@ -185,5 +186,10 @@ public class MultiLabelRule extends AbstractMOAObject {
 		learningLiteral.setOutputAttributesSelector(outputSelector);
 		
 	}
+
+	public void setNominalObserverOption(NominalStatisticsObserver nominalStatisticsObserver) {
+		learningLiteral.setNominalObserverOption(nominalStatisticsObserver);	
+	}
+
 
 }

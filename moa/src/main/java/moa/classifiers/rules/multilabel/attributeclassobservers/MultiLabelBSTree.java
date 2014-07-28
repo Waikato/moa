@@ -5,6 +5,7 @@ import java.io.Serializable;
 import com.github.javacliparser.IntOption;
 
 import moa.classifiers.rules.core.RulePredicate;
+import moa.classifiers.rules.core.Utils;
 import moa.classifiers.rules.multilabel.core.AttributeExpansionSuggestion;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.core.DoubleVector;
@@ -57,17 +58,17 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 			rightStatistics[i]=new DoubleVector(preSplitStatistics[i]);
 		}
 
-		return searchForBestSplitOption(this.root, null, criterion, inputAttributeIndex);
+		return searchForBestSplitOption(this.root, null, criterion, preSplitStatistics, inputAttributeIndex);
 	}
 
-	protected AttributeExpansionSuggestion searchForBestSplitOption(Node currentNode, AttributeExpansionSuggestion currentBestOption, MultiLabelSplitCriterion criterion, int inputAttributeIndex) {
+	protected AttributeExpansionSuggestion searchForBestSplitOption(Node currentNode, AttributeExpansionSuggestion currentBestOption, MultiLabelSplitCriterion criterion, DoubleVector [] preSplitStatistics, int inputAttributeIndex) {
 		// Return null if the current node is null or we have finished looking through all the possible splits
 		if (currentNode == null) { // TODO: JD check || countRightTotal == 0.0
 			return currentBestOption;
 		}
 
 		if (currentNode.left != null) {
-			currentBestOption = searchForBestSplitOption(currentNode.left, currentBestOption, criterion, inputAttributeIndex);
+			currentBestOption = searchForBestSplitOption(currentNode.left, currentBestOption, criterion, preSplitStatistics, inputAttributeIndex);
 		}
 		for (int i=0; i<leftStatistics.length; i++)
 		{
@@ -76,26 +77,21 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 		}
 
 		DoubleVector[][] postSplitDists = new DoubleVector [leftStatistics.length][2];
-		DoubleVector [] preSplitDist = new DoubleVector[leftStatistics.length];
 		for (int i=0; i<leftStatistics.length; i++)
 		{
-			preSplitDist[i]= new DoubleVector(leftStatistics[i]);
-			preSplitDist[i].addValues(rightStatistics[i]);
-
 			postSplitDists[i]= new DoubleVector[2];
 			postSplitDists[i][0]=leftStatistics[i];
 			postSplitDists[i][1]=rightStatistics[i];
 		}
 
-		double merit = criterion.getMeritOfSplit(preSplitDist, postSplitDists);
+		double merit = criterion.getMeritOfSplit(preSplitStatistics, postSplitDists);
 
 		if ((currentBestOption == null) || (merit > currentBestOption.merit)) {
-			currentBestOption= new AttributeExpansionSuggestion(new RulePredicate(inputAttributeIndex, currentNode.cutPoint, true), postSplitDists, merit);
-
+			currentBestOption= new AttributeExpansionSuggestion(new RulePredicate(inputAttributeIndex, currentNode.cutPoint, true), Utils.copy(postSplitDists), merit);
 		}
 
 		if (currentNode.right != null) {
-			currentBestOption = searchForBestSplitOption(currentNode.right, currentBestOption, criterion, inputAttributeIndex);
+			currentBestOption = searchForBestSplitOption(currentNode.right, currentBestOption, criterion, preSplitStatistics, inputAttributeIndex);
 		}
 		for (int i=0; i<leftStatistics.length; i++)
 		{

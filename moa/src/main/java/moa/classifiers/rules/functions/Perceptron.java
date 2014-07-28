@@ -19,6 +19,7 @@
  */
 package moa.classifiers.rules.functions;
 
+import java.util.LinkedList;
 import java.util.Random;
 
 import com.github.javacliparser.FlagOption;
@@ -44,18 +45,18 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 	public FloatOption learningRatioOption = new FloatOption(
 			"learningRatio", 'l', 
 			"Constante Learning Ratio to use for training the Perceptrons in the leaves.", 0.025);
-	
+
 	public FloatOption learningRateDecayOption = new FloatOption(
 			"learningRateDecay", 'm', 
 			" Learning Rate decay to use for training the Perceptron.", 0.001);
-	
+
 	public FloatOption fadingFactorOption = new FloatOption(
 			"fadingFactor", 'e', 
 			"Fading factor for the Perceptron accumulated error", 0.99, 0, 1);
 
 	private double nError;
 	protected double fadingFactor;
-	
+
 	protected double learningRatio;
 
 	protected double learningRateDecay;
@@ -80,15 +81,16 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 
 	protected double squaredperceptronsumY;
 
+	protected int [] numericAttributesIndex;
 
 	public Perceptron()
 	{
 		this.initialisePerceptron = true;
 	}
-	
-/*
- * Perceptron
-*/
+
+	/*
+	 * Perceptron
+	 */
 	public Perceptron(Perceptron p) {
 		super();
 		this.constantLearningRatioDecayOption = p.constantLearningRatioDecayOption;
@@ -101,15 +103,16 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 		this.learningRateDecay = p.learningRateDecay;
 		if (p.weightAttribute!=null)
 			this.weightAttribute = p.weightAttribute.clone();
-		
+
 		this.perceptronattributeStatistics = new DoubleVector(p.perceptronattributeStatistics);
 		this.squaredperceptronattributeStatistics = new DoubleVector(p.squaredperceptronattributeStatistics);
 		this.perceptronInstancesSeen = p.perceptronInstancesSeen;
-		
+
 		this.initialisePerceptron = p.initialisePerceptron;
 		this.perceptronsumY = p.perceptronsumY;
 		this.squaredperceptronsumY = p.squaredperceptronsumY;
 		this.perceptronYSeen=p.perceptronYSeen;
+		this.numericAttributesIndex=p.numericAttributesIndex.clone();
 	}
 
 	public void setWeights(double[] w)
@@ -121,7 +124,7 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 	{
 		return this.weightAttribute;	    
 	}
-	
+
 
 
 	public double getInstancesSeen() {
@@ -165,29 +168,39 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 		nError=inst.weight()+fadingFactor*nError;
 		// Initialise Perceptron if necessary   
 		if (this.initialisePerceptron == true) {
+			//Initialize numericAttributesIndex
+			LinkedList<Integer> numericIndices= new LinkedList<Integer>();
+			for (int i = 0; i < inst.numAttributes(); i++)
+				if(inst.attribute(i).isNumeric() && i!=inst.classIndex())
+					numericIndices.add(i);
+			numericAttributesIndex=new int[numericIndices.size()];
+			int j=0;
+			for(Integer index : numericIndices)
+				numericAttributesIndex[j++]=index;
+
 			this.fadingFactor=this.fadingFactorOption.getValue();
 			this.classifierRandom=new Random();
 			this.classifierRandom.setSeed(randomSeedOption.getValue()); 
 			this.initialisePerceptron = false; // not in resetLearningImpl() because it needs Instance!
-			this.weightAttribute = new double[inst.numAttributes()];
-			for (int j = 0; j < inst.numAttributes(); j++) {
-				if (inst.attribute(j).isNumeric())
-					weightAttribute[j] = 2 * this.classifierRandom.nextDouble() - 1;
+			this.weightAttribute = new double[numericAttributesIndex.length+1];
+			for (int i = 0; i < numericAttributesIndex.length+1; i++) {
+				//if (inst.attribute(i).isNumeric())
+				weightAttribute[i] = 2 * this.classifierRandom.nextDouble() - 1;
 			}
 			// Update Learning Rate
 			learningRatio = learningRatioOption.getValue();
 			this.learningRateDecay = learningRateDecayOption.getValue();
-			
+
 		}
 
 		// Update attribute statistics
 		this.perceptronInstancesSeen+=inst.weight();
 		this.perceptronYSeen+=inst.weight();
-		
-		
-		for(int j = 0; j < inst.numAttributes() -1; j++)
+
+
+		for(int j = 0; j < numericAttributesIndex.length; j++)
 		{
-			int instAttIndex = modelAttIndexToInstanceAttIndex(j, inst);
+			int instAttIndex = modelAttIndexToInstanceAttIndex(numericAttributesIndex[j], inst);
 			double value=inst.value(instAttIndex);
 			perceptronattributeStatistics.addToValue(j, value*inst.weight());	
 			squaredperceptronattributeStatistics.addToValue(j, value*value*inst.weight());
@@ -203,7 +216,7 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 		//double prediction = this.updateWeights(inst,learningRatio);
 		//accumulatedError= Math.abs(prediction-inst.classValue()) + fadingFactor*accumulatedError;
 
-		
+
 		this.updateWeights(inst,learningRatio);
 
 	}
@@ -213,9 +226,13 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 	 */
 	private double prediction(Instance inst)
 	{
-		double[] normalizedInstance = normalizedInstance(inst); 
-		double normalizedPrediction = prediction(normalizedInstance);
-		return denormalizedPrediction(normalizedPrediction);
+		if(this.initialisePerceptron){
+			return 0;
+		}else{
+			double[] normalizedInstance = normalizedInstance(inst); 
+			double normalizedPrediction = prediction(normalizedInstance);
+			return denormalizedPrediction(normalizedPrediction);
+		}
 	}
 
 	public double normalizedPrediction(Instance inst)
@@ -254,9 +271,9 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 
 	public double[] normalizedInstance(Instance inst){
 		// Normalize Instance
-		double[] normalizedInstance = new double[inst.numAttributes()];
-		for(int j = 0; j < inst.numAttributes() -1; j++) {
-			int instAttIndex = modelAttIndexToInstanceAttIndex(j, inst);
+		double[] normalizedInstance = new double[numericAttributesIndex.length+1];
+		for(int j = 0; j < numericAttributesIndex.length; j++) {
+			int instAttIndex = modelAttIndexToInstanceAttIndex(numericAttributesIndex[j], inst);
 			double mean = perceptronattributeStatistics.getValue(j) / perceptronYSeen;
 			double sd = computeSD(squaredperceptronattributeStatistics.getValue(j), perceptronattributeStatistics.getValue(j), perceptronYSeen);
 			if (sd > SD_THRESHOLD) 
@@ -283,23 +300,23 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 		double sumWeights = 0.0;		
 		double delta = normalizedY - normalizedPredict;
 
-		for (int j = 0; j < inst.numAttributes() - 1; j++) {
-			int instAttIndex = modelAttIndexToInstanceAttIndex(j, inst);
-			if(inst.attribute(instAttIndex).isNumeric()) {
+		for (int j = 0; j < numericAttributesIndex.length; j++) {
+			//int instAttIndex = modelAttIndexToInstanceAttIndex(numericAttributesIndex[j], inst);
+			//if(inst.attribute(instAttIndex).isNumeric()) {
 				this.weightAttribute[j] += learningRatio * delta * normalizedInstance[j]*inst.weight();
 				sumWeights += Math.abs(this.weightAttribute[j]);
-			}
+			//}
 		}
-		this.weightAttribute[inst.numAttributes() - 1] += learningRatio * delta*inst.weight();
-		sumWeights += Math.abs(this.weightAttribute[inst.numAttributes() - 1]);
-		if (sumWeights > inst.numAttributes()) { // Lasso regression
-			for (int j = 0; j < inst.numAttributes() - 1; j++) {
-				int instAttIndex = modelAttIndexToInstanceAttIndex(j, inst);
-				if(inst.attribute(instAttIndex).isNumeric()) {
+		this.weightAttribute[numericAttributesIndex.length] += learningRatio * delta*inst.weight();
+		sumWeights += Math.abs(this.weightAttribute[numericAttributesIndex.length]);
+		if (sumWeights > numericAttributesIndex.length) { // Lasso regression
+			for (int j = 0; j < numericAttributesIndex.length; j++) {
+				//int instAttIndex = modelAttIndexToInstanceAttIndex(numericAttributesIndex[j], inst);
+				//if(inst.attribute(instAttIndex).isNumeric()) {
 					this.weightAttribute[j] = this.weightAttribute[j] / sumWeights;
-				}
+				//}
 			}
-			this.weightAttribute[inst.numAttributes() - 1]  = this.weightAttribute[inst.numAttributes() - 1] / sumWeights;
+			this.weightAttribute[numericAttributesIndex.length]  = this.weightAttribute[numericAttributesIndex.length] / sumWeights;
 		}
 
 		//return denormalizedPrediction(normalizedPredict);
@@ -336,7 +353,10 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 
 	@Override
 	public double[] getVotesForInstance(Instance inst) {
-		return new double[]{this.prediction(inst)};
+		if (!this.initialisePerceptron) //has started training
+			return new double[]{this.prediction(inst)};
+		else
+			return new double[]{0};
 	}
 
 	@Override
@@ -365,7 +385,7 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 		this.learningRatio=learningRatio;
 
 	}
-	
+
 	public double getCurrentError()
 	{
 		if (nError>0)

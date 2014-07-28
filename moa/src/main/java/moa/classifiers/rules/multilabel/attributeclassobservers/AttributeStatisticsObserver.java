@@ -19,8 +19,6 @@
  */
 package moa.classifiers.rules.multilabel.attributeclassobservers;
 
-import moa.classifiers.core.AttributeSplitSuggestion;
-import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.classifiers.rules.multilabel.core.AttributeExpansionSuggestion;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.core.DoubleVector;
@@ -52,10 +50,10 @@ public interface AttributeStatisticsObserver extends OptionHandler {
      *
      * @param criterion the split criterion to use
      * @param preSplitDist the class distribution before the split
-     * @param attIndex the attribute index
+     * @param attIndex the input attribute index
      * @return suggestion of best attribute split
      */
     public AttributeExpansionSuggestion getBestEvaluatedSplitSuggestion(
-            MultiLabelSplitCriterion criterion, DoubleVector [] statistics, int inputAttributeIndex);
+            MultiLabelSplitCriterion criterion, DoubleVector [] preSplitStatistics, int inputAttributeIndex);
     
 }

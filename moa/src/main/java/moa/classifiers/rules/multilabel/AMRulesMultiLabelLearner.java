@@ -37,6 +37,7 @@ import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
+import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatisticsObserver;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.rules.multilabel.core.MultiLabelRule;
 import moa.classifiers.rules.multilabel.core.MultiLabelRuleSet;
@@ -100,9 +101,14 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 
 
 	public ClassOption numericObserverOption = new ClassOption("numericObserver",
-			'z', "Numeric observer.", 
+			'y', "Numeric observer.", 
 			NumericStatisticsObserver.class,
 			"MultiLabelBSTree");
+	
+	public ClassOption nominalObserverOption = new ClassOption("nominalObserver",
+			'z', "Nominal observer.", 
+			NominalStatisticsObserver.class,
+			"MultiLabelNominalAttributeObserver");
 
 	public IntOption VerbosityOption = new IntOption(
 			"verbosity",
@@ -430,6 +436,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		rule.setChangeDetector((ChangeDetector)((ChangeDetector)getPreparedClassOption(changeDetector)).copy());
 		rule.setAnomalyDetector((AnomalyDetector)((AnomalyDetector)getPreparedClassOption(anomalyDetector)).copy());
 		rule.setNumericObserverOption((NumericStatisticsObserver)((NumericStatisticsObserver)getPreparedClassOption(numericObserverOption)).copy());
+		rule.setNominalObserverOption((NominalStatisticsObserver)((NominalStatisticsObserver)getPreparedClassOption(nominalObserverOption)).copy());
 		rule.setErrorMeasurer((MultiLabelErrorMeasurer)((MultiLabelErrorMeasurer)getPreparedClassOption(errorMeasurerOption)).copy());
 		rule.setOutputAttributesSelector((OutputAttributesSelector)((OutputAttributesSelector)getPreparedClassOption(outputSelectorOption)).copy());
 	}

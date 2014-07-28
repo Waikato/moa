@@ -16,6 +16,7 @@ import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.classifiers.rules.core.Utils;
 import moa.classifiers.rules.multilabel.attributeclassobservers.AttributeStatisticsObserver;
+import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatisticsObserver;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.functions.AMRulesFunction;
@@ -209,6 +210,8 @@ public class LearningLiteralRegression extends LearningLiteral {
 			if(obs==null){
 				if(instance.attribute(i).isNumeric()){
 					obs=((NumericStatisticsObserver)numericStatisticsObserver.copy());
+				}else if(instance.attribute(i).isNominal()){ //just to make sure its nominal (in the future there may be ordinal?
+					obs=((NominalStatisticsObserver)nominalStatisticsObserver.copy());
 				}
 				this.attributeObservers.set(i, obs);
 				//TODO: JD - support categorical attributes
