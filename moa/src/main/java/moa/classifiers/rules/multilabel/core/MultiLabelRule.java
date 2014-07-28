@@ -120,7 +120,7 @@ public class MultiLabelRule extends AbstractMOAObject {
 		}
 		return hasExpanded;
 	}
-	
+
 	public MultiLabelRule getNewRuleFromOtherBranch(){
 		return otherBranchRule;
 	}

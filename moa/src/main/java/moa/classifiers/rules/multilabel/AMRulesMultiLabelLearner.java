@@ -64,7 +64,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	protected MultiLabelRule defaultRule;
 	protected int ruleNumberID;
 	protected double[] statistics;
-	public static final double NORMAL_CONSTANT = Math.sqrt(2 * Math.PI);
+	//public static final double NORMAL_CONSTANT = Math.sqrt(2 * Math.PI);
 	public FloatOption splitConfidenceOption = new FloatOption(
 			"splitConfidence",
 			'c',
@@ -119,7 +119,8 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	public ClassOption outputSelectorOption = new ClassOption("outputSelector",
 			'O', "Output attributes selector", 
 			OutputAttributesSelector.class,
-			"SelectAllOutputs");
+			"VarianceThreshold");
+			//"SelectAllOutputs");
 
 
 	protected double attributesPercentage;
