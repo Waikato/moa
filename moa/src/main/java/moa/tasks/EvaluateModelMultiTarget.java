@@ -26,7 +26,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import moa.classifiers.Classifier;
-import moa.classifiers.MultiTargetLearner;
+import moa.classifiers.MultiTargetRegressor;
 import moa.core.Example;
 import moa.core.ObjectRepository;
 import moa.evaluation.LearningEvaluation;
@@ -54,7 +54,7 @@ public class EvaluateModelMultiTarget extends MultiTargetMainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption modelOption = new ClassOption("model", 'm',
-            "Learner to evaluate.", MultiTargetLearner.class, "LearnModelMultiTarget");
+            "Learner to evaluate.", MultiTargetRegressor.class, "LearnModelMultiTarget");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", MultiTargetInstanceStream.class,

@@ -33,12 +33,23 @@ public class NominalAttributeBinaryRulePredicate extends NominalAttributeBinaryT
 	public NominalAttributeBinaryRulePredicate(int attIndex, int attValue) {
 		super(attIndex, attValue);
 	}
+	//used for negation
+	protected boolean state=true;
 
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	public boolean evaluate(Instance inst) {
-		return (branchForInstance(inst) == 0);
+		if(state)
+			return (branchForInstance(inst) == 0) ;
+		else
+			return (branchForInstance(inst) != 0);
+	}
+
+	@Override
+	public void negateCondition() {
+		state=!state;
+		
 	}
 	
 }

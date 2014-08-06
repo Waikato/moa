@@ -24,6 +24,7 @@ import moa.learners.Learner;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Classifier interface for incremental classification models.
@@ -96,5 +97,5 @@ public interface Classifier extends Learner<Example<Instance>> {
      */
     //public InstancesHeader getModelContext();
     
-    public InstanceData getPredictionForInstance(Instance inst);
+    public Prediction getPredictionForInstance(Instance inst);
 }

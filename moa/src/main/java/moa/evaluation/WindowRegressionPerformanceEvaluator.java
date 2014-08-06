@@ -30,6 +30,7 @@ import moa.tasks.TaskMonitor;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Regression evaluator that updates evaluation results using a sliding window.
@@ -160,8 +161,10 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
             ObjectRepository repository) {
     }
     
-    @Override
-    public void addResult(Example<Instance> example, InstanceData classVotes) {
-    	addResult(example,classVotes.toDoubleArray());
-    }
+
+	@Override
+	public void addResult(Example<Instance> testInst, Prediction prediction) {
+		addResult(testInst, prediction.getVotes());
+		
+	}
 }

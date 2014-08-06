@@ -15,6 +15,8 @@
  */
 package com.yahoo.labs.samoa.instances;
 
+import com.sun.corba.se.impl.protocol.INSServerRequestDispatcher;
+
 /**
  * The Class SingleLabelInstance.
  *
@@ -103,7 +105,7 @@ public class SingleLabelInstance implements Instance {
      * @param numAttributes the num attributes
      */
     public SingleLabelInstance(int numAttributes) {
-    this.instanceData = new DenseInstanceData(new double[numAttributes]);
+    this.instanceData = new DenseInstanceData(new double[numAttributes-1]); //JD
     //m_AttValues = new double[numAttributes];
     /*for (int i = 0; i < m_AttValues.length; i++) {
       m_AttValues[i] = Utils.missingValue();
@@ -140,7 +142,7 @@ public class SingleLabelInstance implements Instance {
      */    
     @Override
     public Attribute attribute(int instAttIndex) {
-        return this.instanceInformation.attribute(instAttIndex);
+        return this.instanceInformation.attribute(instAttIndex);	
     }
     
      /**
@@ -181,11 +183,16 @@ public class SingleLabelInstance implements Instance {
      */ 
     @Override
     public double value(int instAttIndex) {
-        return //attributeValues[instAttIndex]; //
-                this.instanceData.value(instAttIndex);
+    	int matchIndex=getMatchingIndex(instAttIndex);
+    	if(matchIndex==this.numAttributes()-1)
+    		return this.classValue();
+    	else
+    		return //this.instanceData.value(instAttIndex); //JD - for compatibility with older code (class attribute not the last)
+        		this.instanceData.value(matchIndex);
     }
 
-     /**
+
+	/**
      * Checks if is missing.
      *
      * @param instAttIndex the inst att index
@@ -194,7 +201,7 @@ public class SingleLabelInstance implements Instance {
     @Override
     public boolean isMissing(int instAttIndex) {
         return //Double.isNaN(value(instAttIndex)); //
-                this.instanceData.isMissing(instAttIndex);
+                this.instanceData.isMissing(getMatchingIndex(instAttIndex));
     }
 
      /**
@@ -392,6 +399,41 @@ public class SingleLabelInstance implements Instance {
     public void addSparseValues(int[] indexValues, double[] attributeValues, int numberAttributes) {
          this.instanceData = new SparseInstanceData(attributeValues, indexValues, numberAttributes); //???
     }
+    
+    /**
+     * Text representation of a SingleLabelInstance.
+     */
+    public String toString()
+    {
+    	double [] aux = this.instanceData.toDoubleArray();
+    	StringBuffer str= new StringBuffer();
+    	for (int i=0; i<aux.length;i++)
+    		str.append(aux[i]+" ");
+    	str.append("- ");
+    	aux = this.classData.toDoubleArray();
+    	for (int i=0; i<aux.length;i++)
+    		str.append(aux[i]+" ");
+    	
+    	return str.toString();
+    }
 
-
+  //JD - for compatibility with older code (class attribute not the last)
+    /**
+    * Makes correspondence between old instance representation and .
+    *
+    * @param instAttIndex the index value
+    * @return "corrected" attribute index
+    */
+    private int getMatchingIndex(int instAttIndex) {
+    	int classIndex=this.classIndex();
+    	if (instAttIndex==classIndex)
+    		instAttIndex=this.numAttributes()-1;
+    	else 
+    		if(instAttIndex>classIndex) 
+    			instAttIndex--;
+		
+		return instAttIndex;
+	}
+    
+    
 }

@@ -1,5 +1,5 @@
 /*
- *    MultiTargetLearner.java
+ *    MultiTargetRegressor.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  *
@@ -25,6 +25,6 @@ package moa.classifiers;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public interface MultiTargetLearner {
+public interface MultiTargetRegressor extends MultiLabelLearner {
     
 }

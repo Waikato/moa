@@ -49,7 +49,7 @@ public class InstanceInformation implements Serializable{
   //protected List<Attribute> attributes;
   
   /** The class index. */
-  protected int classIndex;
+  protected int classIndex=Integer.MAX_VALUE; //By default is multilabel
   
 
  
@@ -116,13 +116,21 @@ public class InstanceInformation implements Serializable{
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#setClassIndex(int)
 	 */
 	public void setClassIndex(int classIndex) {
-        this.classIndex = classIndex;
-        Attribute classAtribute = this.inputAttribute(classIndex);
-        List<Attribute> listAttribute = new ArrayList<Attribute>();
-        listAttribute.add(classAtribute);
-        this.outputInstanceInformation.setAttributes(listAttribute);
-        this.inputInstanceInformation.attributes.remove(classAtribute);
-    }
+		if(classIndex<Integer.MAX_VALUE){//classIndex==Integer.MAX_VALUE indicates multilabel
+			if(outputInstanceInformation.numAttributes()>0) //JD
+			{
+				this.inputInstanceInformation.attributes.add(classIndex, outputInstanceInformation.attributes.get(0));
+				outputInstanceInformation.attributes.remove(0);
+			}
+			
+			Attribute classAtribute = this.inputAttribute(classIndex);
+			List<Attribute> listAttribute = new ArrayList<Attribute>();
+			listAttribute.add(classAtribute);
+			this.outputInstanceInformation.setAttributes(listAttribute);
+			this.inputInstanceInformation.attributes.remove(classAtribute);
+			this.classIndex = classIndex;
+			}
+	}
   
     /* (non-Javadoc)
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#classAttribute()
@@ -144,7 +152,17 @@ public class InstanceInformation implements Serializable{
 	public Attribute attribute(int w) {
     	//TODO: check for single label instances
     	int offset = this.inputInstanceInformation.attributes.size();
-    	if (w < offset) { 
+		if(classIndex<offset){ //Just for single label instances (retro-compatibility)
+			if(w==classIndex)
+				return this.outputInstanceInformation.attributes.get(0);
+			else if(w<classIndex)
+				return this.inputInstanceInformation.attributes.get(w);
+			else
+				return this.inputInstanceInformation.attributes.get(w-1);
+				
+		}	
+		else //is multilabel (classindex=-1) 
+			if (w < offset) { 
     		return this.inputInstanceInformation.attributes.get(w);
     	} else {
     		return this.outputInstanceInformation.attributes.get(w-offset);
@@ -155,7 +173,8 @@ public class InstanceInformation implements Serializable{
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#numClasses()
 	 */
 	public int numClasses() {
-        return this.outputInstanceInformation.attributes.get(this.classIndex()).numValues();
+        //return this.outputInstanceInformation.attributes.get(this.classIndex()).numValues(); //JD
+        return this.outputInstanceInformation.attributes.get(0).numValues();
     }
     
     /* (non-Javadoc)

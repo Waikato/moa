@@ -21,6 +21,7 @@ package moa.classifiers.rules.core.conditionaltests;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.classifiers.core.conditionaltests.InstanceConditionalBinaryTest;
 import moa.classifiers.rules.core.Predicate;
 
@@ -41,6 +42,8 @@ public class NumericAttributeBinaryRulePredicate extends InstanceConditionalBina
     protected double attValue;
 
     protected int operator; // 0 =, 1<=, 2>
+    
+	protected boolean state=true;
 
     public NumericAttributeBinaryRulePredicate(int attIndex, double attValue,
             int operator) {
@@ -48,6 +51,12 @@ public class NumericAttributeBinaryRulePredicate extends InstanceConditionalBina
         this.attValue = attValue;
         this.operator = operator;
     }
+    
+	@Override
+	public void negateCondition() {
+		state=!state;
+		
+	}
 
     @Override
     public int branchForInstance(Instance inst) {
@@ -105,10 +114,13 @@ public class NumericAttributeBinaryRulePredicate extends InstanceConditionalBina
         return this.attValue;
     }
 
-    @Override
-    public boolean evaluate(Instance inst) {
-        return (branchForInstance(inst) == 0);
-    }
+	@Override
+	public boolean evaluate(Instance inst) {
+		if(state)
+			return (branchForInstance(inst) == 0) ;
+		else
+			return (branchForInstance(inst) != 0);
+	}
 
     @Override
     public String toString() {

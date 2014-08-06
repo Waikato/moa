@@ -82,7 +82,7 @@ public class FIMTDDNumericAttributeClassLimitObserver extends FIMTDDNumericAttri
 		// If the new value is less than the value in a node, update the
 		// left distribution and send the value down to the left child node.
 		// If no left child exists, create one
-		else if (val <= this.cut_point) {
+		else if (val < this.cut_point) {
 			this.leftStatistics.addToValue(0,1);
 			this.leftStatistics.addToValue(1,label);
 			this.leftStatistics.addToValue(2,label*label);

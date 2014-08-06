@@ -46,6 +46,7 @@ import moa.streams.ExampleStream;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.evaluation.RegressionPerformanceEvaluator;
 
@@ -198,7 +199,7 @@ public class EvaluatePrequentialRegression extends RegressionMainTask {
             Example testInst = (Example) trainInst; //.copy();
             //testInst.setClassMissing();
             //double[] prediction = learner.getVotesForInstance(testInst);
-            InstanceData prediction = learner.getPredictionForInstance(testInst);
+            Prediction prediction = learner.getPredictionForInstance(testInst);
             // Output prediction
             if (outputPredictionFile != null) {
                 double trueClass = ((Instance) trainInst.getData()).classValue();

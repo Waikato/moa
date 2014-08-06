@@ -1,7 +1,7 @@
 /*
- *    UniformWeightedVote.java
+ *    MinErrorWeightedVote.java
  *    Copyright (C) 2014 University of Porto, Portugal
- *    @author A. Bifet, J. Duarte, J. Gama
+ *    @author J. Duarte, J. Gama
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 package moa.classifiers.rules.core.voting;
 
 /**
- * InverseErrorWeightedVote class for weighted votes based on estimates of errors. 
+ * MinErrorWeightedVote class for weighted votes based on estimates of errors. 
  *
  * @author João Duarte (jmduarte@inescporto.pt)
  * @version $Revision: 1 $
@@ -60,7 +60,6 @@ public class MinErrorWeightedVote extends AbstractErrorWeightedVote {
 	
 	@Override
 	public void getDescription(StringBuilder sb, int indent) {
-		// TODO Auto-generated method stub
 
 	}
 

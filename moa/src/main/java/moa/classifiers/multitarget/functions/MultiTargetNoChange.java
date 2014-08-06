@@ -5,8 +5,12 @@ import com.yahoo.labs.samoa.instances.DenseInstanceData;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
+import com.yahoo.labs.samoa.instances.Prediction;
+
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.MultiTargetLearner;
+import moa.classifiers.AbstractMultiLabelLearner;
+import moa.classifiers.MultiTargetRegressor;
 import moa.core.Measurement;
 
 /**
@@ -15,7 +19,7 @@ import moa.core.Measurement;
  * @author Albert Bifet (abifet@cs.waikato.ac.nz)
  * @version $Revision: 1 $
  */
-public class MultiTargetNoChange extends AbstractClassifier implements MultiTargetLearner {
+public class MultiTargetNoChange extends AbstractMultiLabelLearner implements MultiTargetRegressor {
 
     private static final long serialVersionUID = 1L;
 
@@ -24,27 +28,26 @@ public class MultiTargetNoChange extends AbstractClassifier implements MultiTarg
         return "Weather Forecast class classifier: always predicts the last class seen.";
     }
 
-    protected InstanceData lastSeenClasses;
-
+    //protected InstanceData lastSeenClasses;
+    Prediction lastSeenClasses;
+    
     @Override
     public void resetLearningImpl() {
         this.lastSeenClasses = null;
     }
 
     @Override
-    public void trainOnInstanceImpl(Instance inst) {
-    	MultiLabelInstance instance = (MultiLabelInstance) inst;
-        this.lastSeenClasses = instance.classValues();
+    public void trainOnInstanceImpl(MultiLabelInstance inst) {
+    	int numOutputs = inst.numberOutputTargets();
+    	Prediction prediction = new MultiLabelPrediction(numOutputs);
+    	
+    	for(int i=0; i<numOutputs;i++)
+    		prediction.setVotes(i,new double[]{inst.classValue(i)});
+    	
+        this.lastSeenClasses = prediction;
+    	
     }
-
-    public InstanceData getPredictionForInstance(Instance i) {
-        return (lastSeenClasses!=null) ? this.lastSeenClasses : new DenseInstanceData();
-    }
-    
-    public double[] getVotesForInstance(Instance i) {
-        return this.getPredictionForInstance(i).toDoubleArray();
-    }
-    
+   
     
 
     @Override
@@ -60,5 +63,10 @@ public class MultiTargetNoChange extends AbstractClassifier implements MultiTarg
     public boolean isRandomizable() {
         return false;
     }
+
+	@Override
+	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
+		return (lastSeenClasses!=null) ? this.lastSeenClasses : new MultiLabelPrediction();
+	}
 
 }

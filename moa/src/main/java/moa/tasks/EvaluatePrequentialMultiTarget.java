@@ -25,11 +25,13 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
+import com.yahoo.labs.samoa.instances.Prediction;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import moa.classifiers.MultiTargetLearner;
 
+import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.Regressor;
 import moa.core.Example;
 import moa.core.Measurement;
@@ -41,7 +43,6 @@ import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
 import moa.evaluation.MultiTargetPerformanceEvaluator;
-
 import moa.evaluation.RegressionPerformanceEvaluator;
 import moa.evaluation.WindowClassificationPerformanceEvaluator;
 import moa.learners.Learner;
@@ -66,7 +67,7 @@ public class EvaluatePrequentialMultiTarget extends MultiTargetMainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption learnerOption = new ClassOption("learner", 'l',
-           "Learner to train.", MultiTargetLearner.class, "moa.classifiers.multitarget.functions.MultiTargetNoChange");
+           "Learner to train.", MultiTargetRegressor.class, "moa.classifiers.multitarget.functions.MultiTargetNoChange");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", MultiTargetInstanceStream.class,
@@ -198,7 +199,7 @@ public class EvaluatePrequentialMultiTarget extends MultiTargetMainTask {
             Example testInst = (Example) trainInst; //.copy();
             //testInst.setClassMissing();
             //double[] prediction = learner.getVotesForInstance(testInst);
-            InstanceData prediction = learner.getPredictionForInstance(testInst);
+            Prediction prediction = learner.getPredictionForInstance(testInst);
             // Output prediction
             if (outputPredictionFile != null) {
                 double trueClass = ((Instance) trainInst.getData()).classValue();

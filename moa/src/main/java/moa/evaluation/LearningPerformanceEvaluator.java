@@ -20,6 +20,7 @@
 package moa.evaluation;
 
 import com.yahoo.labs.samoa.instances.InstanceData;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.MOAObject;
 import moa.core.Example;
@@ -49,7 +50,7 @@ public interface LearningPerformanceEvaluator<E extends Example> extends MOAObje
      * probabilities of the test instance in each class
      * @return an array of measurements monitored in this evaluator
      */
-	public void addResult(E testInst, InstanceData prediction);
+	public void addResult(E testInst, Prediction prediction);
     public void addResult(E example, double[] classVotes);
 
     /**
