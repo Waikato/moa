@@ -25,31 +25,41 @@ import java.util.List;
  *
  * @author abifet
  */
-public class InstanceInformation implements Serializable{
+public class InstanceInformation implements InstanceInformationInterface, Serializable{
     
-    
-	protected InstanceDataInformation inputInstanceInformation;
-	
-	protected InstanceDataInformation outputInstanceInformation;
-	
-	public Attribute inputAttribute(int w) {
-        return this.inputInstanceInformation.attributes.get(w);
-    }
+    //protected InstanceDataInformation inputInstanceInformation;
 
-	public Attribute outputAttribute(int w) {
-        return this.outputInstanceInformation.attributes.get(w);
-    }
+//protected InstanceDataInformation outputInstanceInformation;
+    
+/** The dataset's name. */
+protected String relationName;   
+
+protected AttributesInformation attributesInformation;   
+
+/** The class index. */
+protected int classIndex = Integer.MAX_VALUE; //By default is multilabel
+
+/** Range for multi-label instances. */
+protected Range range;
+
+public Attribute inputAttribute(int w) {
+return this.attributesInformation.attribute(inputAttributeIndex(w));
+        //inputInstanceInformation.attributes.get(w);
+}
+
+public Attribute outputAttribute(int w) {
+return this.attributesInformation.attribute(outputAttributeIndex(w));
+    //this.outputInstanceInformation.attributes.get(w);
+}
 	
 	
     
-  /** The dataset's name. */
-  protected String relationName;         
+      
 
   /** The attribute information. */
   //protected List<Attribute> attributes;
   
-  /** The class index. */
-  protected int classIndex=Integer.MAX_VALUE; //By default is multilabel
+
   
 
  
@@ -61,8 +71,9 @@ public class InstanceInformation implements Serializable{
     public InstanceInformation(InstanceInformation chunk) {
         this.relationName = chunk.relationName;
         //this.attributes = chunk.attributes;
-        this.inputInstanceInformation = chunk.inputInstanceInformation;
-        this.outputInstanceInformation = chunk.outputInstanceInformation;
+        //this.inputInstanceInformation = chunk.inputInstanceInformation;
+        //this.outputInstanceInformation = chunk.outputInstanceInformation;
+        this.attributesInformation = chunk.attributesInformation;
         this.classIndex = chunk.classIndex;
     }
     
@@ -72,10 +83,10 @@ public class InstanceInformation implements Serializable{
      * @param st the st
      * @param v the v
      */
-    public InstanceInformation(String st, List<Attribute> input, List<Attribute> output) {
+    public InstanceInformation(String st, List<Attribute> input) {
         this.relationName = st;
-        this.inputInstanceInformation = new InstanceDataInformation(st,input);
-        this.outputInstanceInformation = new InstanceDataInformation(st,output);
+        this.attributesInformation = new AttributesInformation(input, input.size());
+        //this.outputInstanceInformation = new InstanceDataInformation(st,output);
         //this.attributes = v;
     }
     
@@ -85,6 +96,7 @@ public class InstanceInformation implements Serializable{
     public InstanceInformation() {
         this.relationName = null;
         //this.attributes = null;
+        this.attributesInformation = null;
     }
     
     
@@ -108,15 +120,16 @@ public class InstanceInformation implements Serializable{
     /* (non-Javadoc)
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#classIndex()
 	 */
-	public int classIndex() {
-        return classIndex; 
+    public int classIndex() {
+        return this.classIndex; 
     }
 
     /* (non-Javadoc)
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#setClassIndex(int)
 	 */
 	public void setClassIndex(int classIndex) {
-		if(classIndex<Integer.MAX_VALUE){//classIndex==Integer.MAX_VALUE indicates multilabel
+            this.classIndex = classIndex;
+		/*if(classIndex<Integer.MAX_VALUE){//classIndex==Integer.MAX_VALUE indicates multilabel
 			if(outputInstanceInformation.numAttributes()>0) //JD
 			{
 				this.inputInstanceInformation.attributes.add(classIndex, outputInstanceInformation.attributes.get(0));
@@ -130,6 +143,7 @@ public class InstanceInformation implements Serializable{
 			this.inputInstanceInformation.attributes.remove(classAtribute);
 			this.classIndex = classIndex;
 			}
+            */
 	}
   
     /* (non-Javadoc)
@@ -143,7 +157,8 @@ public class InstanceInformation implements Serializable{
 	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#numAttributes()
 	 */
 	public int numAttributes() {
-        return this.inputInstanceInformation.attributes.size() + this.outputInstanceInformation.attributes.size();
+        return  this.attributesInformation.numberAttributes;
+                //this.inputInstanceInformation.attributes.size() + this.outputInstanceInformation.attributes.size();
     }
 
     /* (non-Javadoc)
@@ -151,7 +166,7 @@ public class InstanceInformation implements Serializable{
 	 */
 	public Attribute attribute(int w) {
     	//TODO: check for single label instances
-    	int offset = this.inputInstanceInformation.attributes.size();
+    	/*int offset = this.inputInstanceInformation.attributes.size();
 		if(classIndex<offset){ //Just for single label instances (retro-compatibility)
 			if(w==classIndex)
 				return this.outputInstanceInformation.attributes.get(0);
@@ -166,7 +181,8 @@ public class InstanceInformation implements Serializable{
     		return this.inputInstanceInformation.attributes.get(w);
     	} else {
     		return this.outputInstanceInformation.attributes.get(w-offset);
-    	}
+    	}*/
+        return this.attributesInformation.attribute(w);
     }
     
     /* (non-Javadoc)
@@ -174,7 +190,8 @@ public class InstanceInformation implements Serializable{
 	 */
 	public int numClasses() {
         //return this.outputInstanceInformation.attributes.get(this.classIndex()).numValues(); //JD
-        return this.outputInstanceInformation.attributes.get(0).numValues();
+        return this.attributesInformation.attribute(classIndex()).numValues();
+//this.outputInstanceInformation.attributes.get(0).numValues();
     }
     
     /* (non-Javadoc)
@@ -198,6 +215,55 @@ public class InstanceInformation implements Serializable{
 	public void setAttributes(List<Attribute> v) {
         this.attributes = v;
     }*/
+
+    @Override
+    public void setAttributes(List<Attribute> v) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public int inputAttributeIndex(int index) {
+        int ret = 0;
+        if (classIndex == Integer.MAX_VALUE){//Multi Label
+            
+        } else { //Single Label
+            ret = classIndex() > index ? index : index + 1;
+        }
+        return ret;
+    }    
+
+    public int outputAttributeIndex(int attributeIndex) {
+        int ret = 0;
+        if (classIndex == Integer.MAX_VALUE){//Multi Label
+            
+        } else { //Single Label
+            ret = classIndex;
+        }
+        return ret; }
+
+    int numInputAttributes() {
+        int ret = 0;
+        if (classIndex == Integer.MAX_VALUE){//Multi Label
+            
+        } else { //Single Label
+            ret = this.numAttributes() - 1;
+        }
+        return ret; 
+    }
+
+    int numOutputAttributes() {
+        int ret = 0;
+        if (classIndex == Integer.MAX_VALUE){//Multi Label
+            
+        } else { //Single Label
+            ret = 1;
+        }
+        return ret;   
+    }
+
+    void setRangeOutputIndices(Range range) {
+        this.setClassIndex(Integer.MAX_VALUE);
+        this.range = range;
+    }
     
     
 }

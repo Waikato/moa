@@ -68,6 +68,6 @@ public class DenseInstance extends SingleLabelInstance {
 		/*super(inst.weight(), inst.instanceData);
 		this.setClassValue(inst.classValue(outputAttribute));
 		this.instanceInformation = inst.instanceInformation;*/
-		super(inst.weight(), inst.instanceData.toDoubleArray());
+		super(inst.weight(), inst.toDoubleArray()); //.instanceData.toDoubleArray());
 	}
 }

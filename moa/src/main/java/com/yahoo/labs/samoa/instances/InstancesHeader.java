@@ -104,10 +104,14 @@ public class InstancesHeader extends Instances {
     }
 
 	public int numInputAttributes() {
-		return this.instanceInformation.inputInstanceInformation.numAttributes();
+		return this.instanceInformation.numInputAttributes();
 	}
 	
 	public int numOutputAttributes() {
-		return this.instanceInformation.outputInstanceInformation.numAttributes();
+		return this.instanceInformation.numOutputAttributes();
 	}
+
+    public InstanceInformation getInstanceInformation() {
+       return this.instanceInformation;
+    }
 }

@@ -1,6 +1,7 @@
 package com.yahoo.labs.samoa.instances;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AttributesInformation {
@@ -10,6 +11,9 @@ public class AttributesInformation {
 	protected List<Integer> indexValues;
 	/** The number of attributes. */
 	protected int numberAttributes;
+        
+        /** The attribute used for default for numerical values */
+        protected Attribute defaultNumericAttribute;
 
 
 	public AttributesInformation(AttributesInformation chunk) {
@@ -19,16 +23,25 @@ public class AttributesInformation {
 	}
 	
 	public AttributesInformation(List<Attribute> v, List<Integer> i, int numberAttributes) {
-        this.attributes = v;
-        this.indexValues = i;
-        this.numberAttributes = numberAttributes;
-    }
+            this.attributes = v;
+            this.indexValues = i;
+            this.numberAttributes = numberAttributes;
+        }
+        
+        public AttributesInformation(List<Attribute> v, int numberAttributes) {
+            this.attributes = v;
+            this.indexValues = new ArrayList<Integer>(numberAttributes);
+            for (int i = 0; i< numberAttributes; i++){
+                this.indexValues.add(i);
+            }
+            this.numberAttributes = numberAttributes;
+        }
 	
 	 public AttributesInformation() {
-			super();
 	        this.attributes = null;
 	        this.indexValues = null;
 	        this.numberAttributes = 0;
+                this.defaultNumericAttribute = null;
 	    }
 	
 	/**
@@ -38,7 +51,15 @@ public class AttributesInformation {
 	 * @return the attribute
 	 */
 	public Attribute attribute(int indexAttribute) {
+                if (this.attributes == null) {
+                    //All attributes are numeric
+                    return defaultNumericAttribute();
+                }
 		int location = locateIndex(indexAttribute);
+                if (location == -1) {
+                    //if there is not attribute information, it is numeric
+                    return defaultNumericAttribute();
+                }
 		return attributes.get(location);
 	}
 	
@@ -88,5 +109,12 @@ public class AttributesInformation {
 	    return min - 1;
 	  }
 	}
+
+    private Attribute defaultNumericAttribute() {
+        if (this.defaultNumericAttribute == null) {
+            this.defaultNumericAttribute = new Attribute("default");
+        }
+        return this.defaultNumericAttribute;
+    }
 
 }

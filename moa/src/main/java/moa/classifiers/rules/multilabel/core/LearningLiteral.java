@@ -1,7 +1,12 @@
 package moa.classifiers.rules.multilabel.core;
 
-import org.hamcrest.core.IsInstanceOf;
+//import org.hamcrest.core.IsInstanceOf;
 
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceData;
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
+import com.yahoo.labs.samoa.instances.Prediction;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;
@@ -20,10 +25,6 @@ import moa.core.DoubleVector;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
 
-import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
-import com.yahoo.labs.samoa.instances.Prediction;
 
 public abstract class LearningLiteral extends AbstractOptionHandler {
 
@@ -105,7 +106,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 				}
 			}
 			Prediction prediction=getPredictionForInstance(instance);
-			double []normalizedErrors=getNormalizedErrors(prediction, instance.classValues());
+			double []normalizedErrors=getNormalizedErrors(prediction, instance);
 			for (int i=0; i<outputsToLearn.length;i++){
 				changeDetectors[i].input(normalizedErrors[i]);
 				if(changeDetectors[i].getChange()){
@@ -119,7 +120,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 
 
 	protected abstract double[] getNormalizedErrors(Prediction prediction,
-			InstanceData classValues);
+			Instance inst);
 
 	public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance) {
 		if(hasStarted)

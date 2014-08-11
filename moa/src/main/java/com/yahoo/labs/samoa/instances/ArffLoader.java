@@ -36,6 +36,8 @@ public class ArffLoader {
     /** The instance information. */
     protected InstanceInformation instanceInformation;
     
+    protected InstancesHeader streamHeader;
+    
     /** The stream tokenizer. */
     protected StreamTokenizer streamTokenizer;
 
@@ -51,7 +53,7 @@ public class ArffLoader {
        this(reader);
         if (classAttribute < 0) {
             this.instanceInformation.setClassIndex(this.instanceInformation.numAttributes()-1);
-            System.out.print(this.instanceInformation.classIndex());
+            //System.out.print(this.instanceInformation.classIndex());
         } else if (classAttribute > 0) {
             this.instanceInformation.setClassIndex(classAttribute - 1);
         }
@@ -117,7 +119,8 @@ public class ArffLoader {
       this.instanceInformation = this.getHeader();
       
       if (range != null) { //is MultiLabel
-          this.instanceInformation.setClassIndex(Integer.MAX_VALUE);
+          //this.instanceInformation.setClassIndex(Integer.MAX_VALUE);
+          this.instanceInformation.setRangeOutputIndices(range);
       }
     
       
@@ -216,11 +219,11 @@ public class ArffLoader {
             //System.out.println(value +"/"+valueAttribute+" ");
         }
         if (this.instanceInformation.classIndex() == numAttribute) {
-            instance.setClassValue(valueAttribute);
+            setClassValue(instance, valueAttribute);
             //System.out.println(value +"<"+this.instanceInformation.classIndex()+">");
         } else {
-        	if(numAttribute>this.instanceInformation.classIndex())
-        		numAttribute--;
+        	//if(numAttribute>this.instanceInformation.classIndex())
+        	//	numAttribute--;
         	instance.setValue(numAttribute, valueAttribute);
         }
     }
@@ -304,7 +307,7 @@ public class ArffLoader {
             valueAttribute = value;
         }
         if (this.instanceInformation.classIndex() == numAttribute) {
-            instance.setClassValue(valueAttribute);
+            setClassValue(instance, valueAttribute);
         } else {
             //instance.setValue(numAttribute, valueAttribute);
             indexValues.add(numAttribute);
@@ -375,10 +378,10 @@ public class ArffLoader {
     	//this.range.setUpper(10000); //TO DO: Create a new range object with isInRange that does not need the upper limit
         String relation = "file stream";
         //System.out.println("RELATION " + relation);
-        inputAttributes = new ArrayList<Attribute>();
-        outputAttributes = new ArrayList<Attribute>();
+        //inputAttributes = new ArrayList<Attribute>();
+        //outputAttributes = new ArrayList<Attribute>();
         ArrayList<Attribute> auxAttributes = new ArrayList<Attribute>();//JD
-        int numAttribute = 0;
+        int numAttributes = 0;
         try {
             streamTokenizer.nextToken();
             while (streamTokenizer.ttype != StreamTokenizer.TT_EOF) {
@@ -425,7 +428,7 @@ public class ArffLoader {
                             	inputAttributes.add(new Attribute(name, attributeLabels));
                             }*/
                             auxAttributes.add(new Attribute(name, attributeLabels));
-                            numAttribute++;
+                            numAttributes++;
                         } else {
                             // Add attribute
                         	//commented JD
@@ -435,7 +438,7 @@ public class ArffLoader {
                             	inputAttributes.add(new Attribute(name));
                             }*/
                         	auxAttributes.add(new Attribute(name));
-                        	numAttribute++;
+                        	numAttributes++;
                         }
 
                     } else if (token.startsWith("@DATA")) {
@@ -446,35 +449,46 @@ public class ArffLoader {
                 }
                 streamTokenizer.nextToken();
             }
-            if (range==null) //is single-target. All instances should go to inputAtrributes (see setClassIndex(int) from InstanceInformation )
+            if (range != null) {
+                this.range.setUpper(numAttributes);
+            }
+            /*if (range==null) //is single-target. All instances should go to inputAtrributes (see setClassIndex(int) from InstanceInformation )
             	inputAttributes=auxAttributes;
             else//is multi-target
             {
 	            this.range.setUpper(numAttribute);
 	            for (int i=0; i<auxAttributes.size();i++)
 	            {
-	            	if (this.range.isInRange(i))
-	            		outputAttributes.add(auxAttributes.get(i));
-	            	else
+	            	//if (this.range.isInRange(i))
+	            	//	outputAttributes.add(auxAttributes.get(i));
+	            	//else
 	            		inputAttributes.add(auxAttributes.get(i));
 	            	
 	            }
-            }
+            }*/
             	
 
         } catch (IOException ex) {
             Logger.getLogger(ArffLoader.class.getName()).log(Level.SEVERE, null, ex);
         }
        // this.range.setUpper(inputAttributes.size()+outputAttributes.size());
-        return new InstanceInformation(relation, inputAttributes, outputAttributes);
+        return new InstanceInformation(relation, auxAttributes);
     }
     
     protected Instance newSparseInstance(double d, double[] res) {
- 		return new SparseInstance(d, res) ;
+ 		Instance inst = new SparseInstance(d, res) ;
+                //inst.setInstanceInformation(this.instanceInformation);
+                return inst;
  	}
     
     protected Instance newDenseInstance(int numberAttributes) {
-		return new DenseInstance(numberAttributes);
+		Instance inst = new DenseInstance(numberAttributes);
+                //inst.setInstanceInformation(this.instanceInformation);
+                return inst;
 	}
-    
+
+    private void setClassValue(Instance instance, double valueAttribute) {
+           instance.setValue(this.instanceInformation.classIndex(), valueAttribute);
+    }
+   
 }

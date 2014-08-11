@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.yahoo.labs.samoa.instances.Range;
 
 /**
  * The Class Instances.
@@ -128,7 +127,7 @@ public class Instances implements Serializable{
      * @param capacity the capacity
      */
     public Instances(String st, List<Attribute> v, int capacity) {
-        this.instanceInformation = new InstanceInformation(st,v, null);
+        this.instanceInformation = new InstanceInformation(st,v);
     }
 
     /**

@@ -2,7 +2,6 @@ package moa.classifiers.rules.errormeasurers;
 
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.SingleLabelInstance;
 
 import moa.AbstractMOAObject;
 
@@ -18,7 +17,7 @@ abstract public class ErrorMeasurement extends AbstractMOAObject {
 	private static final long serialVersionUID = 1L;
 	
 	protected double fadingErrorFactor;
-	abstract public void addPrediction(double [] prediction, SingleLabelInstance inst);
+	abstract public void addPrediction(double [] prediction, Instance inst);
 	
 	abstract public double getCurrentError();
 

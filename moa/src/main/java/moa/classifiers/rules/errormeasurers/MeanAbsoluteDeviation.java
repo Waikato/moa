@@ -1,7 +1,7 @@
 package moa.classifiers.rules.errormeasurers;
 
 import com.github.javacliparser.FloatOption;
-import com.yahoo.labs.samoa.instances.SingleLabelInstance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /*
  * Computes the Mean Absolute Deviation for single target regression problems
@@ -25,7 +25,7 @@ public class MeanAbsoluteDeviation extends ErrorMeasurement {
 	}
 
 	@Override
-	public void addPrediction(double[] prediction, SingleLabelInstance inst) {
+	public void addPrediction(double[] prediction, Instance inst) {
 		sumError=Math.abs(prediction[0]-inst.classValue())*inst.weight()+fadingErrorFactor*sumError;
 		weightSeen=inst.weight()+fadingErrorFactor*weightSeen;
 	}

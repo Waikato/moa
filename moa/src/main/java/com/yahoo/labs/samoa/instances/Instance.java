@@ -223,6 +223,24 @@ public interface Instance extends Serializable{
      * @return the instances
      */
     public Instances dataset();
+
+           public int numInputAttributes();
+    
+    public int numOutputAttributes();
+    
+    public int numberOutputTargets();
+
+	public double classValue(int instAttIndex) ;
+
+	public void setClassValue(int indexClass, double valueAttribute);
+
+	public Attribute outputAttribute(int outputIndex);
+
+	public Attribute inputAttribute(int attributeIndex);
+
+	public double valueInputAttribute(int attributeIndex);
+
+	public double valueOutputAttribute(int attributeIndex);
     
 }
 
