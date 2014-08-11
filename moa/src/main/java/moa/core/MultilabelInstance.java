@@ -19,7 +19,7 @@
  */
 package moa.core;
 
-import com.yahoo.labs.samoa.instances.SingleLabelInstance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 
 /**
  * Multilabel instance.
@@ -27,12 +27,12 @@ import com.yahoo.labs.samoa.instances.SingleLabelInstance;
  * @author Jesse Read (jmr30@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class MultilabelInstance extends SingleLabelInstance {
+public class MultilabelInstance extends InstanceImpl {
 
     public MultilabelInstance(double d, double[] res) {
          super(d,res);
     }
-    public MultilabelInstance(SingleLabelInstance inst) {
+    public MultilabelInstance(InstanceImpl inst) {
         super(inst);
     }
 

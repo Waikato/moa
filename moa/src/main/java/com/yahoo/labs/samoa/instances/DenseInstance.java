@@ -19,7 +19,7 @@ package com.yahoo.labs.samoa.instances;
 /**
  * The Class DenseInstance.
  */
-public class DenseInstance extends SingleLabelInstance {
+public class DenseInstance extends InstanceImpl {
 
     /**
      * Instantiates a new dense instance.
@@ -36,7 +36,7 @@ public class DenseInstance extends SingleLabelInstance {
      *
      * @param inst the inst
      */
-    public DenseInstance(SingleLabelInstance inst) {
+    public DenseInstance(InstanceImpl inst) {
         super(inst);
     }
     
@@ -46,7 +46,7 @@ public class DenseInstance extends SingleLabelInstance {
      * @param inst the inst
      */
     public DenseInstance(Instance inst) {
-        super((SingleLabelInstance) inst);
+        super((InstanceImpl) inst);
     }
     
     /**

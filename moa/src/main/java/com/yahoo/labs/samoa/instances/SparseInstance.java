@@ -20,7 +20,7 @@ package com.yahoo.labs.samoa.instances;
  *
  * @author abifet
  */
-public class SparseInstance extends SingleLabelInstance{
+public class SparseInstance extends InstanceImpl{
     
      /**
      * Instantiates a new sparse instance.
@@ -37,7 +37,7 @@ public class SparseInstance extends SingleLabelInstance{
      *
      * @param inst the inst
      */
-    public SparseInstance(SingleLabelInstance inst) {
+    public SparseInstance(InstanceImpl inst) {
         super(inst);
     }
 

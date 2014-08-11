@@ -16,11 +16,11 @@
 package com.yahoo.labs.samoa.instances;
 
 /**
- * The Class SingleLabelInstance.
+ * The Class InstanceImpl.
  *
  * @author abifet
  */
-public class SingleLabelInstance implements MultiLabelInstance {
+public class InstanceImpl implements MultiLabelInstance {
 
     /**
      * The weight.
@@ -49,7 +49,7 @@ public class SingleLabelInstance implements MultiLabelInstance {
      *
      * @param inst the inst
      */
-    public SingleLabelInstance(SingleLabelInstance inst) {
+    public InstanceImpl(InstanceImpl inst) {
         this.weight = inst.weight;
         this.instanceData = inst.instanceData; //copy
         //this.classData = inst.classData; //copy
@@ -65,7 +65,7 @@ public class SingleLabelInstance implements MultiLabelInstance {
      * @param weight the weight
      * @param res the res
      */
-    public SingleLabelInstance(double weight, double[] res) {
+    public InstanceImpl(double weight, double[] res) {
         this.weight = weight;
         this.instanceData = new DenseInstanceData(res);
          //this.attributeValues = res;
@@ -82,7 +82,7 @@ public class SingleLabelInstance implements MultiLabelInstance {
      * @param indexValues the index values
      * @param numberAttributes the number attributes
      */
-    public SingleLabelInstance(double weight, double[] attributeValues, int[] indexValues, int numberAttributes) {
+    public InstanceImpl(double weight, double[] attributeValues, int[] indexValues, int numberAttributes) {
         this.weight = weight;
         this.instanceData = new SparseInstanceData(attributeValues, indexValues, numberAttributes); //???
         //this.classData = new SingleClassInstanceData();
@@ -95,7 +95,7 @@ public class SingleLabelInstance implements MultiLabelInstance {
      * @param weight the weight
      * @param instanceData the instance data
      */
-    public SingleLabelInstance(double weight, InstanceData instanceData) {
+    public InstanceImpl(double weight, InstanceData instanceData) {
         this.weight = weight;
         this.instanceData = instanceData; //???
         //this.classValue = Double.NaN;
@@ -107,7 +107,7 @@ public class SingleLabelInstance implements MultiLabelInstance {
      *
      * @param numAttributes the num attributes
      */
-    public SingleLabelInstance(int numAttributes) {
+    public InstanceImpl(int numAttributes) {
         this.instanceData = new DenseInstanceData(new double[numAttributes]); //JD
         //m_AttValues = new double[numAttributes];
     /*for (int i = 0; i < m_AttValues.length; i++) {
@@ -372,7 +372,7 @@ public class SingleLabelInstance implements MultiLabelInstance {
      */
     @Override
     public Instance copy() {
-        SingleLabelInstance inst = new SingleLabelInstance(this);
+        InstanceImpl inst = new InstanceImpl(this);
         return inst;
     }
 
@@ -408,7 +408,7 @@ public class SingleLabelInstance implements MultiLabelInstance {
     }
 
     /**
-     * Text representation of a SingleLabelInstance.
+     * Text representation of a InstanceImpl.
      */
     public String toString() {
         double[] aux = this.instanceData.toDoubleArray();
