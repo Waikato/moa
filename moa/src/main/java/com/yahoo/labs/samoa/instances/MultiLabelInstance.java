@@ -16,7 +16,7 @@
 package com.yahoo.labs.samoa.instances;
 
 /**
- * The Class MultiLabelInstance.
+ * The Interface MultiLabelInstance.
  *
  * @author abifet
  */

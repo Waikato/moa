@@ -13,35 +13,43 @@
  * language governing permissions and limitations under the
  * License.  
  */
-
 package com.yahoo.labs.samoa.instances;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
 /**
  * The Class Attribute.
  */
-public class Attribute implements Serializable{
+public class Attribute implements Serializable {
 
-    /** The is nominal. */
+    /**
+     * The is nominal.
+     */
     protected boolean isNominal;
-    
-    /** The is numeric. */
+
+    /**
+     * The is numeric.
+     */
     protected boolean isNumeric;
-    
-    /** The is date. */
+
+    /**
+     * The is date.
+     */
     protected boolean isDate;
-    
-    /** The name. */
+
+    /**
+     * The name.
+     */
     protected String name;
-    
-    /** The attribute values. */
+
+    /**
+     * The attribute values.
+     */
     protected List<String> attributeValues;
 
     /**
@@ -52,8 +60,10 @@ public class Attribute implements Serializable{
     public List<String> getAttributeValues() {
         return attributeValues;
     }
-    
-    /** The index. */
+
+    /**
+     * The index.
+     */
     protected int index;
 
     /**
@@ -77,7 +87,7 @@ public class Attribute implements Serializable{
         this.attributeValues = attributeValues;
         this.isNominal = true;
     }
-    
+
     /**
      * Instantiates a new attribute.
      */
@@ -130,8 +140,7 @@ public class Attribute implements Serializable{
     public int numValues() {
         if (isNumeric()) {
             return 0;
-        }
-        else {
+        } else {
             return attributeValues.size();
         }
     }
@@ -164,8 +173,10 @@ public class Attribute implements Serializable{
     boolean isDate() {
         return isDate;
     }
-    
-    /** The values string attribute. */
+
+    /**
+     * The values string attribute.
+     */
     private Map<String, Integer> valuesStringAttribute;
 
     /**

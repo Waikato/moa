@@ -13,7 +13,6 @@
  * language governing permissions and limitations under the
  * License.  
  */
-
 package com.yahoo.labs.samoa.instances;
 
 import java.io.Serializable;
@@ -23,24 +22,22 @@ import java.io.Serializable;
  *
  * @author abifet
  */
-
-public interface Instance extends Serializable{
+public interface Instance extends Serializable {
 
     /**
-     * Weight.
+     * Gets the weight of the instance.
      *
-     * @return the double
+     * @return the weight
      */
     public double weight();
-    
+
     /**
      * Sets the weight.
      *
      * @param weight the new weight
      */
     public void setWeight(double weight);
-    
-    //Attributes
+
     /**
      * Attribute.
      *
@@ -48,28 +45,28 @@ public interface Instance extends Serializable{
      * @return the attribute
      */
     public Attribute attribute(int instAttIndex);
-    
+
     /**
      * Delete attribute at.
      *
-     * @param i the i
+     * @param i the index
      */
     public void deleteAttributeAt(int i);
-    
+
     /**
      * Insert attribute at.
      *
-     * @param i the i
+     * @param i the index
      */
     public void insertAttributeAt(int i);
-    
+
     /**
-     * Num attributes.
+     * Gets the number of attributes.
      *
-     * @return the int
+     * @return the number of attributes
      */
     public int numAttributes();
-    
+
     /**
      * Adds the sparse values.
      *
@@ -78,123 +75,122 @@ public interface Instance extends Serializable{
      * @param numberAttributes the number attributes
      */
     public void addSparseValues(int[] indexValues, double[] attributeValues, int numberAttributes);
-    
 
-    //Values
     /**
-     * Num values.
+     * Gets the number of values, mainly for sparse instances.
      *
-     * @return the int
+     * @return the number of values
      */
     public int numValues();
-    
+
     /**
-     * String value.
+     * Gets the value of a discrete attribute as a string.
      *
      * @param i the i
      * @return the string
      */
     public String stringValue(int i);
-    
+
     /**
-     * Value.
+     * Gets the value of an attribute.
      *
      * @param instAttIndex the inst att index
      * @return the double
      */
     public double value(int instAttIndex);
-    
+
     /**
-     * Value.
+     * Gets the value of an attribute, given the attribute.
      *
      * @param attribute the attribute
      * @return the double
      */
     public double value(Attribute attribute);
-    
+
     /**
-     * Sets the value.
+     * Sets the value of an attribute.
      *
-     * @param m_numAttributes the m_num attributes
-     * @param d the d
+     * @param instAttIndex the index
+     * @param value the value
      */
-    public void setValue(int m_numAttributes, double d);
-    
+    public void setValue(int instAttIndex, double value);
+
     /**
-     * Checks if is missing.
+     * Checks if an attribute is missing.
      *
      * @param instAttIndex the inst att index
      * @return true, if is missing
      */
     public boolean isMissing(int instAttIndex);
-    
+
     /**
-     * Index.
+     * Gets the index of the attribute given the index of the array in a sparse
+     * representation.
      *
-     * @param i the i
-     * @return the int
+     * @param arrayIndex the index of the array
+     * @return the index
      */
-    public int index(int i);
-    
+    public int index(int arrayIndex);
+
     /**
-     * Value sparse.
+     * Gets the value of an attribute in a sparse representation of the
+     * instance.
      *
      * @param i the i
-     * @return the double
+     * @return the value
      */
     public double valueSparse(int i);
-    
+
     /**
-     * Checks if is missing sparse.
+     * Checks if the attribute is missing sparse.
      *
      * @param p1 the p1
      * @return true, if is missing sparse
      */
     public boolean isMissingSparse(int p1);
-    
+
     /**
      * To double array.
      *
      * @return the double[]
      */
     public double[] toDoubleArray();
-    
-    //Class
+
     /**
      * Class attribute.
      *
      * @return the attribute
      */
     public Attribute classAttribute();
-    
+
     /**
      * Class index.
      *
      * @return the int
      */
     public int classIndex();
-    
+
     /**
      * Class is missing.
      *
      * @return true, if successful
      */
     public boolean classIsMissing();
-    
+
     /**
      * Class value.
      *
      * @return the double
      */
     public double classValue();
-    
+
     /**
      * Num classes.
      *
      * @return the int
      */
     public int numClasses();
-    
+
     /**
      * Sets the class value.
      *
@@ -209,14 +205,13 @@ public interface Instance extends Serializable{
      */
     public Instance copy();
 
-    //Dataset
     /**
      * Sets the dataset.
      *
      * @param dataset the new dataset
      */
     public void setDataset(Instances dataset);
-    
+
     /**
      * Dataset.
      *
@@ -224,23 +219,73 @@ public interface Instance extends Serializable{
      */
     public Instances dataset();
 
-           public int numInputAttributes();
-    
+    /**
+     * Gets the number of input attributes.
+     *
+     * @return the number of input attributes
+     */
+    public int numInputAttributes();
+
+    /**
+     * Gets the number of output attributes.
+     *
+     * @return the number of output attributes
+     */
     public int numOutputAttributes();
-    
+
+    /**
+     * Gets the number of output attributes.
+     *
+     * @return the number of output attributes
+     */
     public int numberOutputTargets();
 
-	public double classValue(int instAttIndex) ;
+    /**
+     * Gets the value of an output attribute.
+     *
+     * @param attributeIndex the index
+     * @return the value
+     */
+    public double classValue(int attributeIndex);
 
-	public void setClassValue(int indexClass, double valueAttribute);
+    /**
+     * Sets the value of an output attribute.
+     *
+     * @param indexClass the output attribute index
+     * @param valueAttribute the value of the attribute
+     */
+    public void setClassValue(int indexClass, double valueAttribute);
 
-	public Attribute outputAttribute(int outputIndex);
+    /**
+     * Gets an output attribute given its index.
+     *
+     * @param attributeIndex the index
+     * @return the attribute
+     */
+    public Attribute outputAttribute(int attributeIndex);
 
-	public Attribute inputAttribute(int attributeIndex);
+    /**
+     * Gets an input attribute given its index.
+     *
+     * @param attributeIndex the index
+     * @return the attribute
+     */
+    public Attribute inputAttribute(int attributeIndex);
 
-	public double valueInputAttribute(int attributeIndex);
+    /**
+     * Gets the value of an input attribute.
+     *
+     * @param attributeIndex the index
+     * @return the value
+     */
+    public double valueInputAttribute(int attributeIndex);
 
-	public double valueOutputAttribute(int attributeIndex);
-    
+    /**
+     * Gets the value of an output attribute.
+     *
+     * @param attributeIndex the index
+     * @return the value
+     */
+    public double valueOutputAttribute(int attributeIndex);
+
 }
-

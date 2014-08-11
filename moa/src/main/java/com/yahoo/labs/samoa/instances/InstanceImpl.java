@@ -33,34 +33,24 @@ public class InstanceImpl implements MultiLabelInstance {
     protected InstanceData instanceData;
 
     /**
-     * The class data.
-     */
-    //protected InstanceData classData;
-    //Fast implementation without using Objects
-    //protected double[] attributeValues;
-    //protected double classValue;
-    /**
      * The instance information.
      */
     protected InstancesHeader instanceHeader;
 
     /**
-     * Instantiates a new single label instance.
+     * Instantiates a new instance.
      *
      * @param inst the inst
      */
     public InstanceImpl(InstanceImpl inst) {
         this.weight = inst.weight;
-        this.instanceData = inst.instanceData; //copy
-        //this.classData = inst.classData; //copy
-        //this.classValue = inst.classValue;
-        //this.attributeValues = inst.attributeValues;
+        this.instanceData = inst.instanceData;
         this.instanceHeader = inst.instanceHeader;
     }
 
     //Dense
     /**
-     * Instantiates a new single label instance.
+     * Instantiates a new instance.
      *
      * @param weight the weight
      * @param res the res
@@ -68,14 +58,11 @@ public class InstanceImpl implements MultiLabelInstance {
     public InstanceImpl(double weight, double[] res) {
         this.weight = weight;
         this.instanceData = new DenseInstanceData(res);
-         //this.attributeValues = res;
-        //this.classData = new SingleClassInstanceData();
-        //this.classValue = Double.NaN;
     }
 
     //Sparse
     /**
-     * Instantiates a new single label instance.
+     * Instantiates a new instance.
      *
      * @param weight the weight
      * @param attributeValues the attribute values
@@ -84,37 +71,28 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     public InstanceImpl(double weight, double[] attributeValues, int[] indexValues, int numberAttributes) {
         this.weight = weight;
-        this.instanceData = new SparseInstanceData(attributeValues, indexValues, numberAttributes); //???
-        //this.classData = new SingleClassInstanceData();
-        //this.classValue = Double.NaN;
+        this.instanceData = new SparseInstanceData(attributeValues, indexValues, numberAttributes);
     }
 
     /**
-     * Instantiates a new single label instance.
+     * Instantiates a new instance.
      *
      * @param weight the weight
      * @param instanceData the instance data
      */
     public InstanceImpl(double weight, InstanceData instanceData) {
         this.weight = weight;
-        this.instanceData = instanceData; //???
-        //this.classValue = Double.NaN;
-        //this.classData = new SingleClassInstanceData();
+        this.instanceData = instanceData;
     }
 
     /**
-     * Instantiates a new single label instance.
+     * Instantiates a new instance.
      *
      * @param numAttributes the num attributes
      */
     public InstanceImpl(int numAttributes) {
         this.instanceData = new DenseInstanceData(new double[numAttributes]); //JD
-        //m_AttValues = new double[numAttributes];
-    /*for (int i = 0; i < m_AttValues.length; i++) {
-         m_AttValues[i] = Utils.missingValue();
-         }*/
         this.weight = 1;
-        //this.classData = new SingleClassInstanceData();
     }
 
     /**
@@ -186,13 +164,6 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public double value(int instAttIndex) {
-        /*int matchIndex=getMatchingIndex(instAttIndex);
-         if(matchIndex==this.numAttributes()-1)
-         return this.classValue();
-         else
-         return //this.instanceData.value(instAttIndex); //JD - for compatibility with older code (class attribute not the last)
-         this.instanceData.value(matchIndex);
-         */
         return this.instanceData.value(instAttIndex);
     }
 
@@ -204,9 +175,7 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public boolean isMissing(int instAttIndex) {
-        return //Double.isNaN(value(instAttIndex)); //
-                //this.instanceData.isMissing(getMatchingIndex(instAttIndex));
-                this.instanceData.isMissing(instAttIndex);
+        return this.instanceData.isMissing(instAttIndex);
     }
 
     /**
@@ -216,8 +185,7 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public int numValues() {
-        return //this.attributeValues.length; //
-                this.instanceData.numValues();
+        return this.instanceData.numValues();
     }
 
     /**
@@ -228,8 +196,7 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public int index(int i) {
-        return //i; //
-                this.instanceData.index(i);
+        return this.instanceData.index(i);
     }
 
     /**
@@ -284,8 +251,7 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public double[] toDoubleArray() {
-        return //this.attributeValues; //
-                this.instanceData.toDoubleArray();
+        return this.instanceData.toDoubleArray();
     }
 
     /**
@@ -297,7 +263,6 @@ public class InstanceImpl implements MultiLabelInstance {
     @Override
     public void setValue(int numAttribute, double d) {
         this.instanceData.setValue(numAttribute, d);
-        //this.attributeValues[numAttribute] = d;
     }
 
     /**
@@ -308,8 +273,6 @@ public class InstanceImpl implements MultiLabelInstance {
     @Override
     public double classValue() {
         return this.instanceData.value(classIndex());
-        //this.classData.value(0);
-        //return classValue;
     }
 
     /**
@@ -340,8 +303,7 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public boolean classIsMissing() {
-        return //Double.isNaN(this.classValue);//
-                this.instanceData.isMissing(classIndex());
+        return this.instanceData.isMissing(classIndex());
     }
 
     /**
@@ -362,7 +324,6 @@ public class InstanceImpl implements MultiLabelInstance {
     @Override
     public void setClassValue(double d) {
         this.setValue(classIndex(), d);
-        //this.classValue = d;
     }
 
     /**
@@ -403,6 +364,7 @@ public class InstanceImpl implements MultiLabelInstance {
      * @param attributeValues the attribute values
      * @param numberAttributes the number attributes
      */
+    @Override
     public void addSparseValues(int[] indexValues, double[] attributeValues, int numberAttributes) {
         this.instanceData = new SparseInstanceData(attributeValues, indexValues, numberAttributes); //???
     }
@@ -410,84 +372,65 @@ public class InstanceImpl implements MultiLabelInstance {
     /**
      * Text representation of a InstanceImpl.
      */
+    @Override
     public String toString() {
         double[] aux = this.instanceData.toDoubleArray();
-        StringBuffer str = new StringBuffer();
+        StringBuilder str = new StringBuilder();
         for (int i = 0; i < aux.length; i++) {
-            str.append(aux[i] + " ");
+            str.append(aux[i]).append(" ");
         }
-        /*str.append("- ");
-        aux = this.classData.toDoubleArray();
-        for (int i = 0; i < aux.length; i++) {
-            str.append(aux[i] + " ");
-        }*/
 
         return str.toString();
     }
 
-    //JD - for compatibility with older code (class attribute not the last)
-    /**
-     * Makes correspondence between old instance representation and .
-     *
-     * @param instAttIndex the index value
-     * @return "corrected" attribute index
-     */
-   /* private int getMatchingIndex(int instAttIndex) {
-        int classIndex = this.classIndex();
-        if (instAttIndex == classIndex) {
-            instAttIndex = this.numAttributes() - 1;
-        } else if (instAttIndex > classIndex) {
-            instAttIndex--;
-        }
-
-        return instAttIndex;
-    }*/
-    
-       public int numInputAttributes() {
-        return this.instanceHeader.numInputAttributes(); 
+    @Override
+    public int numInputAttributes() {
+        return this.instanceHeader.numInputAttributes();
     }
-    
+
+    @Override
     public int numOutputAttributes() {
-        return numberOutputTargets(); 
+        return numberOutputTargets();
     }
-        public int numberOutputTargets() {
-		return this.instanceHeader.numOutputAttributes();
-                //this.classData.numAttributes();
-	}
+    
+    @Override
+    public int numberOutputTargets() {
+        return this.instanceHeader.numOutputAttributes();
+    }
 
-	public double classValue(int instAttIndex) {
-            //InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
-	    //return this.instanceData.value(instanceInformation.outputAttributeIndex(instAttIndex));
-            return valueOutputAttribute(instAttIndex);
-            }
+    @Override
+    public double classValue(int instAttIndex) {
+        return valueOutputAttribute(instAttIndex);
+    }
 
-	/*public InstanceData classValues() {
-		return this.classData;
-	}*/
+    @Override
+    public void setClassValue(int indexClass, double valueAttribute) {
+        InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
+        this.instanceData.setValue(instanceInformation.outputAttributeIndex(indexClass), valueAttribute);
 
-	public void setClassValue(int indexClass, double valueAttribute) {
-            InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
-            this.instanceData.setValue(instanceInformation.outputAttributeIndex(indexClass), valueAttribute);
-		
-	}
+    }
 
-	public Attribute outputAttribute(int outputIndex) {
-            InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
-	    return instanceInformation.outputAttribute(outputIndex);
-	}
+    @Override
+    public Attribute outputAttribute(int outputIndex) {
+        InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
+        return instanceInformation.outputAttribute(outputIndex);
+    }
 
-	public Attribute inputAttribute(int attributeIndex) {
-            InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
-		return instanceInformation.inputAttribute(attributeIndex);
-	}
+    @Override
+    public Attribute inputAttribute(int attributeIndex) {
+        InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
+        return instanceInformation.inputAttribute(attributeIndex);
+    }
 
-	public double valueInputAttribute(int attributeIndex) {
-            InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
-		return this.instanceData.value(instanceInformation.inputAttributeIndex(attributeIndex));
-	}
+    @Override
+    public double valueInputAttribute(int attributeIndex) {
+        InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
+        return this.instanceData.value(instanceInformation.inputAttributeIndex(attributeIndex));
+    }
 
-	public double valueOutputAttribute(int attributeIndex) {
-            InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
-		return this.instanceData.value(instanceInformation.outputAttributeIndex(attributeIndex));
-	}
+    @Override
+    public double valueOutputAttribute(int attributeIndex) {
+        InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
+        return this.instanceData.value(instanceInformation.outputAttributeIndex(attributeIndex));
+    }
 }

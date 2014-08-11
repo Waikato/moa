@@ -49,7 +49,7 @@ public class WekaToSamoaInstanceConverter implements Serializable{
                     indexValues, inst.numAttributes());
         } else {
             samoaInstance = new DenseInstance(inst.weight(), inst.toDoubleArray());
-            samoaInstance.deleteAttributeAt(inst.classIndex());
+            //samoaInstance.deleteAttributeAt(inst.classIndex());
         }
         if (this.samoaInstanceInformation == null) {
             this.samoaInstanceInformation = this.samoaInstancesInformation(inst.dataset());
