@@ -1,13 +1,13 @@
 package moa.classifiers.rules.multilabel.core;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import com.yahoo.labs.samoa.instances.Instance;
 
 import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
-
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
@@ -44,12 +44,12 @@ public class LearningLiteralRegression extends LearningLiteral {
 
 
 
-	protected double [] getNormalizedErrors(Prediction prediction, InstanceData classValues) {
+	protected double [] getNormalizedErrors(Prediction prediction, Instance instance) {
 		double [] errors= new double[outputsToLearn.length];
 
 		for (int i=0; i<outputsToLearn.length;i++){
 			double predY=normalizeOutputValue(i,prediction.getVote(outputsToLearn[i], 0));
-			double trueY=normalizeOutputValue(i,classValues.value(outputsToLearn[i]));
+			double trueY=normalizeOutputValue(i,instance.valueOutputAttribute(outputsToLearn[i]));
 			errors[i]=Math.abs(predY-trueY);
 		}
 		return errors;

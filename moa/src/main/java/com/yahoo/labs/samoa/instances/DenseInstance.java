@@ -13,13 +13,12 @@
  * language governing permissions and limitations under the
  * License.  
  */
-
 package com.yahoo.labs.samoa.instances;
 
 /**
  * The Class DenseInstance.
  */
-public class DenseInstance extends SingleLabelInstance {
+public class DenseInstance extends InstanceImpl {
 
     /**
      * Instantiates a new dense instance.
@@ -28,46 +27,33 @@ public class DenseInstance extends SingleLabelInstance {
      * @param res the res
      */
     public DenseInstance(double weight, double[] res) {
-         super(weight,res);
+        super(weight, res);
     }
-    
+
     /**
      * Instantiates a new dense instance.
      *
      * @param inst the inst
      */
-    public DenseInstance(SingleLabelInstance inst) {
+    public DenseInstance(InstanceImpl inst) {
         super(inst);
     }
-    
+
     /**
      * Instantiates a new dense instance.
      *
      * @param inst the inst
      */
     public DenseInstance(Instance inst) {
-        super((SingleLabelInstance) inst);
+        super((InstanceImpl) inst);
     }
-    
+
     /**
      * Instantiates a new dense instance.
      *
      * @param numberAttributes the number attributes
      */
     public DenseInstance(double numberAttributes) {
-         super((int) numberAttributes);
-         //super(1, new double[(int) numberAttributes-1]); 
-         //Add missing values
-         //for (int i = 0; i < numberAttributes-1; i++) {
-          //   //this.setValue(i, Double.NaN);
-        //}
+        super((int) numberAttributes);
     }
-
-	public DenseInstance(MultiLabelInstance inst, int outputAttribute) {
-		// We create a dense instance from a multilabel
-		/*super(inst.weight(), inst.instanceData);
-		this.setClassValue(inst.classValue(outputAttribute));
-		this.instanceInformation = inst.instanceInformation;*/
-		super(inst.weight(), inst.instanceData.toDoubleArray());
-	}
 }

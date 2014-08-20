@@ -75,7 +75,7 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 		//Instance instance = new DenseInstance(this.numAttributes+1);
 		//instance.setDataset(dataset[classifierIndex]);
 		int numAttributes = this.header[outputIndex].numInputAttributes();
-		double[] attVals = new double[numAttributes];
+		double[] attVals = new double[numAttributes+1]; //JD - +1 for class
 		for (int attributeIndex = 0; attributeIndex < numAttributes; attributeIndex++) {
 			attVals[attributeIndex] = inst.valueInputAttribute(attributeIndex);
 		}
@@ -97,7 +97,11 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 
 	@Override
 	protected Measurement[] getModelMeasurementsImpl() {
-		return ensemble[0].getModelMeasurements(); //TODO: JD - get measurements for all outputs
+		if(ensemble.length>0)
+			return ensemble[0].getModelMeasurements(); 
+		//TODO: JD - get measurements for all outputs
+		else 
+			return null;
 	}
 
 

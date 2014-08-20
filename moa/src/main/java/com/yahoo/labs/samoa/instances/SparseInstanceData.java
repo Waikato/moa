@@ -19,9 +19,9 @@ package com.yahoo.labs.samoa.instances;
  *
  * @author abifet
  */
-public class SparseInstanceData implements InstanceData{
-    
-     /**
+public class SparseInstanceData implements InstanceData {
+
+    /**
      * Instantiates a new sparse instance data.
      *
      * @param attributeValues the attribute values
@@ -29,25 +29,27 @@ public class SparseInstanceData implements InstanceData{
      * @param numberAttributes the number attributes
      */
     public SparseInstanceData(double[] attributeValues, int[] indexValues, int numberAttributes) {
-       this.attributeValues = attributeValues;
-       this.indexValues = indexValues;
-       this.numberAttributes = numberAttributes;
+        this.attributeValues = attributeValues;
+        this.indexValues = indexValues;
+        this.numberAttributes = numberAttributes;
     }
-    
-     /**
+
+    /**
      * Instantiates a new sparse instance data.
      *
      * @param length the length
      */
     public SparseInstanceData(int length) {
-       this.attributeValues = new double[length];
-       this.indexValues =  new int[length];
+        this.attributeValues = new double[length];
+        this.indexValues = new int[length];
     }
-    
-    /** The attribute values. */
+
+    /**
+     * The attribute values.
+     */
     protected double[] attributeValues;
 
-     /**
+    /**
      * Gets the attribute values.
      *
      * @return the attribute values
@@ -56,7 +58,7 @@ public class SparseInstanceData implements InstanceData{
         return attributeValues;
     }
 
-     /**
+    /**
      * Sets the attribute values.
      *
      * @param attributeValues the new attribute values
@@ -65,7 +67,7 @@ public class SparseInstanceData implements InstanceData{
         this.attributeValues = attributeValues;
     }
 
-     /**
+    /**
      * Gets the index values.
      *
      * @return the index values
@@ -74,7 +76,7 @@ public class SparseInstanceData implements InstanceData{
         return indexValues;
     }
 
-     /**
+    /**
      * Sets the index values.
      *
      * @param indexValues the new index values
@@ -83,7 +85,7 @@ public class SparseInstanceData implements InstanceData{
         this.indexValues = indexValues;
     }
 
-     /**
+    /**
      * Gets the number attributes.
      *
      * @return the number attributes
@@ -92,7 +94,7 @@ public class SparseInstanceData implements InstanceData{
         return numberAttributes;
     }
 
-     /**
+    /**
      * Sets the number of attributes.
      *
      * @param numberAttributes the new number attributes
@@ -100,25 +102,28 @@ public class SparseInstanceData implements InstanceData{
     public void setNumberAttributes(int numberAttributes) {
         this.numberAttributes = numberAttributes;
     }
-    
-    /** The index values. */
+
+    /**
+     * The index values.
+     */
     protected int[] indexValues;
-    
-    /** The number of attributes. */
+
+    /**
+     * The number of attributes.
+     */
     protected int numberAttributes;
 
-     /**
+    /**
      * Gets the number of attributes.
      *
      * @return the int
      */
-    
     @Override
     public int numAttributes() {
         return this.numberAttributes;
     }
 
-     /**
+    /**
      * Value.
      *
      * @param indexAttribute the index attribute
@@ -128,15 +133,15 @@ public class SparseInstanceData implements InstanceData{
     public double value(int indexAttribute) {
         int location = locateIndex(indexAttribute);
         //return location == -1 ? 0 : this.attributeValues[location];
-      //      int index = locateIndex(attIndex);
-    if ((location >= 0) && (indexValues[location] == indexAttribute)) {
-      return attributeValues[location];
-    } else {
-      return 0.0;
-    }
+        //      int index = locateIndex(attIndex);
+        if ((location >= 0) && (indexValues[location] == indexAttribute)) {
+            return attributeValues[location];
+        } else {
+            return 0.0;
+        }
     }
 
-     /**
+    /**
      * Checks if is missing.
      *
      * @param indexAttribute the index attribute
@@ -147,7 +152,7 @@ public class SparseInstanceData implements InstanceData{
         return Double.isNaN(this.value(indexAttribute));
     }
 
-     /**
+    /**
      * Num values.
      *
      * @return the int
@@ -157,7 +162,7 @@ public class SparseInstanceData implements InstanceData{
         return this.attributeValues.length;
     }
 
-     /**
+    /**
      * Index.
      *
      * @param indexAttribute the index attribute
@@ -168,7 +173,7 @@ public class SparseInstanceData implements InstanceData{
         return this.indexValues[indexAttribute];
     }
 
-     /**
+    /**
      * Value sparse.
      *
      * @param indexAttribute the index attribute
@@ -179,7 +184,7 @@ public class SparseInstanceData implements InstanceData{
         return this.attributeValues[indexAttribute];
     }
 
-     /**
+    /**
      * Checks if is missing sparse.
      *
      * @param indexAttribute the index attribute
@@ -190,12 +195,7 @@ public class SparseInstanceData implements InstanceData{
         return Double.isNaN(this.valueSparse(indexAttribute));
     }
 
-    /*@Override
-    public double value(Attribute attribute) {
-        return value(attribute.index());
-    }*/
-    
-     /**
+    /**
      * To double array.
      *
      * @return the double[]
@@ -203,12 +203,12 @@ public class SparseInstanceData implements InstanceData{
     @Override
     public double[] toDoubleArray() {
         double[] array = new double[numAttributes()];
-        for (int i=0; i<numValues() ; i++) {
+        for (int i = 0; i < numValues(); i++) {
             array[index(i)] = valueSparse(i);
         }
         return array;
     }
-    
+
     /**
      * Sets the value.
      *
@@ -224,38 +224,38 @@ public class SparseInstanceData implements InstanceData{
             // We need to add the value
         }
     }
-    
-   /**
-   * Locates the greatest index that is not greater than the given index.
-   * 
-   * @return the internal index of the attribute index. Returns -1 if no index
-   *         with this property could be found
-   */
-  public int locateIndex(int index) {
 
-    int min = 0;
-    int max = this.indexValues.length - 1;
+    /**
+     * Locates the greatest index that is not greater than the given index.
+     *
+     * @return the internal index of the attribute index. Returns -1 if no index
+     * with this property could be found
+     */
+    public int locateIndex(int index) {
 
-    if (max == -1) {
-      return -1;
+        int min = 0;
+        int max = this.indexValues.length - 1;
+
+        if (max == -1) {
+            return -1;
+        }
+
+        // Binary search
+        while ((this.indexValues[min] <= index) && (this.indexValues[max] >= index)) {
+            int current = (max + min) / 2;
+            if (this.indexValues[current] > index) {
+                max = current - 1;
+            } else if (this.indexValues[current] < index) {
+                min = current + 1;
+            } else {
+                return current;
+            }
+        }
+        if (this.indexValues[max] < index) {
+            return max;
+        } else {
+            return min - 1;
+        }
     }
 
-    // Binary search
-    while ((this.indexValues[min] <= index) && (this.indexValues[max] >= index)) {
-      int current = (max + min) / 2;
-      if (this.indexValues[current] > index) {
-        max = current - 1;
-      } else if (this.indexValues[current] < index) {
-        min = current + 1;
-      } else {
-        return current;
-      }
-    }
-    if (this.indexValues[max] < index) {
-      return max;
-    } else {
-      return min - 1;
-    }
-  }
-    
 }

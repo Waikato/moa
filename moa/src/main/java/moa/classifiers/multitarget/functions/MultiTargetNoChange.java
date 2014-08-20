@@ -66,7 +66,8 @@ public class MultiTargetNoChange extends AbstractMultiLabelLearner implements Mu
 
 	@Override
 	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
-		return (lastSeenClasses!=null) ? this.lastSeenClasses : new MultiLabelPrediction();
+		//return (lastSeenClasses!=null) ? this.lastSeenClasses : new MultiLabelPrediction();
+		return (lastSeenClasses!=null) ? this.lastSeenClasses : null;
 	}
 
 }

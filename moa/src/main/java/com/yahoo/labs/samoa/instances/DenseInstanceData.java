@@ -124,11 +124,6 @@ public class DenseInstanceData implements InstanceData{
         return isMissing(indexAttribute);
     }
 
-    /*@Override
-    public double value(Attribute attribute) {
-        return value(attribute.index());
-    }*/
-
     /**
      * To double array.
      *
