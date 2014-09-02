@@ -13,23 +13,12 @@ import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 
-public class AnomalinessScore extends AbstractAnomalyDetector {
+public class OddsRatioScore extends AbstractAnomalyDetector {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	public FloatOption multivariateAnomalyProbabilityThresholdOption = new FloatOption(
-			"multivariateAnomalyProbabilityThreshold",
-			'm',
-			"Multivariate anomaly threshold value.",
-			0.99, 0.0, 1.0);
-	public FloatOption univariateAnomalyprobabilityThresholdOption = new FloatOption(
-			"univariateAnomalyprobabilityThreshold",
-			'u',
-			"Univariate anomaly threshold value.",
-			0.90, 0.0, 1.0);
 
 	public IntOption minNumberInstancesOption = new IntOption(
 			"minNumberInstances",
@@ -54,27 +43,19 @@ public class AnomalinessScore extends AbstractAnomalyDetector {
 	public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance) {
 		if(probabilityFunction==null){
 			weightSeen=0.0;
-			//load options
-			minInstances=minNumberInstancesOption.getValue();
-			univariateThreshold=univariateAnomalyprobabilityThresholdOption.getValue();
-			multivariateThreshold=multivariateAnomalyProbabilityThresholdOption.getValue();	
-			probabilityFunction=(ProbabilityFunction)getPreparedClassOption(probabilityFunctionOption);
-
 			//free memory
 			minNumberInstancesOption=null;
-			univariateAnomalyprobabilityThresholdOption=null;
-			multivariateAnomalyProbabilityThresholdOption=null;
 			probabilityFunctionOption=null;
 		}
 
-		boolean isAnomaly=false, doTest=false;
+		boolean doTest=false;
 		if(sufficientStatistics==null)
 			sufficientStatistics= new AutoExpandVector<double[]>();
 
 			if(weightSeen>minInstances)
 				doTest=true;
 
-			double D=0, N=0;
+			double anomaly=0;
 			//check if it is anomaly
 			for(int i=0; i<instance.numInputAttributes(); i++){
 				double prob=0;
@@ -82,8 +63,10 @@ public class AnomalinessScore extends AbstractAnomalyDetector {
 				if(instance.attribute(i).isNumeric()){
 					double val=instance.valueInputAttribute(i);
 					if(stats!=null){
-						if(doTest)
+						if(doTest){
 							prob=probabilityFunction.getProbability(stats[0]/weightSeen, Utils.computeSD(stats[1], stats[0], weightSeen), val);
+							anomaly+=Math.log(prob/(1-prob));
+						}
 						//update statistics for numeric attributes
 						stats[0]+=val;
 						stats[1]+=(val*val);
@@ -93,18 +76,12 @@ public class AnomalinessScore extends AbstractAnomalyDetector {
 						sufficientStatistics.set(i,stats);
 					}
 				}
-				if(doTest){
-					D = D + Math.log(1-prob);
-					if ((1-prob) >= univariateThreshold) 
-						N = N + Math.log(1-prob);
-				}
 			}
-			if(doTest)
-				if(D!=0){
-					isAnomaly=(N/D>multivariateThreshold);
-				}
 			weightSeen+=instance.weight();
-			return isAnomaly;
+			if(doTest)
+				return anomaly<0;
+			else
+				return false;
 	}
 
 

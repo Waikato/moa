@@ -22,6 +22,10 @@ package moa.classifiers.rules.core;
 
 import com.yahoo.labs.samoa.instances.Instance;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -222,7 +226,8 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 				double mean = atribSum / perceptronIntancesSeen;
 				double sd = computeSD(atribSquredSum, atribSum, perceptronIntancesSeen);
 				double probability = computeProbability(mean, sd, instance.value(instAttIndex));
-
+				
+				/* old implementation
 				if (probability > 0.0) {
 					D = D + Math.abs(Math.log(probability));
 					if (probability < uniVariateAnomalyProbabilityThreshold) {//0.10
@@ -230,11 +235,14 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 					}
 				} else {
 					debug("Anomaly with probability 0 in atribute : " + x, 4);
-				}
+				}*/
+				
+				//odds ratio
+				anomaly+=Math.log(probability/(1-probability));
 			}
 
-			anomaly = 0.0;
-			if (D != 0.0) {
+			/*anomaly = 0.0; //Old implementation
+			if (D != 0.0) { 
 				anomaly = N / D;
 			}
 			if (anomaly >= multiVariateAnomalyProbabilityThreshold) {
@@ -243,7 +251,16 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 						multiVariateAnomalyProbabilityThreshold,
 						anomaly);
 				return true;
-			}
+			}*/
+			/*System.out.println("Anomaly = " + anomaly); //TODO: JD remove commented code
+			try {
+			    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("/home/jduarte/fried_anomalies.txt", true)));
+			    out.println(anomaly);
+			    out.close();
+			} catch (IOException e) {
+			    //exception handling left as an exercise for the reader
+			}*/
+			return anomaly<0;
 		}
 		return false;
 	}
@@ -342,7 +359,8 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 			// competing attributes are equally good, and the split will be made on the one with the higher SDR value.
 
 			if (bestSuggestion.merit > 0) {
-				if ((((secondBestSuggestion.merit / bestSuggestion.merit) + hoeffdingBound) < 1)
+				//if ((((secondBestSuggestion.merit / bestSuggestion.merit) + hoeffdingBound) < 1) //ratio
+				if ((((bestSuggestion.merit-secondBestSuggestion.merit) ) > hoeffdingBound) // if normalized
 						|| (hoeffdingBound < tieThreshold)) {
 					debug("Expanded ", 5);
 					shouldSplit = true;
