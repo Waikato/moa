@@ -38,7 +38,7 @@ import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
-import moa.classifiers.rules.AMRulesRegressor;
+import moa.classifiers.rules.AMRulesRegressorOld;
 import moa.classifiers.rules.AbstractAMRules;
 import moa.classifiers.rules.core.splitcriteria.AMRulesSplitCriterion;
 import moa.classifiers.rules.core.splitcriteria.SDRSplitCriterionAMRules;
@@ -89,8 +89,8 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 		super(builder);
 		this.perceptron = new Perceptron();
 		this.perceptron.prepareForUse();
-		this.perceptron.learningRatioOption = ((AMRulesRegressor)this.amRules).learningRatioOption;
-		this.perceptron.constantLearningRatioDecayOption = ((AMRulesRegressor)this.amRules).constantLearningRatioDecayOption;	
+		this.perceptron.learningRatioOption = ((AMRulesRegressorOld)this.amRules).learningRatioOption;
+		this.perceptron.constantLearningRatioDecayOption = ((AMRulesRegressorOld)this.amRules).constantLearningRatioDecayOption;	
 
 
 		if(this.predictionFunction!=1)
@@ -220,7 +220,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 			for (int x = 0; x < instance.numAttributes() - 1; x++) {
 				// Perceptron is initialized each rule.
 				// this is a local anomaly.
-				int instAttIndex = AMRulesRegressor.modelAttIndexToInstanceAttIndex(x, instance);
+				int instAttIndex = AMRulesRegressorOld.modelAttIndexToInstanceAttIndex(x, instance);
 				atribSum = this.perceptron.perceptronattributeStatistics.getValue(x);
 				atribSquredSum = this.perceptron.squaredperceptronattributeStatistics.getValue(x);
 				double mean = atribSum / perceptronIntancesSeen;
@@ -238,7 +238,10 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 				}*/
 				
 				//odds ratio
-				anomaly+=Math.log(probability/(1-probability));
+				if(probability>0)
+					anomaly+=Math.log(probability/(1-probability));
+				if(probability==1) //TODO: JD comment: only for testing
+					anomaly+=Math.log(probability/(1-probability));
 			}
 
 			/*anomaly = 0.0; //Old implementation
@@ -252,8 +255,8 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 						anomaly);
 				return true;
 			}*/
-			/*System.out.println("Anomaly = " + anomaly); //TODO: JD remove commented code
-			try {
+			System.out.println("Anomaly = " + anomaly); //TODO: JD remove commented code
+			/*try {
 			    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("/home/jduarte/fried_anomalies.txt", true)));
 			    out.println(anomaly);
 			    out.close();
@@ -269,7 +272,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 		double atribSquredSum = 0.0;
 
 		for (int x = 0; x < instance.numAttributes() - 1; x++) {
-			int instAttIndex = AMRulesRegressor.modelAttIndexToInstanceAttIndex(x, instance);
+			int instAttIndex = AMRulesRegressorOld.modelAttIndexToInstanceAttIndex(x, instance);
 			atribSum = perceptron.perceptronattributeStatistics.getValue(x);
 			atribSquredSum = perceptron.squaredperceptronattributeStatistics.getValue(x);
 			double mean = atribSum / perceptron.getInstancesSeen();
@@ -294,7 +297,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 		{
 			this.perceptron=new Perceptron(((RuleActiveRegressionNode) oldLearningNode).perceptron);
 			this.perceptron.resetError();
-			this.perceptron.setLearningRatio(((AMRulesRegressor)this.amRules).learningRatioOption.getValue());
+			this.perceptron.setLearningRatio(((AMRulesRegressorOld)this.amRules).learningRatioOption.getValue());
 		}
 
 		if(((RuleActiveRegressionNode) oldLearningNode).targetMean!=null)
@@ -323,7 +326,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 		// tieThreshold. Hoeffding Bound test parameter.
 		//SplitCriterion splitCriterion = new SDRSplitCriterionAMRules(); 
 			//SplitCriterion splitCriterion = new SDRSplitCriterionAMRulesNode();//JD for assessing only best branch
-		AMRulesSplitCriterion splitCriterion=(AMRulesSplitCriterion)((AMRulesSplitCriterion) ((AMRulesRegressor)this.amRules).splitCriterionOption.getPreMaterializedObject()).copy();
+		AMRulesSplitCriterion splitCriterion=(AMRulesSplitCriterion)((AMRulesSplitCriterion) ((AMRulesRegressorOld)this.amRules).splitCriterionOption.getPreMaterializedObject()).copy();
 
 		// Using this criterion, find the best split per attribute and rank the results
 		AttributeSplitSuggestion[] bestSplitSuggestions

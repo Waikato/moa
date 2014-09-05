@@ -22,10 +22,18 @@ import com.yahoo.labs.samoa.instances.Prediction;
 public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner implements MultiTargetRegressor{
 
 
+	public BasicMultiTargetRegressor() {
+		init();
+	}
+
+	protected void init() {
+		baseLearnerOption = new ClassOption("baseLearner", 'l',
+				"Classifier to train.", Classifier.class, "rules.AMRulesRegressor");
+	}
+
 	private static final long serialVersionUID = 1L;
 
-	public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-			"Classifier to train.", Classifier.class, "rules.AMRulesRegressor") ; //rules.AMRules"); 
+	public ClassOption baseLearnerOption; //rules.AMRules"); 
 
 	protected Classifier[] ensemble;
 

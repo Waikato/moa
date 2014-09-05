@@ -21,14 +21,10 @@ implements MultiTargetRegressor, AMRulesFunction {
 
 	private static final int NUM_LEARNERS=2;
 
-	public ClassOption baseLearnerOption1 = new ClassOption("baseLearner1", 'l',
-			"First base learner.", MultiTargetRegressor.class, "moa.classifiers.rules.multilabel.functions.MultiLabelTargetMeanRegressor") ;
+	public ClassOption baseLearnerOption1;
+	public ClassOption baseLearnerOption2;
 
-	public ClassOption baseLearnerOption2 = new ClassOption("baseLearner2", 'm',
-			"Second base learner.", MultiTargetRegressor.class, "moa.classifiers.rules.multilabel.functions.MultiLabelPerceptronRegressor") ;
-
-	public ClassOption errorMeasurerOption = new ClassOption("errorMeasurer", 'e',
-			"Measure of error for deciding which learner should predict.", AbstractMultiTargetErrorMeasurer.class, "MeanAbsoluteDeviationMT") ;
+	public ClassOption errorMeasurerOption;
 
 	protected boolean hasStarted;
 
@@ -37,6 +33,15 @@ implements MultiTargetRegressor, AMRulesFunction {
 
 	protected MultiTargetErrorMeasurer [] errorMeasurer;
 
+	public AdaptiveMultiTargetRegressor(){
+		 baseLearnerOption1 = new ClassOption("baseLearner1", 'l',
+					"First base learner.", MultiTargetRegressor.class, "moa.classifiers.rules.multilabel.functions.MultiLabelTargetMeanRegressor") ;
+		 baseLearnerOption2= new ClassOption("baseLearner2", 'm',
+					"Second base learner.", MultiTargetRegressor.class, "moa.classifiers.rules.multilabel.functions.MultiLabelPerceptronRegressor") ;
+		 errorMeasurerOption = new ClassOption("errorMeasurer", 'e',
+					"Measure of error for deciding which learner should predict.", AbstractMultiTargetErrorMeasurer.class, "MeanAbsoluteDeviationMT") ;
+
+	}
 	@Override
 	public void trainOnInstanceImpl(MultiLabelInstance instance) {
 		if (!this.hasStarted){	

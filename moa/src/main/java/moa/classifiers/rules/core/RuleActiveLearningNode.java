@@ -203,7 +203,10 @@ public abstract class RuleActiveLearningNode extends ActiveLearningNode {
         
         if (sd > 0.0) {
             double k = (Math.abs(value - mean) / sd); // One tailed variant of Chebyshev's inequality
-        	probability= 1.0 / (1+k*k); //cantelli's
+        	probability= 1.0 / (1+k*k); //cantelli's (one-tailed)
+        	double var=Math.pow(sd, 2);
+        	probability= 2*var/(var+Math.pow(Math.abs(value - mean), 2));
+        	//probability= 1.0 / (1+k*k);
             //probability= 1.0 / (k*k); //chebyshev
         	//normal distribution
         	//double diff = value - mean;

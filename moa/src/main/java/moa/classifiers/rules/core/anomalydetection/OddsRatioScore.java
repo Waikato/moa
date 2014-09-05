@@ -26,16 +26,21 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 			"The minimum number of instances required to perform anomaly detection.",
 			30, 0, Integer.MAX_VALUE);
 
+	public FloatOption thresholdOption = new FloatOption(
+			"threshold",
+			't',
+			"The threshold value for detecting anomalies.",
+			-10, -100, 0);
+
 	public ClassOption probabilityFunctionOption = new ClassOption("probabilityFunction",
 			'p', "Probability function", 
 			ProbabilityFunction.class,
-			"CantellisInequality");
+			"GaussInequality");
 
 
 	private int minInstances;
 	private double weightSeen;
-	private double univariateThreshold;
-	private double multivariateThreshold;
+	private double threshold;
 	AutoExpandVector<double[]> sufficientStatistics;
 	private ProbabilityFunction probabilityFunction;
 
@@ -43,17 +48,18 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 	public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance) {
 		if(probabilityFunction==null){
 			weightSeen=0.0;
+			//load options
+			minInstances=minNumberInstancesOption.getValue();
+			threshold=thresholdOption.getValue();
+			probabilityFunction=(ProbabilityFunction)getPreparedClassOption(probabilityFunctionOption);
 			//free memory
 			minNumberInstancesOption=null;
 			probabilityFunctionOption=null;
 		}
 
-		boolean doTest=false;
+		boolean doTest=weightSeen>minInstances;
 		if(sufficientStatistics==null)
 			sufficientStatistics= new AutoExpandVector<double[]>();
-
-			if(weightSeen>minInstances)
-				doTest=true;
 
 			double anomaly=0;
 			//check if it is anomaly
@@ -65,6 +71,17 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 					if(stats!=null){
 						if(doTest){
 							prob=probabilityFunction.getProbability(stats[0]/weightSeen, Utils.computeSD(stats[1], stats[0], weightSeen), val);
+							System.out.println("prob = " + prob);
+						/*	if(prob==1)
+								anomaly+=Math.log(Double.MAX_VALUE);
+							else if(prob==0)
+								anomaly+=Math.log(Double.MIN_VALUE);
+							else
+								anomaly+=Math.log(prob/(1-prob));	*/	
+							if(prob>0.9999)
+								prob=0.9999;
+							else if(prob<0.0001)
+								prob=0.0001;
 							anomaly+=Math.log(prob/(1-prob));
 						}
 						//update statistics for numeric attributes
@@ -78,8 +95,9 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 				}
 			}
 			weightSeen+=instance.weight();
+			System.out.println("Anomaly = " + anomaly);
 			if(doTest)
-				return anomaly<0;
+				return anomaly<threshold;
 			else
 				return false;
 	}

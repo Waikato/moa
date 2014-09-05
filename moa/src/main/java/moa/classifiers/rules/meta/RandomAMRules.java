@@ -35,7 +35,7 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.Regressor;
-import moa.classifiers.rules.AMRulesRegressor;
+import moa.classifiers.rules.AMRulesRegressorOld;
 import moa.classifiers.rules.AbstractAMRules;
 import moa.classifiers.rules.core.voting.ErrorWeightedVote;
 import moa.classifiers.rules.core.voting.Vote;

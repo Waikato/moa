@@ -40,7 +40,7 @@ public class AnomalinessScore extends AbstractAnomalyDetector {
 	public ClassOption probabilityFunctionOption = new ClassOption("probabilityFunction",
 			'p', "Probability function", 
 			ProbabilityFunction.class,
-			"CantellisInequality");
+			"GaussInequality");
 
 
 	private int minInstances;

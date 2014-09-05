@@ -91,8 +91,8 @@ public class LearningLiteralRegression extends LearningLiteral {
 			bestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1];
 			AttributeExpansionSuggestion secondBestSuggestion
 			= bestSplitSuggestions[bestSplitSuggestions.length - 2];
-			//if ((((bestSuggestion.merit-secondBestSuggestion.merit)) > hoeffdingBound) || (hoeffdingBound < tieThreshold)) {
-			if ((((secondBestSuggestion.merit/bestSuggestion.merit) + hoeffdingBound) < 1) || (hoeffdingBound < tieThreshold)) {
+			if ((((bestSuggestion.merit-secondBestSuggestion.merit)) > hoeffdingBound) || (hoeffdingBound < tieThreshold)) {
+			//if ((((secondBestSuggestion.merit/bestSuggestion.merit) + hoeffdingBound) < 1) || (hoeffdingBound < tieThreshold)) {
 				//debug("Expanded ", 5);
 				shouldSplit = true;
 			}
@@ -115,7 +115,7 @@ public class LearningLiteralRegression extends LearningLiteral {
 			int [] newOutputs=outputSelector.getNextOutputIndices(newLiteralStatistics,literalStatistics, outputsToLearn);
 			//set expanding branch
 			if(learner instanceof AMRulesFunction){
-				((AMRulesFunction) learner).resetWithMemory();;
+				((AMRulesFunction) learner).resetWithMemory();
 			}
 			expandedLearningLiteral=new LearningLiteralRegression(newOutputs);
 			expandedLearningLiteral.setLearner((MultiLabelLearner)this.learner.copy());
