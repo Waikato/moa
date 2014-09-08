@@ -190,7 +190,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 				double [] errors= defaultRule.getCurrentErrors();
 				errorWeightedVote.addVote(vote,errors);
 				debug("Default Rule Vote " + vote.toString() + "\n Error " + errors + "  Y: " + instance,3);
-			}
+			} 
 		} 	
 		Prediction weightedVote=errorWeightedVote.computeWeightedVote();
 		if(weightedVote!=null){

@@ -193,7 +193,6 @@ public class LearningLiteralRegression extends LearningLiteral {
 					obs=((NominalStatisticsObserver)nominalStatisticsObserver.copy());
 				}
 				this.attributeObservers.set(i, obs);
-				//TODO: JD - support categorical attributes
 			}
 			obs.observeAttribute(instance.valueInputAttribute(i), exampleStatistics);
 		}

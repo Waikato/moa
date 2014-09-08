@@ -88,7 +88,7 @@ public class MultiLabelPrediction implements Prediction {
 	public boolean hasVotesForAttribute(int outputAttributeIndex) {
 		if(prediction.length<(outputAttributeIndex+1))
 				return false;
-		return (prediction[outputAttributeIndex]==null) ? false : true;
+		return (prediction[outputAttributeIndex].numValues()==0) ? false : true;
 	}
 
 }

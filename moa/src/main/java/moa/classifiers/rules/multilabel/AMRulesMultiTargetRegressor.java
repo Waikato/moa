@@ -2,6 +2,7 @@ package moa.classifiers.rules.multilabel;
 
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
+import moa.classifiers.Regressor;
 import moa.classifiers.rules.multilabel.core.MultiLabelRule;
 import moa.classifiers.rules.multilabel.core.MultiLabelRuleRegression;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;

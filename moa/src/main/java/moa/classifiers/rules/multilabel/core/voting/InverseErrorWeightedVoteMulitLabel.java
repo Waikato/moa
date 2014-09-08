@@ -38,60 +38,50 @@ public class InverseErrorWeightedVoteMulitLabel extends AbstractErrorWeightedVot
 
 	@Override
 	public Prediction computeWeightedVote() {
-		int numOutputs=outputAttributesCount.length;
-		Prediction weightedVote=new MultiLabelPrediction(numOutputs);
-		//TODO: JD
-		/*
+		Prediction weightedVote=null;
 		int n=votes.size();
-		weights=new double[n];
 		if (n>0){
-			double sumError=0;
+			int numOutputs=outputAttributesCount.length;
 
-			//For each vote
-			//weights are 1/(error+eps)
-			for (int i=0; i<n; ++i){
-				if(errors.get(i)<Double.MAX_VALUE){
-					weights[i]=1.0/(errors.get(i)+EPS);
-					sumError+=weights[i];
-				}
-				else
-					weights[i]=0;
+			weights=new double[n][numOutputs];
 
-			}
-			if(sumError>0)
-				//For each vote
-				for (int i=0; i<n; ++i)
-				{
-					//normalize so that weights sum 1
-					weights[i]/=sumError;
-					//For each output attribute
-					for (int o=1;o<numOutputs;o++)
-					{
-						int numClasses=votes.get(0).numClasses(o);
-						//For each class
-						//compute weighted vote
-						for(int j=0; j<numClasses; j++)
-							weightedVote.setVote(o, j, weightedVote.getVote(o, j)+votes.get(i).getVote(o, j)*weights[i]);
-					}
-				}
-			//Only occurs if all errors=Double.MAX_VALUE
-			else
+
+			weightedVote=new MultiLabelPrediction(numOutputs);
+
+			double [] sumError= new double[numOutputs];
+			//For each output attribute
+			for (int o=0;o<numOutputs;o++)
 			{
-				//compute arithmetic vote
-				for (int i=0; i<n; ++i)
+				for (int i=0; i<n; i++)
 				{
-					//For each output attribute
-					for (int o=1;o<numOutputs;o++)
-					{
-						int numClasses=votes.get(0).numClasses(o);
-						//For each class
-						//compute weighted vote
-						for(int j=0; j<numClasses; j++)
-							weightedVote.setVote(o, j, weightedVote.getVote(o, j)+votes.get(i).getVote(o, j)/n);
+					if(votes.get(i).hasVotesForAttribute(o) && errors.get(i)!=null){
+						weights[i][o]=1.0/(errors.get(i)[o]+EPS);
+						sumError[o]+=weights[i][o];
 					}
 				}
+
+				int numClasses=votes.get(0).numClasses(o);
+
+
+				//For each vote
+				for (int i=0; i<n; i++)
+				{
+					if(votes.get(i).hasVotesForAttribute(o)){
+						if(sumError[o]>0)
+							weights[i][o]/=sumError[o];
+						else
+							weights[i][o]=1.0/outputAttributesCount[o];
+					}
+					//For each class
+					for(int j=0; j<numClasses; j++){
+						weightedVote.setVote(o, j, weightedVote.getVote(o, j)+votes.get(i).getVote(o, j)*weights[i][o]);
+					}
+
+				}	
+
 			}
-		}*/
+
+		}
 		return weightedVote;
 	}
 

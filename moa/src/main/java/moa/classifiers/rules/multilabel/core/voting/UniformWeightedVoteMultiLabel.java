@@ -41,10 +41,7 @@ public class UniformWeightedVoteMultiLabel extends AbstractErrorWeightedVoteMult
 		int n=votes.size();
 		if (n>0){
 			int numOutputs=outputAttributesCount.length;
-
 			weights=new double[n][numOutputs];
-
-
 				weightedVote=new MultiLabelPrediction(numOutputs);
 
 				//For each output attribute
@@ -54,7 +51,7 @@ public class UniformWeightedVoteMultiLabel extends AbstractErrorWeightedVoteMult
 					//For each vote
 					for (int i=0; i<n; i++)
 					{
-						if(votes.get(i).hasVotesForAttribute(o));
+						if(votes.get(i).hasVotesForAttribute(o))
 							weights[i][o]=1.0/outputAttributesCount[o];
 						//else takes value 0
 
