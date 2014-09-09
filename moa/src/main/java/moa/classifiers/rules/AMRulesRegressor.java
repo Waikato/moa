@@ -13,6 +13,8 @@ public class AMRulesRegressor extends AMRulesMultiTargetRegressor implements
 
 	public AMRulesRegressor() {
 		super();
+		changeDetector.setValueViaCLIString("PageHinkleyDM -d 0.05 -l 35.0");
+		anomalyDetector.setValueViaCLIString("OddsRatioScore");
 	}
 
 }

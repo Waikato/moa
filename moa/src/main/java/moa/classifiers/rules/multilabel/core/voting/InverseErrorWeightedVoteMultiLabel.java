@@ -28,7 +28,7 @@ import com.yahoo.labs.samoa.instances.Prediction;
  * @author João Duarte (jmduarte@inescporto.pt)
  * @version $Revision: 1 $
  */
-public class InverseErrorWeightedVoteMulitLabel extends AbstractErrorWeightedVoteMultiLabel {
+public class InverseErrorWeightedVoteMultiLabel extends AbstractErrorWeightedVoteMultiLabel {
 
 	/**
 	 * 

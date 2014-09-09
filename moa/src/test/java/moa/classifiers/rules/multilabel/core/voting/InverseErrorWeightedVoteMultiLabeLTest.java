@@ -10,11 +10,11 @@ import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 public class InverseErrorWeightedVoteMultiLabeLTest {
-	static InverseErrorWeightedVoteMulitLabel weightedVote;
+	static InverseErrorWeightedVoteMultiLabel weightedVote;
 	static final double EPS=0.0000001;
 	@BeforeClass
-	    public static void onlyOnce() {
-			weightedVote = new InverseErrorWeightedVoteMulitLabel();
+	    public static void runBefore() {
+			weightedVote = new InverseErrorWeightedVoteMultiLabel();
 			Prediction pred= new MultiLabelPrediction(4);
 			pred.setVotes(0, new double[]{1});
 			pred.setVotes(1, new double[]{2});
@@ -48,7 +48,7 @@ public class InverseErrorWeightedVoteMultiLabeLTest {
 	
 		@Test
 		public void testGetWeightedError() {
-			assertEquals(0.6578947371,weightedVote.getWeightedError(), EPS);
+			assertEquals(0.9736842113,weightedVote.getWeightedError(), EPS);
 		}
 	
 		@Test
@@ -87,13 +87,9 @@ public class InverseErrorWeightedVoteMultiLabeLTest {
 		@Test
 		public void testGetOutputAttributesErrors() {
 			double [] errors=weightedVote.getOutputAttributesErrors();
-			assertEquals(0.631578948, errors[0],EPS);
-			assertEquals(0.000000001, errors[1],EPS);
+			assertEquals(1.894736843, errors[0],EPS);
+			assertEquals(0.000000002, errors[1],EPS);
 			assertEquals(2, errors[2],EPS);
 			assertEquals(0, errors[3],EPS);
-			
 		}
-
-
-
 }

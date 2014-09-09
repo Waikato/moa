@@ -74,10 +74,10 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 	@Override
 	public double getWeightedError()
 	{
-		if(outputAttributesCount!=null){
-			int numOutputs=outputAttributesCount.length;
+		double [] errors=getOutputAttributesErrors();
+		if(errors!=null){
+			int numOutputs=errors.length;
 			double error=0;
-			double [] errors=getOutputAttributesErrors();
 			
 			for (int i=0; i<numOutputs;i++)
 				error+=errors[i];
@@ -120,8 +120,8 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 			for (int i=0; i<numVotes; ++i){
 				//For each output attribute
 				for (int j=0; j<numOutputs; j++){
-					if(errors.get(i)[j]!=Double.MAX_VALUE)
-						weightedError[j]+=errors.get(i)[j]*weights[i][j]/outputAttributesCount[j];
+					if(errors.get(i)!=null && errors.get(i)[j]!=Double.MAX_VALUE)
+						weightedError[j]+=errors.get(i)[j]*weights[i][j];
 				}
 			}
 			return weightedError;

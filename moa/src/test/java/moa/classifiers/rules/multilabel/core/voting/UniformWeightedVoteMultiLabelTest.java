@@ -14,7 +14,7 @@ public class UniformWeightedVoteMultiLabelTest {
 	static final double EPS=0.0000001;
 	
     @BeforeClass
-    public static void onlyOnce() {
+    public static void runBefore() {
 		weightedVote = new UniformWeightedVoteMultiLabel();
 		Prediction pred= new MultiLabelPrediction(4);
 		pred.setVotes(0, new double[]{1});

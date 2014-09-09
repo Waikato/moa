@@ -71,7 +71,7 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 					if(stats!=null){
 						if(doTest){
 							prob=probabilityFunction.getProbability(stats[0]/weightSeen, Utils.computeSD(stats[1], stats[0], weightSeen), val);
-							System.out.println("prob = " + prob);
+						//	System.out.println("prob = " + prob);
 						/*	if(prob==1)
 								anomaly+=Math.log(Double.MAX_VALUE);
 							else if(prob==0)
@@ -95,7 +95,7 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 				}
 			}
 			weightSeen+=instance.weight();
-			System.out.println("Anomaly = " + anomaly);
+			//System.out.println("Anomaly = " + anomaly);
 			if(doTest)
 				return anomaly<threshold;
 			else
