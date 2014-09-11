@@ -155,6 +155,9 @@ public class LearningLiteralRegression extends LearningLiteral {
 
 	@Override
 	public void trainOnInstance(MultiLabelInstance instance)  {
+		if (attributesMask==null)
+			initializeAttibutesMask(instance);
+		
 		//learn for all output attributes if not specified at construction time
 		int numOutputs=instance.numberOutputTargets();
 		if(!hasStarted)
@@ -184,17 +187,20 @@ public class LearningLiteralRegression extends LearningLiteral {
 
 		if(this.attributeObservers==null)
 			this.attributeObservers=new AutoExpandVector<AttributeStatisticsObserver>();
-		for(int i =0; i<instance.numInputAttributes(); i++){
-			AttributeStatisticsObserver obs=this.attributeObservers.get(i);
-			if(obs==null){
-				if(instance.attribute(i).isNumeric()){
-					obs=((NumericStatisticsObserver)numericStatisticsObserver.copy());
-				}else if(instance.attribute(i).isNominal()){ //just to make sure its nominal (in the future there may be ordinal?
-					obs=((NominalStatisticsObserver)nominalStatisticsObserver.copy());
+		for(int i=0, ct=0; i<instance.numInputAttributes(); i++){
+			if(attributesMask[i]){
+				AttributeStatisticsObserver obs=this.attributeObservers.get(ct);
+				if(obs==null){
+					if(instance.attribute(i).isNumeric()){
+						obs=((NumericStatisticsObserver)numericStatisticsObserver.copy());
+					}else if(instance.attribute(i).isNominal()){ //just to make sure its nominal (in the future there may be ordinal?
+						obs=((NominalStatisticsObserver)nominalStatisticsObserver.copy());
+					}
+					this.attributeObservers.set(ct, obs);
 				}
-				this.attributeObservers.set(i, obs);
+				obs.observeAttribute(instance.valueInputAttribute(i), exampleStatistics);
+				ct++;
 			}
-			obs.observeAttribute(instance.valueInputAttribute(i), exampleStatistics);
 		}
 		Prediction prediction=learner.getPredictionForInstance(instance);
 		if(prediction!=null)
@@ -202,6 +208,7 @@ public class LearningLiteralRegression extends LearningLiteral {
 		learner.trainOnInstance(instance);
 		weightSeen+=instance.weight();
 	}
+
 
 	/*@Override
 	public void resetLearning() {

@@ -98,4 +98,6 @@ public interface ErrorWeightedVoteMultiLabel {
 	 * @return      copy of the object
 	 */
 	public MOAObject copy();
+
+	public Prediction getPrediction();
 }

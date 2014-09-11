@@ -43,7 +43,7 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 	protected List<double[]> errors;
 	protected double[][] weights;
 	protected int [] outputAttributesCount;
-
+	protected Prediction weightedVote=null;
 
 
 	public AbstractErrorWeightedVoteMultiLabel() {
@@ -133,6 +133,12 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 	@Override
 	public void getDescription(StringBuilder sb, int indent) {
 		
+	}
+	
+	public Prediction getPrediction(){
+		if (this.weightedVote==null)
+			weightedVote=computeWeightedVote();
+		return weightedVote;
 	}
 	
 }

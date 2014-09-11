@@ -2,11 +2,18 @@ package moa.classifiers.rules.multilabel.core;
 
 //import org.hamcrest.core.IsInstanceOf;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
+
+import javax.smartcardio.ATR;
+
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
+
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;
@@ -72,6 +79,11 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	protected NominalStatisticsObserver nominalStatisticsObserver;
 
 	protected OutputAttributesSelector outputSelector;
+
+	protected Random randomGenerator;
+	
+    protected boolean [] attributesMask; //TODO: JD Use sparse representation?
+    protected double attributesPercentage;
 
 
 	// Maintain statistics for input and output attributes for standard deviation computation?
@@ -215,8 +227,32 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	public void setNominalObserverOption(NominalStatisticsObserver nominalStatisticsObserver) {
 		this.nominalStatisticsObserver=nominalStatisticsObserver;
 	}
-	
 
+	public void setRandomGenerator(Random random) {
+		this.randomGenerator=random;
+		
+	}
+
+	public void setAttributesPercentage(double attributesPercentage) {
+		this.attributesPercentage=attributesPercentage;
+	}
+	
+	protected void initializeAttibutesMask(MultiLabelInstance inst) {
+		int numInputAttributes=inst.numInputAttributes();
+		int numAttributesSelected=(int)Math.round(numInputAttributes*attributesPercentage/100);
+		
+		attributesMask=new boolean[numInputAttributes]; 
+		ArrayList<Integer> indices = new ArrayList<Integer>(numInputAttributes);
+		for(int i=0; i<numInputAttributes; i++)
+				indices.add(i);
+		Collections.shuffle(indices, this.randomGenerator);
+		
+		for (int i=0; i<numAttributesSelected;++i)
+			attributesMask[indices.get(i)]=true;
+		
+	}
+	
+	
 	
 
 	//	abstract public void resetLearning();

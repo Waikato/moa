@@ -38,7 +38,6 @@ public class InverseErrorWeightedVoteMultiLabel extends AbstractErrorWeightedVot
 
 	@Override
 	public Prediction computeWeightedVote() {
-		Prediction weightedVote=null;
 		int n=votes.size();
 		if (n>0){
 			int numOutputs=outputAttributesCount.length;

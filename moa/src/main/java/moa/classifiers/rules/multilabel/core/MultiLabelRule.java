@@ -2,6 +2,7 @@ package moa.classifiers.rules.multilabel.core;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
@@ -189,6 +190,15 @@ public class MultiLabelRule extends AbstractMOAObject {
 
 	public void setNominalObserverOption(NominalStatisticsObserver nominalStatisticsObserver) {
 		learningLiteral.setNominalObserverOption(nominalStatisticsObserver);	
+	}
+
+	public void setRandomGenerator(Random random) {
+		learningLiteral.setRandomGenerator(random);
+	}
+
+	public void setAttributesPercentage(double attributesPercentage) {
+		learningLiteral.setAttributesPercentage(attributesPercentage);
+		
 	}
 
 

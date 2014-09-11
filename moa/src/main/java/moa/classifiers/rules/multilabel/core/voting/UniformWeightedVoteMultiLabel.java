@@ -34,10 +34,8 @@ public class UniformWeightedVoteMultiLabel extends AbstractErrorWeightedVoteMult
 
 
 	private static final long serialVersionUID = 1;
-
 	@Override
 	public Prediction computeWeightedVote() {
-	Prediction weightedVote=null;
 		int n=votes.size();
 		if (n>0){
 			int numOutputs=outputAttributesCount.length;

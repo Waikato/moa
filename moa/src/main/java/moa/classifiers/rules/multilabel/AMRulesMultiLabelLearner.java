@@ -146,9 +146,14 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 
 	@Override
 	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
-		MultiLabelVote vote=getVotes(inst);
+		/*MultiLabelVote vote=getVotes(inst);
 		if(vote!=null)	
 			return vote.getVote();
+		else
+			return null;*/
+		ErrorWeightedVoteMultiLabel vote=getVotes(inst);
+		if(vote!=null)	
+			return vote.getPrediction();
 		else
 			return null;
 	}
@@ -159,7 +164,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	 * returns the prediction of the instance.
 	 * Called in WeightedRandomRules
 	 */
-	public MultiLabelVote getVotes(MultiLabelInstance instance) {
+	public ErrorWeightedVoteMultiLabel getVotes(MultiLabelInstance instance) {
 		ErrorWeightedVoteMultiLabel errorWeightedVote=newErrorWeightedVote();
 		//DoubleVector combinedVote = new DoubleVector();
 		debug("Test",3);    
@@ -192,14 +197,16 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 				debug("Default Rule Vote " + vote.toString() + "\n Error " + errors + "  Y: " + instance,3);
 			} 
 		} 	
-		Prediction weightedVote=errorWeightedVote.computeWeightedVote();
+		errorWeightedVote.computeWeightedVote();
+		return errorWeightedVote;
+		/*Prediction weightedVote=errorWeightedVote.computeWeightedVote();
 		if(weightedVote!=null){
 			double weightedError=errorWeightedVote.getWeightedError();
 			debug("Weighted Rule - Vote: " + weightedVote.toString() + " Weighted Error: " + weightedError + " Y:" + instance.classValue(),3);
 			return new MultiLabelVote(weightedVote, weightedError);
 		}
 		else 
-			return new MultiLabelVote(null , Double.MAX_VALUE);
+			return new MultiLabelVote(null , Double.MAX_VALUE);*/
 
 	}
 
@@ -260,7 +267,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		while (ruleIterator.hasNext()) { 
 			MultiLabelRule rule = ruleIterator.next();
 			if (rule.isCovering(instance) == true) {
-				rulesCoveringInstance = true;
+				rulesCoveringInstance = true; //TODO: JD use different strategies for this validation (first rule, first complete rule (all out attributes covered), voted complete rule, etc)
 				if (!rule.updateAnomalyDetection(instance)) {
 					if (rule.updateChangeDetection(instance)) {
 						debug("I) Drift Detected. Exa. : " +  this.numInstances + " (" + rule.getWeightSeenSinceExpansion() +") Remove Rule: " +rule.getRuleNumberID(),1);
@@ -440,6 +447,8 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		rule.setNominalObserverOption((NominalStatisticsObserver)((NominalStatisticsObserver)getPreparedClassOption(nominalObserverOption)).copy());
 		rule.setErrorMeasurer((MultiLabelErrorMeasurer)((MultiLabelErrorMeasurer)getPreparedClassOption(errorMeasurerOption)).copy());
 		rule.setOutputAttributesSelector((OutputAttributesSelector)((OutputAttributesSelector)getPreparedClassOption(outputSelectorOption)).copy());
+		rule.setRandomGenerator(this.classifierRandom);
+		rule.setAttributesPercentage(this.attributesPercentage);
 	}
 
 	abstract protected MultiLabelRule newDefaultRule();

@@ -19,7 +19,7 @@ public class AMRulesMultiTargetRegressor extends AMRulesMultiLabelLearner implem
 	private static final long serialVersionUID = 1L;
 	
 	public  AMRulesMultiTargetRegressor(){
-		splitCriterionOption = new ClassOption("splitCriterionOption", 's',
+		splitCriterionOption = new ClassOption("splitCriterionOption", 'S',
 				"Split criterion used to assess the merit of a split", MultiLabelSplitCriterion.class, "MultiTargetVarianceRatio") ;
 
 		 weightedVoteOption = new ClassOption("weightedVoteOption",
@@ -46,6 +46,10 @@ public class AMRulesMultiTargetRegressor extends AMRulesMultiLabelLearner implem
 	@Override
 	protected MultiLabelRule newDefaultRule() {
 		return new MultiLabelRuleRegression(1);
+	}
+
+	public AMRulesMultiTargetRegressor(double attributesPercentage) {
+		super(attributesPercentage);
 	}
 
 

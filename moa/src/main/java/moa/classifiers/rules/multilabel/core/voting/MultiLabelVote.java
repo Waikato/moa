@@ -45,6 +45,7 @@ public class MultiLabelVote {
 		double [] sum=sumVoteDistrib();
 		for (int j=0; j<vote.numOutputAttributes();j++)
 			for (int i=0; i<vote.numClasses(j); ++i)
-				vote.setVote(j, i, vote.getVote(j, i)/sum[j]);
+				if(sum[j]!=0)
+					vote.setVote(j, i, vote.getVote(j, i)/sum[j]);
 	}
 }
