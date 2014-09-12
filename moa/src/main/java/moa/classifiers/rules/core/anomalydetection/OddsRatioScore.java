@@ -71,8 +71,8 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 					if(stats!=null){
 						if(doTest){
 							prob=probabilityFunction.getProbability(stats[0]/weightSeen, Utils.computeSD(stats[1], stats[0], weightSeen), val);
-						//	System.out.println("prob = " + prob);
-						/*	if(prob==1)
+							//	System.out.println("prob = " + prob);
+							/*	if(prob==1)
 								anomaly+=Math.log(Double.MAX_VALUE);
 							else if(prob==0)
 								anomaly+=Math.log(Double.MIN_VALUE);
@@ -89,17 +89,52 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 						stats[1]+=(val*val);
 					}
 					else{
-						stats=new double[]{val,val*val};
+						stats=new double[]{instance.weight()*val,instance.weight()*val*val};
 						sufficientStatistics.set(i,stats);
 					}
 				}
 			}
 			weightSeen+=instance.weight();
 			//System.out.println("Anomaly = " + anomaly);
-			if(doTest)
+			if(doTest){
+				if(anomaly<threshold)
+					printAnomaly(instance ,anomaly);
 				return anomaly<threshold;
+			}
 			else
 				return false;
+	}
+
+
+
+
+
+	protected void printAnomaly(Instance inst, double anomaly) {
+		StringBuffer sb= new StringBuffer();
+		for(int i=0; i<inst.numInputAttributes(); i++){
+			if(inst.attribute(i).isNumeric()){
+				double [] stats;
+				//Atribute name
+				sb.append("Attribute " + i +" (" + inst.attribute(i).name()+ ") - ");
+				System.out.println();
+				//Val for instance
+				double val=inst.valueInputAttribute(i);
+				sb.append("Value: ").append(val);
+				stats=sufficientStatistics.get(i);	
+				double mean=stats[0]/weightSeen;
+				double std=Utils.computeSD(stats[1], stats[0], weightSeen);
+				double prob=probabilityFunction.getProbability(mean, Utils.computeSD(stats[1], stats[0], weightSeen), val);
+				//Mean
+				sb.append(" - Prob: ").append(prob);
+				//Mean
+				sb.append(" - Mean: ").append(mean);
+				//SD
+				sb.append(" - Std: ").append(std).append("\n");	
+			}
+		}
+		sb.append("Score - ").append(anomaly);
+		System.out.println(sb);
+
 	}
 
 

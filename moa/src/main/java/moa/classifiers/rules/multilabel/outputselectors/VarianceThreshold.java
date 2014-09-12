@@ -30,7 +30,9 @@ public class VarianceThreshold extends AbstractOptionHandler implements
 		
 		//compute minimum normalized variance
 		for(int i=0; i<numCurrentOutputs;i++){
-			normalizedVariances[i]=Math.sqrt(Utils.computeVariance(resultingStatistics[i]))/Math.sqrt(Utils.computeVariance(currentLiteralStatistics[i]));
+			double stdRes=Math.sqrt(Utils.computeVariance(resultingStatistics[i]));
+			double stdCur=Math.sqrt(Utils.computeVariance(currentLiteralStatistics[i]));
+			normalizedVariances[i]=stdRes/stdCur;
 			if(minNormVariance>normalizedVariances[i])
 				minNormVariance=normalizedVariances[i];
 		
@@ -42,7 +44,6 @@ public class VarianceThreshold extends AbstractOptionHandler implements
 			if(normalizedVariances[i]<=maxAllowedVariance)
 				newOutputsList.add(currentIndices[i]);
 		}
-		
 		//list to array
 		int [] newOutputs=new int[newOutputsList.size()];
 		int ct=0;

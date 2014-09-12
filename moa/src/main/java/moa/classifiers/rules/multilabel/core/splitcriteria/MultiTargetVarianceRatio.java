@@ -47,6 +47,9 @@ public class MultiTargetVarianceRatio extends AbstractOptionHandler implements M
 	@Override
 	public double [] getBranchesSplitMerits(DoubleVector[][] postSplitDists){
 		int numOutputs=postSplitDists.length;
+		/*if(numOutputs==0)
+			System.out.println("teste"); 
+		//TODO: JD Remove test*/
 		int numBranches=postSplitDists[0].length;
 		double [] merits=new double[numBranches];
 			for(int j=0; j<numOutputs;j++)

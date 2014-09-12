@@ -57,7 +57,7 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 		}
 		for (int i = 0; i < this.ensemble.length; i++) {
 			Instance weightedInst = transformInstance(instance,i);
-			this.ensemble[i].trainOnInstance(weightedInst);
+			this.ensemble[i].trainOnInstance(weightedInst); 
 		}
 	}
 
@@ -124,7 +124,8 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 			prediction=new MultiLabelPrediction(ensemble.length);
 			DoubleVector combinedVote = new DoubleVector();
 			for (int i = 0; i < this.ensemble.length; i++) {
-				prediction.setVote(i, 0, this.ensemble[i].getVotesForInstance(transformInstance(instance,i))[0]);
+				double vote=this.ensemble[i].getVotesForInstance(transformInstance(instance,i))[0];
+				prediction.setVote(i, 0, vote);
 			}
 		}
 		
