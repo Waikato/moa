@@ -37,6 +37,7 @@ import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
+import moa.classifiers.rules.core.anomalydetection.OddsRatioScore;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatisticsObserver;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.rules.multilabel.core.MultiLabelRule;
@@ -85,12 +86,12 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	public ClassOption changeDetector = new ClassOption("changeDetector",
 			'H', "Change Detector.", 
 			ChangeDetector.class,
-			"PageHinkleyDM");
+			"PageHinkleyDM -d 0.05 -l 35.0");
 
 	public ClassOption anomalyDetector = new ClassOption("anomalyDetector",
 			'A', "Anomaly Detector.", 
 			AnomalyDetector.class,
-			"moa.classifiers.rules.core.anomalydetection.AnomalinessScore");
+			OddsRatioScore.class.getName());
 
 	public ClassOption splitCriterionOption;
 
@@ -374,22 +375,16 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			StringUtils.appendIndented(out, indent, "Method Unordered");
 			StringUtils.appendNewline(out);
 		}
-		/*	if(this.DriftDetectionOption.isSet()){
-			StringUtils.appendIndented(out, indent, "Change Detection OFF");
-			StringUtils.appendNewline(out);
-		}else{
-			StringUtils.appendIndented(out, indent, "Change Detection ON");
-			StringUtils.appendNewline(out);
-		}
-		if(this.noAnomalyDetectionOption.isSet()){
-			StringUtils.appendIndented(out, indent, "Anomaly Detection OFF");
-			StringUtils.appendNewline(out);
-		}else{
-			StringUtils.appendIndented(out, indent, "Anomaly Detection ON");
-			StringUtils.appendNewline(out);
-		}*/
 		StringUtils.appendIndented(out, indent, "Number of Rules: " + (this.ruleSet.size()+1));
-		StringUtils.appendNewline(out);		
+		StringUtils.appendNewline(out);
+		
+		StringUtils.appendIndented(out, indent, "Default rule :");
+		this.defaultRule.getDescription(out, indent);
+		
+		StringUtils.appendIndented(out, indent, "Rules in ruleSet:");
+		for (MultiLabelRule rule: ruleSet) {
+			rule.getDescription(out, indent);
+		}
 	}
 
 	/**
@@ -415,14 +410,14 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		}    	
 	}
 
-	public void PrintRuleSet() {    	
-		debug("Rule in RuleSet:",2);
+	public void PrintRuleSet() {    
+		debug("Default rule :",2);
+		debug(this.defaultRule.toString(),2);
+		
+		debug("Rules in ruleSet:",2);
 		for (MultiLabelRule rule: ruleSet) {
 			debug(rule.toString(),2);
 		}
-
-		debug("Default rule :",2);
-		debug(this.defaultRule.toString(),2);
 	}
 
 	//	abstract public RuleActiveLearningNode newRuleActiveLearningNode(Builder builder);

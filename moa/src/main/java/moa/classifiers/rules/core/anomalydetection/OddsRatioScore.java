@@ -30,7 +30,7 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 			"threshold",
 			't',
 			"The threshold value for detecting anomalies.",
-			-10, -100, 0);
+			-1, -10, 10);
 
 	public ClassOption probabilityFunctionOption = new ClassOption("probabilityFunction",
 			'p', "Probability function", 
@@ -62,6 +62,7 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 			sufficientStatistics= new AutoExpandVector<double[]>();
 
 			double anomaly=0;
+			int ct=0;
 			//check if it is anomaly
 			for(int i=0; i<instance.numInputAttributes(); i++){
 				double prob=0;
@@ -83,6 +84,7 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 							else if(prob<0.0001)
 								prob=0.0001;
 							anomaly+=Math.log(prob/(1-prob));
+							ct++;
 						}
 						//update statistics for numeric attributes
 						stats[0]+=val;
@@ -94,6 +96,7 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 					}
 				}
 			}
+			anomaly/=ct;
 			weightSeen+=instance.weight();
 			//System.out.println("Anomaly = " + anomaly);
 			if(doTest){
@@ -104,10 +107,6 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 			else
 				return false;
 	}
-
-
-
-
 
 	protected void printAnomaly(Instance inst, double anomaly) {
 		StringBuffer sb= new StringBuffer();

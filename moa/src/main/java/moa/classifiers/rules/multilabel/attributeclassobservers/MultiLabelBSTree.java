@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import com.github.javacliparser.IntOption;
 
-import moa.classifiers.rules.core.RulePredicate;
+import moa.classifiers.rules.core.NumericRulePredicate;
 import moa.classifiers.rules.core.Utils;
 import moa.classifiers.rules.multilabel.core.AttributeExpansionSuggestion;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
@@ -87,7 +87,7 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 		double merit = criterion.getMeritOfSplit(preSplitStatistics, postSplitDists);
 
 		if ((currentBestOption == null) || (merit > currentBestOption.merit)) {
-			currentBestOption= new AttributeExpansionSuggestion(new RulePredicate(inputAttributeIndex, currentNode.cutPoint, true), Utils.copy(postSplitDists), merit);
+			currentBestOption= new AttributeExpansionSuggestion(new NumericRulePredicate(inputAttributeIndex, currentNode.cutPoint, true), Utils.copy(postSplitDists), merit);
 		}
 
 		if (currentNode.right != null) {

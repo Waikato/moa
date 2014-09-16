@@ -4,17 +4,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import com.github.javacliparser.FlagOption;
-
-import moa.classifiers.rules.core.RulePredicate;
+import moa.classifiers.rules.core.NominalRulePredicate;
 import moa.classifiers.rules.core.Utils;
 import moa.classifiers.rules.multilabel.core.AttributeExpansionSuggestion;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
-import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
+
+import com.github.javacliparser.FlagOption;
 
 public class MultiLabelNominalAttributeObserver extends AbstractOptionHandler
 		implements NominalStatisticsObserver {
@@ -73,7 +72,7 @@ public class MultiLabelNominalAttributeObserver extends AbstractOptionHandler
 	    	double merit=criterion.getMeritOfSplit(preSplitStatistics, resultingStatistics);
 	    	if(merit>bestSuggestionMerit){
 	    		bestSuggestionMerit=merit;
-	    		bestSuggestiong=new AttributeExpansionSuggestion(new RulePredicate(inputAttributeIndex,splitValue,true), Utils.copy(resultingStatistics), merit);
+	    		bestSuggestiong=new AttributeExpansionSuggestion(new NominalRulePredicate(inputAttributeIndex,splitValue,true), Utils.copy(resultingStatistics), merit);
 	    	}
 	    }
 

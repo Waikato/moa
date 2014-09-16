@@ -24,7 +24,14 @@ public class Literal extends AbstractMOAObject{
 	
 	@Override
 	public void getDescription(StringBuilder sb, int indent) {
-		
+		predicate.getDescription(sb, indent);
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		predicate.getDescription(sb, 1);
+		return sb.toString();
 	}
 
 
