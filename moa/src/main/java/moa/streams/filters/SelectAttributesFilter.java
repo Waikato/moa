@@ -55,7 +55,7 @@ public class SelectAttributesFilter extends AbstractMultiLabelStreamFilter imple
 		for (int i=0; i<inputsSelected.numEntries();i++)
 		{
 			for (int j=inputsSelected.getStart(i); j<=inputsSelected.getEnd(i);j++){
-				v.add(instance.attribute(j));
+				v.add(instance.attribute(j-1));
 				indexValues.add(ct);
 				ct++;
 			}
@@ -64,7 +64,7 @@ public class SelectAttributesFilter extends AbstractMultiLabelStreamFilter imple
 		for (int i=0; i<outputsSelected.numEntries();i++)
 		{
 			for (int j=outputsSelected.getStart(i); j<=outputsSelected.getEnd(i);j++){
-				v.add(instance.attribute(j));
+				v.add(instance.attribute(j-1));
 				indexValues.add(ct);
 				ct++;
 			}
