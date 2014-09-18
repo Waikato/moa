@@ -152,7 +152,9 @@ public class InstanceInformation implements Serializable {
     }
 
     public void setAttributes(List<Attribute> v) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    	if(this.attributesInformation==null)
+    		this.attributesInformation= new AttributesInformation();
+        this.attributesInformation.setAttributes(v);
     }
 
     public int inputAttributeIndex(int index) {
@@ -179,7 +181,7 @@ public class InstanceInformation implements Serializable {
         return ret;
     }
 
-    int numInputAttributes() {
+    public int numInputAttributes() {
         int ret = 0;
         if (classIndex == Integer.MAX_VALUE) {//Multi Label
         	ret=this.numAttributes()-range.getSelectionLength(); //JD
@@ -189,7 +191,7 @@ public class InstanceInformation implements Serializable {
         return ret;
     }
 
-    int numOutputAttributes() {
+    public int numOutputAttributes() {
         int ret = 0;
         if (classIndex == Integer.MAX_VALUE) {//Multi Label
         	ret=range.getSelectionLength(); //JD
@@ -199,9 +201,16 @@ public class InstanceInformation implements Serializable {
         return ret;
     }
 
-    void setRangeOutputIndices(Range range) {
+    public void setRangeOutputIndices(Range range) {
         this.setClassIndex(Integer.MAX_VALUE);
         this.range = range;
     }
+
+	public void setAttributes(List<Attribute> v, List<Integer> indexValues) {
+    	if(this.attributesInformation==null)
+    		this.attributesInformation= new AttributesInformation();
+        this.attributesInformation.setAttributes(v,indexValues);
+		
+	}
 
 }

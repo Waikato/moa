@@ -20,8 +20,12 @@
 package moa.streams.generators.multilabel;
 
 import moa.streams.ArffFileStream;
+import moa.streams.MultiTargetInstanceStream;
+
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.core.MultilabelInstancesHeader;
+
 import com.github.javacliparser.IntOption;
 
 /**
@@ -30,7 +34,7 @@ import com.github.javacliparser.IntOption;
  * @author Jesse Read (jmr30@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class MultilabelArffFileStream extends ArffFileStream {
+public class MultilabelArffFileStream extends ArffFileStream implements MultiTargetInstanceStream{
 
     @Override
     public String getPurposeString() {

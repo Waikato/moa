@@ -85,8 +85,9 @@ public class MultiLabelRule extends AbstractMOAObject {
 		StringUtils.appendIndented(out, indent+1, "Rule Nr." + this.ruleNumberID + " Instances seen:" + this.learningLiteral.getWeightSeenSinceExpansion() + "\n"); 
 		for (Literal literal : literalList) {
 			literal.getDescription(out, indent+1);
-			StringUtils.appendIndented(out, indent+1, "\n");
+			StringUtils.appendIndented(out, indent+1, " ");
 		}
+		StringUtils.appendNewline(out);
 	}
 
 	public boolean updateChangeDetection(MultiLabelInstance instance) {

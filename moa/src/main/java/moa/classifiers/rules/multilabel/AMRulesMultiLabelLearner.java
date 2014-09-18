@@ -63,7 +63,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	private static final long serialVersionUID = 1L;
 	protected MultiLabelRuleSet ruleSet = new MultiLabelRuleSet();
 	protected MultiLabelRule defaultRule;
-	protected int ruleNumberID;
+	protected int ruleNumberID=1;
 	protected double[] statistics;
 	//public static final double NORMAL_CONSTANT = Math.sqrt(2 * Math.PI);
 	public FloatOption splitConfidenceOption = new FloatOption(
@@ -382,6 +382,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		this.defaultRule.getDescription(out, indent);
 		
 		StringUtils.appendIndented(out, indent, "Rules in ruleSet:");
+		StringUtils.appendNewline(out);
 		for (MultiLabelRule rule: ruleSet) {
 			rule.getDescription(out, indent);
 		}

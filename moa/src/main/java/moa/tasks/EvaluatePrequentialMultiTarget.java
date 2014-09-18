@@ -266,6 +266,9 @@ public class EvaluatePrequentialMultiTarget extends MultiTargetMainTask {
                         - evaluateStartTime);
             }
         }
+        StringBuilder sb= new StringBuilder();
+        learner.getDescription(sb, 0);
+        System.out.println(sb.toString());
         if (immediateResultStream != null) {
             immediateResultStream.close();
         }
