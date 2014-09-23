@@ -367,7 +367,6 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	 */
 	@Override
 	public void getModelDescription(StringBuilder out, int indent) {
-		indent=0;
 		if(!this.unorderedRulesOption.isSet()){
 			StringUtils.appendIndented(out, indent, "Method Ordered");
 			StringUtils.appendNewline(out);
