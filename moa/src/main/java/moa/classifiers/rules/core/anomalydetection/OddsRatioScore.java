@@ -2,7 +2,6 @@ package moa.classifiers.rules.core.anomalydetection;
 
 import moa.classifiers.rules.core.Utils;
 import moa.classifiers.rules.core.anomalydetection.probabilityfunctions.ProbabilityFunction;
-import moa.classifiers.rules.core.attributeclassobservers.FIMTDDNumericAttributeClassLimitObserver;
 import moa.core.AutoExpandVector;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
@@ -19,6 +18,9 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final double MINSTD=0.01;
+	private static final double MINPROB=0.01;
+	private static final double MAXPROB=1-MINPROB;
 
 	public IntOption minNumberInstancesOption = new IntOption(
 			"minNumberInstances",
@@ -30,7 +32,7 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 			"threshold",
 			't',
 			"The threshold value for detecting anomalies.",
-			-1, -10, 10);
+			-2, -10, 0);
 
 	public ClassOption probabilityFunctionOption = new ClassOption("probabilityFunction",
 			'p', "Probability function", 
@@ -46,6 +48,7 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 
 	@Override
 	public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance) {
+		boolean isAnomaly=false;
 		if(probabilityFunction==null){
 			weightSeen=0.0;
 			//load options
@@ -56,12 +59,8 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 			minNumberInstancesOption=null;
 			probabilityFunctionOption=null;
 		}
-
-		boolean doTest=weightSeen>minInstances;
-		if(sufficientStatistics==null)
-			sufficientStatistics= new AutoExpandVector<double[]>();
-
-			double anomaly=0;
+		double anomaly=0;
+		if(weightSeen>minInstances){
 			int ct=0;
 			//check if it is anomaly
 			for(int i=0; i<instance.numInputAttributes(); i++){
@@ -69,43 +68,48 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 				double [] stats=sufficientStatistics.get(i);
 				if(instance.attribute(i).isNumeric()){
 					double val=instance.valueInputAttribute(i);
-					if(stats!=null){
-						if(doTest){
-							prob=probabilityFunction.getProbability(stats[0]/weightSeen, Utils.computeSD(stats[1], stats[0], weightSeen), val);
-							//	System.out.println("prob = " + prob);
-							/*	if(prob==1)
-								anomaly+=Math.log(Double.MAX_VALUE);
-							else if(prob==0)
-								anomaly+=Math.log(Double.MIN_VALUE);
-							else
-								anomaly+=Math.log(prob/(1-prob));	*/	
-							if(prob>0.9999)
-								prob=0.9999;
-							else if(prob<0.0001)
-								prob=0.0001;
-							anomaly+=Math.log(prob/(1-prob));
-							ct++;
-						}
-						//update statistics for numeric attributes
-						stats[0]+=val;
-						stats[1]+=(val*val);
-					}
-					else{
-						stats=new double[]{instance.weight()*val,instance.weight()*val*val};
-						sufficientStatistics.set(i,stats);
+					double sd=Utils.computeSD(stats[1], stats[0], weightSeen);
+					if(sd>MINSTD){
+						prob=probabilityFunction.getProbability(stats[0]/weightSeen, sd, val);
+						if(prob>MAXPROB)
+							prob=MAXPROB;
+						else if(prob<MINPROB)
+							prob=MINPROB;
+						anomaly+=Math.log(prob)-Math.log(1-prob);
+						ct++;
 					}
 				}
 			}
-			anomaly/=ct;
-			weightSeen+=instance.weight();
-			//System.out.println("Anomaly = " + anomaly);
-			if(doTest){
-				if(anomaly<threshold)
-					printAnomaly(instance ,anomaly);
-				return anomaly<threshold;
+			if(ct>0)
+				anomaly=anomaly/ct;
+			isAnomaly=anomaly<threshold;
+		}
+		//update stats
+		if(!isAnomaly){
+			if(sufficientStatistics==null)
+				sufficientStatistics= new AutoExpandVector<double[]>();
+				weightSeen+=instance.weight();
+				for(int i=0; i<instance.numInputAttributes(); i++){
+					double [] stats=sufficientStatistics.get(i);
+					if(instance.attribute(i).isNumeric()){
+						double val=instance.valueInputAttribute(i);
+						if(stats!=null){
+							//update statistics for numeric attributes
+							stats[0]+=val;
+							stats[1]+=(val*val);
+						}
+						else{
+							stats=new double[]{instance.weight()*val,instance.weight()*val*val};
+							sufficientStatistics.set(i,stats);
+						}
+					}
+				}
+		}			else
+			{
+				//System.out.println("Anomaly = " + anomaly);
+				printAnomaly(instance, anomaly);
 			}
-			else
-				return false;
+		return isAnomaly;
 	}
 
 	protected void printAnomaly(Instance inst, double anomaly) {
@@ -113,7 +117,7 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 		for(int i=0; i<inst.numInputAttributes(); i++){
 			if(inst.attribute(i).isNumeric()){
 				double [] stats;
-				//Atribute name
+				//Attribute name
 				sb.append("Attribute " + i +" (" + inst.attribute(i).name()+ ") - ");
 				System.out.println();
 				//Val for instance

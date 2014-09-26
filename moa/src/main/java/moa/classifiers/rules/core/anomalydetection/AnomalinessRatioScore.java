@@ -19,6 +19,7 @@ public class AnomalinessRatioScore extends AbstractAnomalyDetector {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final double MINSTD=0.01;
 
 	public FloatOption percentageAnomalousAttributesOption = new FloatOption(
 			"percentageAnomalousAttributes",
@@ -50,8 +51,11 @@ public class AnomalinessRatioScore extends AbstractAnomalyDetector {
 	AutoExpandVector<double[]> sufficientStatistics;
 	private ProbabilityFunction probabilityFunction;
 
+
+
 	@Override
 	public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance) {
+		boolean isAnomaly=false;
 		if(probabilityFunction==null){
 			weightSeen=0.0;
 			//load options
@@ -66,14 +70,8 @@ public class AnomalinessRatioScore extends AbstractAnomalyDetector {
 			percentageAnomalousAttributesOption=null;
 			probabilityFunctionOption=null;
 		}
-
-		boolean isAnomaly=false, doTest=false;
-		if(sufficientStatistics==null)
-			sufficientStatistics= new AutoExpandVector<double[]>();
-
-			if(weightSeen>minInstances)
-				doTest=true;
-
+		double anomaly=0;
+		if(weightSeen>minInstances){
 			int anomalousTotal=0, total=0;
 			//check if it is anomaly
 			for(int i=0; i<instance.numInputAttributes(); i++){
@@ -81,31 +79,42 @@ public class AnomalinessRatioScore extends AbstractAnomalyDetector {
 				double [] stats=sufficientStatistics.get(i);
 				if(instance.attribute(i).isNumeric()){
 					double val=instance.valueInputAttribute(i);
-					if(stats!=null){
-						if(doTest){
-							prob=probabilityFunction.getProbability(stats[0]/weightSeen, Utils.computeSD(stats[1], stats[0], weightSeen), val);
-							if((1-prob)>univariateThreshold)
-								anomalousTotal++;
-							total++;
-						}
-							//update statistics for numeric attributes
-						stats[0]+=val;
-						stats[1]+=(val*val);
-					}
-					else{
-						stats=new double[]{val,val*val};
-						sufficientStatistics.set(i,stats);
+					double sd=Utils.computeSD(stats[1], stats[0], weightSeen);
+					if(sd>MINSTD){
+						prob=probabilityFunction.getProbability(stats[0]/weightSeen, Utils.computeSD(stats[1], stats[0], weightSeen), val);
+						if((1-prob)>univariateThreshold)
+							anomalousTotal++;
+						total++;
 					}
 				}
 			}
-			if(doTest)
-					isAnomaly=(anomalousTotal/((double)total)>percentageAnomalous);
-			weightSeen+=instance.weight();
-			return isAnomaly;
+			if(total>0)
+				anomaly=anomaly/total;
+			isAnomaly=(anomalousTotal/((double)total)>percentageAnomalous);
+		}
+		//update stats
+		if(!isAnomaly){
+			if(sufficientStatistics==null)
+				sufficientStatistics= new AutoExpandVector<double[]>();
+				weightSeen+=instance.weight();
+				for(int i=0; i<instance.numInputAttributes(); i++){
+					double [] stats=sufficientStatistics.get(i);
+					if(instance.attribute(i).isNumeric()){
+						double val=instance.valueInputAttribute(i);
+						if(stats!=null){
+							//update statistics for numeric attributes
+							stats[0]+=val;
+							stats[1]+=(val*val);
+						}
+						else{
+							stats=new double[]{instance.weight()*val,instance.weight()*val*val};
+							sufficientStatistics.set(i,stats);
+						}
+					}
+				}
+		}		
+		return isAnomaly;
 	}
-
-
-
 
 
 	@Override

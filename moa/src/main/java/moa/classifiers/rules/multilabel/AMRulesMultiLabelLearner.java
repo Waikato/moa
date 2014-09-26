@@ -47,6 +47,7 @@ import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
 import moa.classifiers.rules.multilabel.core.voting.MultiLabelVote;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
+import moa.classifiers.rules.multilabel.outputselectors.SelectAllOutputs;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
@@ -120,8 +121,8 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	public ClassOption outputSelectorOption = new ClassOption("outputSelector",
 			'O', "Output attributes selector", 
 			OutputAttributesSelector.class,
-			"VarianceThreshold");
-			//"SelectAllOutputs");
+			//"StdDevThreshold");
+			SelectAllOutputs.class.getName());
 
 
 	protected double attributesPercentage;

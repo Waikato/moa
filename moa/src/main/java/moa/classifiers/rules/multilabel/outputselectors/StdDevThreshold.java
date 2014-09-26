@@ -10,7 +10,7 @@ import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
-public class VarianceThreshold extends AbstractOptionHandler implements
+public class StdDevThreshold extends AbstractOptionHandler implements
 		OutputAttributesSelector {
 
 	/**
