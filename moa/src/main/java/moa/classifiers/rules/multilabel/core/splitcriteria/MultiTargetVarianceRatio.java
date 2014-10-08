@@ -32,24 +32,10 @@ public class MultiTargetVarianceRatio extends AbstractOptionHandler implements M
 
 	}
 	
-	/*public double getBranchSplitMeritsOutput(DoubleVector[] postSplitDists) {
-		double merit=0;
-		double [] meritsByBranch=getBranchSplitVarianceOutput(postSplitDists);
-		double weightTotal=0;
-		for (int i=0; i<postSplitDists.length;i++){
-			weightTotal+=postSplitDists[i].getValue(0)/weightTotal*postSplitDists[i].getValue(0); //weight variance
-		}
-		for (int i=0; i<postSplitDists.length;i++){
-			merit-=meritsByBranch[i];
-		}
-		return merit/postSplitDists.length;
-	}*/
+
 	@Override
 	public double [] getBranchesSplitMerits(DoubleVector[][] postSplitDists){
 		int numOutputs=postSplitDists.length;
-		/*if(numOutputs==0)
-			System.out.println("teste"); 
-		//TODO: JD Remove test*/
 		int numBranches=postSplitDists[0].length;
 		double [] merits=new double[numBranches];
 			for(int j=0; j<numOutputs;j++)
@@ -96,8 +82,10 @@ public class MultiTargetVarianceRatio extends AbstractOptionHandler implements M
 			for(int i = 0; i < variances.length; i++)
 				if(postSplitDists[i].getValue(0)>0)
 					sumVarPostSplit+=(postSplitDists[i].getValue(0)/weightTotal*variances[i]);  //weight variance
-			merit=(1-(sumVarPostSplit/variances.length)/varPreSplit);
+			merit=(1-sumVarPostSplit/varPreSplit);
 		}
+		/*if(merit<0 || merit>1)
+			System.out.println("out of range");*/
 		return merit;
 	}
 

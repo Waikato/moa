@@ -1,13 +1,14 @@
 package moa.classifiers.rules.multilabel.core;
 
 import com.yahoo.labs.samoa.instances.Instance;
-
 import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
@@ -95,6 +96,7 @@ public class LearningLiteralRegression extends LearningLiteral {
 			//if ((((secondBestSuggestion.merit/bestSuggestion.merit) + hoeffdingBound) < 1) || (hoeffdingBound < tieThreshold)) {
 				//debug("Expanded ", 5);
 				shouldSplit = true;
+				//System.out.println(bestSuggestion.merit);
 			}
 		}
 

@@ -150,8 +150,28 @@ implements MultiTargetRegressor {
 
 	@Override
 	protected Measurement[] getModelMeasurementsImpl() {
-		// TODO Auto-generated method stub
-		return null;
+		Measurement [] baseLearnerMeasurements=((AMRulesMultiLabelLearner) getPreparedClassOption(this.baseLearnerOption)).getModelMeasurements();
+		int nMeasurements=baseLearnerMeasurements.length;
+		Measurement [] m=new Measurement[nMeasurements+1];
+
+		for(int i=0; i<baseLearnerMeasurements.length; i++)
+			m[i+1]=baseLearnerMeasurements[i];
+		
+		int ensembleSize=0;
+		if(this.ensemble !=null){	
+			ensembleSize=this.ensemble.length;
+			for(int i=0; i<nMeasurements; i++){
+				double value=0;
+				for (int j=0; j<ensembleSize; ++j){
+					value+=ensemble[j].getModelMeasurements()[i].getValue();
+				}
+				m[i+1]= new Measurement("Avg " + baseLearnerMeasurements[i].getName(), value/ensembleSize);
+			}
+		}
+	
+		m[0]=new Measurement("ensemble size", ensembleSize);
+		
+		return m;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package moa.classifiers.rules.core.anomalydetection;
 
 import moa.classifiers.rules.core.Utils;
+import moa.classifiers.rules.core.anomalydetection.probabilityfunctions.CantellisInequality;
 import moa.classifiers.rules.core.anomalydetection.probabilityfunctions.ProbabilityFunction;
 import moa.core.AutoExpandVector;
 import moa.core.ObjectRepository;
@@ -32,12 +33,12 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 			"threshold",
 			't',
 			"The threshold value for detecting anomalies.",
-			-2, -10, 0);
+			-0.75, -10, 0);
 
 	public ClassOption probabilityFunctionOption = new ClassOption("probabilityFunction",
 			'p', "Probability function", 
 			ProbabilityFunction.class,
-			"GaussInequality");
+			CantellisInequality.class.getName());
 
 
 	private int minInstances;
@@ -106,8 +107,8 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 				}
 		}			else
 			{
-				//System.out.println("Anomaly = " + anomaly);
-				printAnomaly(instance, anomaly);
+				//System.out.println("Anomaly = " + anomaly + "#instances: " + weightSeen);
+				//printAnomaly(instance, anomaly);
 			}
 		return isAnomaly;
 	}
@@ -119,7 +120,6 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 				double [] stats;
 				//Attribute name
 				sb.append("Attribute " + i +" (" + inst.attribute(i).name()+ ") - ");
-				System.out.println();
 				//Val for instance
 				double val=inst.valueInputAttribute(i);
 				sb.append("Value: ").append(val);
