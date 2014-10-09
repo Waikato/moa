@@ -529,7 +529,7 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         eventScheduler();
 
         //make room for the classlabel
-        double[] values_new = new double [numAttsOption.getValue()]; //+1
+        double[] values_new = new double [numAttsOption.getValue()+1]; //+1
         double[] values = null;
         int clusterChoice = -1;
 
@@ -545,8 +545,8 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         if(Double.isNaN(values[0])){
             System.out.println("Instance corrupted:"+numGeneratedInstances);
         }
+        //System.arraycopy(values, 0, values_new, 0, values.length);
         System.arraycopy(values, 0, values_new, 0, values.length);
-
         Instance inst = new DenseInstance(1.0, values_new);
         inst.setDataset(getHeader());
         if(clusterChoice == -1){

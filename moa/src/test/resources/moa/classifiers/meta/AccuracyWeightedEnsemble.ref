@@ -1,0 +1,595 @@
+--> classification-out0.arff
+moa.classifiers.meta.AccuracyWeightedEnsemble -l (trees.HoeffdingTree -e 1000 -g 100 -c 0.01 -l NB)
+
+Index
+  10000
+Votes
+  0: 0.50612283
+  1: 0.49387717
+Measurements
+  classified instances: 9999
+  classifications correct (percent): 75.67756776
+  Kappa Statistic (percent): 48.98377346
+  Kappa Temporal Statistic (percent): 48.73524452
+Model measurements
+  model training instances: 9999
+  Member weight 1: 0.21983044
+  Member weight 2: 0.08960219
+  Member weight 3: 0.07917508
+  Member weight 4: 0.07476246
+  Member weight 5: 0.07298253
+  Member weight 6: 0.07153725
+  Member weight 7: 0.06877706
+  Member weight 8: 0.06709926
+  Member weight 9: 0.06435733
+  Member weight 10: 0.05965369
+  Member weight 11: 0.05661265
+  Member weight 12: 0.05328536
+  Member weight 13: 0.05128356
+  Member weight 14: 0.04513944
+  Member weight 15: 0.04322037
+  Stored member weight 16: 0.03962306
+  Stored member weight 17: 0.03920587
+  Stored member weight 18: 0.03219473
+  Stored member weight 19: 0.00277533
+  Stored member weight 20: -1
+  Stored member weight 21: -1
+  Stored member weight 22: -1
+  Stored member weight 23: -1
+  Stored member weight 24: -1
+  Stored member weight 25: -1
+  Stored member weight 26: -1
+  Stored member weight 27: -1
+  Stored member weight 28: -1
+  Stored member weight 29: -1
+  Stored member weight 30: -1
+  [avg] model training instances: 500
+  [err] model training instances: 0
+  [avg] tree size (nodes): 6
+  [err] tree size (nodes): 0
+  [avg] tree size (leaves): 5
+  [err] tree size (leaves): 0
+  [avg] active learning leaves: 5
+  [err] active learning leaves: 0
+  [avg] tree depth: 1
+  [err] tree depth: 0
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  20000
+Votes
+  0: 0.29260779
+  1: 0.70739221
+Measurements
+  classified instances: 19999
+  classifications correct (percent): 77.32886644
+  Kappa Statistic (percent): 52.57318157
+  Kappa Temporal Statistic (percent): 52.66729304
+Model measurements
+  model training instances: 19999
+  Member weight 1: 0.21327313
+  Member weight 2: 0.07728449
+  Member weight 3: 0.0720069
+  Member weight 4: 0.06966946
+  Member weight 5: 0.06881624
+  Member weight 6: 0.06821518
+  Member weight 7: 0.0680706
+  Member weight 8: 0.06805364
+  Member weight 9: 0.06688412
+  Member weight 10: 0.06598239
+  Member weight 11: 0.06588087
+  Member weight 12: 0.06531414
+  Member weight 13: 0.06452435
+  Member weight 14: 0.06447149
+  Member weight 15: 0.06242581
+  Stored member weight 16: 0.0598849
+  Stored member weight 17: 0.0595101
+  Stored member weight 18: 0.05950379
+  Stored member weight 19: 0.05665848
+  Stored member weight 20: 0.05662847
+  Stored member weight 21: 0.05650821
+  Stored member weight 22: 0.05531246
+  Stored member weight 23: 0.05478126
+  Stored member weight 24: 0.0539162
+  Stored member weight 25: 0.05386307
+  Stored member weight 26: 0.05370822
+  Stored member weight 27: 0.05334226
+  Stored member weight 28: 0.05080208
+  Stored member weight 29: 0.05043889
+  Stored member weight 30: 0.0401595
+  [avg] model training instances: 500
+  [err] model training instances: 0
+  [avg] tree size (nodes): 6
+  [err] tree size (nodes): 0
+  [avg] tree size (leaves): 5
+  [err] tree size (leaves): 0
+  [avg] active learning leaves: 5
+  [err] active learning leaves: 0
+  [avg] tree depth: 1
+  [err] tree depth: 0
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  30000
+Votes
+  0: 0.15183108
+  1: 0.84816892
+Measurements
+  classified instances: 29999
+  classifications correct (percent): 77.86926231
+  Kappa Statistic (percent): 53.67277177
+  Kappa Temporal Statistic (percent): 54.14105132
+Model measurements
+  model training instances: 29999
+  Member weight 1: 0.22747135
+  Member weight 2: 0.10361024
+  Member weight 3: 0.10312038
+  Member weight 4: 0.10305053
+  Member weight 5: 0.10085026
+  Member weight 6: 0.09651541
+  Member weight 7: 0.09614126
+  Member weight 8: 0.09589024
+  Member weight 9: 0.09523253
+  Member weight 10: 0.09261069
+  Member weight 11: 0.09133006
+  Member weight 12: 0.09103489
+  Member weight 13: 0.09031254
+  Member weight 14: 0.09024831
+  Member weight 15: 0.08995765
+  Stored member weight 16: 0.08903336
+  Stored member weight 17: 0.08682416
+  Stored member weight 18: 0.08640391
+  Stored member weight 19: 0.0858165
+  Stored member weight 20: 0.08513655
+  Stored member weight 21: 0.08390939
+  Stored member weight 22: 0.08369393
+  Stored member weight 23: 0.08024715
+  Stored member weight 24: 0.07970189
+  Stored member weight 25: 0.07790886
+  Stored member weight 26: 0.07500172
+  Stored member weight 27: 0.07426612
+  Stored member weight 28: 0.07251709
+  Stored member weight 29: 0.06969017
+  Stored member weight 30: 0.06899134
+  [avg] model training instances: 500
+  [err] model training instances: 0
+  [avg] tree size (nodes): 6
+  [err] tree size (nodes): 0
+  [avg] tree size (leaves): 5
+  [err] tree size (leaves): 0
+  [avg] active learning leaves: 5
+  [err] active learning leaves: 0
+  [avg] tree depth: 1
+  [err] tree depth: 0
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  40000
+Votes
+  0: 0.18299127
+  1: 0.81700873
+Measurements
+  classified instances: 39999
+  classifications correct (percent): 78.10195255
+  Kappa Statistic (percent): 54.26502782
+  Kappa Temporal Statistic (percent): 54.73618934
+Model measurements
+  model training instances: 39999
+  Member weight 1: 0.21773419
+  Member weight 2: 0.08537638
+  Member weight 3: 0.08330651
+  Member weight 4: 0.07982469
+  Member weight 5: 0.0787526
+  Member weight 6: 0.07858392
+  Member weight 7: 0.0774828
+  Member weight 8: 0.07685437
+  Member weight 9: 0.07522376
+  Member weight 10: 0.07469639
+  Member weight 11: 0.07427775
+  Member weight 12: 0.07389059
+  Member weight 13: 0.07280333
+  Member weight 14: 0.07248864
+  Member weight 15: 0.07199252
+  Stored member weight 16: 0.07150406
+  Stored member weight 17: 0.07063971
+  Stored member weight 18: 0.07024529
+  Stored member weight 19: 0.06969903
+  Stored member weight 20: 0.06920686
+  Stored member weight 21: 0.06860839
+  Stored member weight 22: 0.06570818
+  Stored member weight 23: 0.06403309
+  Stored member weight 24: 0.06121788
+  Stored member weight 25: 0.06093091
+  Stored member weight 26: 0.05907566
+  Stored member weight 27: 0.05835812
+  Stored member weight 28: 0.05537065
+  Stored member weight 29: 0.05533699
+  Stored member weight 30: 0.05292489
+  [avg] model training instances: 500
+  [err] model training instances: 0
+  [avg] tree size (nodes): 6
+  [err] tree size (nodes): 0
+  [avg] tree size (leaves): 5
+  [err] tree size (leaves): 0
+  [avg] active learning leaves: 5
+  [err] active learning leaves: 0
+  [avg] tree depth: 1
+  [err] tree depth: 0
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  50000
+Votes
+  0: 0.35040945
+  1: 0.64959055
+Measurements
+  classified instances: 49999
+  classifications correct (percent): 78.23756475
+  Kappa Statistic (percent): 54.51713404
+  Kappa Temporal Statistic (percent): 54.95901979
+Model measurements
+  model training instances: 49999
+  Member weight 1: 0.2225965
+  Member weight 2: 0.08403556
+  Member weight 3: 0.07682737
+  Member weight 4: 0.07641031
+  Member weight 5: 0.07150226
+  Member weight 6: 0.07059568
+  Member weight 7: 0.07027019
+  Member weight 8: 0.07011978
+  Member weight 9: 0.06955199
+  Member weight 10: 0.06943943
+  Member weight 11: 0.06939359
+  Member weight 12: 0.06928149
+  Member weight 13: 0.0676304
+  Member weight 14: 0.0660433
+  Member weight 15: 0.06571263
+  Stored member weight 16: 0.06471363
+  Stored member weight 17: 0.06378897
+  Stored member weight 18: 0.0632735
+  Stored member weight 19: 0.06256699
+  Stored member weight 20: 0.06192017
+  Stored member weight 21: 0.06169597
+  Stored member weight 22: 0.06163355
+  Stored member weight 23: 0.06039914
+  Stored member weight 24: 0.05985628
+  Stored member weight 25: 0.05711309
+  Stored member weight 26: 0.05649044
+  Stored member weight 27: 0.05583233
+  Stored member weight 28: 0.0553111
+  Stored member weight 29: 0.05364849
+  Stored member weight 30: 0.04980363
+  [avg] model training instances: 500
+  [err] model training instances: 0
+  [avg] tree size (nodes): 6
+  [err] tree size (nodes): 0
+  [avg] tree size (leaves): 5
+  [err] tree size (leaves): 0
+  [avg] active learning leaves: 5
+  [err] active learning leaves: 0
+  [avg] tree depth: 1
+  [err] tree depth: 0
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  60000
+Votes
+  0: 0.01133509
+  1: 0.98866491
+Measurements
+  classified instances: 59999
+  classifications correct (percent): 78.53630894
+  Kappa Statistic (percent): 55.22434451
+  Kappa Temporal Statistic (percent): 55.61606066
+Model measurements
+  model training instances: 59999
+  Member weight 1: 0.22192726
+  Member weight 2: 0.0966041
+  Member weight 3: 0.09124552
+  Member weight 4: 0.09099395
+  Member weight 5: 0.08815672
+  Member weight 6: 0.08717235
+  Member weight 7: 0.08664322
+  Member weight 8: 0.0861119
+  Member weight 9: 0.08596211
+  Member weight 10: 0.08524845
+  Member weight 11: 0.08513405
+  Member weight 12: 0.08493348
+  Member weight 13: 0.08472994
+  Member weight 14: 0.08313831
+  Member weight 15: 0.08156942
+  Stored member weight 16: 0.08038737
+  Stored member weight 17: 0.08023868
+  Stored member weight 18: 0.07890968
+  Stored member weight 19: 0.07840729
+  Stored member weight 20: 0.07515588
+  Stored member weight 21: 0.0749399
+  Stored member weight 22: 0.07415733
+  Stored member weight 23: 0.07294842
+  Stored member weight 24: 0.0715965
+  Stored member weight 25: 0.0710438
+  Stored member weight 26: 0.06842814
+  Stored member weight 27: 0.06596818
+  Stored member weight 28: 0.06482301
+  Stored member weight 29: 0.06397665
+  Stored member weight 30: 0.06371996
+  [avg] model training instances: 500
+  [err] model training instances: 0
+  [avg] tree size (nodes): 6
+  [err] tree size (nodes): 0
+  [avg] tree size (leaves): 5
+  [err] tree size (leaves): 0
+  [avg] active learning leaves: 5
+  [err] active learning leaves: 0
+  [avg] tree depth: 1
+  [err] tree depth: 0
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  70000
+Votes
+  0: 0.44659954
+  1: 0.55340046
+Measurements
+  classified instances: 69999
+  classifications correct (percent): 78.68540979
+  Kappa Statistic (percent): 55.58850849
+  Kappa Temporal Statistic (percent): 56.06466622
+Model measurements
+  model training instances: 69999
+  Member weight 1: 0.22438365
+  Member weight 2: 0.0819683
+  Member weight 3: 0.08040099
+  Member weight 4: 0.08020696
+  Member weight 5: 0.07902399
+  Member weight 6: 0.07862988
+  Member weight 7: 0.0784694
+  Member weight 8: 0.07840538
+  Member weight 9: 0.07701822
+  Member weight 10: 0.07615344
+  Member weight 11: 0.07603523
+  Member weight 12: 0.07447465
+  Member weight 13: 0.07332125
+  Member weight 14: 0.07239581
+  Member weight 15: 0.06826734
+  Stored member weight 16: 0.06804524
+  Stored member weight 17: 0.067328
+  Stored member weight 18: 0.06660606
+  Stored member weight 19: 0.0662035
+  Stored member weight 20: 0.06596778
+  Stored member weight 21: 0.06471102
+  Stored member weight 22: 0.06322883
+  Stored member weight 23: 0.06188597
+  Stored member weight 24: 0.06151542
+  Stored member weight 25: 0.06145266
+  Stored member weight 26: 0.06070849
+  Stored member weight 27: 0.06053426
+  Stored member weight 28: 0.05738255
+  Stored member weight 29: 0.05583255
+  Stored member weight 30: 0.05573999
+  [avg] model training instances: 500
+  [err] model training instances: 0
+  [avg] tree size (nodes): 6
+  [err] tree size (nodes): 0
+  [avg] tree size (leaves): 5
+  [err] tree size (leaves): 0
+  [avg] active learning leaves: 5
+  [err] active learning leaves: 0
+  [avg] tree depth: 1
+  [err] tree depth: 0
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  80000
+Votes
+  0: 0.41617773
+  1: 0.58382227
+Measurements
+  classified instances: 79999
+  classifications correct (percent): 78.74848436
+  Kappa Statistic (percent): 55.71634442
+  Kappa Temporal Statistic (percent): 56.23825581
+Model measurements
+  model training instances: 79999
+  Member weight 1: 0.22039886
+  Member weight 2: 0.08153748
+  Member weight 3: 0.0801192
+  Member weight 4: 0.07532997
+  Member weight 5: 0.07416861
+  Member weight 6: 0.07358233
+  Member weight 7: 0.07009086
+  Member weight 8: 0.07002275
+  Member weight 9: 0.06908247
+  Member weight 10: 0.06836648
+  Member weight 11: 0.06810424
+  Member weight 12: 0.0680914
+  Member weight 13: 0.06768504
+  Member weight 14: 0.06676427
+  Member weight 15: 0.06667404
+  Stored member weight 16: 0.06577203
+  Stored member weight 17: 0.06493183
+  Stored member weight 18: 0.06451679
+  Stored member weight 19: 0.06412409
+  Stored member weight 20: 0.06336721
+  Stored member weight 21: 0.06276299
+  Stored member weight 22: 0.0623604
+  Stored member weight 23: 0.06235119
+  Stored member weight 24: 0.06185402
+  Stored member weight 25: 0.06164864
+  Stored member weight 26: 0.06129175
+  Stored member weight 27: 0.06095424
+  Stored member weight 28: 0.05927618
+  Stored member weight 29: 0.05734724
+  Stored member weight 30: 0.04896942
+  [avg] model training instances: 500
+  [err] model training instances: 0
+  [avg] tree size (nodes): 6.33333333
+  [err] tree size (nodes): 0.33333333
+  [avg] tree size (leaves): 5.26666667
+  [err] tree size (leaves): 0.26666667
+  [avg] active learning leaves: 5.26666667
+  [err] active learning leaves: 0.26666667
+  [avg] tree depth: 1.06666667
+  [err] tree depth: 0.06666667
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  90000
+Votes
+  0: 0.23190113
+  1: 0.76809887
+Measurements
+  classified instances: 89999
+  classifications correct (percent): 78.85865399
+  Kappa Statistic (percent): 55.94345271
+  Kappa Temporal Statistic (percent): 56.44500401
+Model measurements
+  model training instances: 89999
+  Member weight 1: 0.22519463
+  Member weight 2: 0.09364175
+  Member weight 3: 0.092144
+  Member weight 4: 0.08967053
+  Member weight 5: 0.08920137
+  Member weight 6: 0.08904207
+  Member weight 7: 0.08793566
+  Member weight 8: 0.0876143
+  Member weight 9: 0.08396697
+  Member weight 10: 0.08278043
+  Member weight 11: 0.08257894
+  Member weight 12: 0.08201837
+  Member weight 13: 0.08147537
+  Member weight 14: 0.0805705
+  Member weight 15: 0.08011303
+  Stored member weight 16: 0.07975793
+  Stored member weight 17: 0.07973895
+  Stored member weight 18: 0.07919045
+  Stored member weight 19: 0.07874946
+  Stored member weight 20: 0.07726128
+  Stored member weight 21: 0.07553029
+  Stored member weight 22: 0.0748686
+  Stored member weight 23: 0.07482529
+  Stored member weight 24: 0.07469313
+  Stored member weight 25: 0.07380561
+  Stored member weight 26: 0.07326793
+  Stored member weight 27: 0.07145971
+  Stored member weight 28: 0.06831069
+  Stored member weight 29: 0.06746661
+  Stored member weight 30: 0.05871009
+  [avg] model training instances: 500
+  [err] model training instances: 0
+  [avg] tree size (nodes): 6
+  [err] tree size (nodes): 0
+  [avg] tree size (leaves): 5
+  [err] tree size (leaves): 0
+  [avg] active learning leaves: 5
+  [err] active learning leaves: 0
+  [avg] tree depth: 1
+  [err] tree depth: 0
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  100000
+Votes
+  0: 0.75069046
+  1: 0.24930954
+Measurements
+  classified instances: 99999
+  classifications correct (percent): 78.90278903
+  Kappa Statistic (percent): 56.05621693
+  Kappa Temporal Statistic (percent): 56.54045814
+Model measurements
+  model training instances: 99999
+  Member weight 1: 0.22537838
+  Member weight 2: 0.09550081
+  Member weight 3: 0.09113679
+  Member weight 4: 0.08646795
+  Member weight 5: 0.08499501
+  Member weight 6: 0.08217034
+  Member weight 7: 0.08067884
+  Member weight 8: 0.07946299
+  Member weight 9: 0.07945304
+  Member weight 10: 0.07939056
+  Member weight 11: 0.07915029
+  Member weight 12: 0.07803919
+  Member weight 13: 0.07740038
+  Member weight 14: 0.07724033
+  Member weight 15: 0.0770382
+  Stored member weight 16: 0.07672931
+  Stored member weight 17: 0.07664913
+  Stored member weight 18: 0.076173
+  Stored member weight 19: 0.0748524
+  Stored member weight 20: 0.07470197
+  Stored member weight 21: 0.07320369
+  Stored member weight 22: 0.07276253
+  Stored member weight 23: 0.0713717
+  Stored member weight 24: 0.07005453
+  Stored member weight 25: 0.069456
+  Stored member weight 26: 0.06696198
+  Stored member weight 27: 0.06680182
+  Stored member weight 28: 0.06482388
+  Stored member weight 29: 0.06435338
+  Stored member weight 30: 0.05946111
+  [avg] model training instances: 500
+  [err] model training instances: 0
+  [avg] tree size (nodes): 6
+  [err] tree size (nodes): 0
+  [avg] tree size (leaves): 5
+  [err] tree size (leaves): 0
+  [avg] active learning leaves: 5
+  [err] active learning leaves: 0
+  [avg] tree depth: 1
+  [err] tree depth: 0
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+
+

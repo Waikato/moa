@@ -14,7 +14,7 @@ public class SelectAttributesFilterTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		MultiTargetArffFileStream stream=new MultiTargetArffFileStream("moa/src/test/datasets/regression.arff", "4-6");
+		MultiTargetArffFileStream stream=new MultiTargetArffFileStream(ClassLoader.getSystemResource("moa/classifiers/data/small_regression.arff").getPath(), "4-6");
 		filter= new SelectAttributesFilter();
 		filter.setInputStream(stream);   
 		filter.inputStringOption.setValue("2-5,8");
