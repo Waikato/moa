@@ -19,6 +19,7 @@
  */
 package moa;
 
+import weka.core.Version;
 import moa.core.Globals;
 import moa.core.Measurement;
 import moa.core.StringUtils;
@@ -69,6 +70,27 @@ public class DoTask {
         return isJavaVersionOK;
     }
 
+    /**
+     * Checks if the Weka version is recent enough to run MOA.
+     * For example, if the Weka version is not recent, there may be problems
+     * due to the fact that <code>Instance</code> was a class before 3.7.1 and
+     * now is an interface.
+     *
+     * @return true if the Weka version is recent.
+     */
+    public static boolean isWekaVersionOK() {
+        Version version = new Version();
+        if (version.isOlder("3.7.1")) {
+            System.err.println();
+            System.err.println(Globals.getWorkbenchInfoString());
+            System.err.println();
+            System.err.print("Weka 3.7.1 or higher is required to run MOA. ");
+            System.err.println("Weka version " + Version.VERSION + " found");
+            return false;
+        } else {
+            return true;
+        }
+    }
    
 
     /**

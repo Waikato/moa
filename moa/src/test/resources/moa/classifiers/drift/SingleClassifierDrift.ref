@@ -1,0 +1,165 @@
+--> classification-out0.arff
+moa.classifiers.drift.SingleClassifierDrift
+
+Index
+  10000
+Votes
+  0: 0.0000641
+  1: 0.00003628
+Measurements
+  classified instances: 9999
+  classifications correct (percent): 72.89728973
+  Kappa Statistic (percent): 41.81847765
+  Kappa Temporal Statistic (percent): 42.87521079
+Model measurements
+  model training instances: 9999
+  Change detected: 0
+  Warning detected: 52
+  model training instances: 9999
+
+Index
+  20000
+Votes
+  0: 0.00006447
+  1: 0.00011607
+Measurements
+  classified instances: 19999
+  classifications correct (percent): 73.16865843
+  Kappa Statistic (percent): 42.93623835
+  Kappa Temporal Statistic (percent): 43.98162647
+Model measurements
+  model training instances: 19999
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 19999
+
+Index
+  30000
+Votes
+  0: 0.00015275
+  1: 0.00025596
+Measurements
+  classified instances: 29999
+  classifications correct (percent): 73.27244241
+  Kappa Statistic (percent): 43.15271423
+  Kappa Temporal Statistic (percent): 44.61559715
+Model measurements
+  model training instances: 29999
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 29999
+
+Index
+  40000
+Votes
+  0: 0.00003871
+  1: 0.00012759
+Measurements
+  classified instances: 39999
+  classifications correct (percent): 73.38433461
+  Kappa Statistic (percent): 43.54638422
+  Kappa Temporal Statistic (percent): 44.98475531
+Model measurements
+  model training instances: 39999
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 39999
+
+Index
+  50000
+Votes
+  0: 0.00002152
+  1: 0.0000518
+Measurements
+  classified instances: 49999
+  classifications correct (percent): 73.35746715
+  Kappa Statistic (percent): 43.48652952
+  Kappa Temporal Statistic (percent): 44.85884593
+Model measurements
+  model training instances: 49999
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 49999
+
+Index
+  60000
+Votes
+  0: 0.00003779
+  1: 0.00018819
+Measurements
+  classified instances: 59999
+  classifications correct (percent): 73.36122269
+  Kappa Statistic (percent): 43.62514295
+  Kappa Temporal Statistic (percent): 44.91469929
+Model measurements
+  model training instances: 59999
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 59999
+
+Index
+  70000
+Votes
+  0: 0.00011882
+  1: 0.00018488
+Measurements
+  classified instances: 69999
+  classifications correct (percent): 73.3810483
+  Kappa Statistic (percent): 43.73709504
+  Kappa Temporal Statistic (percent): 45.13089314
+Model measurements
+  model training instances: 69999
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 69999
+
+Index
+  80000
+Votes
+  0: 0.0001627
+  1: 0.00013146
+Measurements
+  classified instances: 79999
+  classifications correct (percent): 73.36341704
+  Kappa Statistic (percent): 43.71144848
+  Kappa Temporal Statistic (percent): 45.14916729
+Model measurements
+  model training instances: 79999
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 79999
+
+Index
+  90000
+Votes
+  0: 0.00008438
+  1: 0.00008116
+Measurements
+  classified instances: 89999
+  classifications correct (percent): 73.39081545
+  Kappa Statistic (percent): 43.77125988
+  Kappa Temporal Statistic (percent): 45.18026783
+Model measurements
+  model training instances: 89999
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 89999
+
+Index
+  100000
+Votes
+  0: 0.00024103
+  1: 0.00003174
+Measurements
+  classified instances: 99999
+  classifications correct (percent): 73.38573386
+  Kappa Statistic (percent): 43.79308354
+  Kappa Temporal Statistic (percent): 45.17551088
+Model measurements
+  model training instances: 99999
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 99999
+
+
+

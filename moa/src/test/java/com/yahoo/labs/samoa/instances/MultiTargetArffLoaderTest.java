@@ -12,6 +12,8 @@ import java.io.Reader;
 import moa.core.InputStreamProgressMonitor;
 import moa.streams.ArffFileStream;
 import moa.streams.MultiTargetArffFileStream;
+import moa.test.MoaTestCase;
+import moa.test.TmpFile;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -20,18 +22,17 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class MultiTargetArffLoaderTest {
-
 	private static double EPS=0.00000001;
 	private static Instances instancesRegression;
 	private static Instances instancesClassification;
+	
 	@BeforeClass
 	public static void setUpBeforeClassRegression() throws Exception {
 		try {
-            InputStream fileStream = new FileInputStream("moa/src/test/datasets/regression.arff");
+            InputStream fileStream = new FileInputStream(ClassLoader.getSystemResource("moa/classifiers/data/small_regression.arff").getPath());
             Reader  reader= new BufferedReader(new InputStreamReader(fileStream));
     		instancesRegression = new Instances(reader,new Range("4-6"));
-    		
-    		fileStream = new FileInputStream("moa/src/test/datasets/classification.arff");
+    		fileStream = new FileInputStream(ClassLoader.getSystemResource("moa/classifiers/data/small_classification.arff").getPath());
     		reader = new BufferedReader(new InputStreamReader(fileStream));
     		instancesClassification = new Instances(reader,new Range("2"));
         } catch (IOException ioe) {
