@@ -24,6 +24,7 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.classifiers.core.conditionaltests.InstanceConditionalBinaryTest;
 import moa.classifiers.rules.core.Predicate;
+import moa.core.StringUtils;
 
 
 
@@ -97,13 +98,6 @@ public class NumericAttributeBinaryRulePredicate extends InstanceConditionalBina
         throw new IndexOutOfBoundsException();
     }
 
-    /**
-     *
-     */
-    @Override
-    public void getDescription(StringBuilder sb, int indent) {
-        // TODO Auto-generated method stub
-    }
 
     @Override
     public int[] getAttsTestDependsOn() {
@@ -121,20 +115,6 @@ public class NumericAttributeBinaryRulePredicate extends InstanceConditionalBina
 		else
 			return (branchForInstance(inst) != 0);
 	}
-
-    @Override
-    public String toString() {
-        if ((operator >= 0) && (operator <= 2)) {
-            String compareChar = (operator == 0) ? "=" : (operator == 1) ? "<=" : ">";
-            //int equalsBranch = this.equalsPassesTest ? 0 : 1;
-            return "x" + this.attIndex
-                    + ' '
-                    + compareChar
-                    + ' ' 
-                    + this.attValue;
-        }
-        throw new IndexOutOfBoundsException();
-    }
 
     public boolean isEqual(NumericAttributeBinaryRulePredicate predicate) {
         return (this.attIndex == predicate.attIndex
@@ -164,4 +144,29 @@ public class NumericAttributeBinaryRulePredicate extends InstanceConditionalBina
         this.attValue = ruleSplitNodeTest.attValue;
 
     }
+    
+
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {   
+		String compareChar = (operator == 0) ? "=" : (operator == 1) ? "<=" : ">";
+		StringUtils.appendIndented(sb, indent+1, "In" + attIndex + compareChar + attValue);
+	}
+	
+	@Override
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		getDescription(sb,0);
+		return sb.toString();
+	}
+	
+	@Override
+	public int getAttributeIndex() {
+		return attIndex;
+	}
+
+	@Override
+	public boolean isEqualOrLess() {
+		return state;
+	}
+
 }

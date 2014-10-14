@@ -88,7 +88,7 @@ public class Range {
         return end - start + 1;
     }
 
-    void setUpper(int attributeNumber) {
+    public void setUpper(int attributeNumber) {
         this.upperLimit = attributeNumber;
         this.setRange(this.rangeText);
     }

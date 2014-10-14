@@ -164,7 +164,12 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
 
 	@Override
 	public void addResult(Example<Instance> testInst, Prediction prediction) {
-		addResult(testInst, prediction.getVotes());
+		double votes[];
+		if(prediction==null)
+			votes = new double[0];
+		else
+			votes=prediction.getVotes();
+		addResult(testInst, votes);
 		
 	}
 }

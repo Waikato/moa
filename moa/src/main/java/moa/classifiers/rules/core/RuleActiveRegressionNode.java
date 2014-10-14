@@ -22,6 +22,10 @@ package moa.classifiers.rules.core;
 
 import com.yahoo.labs.samoa.instances.Instance;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +38,7 @@ import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
-import moa.classifiers.rules.AMRulesRegressor;
+import moa.classifiers.rules.AMRulesRegressorOld;
 import moa.classifiers.rules.AbstractAMRules;
 import moa.classifiers.rules.core.splitcriteria.AMRulesSplitCriterion;
 import moa.classifiers.rules.core.splitcriteria.SDRSplitCriterionAMRules;
@@ -85,8 +89,8 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 		super(builder);
 		this.perceptron = new Perceptron();
 		this.perceptron.prepareForUse();
-		this.perceptron.learningRatioOption = ((AMRulesRegressor)this.amRules).learningRatioOption;
-		this.perceptron.constantLearningRatioDecayOption = ((AMRulesRegressor)this.amRules).constantLearningRatioDecayOption;	
+		this.perceptron.learningRatioOption = ((AMRulesRegressorOld)this.amRules).learningRatioOption;
+		this.perceptron.constantLearningRatioDecayOption = ((AMRulesRegressorOld)this.amRules).constantLearningRatioDecayOption;	
 
 
 		if(this.predictionFunction!=1)
@@ -216,13 +220,14 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 			for (int x = 0; x < instance.numAttributes() - 1; x++) {
 				// Perceptron is initialized each rule.
 				// this is a local anomaly.
-				int instAttIndex = AMRulesRegressor.modelAttIndexToInstanceAttIndex(x, instance);
+				int instAttIndex = AMRulesRegressorOld.modelAttIndexToInstanceAttIndex(x, instance);
 				atribSum = this.perceptron.perceptronattributeStatistics.getValue(x);
 				atribSquredSum = this.perceptron.squaredperceptronattributeStatistics.getValue(x);
 				double mean = atribSum / perceptronIntancesSeen;
 				double sd = computeSD(atribSquredSum, atribSum, perceptronIntancesSeen);
 				double probability = computeProbability(mean, sd, instance.value(instAttIndex));
-
+				
+				/* old implementation
 				if (probability > 0.0) {
 					D = D + Math.abs(Math.log(probability));
 					if (probability < uniVariateAnomalyProbabilityThreshold) {//0.10
@@ -230,11 +235,17 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 					}
 				} else {
 					debug("Anomaly with probability 0 in atribute : " + x, 4);
-				}
+				}*/
+				
+				//odds ratio
+				if(probability>0)
+					anomaly+=Math.log(probability/(1-probability));
+				if(probability==1) //TODO: JD comment: only for testing
+					anomaly+=Math.log(probability/(1-probability));
 			}
 
-			anomaly = 0.0;
-			if (D != 0.0) {
+			/*anomaly = 0.0; //Old implementation
+			if (D != 0.0) { 
 				anomaly = N / D;
 			}
 			if (anomaly >= multiVariateAnomalyProbabilityThreshold) {
@@ -243,7 +254,16 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 						multiVariateAnomalyProbabilityThreshold,
 						anomaly);
 				return true;
-			}
+			}*/
+			System.out.println("Anomaly = " + anomaly); //TODO: JD remove commented code
+			/*try {
+			    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("/home/jduarte/fried_anomalies.txt", true)));
+			    out.println(anomaly);
+			    out.close();
+			} catch (IOException e) {
+			    //exception handling left as an exercise for the reader
+			}*/
+			return anomaly<0;
 		}
 		return false;
 	}
@@ -252,7 +272,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 		double atribSquredSum = 0.0;
 
 		for (int x = 0; x < instance.numAttributes() - 1; x++) {
-			int instAttIndex = AMRulesRegressor.modelAttIndexToInstanceAttIndex(x, instance);
+			int instAttIndex = AMRulesRegressorOld.modelAttIndexToInstanceAttIndex(x, instance);
 			atribSum = perceptron.perceptronattributeStatistics.getValue(x);
 			atribSquredSum = perceptron.squaredperceptronattributeStatistics.getValue(x);
 			double mean = atribSum / perceptron.getInstancesSeen();
@@ -277,7 +297,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 		{
 			this.perceptron=new Perceptron(((RuleActiveRegressionNode) oldLearningNode).perceptron);
 			this.perceptron.resetError();
-			this.perceptron.setLearningRatio(((AMRulesRegressor)this.amRules).learningRatioOption.getValue());
+			this.perceptron.setLearningRatio(((AMRulesRegressorOld)this.amRules).learningRatioOption.getValue());
 		}
 
 		if(((RuleActiveRegressionNode) oldLearningNode).targetMean!=null)
@@ -306,7 +326,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 		// tieThreshold. Hoeffding Bound test parameter.
 		//SplitCriterion splitCriterion = new SDRSplitCriterionAMRules(); 
 			//SplitCriterion splitCriterion = new SDRSplitCriterionAMRulesNode();//JD for assessing only best branch
-		AMRulesSplitCriterion splitCriterion=(AMRulesSplitCriterion)((AMRulesSplitCriterion) ((AMRulesRegressor)this.amRules).splitCriterionOption.getPreMaterializedObject()).copy();
+		AMRulesSplitCriterion splitCriterion=(AMRulesSplitCriterion)((AMRulesSplitCriterion) ((AMRulesRegressorOld)this.amRules).splitCriterionOption.getPreMaterializedObject()).copy();
 
 		// Using this criterion, find the best split per attribute and rank the results
 		AttributeSplitSuggestion[] bestSplitSuggestions
@@ -342,7 +362,8 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 			// competing attributes are equally good, and the split will be made on the one with the higher SDR value.
 
 			if (bestSuggestion.merit > 0) {
-				if ((((secondBestSuggestion.merit / bestSuggestion.merit) + hoeffdingBound) < 1)
+				//if ((((secondBestSuggestion.merit / bestSuggestion.merit) + hoeffdingBound) < 1) //ratio
+				if ((((bestSuggestion.merit-secondBestSuggestion.merit) ) > hoeffdingBound) // if normalized
 						|| (hoeffdingBound < tieThreshold)) {
 					debug("Expanded ", 5);
 					shouldSplit = true;

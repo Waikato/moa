@@ -102,6 +102,7 @@ public class AttributesInformation implements Serializable {
      */
     public void setAttributes(List<Attribute> v) {
         this.attributes = v;
+        this.numberAttributes=v.size();
     }
 
     /**
@@ -143,5 +144,11 @@ public class AttributesInformation implements Serializable {
         }
         return this.defaultNumericAttribute;
     }
+
+	public void setAttributes(List<Attribute> v, List<Integer> indexValues) {
+	        this.attributes = v;
+	        this.numberAttributes=v.size();	
+	        this.indexValues=indexValues;
+	}
 
 }

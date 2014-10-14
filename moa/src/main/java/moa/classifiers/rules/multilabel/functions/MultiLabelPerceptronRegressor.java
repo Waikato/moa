@@ -13,7 +13,8 @@ public class MultiLabelPerceptronRegressor extends BasicMultiTargetRegressor
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public MultiLabelPerceptronRegressor() {
+	@Override
+	protected void init(){
 		baseLearnerOption=new ClassOption("baseLearner", 'l',
 				"Perceptron", Perceptron.class, "Perceptron");
 	}
