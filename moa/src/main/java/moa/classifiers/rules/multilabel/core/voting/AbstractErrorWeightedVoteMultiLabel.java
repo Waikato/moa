@@ -43,7 +43,7 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 	protected List<double[]> errors;
 	protected double[][] weights;
 	protected int [] outputAttributesCount;
-
+	protected Prediction weightedVote=null;
 
 
 	public AbstractErrorWeightedVoteMultiLabel() {
@@ -74,10 +74,10 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 	@Override
 	public double getWeightedError()
 	{
-		if(outputAttributesCount!=null){
-			int numOutputs=outputAttributesCount.length;
+		double [] errors=getOutputAttributesErrors();
+		if(errors!=null){
+			int numOutputs=errors.length;
 			double error=0;
-			double [] errors=getOutputAttributesErrors();
 			
 			for (int i=0; i<numOutputs;i++)
 				error+=errors[i];
@@ -115,11 +115,12 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 			int numOutputs=outputAttributesCount.length;
 			int numVotes=weights.length;
 			weightedError=new double[numOutputs];
+			
 			//For all votes
 			for (int i=0; i<numVotes; ++i){
 				//For each output attribute
 				for (int j=0; j<numOutputs; j++){
-					if(errors.get(i)!=null)//if error is null, then no prediction was made TODO: re-check
+					if(errors.get(i)!=null && errors.get(i)[j]!=Double.MAX_VALUE)
 						weightedError[j]+=errors.get(i)[j]*weights[i][j];
 				}
 			}
@@ -132,6 +133,12 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 	@Override
 	public void getDescription(StringBuilder sb, int indent) {
 		
+	}
+	
+	public Prediction getPrediction(){
+		if (this.weightedVote==null)
+			weightedVote=computeWeightedVote();
+		return weightedVote;
 	}
 	
 }

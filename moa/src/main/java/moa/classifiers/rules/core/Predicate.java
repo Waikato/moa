@@ -25,5 +25,8 @@ public interface Predicate {
 	
 	 public boolean evaluate(Instance instance);
 	 public void negateCondition();
+	 public int getAttributeIndex();
+	 public boolean isEqualOrLess();
+	 public void getDescription(StringBuilder sb, int indent);
 	 
 }

@@ -230,6 +230,8 @@ public class Instances implements Serializable {
      * @param i the i
      */
     public void insertAttributeAt(Attribute attribute, int i) {
+    	if (this.instanceInformation==null)
+    		this.instanceInformation= new InstanceInformation();
         this.instanceInformation.insertAttributeAt(attribute, i);
     }
 
@@ -462,5 +464,22 @@ public class Instances implements Serializable {
 
     public Instance get(int k) {
         return this.instance(k);
+    }
+
+	public void setRangeOutputIndices(Range range) {
+		this.instanceInformation.setRangeOutputIndices(range);
+		
+	}
+	
+    public void setAttributes(List<Attribute> v) {
+    	if(this.instanceInformation==null)
+    		this.instanceInformation= new InstanceInformation();
+        this.instanceInformation.setAttributes(v);
+    }
+    
+    public void setAttributes(List<Attribute> v, List<Integer> indexValues) {
+    	if(this.instanceInformation==null)
+    		this.instanceInformation= new InstanceInformation();
+        this.instanceInformation.setAttributes(v, indexValues);
     }
 }

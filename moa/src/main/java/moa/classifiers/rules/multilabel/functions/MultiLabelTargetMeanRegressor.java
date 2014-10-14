@@ -16,7 +16,8 @@ public class MultiLabelTargetMeanRegressor extends BasicMultiTargetRegressor
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public MultiLabelTargetMeanRegressor() {
+	@Override
+	protected void init(){
 		baseLearnerOption=new ClassOption("baseLearner", 'l',
 				"TargetMean", TargetMean.class, "TargetMean") ;
 	}

@@ -1,20 +1,20 @@
 package moa.integration;
 
+import junit.framework.TestCase;
 import moa.core.Globals;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.core.TimingUtils;
 import moa.options.ClassOption;
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.IntOption;
-import com.github.javacliparser.Option;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
 
 import org.junit.Test;
 
-import junit.framework.TestCase;
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.Option;
 
 /* test that all clusterers run, i.e., do not die on simpe input **/
 public class SimpleClusterTest extends TestCase {
@@ -52,7 +52,7 @@ public class SimpleClusterTest extends TestCase {
             System.out.println();
             System.out.println("No task specified.");
         } else {
-            if (moa.DoTask.isJavaVersionOK() == false || moa.core.WekaUtils.isWekaVersionOK() == false) {
+            if (moa.DoTask.isJavaVersionOK() == false || moa.DoTask.isWekaVersionOK() == false) {
                 return;
             }
             // create standard options

@@ -44,7 +44,11 @@ public abstract class AbstractMultiLabelLearner extends AbstractClassifier imple
     
 	@Override
 	public double[] getVotesForInstance(Instance inst) {
-		return getPredictionForInstance(inst).getVotes();
+		Prediction pred=getPredictionForInstance(inst);
+		if(pred!=null)
+			return pred.getVotes();
+		else
+			return new double[]{0}; //for compatibility with single target code
 	}
 
 }

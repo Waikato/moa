@@ -20,8 +20,10 @@
 package moa.classifiers.rules.core.conditionaltests;
 
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.core.conditionaltests.NominalAttributeBinaryTest;
 import moa.classifiers.rules.core.Predicate;
+import moa.core.StringUtils;
 
 /**
  * Nominal binary conditional test for instances to use to split nodes in rules.
@@ -51,5 +53,31 @@ public class NominalAttributeBinaryRulePredicate extends NominalAttributeBinaryT
 		state=!state;
 		
 	}
+
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {   
+		if(state)
+			StringUtils.appendIndented(sb, indent+1, "In" + attIndex + " = " + attValue);
+		else
+			StringUtils.appendIndented(sb, indent+1, "In" + attIndex + " <> " + attValue);
+	}
+	
+	@Override
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		getDescription(sb,0);
+		return sb.toString();
+	}
+
+	@Override
+	public int getAttributeIndex() {
+		return attIndex;
+	}
+
+	@Override
+	public boolean isEqualOrLess() {
+		return state;
+	}
+	
 	
 }

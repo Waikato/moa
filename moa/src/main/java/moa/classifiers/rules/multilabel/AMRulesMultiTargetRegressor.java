@@ -2,10 +2,12 @@ package moa.classifiers.rules.multilabel;
 
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
+import moa.classifiers.Regressor;
 import moa.classifiers.rules.multilabel.core.MultiLabelRule;
 import moa.classifiers.rules.multilabel.core.MultiLabelRuleRegression;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
+import moa.classifiers.rules.multilabel.core.voting.InverseErrorWeightedVoteMultiLabel;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.options.ClassOption;
 
@@ -17,13 +19,13 @@ public class AMRulesMultiTargetRegressor extends AMRulesMultiLabelLearner implem
 	private static final long serialVersionUID = 1L;
 	
 	public  AMRulesMultiTargetRegressor(){
-		splitCriterionOption = new ClassOption("splitCriterionOption", 's',
+		splitCriterionOption = new ClassOption("splitCriterionOption", 'S',
 				"Split criterion used to assess the merit of a split", MultiLabelSplitCriterion.class, "MultiTargetVarianceRatio") ;
 
 		 weightedVoteOption = new ClassOption("weightedVoteOption",
 					'w', "Weighted vote type", 
 					ErrorWeightedVoteMultiLabel.class,
-					"UniformWeightedVoteMultiLabel");
+					"InverseErrorWeightedVoteMultiLabel");
 		 
 		 learnerOption = new ClassOption("learnerOption",
 					'L', "Learner", 
@@ -44,6 +46,10 @@ public class AMRulesMultiTargetRegressor extends AMRulesMultiLabelLearner implem
 	@Override
 	protected MultiLabelRule newDefaultRule() {
 		return new MultiLabelRuleRegression(1);
+	}
+
+	public AMRulesMultiTargetRegressor(double attributesPercentage) {
+		super(attributesPercentage);
 	}
 
 

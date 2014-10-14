@@ -1,7 +1,9 @@
 package moa.classifiers.rules.multilabel.core;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
@@ -21,6 +23,7 @@ import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatistic
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
+import moa.core.StringUtils;
 
 
 public class MultiLabelRule extends AbstractMOAObject {
@@ -78,8 +81,13 @@ public class MultiLabelRule extends AbstractMOAObject {
 	
 	
 	@Override
-	public void getDescription(StringBuilder sb, int indent) {
-
+	public void getDescription(StringBuilder out, int indent) {
+		StringUtils.appendIndented(out, indent+1, "Rule Nr." + this.ruleNumberID + " Instances seen:" + this.learningLiteral.getWeightSeenSinceExpansion() + "\n"); 
+		for (Literal literal : literalList) {
+			literal.getDescription(out, indent+1);
+			StringUtils.appendIndented(out, indent+1, " ");
+		}
+		StringUtils.appendNewline(out);
 	}
 
 	public boolean updateChangeDetection(MultiLabelInstance instance) {
@@ -114,6 +122,18 @@ public class MultiLabelRule extends AbstractMOAObject {
 		boolean hasExpanded=learningLiteral.tryToExpand(splitConfidence,tieThresholdOption);
 		if(hasExpanded){
 			otherBranchRule=new MultiLabelRule(learningLiteral.getOtherBranchLearningLiteral());
+			//check for obsolete predicate
+			int attribIndex=learningLiteral.getBestSuggestion().getPredicate().getAttributeIndex();
+			boolean isEqualOrLess=learningLiteral.getBestSuggestion().getPredicate().isEqualOrLess();
+			Iterator<Literal> it=literalList.iterator();
+			while(it.hasNext()){
+				Literal l=it.next();
+				if(l.predicate.getAttributeIndex()==attribIndex && l.predicate.isEqualOrLess()==isEqualOrLess)
+				{
+					it.remove();
+					break;
+				}
+			}
 			this.literalList.add(new Literal(learningLiteral.getBestSuggestion().getPredicate()));
 			learningLiteral=learningLiteral.getExpandedLearningLiteral();
 			
@@ -129,26 +149,8 @@ public class MultiLabelRule extends AbstractMOAObject {
 	public String toString()
 	{
 		StringBuilder out = new StringBuilder();
-		//TODO: complete rule description
-		
-		/*int indent = 1;
-		StringUtils.appendIndented(out, indent, "Rule Nr." + this.ruleNumberID + " Instances seen:" + this.learningLiteral.getWeightSeenSinceExpansion() + "\n"); // AC
-		for (Literal literal : literalList) {
-			StringUtils.appendIndented(out, indent, literal.getSplitTest().toString());
-			StringUtils.appendIndented(out, indent, " ");
-			StringUtils.appendIndented(out, indent, literal.toString());
-		}
-		DoubleVector pred = new DoubleVector(this.learningLiteral.getSimplePrediction());
-		StringUtils.appendIndented(out, 0, " --> y: " + pred.toString());
-		StringUtils.appendNewline(out);
-
-		if (this.learningNode instanceof RuleActiveRegressionNode) {
-			if(((RuleActiveRegressionNode)this.learningLiteral).perceptron!=null){
-				((RuleActiveRegressionNode)this.learningLiteral).perceptron.getModelDescription(out,0 );
-				StringUtils.appendNewline(out);
-			}
-		}*/
-		return(out.toString());
+		getDescription(out, 1);
+		return out.toString();
 	}
 
 	public void setSplitCriterion(MultiLabelSplitCriterion splitCriterion) {
@@ -189,6 +191,15 @@ public class MultiLabelRule extends AbstractMOAObject {
 
 	public void setNominalObserverOption(NominalStatisticsObserver nominalStatisticsObserver) {
 		learningLiteral.setNominalObserverOption(nominalStatisticsObserver);	
+	}
+
+	public void setRandomGenerator(Random random) {
+		learningLiteral.setRandomGenerator(random);
+	}
+
+	public void setAttributesPercentage(double attributesPercentage) {
+		learningLiteral.setAttributesPercentage(attributesPercentage);
+		
 	}
 
 

@@ -16,7 +16,13 @@ public class CantellisInequality extends AbstractOptionHandler implements Probab
 
 	@Override
 	public double getProbability(double mean, double sd, double value) {
-		return sd/(sd+Math.abs(value - mean));
+		if(sd==0)
+			sd=10^-9;
+		double var=Math.pow(sd, 2);
+		double prob=2*var/(var+Math.pow(value - mean, 2));
+		if(prob>1)
+			prob=1;
+		return prob;
 	}
 
 	@Override
