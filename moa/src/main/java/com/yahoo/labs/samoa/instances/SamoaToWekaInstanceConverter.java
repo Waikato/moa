@@ -16,7 +16,6 @@
 package com.yahoo.labs.samoa.instances;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The Class SamoaToWekaInstanceConverter.
@@ -40,7 +39,7 @@ public class SamoaToWekaInstanceConverter {
             SparseInstance instance = (SparseInstance) inst;
             SparseInstanceData sparseInstanceData = (SparseInstanceData) instance.instanceData;
             wekaInstance = new weka.core.SparseInstance(instance.weight(), sparseInstanceData.getAttributeValues(),
-                    sparseInstanceData.getIndexValues(), sparseInstanceData.getNumberAttributes() + 1);
+                    sparseInstanceData.getIndexValues(), sparseInstanceData.getNumberAttributes());
             /*if (this.wekaInstanceInformation == null) {
                 this.wekaInstanceInformation = this.wekaInstancesInformation(inst.dataset());
             }
@@ -62,8 +61,7 @@ public class SamoaToWekaInstanceConverter {
         if (this.wekaInstanceInformation == null) {
             this.wekaInstanceInformation = this.wekaInstancesInformation(inst.dataset());
         }
-        //We suppose that the class is the last attibute. We should deal when this is not the case
-        wekaInstance.insertAttributeAt(inst.classIndex());
+        //wekaInstance.insertAttributeAt(inst.classIndex());
         wekaInstance.setDataset(wekaInstanceInformation);
         wekaInstance.setClassValue(inst.classValue());
         return wekaInstance;

@@ -13,7 +13,6 @@
  * language governing permissions and limitations under the
  * License.  
  */
-
 package com.yahoo.labs.samoa.instances;
 
 import java.io.Reader;
@@ -23,37 +22,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.yahoo.labs.samoa.instances.Range;
-
 /**
  * The Class Instances.
  *
  * @author abifet
  */
-public class Instances implements Serializable{
+public class Instances implements Serializable {
 
+    private static final long serialVersionUID = 8110510475535581577L;
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = 8110510475535581577L;
-	/** The instance information. */
+     * The instance information.
+     */
     protected InstanceInformation instanceInformation;
     /**
      * The instances.
      */
     protected List<Instance> instances;
-    
-    /** The arff. */
-    protected ArffLoader arff;
 
     /**
-     * Instantiates a new instances.
-     *
-     * @param modelContext the model context
+     * The arff.
      */
-    /*public Instances(InstancesHeader modelContext) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }*/
+    protected ArffLoader arff;
 
     /**
      * Instantiates a new instances.
@@ -64,15 +53,11 @@ public class Instances implements Serializable{
         this(chunk, chunk.numInstances());
         chunk.copyInstances(0, this, chunk.numInstances());
     }
-    
+
     /**
      * Instantiates a new instances.
      */
     public Instances() {
-        //this.instanceInformation = chunk.instanceInformation();
-        //this.relationName = chunk.relationName;
-        //this.attributes = chunk.attributes;
-        //this.instances = chunk.instances;
     }
 
     /**
@@ -92,7 +77,7 @@ public class Instances implements Serializable{
      * Instantiates a new instances.
      *
      * @param reader the reader
-     * @param range 
+     * @param range
      * @param size the size
      * @param classAttribute the class attribute
      */
@@ -102,7 +87,6 @@ public class Instances implements Serializable{
         this.instances = new ArrayList<Instance>();
     }
 
-    
     /**
      * Instantiates a new instances.
      *
@@ -111,13 +95,10 @@ public class Instances implements Serializable{
      */
     public Instances(Instances chunk, int capacity) {
         this.instanceInformation = chunk.instanceInformation();
-        if (capacity < 0)
+        if (capacity < 0) {
             capacity = 0;
-       // if (chunk.instances != null) {
-       //     this.instances = chunk.instances;
-       // } else {
-            this.instances = new ArrayList<Instance>(capacity);
-        //}
+        }
+        this.instances = new ArrayList<Instance>(capacity);
     }
 
     /**
@@ -128,7 +109,7 @@ public class Instances implements Serializable{
      * @param capacity the capacity
      */
     public Instances(String st, List<Attribute> v, int capacity) {
-        this.instanceInformation = new InstanceInformation(st,v, null);
+        this.instanceInformation = new InstanceInformation(st, v);
     }
 
     /**
@@ -138,16 +119,17 @@ public class Instances implements Serializable{
      * @param first the first instance
      * @param toCopy the j
      */
-   public Instances(Instances chunk, int first, int toCopy) {
-    
-    this(chunk, toCopy);
+    public Instances(Instances chunk, int first, int toCopy) {
 
-    if ((first < 0) || ((first + toCopy) > chunk.numInstances())) {
-      throw new IllegalArgumentException("Parameters first and/or toCopy out "+
-                                         "of range");
+        this(chunk, toCopy);
+
+        if ((first < 0) || ((first + toCopy) > chunk.numInstances())) {
+            throw new IllegalArgumentException("Parameters first and/or toCopy out "
+                    + "of range");
+        }
+        chunk.copyInstances(first, this, toCopy);
     }
-    chunk.copyInstances(first, this, toCopy);
-  }
+
     /**
      * Instantiates a new instances.
      *
@@ -177,7 +159,6 @@ public class Instances implements Serializable{
         return this.instanceInformation.getRelationName();
     }
 
-    
     /**
      * Class index.
      *
@@ -298,43 +279,43 @@ public class Instances implements Serializable{
      * @param numFolds the num folds
      */
     public void stratify(int numFolds) {
-  
-    if (classAttribute().isNominal()) {
 
-      // sort by class
-      int index = 1;
-      while (index < numInstances()) {
-	Instance instance1 = instance(index - 1);
-	for (int j = index; j < numInstances(); j++) {
-	  Instance instance2 = instance(j);
-	  if ((instance1.classValue() == instance2.classValue()) ||
-	      (instance1.classIsMissing() && 
-	       instance2.classIsMissing())) {
-	    swap(index,j);
-	    index++;
-	  }
-	}
-	index++;
-      }
-      stratStep(numFolds);
-    }
-  }
-    protected void stratStep (int numFolds){ 
-    ArrayList<Instance> newVec = new ArrayList<Instance>(this.instances.size());
-    int start = 0, j;
+        if (classAttribute().isNominal()) {
 
-    // create stratified batch
-    while (newVec.size() < numInstances()) {
-      j = start;
-      while (j < numInstances()) {
-	newVec.add(instance(j));
-	j = j + numFolds;
-      }
-      start++;
+            // sort by class
+            int index = 1;
+            while (index < numInstances()) {
+                Instance instance1 = instance(index - 1);
+                for (int j = index; j < numInstances(); j++) {
+                    Instance instance2 = instance(j);
+                    if ((instance1.classValue() == instance2.classValue())
+                            || (instance1.classIsMissing()
+                            && instance2.classIsMissing())) {
+                        swap(index, j);
+                        index++;
+                    }
+                }
+                index++;
+            }
+            stratStep(numFolds);
+        }
     }
-    this.instances = newVec;
-  }
-  
+
+    protected void stratStep(int numFolds) {
+        ArrayList<Instance> newVec = new ArrayList<Instance>(this.instances.size());
+        int start = 0, j;
+
+        // create stratified batch
+        while (newVec.size() < numInstances()) {
+            j = start;
+            while (j < numInstances()) {
+                newVec.add(instance(j));
+                j = j + numFolds;
+            }
+            start++;
+        }
+        this.instances = newVec;
+    }
 
     /**
      * Train cv.
@@ -345,36 +326,37 @@ public class Instances implements Serializable{
      * @param random the random
      * @return the instances
      */
-    public Instances trainCV(int numFolds, int numFold, Random random) {   
+    public Instances trainCV(int numFolds, int numFold, Random random) {
         Instances train = trainCV(numFolds, numFold);
         train.randomize(random);
         return train;
     }
-    
-    public Instances trainCV(int numFolds, int numFold){
+
+    public Instances trainCV(int numFolds, int numFold) {
         int numInstForFold, first, offset;
         Instances train;
 
         numInstForFold = numInstances() / numFolds;
         if (numFold < numInstances() % numFolds) {
-          numInstForFold++;
-          offset = numFold;
-        }else
-          offset = numInstances() % numFolds;
+            numInstForFold++;
+            offset = numFold;
+        } else {
+            offset = numInstances() % numFolds;
+        }
         train = new Instances(this, numInstances() - numInstForFold);
         first = numFold * (numInstances() / numFolds) + offset;
         copyInstances(0, train, first);
         copyInstances(first + numInstForFold, train,
-                      numInstances() - first - numInstForFold);
+                numInstances() - first - numInstForFold);
         return train;
     }
 
-   protected void copyInstances(int from, Instances dest, int num) {
+    protected void copyInstances(int from, Instances dest, int num) {
         for (int i = 0; i < num; i++) {
-          dest.add(instance(from + i));
+            dest.add(instance(from + i));
         }
-  }
-  
+    }
+
     /**
      * Test cv.
      *
@@ -384,20 +366,21 @@ public class Instances implements Serializable{
      */
     public Instances testCV(int numFolds, int numFold) {
 
-       int numInstForFold, first, offset;
-       Instances test;
+        int numInstForFold, first, offset;
+        Instances test;
 
-       numInstForFold = numInstances() / numFolds;
-       if (numFold < numInstances() % numFolds){
-         numInstForFold++;
-         offset = numFold;
-       }else
-         offset = numInstances() % numFolds;
-       test = new Instances(this, numInstForFold);
-       first = numFold * (numInstances() / numFolds) + offset;
-       copyInstances(first, test, numInstForFold);
-       return test;
-     }
+        numInstForFold = numInstances() / numFolds;
+        if (numFold < numInstances() % numFolds) {
+            numInstForFold++;
+            offset = numFold;
+        } else {
+            offset = numInstances() % numFolds;
+        }
+        test = new Instances(this, numInstForFold);
+        first = numFold * (numInstances() / numFolds) + offset;
+        copyInstances(first, test, numInstForFold);
+        return test;
+    }
 
     /*  public Instances dataset() {
      throw new UnsupportedOperationException("Not yet implemented");
@@ -458,26 +441,26 @@ public class Instances implements Serializable{
     private InstanceInformation instanceInformation() {
         return this.instanceInformation;
     }
-    
+
     public Attribute attribute(String name) {
-    
-    for (int i = 0; i < numAttributes(); i++) {
-      if (attribute(i).name().equals(name)) {
-	return attribute(i);
-      }
+
+        for (int i = 0; i < numAttributes(); i++) {
+            if (attribute(i).name().equals(name)) {
+                return attribute(i);
+            }
+        }
+        return null;
     }
-    return null;
-  }
 
     public int size() {
         return this.numInstances();
     }
 
     public void set(int i, Instance inst) {
-      this.instances.set(i, inst);
+        this.instances.set(i, inst);
     }
 
     public Instance get(int k) {
-      return this.instance(k);
+        return this.instance(k);
     }
 }

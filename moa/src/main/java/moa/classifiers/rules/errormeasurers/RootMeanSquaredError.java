@@ -1,6 +1,6 @@
 package moa.classifiers.rules.errormeasurers;
 
-import com.yahoo.labs.samoa.instances.SingleLabelInstance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.AbstractMOAObject;
 
@@ -24,7 +24,7 @@ public class RootMeanSquaredError extends ErrorMeasurement {
 	}
 
 	@Override
-	public void addPrediction(double[] prediction, SingleLabelInstance inst) {
+	public void addPrediction(double[] prediction, Instance inst) {
 		double error=(prediction[0]-inst.classValue());
 		sumSquaredError=error*error*inst.weight()+fadingErrorFactor*sumSquaredError;
 		weightSeen=inst.weight()+fadingErrorFactor*weightSeen;

@@ -12,7 +12,6 @@
  * language governing permissions and limitations under the
  * License.  
  */
-
 package com.yahoo.labs.samoa.instances;
 
 /**
@@ -20,38 +19,37 @@ package com.yahoo.labs.samoa.instances;
  *
  * @author abifet
  */
-public class SparseInstance extends SingleLabelInstance{
-    
-     /**
+public class SparseInstance extends InstanceImpl {
+
+    /**
      * Instantiates a new sparse instance.
      *
      * @param d the d
      * @param res the res
      */
     public SparseInstance(double d, double[] res) {
-         super(d,res);
+        super(d, res);
     }
-    
-     /**
+
+    /**
      * Instantiates a new sparse instance.
      *
      * @param inst the inst
      */
-    public SparseInstance(SingleLabelInstance inst) {
+    public SparseInstance(InstanceImpl inst) {
         super(inst);
     }
 
-     /**
+    /**
      * Instantiates a new sparse instance.
      *
      * @param numberAttributes the number attributes
      */
     public SparseInstance(double numberAttributes) {
-      //super(1, new double[(int) numberAttributes-1]); 
-      super(1,null,null,(int) numberAttributes);  
+        super(1, null, null, (int) numberAttributes);
     }
-    
-     /**
+
+    /**
      * Instantiates a new sparse instance.
      *
      * @param weight the weight
@@ -60,7 +58,7 @@ public class SparseInstance extends SingleLabelInstance{
      * @param numberAttributes the number attributes
      */
     public SparseInstance(double weight, double[] attributeValues, int[] indexValues, int numberAttributes) {
-        super(weight,attributeValues,indexValues,numberAttributes);
+        super(weight, attributeValues, indexValues, numberAttributes);
     }
-    
+
 }

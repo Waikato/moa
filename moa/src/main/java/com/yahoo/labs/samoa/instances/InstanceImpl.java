@@ -15,116 +15,97 @@
  */
 package com.yahoo.labs.samoa.instances;
 
-import com.sun.corba.se.impl.protocol.INSServerRequestDispatcher;
-
 /**
- * The Class SingleLabelInstance.
+ * The Class InstanceImpl.
  *
  * @author abifet
  */
-   
-public class SingleLabelInstance implements Instance {
+public class InstanceImpl implements MultiLabelInstance {
 
-    /** The weight. */
+    /**
+     * The weight.
+     */
     protected double weight;
-    
-    /** The instance data. */
+
+    /**
+     * The instance data.
+     */
     protected InstanceData instanceData;
-    
-    /** The class data. */
-    protected InstanceData classData;
-    
-    //Fast implementation without using Objects
-    //protected double[] attributeValues;
-    //protected double classValue;
-    
-    /** The instance information. */
-    protected InstancesHeader instanceInformation;
-    
-     /**
-     * Instantiates a new single label instance.
+
+    /**
+     * The instance information.
+     */
+    protected InstancesHeader instanceHeader;
+
+    /**
+     * Instantiates a new instance.
      *
      * @param inst the inst
      */
-    public SingleLabelInstance( SingleLabelInstance inst) {
+    public InstanceImpl(InstanceImpl inst) {
         this.weight = inst.weight;
-        this.instanceData = inst.instanceData; //copy
-        this.classData = inst.classData; //copy
-        //this.classValue = inst.classValue;
-        //this.attributeValues = inst.attributeValues;
-        this.instanceInformation = inst.instanceInformation;
+        this.instanceData = inst.instanceData;
+        this.instanceHeader = inst.instanceHeader;
     }
-    
+
     //Dense
     /**
-     * Instantiates a new single label instance.
+     * Instantiates a new instance.
      *
      * @param weight the weight
      * @param res the res
      */
-    public SingleLabelInstance(double weight, double[] res) {
-         this.weight = weight;
-         this.instanceData = new DenseInstanceData(res);
-         //this.attributeValues = res;
-         this.classData = new SingleClassInstanceData();
-         //this.classValue = Double.NaN;
+    public InstanceImpl(double weight, double[] res) {
+        this.weight = weight;
+        this.instanceData = new DenseInstanceData(res);
     }
-    
+
     //Sparse
     /**
-     * Instantiates a new single label instance.
+     * Instantiates a new instance.
      *
      * @param weight the weight
      * @param attributeValues the attribute values
      * @param indexValues the index values
      * @param numberAttributes the number attributes
      */
-    public SingleLabelInstance(double weight, double[] attributeValues, int[] indexValues, int numberAttributes) {
-         this.weight = weight;
-         this.instanceData = new SparseInstanceData(attributeValues, indexValues, numberAttributes); //???
-         this.classData = new SingleClassInstanceData();
-         //this.classValue = Double.NaN;
+    public InstanceImpl(double weight, double[] attributeValues, int[] indexValues, int numberAttributes) {
+        this.weight = weight;
+        this.instanceData = new SparseInstanceData(attributeValues, indexValues, numberAttributes);
     }
-    
-     /**
-     * Instantiates a new single label instance.
+
+    /**
+     * Instantiates a new instance.
      *
      * @param weight the weight
      * @param instanceData the instance data
      */
-    public SingleLabelInstance(double weight, InstanceData instanceData) {
-         this.weight = weight;
-         this.instanceData = instanceData; //???
-         //this.classValue = Double.NaN;
-         this.classData = new SingleClassInstanceData();
+    public InstanceImpl(double weight, InstanceData instanceData) {
+        this.weight = weight;
+        this.instanceData = instanceData;
     }
-    
-     /**
-     * Instantiates a new single label instance.
+
+    /**
+     * Instantiates a new instance.
      *
      * @param numAttributes the num attributes
      */
-    public SingleLabelInstance(int numAttributes) {
-    this.instanceData = new DenseInstanceData(new double[numAttributes-1]); //JD
-    //m_AttValues = new double[numAttributes];
-    /*for (int i = 0; i < m_AttValues.length; i++) {
-      m_AttValues[i] = Utils.missingValue();
-    }*/
-    this.weight = 1;
-    this.classData = new SingleClassInstanceData();
-  }
-    
+    public InstanceImpl(int numAttributes) {
+        this.instanceData = new DenseInstanceData(new double[numAttributes]); //JD
+        this.weight = 1;
+    }
+
     /**
      * Weight.
      *
      * @return the double
-     */  
+     */
     @Override
     public double weight() {
         return weight;
     }
-    
-     /**
+
+    /**
      * Sets the weight.
      *
      * @param weight the new weight
@@ -133,19 +114,19 @@ public class SingleLabelInstance implements Instance {
     public void setWeight(double weight) {
         this.weight = weight;
     }
-    
-     /**
+
+    /**
      * Attribute.
      *
      * @param instAttIndex the inst att index
      * @return the attribute
-     */    
+     */
     @Override
     public Attribute attribute(int instAttIndex) {
-        return this.instanceInformation.attribute(instAttIndex);	
+        return this.instanceHeader.attribute(instAttIndex);
     }
-    
-     /**
+
+    /**
      * Delete attribute at.
      *
      * @param i the i
@@ -155,7 +136,7 @@ public class SingleLabelInstance implements Instance {
         //throw new UnsupportedOperationException("Not yet implemented");
     }
 
-     /**
+    /**
      * Insert attribute at.
      *
      * @param i the i
@@ -164,35 +145,29 @@ public class SingleLabelInstance implements Instance {
     public void insertAttributeAt(int i) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
-   
-     /**
+
+    /**
      * Num attributes.
      *
      * @return the int
      */
     @Override
     public int numAttributes() {
-        return this.instanceInformation.numAttributes(); 
+        return this.instanceHeader.numAttributes();
     }
-    
-     /**
+
+    /**
      * Value.
      *
      * @param instAttIndex the inst att index
      * @return the double
-     */ 
+     */
     @Override
     public double value(int instAttIndex) {
-    	int matchIndex=getMatchingIndex(instAttIndex);
-    	if(matchIndex==this.numAttributes()-1)
-    		return this.classValue();
-    	else
-    		return //this.instanceData.value(instAttIndex); //JD - for compatibility with older code (class attribute not the last)
-        		this.instanceData.value(matchIndex);
+        return this.instanceData.value(instAttIndex);
     }
 
-
-	/**
+    /**
      * Checks if is missing.
      *
      * @param instAttIndex the inst att index
@@ -200,22 +175,20 @@ public class SingleLabelInstance implements Instance {
      */
     @Override
     public boolean isMissing(int instAttIndex) {
-        return //Double.isNaN(value(instAttIndex)); //
-                this.instanceData.isMissing(getMatchingIndex(instAttIndex));
+        return this.instanceData.isMissing(instAttIndex);
     }
 
-     /**
+    /**
      * Num values.
      *
      * @return the int
      */
     @Override
     public int numValues() {
-        return //this.attributeValues.length; //
-        this.instanceData.numValues();
+        return this.instanceData.numValues();
     }
 
-     /**
+    /**
      * Index.
      *
      * @param i the i
@@ -223,11 +196,10 @@ public class SingleLabelInstance implements Instance {
      */
     @Override
     public int index(int i) {
-        return //i; //
-        this.instanceData.index(i);
+        return this.instanceData.index(i);
     }
 
-     /**
+    /**
      * Value sparse.
      *
      * @param i the i
@@ -237,7 +209,7 @@ public class SingleLabelInstance implements Instance {
     public double valueSparse(int i) {
         return this.instanceData.valueSparse(i);
     }
-    
+
     /**
      * Checks if is missing sparse.
      *
@@ -248,8 +220,8 @@ public class SingleLabelInstance implements Instance {
     public boolean isMissingSparse(int p) {
         return this.instanceData.isMissingSparse(p);
     }
-    
-     /**
+
+    /**
      * Value.
      *
      * @param attribute the attribute
@@ -257,10 +229,10 @@ public class SingleLabelInstance implements Instance {
      */
     @Override
     public double value(Attribute attribute) {
-       return value(attribute.index());
-    
+        return value(attribute.index());
+
     }
-    
+
     /**
      * String value.
      *
@@ -271,7 +243,7 @@ public class SingleLabelInstance implements Instance {
     public String stringValue(int i) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
-    
+
     /**
      * To double array.
      *
@@ -279,74 +251,71 @@ public class SingleLabelInstance implements Instance {
      */
     @Override
     public double[] toDoubleArray() {
-        return //this.attributeValues; //
-                this.instanceData.toDoubleArray();
+        return this.instanceData.toDoubleArray();
     }
-    
-     /**
+
+    /**
      * Sets the value.
      *
      * @param numAttribute the num attribute
      * @param d the d
-     */ 
+     */
     @Override
     public void setValue(int numAttribute, double d) {
         this.instanceData.setValue(numAttribute, d);
-        //this.attributeValues[numAttribute] = d;
     }
-    
-     /**
+
+    /**
      * Class value.
      *
      * @return the double
-     */        
+     */
     @Override
     public double classValue() {
-        return this.classData.value(0); 
-        //return classValue;
+        return this.instanceData.value(classIndex());
     }
 
-     /**
+    /**
      * Class index.
      *
      * @return the int
      */
     @Override
     public int classIndex() {
-        return instanceInformation.classIndex();
+        int classIndex = instanceHeader.classIndex();
+        return classIndex != Integer.MAX_VALUE ? classIndex : 0;
     }
 
-     /**
+    /**
      * Num classes.
      *
      * @return the int
      */
     @Override
     public int numClasses() {
-        return this.instanceInformation.numClasses();
+        return this.instanceHeader.numClasses();
     }
 
-     /**
+    /**
      * Class is missing.
      *
      * @return true, if successful
      */
     @Override
     public boolean classIsMissing() {
-        return //Double.isNaN(this.classValue);//
-        this.classData.isMissing(0);
+        return this.instanceData.isMissing(classIndex());
     }
 
     /**
      * Class attribute.
      *
      * @return the attribute
-     */    
+     */
     @Override
     public Attribute classAttribute() {
-        return this.instanceInformation.attribute(0);
+        return this.instanceHeader.attribute(classIndex());
     }
-    
+
     /**
      * Sets the class value.
      *
@@ -354,10 +323,9 @@ public class SingleLabelInstance implements Instance {
      */
     @Override
     public void setClassValue(double d) {
-        this.classData.setValue(0, d);
-        //this.classValue = d;
+        this.setValue(classIndex(), d);
     }
-    
+
     /**
      * Copy.
      *
@@ -365,10 +333,10 @@ public class SingleLabelInstance implements Instance {
      */
     @Override
     public Instance copy() {
-       SingleLabelInstance inst = new SingleLabelInstance(this);
-       return inst;
+        InstanceImpl inst = new InstanceImpl(this);
+        return inst;
     }
-    
+
     /**
      * Dataset.
      *
@@ -376,64 +344,93 @@ public class SingleLabelInstance implements Instance {
      */
     @Override
     public Instances dataset() {
-        return this.instanceInformation;
+        return this.instanceHeader;
     }
 
-     /**
+    /**
      * Sets the dataset.
      *
      * @param dataset the new dataset
-     */ 
+     */
     @Override
     public void setDataset(Instances dataset) {
-        this.instanceInformation = new InstancesHeader(dataset);
+        this.instanceHeader = new InstancesHeader(dataset);
     }
 
-     /**
+    /**
      * Adds the sparse values.
      *
      * @param indexValues the index values
      * @param attributeValues the attribute values
      * @param numberAttributes the number attributes
      */
+    @Override
     public void addSparseValues(int[] indexValues, double[] attributeValues, int numberAttributes) {
-         this.instanceData = new SparseInstanceData(attributeValues, indexValues, numberAttributes); //???
-    }
-    
-    /**
-     * Text representation of a SingleLabelInstance.
-     */
-    public String toString()
-    {
-    	double [] aux = this.instanceData.toDoubleArray();
-    	StringBuffer str= new StringBuffer();
-    	for (int i=0; i<aux.length;i++)
-    		str.append(aux[i]+" ");
-    	str.append("- ");
-    	aux = this.classData.toDoubleArray();
-    	for (int i=0; i<aux.length;i++)
-    		str.append(aux[i]+" ");
-    	
-    	return str.toString();
+        this.instanceData = new SparseInstanceData(attributeValues, indexValues, numberAttributes); //???
     }
 
-  //JD - for compatibility with older code (class attribute not the last)
     /**
-    * Makes correspondence between old instance representation and .
-    *
-    * @param instAttIndex the index value
-    * @return "corrected" attribute index
-    */
-    private int getMatchingIndex(int instAttIndex) {
-    	int classIndex=this.classIndex();
-    	if (instAttIndex==classIndex)
-    		instAttIndex=this.numAttributes()-1;
-    	else 
-    		if(instAttIndex>classIndex) 
-    			instAttIndex--;
-		
-		return instAttIndex;
-	}
+     * Text representation of a InstanceImpl.
+     */
+    @Override
+    public String toString() {
+        double[] aux = this.instanceData.toDoubleArray();
+        StringBuilder str = new StringBuilder();
+        for (int i = 0; i < aux.length; i++) {
+            str.append(aux[i]).append(" ");
+        }
+
+        return str.toString();
+    }
+
+    @Override
+    public int numInputAttributes() {
+        return this.instanceHeader.numInputAttributes();
+    }
+
+    @Override
+    public int numOutputAttributes() {
+        return numberOutputTargets();
+    }
     
-    
+    @Override
+    public int numberOutputTargets() {
+        return this.instanceHeader.numOutputAttributes();
+    }
+
+    @Override
+    public double classValue(int instAttIndex) {
+        return valueOutputAttribute(instAttIndex);
+    }
+
+    @Override
+    public void setClassValue(int indexClass, double valueAttribute) {
+        InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
+        this.instanceData.setValue(instanceInformation.outputAttributeIndex(indexClass), valueAttribute);
+
+    }
+
+    @Override
+    public Attribute outputAttribute(int outputIndex) {
+        InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
+        return instanceInformation.outputAttribute(outputIndex);
+    }
+
+    @Override
+    public Attribute inputAttribute(int attributeIndex) {
+        InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
+        return instanceInformation.inputAttribute(attributeIndex);
+    }
+
+    @Override
+    public double valueInputAttribute(int attributeIndex) {
+        InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
+        return this.instanceData.value(instanceInformation.inputAttributeIndex(attributeIndex));
+    }
+
+    @Override
+    public double valueOutputAttribute(int attributeIndex) {
+        InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
+        return this.instanceData.value(instanceInformation.outputAttributeIndex(attributeIndex));
+    }
 }

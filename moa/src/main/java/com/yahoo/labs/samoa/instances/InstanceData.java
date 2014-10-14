@@ -13,7 +13,6 @@
  * language governing permissions and limitations under the
  * License.  
  */
-
 package com.yahoo.labs.samoa.instances;
 
 import java.io.Serializable;
@@ -23,7 +22,7 @@ import java.io.Serializable;
  *
  * @author abifet
  */
-public interface InstanceData extends Serializable{
+public interface InstanceData extends Serializable {
 
     /**
      * Num attributes.
@@ -79,8 +78,6 @@ public interface InstanceData extends Serializable{
      */
     public boolean isMissingSparse(int p1);
 
-    //public double value(Attribute attribute);
-
     /**
      * To double array.
      *
@@ -95,5 +92,5 @@ public interface InstanceData extends Serializable{
      * @param d the d
      */
     public void setValue(int m_numAttributes, double d);
-    
+
 }
