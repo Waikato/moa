@@ -1,8 +1,6 @@
 
 package moa.classifiers.multitarget;
 
-import org.hamcrest.core.IsInstanceOf;
-
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.Classifier;
