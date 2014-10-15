@@ -2,6 +2,8 @@ package moa.classifiers.rules.multilabel.attributeclassobservers;
 
 import java.io.Serializable;
 
+import javax.rmi.CORBA.Util;
+
 import com.github.javacliparser.IntOption;
 
 import moa.classifiers.rules.core.NumericRulePredicate;
@@ -13,7 +15,7 @@ import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
-public class MultiLabelBSTree extends AbstractOptionHandler implements NumericStatisticsObserver {
+public class MultiLabelBSTreeFloat extends AbstractOptionHandler implements NumericStatisticsObserver {
 
 	/**
 	 * 
@@ -74,8 +76,9 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 		}
 		for (int i=0; i<leftStatistics.length; i++)
 		{
-			leftStatistics[i].addValues(currentNode.leftStatistics[i]);
-			rightStatistics[i].subtractValues(currentNode.leftStatistics[i]);
+			DoubleVector leftStatsDouble=Utils.floatToDoubleVector(currentNode.leftStatistics[i]);
+			leftStatistics[i].addValues(leftStatsDouble);
+			rightStatistics[i].subtractValues(leftStatsDouble);
 		}
 
 		DoubleVector[][] postSplitDists = new DoubleVector [leftStatistics.length][2];
@@ -97,8 +100,9 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 		}
 		for (int i=0; i<leftStatistics.length; i++)
 		{
-			leftStatistics[i].subtractValues(currentNode.leftStatistics[i]);
-			rightStatistics[i].addValues(currentNode.leftStatistics[i]);
+			DoubleVector leftStatsDouble=Utils.floatToDoubleVector(currentNode.leftStatistics[i]);
+			leftStatistics[i].subtractValues(leftStatsDouble);
+			rightStatistics[i].addValues(leftStatsDouble);
 		}
 		return currentBestOption;
 	}
@@ -129,35 +133,43 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 		private static final long serialVersionUID = 1L;
 
 		// The split point to use
-		private double cutPoint;
+		private float cutPoint;
 
 		// E-BST statistics
-		private DoubleVector [] leftStatistics;
-		private DoubleVector [] rightStatistics;
+		private SingleVector [] leftStatistics;
+		private SingleVector [] rightStatistics;
 
 		// Child nodes
 		private Node left;
 		private Node right;
 
-		public Node(double inputAttributeValue, DoubleVector [] statistics) {
+		public Node(float inputAttributeValue, SingleVector [] statistics) {
 			cutPoint = inputAttributeValue;
 			int numOutputAttributes=statistics.length;
-			leftStatistics=new DoubleVector[numOutputAttributes];
+			leftStatistics=new SingleVector[numOutputAttributes];
 			for (int i=0; i<numOutputAttributes; i++)
 			{					
-				leftStatistics[i]=new DoubleVector(statistics[i]);
+				leftStatistics[i]=statistics[i];;
 			}
 			//this.leftStatistics=statistics.clone();
 
-			this.rightStatistics=new DoubleVector[numOutputAttributes];
+			this.rightStatistics=new SingleVector[numOutputAttributes];
 			for (int i=0; i<numOutputAttributes; i++)
-				this.rightStatistics[i]= new DoubleVector();
+				this.rightStatistics[i]= new SingleVector();
+		}
+		
+		public Node(double inputAttributeValue, DoubleVector [] statistics) {
+			this((float)inputAttributeValue, Utils.copyAsFloatVector(statistics));
 		}
 
 		/**
 		 * Updates tree with new observation
 		 */
 		public void observeAttribute(double inputAttributeValue, DoubleVector [] statistics) {
+			this.observeAttribute((float)inputAttributeValue, Utils.copyAsFloatVector(statistics));
+			
+		}
+		public void observeAttribute(float inputAttributeValue, SingleVector [] statistics) {
 			if (inputAttributeValue == this.cutPoint) {
 				for (int i=0; i<statistics.length; i++)
 					this.leftStatistics[i].addValues(statistics[i]);
