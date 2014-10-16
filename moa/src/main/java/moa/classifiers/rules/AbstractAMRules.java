@@ -223,14 +223,13 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 							}	
 						}
 					}
-					if (!this.unorderedRulesOption.isSet()) 
-						break;
 				}
 				else {
 					debug("Anomaly Detected: " + this.numInstances + " Rule: " +rule.getRuleNumberID() ,1);
 					this.numAnomaliesDetected+=instance.weight();//Just for statistics
 				}
-
+				if (!this.unorderedRulesOption.isSet()) 
+					break;
 			}
 		}	
 

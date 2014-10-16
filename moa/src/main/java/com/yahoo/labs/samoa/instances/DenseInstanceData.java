@@ -124,11 +124,6 @@ public class DenseInstanceData implements InstanceData{
         return isMissing(indexAttribute);
     }
 
-    /*@Override
-    public double value(Attribute attribute) {
-        return value(attribute.index());
-    }*/
-
     /**
      * To double array.
      *
@@ -149,5 +144,5 @@ public class DenseInstanceData implements InstanceData{
     public void setValue(int attributeIndex, double d) {
         this.attributeValues[attributeIndex] = d;
     }
-    
+       
 }

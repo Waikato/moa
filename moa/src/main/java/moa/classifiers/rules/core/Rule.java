@@ -35,6 +35,7 @@ package moa.classifiers.rules.core;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,7 +45,6 @@ import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
 import moa.classifiers.rules.AbstractAMRules;
 import moa.classifiers.rules.core.conditionaltests.NumericAttributeBinaryRulePredicate;
-import moa.classifiers.rules.nodes.RuleSplitNode;
 import moa.core.DoubleVector;
 import moa.core.StringUtils;
 

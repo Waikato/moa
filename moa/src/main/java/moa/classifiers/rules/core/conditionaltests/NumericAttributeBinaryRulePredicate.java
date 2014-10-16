@@ -21,8 +21,10 @@ package moa.classifiers.rules.core.conditionaltests;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.classifiers.core.conditionaltests.InstanceConditionalBinaryTest;
 import moa.classifiers.rules.core.Predicate;
+import moa.core.StringUtils;
 
 
 
@@ -41,6 +43,8 @@ public class NumericAttributeBinaryRulePredicate extends InstanceConditionalBina
     protected double attValue;
 
     protected int operator; // 0 =, 1<=, 2>
+    
+	protected boolean state=true;
 
     public NumericAttributeBinaryRulePredicate(int attIndex, double attValue,
             int operator) {
@@ -48,6 +52,12 @@ public class NumericAttributeBinaryRulePredicate extends InstanceConditionalBina
         this.attValue = attValue;
         this.operator = operator;
     }
+    
+	@Override
+	public void negateCondition() {
+		state=!state;
+		
+	}
 
     @Override
     public int branchForInstance(Instance inst) {
@@ -88,13 +98,6 @@ public class NumericAttributeBinaryRulePredicate extends InstanceConditionalBina
         throw new IndexOutOfBoundsException();
     }
 
-    /**
-     *
-     */
-    @Override
-    public void getDescription(StringBuilder sb, int indent) {
-        // TODO Auto-generated method stub
-    }
 
     @Override
     public int[] getAttsTestDependsOn() {
@@ -105,24 +108,13 @@ public class NumericAttributeBinaryRulePredicate extends InstanceConditionalBina
         return this.attValue;
     }
 
-    @Override
-    public boolean evaluate(Instance inst) {
-        return (branchForInstance(inst) == 0);
-    }
-
-    @Override
-    public String toString() {
-        if ((operator >= 0) && (operator <= 2)) {
-            String compareChar = (operator == 0) ? "=" : (operator == 1) ? "<=" : ">";
-            //int equalsBranch = this.equalsPassesTest ? 0 : 1;
-            return "x" + this.attIndex
-                    + ' '
-                    + compareChar
-                    + ' ' 
-                    + this.attValue;
-        }
-        throw new IndexOutOfBoundsException();
-    }
+	@Override
+	public boolean evaluate(Instance inst) {
+		if(state)
+			return (branchForInstance(inst) == 0) ;
+		else
+			return (branchForInstance(inst) != 0);
+	}
 
     public boolean isEqual(NumericAttributeBinaryRulePredicate predicate) {
         return (this.attIndex == predicate.attIndex
@@ -152,4 +144,29 @@ public class NumericAttributeBinaryRulePredicate extends InstanceConditionalBina
         this.attValue = ruleSplitNodeTest.attValue;
 
     }
+    
+
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {   
+		String compareChar = (operator == 0) ? "=" : (operator == 1) ? "<=" : ">";
+		StringUtils.appendIndented(sb, indent+1, "In" + attIndex + compareChar + attValue);
+	}
+	
+	@Override
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		getDescription(sb,0);
+		return sb.toString();
+	}
+	
+	@Override
+	public int getAttributeIndex() {
+		return attIndex;
+	}
+
+	@Override
+	public boolean isEqualOrLess() {
+		return state;
+	}
+
 }

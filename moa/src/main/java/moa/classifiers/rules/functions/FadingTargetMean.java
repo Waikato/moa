@@ -22,7 +22,7 @@ package moa.classifiers.rules.functions;
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
-public class FadingTargetMean extends TargetMean {
+public class FadingTargetMean extends TargetMean implements AMRulesRegressorFunction{
 
 	/**
 	 * 

@@ -18,7 +18,7 @@
 package com.github.javacliparser;
 
 import java.util.Arrays;
-import weka.core.Range;
+import com.yahoo.labs.samoa.instances.Range;
 
 /**
  * Range option.
@@ -43,11 +43,15 @@ public class RangeOption extends StringOption {
         this.currentVal = Arrays.toString(indices); 								// "[1,2,3]"
 		this.currentVal = this.currentVal.substring(1,this.currentVal.length()-1);	// "1,2,3"
     }
+    
+	public Range getRange() {	
+        return new Range(this.getValue());
+    }
 
-    public int[] getRange() {
+    /*public int[] getRange() {
 		Range r = new Range(this.getValue());
         return r.getSelection();
-    }
+    }*/
 
 }
 

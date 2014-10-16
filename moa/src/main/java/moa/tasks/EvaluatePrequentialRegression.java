@@ -36,12 +36,18 @@ import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
 import moa.learners.Learner;
 import moa.options.ClassOption;
+
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+
 import moa.classifiers.Regressor;
 import moa.streams.ExampleStream;
+
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceData;
+import com.yahoo.labs.samoa.instances.Prediction;
+
 import moa.evaluation.RegressionPerformanceEvaluator;
 
 /**
@@ -192,11 +198,12 @@ public class EvaluatePrequentialRegression extends RegressionMainTask {
             Example trainInst = stream.nextInstance();
             Example testInst = (Example) trainInst; //.copy();
             //testInst.setClassMissing();
-            double[] prediction = learner.getVotesForInstance(testInst);
+            //double[] prediction = learner.getVotesForInstance(testInst);
+            Prediction prediction = learner.getPredictionForInstance(testInst);
             // Output prediction
             if (outputPredictionFile != null) {
                 double trueClass = ((Instance) trainInst.getData()).classValue();
-                outputPredictionResultStream.println(prediction[0] + "," + trueClass);
+                outputPredictionResultStream.println(prediction + "," + trueClass);
             }
 
             //evaluator.addClassificationAttempt(trueClass, prediction, testInst.weight());

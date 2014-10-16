@@ -24,19 +24,30 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+
 import moa.MOAObject;
 import moa.core.Example;
+
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.StringUtils;
 import moa.gui.AWTRenderer;
 import moa.learners.Learner;
 import moa.options.AbstractOptionHandler;
+
 import com.github.javacliparser.IntOption;
+
 import moa.tasks.TaskMonitor;
+
+import com.yahoo.labs.samoa.instances.DenseInstanceData;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
+import com.yahoo.labs.samoa.instances.Prediction;
+
 import moa.core.Utils;
 
 public abstract class AbstractClassifier extends AbstractOptionHandler
@@ -93,6 +104,19 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     @Override
     public abstract double[] getVotesForInstance(Instance inst);
 
+    @Override
+    public Prediction getPredictionForInstance(Example<Instance> example){
+		return getPredictionForInstance(example.getData());
+	}
+
+    @Override
+    public Prediction getPredictionForInstance(Instance inst){
+    	Prediction prediction= new MultiLabelPrediction(1);
+    	prediction.setVotes(getVotesForInstance(inst));
+    	return prediction;
+    }
+
+    
     @Override
     public void setModelContext(InstancesHeader ih) {
         if ((ih != null) && (ih.classIndex() < 0)) {
@@ -394,7 +418,7 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
      */
     protected static int modelAttIndexToInstanceAttIndex(int index,
             Instance inst) {
-        return index; //inst.classIndex() > index ? index : index + 1;
+        return inst.classIndex() > index ? index : index + 1;
     }
 
     /**
@@ -407,6 +431,6 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
      */
     protected static int modelAttIndexToInstanceAttIndex(int index,
             Instances insts) {
-        return index; //insts.classIndex() > index ? index : index + 1;
+        return insts.classIndex() > index ? index : index + 1;
     }
 }

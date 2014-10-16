@@ -20,6 +20,9 @@
 package moa.evaluation;
 
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceData;
+import com.yahoo.labs.samoa.instances.Prediction;
+
 import moa.AbstractMOAObject;
 import moa.core.Example;
 import moa.core.Measurement;
@@ -198,4 +201,11 @@ public class BasicConceptDriftPerformanceEvaluator extends AbstractMOAObject
         Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
                 sb, indent);
     }
+
+	@Override
+	public void addResult(Example<Instance> testInst, Prediction prediction) {
+		// TODO Auto-generated method stub
+		
+	}
+    
 }

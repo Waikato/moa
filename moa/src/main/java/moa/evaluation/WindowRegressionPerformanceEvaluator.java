@@ -23,9 +23,14 @@ import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
+
 import com.github.javacliparser.IntOption;
+
 import moa.tasks.TaskMonitor;
+
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceData;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Regression evaluator that updates evaluation results using a sliding window.
@@ -155,4 +160,16 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
     public void prepareForUseImpl(TaskMonitor monitor,
             ObjectRepository repository) {
     }
+    
+
+	@Override
+	public void addResult(Example<Instance> testInst, Prediction prediction) {
+		double votes[];
+		if(prediction==null)
+			votes = new double[0];
+		else
+			votes=prediction.getVotes();
+		addResult(testInst, votes);
+		
+	}
 }

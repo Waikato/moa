@@ -21,7 +21,11 @@ package moa.learners;
 
 import moa.MOAObject;
 import moa.core.Example;
+
+import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.Prediction;
+
 import moa.core.Measurement;
 import moa.gui.AWTRenderable;
 import moa.options.OptionHandler;
@@ -129,6 +133,8 @@ public interface Learner<E extends Example> extends MOAObject, OptionHandler, AW
      * @return the reference to the data stream header
      */
     public InstancesHeader getModelContext();
+
+	public Prediction getPredictionForInstance(E testInst);
     
 }
 

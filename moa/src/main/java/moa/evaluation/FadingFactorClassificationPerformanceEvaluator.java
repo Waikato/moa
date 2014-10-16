@@ -22,12 +22,16 @@ package moa.evaluation;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
+
 import com.github.javacliparser.FloatOption;
+
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
-
 import moa.core.Utils;
+
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceData;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Classification evaluator that updates evaluation results using a fading factor.
@@ -140,4 +144,11 @@ public class FadingFactorClassificationPerformanceEvaluator extends AbstractOpti
             ObjectRepository repository) {
         reset();
     }
+    
+
+	@Override
+	public void addResult(Example<Instance> testInst, Prediction prediction) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -22,7 +22,10 @@ package moa.evaluation;
 import moa.AbstractMOAObject;
 import moa.core.Example;
 import moa.core.Measurement;
+
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceData;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Regression evaluator that performs basic incremental evaluation.
@@ -72,7 +75,7 @@ public class BasicRegressionPerformanceEvaluator extends AbstractMOAObject
                 this.sumTarget += inst.classValue();
                 this.weightObserved += inst.weight();
             }
-            //System.out.println(inst.classValue()+", "+prediction[0]);
+           //System.out.println(inst.classValue()+", "+prediction[0]);
         }
     }
 
@@ -134,5 +137,11 @@ public class BasicRegressionPerformanceEvaluator extends AbstractMOAObject
         //return targetSquareError > 0 ? getSquareError()/targetSquareError : 0.0;
     return Math.sqrt(this.squareTargetError> 0 ?
                 this.squareError/this.squareTargetError : 0.0);
+    }
+    
+    @Override
+    public void addResult(Example<Instance> example, Prediction prediction) {
+    	if(prediction!=null)
+    		addResult(example,prediction.getVotes(0));
     }
 }

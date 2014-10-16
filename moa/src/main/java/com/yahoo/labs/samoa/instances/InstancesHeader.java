@@ -15,11 +15,9 @@
  */
 package com.yahoo.labs.samoa.instances;
 
-import java.io.IOException;
-import java.io.Reader;
-
 /**
- * Class for storing the header or context of a data stream. It allows to know the number of attributes and classes.
+ * Class for storing the header or context of a data stream. It allows to know
+ * the number of attributes and classes.
  *
  * @version $Revision: 7 $
  */
@@ -34,7 +32,7 @@ public class InstancesHeader extends Instances {
     public InstancesHeader() {
         super();
     }
-    
+
     public static String getClassNameString(InstancesHeader context) {
         if (context == null) {
             return "[class]";
@@ -96,4 +94,23 @@ public class InstancesHeader extends Instances {
         return Double.toString(value);
     }
 
+    public Attribute inputAttribute(int w) {
+        return this.instanceInformation.inputAttribute(w);
+    }
+
+    public Attribute outputAttribute(int w) {
+        return this.instanceInformation.outputAttribute(w);
+    }
+
+    public int numInputAttributes() {
+        return this.instanceInformation.numInputAttributes();
+    }
+
+    public int numOutputAttributes() {
+        return this.instanceInformation.numOutputAttributes();
+    }
+
+    public InstanceInformation getInstanceInformation() {
+        return this.instanceInformation;
+    }
 }
