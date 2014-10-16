@@ -45,6 +45,8 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	protected DoubleVector[] literalStatistics;
 
 	protected int[] outputsToLearn;
+	
+	protected int [] inputsToLearn;
 
 	protected MultiLabelLearner learner;
 

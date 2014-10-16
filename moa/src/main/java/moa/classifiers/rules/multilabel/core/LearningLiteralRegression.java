@@ -162,15 +162,24 @@ public class LearningLiteralRegression extends LearningLiteral {
 		
 		//learn for all output attributes if not specified at construction time
 		int numOutputs=instance.numberOutputTargets();
+		int numInputs=instance.numberOutputTargets();
 		if(!hasStarted)
 		{
 			if(outputsToLearn==null)
 			{
-				outputsToLearn=new int[instance.numberOutputTargets()];
+				outputsToLearn=new int[numOutputs];
 				for (int i=0; i<numOutputs;i++){
 					outputsToLearn[i]=i;
 				}
 			}
+			if(inputsToLearn==null)
+			{
+				inputsToLearn=new int[numInputs];
+				for (int i=0; i<numInputs;i++){//TODO: check with mask?
+					inputsToLearn[i]=i;
+				}
+			}
+			
 			literalStatistics= new DoubleVector[outputsToLearn.length];
 			for(int i=0; i<outputsToLearn.length; i++)
 				literalStatistics[i]=new DoubleVector(new double[3]);
@@ -189,7 +198,7 @@ public class LearningLiteralRegression extends LearningLiteral {
 
 		if(this.attributeObservers==null)
 			this.attributeObservers=new AutoExpandVector<AttributeStatisticsObserver>();
-		for(int i=0, ct=0; i<instance.numInputAttributes(); i++){
+		for(int i=0, ct=0; i<instance.numInputAttributes(); i++){ //TODO: mix with input attributes code?
 			if(attributesMask[i]){
 				AttributeStatisticsObserver obs=this.attributeObservers.get(ct);
 				if(obs==null){
