@@ -133,7 +133,7 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public void deleteAttributeAt(int i) {
-        //throw new UnsupportedOperationException("Not yet implemented");
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     /**
