@@ -46,6 +46,8 @@ import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriter
 import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
 import moa.classifiers.rules.multilabel.core.voting.MultiLabelVote;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
+import moa.classifiers.rules.multilabel.inputselectors.InputAttributesSelector;
+import moa.classifiers.rules.multilabel.inputselectors.SelectAllInputs;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.classifiers.rules.multilabel.outputselectors.SelectAllOutputs;
 import moa.core.Measurement;
@@ -123,6 +125,12 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			OutputAttributesSelector.class,
 			//"StdDevThreshold");
 			SelectAllOutputs.class.getName());
+	
+	public ClassOption inputSelectorOption = new ClassOption("inputSelector",
+			'I', "Input attributes selector", 
+			InputAttributesSelector.class,
+			//"MeritThreshold");
+			SelectAllInputs.class.getName());
 
 
 	protected double attributesPercentage;
@@ -445,6 +453,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		rule.setOutputAttributesSelector((OutputAttributesSelector)((OutputAttributesSelector)getPreparedClassOption(outputSelectorOption)).copy());
 		rule.setRandomGenerator(this.classifierRandom);
 		rule.setAttributesPercentage(this.attributesPercentage);
+		rule.setInputAttributesSelector((InputAttributesSelector)((InputAttributesSelector)getPreparedClassOption(inputSelectorOption)).copy());
 	}
 
 	abstract protected MultiLabelRule newDefaultRule();

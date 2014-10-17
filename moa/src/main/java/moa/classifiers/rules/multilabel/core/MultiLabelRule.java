@@ -22,6 +22,7 @@ import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatistic
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
+import moa.classifiers.rules.multilabel.inputselectors.InputAttributesSelector;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.core.StringUtils;
 
@@ -199,6 +200,11 @@ public class MultiLabelRule extends AbstractMOAObject {
 
 	public void setAttributesPercentage(double attributesPercentage) {
 		learningLiteral.setAttributesPercentage(attributesPercentage);
+		
+	}
+
+	public void setInputAttributesSelector(InputAttributesSelector inputSelector) {
+		learningLiteral.setInputAttributesSelector(inputSelector);
 		
 	}
 

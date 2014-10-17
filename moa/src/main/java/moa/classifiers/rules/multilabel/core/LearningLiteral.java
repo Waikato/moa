@@ -26,6 +26,7 @@ import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatistic
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.errormeasurers.AbstractMultiTargetErrorMeasurer;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
+import moa.classifiers.rules.multilabel.inputselectors.InputAttributesSelector;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
@@ -81,6 +82,8 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	protected NominalStatisticsObserver nominalStatisticsObserver;
 
 	protected OutputAttributesSelector outputSelector;
+	
+	protected InputAttributesSelector inputSelector;
 
 	protected Random randomGenerator;
 	
@@ -252,6 +255,10 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 		for (int i=0; i<numAttributesSelected;++i)
 			attributesMask[indices.get(i)]=true;
 		
+	}
+
+	public void setInputAttributesSelector(InputAttributesSelector inputSelector) {
+		this.inputSelector=inputSelector;
 	}
 	
 	

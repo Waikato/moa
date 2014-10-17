@@ -15,6 +15,7 @@ import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
+import moa.classifiers.rules.core.NumericRulePredicate;
 import moa.classifiers.rules.core.Utils;
 import moa.classifiers.rules.multilabel.attributeclassobservers.AttributeStatisticsObserver;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatisticsObserver;
@@ -80,10 +81,25 @@ public class LearningLiteralRegression extends LearningLiteral {
 		AttributeExpansionSuggestion[] bestSplitSuggestions	= this.getBestSplitSuggestions(splitCriterion);
 		Arrays.sort(bestSplitSuggestions);
 
+		//disable attributes that are not relevant
+		int []oldInputs=inputsToLearn.clone();
+		inputsToLearn=inputSelector.getNextInputIndices(bestSplitSuggestions); //
+		Arrays.sort(this.inputsToLearn);
+		for (int i=0; i<oldInputs.length; i++){
+			if(attributesMask[oldInputs[i]]){
+				if(Arrays.binarySearch(inputsToLearn, oldInputs[i])<0)
+				{
+					this.attributeObservers.set(oldInputs[i], null);
+				}
+			}
+		}
+
+
 		// If only one split was returned, use it
 		if (bestSplitSuggestions.length < 2) {
 			//shouldSplit = ((bestSplitSuggestions.length > 0) && (bestSplitSuggestions[0].merit > 0)); 
 			bestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1];
+			shouldSplit = true;
 		} // Otherwise, consider which of the splits proposed may be worth trying
 		else {
 			double hoeffdingBound = computeHoeffdingBound(splitCriterion.getRangeOfMerit(this.literalStatistics), splitConfidence, weightSeen);
@@ -93,13 +109,12 @@ public class LearningLiteralRegression extends LearningLiteral {
 			AttributeExpansionSuggestion secondBestSuggestion
 			= bestSplitSuggestions[bestSplitSuggestions.length - 2];
 			if ((((bestSuggestion.merit-secondBestSuggestion.merit)) > hoeffdingBound) || (hoeffdingBound < tieThreshold)) {
-			//if ((((secondBestSuggestion.merit/bestSuggestion.merit) + hoeffdingBound) < 1) || (hoeffdingBound < tieThreshold)) {
+				//if ((((secondBestSuggestion.merit/bestSuggestion.merit) + hoeffdingBound) < 1) || (hoeffdingBound < tieThreshold)) {
 				//debug("Expanded ", 5);
 				shouldSplit = true;
 				//System.out.println(bestSuggestion.merit);
 			}
 		}
-
 		if(shouldSplit)
 		{
 			//check which branch is better and update bestSuggestion (in amrules the splits are binary )
@@ -141,13 +156,16 @@ public class LearningLiteralRegression extends LearningLiteral {
 
 	private AttributeExpansionSuggestion[] getBestSplitSuggestions(MultiLabelSplitCriterion criterion) {
 		List<AttributeExpansionSuggestion> bestSuggestions = new LinkedList<AttributeExpansionSuggestion>();
-		for (int i = 0; i < this.attributeObservers.size(); i++) {
-			AttributeStatisticsObserver obs = this.attributeObservers.get(i);
-			if (obs != null) {
-				AttributeExpansionSuggestion bestSuggestion = null;
-				bestSuggestion = obs.getBestEvaluatedSplitSuggestion(criterion, literalStatistics, i);
+		for (int i = 0; i < this.inputsToLearn.length; i++) {
+			if(attributesMask[inputsToLearn[i]]){ //Should always be true (check trainOnInstance(). Remove?
+				AttributeStatisticsObserver obs = this.attributeObservers.get(inputsToLearn[i]);
+				if (obs != null) {
+					AttributeExpansionSuggestion bestSuggestion = obs.getBestEvaluatedSplitSuggestion(criterion, literalStatistics, inputsToLearn[i]);
 
-				if (bestSuggestion != null) {
+					if (bestSuggestion == null) {
+						//ALL attributes must have a best suggestion. Adding dummy suggestion with minimal merit.
+						bestSuggestion=new  AttributeExpansionSuggestion(new NumericRulePredicate(inputsToLearn[i],0,true),null,Double.MIN_VALUE);
+					}
 					bestSuggestions.add(bestSuggestion);
 				}
 			}
@@ -159,10 +177,10 @@ public class LearningLiteralRegression extends LearningLiteral {
 	public void trainOnInstance(MultiLabelInstance instance)  {
 		if (attributesMask==null)
 			initializeAttibutesMask(instance);
-		
+
 		//learn for all output attributes if not specified at construction time
 		int numOutputs=instance.numberOutputTargets();
-		int numInputs=instance.numberOutputTargets();
+		int numInputs=instance.numInputAttributes();
 		if(!hasStarted)
 		{
 			if(outputsToLearn==null)
@@ -176,10 +194,11 @@ public class LearningLiteralRegression extends LearningLiteral {
 			{
 				inputsToLearn=new int[numInputs];
 				for (int i=0; i<numInputs;i++){//TODO: check with mask?
-					inputsToLearn[i]=i;
+					if(attributesMask[i])
+						inputsToLearn[i]=i;
 				}
 			}
-			
+
 			literalStatistics= new DoubleVector[outputsToLearn.length];
 			for(int i=0; i<outputsToLearn.length; i++)
 				literalStatistics[i]=new DoubleVector(new double[3]);
@@ -198,19 +217,18 @@ public class LearningLiteralRegression extends LearningLiteral {
 
 		if(this.attributeObservers==null)
 			this.attributeObservers=new AutoExpandVector<AttributeStatisticsObserver>();
-		for(int i=0, ct=0; i<instance.numInputAttributes(); i++){ //TODO: mix with input attributes code?
-			if(attributesMask[i]){
-				AttributeStatisticsObserver obs=this.attributeObservers.get(ct);
+		for(int i=0; i<inputsToLearn.length; i++){
+			if(attributesMask[inputsToLearn[i]]){ //this is checked above. Remove?
+				AttributeStatisticsObserver obs=this.attributeObservers.get(inputsToLearn[i]);
 				if(obs==null){
-					if(instance.attribute(i).isNumeric()){
+					if(instance.attribute(inputsToLearn[i]).isNumeric()){
 						obs=((NumericStatisticsObserver)numericStatisticsObserver.copy());
-					}else if(instance.attribute(i).isNominal()){ //just to make sure its nominal (in the future there may be ordinal?
+					}else if(instance.attribute(inputsToLearn[i]).isNominal()){  //just to make sure its nominal (in the future there may be ordinal?
 						obs=((NominalStatisticsObserver)nominalStatisticsObserver.copy());
 					}
-					this.attributeObservers.set(ct, obs);
+					this.attributeObservers.set(inputsToLearn[i], obs);
 				}
-				obs.observeAttribute(instance.valueInputAttribute(i), exampleStatistics);
-				ct++;
+				obs.observeAttribute(instance.valueInputAttribute(inputsToLearn[i]), exampleStatistics);
 			}
 		}
 		Prediction prediction=learner.getPredictionForInstance(instance);
