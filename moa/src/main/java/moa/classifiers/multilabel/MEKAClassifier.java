@@ -26,6 +26,7 @@ import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import moa.classifiers.MultiLabelLearner;
+import moa.classifiers.MultiTargetRegressor;
 
 /**
  * Class for using a MEKA classifier. NOTE: This class only exists to adjust the
@@ -36,7 +37,7 @@ import moa.classifiers.MultiLabelLearner;
  * @author Jesse Read (jesse@tsc.uc3m.es)
  * @version $Revision: 1 $
  */
-public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner {
+public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner, MultiTargetRegressor {
 
     private static final long serialVersionUID = 1L;
     protected int m_L = -1;

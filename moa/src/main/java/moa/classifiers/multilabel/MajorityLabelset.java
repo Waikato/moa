@@ -27,6 +27,7 @@ import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import moa.classifiers.AbstractMultiLabelLearner;
+import moa.classifiers.MultiTargetRegressor;
 
 /**
  * Majority Labelset classifier. Each labelset combination of relevances, e.g.
@@ -35,7 +36,7 @@ import moa.classifiers.AbstractMultiLabelLearner;
  * @author Jesse Read (jesse@tsc.uc3m.es)
  * @version $Revision: 1 $
  */
-public class MajorityLabelset extends AbstractMultiLabelLearner {
+public class MajorityLabelset extends AbstractMultiLabelLearner implements MultiTargetRegressor {
     //AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
