@@ -22,8 +22,10 @@ package moa.classifiers.multilabel;
 import moa.classifiers.meta.WEKAClassifier;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import weka.classifiers.UpdateableClassifier;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
+import com.yahoo.labs.samoa.instances.Prediction;
+import moa.classifiers.MultiLabelLearner;
 
 /**
  * Class for using a MEKA classifier. NOTE: This class only exists to adjust the
@@ -34,22 +36,23 @@ import com.yahoo.labs.samoa.instances.Instances;
  * @author Jesse Read (jesse@tsc.uc3m.es)
  * @version $Revision: 1 $
  */
-public class MEKAClassifier extends WEKAClassifier {
+public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner {
 
     private static final long serialVersionUID = 1L;
     protected int m_L = -1;
 
     @Override
     public void setModelContext(InstancesHeader raw_header) {
-        m_L = (m_L < 0 ? raw_header.classIndex() + 1 : m_L);
+        //m_L = (m_L < 0 ? raw_header.classIndex() + 1 : m_L);
+        m_L = (m_L < 0 ? raw_header.numOutputAttributes(): m_L);
         super.setModelContext(raw_header);
     }
 
     @Override
-    public void trainOnInstanceImpl(Instance samoaInstance) {
+    public void trainOnInstanceImpl(MultiLabelInstance samoaInstance) {
         weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
         if (m_L < 0) {
-            m_L = inst.classIndex() + 1;
+            m_L = samoaInstance.numOutputAttributes();//inst.classIndex() + 1;
         }
 
         try {
@@ -73,5 +76,16 @@ public class MEKAClassifier extends WEKAClassifier {
             e.printStackTrace();
             System.exit(1);
         }
+    }
+
+    @Override
+    public Prediction getPredictionForInstance(MultiLabelInstance instance) {
+        
+       double[] predictionArray = this.getVotesForInstance(instance);
+       Prediction prediction = new MultiLabelPrediction(predictionArray.length);
+       for (int j = 1; j < predictionArray.length; j++){
+            prediction.setVote(j, 1, predictionArray[j]);
+        }
+        return prediction;
     }
 }
