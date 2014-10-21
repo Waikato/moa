@@ -238,6 +238,17 @@ public class LearningLiteralRegression extends LearningLiteral {
 		weightSeen+=instance.weight();
 	}
 
+	@Override
+	public String getStaticOutput() {
+		StringBuffer sb = new StringBuffer();
+		if(this.literalStatistics!=null){
+			for(int i=0; i<this.literalStatistics.length; i++){
+				sb.append("Y"+(i+1) +  ": " + literalStatistics[i].getValue(1)/literalStatistics[i].getValue(0) + " ");
+			}
+		}
+		return sb.toString();
+	}
+
 
 	/*@Override
 	public void resetLearning() {

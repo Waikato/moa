@@ -88,7 +88,11 @@ public class MultiLabelRule extends AbstractMOAObject {
 			literal.getDescription(out, indent+1);
 			StringUtils.appendIndented(out, indent+1, " ");
 		}
-		StringUtils.appendNewline(out);
+		StringUtils.appendIndented(out, indent+1, " Static Output: " + this.learningLiteral.getStaticOutput());
+	}
+
+	 protected String getStaticOutput() {
+		return "";
 	}
 
 	public boolean updateChangeDetection(MultiLabelInstance instance) {

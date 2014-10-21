@@ -260,7 +260,8 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	public void setInputAttributesSelector(InputAttributesSelector inputSelector) {
 		this.inputSelector=inputSelector;
 	}
-	
+
+	abstract public String getStaticOutput();	
 	
 	
 
