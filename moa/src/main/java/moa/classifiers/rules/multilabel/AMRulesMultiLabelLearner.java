@@ -131,6 +131,9 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			InputAttributesSelector.class,
 			//"MeritThreshold");
 			SelectAllInputs.class.getName());
+	public IntOption randomSeedOption = new IntOption("randomSeedOption",
+			'R', "randomSeedOption", 
+			1,Integer.MIN_VALUE, Integer.MAX_VALUE);
 
 
 	protected double attributesPercentage;
@@ -145,6 +148,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 
 	public AMRulesMultiLabelLearner() {
 		super();
+		this.randomSeed=randomSeedOption.getValue();
 		attributesPercentage=100;
 	}
 

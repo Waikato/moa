@@ -14,7 +14,7 @@ public class RandomAMRules extends MultiLabelRandomAMRules implements Regressor 
 
 	public RandomAMRules() {
 		super();
-		baseLearnerOption = new ClassOption("baseLearner", 'l', "Classifier to train.", AMRulesMultiLabelLearner.class, "AMRulesMultiTargetRegressor"); 
+	//	baseLearnerOption = new ClassOption("baseLearner", 'l', "Classifier to train.", AMRulesMultiLabelLearner.class, "AMRulesMultiTargetRegressor"); 
 	}
 
 }

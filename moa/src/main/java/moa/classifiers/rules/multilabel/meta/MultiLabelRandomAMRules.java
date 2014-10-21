@@ -95,7 +95,7 @@ implements MultiTargetRegressor {
 
 	public void trainOnInstanceImpl(MultiLabelInstance instance) {
 		for (int i = 0; i < this.ensemble.length; i++) {
-			Instance inst=instance.copy();
+			MultiLabelInstance inst=(MultiLabelInstance)instance.copy();
 			int k = 1;
 			if ( this.useBaggingOption.isSet()) {
 				k = MiscUtils.poisson(1.0, this.classifierRandom);
@@ -106,7 +106,7 @@ implements MultiTargetRegressor {
 				//estimate error
 				Prediction p=ensemble[i].getPredictionForInstance(inst);
 				if(p!=null)
-					errorMeasurer[i].addPrediction(p, instance);	
+					errorMeasurer[i].addPrediction(p, inst);	
 				//train learner
 				this.ensemble[i].trainOnInstance(inst);
 			}
