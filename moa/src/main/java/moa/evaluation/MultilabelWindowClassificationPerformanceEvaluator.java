@@ -66,7 +66,7 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
     @Override
     public void addResult(Example<Instance> example, double[] y) {
         Instance x = example.getData();
-        if (y.length <= 2) {
+        if (y.length < 2) {
             System.err.println("y.length too short (" + y.length + "). We've lost track of L at some point, unable to continue");
             System.exit(1);
         }
@@ -83,7 +83,7 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
         if (inst.weight() > 0.0) {
             int numberOutputs = inst.numOutputAttributes();
             double[] result = new double[numberOutputs];
-            for (int i = 0; i< numberOutputs;i++){
+            for (int i = 0; i< prediction.size();i++){
             	result[i] = (prediction.numOutputAttributes()==0) ? 0.0 : prediction.getVote(i,0);
             }
             addResult(example, result);

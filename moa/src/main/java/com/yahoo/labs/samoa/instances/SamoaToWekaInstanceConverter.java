@@ -96,7 +96,12 @@ public class SamoaToWekaInstanceConverter {
             attInfo.add(wekaAttribute(i, instances.attribute(i)));
         }
         wekaInstances = new weka.core.Instances(instances.getRelationName(), attInfo, 0);
-        wekaInstances.setClassIndex(instances.classIndex());
+        if (instances.instanceInformation.numOutputAttributes() == 1){
+            wekaInstances.setClassIndex(instances.classIndex());
+        }
+        else {
+            wekaInstances.setClassIndex(instances.numAttributes()-1); //Last
+        }
         return wekaInstances;
     }
 
