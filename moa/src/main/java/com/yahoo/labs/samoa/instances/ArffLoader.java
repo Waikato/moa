@@ -213,7 +213,7 @@ public class ArffLoader {
      */
     private Instance readInstanceSparse() {
         //Return a Sparse Instance
-        Instance instance = newSparseInstance(1.0, null); //(this.instanceInformation.numAttributes() + 1);
+        Instance instance = newSparseInstance(1.0); //, null); //(this.instanceInformation.numAttributes() + 1);
         //System.out.println(this.instanceInformation.numAttributes());
         int numAttribute;
         ArrayList<Double> attributeValues = new ArrayList<Double>();
@@ -245,7 +245,7 @@ public class ArffLoader {
                     } else if (streamTokenizer.sval != null && (streamTokenizer.ttype == StreamTokenizer.TT_WORD
                             || streamTokenizer.ttype == 34)) {
                         //System.out.print(streamTokenizer.sval + "-");
-                        if (inputAttributes.get(numAttribute).isNumeric()) {
+                        if (this.auxAttributes.get(numAttribute).isNumeric()) {
                             this.setSparseValue(instance, indexValues, attributeValues, numAttribute, Double.valueOf(streamTokenizer.sval).doubleValue(), true);
                         } else {
                             this.setSparseValue(instance, indexValues, attributeValues, numAttribute, this.instanceInformation.attribute(numAttribute).indexOfValue(streamTokenizer.sval), false);
@@ -280,13 +280,13 @@ public class ArffLoader {
         } else {
             valueAttribute = value;
         }
-        if (this.instanceInformation.classIndex() == numAttribute) {
-            setClassValue(instance, valueAttribute);
-        } else {
+        //if (this.instanceInformation.classIndex() == numAttribute) {
+        //    setClassValue(instance, valueAttribute);
+        //} else {
             //instance.setValue(numAttribute, valueAttribute);
             indexValues.add(numAttribute);
             attributeValues.add(valueAttribute);
-        }
+        //}
         //System.out.println(numAttribute+":"+valueAttribute+","+this.instanceInformation.classIndex()+","+value);
     }
 
@@ -322,7 +322,7 @@ public class ArffLoader {
                     } else if (streamTokenizer.sval != null && (streamTokenizer.ttype == StreamTokenizer.TT_WORD
                             || streamTokenizer.ttype == 34)) {
                         //System.out.print(streamTokenizer.sval + "/"+this.instanceInformation.attribute(numAttribute).indexOfValue(streamTokenizer.sval)+" ");
-                        if (inputAttributes.get(numAttribute).isNumeric()) {
+                        if (this.auxAttributes.get(numAttribute).isNumeric()) {
                             this.setValue(instance, numAttribute, Double.valueOf(streamTokenizer.sval).doubleValue(), true);
                         } else {
                             this.setValue(instance, numAttribute, this.instanceInformation.attribute(numAttribute).indexOfValue(streamTokenizer.sval), false);
@@ -343,8 +343,10 @@ public class ArffLoader {
         return instance;
     }
 
-    protected List<Attribute> inputAttributes;
-    protected List<Attribute> outputAttributes;
+    //protected List<Attribute> inputAttributes;
+   // protected List<Attribute> outputAttributes;
+    
+    protected List<Attribute> auxAttributes;
 
     private InstanceInformation getHeader() {
     	//commented JD
@@ -353,7 +355,8 @@ public class ArffLoader {
         //System.out.println("RELATION " + relation);
         //inputAttributes = new ArrayList<Attribute>();
         //outputAttributes = new ArrayList<Attribute>();
-        ArrayList<Attribute> auxAttributes = new ArrayList<Attribute>();//JD
+        //ArrayList<Attribute> 
+        auxAttributes = new ArrayList<Attribute>();//JD
         int numAttributes = 0;
         try {
             streamTokenizer.nextToken();
@@ -448,7 +451,13 @@ public class ArffLoader {
     }
 
     protected Instance newSparseInstance(double d, double[] res) {
-        Instance inst = new SparseInstance(d, res);
+        Instance inst = new SparseInstance(d, res); //is it dense?
+        //inst.setInstanceInformation(this.instanceInformation);
+        return inst;
+    }
+    
+    protected Instance newSparseInstance(double d) {
+        Instance inst = new SparseInstance(d);
         //inst.setInstanceInformation(this.instanceInformation);
         return inst;
     }

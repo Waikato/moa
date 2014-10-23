@@ -26,10 +26,10 @@ public class SimpleClusterTest extends TestCase {
 	public void testClusterGenerator(){testClusterer(Clusterers[0]);}
 //	@Test
 //	public void testCobWeb(){testClusterer(Clusterers[1]);}
-	@Test
+	/*@Test
 	public void testClustream(){testClusterer(Clusterers[3]);}
 	@Test
-	public void testClusTree(){testClusterer(Clusterers[4]);}
+	public void testClusTree(){testClusterer(Clusterers[4]);}*/
 	@Test
 	public void testDenStream(){testClusterer(Clusterers[5]);}
 	@Test
@@ -52,7 +52,7 @@ public class SimpleClusterTest extends TestCase {
             System.out.println();
             System.out.println("No task specified.");
         } else {
-            if (moa.DoTask.isJavaVersionOK() == false || moa.DoTask.isWekaVersionOK() == false) {
+            if (moa.DoTask.isJavaVersionOK() == false ) {//|| moa.DoTask.isWekaVersionOK() == false) {
                 return;
             }
             // create standard options

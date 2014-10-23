@@ -19,6 +19,7 @@
  */
 package moa.classifiers.multilabel;
 
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.meta.WEKAClassifier;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import weka.classifiers.UpdateableClassifier;
@@ -50,19 +51,29 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
     }
 
     @Override
+    public void trainOnInstanceImpl(Instance instance) {
+        trainOnInstanceImpl((MultiLabelInstance) instance);
+    }
+
+    
+    @Override
     public void trainOnInstanceImpl(MultiLabelInstance samoaInstance) {
         weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
         if (m_L < 0) {
             m_L = samoaInstance.numOutputAttributes();//inst.classIndex() + 1;
         }
 
+        System.out.println(inst.classIndex());
         try {
             if (numberInstances < 1) { // INIT 
                 weka.core.Instances D = inst.dataset();
-                D.setClassIndex(m_L);
+                D.setClassIndex(m_L-1);
                 this.instancesBuffer = new weka.core.Instances(D);
                 if (classifier instanceof UpdateableClassifier) {
-                    this.instancesBuffer.setClassIndex(m_L);
+                    this.instancesBuffer.setClassIndex(m_L-1);
+                   // System.out.println(instancesBuffer.classIndex());
+                   // System.out.println(instancesBuffer.classAttribute().name());
+                   // System.out.println(instancesBuffer.classAttribute().isNumeric());
                     this.classifier.buildClassifier(instancesBuffer);
                     this.isClassificationEnabled = true;
                 } else {
