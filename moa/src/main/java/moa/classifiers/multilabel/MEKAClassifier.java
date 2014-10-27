@@ -63,7 +63,7 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
             m_L = samoaInstance.numOutputAttributes();//inst.classIndex() + 1;
         }
 
-        System.out.println(inst.classIndex());
+        //System.out.println(inst.classIndex());
         try {
             if (numberInstances < 1) { // INIT 
                 weka.core.Instances D = inst.dataset();

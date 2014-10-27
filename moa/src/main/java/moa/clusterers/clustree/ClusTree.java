@@ -142,11 +142,11 @@ public class ClusTree extends AbstractClusterer{
         
         //TODO check if instance contains label
         if(root == null){
-            numberDimensions = instance.numAttributes()-1; //Added -1 for new instances
+            numberDimensions = instance.numAttributes();
             root = new Node(numberDimensions, 0);
         }
         else{
-            if(numberDimensions!=instance.numAttributes()-1)
+            if(numberDimensions!=instance.numAttributes())
                 System.out.println("Wrong dimensionality, expected:"+numberDimensions+ "found:"+instance.numAttributes());
         }
 
