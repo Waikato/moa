@@ -107,7 +107,7 @@ public abstract class MyBaseOutlierDetector extends AbstractClusterer {
     }
     
     public double[] getInstanceValues(Instance inst) {
-        int length = inst.numValues(); // -1
+        int length = inst.numValues()-1; 
         double[] values = new double[length]; // last attribute is the class
         for (int i = 0; i < length; i++) {
             values[i] = inst.value(i);
@@ -117,7 +117,7 @@ public abstract class MyBaseOutlierDetector extends AbstractClusterer {
     
     public void PrintInstance(Instance inst) {
         Print("instance: [ ");
-        for (int i = 0; i < inst.numValues(); i++) { // -1 last value is the class
+        for (int i = 0; i < inst.numValues()-1; i++) { // -1 last value is the class
             Printf("%.2f ", inst.value(i));
         }
         Print("] ");

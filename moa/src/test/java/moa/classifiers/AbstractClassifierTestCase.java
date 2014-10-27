@@ -34,7 +34,6 @@ import moa.test.MoaTestCase;
 import moa.test.TestHelper;
 import moa.test.TmpFile;
 import weka.core.MOAUtils;
-import weka.core.converters.ArffLoader.ArffReader;
 
 import com.yahoo.labs.samoa.instances.ArffLoader;
 import com.yahoo.labs.samoa.instances.Instance;

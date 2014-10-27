@@ -20,10 +20,14 @@
 package moa.classifiers.multilabel;
 
 import java.util.HashMap;
-import moa.classifiers.AbstractClassifier;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.Measurement;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
+import com.yahoo.labs.samoa.instances.Prediction;
+import moa.classifiers.AbstractMultiLabelLearner;
+import moa.classifiers.MultiTargetRegressor;
 
 /**
  * Majority Labelset classifier. Each labelset combination of relevances, e.g.
@@ -32,7 +36,8 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Jesse Read (jesse@tsc.uc3m.es)
  * @version $Revision: 1 $
  */
-public class MajorityLabelset extends AbstractClassifier {
+public class MajorityLabelset extends AbstractMultiLabelLearner implements MultiTargetRegressor {
+    //AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,7 +45,7 @@ public class MajorityLabelset extends AbstractClassifier {
 
     private double maxValue = 0.0;
 
-    private double prediction[] = null;
+    private double predictionArray[] = null;
 
     private HashMap<String, Double> classFreqs = new HashMap<String, Double>();
 
@@ -62,9 +67,9 @@ public class MajorityLabelset extends AbstractClassifier {
             classFreqs.put(y, freq);
             if (freq >= maxValue) {
                 maxValue = freq;
-                this.prediction = new double[L];
+                this.predictionArray = new double[L];
                 for (int j = 0; j < L; j++) {
-                    this.prediction[j] = x.value(j);
+                    this.predictionArray[j] = x.value(j);
                 }
             }
         } else {
@@ -76,8 +81,8 @@ public class MajorityLabelset extends AbstractClassifier {
     public void setModelContext(InstancesHeader raw_header) {
         //set the multilabel model context
         this.modelContext = raw_header;
-        m_L = raw_header.classIndex() + 1;
-        prediction = new double[m_L];
+        m_L = raw_header.numOutputAttributes(); //raw_header.classIndex() + 1;
+        predictionArray = new double[m_L];
     }
 
     @Override
@@ -85,17 +90,24 @@ public class MajorityLabelset extends AbstractClassifier {
     }
 
     @Override
-    public void trainOnInstanceImpl(Instance x) {
+    public void trainOnInstanceImpl(MultiLabelInstance x) {
         updateCount(x, m_L);
     }
 
     @Override
-    public double[] getVotesForInstance(Instance x) {
-        int L = x.classIndex() + 1;
+    //public double[] getVotesForInstance(Instance x) {
+    public Prediction getPredictionForInstance(MultiLabelInstance x){
+        
+        int L = x.numOutputAttributes(); //x.classIndex() + 1;
         if (m_L != L) {
             System.err.println("set L = " + L);
             m_L = L;
-            prediction = new double[m_L];
+            predictionArray = new double[m_L];
+        }
+        
+       Prediction prediction = new MultiLabelPrediction(predictionArray.length);
+       for (int j = 1; j < predictionArray.length; j++){
+            prediction.setVote(j, 1, predictionArray[j]);
         }
         return prediction;
         //System.out.println("getVotesForInstance(): "+x.classIndex());
@@ -114,4 +126,5 @@ public class MajorityLabelset extends AbstractClassifier {
     @Override
     public void getModelDescription(StringBuilder out, int indent) {
     }
+
 }

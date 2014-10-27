@@ -258,4 +258,46 @@ public class SparseInstanceData implements InstanceData {
         }
     }
 
+   /**
+   * Deletes an attribute at the given position (0 to numAttributes() - 1).
+   * 
+   * @param pos the attribute's position
+   */
+  @Override
+  public void deleteAttributeAt(int position) {
+
+    int index = locateIndex(position);
+
+    this.numberAttributes--;
+    if ((index >= 0) && (indexValues[index] == position)) {
+      int[] tempIndices = new int[indexValues.length - 1];
+      double[] tempValues = new double[attributeValues.length - 1];
+      System.arraycopy(indexValues, 0, tempIndices, 0, index);
+      System.arraycopy(attributeValues, 0, tempValues, 0, index);
+      for (int i = index; i < indexValues.length - 1; i++) {
+        tempIndices[i] = indexValues[i + 1] - 1;
+        tempValues[i] = attributeValues[i + 1];
+      }
+      indexValues = tempIndices;
+      attributeValues = tempValues;
+    } else {
+      int[] tempIndices = new int[indexValues.length];
+      double[] tempValues = new double[attributeValues.length];
+      System.arraycopy(indexValues, 0, tempIndices, 0, index + 1);
+      System.arraycopy(attributeValues, 0, tempValues, 0, index + 1);
+      for (int i = index + 1; i < indexValues.length; i++) {
+        tempIndices[i] = indexValues[i] - 1;
+        tempValues[i] = attributeValues[i];
+      }
+      indexValues = tempIndices;
+      attributeValues = tempValues;
+    }
+  }
+
+    @Override
+    public InstanceData copy() {
+      return new SparseInstanceData(this.attributeValues.clone(),this.indexValues.clone(),this.numberAttributes);   
+    }
+
+
 }

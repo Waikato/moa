@@ -93,4 +93,19 @@ public interface InstanceData extends Serializable {
      */
     public void setValue(int m_numAttributes, double d);
 
+    
+     /**
+     * Deletes an attribute.
+     *
+     * @param index the indes
+     */
+    public void deleteAttributeAt(int index);
+    
+   /**
+   * Produces a shallow copy of this instance data. 
+   * 
+   * @return the shallow copy
+   */
+    public InstanceData copy();
+
 }
