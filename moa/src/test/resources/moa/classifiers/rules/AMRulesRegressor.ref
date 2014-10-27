@@ -1,5 +1,5 @@
 --> regression-out0.arff
-moa.classifiers.rules.AMRulesRegressor
+moa.classifiers.rules.AMRulesRegressor -L (rules.multilabel.functions.AdaptiveMultiTargetRegressor -l rules.multilabel.functions.MultiLabelTargetMeanRegressor -m rules.multilabel.functions.MultiLabelPerceptronRegressor) -A (OddsRatioScore -p CantellisInequality) -O SelectAllOutputs
 
 Index
   100

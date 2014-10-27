@@ -91,4 +91,9 @@ public class MultiLabelPrediction implements Prediction {
 		return (prediction[outputAttributeIndex].numValues()==0) ? false : true;
 	}
 
+    @Override
+    public int size() {
+        return prediction.length;
+    }
+
 }

@@ -19,11 +19,15 @@
  */
 package moa.classifiers.multilabel;
 
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.meta.WEKAClassifier;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import weka.classifiers.UpdateableClassifier;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
+import com.yahoo.labs.samoa.instances.Prediction;
+import moa.classifiers.MultiLabelLearner;
+import moa.classifiers.MultiTargetRegressor;
 
 /**
  * Class for using a MEKA classifier. NOTE: This class only exists to adjust the
@@ -34,31 +38,42 @@ import com.yahoo.labs.samoa.instances.Instances;
  * @author Jesse Read (jesse@tsc.uc3m.es)
  * @version $Revision: 1 $
  */
-public class MEKAClassifier extends WEKAClassifier {
+public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner, MultiTargetRegressor {
 
     private static final long serialVersionUID = 1L;
     protected int m_L = -1;
 
     @Override
     public void setModelContext(InstancesHeader raw_header) {
-        m_L = (m_L < 0 ? raw_header.classIndex() + 1 : m_L);
+        //m_L = (m_L < 0 ? raw_header.classIndex() + 1 : m_L);
+        m_L = (m_L < 0 ? raw_header.numOutputAttributes(): m_L);
         super.setModelContext(raw_header);
     }
 
     @Override
-    public void trainOnInstanceImpl(Instance samoaInstance) {
+    public void trainOnInstanceImpl(Instance instance) {
+        trainOnInstanceImpl((MultiLabelInstance) instance);
+    }
+
+    
+    @Override
+    public void trainOnInstanceImpl(MultiLabelInstance samoaInstance) {
         weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
         if (m_L < 0) {
-            m_L = inst.classIndex() + 1;
+            m_L = samoaInstance.numOutputAttributes();//inst.classIndex() + 1;
         }
 
+        //System.out.println(inst.classIndex());
         try {
             if (numberInstances < 1) { // INIT 
                 weka.core.Instances D = inst.dataset();
-                D.setClassIndex(m_L);
+                D.setClassIndex(m_L-1);
                 this.instancesBuffer = new weka.core.Instances(D);
                 if (classifier instanceof UpdateableClassifier) {
-                    this.instancesBuffer.setClassIndex(m_L);
+                    this.instancesBuffer.setClassIndex(m_L-1);
+                   // System.out.println(instancesBuffer.classIndex());
+                   // System.out.println(instancesBuffer.classAttribute().name());
+                   // System.out.println(instancesBuffer.classAttribute().isNumeric());
                     this.classifier.buildClassifier(instancesBuffer);
                     this.isClassificationEnabled = true;
                 } else {
@@ -73,5 +88,16 @@ public class MEKAClassifier extends WEKAClassifier {
             e.printStackTrace();
             System.exit(1);
         }
+    }
+
+    @Override
+    public Prediction getPredictionForInstance(MultiLabelInstance instance) {
+        
+       double[] predictionArray = this.getVotesForInstance(instance);
+       Prediction prediction = new MultiLabelPrediction(predictionArray.length);
+       for (int j = 1; j < predictionArray.length; j++){
+            prediction.setVote(j, 1, predictionArray[j]);
+        }
+        return prediction;
     }
 }

@@ -35,8 +35,8 @@ public class SamoaToWekaInstanceConverter {
      */
     public weka.core.Instance wekaInstance(Instance inst) {
         weka.core.Instance wekaInstance;
-        if (inst instanceof SparseInstance) {
-            SparseInstance instance = (SparseInstance) inst;
+        if (((InstanceImpl) inst).instanceData instanceof SparseInstanceData) {
+            InstanceImpl instance = (InstanceImpl) inst;
             SparseInstanceData sparseInstanceData = (SparseInstanceData) instance.instanceData;
             wekaInstance = new weka.core.SparseInstance(instance.weight(), sparseInstanceData.getAttributeValues(),
                     sparseInstanceData.getIndexValues(), sparseInstanceData.getNumberAttributes());
@@ -63,7 +63,10 @@ public class SamoaToWekaInstanceConverter {
         }
         //wekaInstance.insertAttributeAt(inst.classIndex());
         wekaInstance.setDataset(wekaInstanceInformation);
-        wekaInstance.setClassValue(inst.classValue());
+        if (inst.numOutputAttributes() == 1){
+            wekaInstance.setClassValue(inst.classValue());
+        }
+        
         return wekaInstance;
     }
     
@@ -96,7 +99,17 @@ public class SamoaToWekaInstanceConverter {
             attInfo.add(wekaAttribute(i, instances.attribute(i)));
         }
         wekaInstances = new weka.core.Instances(instances.getRelationName(), attInfo, 0);
-        wekaInstances.setClassIndex(instances.classIndex());
+        if (instances.instanceInformation.numOutputAttributes() == 1){
+            wekaInstances.setClassIndex(instances.classIndex());
+        }
+        else {
+            //Assign a classIndex to a MultiLabel instance for compatibility reasons
+            wekaInstances.setClassIndex(instances.instanceInformation.numOutputAttributes()-1); //instances.numAttributes()-1); //Last
+        }
+        //System.out.println(attInfo.get(3).name());
+        //System.out.println(attInfo.get(3).isNominal());
+        //System.out.println(wekaInstances.attribute(3).name());
+        //System.out.println(wekaInstances.attribute(3).isNominal());
         return wekaInstances;
     }
 
@@ -111,9 +124,12 @@ public class SamoaToWekaInstanceConverter {
         weka.core.Attribute wekaAttribute;
         if (attribute.isNominal()) {
             wekaAttribute = new weka.core.Attribute(attribute.name(), attribute.getAttributeValues(), index);
+          
         } else {
             wekaAttribute = new weka.core.Attribute(attribute.name(), index);
         }
+        //System.out.println(wekaAttribute.name());
+        //System.out.println(wekaAttribute.isNominal());
         return wekaAttribute;
     }
 }
