@@ -84,6 +84,14 @@ public interface Prediction {
      * @return the votes for the first output attribute outputAttributeIndex.
      */
 	boolean hasVotesForAttribute(int outputAttributeIndex);
+
+
+     /**
+     * The size of the prediction, that is the number of output attributes
+     *
+     * @return the votes for the first output attribute outputAttributeIndex.
+     */
+        public int size();
 		
 
 }

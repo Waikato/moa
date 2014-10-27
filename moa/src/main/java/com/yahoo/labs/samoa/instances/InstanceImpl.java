@@ -44,7 +44,7 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     public InstanceImpl(InstanceImpl inst) {
         this.weight = inst.weight;
-        this.instanceData = inst.instanceData;
+        this.instanceData = inst.instanceData.copy();
         this.instanceHeader = inst.instanceHeader;
     }
 
@@ -133,7 +133,8 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public void deleteAttributeAt(int i) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        //throw new UnsupportedOperationException("Not yet implemented");
+        this.instanceData.deleteAttributeAt(i);
     }
 
     /**
@@ -153,7 +154,7 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public int numAttributes() {
-        return this.instanceHeader.numAttributes();
+        return this.instanceData.numAttributes();
     }
 
     /**

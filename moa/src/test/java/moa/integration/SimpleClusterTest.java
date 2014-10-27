@@ -52,7 +52,7 @@ public class SimpleClusterTest extends TestCase {
             System.out.println();
             System.out.println("No task specified.");
         } else {
-            if (moa.DoTask.isJavaVersionOK() == false || moa.DoTask.isWekaVersionOK() == false) {
+            if (moa.DoTask.isJavaVersionOK() == false ) {//|| moa.DoTask.isWekaVersionOK() == false) {
                 return;
             }
             // create standard options

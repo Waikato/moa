@@ -144,5 +144,23 @@ public class DenseInstanceData implements InstanceData{
     public void setValue(int attributeIndex, double d) {
         this.attributeValues[attributeIndex] = d;
     }
+
+    @Override
+    public void deleteAttributeAt(int index) {
+        
+        double[] newValues = new double[attributeValues.length - 1];
+
+        System.arraycopy(attributeValues, 0, newValues, 0, index);
+        if (index < attributeValues.length - 1) {
+          System.arraycopy(attributeValues, index + 1, newValues, index,
+              attributeValues.length - (index + 1));
+        }
+        attributeValues = newValues;
+    }
+
+    @Override
+    public InstanceData copy() {
+        return new DenseInstanceData(this.attributeValues.clone());
+    }
        
 }
