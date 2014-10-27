@@ -125,6 +125,7 @@ public class InstanceImpl implements MultiLabelInstance {
     public Attribute attribute(int instAttIndex) {
         return this.instanceHeader.attribute(instAttIndex);
     }
+
     /**
      * Delete attribute at.
      *
@@ -132,8 +133,8 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public void deleteAttributeAt(int i) {
-    //throw new UnsupportedOperationException("Not yet implemented");
-    this.instanceData.deleteAttributeAt(i);
+        //throw new UnsupportedOperationException("Not yet implemented");
+        this.instanceData.deleteAttributeAt(i);
     }
 
     /**
@@ -153,7 +154,7 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public int numAttributes() {
-        return this.instanceHeader.numAttributes();
+        return this.instanceData.numAttributes();
     }
 
     /**
