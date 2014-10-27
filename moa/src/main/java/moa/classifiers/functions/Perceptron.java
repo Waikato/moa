@@ -72,7 +72,7 @@ public class Perceptron extends AbstractClassifier {
             this.weightAttribute = new double[inst.numClasses()][inst.numAttributes()];
             for (int i = 0; i < inst.numClasses(); i++) {
                 for (int j = 0; j < inst.numAttributes(); j++) {
-                    weightAttribute[i][j] = 0.2 * Math.random() - 0.1;
+                    weightAttribute[i][j] = 0.2 * this.classifierRandom.nextDouble() - 0.1;
                 }
             }
         }
@@ -88,7 +88,7 @@ public class Perceptron extends AbstractClassifier {
             double actual = (i == actualClass) ? 1.0 : 0.0;
             double delta = (actual - preds[i]) * preds[i] * (1 - preds[i]);
             for (int j = 0; j < inst.numAttributes() - 1; j++) {
-                this.weightAttribute[i][j] += learningRatio * delta * inst.value(j);
+                this.weightAttribute[i][j] += learningRatio * delta * inst.valueInputAttribute(j);
             }
             this.weightAttribute[i][inst.numAttributes() - 1] += learningRatio * delta;
         }
@@ -117,7 +117,7 @@ public class Perceptron extends AbstractClassifier {
     public double prediction(Instance inst, int classVal) {
         double sum = 0.0;
         for (int i = 0; i < inst.numAttributes() - 1; i++) {
-            sum += weightAttribute[classVal][i] * inst.value(i);
+            sum += weightAttribute[classVal][i] * inst.valueInputAttribute(i);
         }
         sum += weightAttribute[classVal][inst.numAttributes() - 1];
         return 1.0 / (1.0 + Math.exp(-sum));
@@ -150,6 +150,6 @@ public class Perceptron extends AbstractClassifier {
 
     @Override
     public boolean isRandomizable() {
-        return false;
+        return true;
     }
 }
