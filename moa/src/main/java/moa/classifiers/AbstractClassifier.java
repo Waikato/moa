@@ -226,7 +226,6 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
         return getSubClassifiers();
     }
     
-    
     @Override
     public Classifier[] getSubClassifiers() {
         return null;

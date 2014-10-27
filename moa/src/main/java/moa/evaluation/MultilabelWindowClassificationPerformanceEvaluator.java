@@ -25,6 +25,8 @@ import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.utils.EvalUtils;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Multilabel Window Classification Performance Evaluator.
@@ -32,7 +34,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Jesse Read (jesse@tsc.uc3m.es)
  * @version $Revision: 1 $
  */
-public class MultilabelWindowClassificationPerformanceEvaluator extends WindowClassificationPerformanceEvaluator {
+public class MultilabelWindowClassificationPerformanceEvaluator extends WindowClassificationPerformanceEvaluator implements MultiTargetPerformanceEvaluator {
 
     //ArrayList<Pair<double[],int[]>> result = new ArrayList<Pair<double[],int[]>>();
     ArrayList<double[]> result_pred = new ArrayList<double[]>();
@@ -64,7 +66,7 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
     @Override
     public void addResult(Example<Instance> example, double[] y) {
         Instance x = example.getData();
-        if (y.length <= 2) {
+        if (y.length < 2) {
             System.err.println("y.length too short (" + y.length + "). We've lost track of L at some point, unable to continue");
             System.exit(1);
         }
@@ -73,6 +75,23 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
         result_pred.add(y);
     }
 
+    
+    @Override
+    public void addResult(Example<Instance> example, Prediction prediction) {
+
+        MultiLabelInstance inst = (MultiLabelInstance) example.getData();
+        if (inst.weight() > 0.0) {
+            int numberOutputs = inst.numOutputAttributes();
+            double[] result = new double[numberOutputs];
+            for (int i = 0; i< prediction.size();i++){
+            	result[i] = (prediction.numOutputAttributes()==0) ? 0.0 : prediction.getVote(i,0);
+            }
+            addResult(example, result);
+        }
+            //System.out.println(inst.classValue()+", "+prediction);
+    }
+    
+    
     @Override
     public Measurement[] getPerformanceMeasurements() {
 

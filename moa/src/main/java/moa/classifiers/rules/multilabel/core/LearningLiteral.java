@@ -6,14 +6,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-import javax.smartcardio.ATR;
-
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
-
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;
@@ -232,6 +229,9 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	public void setNominalObserverOption(NominalStatisticsObserver nominalStatisticsObserver) {
 		this.nominalStatisticsObserver=nominalStatisticsObserver;
 	}
+	
+
+	
 
 	public void setRandomGenerator(Random random) {
 		this.randomGenerator=random;
