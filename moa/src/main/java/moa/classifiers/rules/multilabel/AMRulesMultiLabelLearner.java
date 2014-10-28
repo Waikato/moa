@@ -397,6 +397,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		StringUtils.appendNewline(out);
 		for (MultiLabelRule rule: ruleSet) {
 			rule.getDescription(out, indent);
+			StringUtils.appendNewline(out);
 		}
 	}
 

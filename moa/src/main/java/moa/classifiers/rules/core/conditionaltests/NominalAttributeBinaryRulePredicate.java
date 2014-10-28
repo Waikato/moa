@@ -20,6 +20,7 @@
 package moa.classifiers.rules.core.conditionaltests;
 
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceInformation;
 
 import moa.classifiers.core.conditionaltests.NominalAttributeBinaryTest;
 import moa.classifiers.rules.core.Predicate;
@@ -62,6 +63,7 @@ public class NominalAttributeBinaryRulePredicate extends NominalAttributeBinaryT
 			StringUtils.appendIndented(sb, indent+1, "In" + attIndex + " <> " + attValue);
 	}
 	
+	
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
@@ -77,6 +79,13 @@ public class NominalAttributeBinaryRulePredicate extends NominalAttributeBinaryT
 	@Override
 	public boolean isEqualOrLess() {
 		return state;
+	}
+
+	@Override
+	public void getDescription(StringBuilder sb, int indent,
+			InstanceInformation instInformation) {
+		getDescription(sb,indent);
+		
 	}
 	
 	

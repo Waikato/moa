@@ -2,6 +2,7 @@ package moa.classifiers.rules.multilabel.core;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
+import com.yahoo.labs.samoa.instances.InstanceInformation;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
@@ -239,11 +240,11 @@ public class LearningLiteralRegression extends LearningLiteral {
 	}
 
 	@Override
-	public String getStaticOutput() {
+	public String getStaticOutput(InstanceInformation instanceInformation) {
 		StringBuffer sb = new StringBuffer();
 		if(this.literalStatistics!=null){
 			for(int i=0; i<this.literalStatistics.length; i++){
-				sb.append("Y"+(i+1) +  ": " + literalStatistics[i].getValue(1)/literalStatistics[i].getValue(0) + " ");
+				sb.append(instanceInformation.outputAttribute(i).name() +  ": " + literalStatistics[i].getValue(1)/literalStatistics[i].getValue(0) + " ");
 			}
 		}
 		return sb.toString();

@@ -5,19 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-import com.yahoo.labs.samoa.instances.Prediction;
-
 import moa.AbstractMOAObject;
 import moa.classifiers.MultiLabelLearner;
-import moa.classifiers.core.attributeclassobservers.NumericAttributeClassObserver;
-import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
-import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
 import moa.classifiers.core.driftdetection.ChangeDetector;
-import moa.classifiers.rules.core.RuleActiveLearningNode;
-import moa.classifiers.rules.core.RuleSplitNode;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
-import moa.classifiers.rules.core.conditionaltests.NumericAttributeBinaryRulePredicate;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatisticsObserver;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
@@ -25,6 +16,12 @@ import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.classifiers.rules.multilabel.inputselectors.InputAttributesSelector;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.core.StringUtils;
+
+import com.yahoo.labs.samoa.instances.InstanceInformation;
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 
 public class MultiLabelRule extends AbstractMOAObject {
@@ -42,6 +39,8 @@ public class MultiLabelRule extends AbstractMOAObject {
 	protected int ruleNumberID;
 	
 	protected MultiLabelRule otherBranchRule;
+	
+	protected InstanceInformation instanceInformation;
 	
 	public MultiLabelRule(LearningLiteral learningLiteral) {
 		this.learningLiteral=learningLiteral; //copy()?
@@ -85,10 +84,10 @@ public class MultiLabelRule extends AbstractMOAObject {
 	public void getDescription(StringBuilder out, int indent) {
 		StringUtils.appendIndented(out, indent+1, "Rule Nr." + this.ruleNumberID + " Instances seen:" + this.learningLiteral.getWeightSeenSinceExpansion() + "\n"); 
 		for (Literal literal : literalList) {
-			literal.getDescription(out, indent+1);
+			literal.getDescription(out, indent+1, instanceInformation);
 			StringUtils.appendIndented(out, indent+1, " ");
 		}
-		StringUtils.appendIndented(out, indent+1, " Static Output: " + this.learningLiteral.getStaticOutput());
+		StringUtils.appendIndented(out, indent+1, " Output: " + this.learningLiteral.getStaticOutput(instanceInformation));
 	}
 
 	 protected String getStaticOutput() {
@@ -104,6 +103,8 @@ public class MultiLabelRule extends AbstractMOAObject {
 	}
 
 	public void trainOnInstance(MultiLabelInstance instance) {
+		if(this.instanceInformation==null)
+			this.instanceInformation=((InstancesHeader)instance.dataset()).getInstanceInformation();
 		learningLiteral.trainOnInstance(instance);
 	}
 

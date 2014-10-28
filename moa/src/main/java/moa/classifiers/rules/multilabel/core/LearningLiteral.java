@@ -8,9 +8,11 @@ import java.util.Random;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
+import com.yahoo.labs.samoa.instances.InstanceInformation;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
+
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;
@@ -261,7 +263,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 		this.inputSelector=inputSelector;
 	}
 
-	abstract public String getStaticOutput();	
+	abstract public String getStaticOutput(InstanceInformation instanceInformation);	
 	
 	
 

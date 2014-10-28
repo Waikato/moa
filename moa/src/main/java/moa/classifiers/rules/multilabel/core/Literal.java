@@ -1,6 +1,7 @@
 package moa.classifiers.rules.multilabel.core;
 
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceInformation;
 
 import moa.AbstractMOAObject;
 import moa.classifiers.rules.core.Predicate;
@@ -24,13 +25,17 @@ public class Literal extends AbstractMOAObject{
 	
 	@Override
 	public void getDescription(StringBuilder sb, int indent) {
-		predicate.getDescription(sb, indent);
+		predicate.getDescription(sb, indent, null);
+	}
+	
+	public void getDescription(StringBuilder sb, int indent, InstanceInformation instanceInformation) {
+		predicate.getDescription(sb, indent, instanceInformation);
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		predicate.getDescription(sb, 1);
+		predicate.getDescription(sb, 1, null);
 		return sb.toString();
 	}
 
