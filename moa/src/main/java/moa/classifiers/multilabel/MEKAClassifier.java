@@ -19,6 +19,7 @@
  */
 package moa.classifiers.multilabel;
 
+import java.util.Arrays;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.meta.WEKAClassifier;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
@@ -94,9 +95,14 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
     public Prediction getPredictionForInstance(MultiLabelInstance instance) {
         
        double[] predictionArray = this.getVotesForInstance(instance);
+
+	   System.out.println("----------------------------------------");
+		System.out.println("y = "+Arrays.toString(predictionArray));
+		
        Prediction prediction = new MultiLabelPrediction(predictionArray.length);
-       for (int j = 1; j < predictionArray.length; j++){
+       for (int j = 0; j < predictionArray.length; j++){
             prediction.setVote(j, 1, predictionArray[j]);
+			//prediction.setVote(j, 0, 1. - predictionArray[j]);
         }
         return prediction;
     }
