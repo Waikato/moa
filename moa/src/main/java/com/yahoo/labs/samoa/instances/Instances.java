@@ -78,8 +78,6 @@ public class Instances implements Serializable {
      *
      * @param reader the reader
      * @param range
-     * @param size the size
-     * @param classAttribute the class attribute
      */
     public Instances(Reader reader, Range range) {
         this.arff = new MultiTargetArffLoader(reader, range);
@@ -134,10 +132,10 @@ public class Instances implements Serializable {
      * Instantiates a new instances.
      *
      * @param st the st
-     * @param v the v
+     * @param capacity the capacity
      */
-    public Instances(StringReader st, int v) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public Instances(StringReader st, int capacity) {
+         this.instances = new ArrayList<Instance>(capacity);
     }
 
     //Information Instances
@@ -422,6 +420,14 @@ public class Instances implements Serializable {
     public void delete() {
         this.instances = new ArrayList<Instance>();
     }
+    
+     /**
+     * Delete.
+     */
+    public void delete(int index) {
+        this.instances.remove(index);
+    }
+
 
     /**
      * Swap.
