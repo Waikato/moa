@@ -140,7 +140,7 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
                     numLeaves += ((NewNode) child).numberLeaves();
                 }
             }
-            return numLeaves + 1;
+            return numLeaves;
         }
 
         @Override
