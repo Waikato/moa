@@ -19,6 +19,7 @@
  */
 package moa.classifiers.multilabel;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.Measurement;
@@ -104,11 +105,15 @@ public class MajorityLabelset extends AbstractMultiLabelLearner implements Multi
             m_L = L;
             predictionArray = new double[m_L];
         }
+
+	   System.out.println("----------------------------------------");
+		System.out.println("y = "+Arrays.toString(predictionArray));
         
        Prediction prediction = new MultiLabelPrediction(predictionArray.length);
-       for (int j = 1; j < predictionArray.length; j++){
+       for (int j = 0; j < predictionArray.length; j++){
             prediction.setVote(j, 1, predictionArray[j]);
         }
+		
         return prediction;
         //System.out.println("getVotesForInstance(): "+x.classIndex());
     }
