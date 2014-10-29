@@ -54,8 +54,6 @@ public class InverseErrorWeightedVoteMultiLabel extends AbstractErrorWeightedVot
 				for (int i=0; i<n; i++)
 				{
 					if(votes.get(i).hasVotesForAttribute(o) && errors.get(i)!=null){
-						if(errors.get(i).length<4)
-							System.out.println("a");
 						weights[i][o]=1.0/(errors.get(i)[o]+EPS);
 						sumError[o]+=weights[i][o];
 					}

@@ -377,6 +377,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		
 		StringUtils.appendIndented(out, indent, "Default rule :");
 		this.defaultRule.getDescription(out, indent);
+		StringUtils.appendNewline(out);
 		
 		StringUtils.appendIndented(out, indent, "Rules in ruleSet:");
 		StringUtils.appendNewline(out);

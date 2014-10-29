@@ -59,9 +59,9 @@ public class NominalRulePredicate extends AbstractMOAObject implements Predicate
 			InstanceInformation instInformation) {
 		if (instInformation!=null){
 			if(isEqual)
-				StringUtils.appendIndented(sb, indent+1, instInformation.inputAttribute(inputAttributeIndex).name() + " == " + attributeValue);
+				StringUtils.appendIndented(sb, indent+1, instInformation.inputAttribute(inputAttributeIndex).name() + " == " + instInformation.inputAttribute(inputAttributeIndex).value((int)attributeValue));
 			else
-				StringUtils.appendIndented(sb, indent+1, instInformation.inputAttribute(inputAttributeIndex).name() + " <> " + attributeValue);
+				StringUtils.appendIndented(sb, indent+1, instInformation.inputAttribute(inputAttributeIndex).name() + " <> " + instInformation.inputAttribute(inputAttributeIndex).value((int)attributeValue));
 		}
 		else 
 			getDescription(sb,indent);
