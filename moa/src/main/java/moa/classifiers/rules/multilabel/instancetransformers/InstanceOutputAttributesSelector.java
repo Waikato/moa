@@ -26,6 +26,9 @@ public class InstanceOutputAttributesSelector extends AbstractMOAObject implemen
 	public int [] targetOutputIndices;
 	public int numSourceInstancesOutputs;
 
+	public InstanceOutputAttributesSelector(){
+		
+	}
 	public InstanceOutputAttributesSelector(InstancesHeader sourceInstances, int [] targetOutputIndices){
 		this.targetOutputIndices=targetOutputIndices;
 		this.numSourceInstancesOutputs=sourceInstances.numOutputAttributes();
@@ -54,18 +57,17 @@ public class InstanceOutputAttributesSelector extends AbstractMOAObject implemen
 		targetInstances.setRangeOutputIndices(r);
 	}
 
-	public InstanceOutputAttributesSelector() {
-	}
 
 	@Override
 	public Instance sourceInstanceToTarget(Instance sourceInstance) {
 		double [] attValues = new double[targetInstances.numAttributes()];
 		Instance newInstance=new InstanceImpl(sourceInstance.weight(),attValues);
-		for (int i=0; i<this.targetInstances.numInputAttributes(); i++){
+		int numInputs=this.targetInstances.numInputAttributes();
+		for (int i=0; i<numInputs; i++){
 			newInstance.setValue(i, sourceInstance.valueInputAttribute(i));
 		}
 		for (int i=0; i<this.targetOutputIndices.length; i++){
-			newInstance.setValue(i, sourceInstance.valueOutputAttribute(targetOutputIndices[i]));
+			newInstance.setValue(numInputs+i, sourceInstance.valueOutputAttribute(targetOutputIndices[i]));
 		}
 		newInstance.setDataset(targetInstances);
 		return newInstance;

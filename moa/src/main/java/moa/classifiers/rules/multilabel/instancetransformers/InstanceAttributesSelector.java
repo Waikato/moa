@@ -32,7 +32,6 @@ public class InstanceAttributesSelector extends InstanceOutputAttributesSelector
 	public int numSourceInstancesOutputs;
 
 	public InstanceAttributesSelector(InstancesHeader sourceInstances, int [] targetInputIndices, int [] targetOutputIndices){
-		super();
 		this.targetInputIndices=targetInputIndices;
 		this.targetOutputIndices=targetOutputIndices;
 		this.numSourceInstancesOutputs=sourceInstances.numOutputAttributes();

@@ -8,6 +8,11 @@ import static org.junit.Assert.*;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
+/**
+ * Test UniformWeightedVoteMultiLabel
+ *
+ * @author João Duarte (joaomaiaduarte@gmail.com)
+ */
 public class UniformWeightedVoteMultiLabelTest {
 	
 	static UniformWeightedVoteMultiLabel weightedVote;
