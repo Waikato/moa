@@ -68,7 +68,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	protected MultiLabelRule defaultRule;
 	protected int ruleNumberID=1;
 	protected double[] statistics;
-	
+
 	public FloatOption splitConfidenceOption = new FloatOption(
 			"splitConfidence",
 			'c',
@@ -108,7 +108,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			'y', "Numeric observer.", 
 			NumericStatisticsObserver.class,
 			"MultiLabelBSTree");
-	
+
 	public ClassOption nominalObserverOption = new ClassOption("nominalObserver",
 			'z', "Nominal observer.", 
 			NominalStatisticsObserver.class,
@@ -119,13 +119,13 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			'v',
 			"Output Verbosity Control Level. 1 (Less) to 5 (More)",
 			1, 1, 5);
-	
+
 	public ClassOption outputSelectorOption = new ClassOption("outputSelector",
 			'O', "Output attributes selector", 
 			OutputAttributesSelector.class,
 			//"StdDevThreshold");
 			SelectAllOutputs.class.getName());
-	
+
 	public ClassOption inputSelectorOption = new ClassOption("inputSelector",
 			'I', "Input attributes selector", 
 			InputAttributesSelector.class,
@@ -307,11 +307,11 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 					MultiLabelRule newDefaultRule=defaultRule.getNewRuleFromOtherBranch();
 					newDefaultRule.setRuleNumberID(++ruleNumberID);
 					setRuleOptions(newDefaultRule);
-					
+
 					//Add expanded rule to ruleset
 					setRuleOptions(defaultRule);
 					ruleSet.add(this.defaultRule);
-					
+
 
 					debug("Default rule expanded! New Rule:",2);
 					debug(defaultRule.toString(),2);
@@ -357,7 +357,43 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		return new Measurement[]{
 				new Measurement("anomaly detections", this.numAnomaliesDetected),
 				new Measurement("change detections", this.numChangesDetected), 
-				new Measurement("rules (number)", this.ruleSet.size()+1)}; 
+				new Measurement("rules (number)", this.ruleSet.size()+1),
+				new Measurement("Avg #inputs/rule", getAverageInputs()),
+				new Measurement("Avg #outputs/rule", getAverageOutputs())}; 
+	}
+
+	protected double getAverageInputs() {
+		double avg=0;
+		int ct=0;
+		if(ruleSet.size()>0){
+			for (MultiLabelRule r : ruleSet){
+				int [] aux=r.getInputsCovered();
+				if(aux!=null){
+					avg+=aux.length;
+					ct++;
+				}
+			}
+		}
+		if(ct>0)
+			avg/=ct;
+		return avg;
+	}
+
+	protected double getAverageOutputs() {
+		double avg=0;
+		int ct=0;
+		if(ruleSet.size()>0){
+			for (MultiLabelRule r : ruleSet){
+				int [] aux=r.getOutputsCovered();
+				if(aux!=null){
+					avg+=aux.length;
+					ct++;
+				}
+			}
+		}
+		if(ct>0)
+			avg/=ct;
+		return avg;
 	}
 
 	/**
@@ -374,11 +410,11 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		}
 		StringUtils.appendIndented(out, indent, "Number of Rules: " + (this.ruleSet.size()+1));
 		StringUtils.appendNewline(out);
-		
+
 		StringUtils.appendIndented(out, indent, "Default rule :");
 		this.defaultRule.getDescription(out, indent);
 		StringUtils.appendNewline(out);
-		
+
 		StringUtils.appendIndented(out, indent, "Rules in ruleSet:");
 		StringUtils.appendNewline(out);
 		for (MultiLabelRule rule: ruleSet) {
@@ -413,7 +449,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	public void PrintRuleSet() {    
 		debug("Default rule :",2);
 		debug(this.defaultRule.toString(),2);
-		
+
 		debug("Rules in ruleSet:",2);
 		for (MultiLabelRule rule: ruleSet) {
 			debug(rule.toString(),2);
@@ -432,7 +468,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		defaultRule.setLearner((MultiLabelLearner)((MultiLabelLearner)getPreparedClassOption(learnerOption)).copy());
 		setRuleOptions(defaultRule);
 	}
-	
+
 
 	protected void setRuleOptions(MultiLabelRule rule){
 		rule.setSplitCriterion((MultiLabelSplitCriterion)((MultiLabelSplitCriterion)getPreparedClassOption(splitCriterionOption)).copy());

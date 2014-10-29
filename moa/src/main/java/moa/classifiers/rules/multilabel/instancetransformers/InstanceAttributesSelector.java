@@ -13,6 +13,12 @@ import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import com.yahoo.labs.samoa.instances.Range;
 
+/**
+ * Transforms instances considering both a subset of input attributes
+ * and a subset of output attributes
+ *
+ * @author João Duarte (joaomaiaduarte@gmail.com)
+ */
 public class InstanceAttributesSelector extends InstanceOutputAttributesSelector implements InstanceTransformer {
 
 	/**

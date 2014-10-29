@@ -5,20 +5,23 @@ import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.AbstractMOAObject;
 
+/**
+ * Performs no transformation. Returns
+ *
+ * @author João Duarte (joaomaiaduarte@gmail.com)
+ */
+
 public class NoInstanceTransformation extends AbstractMOAObject implements InstanceTransformer{
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	public Instance sourceInstanceToTarget(Instance sourceInstance) {
-		return sourceInstance;
+		return sourceInstance; //.copy?
 	}
 
 	@Override
 	public Prediction targetPredictionToSource(Prediction targetPrediction) {
-		return targetPrediction;
+		return targetPrediction; //.copy?
 	}
 	
 	@Override

@@ -13,11 +13,13 @@ import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import com.yahoo.labs.samoa.instances.Range;
 
+/**
+ * Transforms instances considering only a subset of output attributes
+ *
+ * @author João Duarte (joaomaiaduarte@gmail.com)
+ */
 public class InstanceOutputAttributesSelector extends AbstractMOAObject implements InstanceTransformer {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public InstancesHeader targetInstances;

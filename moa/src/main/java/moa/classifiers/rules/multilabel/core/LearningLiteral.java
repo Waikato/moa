@@ -272,7 +272,11 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 		this.inputSelector=inputSelector;
 	}
 
-	abstract public String getStaticOutput(InstanceInformation instanceInformation);	
+	abstract public String getStaticOutput(InstanceInformation instanceInformation);
+
+	public int[] getInputsToLearn() {
+		return this.inputsToLearn;
+	}	
 
 
 

@@ -78,7 +78,9 @@ public class MultiLabelRule extends AbstractMOAObject {
 		return learningLiteral.getOutputsToLearn();
 	}
 	
-	
+	public int[] getInputsCovered() {
+		return learningLiteral.getInputsToLearn();
+	}
 	
 	@Override
 	public void getDescription(StringBuilder out, int indent) {
