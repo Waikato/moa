@@ -68,7 +68,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	protected MultiLabelRule defaultRule;
 	protected int ruleNumberID=1;
 	protected double[] statistics;
-	//public static final double NORMAL_CONSTANT = Math.sqrt(2 * Math.PI);
+	
 	public FloatOption splitConfidenceOption = new FloatOption(
 			"splitConfidence",
 			'c',
@@ -160,11 +160,6 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 
 	@Override
 	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
-		/*MultiLabelVote vote=getVotes(inst);
-		if(vote!=null)	
-			return vote.getVote();
-		else
-			return null;*/
 		ErrorWeightedVoteMultiLabel vote=getVotes(inst);
 		if(vote!=null)	
 			return vote.getPrediction();
@@ -179,23 +174,21 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	 * Called in WeightedRandomRules
 	 */
 	public ErrorWeightedVoteMultiLabel getVotes(MultiLabelInstance instance) {
-		ErrorWeightedVoteMultiLabel errorWeightedVote=newErrorWeightedVote();
-		//DoubleVector combinedVote = new DoubleVector();
-		debug("Test",3);    
+		ErrorWeightedVoteMultiLabel errorWeightedVote=newErrorWeightedVote(); 
 		int numberOfRulesCovering = 0;
 
 		VerboseToConsole(instance); // Verbose to console Dataset name.
 		for (MultiLabelRule rule : ruleSet) {
 			if (rule.isCovering(instance) == true){
 				numberOfRulesCovering++;
-				//DoubleVector vote = new DoubleVector(rule.getPrediction(instance));
 				Prediction vote=rule.getPredictionForInstance(instance);
 				if (vote!=null){ //should only happen for first instance
 					double [] errors= rule.getCurrentErrors();
+					if(errors==null) //if errors==null, rule has seen no predictions since expansion: return maximum error, since prediction is not reliable
+						errors=defaultRuleErrors(vote);
 					debug("Rule No"+ rule.getRuleNumberID() + " Vote: " + vote.toString() + " Error: " + errors + " Y: " + instance.classValue(),3); //predictionValueForThisRule);
 					errorWeightedVote.addVote(vote,errors);
 				}
-				//combinedVote.addValues(vote);
 				if (!this.unorderedRulesOption.isSet()) { // Ordered Rules Option. //TODO: Only break if all outputs have values assigned.Complete Prediction only with the missing values
 					break; // Only one rule cover the instance.
 				}
@@ -203,7 +196,6 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		}
 
 		if (numberOfRulesCovering == 0) { //TODO: Change to "if all outputs have a value assigned. Complete Prediction only with the missing values
-			//combinedVote = new DoubleVector(defaultRule.getPrediction(instance));
 			Prediction vote=defaultRule.getPredictionForInstance(instance);
 			if (vote!=null){ //should only happen for first instance
 				double [] errors= defaultRule.getCurrentErrors();
@@ -213,15 +205,19 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		} 	
 		errorWeightedVote.computeWeightedVote();
 		return errorWeightedVote;
-		/*Prediction weightedVote=errorWeightedVote.computeWeightedVote();
-		if(weightedVote!=null){
-			double weightedError=errorWeightedVote.getWeightedError();
-			debug("Weighted Rule - Vote: " + weightedVote.toString() + " Weighted Error: " + weightedError + " Y:" + instance.classValue(),3);
-			return new MultiLabelVote(weightedVote, weightedError);
-		}
-		else 
-			return new MultiLabelVote(null , Double.MAX_VALUE);*/
+	}
 
+	/*
+	 * Returns the estimate error for each output of a rule
+	 * Should be used when rule.getCurrentErrors() returns null
+	 */
+	protected double[] defaultRuleErrors(Prediction vote) {
+		double [] errors=new double[vote.numOutputAttributes()];
+		for(int i=0; i<vote.numOutputAttributes(); i++){
+			if(vote.hasVotesForAttribute(i))
+				errors[i]=Double.MAX_VALUE;
+		}
+		return errors;
 	}
 
 	@Override
@@ -229,15 +225,6 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		return true;
 	}
 
-
-
-	/**
-	 * Rule.Builder() to build an object with the parameters.
-	 * If you have an algorithm with many parameters, especially if some of them are optional, 
-	 * it can be beneficial to define an object that represents all of the parameters.
-	 * @return
-	 */
-	//abstract protected Rule newRule(int ID, RuleActiveLearningNode learningNode, double [] statistics); //Learning node and statistics can be null
 
 	/**
 	 * AMRules Algorithm.
@@ -316,9 +303,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 				debug("Nr. examples "+defaultRule.getWeightSeenSinceExpansion(), 4);
 
 				if (defaultRule.tryToExpand(this.splitConfidenceOption.getValue(), this.tieThresholdOption.getValue()) == true) {
-					//Rule newDefaultRule=newRule(defaultRule.getRuleNumberID(),defaultRule.getLearningNode(),defaultRule.getLearningNode().getStatisticsOtherBranchSplit()); //other branch
-					//defaultRule.split();
-					//create new default rule
+
 					MultiLabelRule newDefaultRule=defaultRule.getNewRuleFromOtherBranch();
 					newDefaultRule.setRuleNumberID(++ruleNumberID);
 					setRuleOptions(newDefaultRule);

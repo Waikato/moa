@@ -26,6 +26,7 @@ import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriter
 import moa.classifiers.rules.multilabel.errormeasurers.AbstractMultiTargetErrorMeasurer;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.classifiers.rules.multilabel.inputselectors.InputAttributesSelector;
+import moa.classifiers.rules.multilabel.instancetransformers.InstanceTransformer;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
@@ -45,7 +46,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	protected DoubleVector[] literalStatistics;
 
 	protected int[] outputsToLearn;
-	
+
 	protected int [] inputsToLearn;
 
 	protected MultiLabelLearner learner;
@@ -77,17 +78,19 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	//public ClassOption anomalyDetectorOption;
 
 	protected NumericStatisticsObserver numericStatisticsObserver;
-	
+
 	protected NominalStatisticsObserver nominalStatisticsObserver;
 
 	protected OutputAttributesSelector outputSelector;
-	
+
 	protected InputAttributesSelector inputSelector;
 
 	protected Random randomGenerator;
-	
-    protected boolean [] attributesMask; //TODO: JD Use sparse representation?
-    protected double attributesPercentage;
+
+	protected boolean [] attributesMask; //TODO: JD Use sparse representation?
+	protected double attributesPercentage;
+
+	protected InstanceTransformer instanceTransformer;
 
 
 	// Maintain statistics for input and output attributes for standard deviation computation?
@@ -103,18 +106,24 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	abstract public void trainOnInstance(MultiLabelInstance instance);
 
 	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
-		if (learner!=null)
-			return learner.getPredictionForInstance(instance);
-		else
-			return null;
+		Prediction sourcePrediction=null;
+		if (this.instanceTransformer!=null && learner!=null){
+			Instance transfInstance=this.instanceTransformer.sourceInstanceToTarget(instance);
+			Prediction targetPrediction=learner.getPredictionForInstance(transfInstance);
+			sourcePrediction=this.instanceTransformer.targetPredictionToSource(targetPrediction);
+		}
+		return sourcePrediction;
 	}
 
 
 	public abstract boolean tryToExpand(double splitConfidence, double tieThresholdOption);
 
 	public boolean updateAndCheckChange(MultiLabelInstance instance) {
+
+
 		boolean hasChanged=false;
 		if (hasStarted){
+			//MultiLabelInstance transformedInstance=(MultiLabelInstance) instanceTransformer.sourceInstanceToTarget(instance);
 			if (changeDetectors==null){
 				changeDetectors=new ChangeDetector[outputsToLearn.length]; 
 				for (int i=0; i<outputsToLearn.length; i++){
@@ -171,10 +180,10 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	}
 
 	public double[] getErrors() {
+		double [] errors=null;
 		if(errorMeasurer!=null)
-			return errorMeasurer.getCurrentErrors();
-		else 
-			return null;
+			errors=errorMeasurer.getCurrentErrors();
+		return errors;
 	}
 
 	public void setSplitCriterion(MultiLabelSplitCriterion splitCriterion) {
@@ -225,38 +234,38 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	public void setOutputAttributesSelector(
 			OutputAttributesSelector outputSelector) {
 		this.outputSelector=outputSelector;
-		
+
 	}
 
 	public void setNominalObserverOption(NominalStatisticsObserver nominalStatisticsObserver) {
 		this.nominalStatisticsObserver=nominalStatisticsObserver;
 	}
-	
 
-	
+
+
 
 	public void setRandomGenerator(Random random) {
 		this.randomGenerator=random;
-		
+
 	}
 
 	public void setAttributesPercentage(double attributesPercentage) {
 		this.attributesPercentage=attributesPercentage;
 	}
-	
+
 	protected void initializeAttibutesMask(MultiLabelInstance inst) {
 		int numInputAttributes=inst.numInputAttributes();
 		int numAttributesSelected=(int)Math.round(numInputAttributes*attributesPercentage/100);
-		
+
 		attributesMask=new boolean[numInputAttributes]; 
 		ArrayList<Integer> indices = new ArrayList<Integer>(numInputAttributes);
 		for(int i=0; i<numInputAttributes; i++)
-				indices.add(i);
+			indices.add(i);
 		Collections.shuffle(indices, this.randomGenerator);
-		
+
 		for (int i=0; i<numAttributesSelected;++i)
 			attributesMask[indices.get(i)]=true;
-		
+
 	}
 
 	public void setInputAttributesSelector(InputAttributesSelector inputSelector) {
@@ -264,8 +273,8 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	}
 
 	abstract public String getStaticOutput(InstanceInformation instanceInformation);	
-	
-	
+
+
 
 	//	abstract public void resetLearning();
 }

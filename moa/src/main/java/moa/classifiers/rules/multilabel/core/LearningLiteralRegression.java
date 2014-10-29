@@ -3,6 +3,7 @@ package moa.classifiers.rules.multilabel.core;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.InstanceInformation;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
@@ -23,6 +24,9 @@ import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatistic
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.functions.AMRulesFunction;
+import moa.classifiers.rules.multilabel.instancetransformers.InstanceAttributesSelector;
+import moa.classifiers.rules.multilabel.instancetransformers.InstanceOutputAttributesSelector;
+import moa.classifiers.rules.multilabel.instancetransformers.NoInstanceTransformation;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
@@ -131,16 +135,24 @@ public class LearningLiteralRegression extends LearningLiteral {
 			}
 			//
 			int [] newOutputs=outputSelector.getNextOutputIndices(newLiteralStatistics,literalStatistics, outputsToLearn);
-			//set expanding branch
-			if(learner instanceof AMRulesFunction){
+			
+			//set other branch (only used if default rule expands)
+			otherBranchLearningLiteral=new LearningLiteralRegression();
+			otherBranchLearningLiteral.setLearner((MultiLabelLearner)learner.copy());
+			//Set expanding branch
+			//if is AMRulesFunction and the  number of output attributes changes, start learning a new predictor
+			//should we do the same for input attributes (attributesMask)?. It would have impact in RandomAMRules
+			if(learner instanceof AMRulesFunction && newOutputs.length == outputsToLearn.length){ //Reset learning
 				((AMRulesFunction) learner).resetWithMemory();
 			}
+			//just reset learning
+			else{
+				learner.resetLearning();
+			}
+				
 			expandedLearningLiteral=new LearningLiteralRegression(newOutputs);
 			expandedLearningLiteral.setLearner((MultiLabelLearner)this.learner.copy());
-
-			//set other branch (used if default rule expands)
-			otherBranchLearningLiteral=new LearningLiteralRegression(newOutputs);
-			otherBranchLearningLiteral.setLearner((MultiLabelLearner)learner.copy());
+			
 
 		}
 		return shouldSplit;
@@ -203,6 +215,10 @@ public class LearningLiteralRegression extends LearningLiteral {
 			literalStatistics= new DoubleVector[outputsToLearn.length];
 			for(int i=0; i<outputsToLearn.length; i++)
 				literalStatistics[i]=new DoubleVector(new double[3]);
+			if (inputsToLearn.length+outputsToLearn.length==instance.numAttributes())//attributes are the original
+				instanceTransformer=new NoInstanceTransformation();
+			else
+				instanceTransformer=new InstanceOutputAttributesSelector((InstancesHeader)instance.dataset(), outputsToLearn);
 
 			hasStarted=true;
 		}
@@ -232,10 +248,19 @@ public class LearningLiteralRegression extends LearningLiteral {
 				obs.observeAttribute(instance.valueInputAttribute(inputsToLearn[i]), exampleStatistics);
 			}
 		}
-		Prediction prediction=learner.getPredictionForInstance(instance);
+		
+		//Transform instance for learning
+		Instance transformedInstance=instanceTransformer.sourceInstanceToTarget(instance);
+		Prediction prediction=null;
+		Prediction targetPrediction=learner.getPredictionForInstance(transformedInstance);
+		if(targetPrediction!=null)
+			prediction=instanceTransformer.targetPredictionToSource(targetPrediction);
+		
 		if(prediction!=null)
 			errorMeasurer.addPrediction(prediction, instance);
-		learner.trainOnInstance(instance);
+		
+		learner.trainOnInstance(transformedInstance);
+		
 		weightSeen+=instance.weight();
 	}
 
@@ -244,7 +269,7 @@ public class LearningLiteralRegression extends LearningLiteral {
 		StringBuffer sb = new StringBuffer();
 		if(this.literalStatistics!=null){
 			for(int i=0; i<this.literalStatistics.length; i++){
-				sb.append(instanceInformation.outputAttribute(i).name() +  ": " + literalStatistics[i].getValue(1)/literalStatistics[i].getValue(0) + " ");
+				sb.append(instanceInformation.outputAttribute(outputsToLearn[i]).name() +  ": " + literalStatistics[i].getValue(1)/literalStatistics[i].getValue(0) + " ");
 			}
 		}
 		return sb.toString();
