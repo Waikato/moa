@@ -39,6 +39,8 @@ public class LearningLiteralRegression extends LearningLiteral {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	double [] varianceShift; //for proper computation of variance
 
 	public LearningLiteralRegression() {
 		super();
@@ -47,7 +49,6 @@ public class LearningLiteralRegression extends LearningLiteral {
 	public LearningLiteralRegression(int [] outputsToLearn) {
 		super(outputsToLearn);
 	}
-
 
 
 
@@ -136,6 +137,7 @@ public class LearningLiteralRegression extends LearningLiteral {
 			//
 			int [] newOutputs=outputSelector.getNextOutputIndices(newLiteralStatistics,literalStatistics, outputsToLearn);
 			
+
 			//set other branch (only used if default rule expands)
 			otherBranchLearningLiteral=new LearningLiteralRegression();
 			otherBranchLearningLiteral.setLearner((MultiLabelLearner)learner.copy());
@@ -213,9 +215,12 @@ public class LearningLiteralRegression extends LearningLiteral {
 			}
 
 			literalStatistics= new DoubleVector[outputsToLearn.length];
-			for(int i=0; i<outputsToLearn.length; i++)
-				literalStatistics[i]=new DoubleVector(new double[3]);
-			if (inputsToLearn.length+outputsToLearn.length==instance.numAttributes())//attributes are the original
+			varianceShift=new double[outputsToLearn.length];
+			for(int i=0; i<outputsToLearn.length; i++){
+				literalStatistics[i]=new DoubleVector(new double[5]);
+				varianceShift[i]=instance.valueOutputAttribute(outputsToLearn[i]);
+			}
+			if (outputsToLearn.length==instance.numOutputAttributes())//attributes are the original
 				instanceTransformer=new NoInstanceTransformation();
 			else
 				instanceTransformer=new InstanceOutputAttributesSelector((InstancesHeader)instance.dataset(), outputsToLearn);
@@ -228,7 +233,9 @@ public class LearningLiteralRegression extends LearningLiteral {
 			double target=instance.valueOutputAttribute(outputsToLearn[i]);
 			double sum=weight*target;
 			double squaredSum=weight*target*target;
-			exampleStatistics[i]= new DoubleVector(new double[]{weight,sum, squaredSum});
+			double sumShifted=weight*target-varianceShift[i];
+			double squaredSumShifted=weight*(target-varianceShift[i])*(target-varianceShift[i]);
+			exampleStatistics[i]= new DoubleVector(new double[]{weight,sum, squaredSum,sumShifted,squaredSumShifted});
 			literalStatistics[i].addValues(exampleStatistics[i].getArrayRef());
 		}
 

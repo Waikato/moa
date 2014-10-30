@@ -11,13 +11,13 @@ import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
 public class StdDevThreshold extends AbstractOptionHandler implements
-		OutputAttributesSelector {
+OutputAttributesSelector {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	public FloatOption percentageThresholdOption = new FloatOption("percentageThreshold",
 			'p', "Percentage of allowed normalized variance increase relative to the best output score.",
 			0.5, 0.0, 1.0);
@@ -27,15 +27,15 @@ public class StdDevThreshold extends AbstractOptionHandler implements
 		int numCurrentOutputs=resultingStatistics.length;
 		double [] normalizedVariances= new double [numCurrentOutputs];
 		double minNormVariance=Double.MAX_VALUE;
-		
+
 		//compute minimum normalized variance
 		for(int i=0; i<numCurrentOutputs;i++){
-			double stdRes=Math.sqrt(Utils.computeVariance(resultingStatistics[i]));
-			double stdCur=Math.sqrt(Utils.computeVariance(currentLiteralStatistics[i]));
+			double stdRes=Math.sqrt(Utils.computeVariance(resultingStatistics[i].getValue(0),resultingStatistics[i].getValue(3),resultingStatistics[i].getValue(4)));
+			double stdCur=Math.sqrt(Utils.computeVariance(currentLiteralStatistics[i].getValue(0),currentLiteralStatistics[i].getValue(3),currentLiteralStatistics[i].getValue(4)));
 			normalizedVariances[i]=stdRes/stdCur;
 			if(minNormVariance>normalizedVariances[i])
 				minNormVariance=normalizedVariances[i];
-		
+
 		}
 		double maxAllowedVariance=minNormVariance*(1+percentageThresholdOption.getValue());
 		//get new outputs
@@ -53,7 +53,7 @@ public class StdDevThreshold extends AbstractOptionHandler implements
 		}
 		return newOutputs;
 	}
-	
+
 
 	@Override
 	public void getDescription(StringBuilder sb, int indent) {

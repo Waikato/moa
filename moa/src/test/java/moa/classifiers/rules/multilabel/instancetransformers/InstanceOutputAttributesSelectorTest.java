@@ -35,9 +35,21 @@ public class InstanceOutputAttributesSelectorTest {
 		transformed2=transformer.sourceInstanceToTarget(instance2);
 	}
 	@Test
-	public void testInstanceOutputAttributesSelector() {
+	public void sourceInstanceToTarget() {
 		assertEquals(1,transformed1.valueOutputAttribute(0), EPS);
 		assertEquals(3,transformed1.valueOutputAttribute(1), EPS);
+		assertEquals(1.1,transformed1.valueInputAttribute(0), EPS);
+		assertEquals(-2.3,transformed1.valueInputAttribute(1), EPS);
+		assertEquals(2,transformed1.valueInputAttribute(2), EPS);
+		assertEquals(3.3,transformed1.valueInputAttribute(3), EPS);
+		assertEquals(0,transformed1.valueInputAttribute(4), EPS);
+		
+		assertEquals(1.2,transformed2.valueInputAttribute(0), EPS);
+		assertEquals(-2.2,transformed2.valueInputAttribute(1), EPS);
+		assertEquals(0,transformed2.valueInputAttribute(2), EPS);
+		assertEquals(3.2,transformed2.valueInputAttribute(3), EPS);
+		assertEquals(0,transformed2.valueInputAttribute(4), EPS);
+		
 		assertEquals(3,transformed2.valueOutputAttribute(0), EPS);
 		assertEquals(2, transformed2.valueOutputAttribute(1), EPS);
 	}
@@ -49,19 +61,21 @@ public class InstanceOutputAttributesSelectorTest {
 		targetPred.setVotes(1, new double []{1.5});
 		Prediction pred=transformer.targetPredictionToSource(targetPred);
 		
-		assertEquals(pred.getVotes(0)[0], 0.5, EPS);
+		assertEquals(0.5, pred.getVotes(0)[0], EPS);
 		assertTrue(pred.getVotes(1).length==0);
-		assertEquals(pred.getVotes(2)[0], 1.5, EPS);
+		assertEquals(1.5, pred.getVotes(2)[0], EPS);
 	}
 	
 	@Test
 	public void testNumInputs() {
 		assertEquals(5, transformed1.numInputAttributes(), EPS);
+		assertEquals(5, transformed2.numInputAttributes(), EPS);
 	}
 	
 	@Test
 	public void testNumOutputs() {
 		assertEquals(2, transformed1.numOutputAttributes(), EPS);
+		assertEquals(2, transformed2.numOutputAttributes(), EPS);
 	}
 
 }
