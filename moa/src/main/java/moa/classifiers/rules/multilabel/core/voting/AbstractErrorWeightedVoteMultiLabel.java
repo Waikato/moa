@@ -62,7 +62,6 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 		for(int i=0; i<numOutputs; i++)
 			if(vote.hasVotesForAttribute(i))
 				outputAttributesCount[i]++;
-
 		votes.add(vote);
 		errors.add(error);
 	}
@@ -139,6 +138,18 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 		if (this.weightedVote==null)
 			weightedVote=computeWeightedVote();
 		return weightedVote;
+	}
+	
+	public boolean coversAllOutputs(){
+		int i=0;
+		boolean flag=false;
+		
+		if(outputAttributesCount!=null){
+			while( i<outputAttributesCount.length && outputAttributesCount[i]>0)
+				i++;
+			flag=i==outputAttributesCount.length;
+		}
+		return flag;
 	}
 	
 }

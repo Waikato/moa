@@ -58,6 +58,7 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 
@@ -171,16 +172,15 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	 * getVotes extension of the instance method getVotesForInstance 
 	 * in moa.classifier.java
 	 * returns the prediction of the instance.
-	 * Called in WeightedRandomRules
 	 */
 	public ErrorWeightedVoteMultiLabel getVotes(MultiLabelInstance instance) {
 		ErrorWeightedVoteMultiLabel errorWeightedVote=newErrorWeightedVote(); 
-		int numberOfRulesCovering = 0;
+		//int numberOfRulesCovering = 0;
 
 		VerboseToConsole(instance); // Verbose to console Dataset name.
 		for (MultiLabelRule rule : ruleSet) {
 			if (rule.isCovering(instance) == true){
-				numberOfRulesCovering++;
+				//numberOfRulesCovering++;
 				Prediction vote=rule.getPredictionForInstance(instance);
 				if (vote!=null){ //should only happen for first instance
 					double [] errors= rule.getCurrentErrors();
@@ -195,13 +195,33 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			}
 		}
 
-		if (numberOfRulesCovering == 0) { //TODO: Change to "if all outputs have a value assigned. Complete Prediction only with the missing values
-			Prediction vote=defaultRule.getPredictionForInstance(instance);
-			if (vote!=null){ //should only happen for first instance
-				double [] errors= defaultRule.getCurrentErrors();
-				errorWeightedVote.addVote(vote,errors);
-				debug("Default Rule Vote " + vote.toString() + "\n Error " + errors + "  Y: " + instance,3);
-			} 
+		if(!errorWeightedVote.coversAllOutputs()) {
+			//Complete Prediction (fill missing outputs with default)
+			Prediction vote=errorWeightedVote.getPrediction();
+			if (vote==null){  //use default rule
+				vote = new MultiLabelPrediction(instance.numberOutputTargets());
+			}
+			Prediction defaultVote=defaultRule.getPredictionForInstance(instance);
+			if(defaultVote!=null){
+				double [] defaultErrors= defaultRule.getCurrentErrors();
+				double [] fixErrors=new double[vote.numOutputAttributes()];
+				Prediction fixVote= new MultiLabelPrediction(vote.numOutputAttributes());
+				for (int i=0; i<vote.numOutputAttributes(); i++){
+					if(!vote.hasVotesForAttribute(i)){
+						fixVote.setVotes(i, defaultVote.getVotes(i));
+					}
+				}
+				errorWeightedVote.addVote(fixVote,fixErrors);
+				debug("Default Rule Vote " + defaultVote.toString() + "\n Error " + defaultErrors + "  Y: " + instance,3);
+			}
+			/*{
+				vote = new MultiLabelPrediction(instance.numberOutputTargets());
+				for (int i=0; i<instance.numberOutputTargets(); i++){
+					vote.setVotes(i, new double[instance.attribute(i).numValues()]);
+				}
+				errorWeightedVote.addVote(vote, defaultRuleErrors(vote));	
+			}*/
+
 		} 	
 		errorWeightedVote.computeWeightedVote();
 		return errorWeightedVote;

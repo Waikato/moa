@@ -93,6 +93,12 @@ public interface ErrorWeightedVoteMultiLabel {
 	public int getNumberVotes(int outputAttribute);
 	
 	/**
+	 * Check if vote has a value for each output
+	 * 
+	 */
+	public boolean coversAllOutputs();
+	
+	/**
 	 * Creates a copy of the object
 	 * 
 	 * @return      copy of the object

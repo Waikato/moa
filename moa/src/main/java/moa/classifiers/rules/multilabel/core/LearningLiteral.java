@@ -106,13 +106,13 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	abstract public void trainOnInstance(MultiLabelInstance instance);
 
 	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
-		Prediction sourcePrediction=null;
-		if (this.instanceTransformer!=null && learner!=null){
+		Prediction prediction=null;
+		if (learner!=null && this.instanceTransformer!=null){ //TODO: check this 
 			Instance transfInstance=this.instanceTransformer.sourceInstanceToTarget(instance);
 			Prediction targetPrediction=learner.getPredictionForInstance(transfInstance);
-			sourcePrediction=this.instanceTransformer.targetPredictionToSource(targetPrediction);
+			prediction=this.instanceTransformer.targetPredictionToSource(targetPrediction);
 		}
-		return sourcePrediction;
+		return prediction;
 	}
 
 
@@ -276,6 +276,11 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 
 	public int[] getInputsToLearn() {
 		return this.inputsToLearn;
+	}
+
+	public void setInstanceTransformer(InstanceTransformer instanceTransformer) {
+		this.instanceTransformer=instanceTransformer;
+		
 	}	
 
 

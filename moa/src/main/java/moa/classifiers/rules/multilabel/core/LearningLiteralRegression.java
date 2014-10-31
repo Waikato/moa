@@ -141,6 +141,7 @@ public class LearningLiteralRegression extends LearningLiteral {
 			//set other branch (only used if default rule expands)
 			otherBranchLearningLiteral=new LearningLiteralRegression();
 			otherBranchLearningLiteral.setLearner((MultiLabelLearner)learner.copy());
+			otherBranchLearningLiteral.setInstanceTransformer(this.instanceTransformer); //TODO: check this 
 			//Set expanding branch
 			//if is AMRulesFunction and the  number of output attributes changes, start learning a new predictor
 			//should we do the same for input attributes (attributesMask)?. It would have impact in RandomAMRules

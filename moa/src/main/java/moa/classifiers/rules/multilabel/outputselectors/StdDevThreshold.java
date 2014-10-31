@@ -20,7 +20,7 @@ OutputAttributesSelector {
 
 	public FloatOption percentageThresholdOption = new FloatOption("percentageThreshold",
 			'p', "Percentage of allowed normalized variance increase relative to the best output score.",
-			0.5, 0.0, 1.0);
+			1, 0.0, 10.0);
 
 
 	public int[] getNextOutputIndices(DoubleVector[] resultingStatistics, DoubleVector[] currentLiteralStatistics, int[] currentIndices) {
