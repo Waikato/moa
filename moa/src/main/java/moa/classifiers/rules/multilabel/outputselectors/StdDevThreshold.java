@@ -2,13 +2,13 @@ package moa.classifiers.rules.multilabel.outputselectors;
 
 import java.util.LinkedList;
 
-import com.github.javacliparser.FloatOption;
-
 import moa.classifiers.rules.core.Utils;
 import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
+
+import com.github.javacliparser.FloatOption;
 
 public class StdDevThreshold extends AbstractOptionHandler implements
 OutputAttributesSelector {

@@ -20,11 +20,9 @@
 
 package moa.classifiers.rules.multilabel.core.voting;
 
-import java.util.List;
+import moa.MOAObject;
 
 import com.yahoo.labs.samoa.instances.Prediction;
-
-import moa.MOAObject;
 
 /**
  * ErrorWeightedVoteMultiLabel interface for weighted votes based on estimates of errors. 

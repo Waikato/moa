@@ -23,10 +23,9 @@ package moa.classifiers.rules.multilabel.core.voting;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.yahoo.labs.samoa.instances.Prediction;
-
 import moa.AbstractMOAObject;
-import moa.core.DoubleVector;
+
+import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * AbstractErrorWeightedVote class for weighted votes based on estimates of errors. 

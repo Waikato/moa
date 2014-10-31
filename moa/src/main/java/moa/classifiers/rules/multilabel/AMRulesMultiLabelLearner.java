@@ -44,7 +44,6 @@ import moa.classifiers.rules.multilabel.core.MultiLabelRule;
 import moa.classifiers.rules.multilabel.core.MultiLabelRuleSet;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
-import moa.classifiers.rules.multilabel.core.voting.MultiLabelVote;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.classifiers.rules.multilabel.inputselectors.InputAttributesSelector;
 import moa.classifiers.rules.multilabel.inputselectors.SelectAllInputs;

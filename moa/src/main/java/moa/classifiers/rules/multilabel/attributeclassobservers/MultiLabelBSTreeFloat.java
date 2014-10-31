@@ -2,10 +2,6 @@ package moa.classifiers.rules.multilabel.attributeclassobservers;
 
 import java.io.Serializable;
 
-import javax.rmi.CORBA.Util;
-
-import com.github.javacliparser.IntOption;
-
 import moa.classifiers.rules.core.NumericRulePredicate;
 import moa.classifiers.rules.core.Utils;
 import moa.classifiers.rules.multilabel.core.AttributeExpansionSuggestion;
@@ -14,6 +10,8 @@ import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
+
+import com.github.javacliparser.IntOption;
 
 public class MultiLabelBSTreeFloat extends AbstractOptionHandler implements NumericStatisticsObserver {
 

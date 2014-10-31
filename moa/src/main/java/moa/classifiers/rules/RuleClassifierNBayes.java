@@ -22,8 +22,10 @@ package moa.classifiers.rules;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import com.github.javacliparser.IntOption;
+
 import moa.classifiers.bayes.NaiveBayes;
+
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
 /**

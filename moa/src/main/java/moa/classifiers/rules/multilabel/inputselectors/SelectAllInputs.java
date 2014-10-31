@@ -1,7 +1,5 @@
 package moa.classifiers.rules.multilabel.inputselectors;
 
-import com.github.javacliparser.FloatOption;
-
 import moa.classifiers.rules.multilabel.core.AttributeExpansionSuggestion;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;

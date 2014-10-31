@@ -1,22 +1,10 @@
 package moa.classifiers.rules.multilabel.core;
 
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.InstanceInformation;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-import com.yahoo.labs.samoa.instances.Prediction;
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import moa.classifiers.MultiLabelLearner;
-import moa.classifiers.core.AttributeSplitSuggestion;
-import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
-import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;
-import moa.classifiers.core.driftdetection.ChangeDetector;
-import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.classifiers.rules.core.NumericRulePredicate;
 import moa.classifiers.rules.core.Utils;
 import moa.classifiers.rules.multilabel.attributeclassobservers.AttributeStatisticsObserver;
@@ -24,14 +12,18 @@ import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatistic
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.functions.AMRulesFunction;
-import moa.classifiers.rules.multilabel.instancetransformers.InstanceAttributesSelector;
 import moa.classifiers.rules.multilabel.instancetransformers.InstanceOutputAttributesSelector;
 import moa.classifiers.rules.multilabel.instancetransformers.NoInstanceTransformation;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
-import moa.learners.Learner;
 import moa.tasks.TaskMonitor;
+
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceInformation;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 public class LearningLiteralRegression extends LearningLiteral {
 

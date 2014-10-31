@@ -1,7 +1,7 @@
 package moa.classifiers.rules.core.anomalydetection;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-
 import moa.options.OptionHandler;
+
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 
 
 /**

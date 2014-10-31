@@ -3,14 +3,10 @@ package moa.classifiers.rules.multilabel.instancetransformers;
 import java.util.ArrayList;
 import java.util.List;
 
-import moa.AbstractMOAObject;
-
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceImpl;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
-import com.yahoo.labs.samoa.instances.Prediction;
 import com.yahoo.labs.samoa.instances.Range;
 
 /**

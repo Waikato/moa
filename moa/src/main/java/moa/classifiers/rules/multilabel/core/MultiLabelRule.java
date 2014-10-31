@@ -18,7 +18,6 @@ import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector
 import moa.core.StringUtils;
 
 import com.yahoo.labs.samoa.instances.InstanceInformation;
-import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;

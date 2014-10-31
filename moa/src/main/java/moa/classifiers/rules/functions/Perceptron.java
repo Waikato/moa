@@ -22,15 +22,13 @@ package moa.classifiers.rules.functions;
 import java.util.LinkedList;
 import java.util.Random;
 
+import moa.classifiers.AbstractClassifier;
+import moa.core.DoubleVector;
+import moa.core.Measurement;
+
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Regressor;
-import moa.core.DoubleVector;
-import moa.core.Measurement;
 
 public class Perceptron extends AbstractClassifier implements AMRulesRegressorFunction{
 

@@ -1,10 +1,14 @@
 package moa.classifiers.rules.functions;
 
-import com.yahoo.labs.samoa.instances.Instance;
-
 import moa.classifiers.AbstractClassifier;
 import moa.core.Measurement;
 
+import com.yahoo.labs.samoa.instances.Instance;
+
+/*
+ * Chooses between Perceptron and Target Mean make predictions
+ * Selection is made according to the current error os each predictor
+ */
 public class AdaptiveNodePredictor extends AbstractClassifier implements
 		AMRulesRegressorFunction {
 

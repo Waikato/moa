@@ -1,10 +1,10 @@
 package moa.classifiers.rules.multilabel.core;
 
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceInformation;
-
 import moa.AbstractMOAObject;
 import moa.classifiers.rules.core.Predicate;
+
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceInformation;
 
 public class Literal extends AbstractMOAObject{
 

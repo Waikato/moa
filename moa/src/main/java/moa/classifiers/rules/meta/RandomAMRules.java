@@ -1,9 +1,7 @@
 package moa.classifiers.rules.meta;
 
 import moa.classifiers.Regressor;
-import moa.classifiers.rules.multilabel.AMRulesMultiLabelLearner;
 import moa.classifiers.rules.multilabel.meta.MultiLabelRandomAMRules;
-import moa.options.ClassOption;
 
 public class RandomAMRules extends MultiLabelRandomAMRules implements Regressor {
 

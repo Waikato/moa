@@ -5,7 +5,6 @@ import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.rules.multilabel.errormeasurers.AbstractMultiTargetErrorMeasurer;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiTargetErrorMeasurer;
 import moa.core.Measurement;
-import moa.learners.Learner;
 import moa.options.ClassOption;
 
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;

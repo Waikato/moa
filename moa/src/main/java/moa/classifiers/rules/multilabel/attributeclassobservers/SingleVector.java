@@ -19,10 +19,9 @@
  */
 package moa.classifiers.rules.multilabel.attributeclassobservers;
 
-import com.github.javacliparser.StringUtils;
-
 import moa.AbstractMOAObject;
-import moa.core.DoubleVector;
+
+import com.github.javacliparser.StringUtils;
 
 /**
  * Vector of float numbers with some utilities.
