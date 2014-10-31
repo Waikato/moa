@@ -213,14 +213,6 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 				errorWeightedVote.addVote(fixVote,fixErrors);
 				debug("Default Rule Vote " + defaultVote.toString() + "\n Error " + defaultErrors + "  Y: " + instance,3);
 			}
-			/*{
-				vote = new MultiLabelPrediction(instance.numberOutputTargets());
-				for (int i=0; i<instance.numberOutputTargets(); i++){
-					vote.setVotes(i, new double[instance.attribute(i).numValues()]);
-				}
-				errorWeightedVote.addVote(vote, defaultRuleErrors(vote));	
-			}*/
-
 		} 	
 		errorWeightedVote.computeWeightedVote();
 		return errorWeightedVote;

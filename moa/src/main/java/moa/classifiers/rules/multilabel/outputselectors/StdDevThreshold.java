@@ -18,30 +18,21 @@ OutputAttributesSelector {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public FloatOption percentageThresholdOption = new FloatOption("percentageThreshold",
-			'p', "Percentage of allowed normalized variance increase relative to the best output score.",
-			1, 0.0, 10.0);
+	public FloatOption thresholdOption = new FloatOption("Threshold",
+			'p', "Maximum allowed variance ratio (stdev(new)/stdev(old)).",
+			1.01, 1, 10.0);
 
 
 	public int[] getNextOutputIndices(DoubleVector[] resultingStatistics, DoubleVector[] currentLiteralStatistics, int[] currentIndices) {
 		int numCurrentOutputs=resultingStatistics.length;
-		double [] normalizedVariances= new double [numCurrentOutputs];
-		double minNormVariance=Double.MAX_VALUE;
-
-		//compute minimum normalized variance
-		for(int i=0; i<numCurrentOutputs;i++){
-			double stdRes=Math.sqrt(Utils.computeVariance(resultingStatistics[i].getValue(0),resultingStatistics[i].getValue(3),resultingStatistics[i].getValue(4)));
-			double stdCur=Math.sqrt(Utils.computeVariance(currentLiteralStatistics[i].getValue(0),currentLiteralStatistics[i].getValue(3),currentLiteralStatistics[i].getValue(4)));
-			normalizedVariances[i]=stdRes/stdCur;
-			if(minNormVariance>normalizedVariances[i])
-				minNormVariance=normalizedVariances[i];
-
-		}
-		double maxAllowedVariance=minNormVariance*(1+percentageThresholdOption.getValue());
+		double threshold=thresholdOption.getValue();
 		//get new outputs
 		LinkedList<Integer> newOutputsList= new LinkedList<Integer>();
 		for(int i=0; i<numCurrentOutputs;i++){
-			if(normalizedVariances[i]<=maxAllowedVariance)
+			double stdRes=Math.sqrt(Utils.computeVariance(resultingStatistics[i].getValue(0),resultingStatistics[i].getValue(3),resultingStatistics[i].getValue(4)));
+			double stdCur=Math.sqrt(Utils.computeVariance(currentLiteralStatistics[i].getValue(0),currentLiteralStatistics[i].getValue(3),currentLiteralStatistics[i].getValue(4)));
+	
+			if(stdRes/stdCur<=threshold)
 				newOutputsList.add(currentIndices[i]);
 		}
 		//list to array

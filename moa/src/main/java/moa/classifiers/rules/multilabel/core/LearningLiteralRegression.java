@@ -128,6 +128,7 @@ public class LearningLiteralRegression extends LearningLiteral {
 			}
 			//
 			int [] newOutputs=outputSelector.getNextOutputIndices(newLiteralStatistics,literalStatistics, outputsToLearn);
+			Arrays.sort(newOutputs); //Must be ordered for latter correspondence algorithm to work
 			
 
 			//set other branch (only used if default rule expands)
@@ -137,8 +138,12 @@ public class LearningLiteralRegression extends LearningLiteral {
 			//Set expanding branch
 			//if is AMRulesFunction and the  number of output attributes changes, start learning a new predictor
 			//should we do the same for input attributes (attributesMask)?. It would have impact in RandomAMRules
-			if(learner instanceof AMRulesFunction && newOutputs.length == outputsToLearn.length){ //Reset learning
+			if(learner instanceof AMRulesFunction){ //Reset learning
 				((AMRulesFunction) learner).resetWithMemory();
+				if(newOutputs.length != outputsToLearn.length){
+					int [] indices=newLearnerOutputIndices(outputsToLearn,newOutputs);
+					((AMRulesFunction) learner).selectOutputsToLearn(indices);
+				}
 			}
 			//just reset learning
 			else{
@@ -154,6 +159,17 @@ public class LearningLiteralRegression extends LearningLiteral {
 	}
 
 
+
+	private int[] newLearnerOutputIndices(int[] outputsToLearn, int[] newOutputs) {
+		int [] indices= new int[newOutputs.length];
+		int j=0;
+		for (int i=0; i<newOutputs.length;i++){
+			while(outputsToLearn[j]!=newOutputs[i])
+				j++;
+			indices[i]=j;
+		}
+		return indices;
+	}
 
 	private DoubleVector[] getBranchStatistics(DoubleVector[][] resultingStatistics, int indexBranch) {
 		DoubleVector[] selBranchStats=new DoubleVector[resultingStatistics.length];

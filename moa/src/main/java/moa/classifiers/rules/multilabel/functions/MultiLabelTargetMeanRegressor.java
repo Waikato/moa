@@ -7,7 +7,7 @@ import moa.options.ClassOption;
 
 import com.yahoo.labs.samoa.instances.Instance;
 
-public class MultiLabelTargetMeanRegressor extends BasicMultiTargetRegressor
+public class MultiLabelTargetMeanRegressor extends AbstractAMRulesFunctionBasicMTRegressor
 		implements MultiTargetRegressor, AMRulesFunction {
 
 	/**

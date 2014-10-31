@@ -3,6 +3,7 @@ package moa.classifiers.rules.multilabel.functions;
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.rules.multilabel.errormeasurers.AbstractMultiTargetErrorMeasurer;
+import moa.classifiers.rules.multilabel.errormeasurers.MeanAbsoluteDeviationMT;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiTargetErrorMeasurer;
 import moa.core.Measurement;
 import moa.options.ClassOption;
@@ -34,11 +35,11 @@ implements MultiTargetRegressor, AMRulesFunction {
 
 	public AdaptiveMultiTargetRegressor(){
 		 baseLearnerOption1 = new ClassOption("baseLearner1", 'l',
-					"First base learner.", MultiTargetRegressor.class, "moa.classifiers.rules.multilabel.functions.MultiLabelTargetMeanRegressor") ;
+					"First base learner.", AMRulesFunction.class, MultiLabelTargetMeanRegressor.class.getName()) ;
 		 baseLearnerOption2= new ClassOption("baseLearner2", 'm',
-					"Second base learner.", MultiTargetRegressor.class, "moa.classifiers.rules.multilabel.functions.MultiLabelPerceptronRegressor") ;
+					"Second base learner.", AMRulesFunction.class, MultiLabelPerceptronRegressor.class.getName()) ;
 		 errorMeasurerOption = new ClassOption("errorMeasurer", 'e',
-					"Measure of error for deciding which learner should predict.", AbstractMultiTargetErrorMeasurer.class, "MeanAbsoluteDeviationMT") ;
+					"Measure of error for deciding which learner should predict.", AbstractMultiTargetErrorMeasurer.class, MeanAbsoluteDeviationMT.class.getName()) ;
 
 	}
 	@Override
@@ -118,6 +119,12 @@ implements MultiTargetRegressor, AMRulesFunction {
 			if(baseLearner[i] instanceof AMRulesFunction)
 				((AMRulesFunction)baseLearner[i]).resetWithMemory();
 		}
+	}
+	@Override
+	public void selectOutputsToLearn(int[] outtputAtributtes) {
+		for (int i=0; i<NUM_LEARNERS; i++){
+				((AMRulesFunction)baseLearner[i]).selectOutputsToLearn(outtputAtributtes);
+		}	
 	}
 	
 
