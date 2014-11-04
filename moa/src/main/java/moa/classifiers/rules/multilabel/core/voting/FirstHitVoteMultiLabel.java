@@ -1,5 +1,5 @@
 /*
- *    InverseErrorWeightedVoteMultiLabel.java
+ *    FirstHitVoteMultiLabel.java
  *    Copyright (C) 2014 University of Porto, Portugal
  *    @author J. Duarte, J. Gama
  *
@@ -17,74 +17,51 @@
  *    
  *    
  */
+
 package moa.classifiers.rules.multilabel.core.voting;
 
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
+
 /**
- * InverseErrorWeightedVoteMuliLabel class for weighted votes based on estimates of errors. 
+ * FirstHitVoteMultiLabel class for weighted votes based on estimates of errors.
+ * Returns the first vote for each output attribute as the weighted vote.
  *
  * @author João Duarte (joaomaiaduarte@gmail.com)
  * @version $Revision: 1 $
  */
-public class InverseErrorWeightedVoteMultiLabel extends AbstractErrorWeightedVoteMultiLabel {
+public class FirstHitVoteMultiLabel extends AbstractErrorWeightedVoteMultiLabel {
 
-	/**
-	 * 
-	 */
-	private static final double EPS = 0.000000001; //just to prevent divide by 0 in 1/X -> 1/(x+EPS)
-	private static final long serialVersionUID = 6359349250620616482L;
 
+	private static final long serialVersionUID = 1;
 	@Override
 	public Prediction computeWeightedVote() {
 		int n=votes.size();
 		if (n>0){
 			int numOutputs=outputAttributesCount.length;
-
 			weights=new double[n][numOutputs];
-
-
 			weightedVote=new MultiLabelPrediction(numOutputs);
 
-			double [] sumError= new double[numOutputs];
 			//For each output attribute
 			for (int o=0;o<numOutputs;o++)
 			{
-				for (int i=0; i<n; i++)
-				{
-					if(votes.get(i).hasVotesForAttribute(o) && errors.get(i)!=null){
-						weights[i][o]=1.0/(errors.get(i)[o]+EPS);
-						sumError[o]+=weights[i][o];
-					}
-				}
-
 				//int numClasses=votes.get(0).numClasses(o);
-
-
 				//For each vote
 				for (int i=0; i<n; i++)
 				{
 					if(votes.get(i).hasVotesForAttribute(o)){
-						if(sumError[o]>0)
-							weights[i][o]/=sumError[o];
-						else
-							weights[i][o]=1.0/outputAttributesCount[o];
+						//set as weighted vote and set weight to 1	
+						weights[i][o]=1;
+						/*for(int j=0; j<numClasses; j++){
+							weightedVote.setVote(o, j, votes.get(i).getVote(o, j));
+						}*/
+						weightedVote.setVotes(o, votes.get(i).getVotes(o));
+						break;
 					}
-					/*//For each class
-					for(int j=0; j<numClasses; j++){
-						weightedVote.setVote(o, j, weightedVote.getVote(o, j)+votes.get(i).getVote(o, j)*weights[i][o]);
-					}*/
-					
-					weightedVote.setVotes(o, votes.get(i).getVotes(o));
-
-				}	
-
+				}
 			}
-
 		}
 		return weightedVote;
 	}
-
-
 }

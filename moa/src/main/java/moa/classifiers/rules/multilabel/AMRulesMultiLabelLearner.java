@@ -203,11 +203,14 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			Prediction defaultVote=defaultRule.getPredictionForInstance(instance);
 			if(defaultVote!=null){
 				double [] defaultErrors= defaultRule.getCurrentErrors();
+				if(defaultErrors==null)
+					defaultErrors=defaultRuleErrors(defaultVote);
 				double [] fixErrors=new double[vote.numOutputAttributes()];
 				Prediction fixVote= new MultiLabelPrediction(vote.numOutputAttributes());
 				for (int i=0; i<vote.numOutputAttributes(); i++){
 					if(!vote.hasVotesForAttribute(i)){
 						fixVote.setVotes(i, defaultVote.getVotes(i));
+						fixErrors[i]=defaultErrors[i];
 					}
 				}
 				errorWeightedVote.addVote(fixVote,fixErrors);
@@ -215,6 +218,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			}
 		} 	
 		errorWeightedVote.computeWeightedVote();
+
 		return errorWeightedVote;
 	}
 
