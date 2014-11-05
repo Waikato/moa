@@ -60,13 +60,10 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	protected LearningLiteral expandedLearningLiteral;
 
 	protected LearningLiteral otherBranchLearningLiteral;
+	
+	protected LearningLiteral otherOutputsLearningLiteral;
 
 	protected AttributeExpansionSuggestion bestSuggestion;
-
-
-	//public ClassOption changeDetectorOption;
-
-	//public ClassOption anomalyDetectorOption;
 
 	protected NumericStatisticsObserver numericStatisticsObserver;
 
@@ -272,7 +269,11 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	public void setInstanceTransformer(InstanceTransformer instanceTransformer) {
 		this.instanceTransformer=instanceTransformer;
 		
-	}	
+	}
+
+	public LearningLiteral getOtherOutputsLearningLiteral() {
+		return otherOutputsLearningLiteral;
+	}
 
 
 

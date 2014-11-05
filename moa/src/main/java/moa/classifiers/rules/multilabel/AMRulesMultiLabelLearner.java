@@ -32,6 +32,7 @@ package moa.classifiers.rules.multilabel;
  **/
 
 import java.util.Iterator;
+import java.util.ListIterator;
 
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiLabelLearner;
@@ -64,7 +65,7 @@ import com.yahoo.labs.samoa.instances.Prediction;
 public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner implements MultiLabelLearner{
 
 	private static final long serialVersionUID = 1L;
-	protected MultiLabelRuleSet ruleSet = new MultiLabelRuleSet();
+	protected MultiLabelRuleSet ruleSet;
 	protected MultiLabelRule defaultRule;
 	protected int ruleNumberID=1;
 	protected double[] statistics;
@@ -85,6 +86,9 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 
 	public FlagOption unorderedRulesOption = new FlagOption("setUnorderedRulesOn", 'U',
 			"unorderedRules.");
+	
+	public FlagOption dropOldRuleAfterExpansionOption = new FlagOption("dropOldRuleAfterExpansion", 'D',
+			"Drop old rule if it expanded (by default the rule is kept for the set of outputs not selected for expansion.)");
 
 	public ClassOption changeDetector = new ClassOption("changeDetector",
 			'H', "Change Detector.", 
@@ -279,7 +283,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		debug("Train",3);
 		debug("Nº instance "+numInstances + " - " + instance.toString(),3);
 		boolean rulesCoveringInstance = false;
-		Iterator<MultiLabelRule> ruleIterator= this.ruleSet.iterator();
+		ListIterator<MultiLabelRule> ruleIterator= this.ruleSet.listIterator();
 		while (ruleIterator.hasNext()) { 
 			MultiLabelRule rule = ruleIterator.next();
 			if (rule.isCovering(instance) == true) {
@@ -295,7 +299,13 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 							if (rule.tryToExpand(this.splitConfidenceOption.getValue(), this.tieThresholdOption.getValue()) ) 
 							{
 								setRuleOptions(rule);
-								//rule.split();
+
+								if(!dropOldRuleAfterExpansionOption.isSet() && rule.hasNewRuleFromOtherOutputs()){
+									MultiLabelRule otherMultiLabelRule=rule.getNewRuleFromOtherOutputs();
+									otherMultiLabelRule.setRuleNumberID(++ruleNumberID);
+									setRuleOptions(otherMultiLabelRule);
+									ruleIterator.add(otherMultiLabelRule);
+								}
 								debug("Rule Expanded:",2);
 								debug(rule.toString(),2);
 							}	
@@ -482,6 +492,9 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		defaultRule=newDefaultRule();
 		defaultRule.setLearner((MultiLabelLearner)((MultiLabelLearner)getPreparedClassOption(learnerOption)).copy());
 		setRuleOptions(defaultRule);
+		ruleSet = new MultiLabelRuleSet();
+		ruleNumberID=1;
+		statistics=null;
 	}
 
 

@@ -30,7 +30,7 @@ public class MultiLabelRule extends AbstractMOAObject {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	protected List<Literal> literalList = new LinkedList<Literal>();
+	protected LinkedList<Literal> literalList = new LinkedList<Literal>();
 
 	protected LearningLiteral learningLiteral;
 	
@@ -38,6 +38,8 @@ public class MultiLabelRule extends AbstractMOAObject {
 	protected int ruleNumberID;
 	
 	protected MultiLabelRule otherBranchRule;
+	
+	protected MultiLabelRule otherOutputsRule;
 	
 	protected InstanceInformation instanceInformation;
 	
@@ -128,6 +130,14 @@ public class MultiLabelRule extends AbstractMOAObject {
 	public boolean tryToExpand(double splitConfidence, double tieThresholdOption) {
 		boolean hasExpanded=learningLiteral.tryToExpand(splitConfidence,tieThresholdOption);
 		if(hasExpanded){
+			LearningLiteral otherOutputsLiteral=learningLiteral.getOtherOutputsLearningLiteral();
+			if(otherOutputsLiteral!=null){
+				otherOutputsRule=new MultiLabelRule();
+				otherOutputsRule.instanceInformation=instanceInformation;
+				otherOutputsRule.literalList=new LinkedList<Literal>(literalList);
+				otherOutputsRule.learningLiteral=otherOutputsLiteral;
+			}
+			
 			otherBranchRule=new MultiLabelRule(learningLiteral.getOtherBranchLearningLiteral());
 			//check for obsolete predicate
 			int attribIndex=learningLiteral.getBestSuggestion().getPredicate().getAttributeIndex();
@@ -142,14 +152,21 @@ public class MultiLabelRule extends AbstractMOAObject {
 				}
 			}
 			this.literalList.add(new Literal(learningLiteral.getBestSuggestion().getPredicate()));
-			learningLiteral=learningLiteral.getExpandedLearningLiteral();
-			
+			learningLiteral=learningLiteral.getExpandedLearningLiteral();	
 		}
 		return hasExpanded;
 	}
 	
 	public MultiLabelRule getNewRuleFromOtherBranch(){
-		return otherBranchRule;
+		MultiLabelRule r=otherBranchRule;
+		otherBranchRule=null;
+		return r;
+	}
+	
+	public MultiLabelRule getNewRuleFromOtherOutputs(){
+		MultiLabelRule r=otherOutputsRule;
+		otherOutputsRule=null;
+		return r;
 	}
 	
 	@Override
@@ -214,5 +231,12 @@ public class MultiLabelRule extends AbstractMOAObject {
 		
 	}
 
+	protected MultiLabelRule getOtherOutputsRule() {
+		return otherOutputsRule;
+	}
+
+	public boolean hasNewRuleFromOtherOutputs() {
+		return this.otherOutputsRule!=null;
+	}
 
 }

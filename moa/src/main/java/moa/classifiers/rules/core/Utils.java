@@ -63,6 +63,23 @@ public final class Utils {
 		}
 		return new DoubleVector(array);
 	}
-
-
+	
+	public static int [] complementSet(int[] referenceSet, int[] comparingSet) {
+		int [] indices= new int[referenceSet.length-comparingSet.length];
+		int j=0,l=0,i;
+		for (i=0; i<referenceSet.length && l<comparingSet.length;i++){
+			if(referenceSet[i]!=comparingSet[l])
+			{
+				indices[j]=referenceSet[i];
+				j++;
+			}
+			else
+				l++;
+		}
+		while(i<referenceSet.length){
+			indices[j]=referenceSet[i];
+			i++; j++;
+		}		
+		return indices;
+	}
 }

@@ -134,19 +134,39 @@ public class LearningLiteralRegression extends LearningLiteral {
 			//set other branch (only used if default rule expands)
 			otherBranchLearningLiteral=new LearningLiteralRegression();
 			otherBranchLearningLiteral.setLearner((MultiLabelLearner)learner.copy());
-			otherBranchLearningLiteral.setInstanceTransformer(this.instanceTransformer); //TODO: check this 
+			otherBranchLearningLiteral.setInstanceTransformer(this.instanceTransformer);
+			
+			//keep a rule learning to the complement set of newOutputs
+			
+			
 			//Set expanding branch
 			//if is AMRulesFunction and the  number of output attributes changes, start learning a new predictor
 			//should we do the same for input attributes (attributesMask)?. It would have impact in RandomAMRules
 			if(learner instanceof AMRulesFunction){ //Reset learning
 				((AMRulesFunction) learner).resetWithMemory();
 				if(newOutputs.length != outputsToLearn.length){
-					int [] indices=newLearnerOutputIndices(outputsToLearn,newOutputs);
+					//other outputs
+					int [] otherOutputs=Utils.complementSet(outputsToLearn,newOutputs);
+					otherOutputsLearningLiteral=new LearningLiteralRegression(otherOutputs);
+					MultiLabelLearner otherOutputsLearner=(MultiLabelLearner)learner.copy();
+					int [] indices=newLearnerOutputIndices(outputsToLearn,otherOutputs);
+					((AMRulesFunction) otherOutputsLearner).selectOutputsToLearn(indices);
+					otherOutputsLearningLiteral.setLearner(otherOutputsLearner);
+					
+					//expanded
+					indices=newLearnerOutputIndices(outputsToLearn,newOutputs);
 					((AMRulesFunction) learner).selectOutputsToLearn(indices);
 				}
 			}
 			//just reset learning
 			else{
+				//other outputs
+				if(newOutputs.length != outputsToLearn.length){
+					otherOutputsLearningLiteral=new LearningLiteralRegression();
+					MultiLabelLearner otherOutputsLearner=(MultiLabelLearner)learner.copy();
+					otherOutputsLearningLiteral.setLearner(otherOutputsLearner);
+				}
+				//expanded
 				learner.resetLearning();
 			}
 				
@@ -154,9 +174,12 @@ public class LearningLiteralRegression extends LearningLiteral {
 			expandedLearningLiteral.setLearner((MultiLabelLearner)this.learner.copy());
 			
 
+			
+
 		}
 		return shouldSplit;
 	}
+
 
 
 
@@ -290,6 +313,7 @@ public class LearningLiteralRegression extends LearningLiteral {
 		}
 		return sb.toString();
 	}
+
 
 
 	/*@Override
