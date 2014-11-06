@@ -30,6 +30,7 @@ import com.yahoo.labs.samoa.instances.Prediction;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
+import moa.core.Example;
 
 /**
  * Class for using a MEKA classifier. NOTE: This class only exists to adjust the
@@ -113,6 +114,11 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
         }
     }
 
+     @Override
+    public Prediction getPredictionForInstance(Example<Instance> example) {
+        return getPredictionForInstance(example.getData());
+    }
+    
     @Override
     public Prediction getPredictionForInstance(MultiLabelInstance instance) {
         
