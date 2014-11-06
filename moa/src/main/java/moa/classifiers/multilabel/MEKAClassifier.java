@@ -95,7 +95,7 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
         weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
 		System.out.println(""+m_L);                   // <--  this is correct
 		System.out.println(""+inst.classIndex());     // <--- this one is wrong
-		inst.setClassIndex(m_L);                      // <-- so, fix it!
+		inst.dataset().setClassIndex(m_L);                      // <-- so, fix it!
 
         if (m_L < 0) {
 			System.out.println("setModelContext(..) has not been called yet!!!");
