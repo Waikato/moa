@@ -79,9 +79,9 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
             System.exit(1);
         }
 
-		System.out.println("-------------------------------");
+		System.out.println("------- new result -------------");
 		System.out.println("x = "+x);
-		System.out.println("y = "+Arrays.toString(y));
+		System.out.println("y = h(x) = "+Arrays.toString(y));
 		
 		sumExamples++;
 		int correct = 0;

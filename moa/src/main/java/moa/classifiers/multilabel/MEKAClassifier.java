@@ -130,20 +130,25 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
 		return votes;
     }
 
-    @Override
-    public Prediction getPredictionForInstance(MultiLabelInstance instance) {
-        
-		System.out.println("-------- start MEKA vote ---------------");
-       double[] predictionArray = this.getVotesForInstance(instance);
+	 @Override
+	 public Prediction getPredictionForInstance(Example<Instance> example) {
+		 return getPredictionForInstance(example.getData());
+	 }
 
-		System.out.println("y = "+Arrays.toString(predictionArray));
-		System.out.println("-------- end MEKA vote -----------------");
-		
-       Prediction prediction = new MultiLabelPrediction(predictionArray.length);
-       for (int j = 0; j < predictionArray.length; j++){
-            prediction.setVote(j, 1, predictionArray[j]);
-			//prediction.setVote(j, 0, 1. - predictionArray[j]);
-        }
-        return prediction;
-    }
+	 @Override
+	 public Prediction getPredictionForInstance(MultiLabelInstance instance) {
+
+		 System.out.println("-------- start MEKA vote ---------------");
+		 double[] predictionArray = this.getVotesForInstance(instance);
+
+		 System.out.println("y = "+Arrays.toString(predictionArray));
+		 System.out.println("-------- end MEKA vote -----------------");
+
+		 Prediction prediction = new MultiLabelPrediction(predictionArray.length);
+		 for (int j = 0; j < predictionArray.length; j++){
+			 prediction.setVote(j, 1, predictionArray[j]);
+			 //prediction.setVote(j, 0, 1. - predictionArray[j]);
+		 }
+		 return prediction;
+	 }
 }
