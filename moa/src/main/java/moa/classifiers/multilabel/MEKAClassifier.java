@@ -30,6 +30,7 @@ import com.yahoo.labs.samoa.instances.Prediction;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
+import moa.core.Example;
 
 /**
  * Class for using a MEKA classifier. NOTE: This class only exists to adjust the
@@ -42,14 +43,14 @@ import moa.classifiers.MultiTargetRegressor;
  */
 public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner, MultiTargetRegressor {
 
-    private static final long serialVersionUID = 1L;
-    protected int m_L = -1;
+	private static final long serialVersionUID = 1L;
+	protected int m_L = -1;
 
-    @Override
-    public void setModelContext(InstancesHeader raw_header) {
-        //m_L = (m_L < 0 ? raw_header.classIndex() + 1 : m_L);
-        m_L = (m_L < 0 ? raw_header.numOutputAttributes(): m_L);
-        super.setModelContext(raw_header);
+	@Override
+	public void setModelContext(InstancesHeader raw_header) {
+		//m_L = (m_L < 0 ? raw_header.classIndex() + 1 : m_L);
+		m_L = (m_L < 0 ? raw_header.numOutputAttributes(): m_L);
+		super.setModelContext(raw_header);
 
 		weka.core.Instances D = null;
 		SamoaToWekaInstanceConverter conv = new SamoaToWekaInstanceConverter();
@@ -84,38 +85,38 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
 		}
 	}
 
-    @Override
-    public void trainOnInstanceImpl(Instance instance) {
-        trainOnInstanceImpl((MultiLabelInstance) instance);
-    }
+	@Override
+	public void trainOnInstanceImpl(Instance instance) {
+		trainOnInstanceImpl((MultiLabelInstance) instance);
+	}
 
-    
-    @Override
-    public void trainOnInstanceImpl(MultiLabelInstance samoaInstance) {
-        weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
+
+	@Override
+	public void trainOnInstanceImpl(MultiLabelInstance samoaInstance) {
+		weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
 		//System.out.println(""+m_L);                   // <--  this is correct
 		//System.out.println(""+inst.classIndex());     // <--- this one is wrong
 		inst.dataset().setClassIndex(m_L);                      // <-- so, fix it!
 
-        if (m_L < 0) {
+		if (m_L < 0) {
 			System.out.println("setModelContext(..) has not been called yet!!!");
-            m_L = samoaInstance.numOutputAttributes();//inst.classIndex() + 1;
+			m_L = samoaInstance.numOutputAttributes();//inst.classIndex() + 1;
 			System.exit(1);
-        }
+		}
 
-        //System.out.println(inst.classIndex());
+		//System.out.println(inst.classIndex());
 		try {
 			//System.out.println("UPDATE   WITH instances of "+instancesBuffer.classIndex()+" labels :\n"+inst);
 			((UpdateableClassifier) classifier).updateClassifier(inst);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
 
-    @Override
-    public double[] getVotesForInstance(Instance samoaInstance) {
-        weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
+	@Override
+	public double[] getVotesForInstance(Instance samoaInstance) {
+		weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
 		//System.out.println("ci = "+inst.classIndex());
 		double votes[] = null;
 		try {
@@ -128,27 +129,27 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
 			System.exit(1);
 		}
 		return votes;
-    }
+	}
 
-	 @Override
-	 public Prediction getPredictionForInstance(Example<Instance> example) {
-		 return getPredictionForInstance(example.getData());
-	 }
+	@Override
+	public Prediction getPredictionForInstance(Example<Instance> example) {
+		return getPredictionForInstance((MultiLabelInstance)example.getData());
+	}
 
-	 @Override
-	 public Prediction getPredictionForInstance(MultiLabelInstance instance) {
+	@Override
+	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
 
-		 System.out.println("-------- start MEKA vote ---------------");
-		 double[] predictionArray = this.getVotesForInstance(instance);
+		System.out.println("-------- start MEKA vote ---------------");
+		double[] predictionArray = this.getVotesForInstance(instance);
 
-		 System.out.println("y = "+Arrays.toString(predictionArray));
-		 System.out.println("-------- end MEKA vote -----------------");
+		System.out.println("y = "+Arrays.toString(predictionArray));
+		System.out.println("-------- end MEKA vote -----------------");
 
-		 Prediction prediction = new MultiLabelPrediction(predictionArray.length);
-		 for (int j = 0; j < predictionArray.length; j++){
-			 prediction.setVote(j, 1, predictionArray[j]);
-			 //prediction.setVote(j, 0, 1. - predictionArray[j]);
-		 }
-		 return prediction;
-	 }
+		Prediction prediction = new MultiLabelPrediction(predictionArray.length);
+		for (int j = 0; j < predictionArray.length; j++){
+			prediction.setVote(j, 1, predictionArray[j]);
+			//prediction.setVote(j, 0, 1. - predictionArray[j]);
+		}
+		return prediction;
+	}
 }

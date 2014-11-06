@@ -66,28 +66,34 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
      * more info in x)
      */
     @Override
-    public void addResult(Example<Instance> example, double[] y) {
+    public void addResult(Example<Instance> example, double[] p_y) {
 
-		//Ah muy bien, con valueOutputAttribute(int attributeIndex); y numOutputAttributes(); se puede comparar directamente con la Prediction. Así ir soltando código antiguo que ya no vamos a necesitar ...
+		//Ah muy bien, con valueOutputAttribute(int attributeIndex); p_y numOutputAttributes(); se puede comparar directamente con la Prediction. Así ir soltando código antiguo que ya no vamos a necesitar ...
 		//
 		//int L = example.numOutputAttributes();
-		int L = y.length;
+		int L = p_y.length;
 
         Instance x = example.getData();
-        if (y.length < 2) {
-            System.err.println("y.length too short (" + y.length + "). We've lost track of L at some point, unable to continue");
+        if (p_y.length < 2) {
+            System.err.println("p_y.length too short (" + p_y.length + "). We've lost track of L at some point, unable to continue");
             System.exit(1);
         }
 
 		System.out.println("------- new result -------------");
 		System.out.println("x = "+x);
-		System.out.println("y = h(x) = "+Arrays.toString(y));
+		System.out.println("p(y) = "+Arrays.toString(p_y));
+
+		int y[] = new int[L];
+		for(int j = 0; j < L; j++) {
+			y[j] = (p_y[j] > t) ? 1 : 0;
+		}
+		System.out.println("y =    "+Arrays.toString(y));
 		
 		sumExamples++;
 		int correct = 0;
 		for(int j = 0; j < y.length; j++) {
 			int y_true = (int)x.value(j); //]example.valueOutputAttribute(j);  // <-- damnit!
-			int y_pred = (y[j] > t) ? 1 : 0;
+			//int y_pred = (p_y[j] > t) ? 1 : 0;
 			if (y_true == y[j])
 				correct++;
 		}
