@@ -93,8 +93,8 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
     @Override
     public void trainOnInstanceImpl(MultiLabelInstance samoaInstance) {
         weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
-		System.out.println(""+m_L);                   // <--  this is correct
-		System.out.println(""+inst.classIndex());     // <--- this one is wrong
+		//System.out.println(""+m_L);                   // <--  this is correct
+		//System.out.println(""+inst.classIndex());     // <--- this one is wrong
 		inst.dataset().setClassIndex(m_L);                      // <-- so, fix it!
 
         if (m_L < 0) {
@@ -105,7 +105,7 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
 
         //System.out.println(inst.classIndex());
 		try {
-			System.out.println("UPDATE   WITH instances of "+instancesBuffer.classIndex()+" labels :\n"+inst);
+			//System.out.println("UPDATE   WITH instances of "+instancesBuffer.classIndex()+" labels :\n"+inst);
 			((UpdateableClassifier) classifier).updateClassifier(inst);
         } catch (Exception e) {
             e.printStackTrace();
@@ -114,17 +114,35 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
     }
 
     @Override
+    public double[] getVotesForInstance(Instance samoaInstance) {
+        weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
+		//System.out.println("ci = "+inst.classIndex());
+		double votes[] = null;
+		try {
+			votes = this.classifier.distributionForInstance(inst);
+			//System.out.println("cfier = "+this.classifier);
+			System.out.println("votes = "+Arrays.toString(votes));
+		} catch(Exception e) {
+			System.err.println("FAILED TO GET VOTES");
+			e.printStackTrace();
+			System.exit(1);
+		}
+		return votes;
+    }
+
+    @Override
     public Prediction getPredictionForInstance(MultiLabelInstance instance) {
         
+		System.out.println("-------- start MEKA vote ---------------");
        double[] predictionArray = this.getVotesForInstance(instance);
 
-	   System.out.println("----------------------------------------");
 		System.out.println("y = "+Arrays.toString(predictionArray));
+		System.out.println("-------- end MEKA vote -----------------");
 		
        Prediction prediction = new MultiLabelPrediction(predictionArray.length);
        for (int j = 0; j < predictionArray.length; j++){
             prediction.setVote(j, 1, predictionArray[j]);
-			prediction.setVote(j, 0, 1. - predictionArray[j]);
+			//prediction.setVote(j, 0, 1. - predictionArray[j]);
         }
         return prediction;
     }
