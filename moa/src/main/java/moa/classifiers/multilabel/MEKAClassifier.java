@@ -57,24 +57,24 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
 		try {
 			D = conv.wekaInstances(raw_header);
 		} catch(Exception e) {
-			System.err.println("FAILED TO CONVERT");
+			System.err.println("FATAL ERROR: Failed to convert InstancesHeader to Instances");
 			e.printStackTrace();
 			System.exit(1);
 		}
 		D.setClassIndex(m_L);
-		System.out.println("L="+D.classIndex()+","+m_L);
+		//System.out.println("L="+D.classIndex()+","+m_L);
 		this.instancesBuffer = new weka.core.Instances(D);
 		if (classifier instanceof UpdateableClassifier) {
 			this.instancesBuffer.setClassIndex(m_L);
 			// System.out.println(instancesBuffer.classIndex());
 			// System.out.println(instancesBuffer.classAttribute().name());
 			// System.out.println(instancesBuffer.classAttribute().isNumeric());
-			System.out.println("N="+instancesBuffer.numInstances()+"\nD:\n"+instancesBuffer);
+			//System.out.println("N="+instancesBuffer.numInstances()+"\nD:\n"+instancesBuffer);
 
 			try {
 				this.classifier.buildClassifier(instancesBuffer);
 			} catch(Exception e) {
-				System.err.println("FAILED TO BUILD");
+				System.err.println("FATAL ERROR: Failed to initialize Meka classifier!");
 				e.printStackTrace();
 				System.exit(1);
 			}
@@ -99,7 +99,7 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
 		inst.dataset().setClassIndex(m_L);                      // <-- so, fix it!
 
 		if (m_L < 0) {
-			System.out.println("setModelContext(..) has not been called yet!!!");
+			System.out.println("FATAL ERROR: setModelContext(..) has not been called yet!");
 			m_L = samoaInstance.numOutputAttributes();//inst.classIndex() + 1;
 			System.exit(1);
 		}
@@ -117,14 +117,11 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
 	@Override
 	public double[] getVotesForInstance(Instance samoaInstance) {
 		weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
-		//System.out.println("ci = "+inst.classIndex());
 		double votes[] = null;
 		try {
 			votes = this.classifier.distributionForInstance(inst);
-			//System.out.println("cfier = "+this.classifier);
-			System.out.println("votes = "+Arrays.toString(votes));
 		} catch(Exception e) {
-			System.err.println("FAILED TO GET VOTES");
+			System.err.println("FATAL ERROR: Failed to get votes");
 			e.printStackTrace();
 			System.exit(1);
 		}
@@ -139,11 +136,9 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
 	@Override
 	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
 
-		System.out.println("-------- start MEKA vote ---------------");
 		double[] predictionArray = this.getVotesForInstance(instance);
 
-		System.out.println("y = "+Arrays.toString(predictionArray));
-		System.out.println("-------- end MEKA vote -----------------");
+		//System.out.println("y = "+Arrays.toString(predictionArray));
 
 		Prediction prediction = new MultiLabelPrediction(predictionArray.length);
 		for (int j = 0; j < predictionArray.length; j++){
