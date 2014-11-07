@@ -28,6 +28,12 @@ import moa.core.utils.Converter;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
+import com.yahoo.labs.samoa.instances.Prediction;
+import moa.classifiers.MultiLabelLearner;
+import moa.classifiers.MultiTargetRegressor;
+import moa.core.Example;
 
 /**
  * Hoeffding Tree for classifying multi-label data.
@@ -38,7 +44,7 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
  * 
  * 
  */ 
-public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves { 
+public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implements MultiLabelLearner, MultiTargetRegressor { 
 // Needs to use InfoGainSplitCriterionMultiLabel, since multilabel entropy is calculated in a different way 
 // Trains a mlinstance adding statistics of several class values and training node classifiers
 // Get votes from the training node classifier
@@ -54,6 +60,26 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves {
 	public void setModelContext(InstancesHeader raw_header) {
 		//set the multilabel model context
 		this.modelContext = raw_header;
+	}
+
+   	@Override
+	public Prediction getPredictionForInstance(Example<Instance> example) {
+		return getPredictionForInstance((MultiLabelInstance)example.getData());
+	} 
+    
+  @Override
+	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
+
+		double[] predictionArray = this.getVotesForInstance(instance);
+
+		//System.out.println("y = "+Arrays.toString(predictionArray));
+
+		Prediction prediction = new MultiLabelPrediction(predictionArray.length);
+		for (int j = 0; j < predictionArray.length; j++){
+			prediction.setVote(j, 1, predictionArray[j]);
+			//prediction.setVote(j, 0, 1. - predictionArray[j]);
+		}
+		return prediction;
 	}
 
 	//It uses several class values
@@ -202,4 +228,10 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves {
 		// Return empty array (this should only happen once! -- before we build the root node).
 		return new double[this.m_L];
 	}
+        
+
+	@Override
+	public void trainOnInstanceImpl(MultiLabelInstance instance) {
+            trainOnInstanceImpl((Instance) instance);
+        }
 }
