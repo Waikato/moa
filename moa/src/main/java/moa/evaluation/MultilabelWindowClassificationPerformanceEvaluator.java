@@ -66,33 +66,41 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
      * more info in x)
      */
     @Override
-    public void addResult(Example<Instance> example, double[] y) {
+    public void addResult(Example<Instance> example, double[] p_y) {
 
-		//Ah muy bien, con valueOutputAttribute(int attributeIndex); y numOutputAttributes(); se puede comparar directamente con la Prediction. Así ir soltando código antiguo que ya no vamos a necesitar ...
-		//
-		//int L = example.numOutputAttributes();
-		int L = y.length;
+		//int L = example.numOutputAttributes();      // <-- doesn't work!
+		int L = p_y.length;
 
         Instance x = example.getData();
-        if (y.length < 2) {
-            System.err.println("y.length too short (" + y.length + "). We've lost track of L at some point, unable to continue");
+        if (p_y.length < 2) {
+            System.err.println("FATAL ERROR: Not enough labels, we've lost track of the number of labels.");
             System.exit(1);
         }
 
-		System.out.println("-------------------------------");
-		System.out.println("x = "+x);
-		System.out.println("y = "+Arrays.toString(y));
+		//System.out.println("------- new result -------------");
+		//System.out.println("x = "+x);
+		//System.out.println("p(y) = "+Arrays.toString(p_y));
+
+		// Threshold to binary output (optional)
+		int y[] = new int[L];
+		for(int j = 0; j < L; j++) {
+			y[j] = (p_y[j] > t) ? 1 : 0;
+		}
+		//System.out.println("y =    "+Arrays.toString(y));
 		
 		sumExamples++;
 		int correct = 0;
 		for(int j = 0; j < y.length; j++) {
-			int y_true = (int)x.value(j); //]example.valueOutputAttribute(j);  // <-- damnit!
-			int y_pred = (y[j] > t) ? 1 : 0;
+			//int y_true = //]example.valueOutputAttribute(j);  // <-- doesn't work!
+			int y_true = (int)x.value(j); 
+			//int y_pred = (p_y[j] > t) ? 1 : 0;
 			if (y_true == y[j])
 				correct++;
 		}
+
 		// Hamming Score
 		sumHamming+=(correct/(double)L);
+
 		// Exact Match
 		if (correct == L)
 			sumAccuracy++;
@@ -106,11 +114,11 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
         if (inst.weight() > 0.0) {
             int numberOutputs = inst.numOutputAttributes();
 			if (numberOutputs <= 1) {
-				System.err.println("THIS IS NOT A MULTI-LABEL DATASET!");
+				System.err.println("FATAL ERROR: This is not a multi-label dataset!");
 				System.exit(1);
 			}
 			if (prediction.numOutputAttributes()==0) {
-				System.err.println("THIS IS NOT A MULTI-LABEL PREDICTION!");
+				System.err.println("FATAL ERROR: This is not a multi-label prediction!");
 				System.exit(1);
 			}
             double[] result = new double[numberOutputs];
