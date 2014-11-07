@@ -99,6 +99,7 @@ public class MajorityLabelset extends AbstractMultiLabelLearner implements Multi
     //public double[] getVotesForInstance(Instance x) {
     public Prediction getPredictionForInstance(MultiLabelInstance x){
         
+		System.out.println("-------- start MC vote   ---------------");
         int L = x.numOutputAttributes(); //x.classIndex() + 1;
         if (m_L != L) {
             System.err.println("set L = " + L);
@@ -106,8 +107,8 @@ public class MajorityLabelset extends AbstractMultiLabelLearner implements Multi
             predictionArray = new double[m_L];
         }
 
-	   System.out.println("----------------------------------------");
 		System.out.println("y = "+Arrays.toString(predictionArray));
+		System.out.println("-------- end MC vote   -----------------");
         
        Prediction prediction = new MultiLabelPrediction(predictionArray.length);
        for (int j = 0; j < predictionArray.length; j++){
