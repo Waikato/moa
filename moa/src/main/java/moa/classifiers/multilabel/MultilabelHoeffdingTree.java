@@ -31,6 +31,7 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
+import java.util.LinkedList;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
 import moa.core.Example;
@@ -54,7 +55,7 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 	public int m_L = -1;
 
 	// Converts multi-label format to single-label format
-	protected Converter converter = null;
+	//protected Converter converter = null;
 	
 	@Override
 	public void setModelContext(InstancesHeader raw_header) {
@@ -93,7 +94,7 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 
 		@Override
 		public void learnFromInstance(Instance inst, HoeffdingTree ht) {
-			List<Integer> labels = ((MultilabelHoeffdingTree) ht).converter.getRelevantLabels(inst);
+			List<Integer> labels = ((MultilabelHoeffdingTree) ht).getRelevantLabels(inst);
 			for (int l : labels){
 				this.observedClassDistribution.addToValue( l, inst.weight());
 			}
@@ -126,7 +127,7 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
 
 			if (this.classifier == null) {
-				return new double[((MultilabelHoeffdingTree) ht).converter.getL()];
+				return new double[m_L]; //[((MultilabelHoeffdingTree) ht).converter.getL()];
 			}
 			return this.classifier.getVotesForInstance(inst); 			
 		}
@@ -145,21 +146,21 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		public void learnFromInstance(Instance mlinst, HoeffdingTree ht) {
 			this.classifier.trainOnInstance(mlinst);  
 			MultilabelHoeffdingTree mht = ((MultilabelHoeffdingTree) ht);
-			List<Integer> labels = mht.converter.getRelevantLabels(mlinst);
+			List<Integer> labels = mht.getRelevantLabels(mlinst);
 			for (int l : labels){
 				this.observedClassDistribution.addToValue( l, mlinst.weight());
 			}
-			Instance inst = mht.converter.formatInstance(mlinst);
-			for (int i = 0; i < inst.numAttributes() - 1; i++) {
+			Instance inst = mlinst; //mht.converter.formatInstance(mlinst);
+			for (int i = 0; i < inst.numInputAttributes(); i++) {
 			//for (int i = 1; i < inst.numAttributes(); i++) {
-				int instAttIndex = modelAttIndexToInstanceAttIndex(i, inst);
-				AttributeClassObserver obs = this.attributeObservers.get(i);
+				int instAttIndex = inst.inputAttribute(i).index(); //modelAttIndexToInstanceAttIndex(i, inst);
+				AttributeClassObserver obs = this.attributeObservers.get(instAttIndex); //i
 				if (obs == null) {
-					obs = inst.attribute(instAttIndex).isNominal() ? mht.newNominalClassObserver() : mht.newNumericClassObserver();
+					obs = inst.inputAttribute(i).isNominal() ? mht.newNominalClassObserver() : mht.newNumericClassObserver();
 					this.attributeObservers.set(i, obs);
 				}
 				for (int l : labels){
-					obs.observeAttributeClass(inst.value(instAttIndex), l, inst.weight());
+					obs.observeAttributeClass(inst.valueInputAttribute(i), l, inst.weight());
 					//obs.observeAttributeClass(inst.value(instAttIndex), 0, inst.weight());
 				}
 			}
@@ -205,7 +206,7 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 			// Update class labels
 			m_L = L;
 			// Create a converter, and its template
-			converter = new Converter(m_L);
+			/*converter = new Converter(m_L);
 			try {
 				converter.createTemplate(new Instances(new StringReader(this.modelContext.toString()),0));
 			} catch(Exception e) {
@@ -213,7 +214,7 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 				System.out.println("Instances: "+this.modelContext.toString());
 				e.printStackTrace();
 				System.exit(1);
-			}
+			}*/
 		}
 
 		if (this.treeRoot != null) {
@@ -234,4 +235,15 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 	public void trainOnInstanceImpl(MultiLabelInstance instance) {
             trainOnInstanceImpl((Instance) instance);
         }
+        
+        private List<Integer> getRelevantLabels(Instance x) {
+        List<Integer> classValues = new LinkedList<Integer>();
+        //get all class attributes
+        for (int j = 0; j < m_L; j++) {
+            if (x.value(j) > 0.0) {
+                classValues.add(j);
+            }
+        }
+        return classValues;
+    }
 }
