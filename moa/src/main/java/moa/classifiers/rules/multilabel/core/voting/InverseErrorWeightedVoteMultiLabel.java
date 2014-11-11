@@ -59,7 +59,7 @@ public class InverseErrorWeightedVoteMultiLabel extends AbstractErrorWeightedVot
 					}
 				}
 
-				//int numClasses=votes.get(0).numClasses(o);
+				int numClasses=votes.get(0).numClasses(o);
 
 
 				//For each vote
@@ -71,12 +71,11 @@ public class InverseErrorWeightedVoteMultiLabel extends AbstractErrorWeightedVot
 						else
 							weights[i][o]=1.0/outputAttributesCount[o];
 					}
-					/*//For each class
+					//For each class
 					for(int j=0; j<numClasses; j++){
 						weightedVote.setVote(o, j, weightedVote.getVote(o, j)+votes.get(i).getVote(o, j)*weights[i][o]);
-					}*/
-					
-					weightedVote.setVotes(o, votes.get(i).getVotes(o));
+					}
+
 
 				}	
 
