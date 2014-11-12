@@ -211,7 +211,7 @@ public class LearningLiteralRegression extends LearningLiteral {
 
 					if (bestSuggestion == null) {
 						//ALL attributes must have a best suggestion. Adding dummy suggestion with minimal merit.
-						bestSuggestion=new  AttributeExpansionSuggestion(new NumericRulePredicate(inputsToLearn[i],0,true),null,Double.MIN_VALUE);
+						bestSuggestion=new  AttributeExpansionSuggestion(new NumericRulePredicate(inputsToLearn[i],0,true),null,-Double.MAX_VALUE);
 					}
 					bestSuggestions.add(bestSuggestion);
 				}

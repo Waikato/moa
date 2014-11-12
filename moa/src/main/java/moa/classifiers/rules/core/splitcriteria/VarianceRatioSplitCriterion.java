@@ -55,7 +55,7 @@ public class VarianceRatioSplitCriterion extends AbstractOptionHandler implement
 	    		return (1-(sumPostSDR/postSplitDists.length)/SDR);
 	    	}
 	    	else
-	    		return Double.MIN_VALUE;
+	    		return -Double.MAX_VALUE;
 	    	
 	}
 

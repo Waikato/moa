@@ -53,7 +53,7 @@ public class MultiTargetVarianceRatio extends AbstractOptionHandler implements M
 					if (postSplitDists[j][i].getValue(0)>0)
 						merits[i]-=branchMeritsOutput[i];
 					else
-						merits[i]=Double.MIN_VALUE;
+						merits[i]=-Double.MAX_VALUE;
 				}
 			}
 		return merits;

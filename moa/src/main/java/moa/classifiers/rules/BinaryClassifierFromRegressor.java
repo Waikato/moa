@@ -55,7 +55,7 @@ public class BinaryClassifierFromRegressor extends AbstractClassifier {
 
 	@Override
 	protected Measurement[] getModelMeasurementsImpl() {
-		return null;
+		return this.regressor.getModelMeasurements();
 	}
 
 	@Override
