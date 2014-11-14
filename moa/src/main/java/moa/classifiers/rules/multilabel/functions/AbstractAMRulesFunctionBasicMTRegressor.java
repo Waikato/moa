@@ -18,7 +18,7 @@ abstract public class AbstractAMRulesFunctionBasicMTRegressor extends
 	public void selectOutputsToLearn(int[] outputsToLearn) {
 		Classifier[] newEnsemble= new Classifier[outputsToLearn.length];
 		for(int i=0; i<outputsToLearn.length; i++){
-			newEnsemble[i]=this.ensemble[outputsToLearn[i]];
+			newEnsemble[i]=this.ensemble[outputsToLearn[i]].copy();
 		}
 		this.ensemble=newEnsemble;
 	}

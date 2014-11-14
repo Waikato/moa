@@ -48,6 +48,7 @@ import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.classifiers.rules.multilabel.inputselectors.InputAttributesSelector;
 import moa.classifiers.rules.multilabel.inputselectors.SelectAllInputs;
+import moa.classifiers.rules.multilabel.instancetransformers.NoInstanceTransformation;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.classifiers.rules.multilabel.outputselectors.SelectAllOutputs;
 import moa.core.Measurement;
@@ -192,7 +193,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 					debug("Rule No"+ rule.getRuleNumberID() + " Vote: " + vote.toString() + " Error: " + errors + " Y: " + instance.classValue(),3); //predictionValueForThisRule);
 					errorWeightedVote.addVote(vote,errors);
 				}
-				if (!this.unorderedRulesOption.isSet()) { // Ordered Rules Option. //TODO: Only break if all outputs have values assigned.Complete Prediction only with the missing values
+				if (!this.unorderedRulesOption.isSet()) { // Ordered Rules Option.
 					break; // Only one rule cover the instance.
 				}
 			}
@@ -222,7 +223,6 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			}
 		} 	
 		errorWeightedVote.computeWeightedVote();
-
 		return errorWeightedVote;
 	}
 
@@ -298,7 +298,6 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 						if (rule.getWeightSeenSinceExpansion()  % this.gracePeriodOption.getValue() == 0.0) {
 							if (rule.tryToExpand(this.splitConfidenceOption.getValue(), this.tieThresholdOption.getValue()) ) 
 							{
-								setRuleOptions(rule);
 
 								if(!dropOldRuleAfterExpansionOption.isSet() && rule.hasNewRuleFromOtherOutputs()){
 									MultiLabelRule otherMultiLabelRule=rule.getNewRuleFromOtherOutputs();
@@ -306,6 +305,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 									setRuleOptions(otherMultiLabelRule);
 									ruleIterator.add(otherMultiLabelRule);
 								}
+								setRuleOptions(rule);
 								debug("Rule Expanded:",2);
 								debug(rule.toString(),2);
 							}	
@@ -328,7 +328,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 				debug("Nr. examples "+defaultRule.getWeightSeenSinceExpansion(), 4);
 
 				if (defaultRule.tryToExpand(this.splitConfidenceOption.getValue(), this.tieThresholdOption.getValue()) == true) {
-
+					
 					MultiLabelRule newDefaultRule=defaultRule.getNewRuleFromOtherBranch();
 					newDefaultRule.setRuleNumberID(++ruleNumberID);
 					setRuleOptions(newDefaultRule);
@@ -491,6 +491,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	public void resetLearningImpl() {
 		defaultRule=newDefaultRule();
 		defaultRule.setLearner((MultiLabelLearner)((MultiLabelLearner)getPreparedClassOption(learnerOption)).copy());
+		defaultRule.setInstanceTransformer(new NoInstanceTransformation());
 		setRuleOptions(defaultRule);
 		ruleSet = new MultiLabelRuleSet();
 		ruleNumberID=1;

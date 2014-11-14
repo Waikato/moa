@@ -82,4 +82,16 @@ public final class Utils {
 		}		
 		return indices;
 	}
+	
+	public static int[] getIndexCorrespondence(int[] originalSet, int[] subSet) {
+		int [] indices= new int[subSet.length];
+		int j=0;
+		for (int i=0; i<subSet.length;i++){
+			while(originalSet[j]!=subSet[i])
+				j++;
+			indices[i]=j;
+		}
+		return indices;
+	}
+	
 }

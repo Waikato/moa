@@ -13,6 +13,7 @@ import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatistic
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.functions.AMRulesFunction;
 import moa.classifiers.rules.multilabel.instancetransformers.InstanceOutputAttributesSelector;
+import moa.classifiers.rules.multilabel.instancetransformers.InstanceTransformer;
 import moa.classifiers.rules.multilabel.instancetransformers.NoInstanceTransformation;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
@@ -31,7 +32,7 @@ public class LearningLiteralRegression extends LearningLiteral {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	double [] varianceShift; //for proper computation of variance
 
 	public LearningLiteralRegression() {
@@ -129,70 +130,67 @@ public class LearningLiteralRegression extends LearningLiteral {
 			//
 			int [] newOutputs=outputSelector.getNextOutputIndices(newLiteralStatistics,literalStatistics, outputsToLearn);
 			Arrays.sort(newOutputs); //Must be ordered for latter correspondence algorithm to work
-			
+
 
 			//set other branch (only used if default rule expands)
 			otherBranchLearningLiteral=new LearningLiteralRegression();
-			otherBranchLearningLiteral.setLearner((MultiLabelLearner)learner.copy());
-			otherBranchLearningLiteral.setInstanceTransformer(this.instanceTransformer);
-			
+			otherBranchLearningLiteral.instanceHeader=instanceHeader;
+			otherBranchLearningLiteral.learner=(MultiLabelLearner)learner.copy();
+			otherBranchLearningLiteral.instanceTransformer=(InstanceTransformer)this.instanceTransformer;
+
 			//keep a rule learning to the complement set of newOutputs
-			
-			
+
+
 			//Set expanding branch
 			//if is AMRulesFunction and the  number of output attributes changes, start learning a new predictor
 			//should we do the same for input attributes (attributesMask)?. It would have impact in RandomAMRules
 			if(learner instanceof AMRulesFunction){ //Reset learning
-				((AMRulesFunction) learner).resetWithMemory();
 				if(newOutputs.length != outputsToLearn.length){
 					//other outputs
 					int [] otherOutputs=Utils.complementSet(outputsToLearn,newOutputs);
-					otherOutputsLearningLiteral=new LearningLiteralRegression(otherOutputs);
-					MultiLabelLearner otherOutputsLearner=(MultiLabelLearner)learner.copy();
-					int [] indices=newLearnerOutputIndices(outputsToLearn,otherOutputs);
-					((AMRulesFunction) otherOutputsLearner).selectOutputsToLearn(indices);
-					otherOutputsLearningLiteral.setLearner(otherOutputsLearner);
-					
+					int [] indices;
+					if(otherOutputs.length>0){
+						otherOutputsLearningLiteral=new LearningLiteralRegression(otherOutputs);
+						MultiLabelLearner otherOutputsLearner=(MultiLabelLearner)learner.copy();
+						indices=Utils.getIndexCorrespondence(outputsToLearn,otherOutputs);
+						((AMRulesFunction) otherOutputsLearner).selectOutputsToLearn(indices);
+						((AMRulesFunction) otherOutputsLearner).resetWithMemory();
+						otherOutputsLearningLiteral.learner=otherOutputsLearner;
+						otherOutputsLearningLiteral.instanceHeader=instanceHeader;
+						otherOutputsLearningLiteral.instanceTransformer=new InstanceOutputAttributesSelector(instanceHeader,otherOutputs);
+					}
 					//expanded
-					indices=newLearnerOutputIndices(outputsToLearn,newOutputs);
+					indices=Utils.getIndexCorrespondence(outputsToLearn,newOutputs);
 					((AMRulesFunction) learner).selectOutputsToLearn(indices);
 				}
+
+				((AMRulesFunction) learner).resetWithMemory();
 			}
 			//just reset learning
 			else{
-				//other outputs
+				//other outputs //TODO JD: Test for general learner (other than AMRules functions
 				if(newOutputs.length != outputsToLearn.length){
-					otherOutputsLearningLiteral=new LearningLiteralRegression();
-					MultiLabelLearner otherOutputsLearner=(MultiLabelLearner)learner.copy();
-					otherOutputsLearningLiteral.setLearner(otherOutputsLearner);
+					int [] otherOutputs=Utils.complementSet(outputsToLearn,newOutputs);
+					if(otherOutputs.length>0){
+						otherOutputsLearningLiteral=new LearningLiteralRegression();
+						MultiLabelLearner otherOutputsLearner=(MultiLabelLearner)learner.copy();
+						otherOutputsLearner.resetLearning();
+						otherOutputsLearningLiteral.learner=otherOutputsLearner;
+						otherOutputsLearningLiteral.instanceHeader=instanceHeader;
+						otherOutputsLearningLiteral.instanceTransformer=new InstanceOutputAttributesSelector(instanceHeader,otherOutputs);
+					}
 				}
 				//expanded
 				learner.resetLearning();
 			}
-				
 			expandedLearningLiteral=new LearningLiteralRegression(newOutputs);
-			expandedLearningLiteral.setLearner((MultiLabelLearner)this.learner.copy());
-			
-
-			
-
+			expandedLearningLiteral.learner=(MultiLabelLearner)this.learner.copy();	
+			expandedLearningLiteral.instanceHeader=instanceHeader;
+			expandedLearningLiteral.instanceTransformer=new InstanceOutputAttributesSelector(instanceHeader,newOutputs);
 		}
 		return shouldSplit;
 	}
 
-
-
-
-	private int[] newLearnerOutputIndices(int[] outputsToLearn, int[] newOutputs) {
-		int [] indices= new int[newOutputs.length];
-		int j=0;
-		for (int i=0; i<newOutputs.length;i++){
-			while(outputsToLearn[j]!=newOutputs[i])
-				j++;
-			indices[i]=j;
-		}
-		return indices;
-	}
 
 	private DoubleVector[] getBranchStatistics(DoubleVector[][] resultingStatistics, int indexBranch) {
 		DoubleVector[] selBranchStats=new DoubleVector[resultingStatistics.length];
@@ -240,7 +238,7 @@ public class LearningLiteralRegression extends LearningLiteral {
 			if(inputsToLearn==null)
 			{
 				inputsToLearn=new int[numInputs];
-				for (int i=0; i<numInputs;i++){//TODO: check with mask?
+				for (int i=0; i<numInputs;i++){//TODO JD: check with mask?
 					if(attributesMask[i])
 						inputsToLearn[i]=i;
 				}
@@ -252,11 +250,7 @@ public class LearningLiteralRegression extends LearningLiteral {
 				literalStatistics[i]=new DoubleVector(new double[5]);
 				varianceShift[i]=instance.valueOutputAttribute(outputsToLearn[i]);
 			}
-			if (outputsToLearn.length==instance.numOutputAttributes())//attributes are the original
-				instanceTransformer=new NoInstanceTransformation();
-			else
-				instanceTransformer=new InstanceOutputAttributesSelector((InstancesHeader)instance.dataset(), outputsToLearn);
-
+			instanceHeader=(InstancesHeader)instance.dataset();
 			hasStarted=true;
 		}
 		double weight=instance.weight();
@@ -287,19 +281,19 @@ public class LearningLiteralRegression extends LearningLiteral {
 				obs.observeAttribute(instance.valueInputAttribute(inputsToLearn[i]), exampleStatistics);
 			}
 		}
-		
+
 		//Transform instance for learning
 		Instance transformedInstance=instanceTransformer.sourceInstanceToTarget(instance);
 		Prediction prediction=null;
 		Prediction targetPrediction=learner.getPredictionForInstance(transformedInstance);
 		if(targetPrediction!=null)
 			prediction=instanceTransformer.targetPredictionToSource(targetPrediction);
-		
+
 		if(prediction!=null)
 			errorMeasurer.addPrediction(prediction, instance);
-		
+
 		learner.trainOnInstance(transformedInstance);
-		
+
 		weightSeen+=instance.weight();
 	}
 

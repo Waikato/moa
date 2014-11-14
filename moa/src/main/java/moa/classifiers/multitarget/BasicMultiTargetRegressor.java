@@ -61,6 +61,8 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 			Instance weightedInst = transformInstance(instance,i);
 			this.ensemble[i].trainOnInstance(weightedInst); 
 		}
+		if(instance.numberOutputTargets()!=ensemble.length)
+			System.out.println("remove me");
 	}
 
 	protected InstancesHeader[] header;

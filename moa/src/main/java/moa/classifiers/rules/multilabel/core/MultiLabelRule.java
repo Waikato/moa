@@ -14,6 +14,8 @@ import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatistic
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.classifiers.rules.multilabel.inputselectors.InputAttributesSelector;
+import moa.classifiers.rules.multilabel.instancetransformers.InstanceTransformer;
+import moa.classifiers.rules.multilabel.instancetransformers.NoInstanceTransformation;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.core.StringUtils;
 
@@ -131,14 +133,15 @@ public class MultiLabelRule extends AbstractMOAObject {
 		boolean hasExpanded=learningLiteral.tryToExpand(splitConfidence,tieThresholdOption);
 		if(hasExpanded){
 			LearningLiteral otherOutputsLiteral=learningLiteral.getOtherOutputsLearningLiteral();
-			if(otherOutputsLiteral!=null){
+			//if && this.literalList.size()>0 is removed then consider including this code for default rule also
+			if(otherOutputsLiteral!=null && this.literalList.size()>0){ //only add "other outputs" rule if antecedent is not empty
 				otherOutputsRule=new MultiLabelRule();
-				otherOutputsRule.instanceInformation=instanceInformation;
-				otherOutputsRule.literalList=new LinkedList<Literal>(literalList);
+				otherOutputsRule.instanceInformation=instanceInformation; 
+				otherOutputsRule.literalList=new LinkedList<Literal>(this.literalList);
 				otherOutputsRule.learningLiteral=otherOutputsLiteral;
 			}
 			
-			otherBranchRule=new MultiLabelRule(learningLiteral.getOtherBranchLearningLiteral());
+			otherBranchRule=new MultiLabelRule((LearningLiteral)learningLiteral.getOtherBranchLearningLiteral());
 			//check for obsolete predicate
 			int attribIndex=learningLiteral.getBestSuggestion().getPredicate().getAttributeIndex();
 			boolean isEqualOrLess=learningLiteral.getBestSuggestion().getPredicate().isEqualOrLess();
@@ -231,12 +234,13 @@ public class MultiLabelRule extends AbstractMOAObject {
 		
 	}
 
-	protected MultiLabelRule getOtherOutputsRule() {
-		return otherOutputsRule;
-	}
-
 	public boolean hasNewRuleFromOtherOutputs() {
 		return this.otherOutputsRule!=null;
+	}
+
+	public void setInstanceTransformer(InstanceTransformer instanceTransformer) {
+		learningLiteral.setInstanceTransformer(instanceTransformer);
+		
 	}
 
 }

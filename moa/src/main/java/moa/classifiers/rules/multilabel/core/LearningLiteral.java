@@ -13,7 +13,9 @@ import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatistic
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.classifiers.rules.multilabel.inputselectors.InputAttributesSelector;
+import moa.classifiers.rules.multilabel.instancetransformers.InstanceOutputAttributesSelector;
 import moa.classifiers.rules.multilabel.instancetransformers.InstanceTransformer;
+import moa.classifiers.rules.multilabel.instancetransformers.NoInstanceTransformation;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
@@ -21,6 +23,7 @@ import moa.options.AbstractOptionHandler;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceInformation;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
@@ -72,6 +75,8 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	protected OutputAttributesSelector outputSelector;
 
 	protected InputAttributesSelector inputSelector;
+	
+	protected InstanceInformation instanceInformation;
 
 	protected Random randomGenerator;
 
@@ -79,6 +84,8 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	protected double attributesPercentage;
 
 	protected InstanceTransformer instanceTransformer;
+	
+	protected InstancesHeader instanceHeader;
 
 
 	// Maintain statistics for input and output attributes for standard deviation computation?
@@ -95,7 +102,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 
 	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
 		Prediction prediction=null;
-		if (learner!=null && this.instanceTransformer!=null){ //TODO: check this 
+		if (learner!=null){ 
 			Instance transfInstance=this.instanceTransformer.sourceInstanceToTarget(instance);
 			Prediction targetPrediction=learner.getPredictionForInstance(transfInstance);
 			prediction=this.instanceTransformer.targetPredictionToSource(targetPrediction);
@@ -201,8 +208,8 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 
 	public void setLearner(MultiLabelLearner learner) {
 		this.learner=learner;
-
 	}
+	
 
 	public void setErrorMeasurer(MultiLabelErrorMeasurer errorMeasurer) {
 		this.errorMeasurer=errorMeasurer;
@@ -273,6 +280,10 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 
 	public LearningLiteral getOtherOutputsLearningLiteral() {
 		return otherOutputsLearningLiteral;
+	}
+
+	public void setInstanceInformation(InstanceInformation instanceInformation) {
+		this.instanceInformation=instanceInformation;
 	}
 
 
