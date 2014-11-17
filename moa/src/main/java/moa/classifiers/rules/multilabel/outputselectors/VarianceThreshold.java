@@ -20,7 +20,7 @@ OutputAttributesSelector {
 
 	public FloatOption thresholdOption = new FloatOption("Threshold",
 			'p', "Maximum allowed variance ratio (variance(new)/variance(old)).",
-			1.01, 1, 10.0);
+			1.0, 0.5, 2.0);
 
 
 	public int[] getNextOutputIndices(DoubleVector[] resultingStatistics, DoubleVector[] currentLiteralStatistics, int[] currentIndices) {

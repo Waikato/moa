@@ -17,14 +17,14 @@ public abstract class AbstractMultiLabelErrorMeasurer  extends AbstractOptionHan
 	
 	public FloatOption fadingErrorFactorOption = new FloatOption(
 			"fadingErrorFactor", 'f', 
-			"Fading factor for the error", 0.99, 0, 1);
+			"Fading factor for the error", 0.999, 0, 1);
 	
 	protected double fadingErrorFactor;
 	
 	abstract public void addPrediction(Prediction prediction, Prediction trueClass, double weight);
 	
 	public void addPrediction(Prediction prediction, Prediction trueClass){
-		addPrediction(prediction, trueClass);
+		addPrediction(prediction, trueClass,1.0);
 	}
 	
 	abstract public void addPrediction(Prediction prediction, MultiLabelInstance inst);

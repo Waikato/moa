@@ -22,29 +22,23 @@ public class UniformWeightedVoteMultiLabelTest {
     public static void runBefore() {
 		weightedVote = new UniformWeightedVoteMultiLabel();
 		Prediction pred= new MultiLabelPrediction(4);
+		pred.setVotes(0, new double[]{1});
 		pred.setVotes(1, new double[]{2});
 		pred.setVotes(2, new double[]{3});
 		pred.setVotes(3, new double[]{4});
-		weightedVote.addVote(pred, new double[]{0,3,2,1});
+		weightedVote.addVote(pred, new double[]{4,3,2,1});
 		
 		pred= new MultiLabelPrediction(4);
 		pred.setVotes(0, new double[]{1});
 		pred.setVotes(1, new double[]{2});
 		pred.setVotes(3, new double[]{4});
-		weightedVote.addVote(pred, new double[]{3,2,1,0});
+		weightedVote.addVote(pred, new double[]{3,2,Double.MAX_VALUE,0});
 		
 		pred= new MultiLabelPrediction(4);
 		pred.setVotes(0, new double[]{4});
 		pred.setVotes(1, new double[]{2});
 		pred.setVotes(3, new double[]{1});
-		weightedVote.addVote(pred, new double[]{1,0,1,0});
-		weightedVote.computeWeightedVote(); 
-		
-		pred= new MultiLabelPrediction(4);
-		pred.setVotes(0, new double[]{});
-		pred.setVotes(1, new double[]{2});
-		pred.setVotes(3, new double[]{1});
-		weightedVote.addVote(pred, new double[]{1,0,1,0});
+		weightedVote.addVote(pred, new double[]{1,0,Double.MAX_VALUE,0});
 		weightedVote.computeWeightedVote(); 
      }
     
