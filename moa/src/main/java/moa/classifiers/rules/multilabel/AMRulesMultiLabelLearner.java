@@ -399,6 +399,11 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 				}
 			}
 		}
+		int [] aux=defaultRule.getInputsCovered();
+		if(aux!=null){
+			avg+=aux.length;
+			ct++;
+		}
 		if(ct>0)
 			avg/=ct;
 		return avg;
@@ -415,6 +420,11 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 					ct++;
 				}
 			}
+		}
+		int [] aux=defaultRule.getOutputsCovered();
+		if(aux!=null){
+			avg+=aux.length;
+			ct++;
 		}
 		if(ct>0)
 			avg/=ct;

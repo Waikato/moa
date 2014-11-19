@@ -5,6 +5,8 @@ import moa.classifiers.AbstractClassifier;
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiTargetRegressor;
+import moa.classifiers.rules.AMRulesRegressor;
+import moa.classifiers.rules.multilabel.AMRulesMultiLabelLearner;
 import moa.core.DoubleVector;
 import moa.core.FastVector;
 import moa.core.Measurement;
@@ -35,7 +37,7 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 
 	protected void init() {
 		baseLearnerOption = new ClassOption("baseLearner", 'l',
-				"Classifier to train.", Classifier.class, "rules.AMRulesRegressor");
+				"Classifier to train.", Classifier.class, AMRulesRegressor.class.getName());
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -121,11 +123,25 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 
 	@Override
 	protected Measurement[] getModelMeasurementsImpl() {
-		if(ensemble.length>0)
-			return ensemble[0].getModelMeasurements(); 
-		//TODO: JD - get measurements for all outputs
-		else 
-			return null;
+		Measurement [] baseLearnerMeasurements=((Classifier) getPreparedClassOption(this.baseLearnerOption)).getModelMeasurements();
+		int nMeasurements=baseLearnerMeasurements.length;
+		Measurement [] m=new Measurement[nMeasurements];
+
+		if(this.ensemble !=null){	
+			int ensembleSize=this.ensemble.length;
+			for(int i=0; i<nMeasurements; i++){
+				double value=0;
+				for (int j=0; j<ensembleSize; ++j){
+					value+=ensemble[j].getModelMeasurements()[i].getValue();
+				}
+				m[i]= new Measurement("Sum " + baseLearnerMeasurements[i].getName(), value);
+			}
+		}
+		else{
+			for(int i=0; i<baseLearnerMeasurements.length; i++)
+				m[i]=baseLearnerMeasurements[i];
+		}
+		return m;
 	}
 
 

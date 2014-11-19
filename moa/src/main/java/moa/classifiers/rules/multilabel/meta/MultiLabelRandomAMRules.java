@@ -151,9 +151,6 @@ implements MultiTargetRegressor {
 		int nMeasurements=baseLearnerMeasurements.length;
 		Measurement [] m=new Measurement[nMeasurements+1];
 
-		for(int i=0; i<baseLearnerMeasurements.length; i++)
-			m[i+1]=baseLearnerMeasurements[i];
-		
 		int ensembleSize=0;
 		if(this.ensemble !=null){	
 			ensembleSize=this.ensemble.length;
@@ -165,9 +162,13 @@ implements MultiTargetRegressor {
 				m[i+1]= new Measurement("Avg " + baseLearnerMeasurements[i].getName(), value/ensembleSize);
 			}
 		}
-	
+		else{
+			for(int i=0; i<baseLearnerMeasurements.length; i++)
+				m[i+1]=baseLearnerMeasurements[i];
+		}
+
 		m[0]=new Measurement("ensemble size", ensembleSize);
-		
+
 		return m;
 	}
 
@@ -184,4 +185,4 @@ implements MultiTargetRegressor {
 
 
 
-	}
+}
