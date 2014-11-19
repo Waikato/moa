@@ -8,6 +8,7 @@ import moa.classifiers.rules.multilabel.errormeasurers.MultiTargetErrorMeasurer;
 import moa.core.Measurement;
 import moa.options.ClassOption;
 
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
@@ -25,6 +26,10 @@ implements MultiTargetRegressor, AMRulesFunction {
 	public ClassOption baseLearnerOption2;
 
 	public ClassOption errorMeasurerOption;
+	
+	public IntOption randomSeedOption = new IntOption("randomSeedOption",
+			'r', "randomSeedOption", 
+			1,Integer.MIN_VALUE, Integer.MAX_VALUE);
 
 	protected boolean hasStarted;
 
@@ -34,12 +39,13 @@ implements MultiTargetRegressor, AMRulesFunction {
 	protected MultiTargetErrorMeasurer [] errorMeasurer;
 
 	public AdaptiveMultiTargetRegressor(){
-		 baseLearnerOption1 = new ClassOption("baseLearner1", 'l',
-					"First base learner.", AMRulesFunction.class, MultiLabelTargetMeanRegressor.class.getName()) ;
-		 baseLearnerOption2= new ClassOption("baseLearner2", 'm',
-					"Second base learner.", AMRulesFunction.class, MultiLabelPerceptronRegressor.class.getName()) ;
-		 errorMeasurerOption = new ClassOption("errorMeasurer", 'e',
-					"Measure of error for deciding which learner should predict.", AbstractMultiTargetErrorMeasurer.class, MeanAbsoluteDeviationMT.class.getName()) ;
+		super.randomSeedOption=randomSeedOption;
+		baseLearnerOption1 = new ClassOption("baseLearner1", 'l',
+				"First base learner.", AMRulesFunction.class, MultiLabelTargetMeanRegressor.class.getName()) ;
+		baseLearnerOption2= new ClassOption("baseLearner2", 'm',
+				"Second base learner.", AMRulesFunction.class, MultiLabelPerceptronRegressor.class.getName()) ;
+		errorMeasurerOption = new ClassOption("errorMeasurer", 'e',
+				"Measure of error for deciding which learner should predict.", AbstractMultiTargetErrorMeasurer.class, MeanAbsoluteDeviationMT.class.getName()) ;
 
 	}
 	@Override
@@ -50,8 +56,11 @@ implements MultiTargetRegressor, AMRulesFunction {
 			baseLearner[0]=(MultiTargetRegressor) getPreparedClassOption(this.baseLearnerOption1);
 			baseLearner[1]=(MultiTargetRegressor) getPreparedClassOption(this.baseLearnerOption2);
 			for (int i=0; i<NUM_LEARNERS; i++){
+				if(baseLearner[i].isRandomizable())
+					baseLearner[i].setRandomSeed(this.randomSeed);
 				baseLearner[i].resetLearning();
 				errorMeasurer[i]=(MultiTargetErrorMeasurer)((MultiTargetErrorMeasurer) getPreparedClassOption(this.errorMeasurerOption)).copy();
+			
 			}
 			this.hasStarted = true;
 		}
@@ -93,6 +102,13 @@ implements MultiTargetRegressor, AMRulesFunction {
 	@Override
 	public void resetLearningImpl() {
 		this.hasStarted = false;
+		if(baseLearner!=null){
+			for (int i=0; i<baseLearner.length; i++){
+				classifierRandom.setSeed(randomSeedOption.getValue());
+				baseLearner[i].setRandomSeed(this.randomSeed);
+				baseLearner[i].resetLearning();
+			}
+		}
 	}
 
 	@Override
@@ -123,10 +139,10 @@ implements MultiTargetRegressor, AMRulesFunction {
 	@Override
 	public void selectOutputsToLearn(int[] outtputAtributtes) {
 		for (int i=0; i<NUM_LEARNERS; i++){
-				((AMRulesFunction)baseLearner[i]).selectOutputsToLearn(outtputAtributtes);
+			((AMRulesFunction)baseLearner[i]).selectOutputsToLearn(outtputAtributtes);
 		}	
 	}
-	
+
 
 
 

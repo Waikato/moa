@@ -228,6 +228,8 @@ public class LearningLiteralRegression extends LearningLiteral {
 		int numInputs=instance.numInputAttributes();
 		if(!hasStarted)
 		{
+			if(this.learner.isRandomizable())
+				this.learner.setRandomSeed(this.randomGenerator.nextInt());
 			if(outputsToLearn==null)
 			{
 				outputsToLearn=new int[numOutputs];

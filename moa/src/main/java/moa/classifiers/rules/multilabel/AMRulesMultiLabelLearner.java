@@ -137,7 +137,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			//"MeritThreshold");
 			SelectAllInputs.class.getName());
 	public IntOption randomSeedOption = new IntOption("randomSeedOption",
-			'R', "randomSeedOption", 
+			'r', "randomSeedOption", 
 			1,Integer.MIN_VALUE, Integer.MAX_VALUE);
 
 
@@ -153,7 +153,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 
 	public AMRulesMultiLabelLearner() {
 		super();
-		this.randomSeed=randomSeedOption.getValue();
+		super.randomSeedOption=this.randomSeedOption;
 		attributesPercentage=100;
 	}
 
@@ -490,7 +490,11 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	@Override
 	public void resetLearningImpl() {
 		defaultRule=newDefaultRule();
-		defaultRule.setLearner((MultiLabelLearner)((MultiLabelLearner)getPreparedClassOption(learnerOption)).copy());
+		this.classifierRandom.setSeed(this.randomSeed);
+		MultiLabelLearner l = (MultiLabelLearner)((MultiLabelLearner)getPreparedClassOption(learnerOption)).copy();
+		l.setRandomSeed(this.randomSeed);
+		l.resetLearning();
+		defaultRule.setLearner(l);
 		defaultRule.setInstanceTransformer(new NoInstanceTransformation());
 		setRuleOptions(defaultRule);
 		ruleSet = new MultiLabelRuleSet();
@@ -519,6 +523,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 
 
 	public void setRandomSeed(int randomSeed){
+		super.setRandomSeed(randomSeed);
 		this.classifierRandom.setSeed(randomSeed);
 	}
 
