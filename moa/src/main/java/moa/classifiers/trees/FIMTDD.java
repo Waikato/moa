@@ -132,7 +132,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 	public FlagOption regressionTreeOption = new FlagOption(
 			"regressionTree",
-			'r',
+			'e',
 			"Build a regression tree instead of a model tree.");
 
 	public FloatOption learningRatioOption = new FloatOption(
@@ -573,12 +573,11 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 			// Initialize perceptron if necessary   
 			if (this.reset == true) {
-				Random r = new Random();
 				reset = false;
 				weightAttribute = new DoubleVector();
 				instancesSeen = 0;
 				for (int j = 0; j < inst.numAttributes(); j++) { // The last index corresponds to the constant b
-					weightAttribute.setValue(j, 2 * r.nextDouble() - 1);
+					weightAttribute.setValue(j, 2 * tree.classifierRandom.nextDouble() - 1);
 				}
 			}
 
@@ -617,12 +616,15 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 				int instAttIndex = modelAttIndexToInstanceAttIndex(j, inst);
 				double mean = tree.sumOfAttrValues.getValue(j) / tree.examplesSeen;
 				double sd = computeSD(tree.sumOfAttrSquares.getValue(j), tree.sumOfAttrValues.getValue(j), tree.examplesSeen);
-				if (inst.attribute(instAttIndex).isNumeric() && tree.examplesSeen > 1) 
+				if (inst.attribute(instAttIndex).isNumeric() && tree.examplesSeen > 1 && sd > 0)
 					normalizedInstance.setValue(j, (inst.value(instAttIndex) - mean) / (3 * sd));
 				else
 					normalizedInstance.setValue(j, 0);
 			}
-			normalizedInstance.setValue(inst.numAttributes() - 1, 1.0); // Value to be multiplied with the constant factor
+			if (tree.examplesSeen > 1)
+                                normalizedInstance.setValue(inst.numAttributes() - 1, 1.0); // Value to be multiplied with the constant factor
+			else
+				normalizedInstance.setValue(inst.numAttributes() - 1, 0.0);
 			return normalizedInstance;
 		}
 
@@ -643,7 +645,10 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		private double denormalizePrediction(double normalizedPrediction, FIMTDD tree) {
 			double mean = tree.sumOfValues / tree.examplesSeen;
 			double sd = computeSD(tree.sumOfSquares, tree.sumOfValues, tree.examplesSeen);
-			return normalizedPrediction * sd * 3 + mean;
+			if (examplesSeen > 1) 
+                                return normalizedPrediction * sd * 3 + mean;
+			else
+				return 0.0;
 		}
 		
 		public void getModelDescription(StringBuilder out, int indent) {
@@ -683,7 +688,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 	}
 
 	public boolean isRandomizable() {
-		return false;
+		return true;
 	}
 
 	public void getModelDescription(StringBuilder out, int indent) {
@@ -719,7 +724,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		if (examplesSeen > 1) {
 			double sd = Math.sqrt((sumOfSquares - ((sumOfValues * sumOfValues)/examplesSeen))/examplesSeen);
 			double average = sumOfValues / examplesSeen;
-			if (sd > 0)
+			if (sd > 0 && examplesSeen > 1)
 				return (value - average) / (3 * sd);
 			else
 				return 0.0;
@@ -740,7 +745,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 	public void trainOnInstanceImpl(Instance inst) {
 		checkRoot();
 
-		examplesSeen ++;
+		examplesSeen++;
 		sumOfValues += inst.classValue();
 		sumOfSquares += inst.classValue() * inst.classValue();
 
@@ -951,7 +956,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 	
 	public double scalarProduct(DoubleVector u, DoubleVector v) {
 		double ret = 0.0;
-		for (int i = 0; i < Math.max(u.maxIndex(), v.maxIndex()); i++) {
+		for (int i = 0; i < Math.max(u.numValues(), v.numValues()); i++) {
 			ret += u.getValue(i) * v.getValue(i);
 		}
 		return ret;
