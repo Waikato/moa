@@ -32,7 +32,7 @@ OutputAttributesSelector {
 			double stdRes=Utils.computeVariance(resultingStatistics[i].getValue(0),resultingStatistics[i].getValue(3),resultingStatistics[i].getValue(4));
 			double stdCur=Utils.computeVariance(currentLiteralStatistics[i].getValue(0),currentLiteralStatistics[i].getValue(3),currentLiteralStatistics[i].getValue(4));
 	
-			if(stdRes/stdCur<=threshold)
+			if(stdRes/stdCur<=threshold || stdCur==0) 
 				newOutputsList.add(currentIndices[i]);
 		}
 		//list to array

@@ -36,7 +36,6 @@ public class MultiLabelRule extends AbstractMOAObject {
 
 	protected LearningLiteral learningLiteral;
 	
-
 	protected int ruleNumberID;
 	
 	protected MultiLabelRule otherBranchRule;

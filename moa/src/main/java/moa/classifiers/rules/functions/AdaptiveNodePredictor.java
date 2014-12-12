@@ -58,6 +58,8 @@ public class AdaptiveNodePredictor extends AbstractClassifier implements
 		if(!hasStarted){
 			p=new Perceptron();
 			tm=new TargetMean();
+			p.resetLearning();
+			tm.resetLearning();
 			hasStarted=true;
 		}
 		p.trainOnInstance(inst);

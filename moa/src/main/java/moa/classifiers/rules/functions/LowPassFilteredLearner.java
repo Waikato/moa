@@ -45,6 +45,8 @@ public class LowPassFilteredLearner extends AbstractClassifier implements AMRule
 	@Override
 	public void resetLearningImpl() {
 		hasStarted=false;
+		if(learner!=null)
+			learner.resetLearning();
 		
 	}
 

@@ -145,12 +145,12 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 	 * A method to reset the model
 	 */
 	public void resetLearningImpl() {
-		this.classifierRandom.setSeed(this.randomSeed);
 		this.initialisePerceptron = true;
 		this.reset(); 
 	}
 
 	public void reset(){
+		this.classifierRandom.setSeed(this.randomSeed);
 		this.nError=0.0;
 		this.accumulatedError = 0.0;
 		this.perceptronInstancesSeen = 0;	

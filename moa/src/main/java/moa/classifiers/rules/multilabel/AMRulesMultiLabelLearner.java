@@ -19,19 +19,7 @@
  */
 
 package moa.classifiers.rules.multilabel;
-/**
- * Adaptive Model Rules for MultiLabel problems(AMRulesML), the streaming rule learning algorithm.
- * 
- * @author  J. Duarte, J. Gama (jgama@fep.up.pt)
- * @version $Revision: 1$* 
- * 
- * This algorithm learn ordered and unordered rule set from data stream. 
- * Each rule  detect changes in the processing generating data and react to changes by pruning the rule set.
- * This algorithm also does the detection of anomalies.
- * 
- **/
 
-import java.util.Iterator;
 import java.util.ListIterator;
 
 import moa.classifiers.AbstractMultiLabelLearner;
@@ -62,6 +50,17 @@ import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
+/**
+ * Adaptive Model Rules for MultiLabel problems(AMRulesML), the streaming rule learning algorithm.
+ * 
+ * @author  J. Duarte, J. Gama (jgama@fep.up.pt)
+ * @version $Revision: 1$* 
+ * 
+ * This algorithm learn ordered and unordered rule set from data stream. 
+ * Each rule  detect changes in the processing generating data and react to changes by pruning the rule set.
+ * This algorithm also does the detection of anomalies.
+ * 
+ **/
 
 public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner implements MultiLabelLearner{
 
@@ -345,7 +344,6 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 					defaultRule=newDefaultRule;
 
 				}
-
 			}
 		}
 	}
