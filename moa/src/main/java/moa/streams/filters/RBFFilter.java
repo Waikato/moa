@@ -95,13 +95,20 @@ public class RBFFilter extends AbstractStreamFilter {
 			v.add(new Attribute("z"+String.valueOf(j)));
 			indexValues.add(j);
 		}
+		v.add(instance.dataset().classAttribute()); 
+		indexValues.add(h);
+
 
 		ds.setAttributes(v,indexValues);
-		Range r= new Range("-" + h);
-		r.setUpper(h);
+		Range r= new Range("start-end");
+		//r.setUpper(h);
 		ds.setRangeOutputIndices(r);
 		dataset=(new InstancesHeader(ds));
-		dataset.setClassIndex(0);
+		dataset.setClassIndex(h);
+		System.out.println(""+ds);
+		System.out.println("no. classes: "+dataset.numClasses());
+		System.out.println("no. instans: "+dataset.numInstances());
+		System.out.println("no. attribs: "+dataset.numAttributes());
 	}
 
 	@Override
