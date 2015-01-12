@@ -40,29 +40,30 @@ public class RBFFilter extends AbstractStreamFilter {
 
 	@Override
 	public InstanceExample nextInstance() {
+
 		Instance x = (Instance) ((Instance) this.inputStream.nextInstance().getData());
+
 		if(dataset==null){
 			System.out.println("INIT. ");
 			initialize(x);
 		}		
 
-		System.out.println("PROC. ");
 		double z_[] = new double[dataset.numAttributes()];
 		Instance z = new InstanceImpl(x.weight(),z_);
 
 		int d = x.numAttributes();
-		int h = z_.length;
+		int h = numLatentOption.getValue();
 		int j_c = x.classIndex();
 
 		for(int k = 0; k < h; k++) {
 			double sum_k = 0.;
 			for(int j = 0; j < d; j++) {
-				if (j!=j_c) // if not the class index
-					sum_k += (x.value(j) - c[k]);
+				sum_k += (x.value(j) - c[k]);
 			}
 			double v = sum_k / Math.pow(r[k],2);
 			z.setValue(k,Math.exp(-sum_k));
 		}
+		z.setValue(h,x.classValue());
 		z.setDataset(dataset);
 
 		return new InstanceExample(z);
@@ -105,10 +106,11 @@ public class RBFFilter extends AbstractStreamFilter {
 		ds.setRangeOutputIndices(r);
 		dataset=(new InstancesHeader(ds));
 		dataset.setClassIndex(h);
-		System.out.println(""+ds);
-		System.out.println("no. classes: "+dataset.numClasses());
-		System.out.println("no. instans: "+dataset.numInstances());
-		System.out.println("no. attribs: "+dataset.numAttributes());
+		System.out.println(""+dataset);
+		System.out.println("classIndex :  "+dataset.classIndex());
+		System.out.println("numClasses :  "+dataset.numClasses());
+		System.out.println("numInstances: "+dataset.numInstances());
+		System.out.println("numAttribute: "+dataset.numAttributes());
 	}
 
 	@Override
