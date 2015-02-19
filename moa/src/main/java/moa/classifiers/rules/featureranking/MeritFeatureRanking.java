@@ -2,8 +2,6 @@ package moa.classifiers.rules.featureranking;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -66,7 +64,7 @@ public class MeritFeatureRanking extends AbstractFeatureRanking implements Featu
 
 	@Override
 	public DoubleVector getFeatureRankings() {
-		DoubleVector normRankings=null;
+		/*DoubleVector normRankings=null;
 		if(attributeImportance!=null){
 			double total=0;
 			for (int i=0; i<attributeImportance.numValues();i++)
@@ -80,7 +78,11 @@ public class MeritFeatureRanking extends AbstractFeatureRanking implements Featu
 			normRankings= new DoubleVector(aux);
 		}
 		return normRankings;
-		//return attributeImportance;
+		*/
+		
+		if(attributeImportance==null)
+			return new DoubleVector();
+		return attributeImportance;
 	}
 
 	public DoubleVector getAccumulated() {

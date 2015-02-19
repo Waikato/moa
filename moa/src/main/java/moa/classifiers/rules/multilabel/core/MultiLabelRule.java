@@ -8,14 +8,8 @@ import java.util.Random;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
-import moa.classifiers.rules.featureranking.WeightedMajorityFeatureRanking_;
-import moa.classifiers.rules.featureranking.messages.BasicAddedMessage;
-import moa.classifiers.rules.featureranking.messages.BasicRemovedMessage;
 import moa.classifiers.rules.featureranking.messages.MeritCheckMessage;
 import moa.classifiers.rules.featureranking.messages.RuleExpandedMessage;
-import moa.classifiers.rules.featureranking.messages.WeightedMajorityAddMessage;
-import moa.classifiers.rules.featureranking.messages.WeightedMajorityCleanMessage;
-import moa.classifiers.rules.featureranking.messages.WeightedMajorityMessage;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatisticsObserver;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
@@ -143,20 +137,7 @@ public class MultiLabelRule extends ObservableMOAObject {
 		//Merit check event
 		double[] merit=learningLiteral.getMeritInputAttributes();
 		this.notifyAll( new MeritCheckMessage(new DoubleVector(merit), this.learningLiteral.getAttributeMask()));
-		/*
-		////////////////////////////////////////////////////////////
-		//WeightedMajorityFeature Ranking
 
-		Iterator<Literal> iter=literalList.iterator();
-		while(iter.hasNext()){
-			Literal l=iter.next();
-			//For WightedMajorityFeatureRanking
-			merit[l.predicate.getAttributeIndex()]=1;
-		}
-		this.notifyAll(new WeightedMajorityAddMessage(merit, this.literalList.size()));
-		//////////////////////////////////////////////////////////////
-		 * 
-		 */
 		if(hasExpanded){
 			
 			LearningLiteral otherOutputsLiteral=learningLiteral.getOtherOutputsLearningLiteral();
@@ -172,11 +153,8 @@ public class MultiLabelRule extends ObservableMOAObject {
 			//check for obsolete predicate
 			int attribIndex=learningLiteral.getBestSuggestion().getPredicate().getAttributeIndex();
 			boolean isEqualOrLess=learningLiteral.getBestSuggestion().getPredicate().isEqualOrLess();
+			
 			boolean isSpecialization=false;
-
-			//////////////////////////////////////////////////////////////
-			//for BasicFeatureRanking
-			/*this.notifyAll(new BasicAddedMessage(attribIndex)); */
 			Iterator<Literal> it=literalList.iterator();
 			while(it.hasNext()){
 				Literal l=it.next();
@@ -184,19 +162,10 @@ public class MultiLabelRule extends ObservableMOAObject {
 				{
 					it.remove();
 					isSpecialization=true;
-					//this.notifyAll(new BasicRemovedMessage(attribIndex)); //for BasicFeatureRanking
 					break;
 				}
 			}
 			
-			/*//For WightedMajorityFeatureRanking
-			if(this.attributesDemeritAccum!=null){
-				this.notifyAll(new WeightedMajorityCleanMessage(attribIndex, this.attributesDemeritAccum[attribIndex]));
-				this.attributesDemeritAccum[attribIndex]=0;
-			}
-			//////////////////////////////////////////////////////////////
-			 * */
-
 			//Rule expansion event
 			this.notifyAll(new RuleExpandedMessage(attribIndex, isSpecialization));
 
@@ -291,41 +260,12 @@ public class MultiLabelRule extends ObservableMOAObject {
 
 	@Override
 	public void addObserver(ObserverMOAObject o) {
-		{
 			observers.add(o);
-			Iterator<Literal> it = this.literalList.iterator();
-			while(it.hasNext()){
-				this.notify(o,new BasicAddedMessage(it.next().getAttributeIndex()));
-			}
-		}
-
 	}
 
 	public List<Literal> getLiterals(){
 		return literalList;
 	}
-
-	/*@Override
-	public void receiveFeedback(ObserverMOAObject o, Object feedback) {
-		if((o instanceof WeightedMajorityFeatureRanking_) && (feedback instanceof WeightedMajorityMessage)){
-			this.addAttributesDemerit(((WeightedMajorityMessage)feedback).getValues());
-		}
-
-	}
-
-	private void addAttributesDemerit(double [] demerit){
-		if(attributesDemeritAccum==null)
-			attributesDemeritAccum=demerit;
-		else{
-			for (int i=0; i<attributesDemeritAccum.length;i++)
-				attributesDemeritAccum[i]+=demerit[i];
-		}
-
-	}*/
-
-	/*public double[] getAttributesDemerit() {
-		return attributesDemeritAccum;
-	}*/
 
 
 }

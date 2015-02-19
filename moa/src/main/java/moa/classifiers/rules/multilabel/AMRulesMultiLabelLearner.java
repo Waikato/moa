@@ -20,7 +20,6 @@
 
 package moa.classifiers.rules.multilabel;
 
-import java.util.Iterator;
 import java.util.ListIterator;
 
 import moa.classifiers.AbstractMultiLabelLearner;
@@ -28,12 +27,11 @@ import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
 import moa.classifiers.rules.core.anomalydetection.OddsRatioScore;
-import moa.classifiers.rules.featureranking.messages.BasicRemovedMessage;
+import moa.classifiers.rules.featureranking.FeatureRanking;
+import moa.classifiers.rules.featureranking.NoFeatureRanking;
 import moa.classifiers.rules.featureranking.messages.ChangeDetectedMessage;
-import moa.classifiers.rules.featureranking.messages.WeightedMajorityRemoveMessage;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatisticsObserver;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
-import moa.classifiers.rules.multilabel.core.Literal;
 import moa.classifiers.rules.multilabel.core.MultiLabelRule;
 import moa.classifiers.rules.multilabel.core.MultiLabelRuleSet;
 import moa.classifiers.rules.multilabel.core.ObserverMOAObject;
@@ -45,6 +43,7 @@ import moa.classifiers.rules.multilabel.inputselectors.SelectAllInputs;
 import moa.classifiers.rules.multilabel.instancetransformers.NoInstanceTransformation;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.classifiers.rules.multilabel.outputselectors.SelectAllOutputs;
+import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
@@ -57,13 +56,13 @@ import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
- * Adaptive Model Rules for MultiLabel problems(AMRulesML), the streaming rule learning algorithm.
+ * Adaptive Model Rules for MultiLabel problems (AMRulesML), the streaming rule learning algorithm.
  * 
  * @author  J. Duarte, J. Gama (jgama@fep.up.pt)
- * @version $Revision: 1$* 
+ * @version $Revision: 2$* 
  * 
- * This algorithm learn ordered and unordered rule set from data stream. 
- * Each rule  detect changes in the processing generating data and react to changes by pruning the rule set.
+ * This algorithm learns ordered and unordered rule set from data streams. 
+ * Each rule detect anomalies and react to changes by pruning the rule set.
  * This algorithm also does the detection of anomalies.
  * 
  **/
@@ -145,8 +144,14 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	public IntOption randomSeedOption = new IntOption("randomSeedOption",
 			'r', "randomSeedOption", 
 			1,Integer.MIN_VALUE, Integer.MAX_VALUE);
+	
+	public ClassOption featureRankingOption = new ClassOption("featureRanking",
+			'F', "Feature ranking algorithm.", 
+			FeatureRanking.class,
+			NoFeatureRanking.class.getName());
 
-
+	private int nAttributes=0;
+	
 	protected double attributesPercentage;
 
 	public double getAttributesPercentage() {
@@ -259,6 +264,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	private double numChangesDetected; //Just for statistics 
 	private double numAnomaliesDetected; //Just for statistics 
 	private double numInstances; //Just for statistics
+	private FeatureRanking featureRanking;
 
 	@Override
 	public void trainOnInstanceImpl(MultiLabelInstance instance) {
@@ -285,6 +291,8 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 					//Expand default rule and add it to the set of rules
 					//Reset the default rule
 		 */
+		if(nAttributes==0)
+			nAttributes=instance.numInputAttributes();
 		numInstances+=instance.weight();
 		debug("Train",3);
 		debug("Nº instance "+numInstances + " - " + instance.toString(),3);
@@ -298,20 +306,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 					if (rule.updateChangeDetection(instance)) {
 						debug("I) Drift Detected. Exa. : " +  this.numInstances + " (" + rule.getWeightSeenSinceExpansion() +") Remove Rule: " +rule.getRuleNumberID(),1);
 						ruleIterator.remove();
-						
-						
-						///////////////////////////////////////////////////////
-						//For BasicFeatureRanking
-						/*Iterator<Literal> itLit=rule.getLiterals().iterator();
-						while(itLit.hasNext()){
-							rule.notifyAll(new BasicRemovedMessage(itLit.next().getAttributeIndex()));
-						}
-						//For WeightedMajorityFeatureRanking_
-						rule.notifyAll(new WeightedMajorityRemoveMessage(rule.getAttributesDemerit()));
-						///////////////////////////////////////////////////////
-						 * 
-						 */
-						
+
 						//Rule expansion event
 						rule.notifyAll(new ChangeDetectedMessage());
 						
@@ -373,47 +368,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 				}
 			}
 		}
-		
-		/*//test - clean this up latter
-		
-		ruleIterator= this.ruleSet.listIterator();
-		double [] sum=null;
-		while (ruleIterator.hasNext()) {
-			double [] aux=ruleIterator.next().getAttributesDemerit();
-			if (sum==null && aux!=null)
-				sum=aux.clone();
-			else{
-				if(aux!=null)
-				for (int i=0; i<sum.length;i++){
-					sum[i]+=aux[i];
-				}
-			}
-				
-		}*/
-		//DoubleVector acc= ((MeritFeatureRanking)this.observer).getAccumulated();
 	}
-
-
-
-	/**
-	 * Method to verify if the instance is an anomaly.
-	 * @param instance
-	 * @param rule
-	 * @return
-	 *//*
-	private boolean isAnomaly(Instance instance, Rule rule) {
-		//AMRUles is equipped with anomaly detection. If on, compute the anomaly value. 			
-		boolean isAnomaly = false;	
-		if (this.noAnomalyDetectionOption.isSet() == false){
-			if (rule.getInstancesSeen() >= this.anomalyNumInstThresholdOption.getValue()) {
-				isAnomaly = rule.isAnomaly(instance, 
-						this.univariateAnomalyprobabilityThresholdOption.getValue(),
-						this.multivariateAnomalyProbabilityThresholdOption.getValue(),
-						this.anomalyNumInstThresholdOption.getValue());
-			}
-		}
-		return isAnomaly;
-	}*/
 
 
 
@@ -422,12 +377,26 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	 */
 	@Override
 	protected Measurement[] getModelMeasurementsImpl() {
-		return new Measurement[]{
+		Measurement[] m=null;
+		Measurement[] mNoFeatureRanking=new Measurement[]{
 				new Measurement("anomaly detections", this.numAnomaliesDetected),
 				new Measurement("change detections", this.numChangesDetected), 
 				new Measurement("rules (number)", this.ruleSet.size()+1),
 				new Measurement("Avg #inputs/rule", getAverageInputs()),
 				new Measurement("Avg #outputs/rule", getAverageOutputs())}; 
+		
+		if(featureRanking instanceof NoFeatureRanking){
+			m=mNoFeatureRanking;
+		}
+		else{
+			m=new Measurement[mNoFeatureRanking.length+this.nAttributes];
+			for(int i=0; i<mNoFeatureRanking.length; i++)
+				m[i]=mNoFeatureRanking[i];
+			DoubleVector rankings=this.featureRanking.getFeatureRankings();
+			for(int i=0; i<this.nAttributes; i++)
+				m[i+mNoFeatureRanking.length]=new Measurement("Attribute" + i, rankings.getValue(i));
+		}
+		return m;
 	}
 
 	protected double getAverageInputs() {
@@ -534,11 +503,6 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		}
 	}
 
-	//	abstract public RuleActiveLearningNode newRuleActiveLearningNode(Builder builder);
-
-	//	abstract public RuleActiveLearningNode newRuleActiveLearningNode(double[] initialClassObservations);
-
-
 
 	@Override
 	public void resetLearningImpl() {
@@ -553,6 +517,8 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		ruleSet = new MultiLabelRuleSet();
 		ruleNumberID=1;
 		statistics=null;
+		this.featureRanking=(FeatureRanking) getPreparedClassOption(this.featureRankingOption);
+		setObserver(featureRanking);
 	}
 
 

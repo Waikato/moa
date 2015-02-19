@@ -7,15 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.hamcrest.core.IsSame;
-
-import com.github.javacliparser.FloatOption;
-
 import moa.classifiers.rules.featureranking.messages.ChangeDetectedMessage;
 import moa.classifiers.rules.featureranking.messages.MeritCheckMessage;
 import moa.classifiers.rules.featureranking.messages.RuleExpandedMessage;
 import moa.classifiers.rules.multilabel.core.ObservableMOAObject;
 import moa.core.DoubleVector;
+
+import com.github.javacliparser.FloatOption;
 
 public class WeightedMajorityFeatureRanking extends AbstractFeatureRanking implements FeatureRanking{
 
@@ -103,21 +101,22 @@ public class WeightedMajorityFeatureRanking extends AbstractFeatureRanking imple
 
 	@Override
 	public DoubleVector getFeatureRankings() {
-		DoubleVector normRankings=null;
+		/*DoubleVector normRankings=new DoubleVector();
 		if(attributeImportance!=null){
 			double total=0;
 			for (int i=0; i<attributeImportance.numValues();i++)
 				total+=attributeImportance.getValue(i);
 			
 			//
-			normRankings=new DoubleVector();
 			double[] aux= new double[attributeImportance.numValues()];
 			for (int i=0; i<attributeImportance.numValues();i++)
 				aux[i]=attributeImportance.getValue(i)/total;	
-			normRankings= new DoubleVector(aux);
+			normRankings.addValues(aux);
 		}
-		return normRankings;
-		//return attributeImportance;
+		return normRankings;*/
+		if(attributeImportance==null)
+			return new DoubleVector();
+		return attributeImportance;
 	}
 
 	public DoubleVector getAccumulated() {

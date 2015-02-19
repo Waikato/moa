@@ -4,6 +4,7 @@ import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.rules.featureranking.BasicFeatureRanking;
 import moa.classifiers.rules.featureranking.FeatureRanking;
+import moa.classifiers.rules.featureranking.NoFeatureRanking;
 import moa.classifiers.rules.multilabel.AMRulesMultiLabelLearner;
 import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
 import moa.classifiers.rules.multilabel.core.voting.UniformWeightedVoteMultiLabel;
@@ -18,6 +19,7 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
+import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
@@ -57,7 +59,7 @@ implements MultiTargetRegressor {
 			"votingTypeOption", 'C', "Select whether the base learner error is computed as the overall error or only the error of the rules that cover the example.", new String[]{
 					"Overall (Static)","Only rules covered (Dynamic)"}, new String[]{
 					"Overall","Covered"}, 0);
-	
+
 
 
 
@@ -76,10 +78,12 @@ implements MultiTargetRegressor {
 	public ClassOption featureRankingOption = new ClassOption("featureRanking",
 			'F', "Feature ranking algorithm.", 
 			FeatureRanking.class,
-			BasicFeatureRanking.class.getName());
-	
+			NoFeatureRanking.class.getName());
+
 	protected boolean isRegression;
 	protected FeatureRanking featureRanking;
+	
+	
 	@Override
 	public void resetLearningImpl() {
 		this.classifierRandom.setSeed(this.randomSeedOption.getValue());
@@ -165,10 +169,18 @@ implements MultiTargetRegressor {
 
 	@Override
 	protected Measurement[] getModelMeasurementsImpl() {
-		Measurement [] baseLearnerMeasurements=((AMRulesMultiLabelLearner) getPreparedClassOption(this.baseLearnerOption)).getModelMeasurements();
+		//Measurement [] baseLearnerMeasurements=((AMRulesMultiLabelLearner) getPreparedClassOption(this.baseLearnerOption)).getModelMeasurements();
+		Measurement [] baseLearnerMeasurements=ensemble[0].getModelMeasurements();
 		int nMeasurements=baseLearnerMeasurements.length;
-		DoubleVector rankings=this.featureRanking.getFeatureRankings();
-		Measurement [] m=new Measurement[nMeasurements+nAttributes+1];
+		
+		int numMeasurements;
+		if(featureRanking instanceof NoFeatureRanking)
+			numMeasurements=nMeasurements+1;
+		else
+			numMeasurements=nMeasurements+nAttributes+1;
+			
+		
+		Measurement [] m=new Measurement[numMeasurements];
 
 		int ensembleSize=0;
 		if(this.ensemble !=null){	
@@ -176,7 +188,8 @@ implements MultiTargetRegressor {
 			for(int i=0; i<nMeasurements; i++){
 				double value=0;
 				for (int j=0; j<ensembleSize; ++j){
-					value+=ensemble[j].getModelMeasurements()[i].getValue();
+					Measurement [] measurements=ensemble[j].getModelMeasurements();
+					value+=measurements[i].getValue();
 				}
 				m[i+1]= new Measurement("Avg " + baseLearnerMeasurements[i].getName(), value/ensembleSize);
 			}
@@ -188,16 +201,18 @@ implements MultiTargetRegressor {
 
 		m[0]=new Measurement("ensemble size", ensembleSize);
 
-		//add feature importance
-		for(int i=0; i<nAttributes;i++){
-			double importance=0;
-			if(rankings!=null)
-				importance=rankings.getValue(i);
-			m[i+nMeasurements+1]=new Measurement("Attribute" + i, importance);
+		//add feature importance is a method was selected
+		if(!(featureRanking instanceof NoFeatureRanking)){
+			DoubleVector rankings=this.featureRanking.getFeatureRankings();
+			for(int i=0; i<nAttributes;i++){
+				double importance=0;
+				if(rankings!=null)
+					importance=rankings.getValue(i);
+				m[i+nMeasurements+1]=new Measurement("Attribute" + i, importance);
+			}
 		}
-		
 		return m;
-	}
+		}
 
 	@Override
 	public void getModelDescription(StringBuilder out, int indent) {

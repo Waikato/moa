@@ -14,7 +14,6 @@ import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriter
 import moa.classifiers.rules.multilabel.functions.AMRulesFunction;
 import moa.classifiers.rules.multilabel.instancetransformers.InstanceOutputAttributesSelector;
 import moa.classifiers.rules.multilabel.instancetransformers.InstanceTransformer;
-import moa.classifiers.rules.multilabel.instancetransformers.NoInstanceTransformation;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
@@ -81,19 +80,12 @@ public class LearningLiteralRegression extends LearningLiteral {
 
 
 		meritPerInput= new double[attributesMask.length];
-		//////////////////////////////////////////////////////////////
-		//for WeightedVoteFeatureRanking
-		/*for (int i=0; i<attributesMask.length;i++){
-			if(!attributesMask[i])
-				meritPerInput[i]=1;
-		}*/
 		for (int i=0; i<bestSplitSuggestions.length;i++){
 			double merit=bestSplitSuggestions[i].getMerit();
 			if(merit>0)
 				meritPerInput[bestSplitSuggestions[i].predicate.getAttributeIndex()]=merit;
 		}
 
-		////////////////////////////////////////////////////////////////////
 
 		Arrays.sort(bestSplitSuggestions);
 

@@ -13,9 +13,7 @@ import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatistic
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.classifiers.rules.multilabel.inputselectors.InputAttributesSelector;
-import moa.classifiers.rules.multilabel.instancetransformers.InstanceOutputAttributesSelector;
 import moa.classifiers.rules.multilabel.instancetransformers.InstanceTransformer;
-import moa.classifiers.rules.multilabel.instancetransformers.NoInstanceTransformation;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
@@ -87,7 +85,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	
 	protected InstancesHeader instanceHeader;
 
-	double [] meritPerInput; //forWeighted VoteFeatureRanking
+	double [] meritPerInput; //for feature
 	
 	// Maintain statistics for input and output attributes for standard deviation computation?
 
@@ -119,7 +117,6 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 
 		boolean hasChanged=false;
 		if (hasStarted){
-			//MultiLabelInstance transformedInstance=(MultiLabelInstance) instanceTransformer.sourceInstanceToTarget(instance);
 			if (changeDetectors==null){
 				changeDetectors=new ChangeDetector[outputsToLearn.length]; 
 				for (int i=0; i<outputsToLearn.length; i++){
@@ -298,5 +295,4 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 		return attributesMask;
 	}
 	
-	//	abstract public void resetLearning();
 }

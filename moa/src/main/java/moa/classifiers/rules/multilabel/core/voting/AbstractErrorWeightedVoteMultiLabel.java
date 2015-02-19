@@ -1,7 +1,7 @@
 
 package moa.classifiers.rules.multilabel.core.voting;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import moa.AbstractMOAObject;
@@ -28,8 +28,8 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 
 	public AbstractErrorWeightedVoteMultiLabel() {
 		super();
-		votes = new ArrayList<Prediction>();
-		errors = new ArrayList<double[]>();
+		votes = new LinkedList<Prediction>();
+		errors = new LinkedList<double[]>();
 	}
 
 

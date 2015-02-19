@@ -2,7 +2,6 @@ package moa.classifiers.rules.featureranking;
 
 import java.util.HashMap;
 
-import moa.classifiers.rules.featureranking.MeritFeatureRanking.RuleInformation;
 import moa.classifiers.rules.featureranking.messages.ChangeDetectedMessage;
 import moa.classifiers.rules.featureranking.messages.RuleExpandedMessage;
 import moa.classifiers.rules.multilabel.core.ObservableMOAObject;
@@ -58,12 +57,15 @@ public class BasicFeatureRanking extends AbstractFeatureRanking{
 
 	@Override
 	public DoubleVector getFeatureRankings() {
-		DoubleVector normRankings=null;
+		/*DoubleVector normRankings=null;
 		if(attributeImportance!=null){
 			normRankings=new DoubleVector(attributeImportance.getArrayCopy());
 			normRankings.normalize();
 		}
-		return normRankings;
+		return normRankings;*/
+		if(attributeImportance==null)
+			return new DoubleVector();
+		return attributeImportance;
 	}
 	
 
