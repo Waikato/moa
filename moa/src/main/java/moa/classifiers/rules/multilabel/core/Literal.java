@@ -18,6 +18,12 @@ public class Literal extends AbstractMOAObject{
 	public Literal(Predicate predicate){
 		this.predicate=predicate;
 	}
+	
+	
+	public int getAttributeIndex(){
+		return this.predicate.getAttributeIndex();
+	}
+	
 
 	public boolean evaluate(Instance inst) {
 		return predicate.evaluate(inst);

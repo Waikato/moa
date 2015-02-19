@@ -5,18 +5,25 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import moa.AbstractMOAObject;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
+import moa.classifiers.rules.featureranking.WeightedMajorityFeatureRanking_;
+import moa.classifiers.rules.featureranking.messages.BasicAddedMessage;
+import moa.classifiers.rules.featureranking.messages.BasicRemovedMessage;
+import moa.classifiers.rules.featureranking.messages.MeritCheckMessage;
+import moa.classifiers.rules.featureranking.messages.RuleExpandedMessage;
+import moa.classifiers.rules.featureranking.messages.WeightedMajorityAddMessage;
+import moa.classifiers.rules.featureranking.messages.WeightedMajorityCleanMessage;
+import moa.classifiers.rules.featureranking.messages.WeightedMajorityMessage;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatisticsObserver;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.classifiers.rules.multilabel.inputselectors.InputAttributesSelector;
 import moa.classifiers.rules.multilabel.instancetransformers.InstanceTransformer;
-import moa.classifiers.rules.multilabel.instancetransformers.NoInstanceTransformation;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
+import moa.core.DoubleVector;
 import moa.core.StringUtils;
 
 import com.yahoo.labs.samoa.instances.InstanceInformation;
@@ -25,33 +32,35 @@ import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 
-public class MultiLabelRule extends AbstractMOAObject {
+public class MultiLabelRule extends ObservableMOAObject {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	protected LinkedList<Literal> literalList = new LinkedList<Literal>();
+	protected List<Literal> literalList = new LinkedList<Literal>();
 
 	protected LearningLiteral learningLiteral;
-	
+
 	protected int ruleNumberID;
-	
+
 	protected MultiLabelRule otherBranchRule;
-	
+
 	protected MultiLabelRule otherOutputsRule;
-	
+
 	protected InstanceInformation instanceInformation;
-	
+
+	//double [] attributesDemeritAccum; //forWeighted VoteFeatureRanking
+
 	public MultiLabelRule(LearningLiteral learningLiteral) {
 		this.learningLiteral=learningLiteral; //copy()?
 	}
 
 	public MultiLabelRule() {
-		
+
 	}
-	
+
 	public MultiLabelRule(int id) {
 		this();
 		ruleNumberID=id;
@@ -64,7 +73,7 @@ public class MultiLabelRule extends AbstractMOAObject {
 	public void setRuleNumberID(int ruleNumberID) {
 		this.ruleNumberID = ruleNumberID;
 	}
-	
+
 	public boolean isCovering(MultiLabelInstance inst) {
 		boolean isCovering = true;
 		for (Literal l : literalList) {
@@ -75,15 +84,15 @@ public class MultiLabelRule extends AbstractMOAObject {
 		}
 		return isCovering;
 	}
-	
+
 	public int[] getOutputsCovered() {
 		return learningLiteral.getOutputsToLearn();
 	}
-	
+
 	public int[] getInputsCovered() {
 		return learningLiteral.getInputsToLearn();
 	}
-	
+
 	@Override
 	public void getDescription(StringBuilder out, int indent) {
 		StringUtils.appendIndented(out, indent+1, "Rule Nr." + this.ruleNumberID + " Instances seen:" + this.learningLiteral.getWeightSeenSinceExpansion() + "\n"); 
@@ -94,7 +103,7 @@ public class MultiLabelRule extends AbstractMOAObject {
 		StringUtils.appendIndented(out, indent+1, " Output: " + this.learningLiteral.getStaticOutput(instanceInformation));
 	}
 
-	 protected String getStaticOutput() {
+	protected String getStaticOutput() {
 		return "";
 	}
 
@@ -127,10 +136,29 @@ public class MultiLabelRule extends AbstractMOAObject {
 	public  Prediction getPredictionForInstance(MultiLabelInstance instance) {
 		return learningLiteral.getPredictionForInstance(instance);
 	}
-	
+
 	public boolean tryToExpand(double splitConfidence, double tieThresholdOption) {
 		boolean hasExpanded=learningLiteral.tryToExpand(splitConfidence,tieThresholdOption);
+		
+		//Merit check event
+		double[] merit=learningLiteral.getMeritInputAttributes();
+		this.notifyAll( new MeritCheckMessage(new DoubleVector(merit), this.learningLiteral.getAttributeMask()));
+		/*
+		////////////////////////////////////////////////////////////
+		//WeightedMajorityFeature Ranking
+
+		Iterator<Literal> iter=literalList.iterator();
+		while(iter.hasNext()){
+			Literal l=iter.next();
+			//For WightedMajorityFeatureRanking
+			merit[l.predicate.getAttributeIndex()]=1;
+		}
+		this.notifyAll(new WeightedMajorityAddMessage(merit, this.literalList.size()));
+		//////////////////////////////////////////////////////////////
+		 * 
+		 */
 		if(hasExpanded){
+			
 			LearningLiteral otherOutputsLiteral=learningLiteral.getOtherOutputsLearningLiteral();
 			//if && this.literalList.size()>0 is removed then consider including this code for default rule also
 			if(otherOutputsLiteral!=null && this.literalList.size()>0){ //only add "other outputs" rule if antecedent is not empty
@@ -139,38 +167,57 @@ public class MultiLabelRule extends AbstractMOAObject {
 				otherOutputsRule.literalList=new LinkedList<Literal>(this.literalList);
 				otherOutputsRule.learningLiteral=otherOutputsLiteral;
 			}
-			
+
 			otherBranchRule=new MultiLabelRule((LearningLiteral)learningLiteral.getOtherBranchLearningLiteral());
 			//check for obsolete predicate
 			int attribIndex=learningLiteral.getBestSuggestion().getPredicate().getAttributeIndex();
 			boolean isEqualOrLess=learningLiteral.getBestSuggestion().getPredicate().isEqualOrLess();
+			boolean isSpecialization=false;
+
+			//////////////////////////////////////////////////////////////
+			//for BasicFeatureRanking
+			/*this.notifyAll(new BasicAddedMessage(attribIndex)); */
 			Iterator<Literal> it=literalList.iterator();
 			while(it.hasNext()){
 				Literal l=it.next();
 				if(l.predicate.getAttributeIndex()==attribIndex && l.predicate.isEqualOrLess()==isEqualOrLess)
 				{
 					it.remove();
+					isSpecialization=true;
+					//this.notifyAll(new BasicRemovedMessage(attribIndex)); //for BasicFeatureRanking
 					break;
 				}
 			}
+			
+			/*//For WightedMajorityFeatureRanking
+			if(this.attributesDemeritAccum!=null){
+				this.notifyAll(new WeightedMajorityCleanMessage(attribIndex, this.attributesDemeritAccum[attribIndex]));
+				this.attributesDemeritAccum[attribIndex]=0;
+			}
+			//////////////////////////////////////////////////////////////
+			 * */
+
+			//Rule expansion event
+			this.notifyAll(new RuleExpandedMessage(attribIndex, isSpecialization));
+
 			this.literalList.add(new Literal(learningLiteral.getBestSuggestion().getPredicate()));
 			learningLiteral=learningLiteral.getExpandedLearningLiteral();	
 		}
 		return hasExpanded;
 	}
-	
+
 	public MultiLabelRule getNewRuleFromOtherBranch(){
 		MultiLabelRule r=otherBranchRule;
 		otherBranchRule=null;
 		return r;
 	}
-	
+
 	public MultiLabelRule getNewRuleFromOtherOutputs(){
 		MultiLabelRule r=otherOutputsRule;
 		otherOutputsRule=null;
 		return r;
 	}
-	
+
 	@Override
 	public String toString()
 	{
@@ -181,38 +228,38 @@ public class MultiLabelRule extends AbstractMOAObject {
 
 	public void setSplitCriterion(MultiLabelSplitCriterion splitCriterion) {
 		learningLiteral.setSplitCriterion(splitCriterion);
-		
+
 	}
 
 	public void setChangeDetector(ChangeDetector changeDetector) {
 		learningLiteral.setChangeDetector(changeDetector);
-		
+
 	}
 
 	public void setAnomalyDetector(AnomalyDetector anomalyDetector) {
 		learningLiteral.setAnomalyDetector(anomalyDetector);
-		
+
 	}
 
 	public void setNumericObserverOption(
 			NumericStatisticsObserver numericStatisticsObserver) {
 		learningLiteral.setNumericObserverOption(numericStatisticsObserver);
-		
+
 	}
 
 	public void setLearner(MultiLabelLearner learner) {
 		learningLiteral.setLearner(learner);
-		
+
 	}
 
 	public void setErrorMeasurer(MultiLabelErrorMeasurer errorMeasurer) {
 		learningLiteral.setErrorMeasurer(errorMeasurer);
-		
+
 	}
 
 	public void setOutputAttributesSelector(OutputAttributesSelector outputSelector) {
 		learningLiteral.setOutputAttributesSelector(outputSelector);
-		
+
 	}
 
 	public void setNominalObserverOption(NominalStatisticsObserver nominalStatisticsObserver) {
@@ -225,12 +272,12 @@ public class MultiLabelRule extends AbstractMOAObject {
 
 	public void setAttributesPercentage(double attributesPercentage) {
 		learningLiteral.setAttributesPercentage(attributesPercentage);
-		
+
 	}
 
 	public void setInputAttributesSelector(InputAttributesSelector inputSelector) {
 		learningLiteral.setInputAttributesSelector(inputSelector);
-		
+
 	}
 
 	public boolean hasNewRuleFromOtherOutputs() {
@@ -239,7 +286,46 @@ public class MultiLabelRule extends AbstractMOAObject {
 
 	public void setInstanceTransformer(InstanceTransformer instanceTransformer) {
 		learningLiteral.setInstanceTransformer(instanceTransformer);
-		
+
 	}
+
+	@Override
+	public void addObserver(ObserverMOAObject o) {
+		{
+			observers.add(o);
+			Iterator<Literal> it = this.literalList.iterator();
+			while(it.hasNext()){
+				this.notify(o,new BasicAddedMessage(it.next().getAttributeIndex()));
+			}
+		}
+
+	}
+
+	public List<Literal> getLiterals(){
+		return literalList;
+	}
+
+	/*@Override
+	public void receiveFeedback(ObserverMOAObject o, Object feedback) {
+		if((o instanceof WeightedMajorityFeatureRanking_) && (feedback instanceof WeightedMajorityMessage)){
+			this.addAttributesDemerit(((WeightedMajorityMessage)feedback).getValues());
+		}
+
+	}
+
+	private void addAttributesDemerit(double [] demerit){
+		if(attributesDemeritAccum==null)
+			attributesDemeritAccum=demerit;
+		else{
+			for (int i=0; i<attributesDemeritAccum.length;i++)
+				attributesDemeritAccum[i]+=demerit[i];
+		}
+
+	}*/
+
+	/*public double[] getAttributesDemerit() {
+		return attributesDemeritAccum;
+	}*/
+
 
 }

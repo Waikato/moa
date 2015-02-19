@@ -20,6 +20,7 @@
 
 package moa.classifiers.rules.multilabel;
 
+import java.util.Iterator;
 import java.util.ListIterator;
 
 import moa.classifiers.AbstractMultiLabelLearner;
@@ -27,10 +28,15 @@ import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
 import moa.classifiers.rules.core.anomalydetection.OddsRatioScore;
+import moa.classifiers.rules.featureranking.messages.BasicRemovedMessage;
+import moa.classifiers.rules.featureranking.messages.ChangeDetectedMessage;
+import moa.classifiers.rules.featureranking.messages.WeightedMajorityRemoveMessage;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatisticsObserver;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
+import moa.classifiers.rules.multilabel.core.Literal;
 import moa.classifiers.rules.multilabel.core.MultiLabelRule;
 import moa.classifiers.rules.multilabel.core.MultiLabelRuleSet;
+import moa.classifiers.rules.multilabel.core.ObserverMOAObject;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
@@ -69,6 +75,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	protected MultiLabelRule defaultRule;
 	protected int ruleNumberID=1;
 	protected double[] statistics;
+	protected ObserverMOAObject observer;
 
 	public FloatOption splitConfidenceOption = new FloatOption(
 			"splitConfidence",
@@ -286,11 +293,28 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		while (ruleIterator.hasNext()) { 
 			MultiLabelRule rule = ruleIterator.next();
 			if (rule.isCovering(instance) == true) {
-				rulesCoveringInstance = true; //TODO: JD use different strategies for this validation (first rule, first complete rule (all out attributes covered), voted complete rule, etc)
+				rulesCoveringInstance = true;
 				if (!rule.updateAnomalyDetection(instance)) {
 					if (rule.updateChangeDetection(instance)) {
 						debug("I) Drift Detected. Exa. : " +  this.numInstances + " (" + rule.getWeightSeenSinceExpansion() +") Remove Rule: " +rule.getRuleNumberID(),1);
 						ruleIterator.remove();
+						
+						
+						///////////////////////////////////////////////////////
+						//For BasicFeatureRanking
+						/*Iterator<Literal> itLit=rule.getLiterals().iterator();
+						while(itLit.hasNext()){
+							rule.notifyAll(new BasicRemovedMessage(itLit.next().getAttributeIndex()));
+						}
+						//For WeightedMajorityFeatureRanking_
+						rule.notifyAll(new WeightedMajorityRemoveMessage(rule.getAttributesDemerit()));
+						///////////////////////////////////////////////////////
+						 * 
+						 */
+						
+						//Rule expansion event
+						rule.notifyAll(new ChangeDetectedMessage());
+						
 						this.numChangesDetected+=instance.weight();  //Just for statistics 
 					} else {
 						rule.trainOnInstance(instance);
@@ -298,11 +322,13 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 							if (rule.tryToExpand(this.splitConfidenceOption.getValue(), this.tieThresholdOption.getValue()) ) 
 							{
 
+								MultiLabelRule otherMultiLabelRule=rule.getNewRuleFromOtherOutputs(); //Need to be outside to make sure other rules are cleaned
 								if(!dropOldRuleAfterExpansionOption.isSet() && rule.hasNewRuleFromOtherOutputs()){
-									MultiLabelRule otherMultiLabelRule=rule.getNewRuleFromOtherOutputs();
 									otherMultiLabelRule.setRuleNumberID(++ruleNumberID);
 									setRuleOptions(otherMultiLabelRule);
 									ruleIterator.add(otherMultiLabelRule);
+									if(observer!=null)
+										otherMultiLabelRule.addObserver(observer);
 								}
 								setRuleOptions(rule);
 								debug("Rule Expanded:",2);
@@ -342,10 +368,29 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 					debug("New default rule:", 3);	
 					debug(newDefaultRule.toString(),3);
 					defaultRule=newDefaultRule;
-
+					if(observer!=null)
+						defaultRule.addObserver(observer);
 				}
 			}
 		}
+		
+		/*//test - clean this up latter
+		
+		ruleIterator= this.ruleSet.listIterator();
+		double [] sum=null;
+		while (ruleIterator.hasNext()) {
+			double [] aux=ruleIterator.next().getAttributesDemerit();
+			if (sum==null && aux!=null)
+				sum=aux.clone();
+			else{
+				if(aux!=null)
+				for (int i=0; i<sum.length;i++){
+					sum[i]+=aux[i];
+				}
+			}
+				
+		}*/
+		//DoubleVector acc= ((MeritFeatureRanking)this.observer).getAccumulated();
 	}
 
 
@@ -534,6 +579,10 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		super.setRandomSeed(randomSeed);
 		this.classifierRandom.setSeed(randomSeed);
 	}
-
+	
+	public void setObserver(ObserverMOAObject observer){
+		this.observer=observer;
+		this.defaultRule.addObserver(observer);
+	}
 
 }

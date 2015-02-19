@@ -78,6 +78,23 @@ public class LearningLiteralRegression extends LearningLiteral {
 		boolean shouldSplit=false;
 		//find the best split per attribute and rank the results
 		AttributeExpansionSuggestion[] bestSplitSuggestions	= this.getBestSplitSuggestions(splitCriterion);
+
+
+		meritPerInput= new double[attributesMask.length];
+		//////////////////////////////////////////////////////////////
+		//for WeightedVoteFeatureRanking
+		/*for (int i=0; i<attributesMask.length;i++){
+			if(!attributesMask[i])
+				meritPerInput[i]=1;
+		}*/
+		for (int i=0; i<bestSplitSuggestions.length;i++){
+			double merit=bestSplitSuggestions[i].getMerit();
+			if(merit>0)
+				meritPerInput[bestSplitSuggestions[i].predicate.getAttributeIndex()]=merit;
+		}
+
+		////////////////////////////////////////////////////////////////////
+
 		Arrays.sort(bestSplitSuggestions);
 
 		//disable attributes that are not relevant
@@ -220,12 +237,13 @@ public class LearningLiteralRegression extends LearningLiteral {
 
 	@Override
 	public void trainOnInstance(MultiLabelInstance instance)  {
+		int numInputs=0;
 		if (attributesMask==null)
-			initializeAttibutesMask(instance);
+			numInputs=initializeAttibutesMask(instance);
 
 		//learn for all output attributes if not specified at construction time
 		int numOutputs=instance.numberOutputTargets();
-		int numInputs=instance.numInputAttributes();
+
 		if(!hasStarted)
 		{
 			if(this.learner.isRandomizable())
@@ -240,9 +258,12 @@ public class LearningLiteralRegression extends LearningLiteral {
 			if(inputsToLearn==null)
 			{
 				inputsToLearn=new int[numInputs];
-				for (int i=0; i<numInputs;i++){//TODO JD: check with mask?
-					if(attributesMask[i])
-						inputsToLearn[i]=i;
+				int ct=0;
+				for (int i=0; i<instance.numInputAttributes();i++){//TODO JD: check with mask?
+					if(attributesMask[i]){
+						inputsToLearn[ct]=i;
+						ct++;
+					}
 				}
 			}
 

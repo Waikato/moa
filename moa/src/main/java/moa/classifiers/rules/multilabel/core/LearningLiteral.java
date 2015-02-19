@@ -87,7 +87,8 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	
 	protected InstancesHeader instanceHeader;
 
-
+	double [] meritPerInput; //forWeighted VoteFeatureRanking
+	
 	// Maintain statistics for input and output attributes for standard deviation computation?
 
 	public LearningLiteral(){
@@ -248,18 +249,21 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 		this.attributesPercentage=attributesPercentage;
 	}
 
-	protected void initializeAttibutesMask(MultiLabelInstance inst) {
+	protected int initializeAttibutesMask(MultiLabelInstance inst) {
 		int numInputAttributes=inst.numInputAttributes();
-		int numAttributesSelected=(int)Math.round(numInputAttributes*attributesPercentage/100);
+		int numAttributesSelected=(int)Math.round((numInputAttributes*attributesPercentage/100));
 
 		attributesMask=new boolean[numInputAttributes]; 
 		ArrayList<Integer> indices = new ArrayList<Integer>(numInputAttributes);
 		for(int i=0; i<numInputAttributes; i++)
 			indices.add(i);
-		Collections.shuffle(indices, this.randomGenerator);
+		if(numInputAttributes!=numAttributesSelected)
+			Collections.shuffle(indices, this.randomGenerator);
 
 		for (int i=0; i<numAttributesSelected;++i)
 			attributesMask[indices.get(i)]=true;
+		
+		return numAttributesSelected;
 
 	}
 
@@ -286,7 +290,13 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 		this.instanceInformation=instanceInformation;
 	}
 
+	public double [] getMeritInputAttributes(){
+		return meritPerInput;
+	}
 
-
+	public boolean[] getAttributeMask() {
+		return attributesMask;
+	}
+	
 	//	abstract public void resetLearning();
 }

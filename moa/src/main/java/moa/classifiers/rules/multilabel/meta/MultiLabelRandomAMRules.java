@@ -2,11 +2,14 @@ package moa.classifiers.rules.multilabel.meta;
 
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
+import moa.classifiers.rules.featureranking.BasicFeatureRanking;
+import moa.classifiers.rules.featureranking.FeatureRanking;
 import moa.classifiers.rules.multilabel.AMRulesMultiLabelLearner;
 import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
 import moa.classifiers.rules.multilabel.core.voting.UniformWeightedVoteMultiLabel;
 import moa.classifiers.rules.multilabel.errormeasurers.AbstractMultiTargetErrorMeasurer;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
+import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;
@@ -25,6 +28,7 @@ implements MultiTargetRegressor {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private 		int nAttributes=0;
 
 	public IntOption VerbosityOption = new IntOption(
 			"verbosity",
@@ -53,6 +57,8 @@ implements MultiTargetRegressor {
 			"votingTypeOption", 'C', "Select whether the base learner error is computed as the overall error or only the error of the rules that cover the example.", new String[]{
 					"Overall (Static)","Only rules covered (Dynamic)"}, new String[]{
 					"Overall","Covered"}, 0);
+	
+
 
 
 	public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
@@ -67,9 +73,13 @@ implements MultiTargetRegressor {
 	/*protected double[] sumError;
 	protected double[] nError;*/
 
-
+	public ClassOption featureRankingOption = new ClassOption("featureRanking",
+			'F', "Feature ranking algorithm.", 
+			FeatureRanking.class,
+			BasicFeatureRanking.class.getName());
+	
 	protected boolean isRegression;
-
+	protected FeatureRanking featureRanking;
 	@Override
 	public void resetLearningImpl() {
 		this.classifierRandom.setSeed(this.randomSeedOption.getValue());
@@ -88,9 +98,17 @@ implements MultiTargetRegressor {
 			this.errorMeasurer[i]=(MultiLabelErrorMeasurer)measurer.copy();
 		}
 		this.isRegression = (baseLearner instanceof MultiTargetRegressor);
+		featureRanking=null; 
 	}
 
 	public void trainOnInstanceImpl(MultiLabelInstance instance) {
+		if(featureRanking==null){
+			featureRanking=  (FeatureRanking) getPreparedClassOption(this.featureRankingOption);
+			for (int i = 0; i < this.ensemble.length; i++) {
+				this.ensemble[i].setObserver(featureRanking);
+			}
+			nAttributes=instance.numInputAttributes();
+		}
 		for (int i = 0; i < this.ensemble.length; i++) {
 			MultiLabelInstance inst=(MultiLabelInstance)instance.copy();
 			int k = 1;
@@ -149,7 +167,8 @@ implements MultiTargetRegressor {
 	protected Measurement[] getModelMeasurementsImpl() {
 		Measurement [] baseLearnerMeasurements=((AMRulesMultiLabelLearner) getPreparedClassOption(this.baseLearnerOption)).getModelMeasurements();
 		int nMeasurements=baseLearnerMeasurements.length;
-		Measurement [] m=new Measurement[nMeasurements+1];
+		DoubleVector rankings=this.featureRanking.getFeatureRankings();
+		Measurement [] m=new Measurement[nMeasurements+nAttributes+1];
 
 		int ensembleSize=0;
 		if(this.ensemble !=null){	
@@ -169,6 +188,14 @@ implements MultiTargetRegressor {
 
 		m[0]=new Measurement("ensemble size", ensembleSize);
 
+		//add feature importance
+		for(int i=0; i<nAttributes;i++){
+			double importance=0;
+			if(rankings!=null)
+				importance=rankings.getValue(i);
+			m[i+nMeasurements+1]=new Measurement("Attribute" + i, importance);
+		}
+		
 		return m;
 	}
 
@@ -182,7 +209,4 @@ implements MultiTargetRegressor {
 	public boolean isRandomizable() {
 		return true;
 	}
-
-
-
 }
