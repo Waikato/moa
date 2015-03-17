@@ -24,7 +24,7 @@ public class WeightedMajorityFeatureRanking extends AbstractFeatureRanking imple
 	
 	
 
-	protected DoubleVector attributeImportance;
+	protected double [] attributeImportance;
 	protected HashMap<ObservableMOAObject, RuleInformation> ruleInformation;
 	
 	public FloatOption meritThresholdOption = new FloatOption(
@@ -42,57 +42,62 @@ public class WeightedMajorityFeatureRanking extends AbstractFeatureRanking imple
 	public void update(ObservableMOAObject o, Object arg) {
 		
 		if (arg instanceof MeritCheckMessage){
-			
-			RuleInformation ri=ruleInformation.get(o);
-			if(ri==null)
-			{
-				ri=new RuleInformation();
-				ruleInformation.put(o, ri);
-			}
 
 			MeritCheckMessage msg = (MeritCheckMessage) arg;
-			
 			//Get Learning attributes
 			boolean [] attributesMask=msg.getLearningAttributes().clone(); //because it will be modified
 			
+			int numAttributes=attributesMask.length;
+			
 			if(this.attributeImportance ==null){
-				double [] init= new double[attributesMask.length];
+				this.attributeImportance= new double[numAttributes];
 				for (int i=0; i<attributesMask.length;i++)
-					init[i]=1.0;
-				this.attributeImportance = new DoubleVector(init);
+					attributeImportance[i]=1.0;
 			}
-			
-			//Cannot decrease importance the importance of attributes in the literals 
-			Iterator<Integer> it=ri.getLiteralAttributes().iterator();
-			while(it.hasNext())
-				attributesMask[it.next()]=false;
-			
-			//Update for each learning attribute given the threshold value
-			DoubleVector merits=msg.getMerits();
-			int numLiterals=ri.getNumLiterals();
-			double th=meritThresholdOption.getValue();
+			int numRules=ruleInformation.size();
+			RuleInformation ri=ruleInformation.get(o);
+			//Merit check of a new rule
+			if(ri==null)
+			{
+				ri=new RuleInformation(numAttributes);
+				ruleInformation.put(o, ri);
+				//new
+				for (int i=0; i<numAttributes; i++)
+					attributeImportance[i]=(attributeImportance[i]*numRules+1)/(numRules+1);
+			}
+			//Merit check of an existing rule
+			else{
+				double [] old=ri.getAttributesImportance().clone(); //it may change after update
+				List<Integer> updated=ri.update(msg.getMerits().getArrayRef(), attributesMask, meritThresholdOption.getValue());
+				
+				Iterator<Integer> it = updated.iterator();
+				while(it.hasNext()){
+					int attIndex=it.next();
 
-			for (int i=0; i<attributesMask.length;i++){
-				if(merits.getValue(i)<th && attributesMask[i]){
-					double currentValue=attributeImportance.getValue(i);
-					attributeImportance.setValue(i, currentValue*(1+numLiterals)/(2+numLiterals));
-					ri.accumulate(i,currentValue/(2+numLiterals));
+					this.attributeImportance[attIndex]=(attributeImportance[attIndex]*numRules-
+							old[attIndex]+ri.getAttributeImportance(attIndex))/numRules;
 				}
-			}
+			}			
 		}
+		//Rule expanded
 		else if (arg instanceof RuleExpandedMessage){
+			int numRules=ruleInformation.size();
 			RuleInformation ri=ruleInformation.get(o);
 			RuleExpandedMessage msg=((RuleExpandedMessage)arg);
-			int attribIndex=msg.getAttributeIndex();
-			if(!msg.isSpecialization()){
-				ri.addLiteralAttribute(attribIndex);
-			}
-			this.attributeImportance.addToValue(attribIndex, ri.getAccumulated(attribIndex));
-			ri.resetDemerit(attribIndex);
+			int attIndex=msg.getAttributeIndex();
+
+			double oldValue=ri.getAttributeImportance(attIndex);
+			this.attributeImportance[attIndex]=(attributeImportance[attIndex]*numRules-oldValue+1)/numRules;
+			ri.addLiteralAttribute(attIndex);
+			
 		}
+		//Rule will be removed
 		else if (arg instanceof ChangeDetectedMessage) {
 			RuleInformation ri=ruleInformation.get(o);
-			this.attributeImportance.addValues(ri.getAccumulated());
+			int numRules=ruleInformation.size();
+			double [] attribImportance=ri.getAttributesImportance();
+			for (int i=0; i<this.attributeImportance.length; i++)
+				attributeImportance[i]=(attributeImportance[i]*numRules-attribImportance[i])/(numRules-1);
 			ruleInformation.remove(o);		
 		}
 		
@@ -116,17 +121,7 @@ public class WeightedMajorityFeatureRanking extends AbstractFeatureRanking imple
 		return normRankings;*/
 		if(attributeImportance==null)
 			return new DoubleVector();
-		return attributeImportance;
-	}
-
-	public DoubleVector getAccumulated() {
-		DoubleVector accumulated= new DoubleVector();
-		Iterator <Entry<ObservableMOAObject, RuleInformation>> it=this.ruleInformation.entrySet().iterator();
-	    while (it.hasNext()) {
-	        Map.Entry<ObservableMOAObject, RuleInformation> pair = (Map.Entry<ObservableMOAObject, RuleInformation>)it.next();
-	        accumulated.addValues(pair.getValue().getAccumulated());
-	    }
-		return accumulated;
+		return new DoubleVector(attributeImportance);
 	}
 	
 	
@@ -136,50 +131,57 @@ public class WeightedMajorityFeatureRanking extends AbstractFeatureRanking imple
 	 * 
 	 **********************************/
 	public class RuleInformation{
-		private DoubleVector accumulated;
-		private int numLiterals;
+		private double [] attributeImportance;
+		private double depth;
 		private List<Integer> literalAttributes= new LinkedList<Integer>();
 		
 
-		public RuleInformation() {
-			accumulated=new DoubleVector();
-			numLiterals=0;
+		public RuleInformation(int numAttributes) {
+			attributeImportance=new double [numAttributes];
+			depth=0;
+			for(int i=0; i<numAttributes; i++)
+				attributeImportance[i]=1.0;
 		}
 
 		public void addLiteralAttribute(int attribIndex) {
-			literalAttributes.add(attribIndex);
+			//it means rule expanded. depth always increases. 
+			//However, the number of literals may be inferior
+			depth++;
+			attributeImportance[attribIndex]=1.0;
+			if(!literalAttributes.contains(attribIndex))
+				literalAttributes.add(attribIndex);
+		}
+
+		public double [] getAttributesImportance() {
+			return attributeImportance;
+		}
+		
+		public double getAttributeImportance(int attribIndex) {
+			return attributeImportance[attribIndex];
+		}
+		
+		
+		/*
+		 * Update the attributes importance if the merit is below the giver threshold
+		 * and the attribute is being considered (attributesMask[i]==true)
+		 * Returns the list of attributes whose merit had change
+		 */
+		public List<Integer> update(double [] merits, boolean [] attributesMask, double threshold){
+			boolean [] attributesMaskAux=attributesMask.clone();
+			Iterator<Integer> it=literalAttributes.iterator();
+			while(it.hasNext())
+				attributesMaskAux[it.next()]=false;
 			
+			List<Integer> updated=new LinkedList<Integer>();
+			for (int i=0; i<attributesMaskAux.length;i++){
+				if(merits[i]<threshold && attributesMaskAux[i]){
+					attributeImportance[i]*=(1+depth)/(2+depth);
+					updated.add(i);
+				}
+			}
+			return updated;
 		}
-
-		public DoubleVector getAccumulated() {
-			return accumulated;
-		}
-		
-		public double getAccumulated(int attribIndex) {
-			return accumulated.getValue(attribIndex);
-		}
-		
-		public void accumulate(int attributeIndex, double value) {
-			accumulated.addToValue(attributeIndex, value);
-		}
-		
-		public void addNumLiterals(){
-			numLiterals++;
-		}
-
-		public int getNumLiterals() {
-			return numLiterals;
-		}
-		
-		public void resetDemerit(int attribIndex) {
-			accumulated.setValue(attribIndex, 0);
-		}
-		
-		public List<Integer> getLiteralAttributes() {
-			return literalAttributes;
-		}
-
-
+				
 	
 	}
 

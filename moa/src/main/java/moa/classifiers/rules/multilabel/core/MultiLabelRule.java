@@ -136,7 +136,8 @@ public class MultiLabelRule extends ObservableMOAObject {
 		
 		//Merit check event
 		double[] merit=learningLiteral.getMeritInputAttributes();
-		this.notifyAll( new MeritCheckMessage(new DoubleVector(merit), this.learningLiteral.getAttributeMask()));
+		if(merit!=null)
+			this.notifyAll( new MeritCheckMessage(new DoubleVector(merit), this.learningLiteral.getAttributeMask()));
 
 		if(hasExpanded){
 			

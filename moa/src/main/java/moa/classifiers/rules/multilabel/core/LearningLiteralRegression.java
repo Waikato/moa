@@ -78,14 +78,19 @@ public class LearningLiteralRegression extends LearningLiteral {
 		//find the best split per attribute and rank the results
 		AttributeExpansionSuggestion[] bestSplitSuggestions	= this.getBestSplitSuggestions(splitCriterion);
 
-
+		double sumMerit=0;
 		meritPerInput= new double[attributesMask.length];
 		for (int i=0; i<bestSplitSuggestions.length;i++){
 			double merit=bestSplitSuggestions[i].getMerit();
-			if(merit>0)
+			if(merit>0){
 				meritPerInput[bestSplitSuggestions[i].predicate.getAttributeIndex()]=merit;
+				sumMerit+=merit;
+			}
 		}
 
+		//if merit==0 it means the split have not enough examples in the smallest branch
+		if(sumMerit==0)
+			meritPerInput=null; //this indicates that no merit should be considered (e.g. for feature ranking)
 
 		Arrays.sort(bestSplitSuggestions);
 
