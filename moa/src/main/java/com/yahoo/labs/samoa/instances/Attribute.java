@@ -21,11 +21,41 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Enumeration;
+import moa.core.Utils;
+import weka.core.WekaEnumeration;
+import weka.core.SerializedObject;
 /**
  * The Class Attribute.
  */
 public class Attribute implements Serializable {
+
+    /** The keyword used to denote the start of an arff attribute declaration */
+    public final static String ARFF_ATTRIBUTE = "@attribute";
+
+    /** A keyword used to denote a numeric attribute */
+    public final static String ARFF_ATTRIBUTE_INTEGER = "integer";
+
+    /** A keyword used to denote a numeric attribute */
+    public final static String ARFF_ATTRIBUTE_REAL = "real";
+
+    /** A keyword used to denote a numeric attribute */
+    public final static String ARFF_ATTRIBUTE_NUMERIC = "numeric";
+
+    /** The keyword used to denote a string attribute */
+    public final static String ARFF_ATTRIBUTE_STRING = "string";
+
+    /** The keyword used to denote a date attribute */
+    public final static String ARFF_ATTRIBUTE_DATE = "date";
+
+    /** The keyword used to denote a relation-valued attribute */
+    public final static String ARFF_ATTRIBUTE_RELATIONAL = "relational";
+
+    /** The keyword used to denote the end of the declaration of a subrelation */
+    public final static String ARFF_END_SUBRELATION = "@end";
+
+    /** Strings longer than this will be stored compressed. */
+    private static final int STRING_COMPRESS_THRESHOLD = 200;
 
     /**
      * The is nominal.
@@ -38,10 +68,15 @@ public class Attribute implements Serializable {
     protected boolean isNumeric;
 
     /**
-     * The is date.
-     */
+    * The is date.
+    */
     protected boolean isDate;
 
+     /** 
+     * Date format specification for date attributes 
+     */
+    protected SimpleDateFormat m_DateFormat;
+  
     /**
      * The name.
      */
@@ -88,6 +123,25 @@ public class Attribute implements Serializable {
         this.isNominal = true;
     }
 
+    /**
+     * Instantiates a new attribute.
+     *
+     * @param attributeName the attribute name
+     * @param dateformat the format of the date used
+     */
+    public Attribute(String attributeName, String dateFormat) {
+        this.name = attributeName;
+        this.index  = -1;
+        this.valuesStringAttribute = null;
+        this.isDate = true;
+        
+        if (dateFormat != null) {
+          m_DateFormat = new SimpleDateFormat(dateFormat);
+        } else {
+          m_DateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        }
+  }
+                   
     /**
      * Instantiates a new attribute.
      */
@@ -161,8 +215,7 @@ public class Attribute implements Serializable {
      * @return the string
      */
     String formatDate(double value) {
-        SimpleDateFormat sdf = new SimpleDateFormat();
-        return sdf.format(new Date((long) value));
+        return this.m_DateFormat.format(new Date((long) value));
     }
 
     /**
@@ -205,4 +258,66 @@ public class Attribute implements Serializable {
             return val.intValue();
         }
     }
+    
+    /**
+    * Returns a description of this attribute in ARFF format. Quotes
+    * strings if they contain whitespace characters, or if they
+     * are a question mark.
+     *
+     * @return a description of this attribute as a string
+     */
+    public final String toString() {
+    
+    StringBuffer text = new StringBuffer();
+    
+    text.append(ARFF_ATTRIBUTE).append(" ").append(Utils.quote(this.name())).append(" ");
+    
+    if (this.isNominal){
+        text.append('{');
+        Enumeration enu = enumerateValues();
+        while (enu.hasMoreElements()) {
+            text.append(Utils.quote((String) enu.nextElement()));
+            if (enu.hasMoreElements())
+                text.append(',');
+        }
+        text.append('}');
+    } else if (this.isNumeric){
+        text.append(ARFF_ATTRIBUTE_NUMERIC);
+    } else if (this.isDate){
+        text.append(ARFF_ATTRIBUTE_DATE).append(" ").append(Utils.quote(m_DateFormat.toPattern()));
+    } else{
+        text.append("UNKNOW");
+    }
+    
+    return text.toString();
+  }
+  
+    /**
+   * Returns an enumeration of all the attribute's values if the
+   * attribute is nominal, null otherwise.
+   *
+   * @return enumeration of all the attribute's values
+   */
+  public final /*@ pure @*/ Enumeration enumerateValues() {
+
+    if (this.isNominal()) {
+      final Enumeration ee = new WekaEnumeration(this.attributeValues);
+      return new Enumeration () {
+          @Override
+          public boolean hasMoreElements() {
+            return ee.hasMoreElements();
+          }
+          @Override
+          public Object nextElement() {
+            Object oo = ee.nextElement();
+            if (oo instanceof SerializedObject) {
+              return ((SerializedObject)oo).getObject();
+            } else {
+              return oo;
+            }
+          }
+        };
+    }
+    return null;
+  }
 }
