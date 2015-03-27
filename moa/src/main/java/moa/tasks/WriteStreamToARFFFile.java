@@ -29,6 +29,8 @@ import moa.options.ClassOption;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.streams.InstanceStream;
 
 /**
@@ -75,7 +77,7 @@ public class WriteStreamToARFFFile extends MainTask {
                 int numWritten = 0;
                 while ((numWritten < this.maxInstancesOption.getValue())
                         && stream.hasMoreInstances()) {
-                    w.write(stream.nextInstance().toString());
+                    w.write(stream.nextInstance().getData().toString());
                     w.write("\n");
                     numWritten++;
                 }
