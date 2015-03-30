@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import moa.classifiers.rules.featureranking.messages.ChangeDetectedMessage;
 import moa.classifiers.rules.featureranking.messages.MeritCheckMessage;
