@@ -89,6 +89,7 @@ implements MultiTargetPerformanceEvaluator, RegressionPerformanceEvaluator{
 			if (prediction != null && prediction.numOutputAttributes()>0) {
 				for (int i = 0; i< numberOutputs;i++){
 					double error=(inst.valueOutputAttribute(i) - prediction.getVote(i, 0));
+					
 					this.sumY[i]+=inst.valueOutputAttribute(i);
 					double errorTM=(inst.valueOutputAttribute(i) - this.sumY[i]/this.weightObserved);
 

@@ -40,13 +40,9 @@ MultiTargetRegressor, AMRulesFunction {
 			"learningRateDecay", 'm', 
 			" Learning Rate decay to use for training the Perceptron.", 0.001);
 
-	public FloatOption fadingFactorOption = new FloatOption(
-			"fadingFactor", 'e', 
-			"Fading factor for the Perceptron accumulated error", 0.99, 0, 1);
-
 	public FlagOption skipStackingOption = new FlagOption(
 			"skipStackingOption", 's',
-			"skipStackingOption");
+			"Predicts the outputs of the first layer (no dependence among output is computed)");
 
 	/*
 	 * Other class attributes 
@@ -305,7 +301,7 @@ MultiTargetRegressor, AMRulesFunction {
 			if(std > SD_THRESHOLD)
 				denormalizedOutput[i]=normOutputs[i]*std+mean;
 			else
-				denormalizedOutput[i]=normOutputs[i]*std+mean;
+				denormalizedOutput[i]=normOutputs[i]+mean;
 		}
 		return denormalizedOutput;
 	}
@@ -359,16 +355,22 @@ MultiTargetRegressor, AMRulesFunction {
 		double [][] newLayer1Weights=new double[numInputsPlus1][numOutputs];
 		double [][] newLayer2Weights=new double[numInputsPlus1][numOutputs];
 		
+		int oldNumOutputs=layer2Weights.length-1;
 		for (int j=0; j<numOutputs; j++){
 			int out=outputAtributtes[j];
 			newOutAttrSum[j]=outAttrSum[out];
 			newOutAttrSquaredSum[j]=outAttrSquaredSum[out];
-			for(int i=0; i<numInputsPlus1; i++){
+			for(int i=0; i<numInputsPlus1; i++)
 				newLayer1Weights[i][j]=layer1Weights[i][out];
-				newLayer2Weights[i][j]=layer2Weights[i][out];
+			for (int i=0; i<numOutputs; i++){
+				int out2=outputAtributtes[i];
+				newLayer2Weights[i][j]=layer2Weights[out2][out];
 			}
+			newLayer2Weights[numOutputs][j]=layer2Weights[oldNumOutputs][out];
 		}
-		
+		outAttrSum=newOutAttrSum;
+		outAttrSquaredSum=newOutAttrSquaredSum;
+		layer1Weights=newLayer1Weights;
+		layer2Weights=newLayer2Weights;
 	}
-
 }
