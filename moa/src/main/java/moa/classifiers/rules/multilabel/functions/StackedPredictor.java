@@ -10,6 +10,7 @@ import moa.core.Measurement;
 
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
@@ -34,15 +35,27 @@ MultiTargetRegressor, AMRulesFunction {
 
 	public FloatOption learningRatioOption = new FloatOption(
 			"learningRatio", 'l', 
-			"Constante Learning Ratio to use for training the Perceptrons in the leaves.", 0.025);
+			"Learning Ratio to use for training the 1st layer.", 0.025);
+
+	public FloatOption learningRatio2ndLayerOption = new FloatOption(
+			"learningRatio2ndLayer", 'n', 
+			"Learning Ratio to use in the second layer.", 0.001);
 
 	public FloatOption learningRateDecayOption = new FloatOption(
 			"learningRateDecay", 'm', 
-			" Learning Rate decay to use for training the Perceptron.", 0.001);
+			" Learning Rate decay to use for training the 1st layer.", 0.001);
 
 	public FlagOption skipStackingOption = new FlagOption(
 			"skipStackingOption", 's',
 			"Predicts the outputs of the first layer (no dependence among output is computed)");
+
+	public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
+			"Seed for random behaviour of the classifier.", 1);
+
+	public FlagOption printWeightsOption = new FlagOption(
+			"printWeights", 'p',
+			"Outputs the 2nd layer weights as measurements.");
+
 
 	/*
 	 * Other class attributes 
@@ -117,15 +130,15 @@ MultiTargetRegressor, AMRulesFunction {
 			{
 				//Iterator<Integer> it=numericIndices.iterator();
 				for (int i=0; i<numInputs+1; i++)
-				//while(it.hasNext())
+					//while(it.hasNext())
 					layer1Weights[i][j] = 2 * this.classifierRandom.nextDouble() - 1;
 				layer2Weights[j][j]=1.0;
 			}
-			/*
-			for (int i=0; i<numOutputs+1; i++)
+
+			/*	for (int i=0; i<numOutputs+1; i++)
 				for (int j=0; j<numOutputs; j++)
-					layer2Weights[i][j]= 2 * this.classifierRandom.nextDouble() - 1;
-			*/
+					layer2Weights[i][j]= 2 * this.classifierRandom.nextDouble() - 1;*/
+
 		}
 
 		/*
@@ -166,8 +179,7 @@ MultiTargetRegressor, AMRulesFunction {
 		}
 
 
-
-		if(constantLearningRatioDecayOption.isSet()==false){
+		if(!constantLearningRatioDecayOption.isSet()){
 			currentLearningRate = learningRatioOption.getValue() / (1+ count*this.learningRateDecayOption.getValue()); 
 		}
 
@@ -179,12 +191,12 @@ MultiTargetRegressor, AMRulesFunction {
 			double sumLayer=0;
 			for(int i=0; i<numInputs; i++){
 				layer1Weights[i][j]+=currentLearningRate * delta * normInputs[i]*instance.weight();
-				Math.abs(sumLayer+=layer1Weights[i][j]);
+				sumLayer+=Math.abs(layer1Weights[i][j]);
 			}
-			
+
 			layer1Weights[numInputs][j]+=currentLearningRate * delta * instance.weight();
 			sumLayer+=Math.abs(layer1Weights[numInputs][j]);
-			if(sumLayer>(numInputs+1)){
+			if(sumLayer>(numInputs)){
 				for(int i=0; i<(numInputs+1); i++)
 					layer1Weights[i][j]/=sumLayer;
 			}
@@ -192,17 +204,18 @@ MultiTargetRegressor, AMRulesFunction {
 		if(!skipStackingOption.isSet()){
 			//update weights
 			//2nd Layer
+			double learningRate2ndLayer=learningRatio2ndLayerOption.getValue();
 			for (int j=0; j<numOutputs; j++){
 				double delta=normOutputs[j] - secondLayerOutput[j];
 				double sumLayer=0;
 				for(int i=0; i<numOutputs; i++){
-					layer2Weights[i][j]+=currentLearningRate * delta * firstLayerOutput[i]*instance.weight();
+					layer2Weights[i][j]+=learningRate2ndLayer * delta * firstLayerOutput[i]*instance.weight();
 					sumLayer+=Math.abs(layer2Weights[i][j]);
 				}
-					
-				layer2Weights[numOutputs][j]+=currentLearningRate * delta * instance.weight();
+
+				layer2Weights[numOutputs][j]+=learningRate2ndLayer * delta * instance.weight();
 				sumLayer+=Math.abs(layer2Weights[numOutputs][j]);
-				if(sumLayer>(numOutputs+1)){
+				if(sumLayer>(numOutputs)){
 					for(int i=0; i<(numOutputs+1); i++)
 						layer2Weights[i][j]/=sumLayer;
 				}
@@ -231,7 +244,7 @@ MultiTargetRegressor, AMRulesFunction {
 			}
 			else
 				denormalizedOutput=getDenormalizedOutput(firstLayerOutput);
-			
+
 			for(int i=0; i<numOutputs; i++)
 				pred.setVotes(i, new double[]{denormalizedOutput[i]});	
 		}	
@@ -333,8 +346,20 @@ MultiTargetRegressor, AMRulesFunction {
 
 	@Override
 	protected Measurement[] getModelMeasurementsImpl() {
-		// TODO Auto-generated method stub
-		return null;
+		Measurement [] measurements=null;
+		if(printWeightsOption.isSet()){
+			int numWeights=this.layer2Weights.length;
+			measurements= new Measurement[numWeights*(numWeights-1)];
+			int ct=0;
+			for(int j=0; j<numWeights-1; j++){
+				for(int i=0; i<numWeights-1; i++){
+					measurements[ct++]= new Measurement("W Out" + (i+1) + ": Out"+(j+1), layer2Weights[i][j]);
+				}
+
+				measurements[ct++]= new Measurement("W Bias: Out"+(j+1), layer2Weights[numWeights-1][j]);
+			}
+		}
+		return measurements;
 	}
 
 	@Override
@@ -345,16 +370,16 @@ MultiTargetRegressor, AMRulesFunction {
 
 	@Override
 	public void selectOutputsToLearn(int[] outputAtributtes) {
-		
+
 		//Remove weights for unselected outputs
 		int numOutputs=outputAtributtes.length;
 		double [] newOutAttrSum=new double[numOutputs];
 		double [] newOutAttrSquaredSum=new double[numOutputs];
 		int numInputsPlus1=layer1Weights.length;
-		
+
 		double [][] newLayer1Weights=new double[numInputsPlus1][numOutputs];
 		double [][] newLayer2Weights=new double[numInputsPlus1][numOutputs];
-		
+
 		int oldNumOutputs=layer2Weights.length-1;
 		for (int j=0; j<numOutputs; j++){
 			int out=outputAtributtes[j];
