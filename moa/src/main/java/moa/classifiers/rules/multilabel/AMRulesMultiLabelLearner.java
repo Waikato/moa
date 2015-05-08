@@ -319,6 +319,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 
 								MultiLabelRule otherMultiLabelRule=rule.getNewRuleFromOtherOutputs(); //Need to be outside to make sure other rules are cleaned
 								if(!dropOldRuleAfterExpansionOption.isSet() && rule.hasNewRuleFromOtherOutputs()){
+									rule.clearOtherOutputs();
 									otherMultiLabelRule.setRuleNumberID(++ruleNumberID);
 									setRuleOptions(otherMultiLabelRule);
 									ruleIterator.add(otherMultiLabelRule);

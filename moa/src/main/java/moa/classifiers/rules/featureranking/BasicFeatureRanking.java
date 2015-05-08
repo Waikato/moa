@@ -80,7 +80,6 @@ public class BasicFeatureRanking extends AbstractFeatureRanking{
 		
 		public void addMerit(int index, double value) {
 			accumulatedMerit.addToValue(index, value);
-			
 		}
 
 
