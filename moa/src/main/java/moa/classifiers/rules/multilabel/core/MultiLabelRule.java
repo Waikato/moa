@@ -184,7 +184,6 @@ public class MultiLabelRule extends ObservableMOAObject {
 
 	public MultiLabelRule getNewRuleFromOtherOutputs(){
 		MultiLabelRule r=otherOutputsRule;
-		otherOutputsRule=null;
 		return r;
 	}
 
@@ -266,6 +265,10 @@ public class MultiLabelRule extends ObservableMOAObject {
 
 	public List<Literal> getLiterals(){
 		return literalList;
+	}
+
+	public void clearOtherOutputs() {
+		otherOutputsRule=null;
 	}
 
 
