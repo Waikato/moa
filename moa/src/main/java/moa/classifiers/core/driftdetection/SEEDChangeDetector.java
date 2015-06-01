@@ -17,10 +17,11 @@
  * 
  */
 
-package cutpointdetection;
-import moa.classifiers.core.driftdetection.AbstractChangeDetector;
+package moa.classifiers.core.driftdetection;
+
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 import moa.core.ObjectRepository;
-import moa.options.*;
 import moa.tasks.TaskMonitor;
 
 /**
