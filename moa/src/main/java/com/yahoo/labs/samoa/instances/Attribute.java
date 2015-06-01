@@ -17,14 +17,9 @@ package com.yahoo.labs.samoa.instances;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Enumeration;
+import java.util.*;
+
 import moa.core.Utils;
-import weka.core.WekaEnumeration;
-import weka.core.SerializedObject;
 /**
  * The Class Attribute.
  */
@@ -127,7 +122,7 @@ public class Attribute implements Serializable {
      * Instantiates a new attribute.
      *
      * @param attributeName the attribute name
-     * @param dateformat the format of the date used
+     * @param dateFormat the format of the date used
      */
     public Attribute(String attributeName, String dateFormat) {
         this.name = attributeName;
@@ -274,7 +269,7 @@ public class Attribute implements Serializable {
     
     if (this.isNominal){
         text.append('{');
-        Enumeration enu = enumerateValues();
+        Enumeration enu =  enumerateValues();
         while (enu.hasMoreElements()) {
             text.append(Utils.quote((String) enu.nextElement()));
             if (enu.hasMoreElements())
@@ -301,22 +296,7 @@ public class Attribute implements Serializable {
   public final /*@ pure @*/ Enumeration enumerateValues() {
 
     if (this.isNominal()) {
-      final Enumeration ee = new WekaEnumeration(this.attributeValues);
-      return new Enumeration () {
-          @Override
-          public boolean hasMoreElements() {
-            return ee.hasMoreElements();
-          }
-          @Override
-          public Object nextElement() {
-            Object oo = ee.nextElement();
-            if (oo instanceof SerializedObject) {
-              return ((SerializedObject)oo).getObject();
-            } else {
-              return oo;
-            }
-          }
-        };
+      return Collections.enumeration(this.attributeValues);
     }
     return null;
   }
