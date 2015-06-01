@@ -20,16 +20,11 @@
  */
 package moa.gui;
 
-import java.awt.BorderLayout;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
 import moa.DoTask;
 import moa.core.WekaUtils;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * The main class for the MOA gui. Lets the user configure
@@ -44,6 +39,7 @@ public class GUI extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private javax.swing.JTabbedPane panel;
+    private JPanel optionPanel;
 
     public GUI() {
         initGUI();
@@ -52,9 +48,15 @@ public class GUI extends JPanel {
     private void initGUI() {
         setLayout(new BorderLayout());
 
+        JSplitPane js = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        add(js, BorderLayout.CENTER);
+        
+        
+        optionPanel = new JPanel();
+        js.add(optionPanel);
         // Create and set up tabs
         panel = new javax.swing.JTabbedPane();
-        add(panel, BorderLayout.CENTER);
+        js.add(panel);
 
         // initialize additional panels
         String[] tabs = GUIDefaults.getTabs();
@@ -65,12 +67,18 @@ public class GUI extends JPanel {
                 String classname = optionsStr[0];
                 // setup panel
                 AbstractTabPanel tabPanel = (AbstractTabPanel) Class.forName(classname).newInstance();
+                if (tabPanel instanceof OptionPanelAware)
+                    ((OptionPanelAware)tabPanel).setOptionsPanel(optionPanel);
                 panel.addTab(tabPanel.getTabTitle(), null, (JPanel) tabPanel, tabPanel.getDescription());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
+    }
+
+    public interface OptionPanelAware {
+        public void setOptionsPanel(JPanel p);
     }
 
     public static void main(String[] args) {

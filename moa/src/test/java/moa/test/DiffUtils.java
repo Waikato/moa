@@ -19,17 +19,13 @@
  */
 package moa.test;
 
+import difflib.*;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import difflib.Chunk;
-import difflib.DeleteDelta;
-import difflib.Delta;
-import difflib.InsertDelta;
-import difflib.Patch;
 
 /**
  * A helper class for generating diffs between two files, lists of strings.
@@ -495,7 +491,7 @@ public class DiffUtils {
    */
   public static String unified(List<String> list1, List<String> list2) {
     StringBuilder	result;
-    Patch		patch;
+    Patch<?>		patch;
 
     patch  = difflib.DiffUtils.diff(list1, list2);
     result = new StringBuilder();
@@ -576,7 +572,7 @@ public class DiffUtils {
    */
   public static SideBySideDiff sideBySide(List<String> list1, List<String> list2) {
     List[]	result;
-    Patch	patch;
+    Patch<?>	patch;
     int		from;
     int		to;
     int		sizeDiff;
