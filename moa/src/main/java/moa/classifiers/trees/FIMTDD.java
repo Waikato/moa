@@ -31,6 +31,8 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -534,7 +536,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		}
 	}
 
-	public class FIMTDDPerceptron {
+	public class FIMTDDPerceptron implements Serializable{
 
 		// The Perception weights 
 		protected DoubleVector weightAttribute = new DoubleVector(); 
