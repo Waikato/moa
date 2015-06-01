@@ -84,21 +84,21 @@ extends MoaTestCase {
 			result = new StringBuilder();
 
 			result.append("Index\n");
-			result.append("  " + index + "\n");
+			result.append("  ").append(index).append('\n');
 
 			result.append("Votes\n");
 			for (i = 0; i < votes.length; i++)
-				result.append("  " + i + ": " + MoaTestCase.doubleToString(votes[i], 8) + "\n");
+				result.append("  ").append(i).append(": ").append(MoaTestCase.doubleToString(votes[i], 8)).append('\n');
 
 			result.append("Measurements\n");
 			for (Measurement m: measurements)
-				result.append("  " + m.getName() + ": " + MoaTestCase.doubleToString(m.getValue(), 8) + "\n");
+				result.append("  ").append(m.getName()).append(": ").append(MoaTestCase.doubleToString(m.getValue(), 8)).append('\n');
 
 			result.append("Model measurements\n");
 			for (Measurement m: modelMeasurements) {
 				if (m.getName().indexOf("serialized") > -1)
 					continue;
-				result.append("  " + m.getName() + ": " + MoaTestCase.doubleToString(m.getValue(), 8) + "\n");
+				result.append("  ").append(m.getName()).append(": ").append(MoaTestCase.doubleToString(m.getValue(), 8)).append('\n');
 			}
 
 			return result.toString();
@@ -217,12 +217,12 @@ extends MoaTestCase {
 
 		str = new StringBuilder();
 
-		str.append(MOAUtils.toCommandLine(cls) + "\n");
-		str.append("\n");
+		str.append(MOAUtils.toCommandLine(cls)).append('\n');
+		str.append('\n');
 
 		for (InspectionData d: data) {
 			str.append(d.toString());
-			str.append("\n");
+			str.append('\n');
 		}
 
 		return m_TestHelper.save(str, filename);

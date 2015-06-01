@@ -126,7 +126,7 @@ implements MultiTargetRegressor {
 			// transformInstance method visibility changed from private to protected in RandomRules
 			ErrorWeightedVoteMultiLabel v = ((AMRulesMultiLabelLearner) this.ensemble[i]).getVotes(inst);
 			if (VerbosityOption.getValue()>1)
-				sb.append(v.getPrediction() + ", " + " E: " + v.getWeightedError() + " ");
+				sb.append(v.getPrediction()).append(", ").append(" E: ").append(v.getWeightedError()).append(' ');
 			/*if (!this.isRegression){
 					v.normalize();
 			}*/
@@ -141,7 +141,7 @@ implements MultiTargetRegressor {
 		}
 		vote=combinedVote.computeWeightedVote();
 		if (VerbosityOption.getValue()>1){
-			sb.append(vote  + ", ").append(inst.classValue()); 
+			sb.append(vote).append(", ").append(inst.classValue());
 			System.out.println(sb.toString());
 		}
 		return vote; 
@@ -154,8 +154,7 @@ implements MultiTargetRegressor {
 		int nMeasurements=baseLearnerMeasurements.length;
 		Measurement [] m=new Measurement[nMeasurements+1];
 
-		for(int i=0; i<baseLearnerMeasurements.length; i++)
-			m[i+1]=baseLearnerMeasurements[i];
+		System.arraycopy(baseLearnerMeasurements, 0, m, 1, baseLearnerMeasurements.length);
 		
 		int ensembleSize=0;
 		if(this.ensemble !=null){	

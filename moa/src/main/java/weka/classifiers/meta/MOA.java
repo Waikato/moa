@@ -107,7 +107,7 @@ public class MOA
 
     result.addElement(new Option(
         "\tThe MOA classifier to use.\n"
-        + "\t(default: " + MOAUtils.toCommandLine(new DecisionStump()) + ")",
+        + "\t(default: " + MOAUtils.toCommandLine(new DecisionStump()) + ')',
         "B", 1, "-B <classname + options>"));
 
     Enumeration en = super.listOptions();

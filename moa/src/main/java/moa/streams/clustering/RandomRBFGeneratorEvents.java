@@ -663,7 +663,7 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
                 //System.out.println("Next event choice: "+nextEventChoice);
         }
         if(!message.isEmpty()){
-        	message+=" (numKernels = "+numActiveKernels+" at "+numGeneratedInstances+")";
+        	message+=" (numKernels = "+numActiveKernels+" at "+numGeneratedInstances+ ')';
         	if(!type.equals("Merge") || message.startsWith("Clusters merging"))
         		fireClusterChange(numGeneratedInstances, type, message);
         }

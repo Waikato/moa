@@ -161,27 +161,30 @@ public class MedianOfWidestDimension
    * Implements computation of the kth-smallest element according
    * to Manber's "Introduction to Algorithms".
    *
-   * @param attIdx The dimension/attribute of the instances in 
-   * which to find the kth-smallest element.
-   * @param indices The master index array containing indices of 
-   * the instances.
-   * @param left The begining index of the portion of the master 
-   * index array in which to find the kth-smallest element.
-   * @param right The end index of the portion of the master index 
-   * array in which to find the kth-smallest element.
-   * @param k The value of k
+   * @param attIdx  The dimension/attribute of the instances in
+   *                which to find the kth-smallest element.
+   * @param indices The master index array containing indices of
+   *                the instances.
+   * @param left    The begining index of the portion of the master
+   *                index array in which to find the kth-smallest element.
+   * @param right   The end index of the portion of the master index
+   *                array in which to find the kth-smallest element.
+   * @param k       The value of k
    * @return The index of the kth-smallest element
    */
   public int select(int attIdx, int[] indices, int left, int right, int k) {
-    
-    if (left == right) {
-      return left;
-    } else {
-      int middle = partition(attIdx, indices, left, right);
-      if ((middle - left + 1) >= k) {
-        return select(attIdx, indices, left, middle, k);
+    while (true) {
+
+      if (left == right) {
+        return left;
       } else {
-        return select(attIdx, indices, middle + 1, right, k - (middle - left + 1));
+        int middle = partition(attIdx, indices, left, right);
+        if ((middle - left + 1) >= k) {
+          right = middle;
+        } else {
+          left = middle + 1;
+          k = k - (middle - left + 1);
+        }
       }
     }
   }

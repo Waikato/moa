@@ -412,7 +412,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			if (tree.buildingModelTree()) {
 				learningModel.getModelDescription(out, 0);
 			} else {
-				out.append(tree.getClassNameString() + " = " + String.format("%.4f", (sumOfValues / examplesSeen)));
+				out.append(tree.getClassNameString()).append(" = ").append(String.format("%.4f", (sumOfValues / examplesSeen)));
 				StringUtils.appendNewline(out);
 			}
 		}
@@ -664,7 +664,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		                out.append(getAttributeNameString(j));
 		            }
 		        }
-				out.append(" + " + weightAttribute.getValue((getModelContext().numAttributes() - 1)));
+				out.append(" + ").append(weightAttribute.getValue((getModelContext().numAttributes() - 1)));
 			}
 	        StringUtils.appendNewline(out);
 		}

@@ -120,7 +120,7 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 		if(ensemble.length>0 && ensemble[0] instanceof AbstractClassifier)
 		{
 			for (int i=0; i<ensemble.length;i++){
-				StringUtils.appendIndented(out,indent+1,"Model output attribute #" + i + "\n");
+				StringUtils.appendIndented(out,indent+1,"Model output attribute #" + i + '\n');
 				((AbstractClassifier)ensemble[i]).getModelDescription(out, indent+1);
 			}
 		}

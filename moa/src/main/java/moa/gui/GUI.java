@@ -20,16 +20,11 @@
  */
 package moa.gui;
 
-import java.awt.BorderLayout;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
 import moa.DoTask;
 import moa.core.WekaUtils;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * The main class for the MOA gui. Lets the user configure
@@ -39,22 +34,18 @@ import moa.core.WekaUtils;
  * @author FracPete (fracpete at waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class GUI extends JPanel {
+public class GUI extends JTabbedPane {
 
+    final static String AppTitle = "Massive Online Analysis - MOA GUI";
     private static final long serialVersionUID = 1L;
 
-    private javax.swing.JTabbedPane panel;
+    private JPanel optionPanel;
 
     public GUI() {
-        initGUI();
-    }
-
-    private void initGUI() {
-        setLayout(new BorderLayout());
+        super();
 
         // Create and set up tabs
-        panel = new javax.swing.JTabbedPane();
-        add(panel, BorderLayout.CENTER);
+
 
         // initialize additional panels
         String[] tabs = GUIDefaults.getTabs();
@@ -65,13 +56,15 @@ public class GUI extends JPanel {
                 String classname = optionsStr[0];
                 // setup panel
                 AbstractTabPanel tabPanel = (AbstractTabPanel) Class.forName(classname).newInstance();
-                panel.addTab(tabPanel.getTabTitle(), null, (JPanel) tabPanel, tabPanel.getDescription());
+                addTab(tabPanel.getTabTitle(), null, tabPanel, tabPanel.getDescription());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
     }
+
+
 
     public static void main(String[] args) {
         try {
@@ -84,7 +77,7 @@ public class GUI extends JPanel {
                 public void run() {
 
                     // Create and set up the window.
-                    JFrame frame = new JFrame("MOA Graphical User Interface");
+                    JFrame frame = new JFrame(AppTitle);
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     
                     try {
@@ -99,10 +92,9 @@ public class GUI extends JPanel {
 
                     GUI gui = new GUI();
                     frame.getContentPane().setLayout(new BorderLayout());
-                    frame.getContentPane().add(gui);
+                    frame.getContentPane().add(gui, BorderLayout.CENTER);
 
-                    // Display the window.
-                    frame.pack();
+                    frame.pack(); // Display the window.
                     frame.setVisible(true);
                 }
             });

@@ -801,8 +801,7 @@ public class KDTree
       }
     }
     int[] result = new int[index];
-    for (int i = 0; i < index; i++)
-      result[i] = owners[i];
+    System.arraycopy(owners, 0, result, 0, index);
     return result;
   }
 

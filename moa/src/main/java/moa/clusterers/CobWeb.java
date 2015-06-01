@@ -586,21 +586,18 @@ public class CobWeb extends AbstractClusterer {
             }
 
             if (m_children == null) {
-                text.append("\n");
+                text.append('\n');
                 for (int j = 0; j < depth; j++) {
                     text.append("|   ");
                 }
-                text.append("leaf " + m_clusterNum + " ["
-                        + m_clusterInstances.numInstances() + "]");
+                text.append("leaf ").append(m_clusterNum).append(" [").append(m_clusterInstances.numInstances()).append(']');
             } else {
                 for (int i = 0; i < m_children.size(); i++) {
-                    text.append("\n");
+                    text.append('\n');
                     for (int j = 0; j < depth; j++) {
                         text.append("|   ");
                     }
-                    text.append("node " + m_clusterNum + " ["
-                            + m_clusterInstances.numInstances()
-                            + "]");
+                    text.append("node ").append(m_clusterNum).append(" [").append(m_clusterInstances.numInstances()).append(']');
                     ((CNode) m_children.elementAt(i)).dumpTree(depth + 1, text);
                 }
             }
@@ -661,25 +658,15 @@ public class CobWeb extends AbstractClusterer {
          */
         protected void graphTree(StringBuffer text) { //throws Exception {
 
-            text.append("N" + m_clusterNum
-                    + " [label=\"" + ((m_children == null)
-                    ? "leaf " : "node ")
-                    + m_clusterNum + " "
-                    + " (" + m_clusterInstances.numInstances()
-                    + ")\" "
-                    + ((m_children == null)
-                    ? "shape=box style=filled " : "")
-                    + (m_saveInstances
+            text.append("N").append(m_clusterNum).append(" [label=\"").append((m_children == null)
+                    ? "leaf " : "node ").append(m_clusterNum).append(' ').append(" (").append(m_clusterInstances.numInstances()).append(")\" ").append((m_children == null)
+                    ? "shape=box style=filled " : "").append(m_saveInstances
                     ? "data =\n" + dumpData() + "\n,\n"
-                    : "")
-                    + "]\n");
+                    : "").append("]\n");
             if (m_children != null) {
                 for (int i = 0; i < m_children.size(); i++) {
                     CNode temp = (CNode) m_children.elementAt(i);
-                    text.append("N" + m_clusterNum
-                            + "->"
-                            + "N" + temp.m_clusterNum
-                            + "\n");
+                    text.append("N").append(m_clusterNum).append("->").append('N').append(temp.m_clusterNum).append('\n');
                 }
 
                 for (int i = 0; i < m_children.size(); i++) {
@@ -895,10 +882,7 @@ public class CobWeb extends AbstractClusterer {
         } else {
             m_cobwebTree.dumpTree(0, text);
             StringUtils.appendIndented(out, indent, "CobWeb - ");
-            out.append("Number of merges: "
-                    + m_numberMerges + "\nNumber of splits: "
-                    + m_numberSplits + "\nNumber of clusters: "
-                    + numberOfClusters() + "\n" + text.toString());
+            out.append("Number of merges: ").append(m_numberMerges).append("\nNumber of splits: ").append(m_numberSplits).append("\nNumber of clusters: ").append(numberOfClusters()).append('\n').append(text);
             StringUtils.appendNewline(out);
         }
     }

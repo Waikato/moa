@@ -125,7 +125,7 @@ public class EvaluateOnlineRecommender extends MainTask {
                         }
                          ));
                 if (monitor.resultPreviewRequested()) {
-                    monitor.setLatestResultPreview(learningCurve.headerToString() + "\n" +
+                    monitor.setLatestResultPreview(learningCurve.headerToString() + '\n' +
                       learningCurve.entryToString(learningCurve.numEntries() - 1));
                 }
             }

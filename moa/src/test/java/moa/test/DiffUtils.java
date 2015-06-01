@@ -19,17 +19,13 @@
  */
 package moa.test;
 
+import difflib.*;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import difflib.Chunk;
-import difflib.DeleteDelta;
-import difflib.Delta;
-import difflib.InsertDelta;
-import difflib.Patch;
 
 /**
  * A helper class for generating diffs between two files, lists of strings.
@@ -323,7 +319,7 @@ public class DiffUtils {
 	result.append(m_Diff[SIDEBYSIDE_FIRST].get(i));
 	result.append(separator);
 	result.append(m_Diff[SIDEBYSIDE_SECOND].get(i));
-	result.append("\n");
+	result.append('\n');
       }
 
       return result.toString();
@@ -457,7 +453,7 @@ public class DiffUtils {
     result = new StringBuilder();
 
     for (Object line: lines)
-      result.append(ind + " " + line + "\n");
+      result.append(ind).append(' ').append(line).append('\n');
 
     return result.toString();
   }
@@ -481,7 +477,7 @@ public class DiffUtils {
    */
   protected static String createRange(Chunk chunk) {
     if (chunk.size() == 1)
-      return (chunk.getPosition() + 1) + "";
+      return String.valueOf(chunk.getPosition() + 1);
     else
       return (chunk.getPosition() + 1) + "," + (chunk.getPosition() + chunk.size());
   }
@@ -495,24 +491,24 @@ public class DiffUtils {
    */
   public static String unified(List<String> list1, List<String> list2) {
     StringBuilder	result;
-    Patch		patch;
+    Patch<?>		patch;
 
     patch  = difflib.DiffUtils.diff(list1, list2);
     result = new StringBuilder();
     for (Delta delta: patch.getDeltas()) {
       if (delta instanceof InsertDelta) {
-	result.append(delta.getOriginal().getPosition() + "a" + createRange(delta.getRevised()) + "\n");
+	result.append(delta.getOriginal().getPosition()).append("a").append(createRange(delta.getRevised())).append('\n');
 	result.append(toString(DESTINATION, delta.getRevised().getLines()));
       }
       else if (delta instanceof DeleteDelta) {
-	result.append(createRange(delta.getOriginal()) + "d" + delta.getRevised().getPosition() + "\n");
+	result.append(createRange(delta.getOriginal())).append('d').append(delta.getRevised().getPosition()).append('\n');
 	result.append(toString(SOURCE, delta.getOriginal().getLines()));
       }
       else {
-	result.append(createRange(delta.getOriginal()) + "c");
-	result.append(createRange(delta.getRevised()) + "\n");
+	result.append(createRange(delta.getOriginal())).append('c');
+	result.append(createRange(delta.getRevised())).append('\n');
 	result.append(toString(SOURCE, delta.getOriginal().getLines()));
-	result.append(SEPARATOR_UNIFIED + "\n");
+	result.append(SEPARATOR_UNIFIED + '\n');
 	result.append(toString(DESTINATION, delta.getRevised().getLines()));
       }
     }
@@ -576,7 +572,7 @@ public class DiffUtils {
    */
   public static SideBySideDiff sideBySide(List<String> list1, List<String> list2) {
     List[]	result;
-    Patch	patch;
+    Patch<?>	patch;
     int		from;
     int		to;
     int		sizeDiff;
@@ -694,7 +690,7 @@ public class DiffUtils {
       }
     }
     else {
-      System.err.println("\nUsage: " + DiffUtils.class.getName() + " <" + OPTION_UNIFIED + "|" + OPTION_SIDEBYSIDE + "|" + OPTION_BRIEF + "> <file1> <file2>\n");
+      System.err.println("\nUsage: " + DiffUtils.class.getName() + " <" + OPTION_UNIFIED + '|' + OPTION_SIDEBYSIDE + '|' + OPTION_BRIEF + "> <file1> <file2>\n");
       return;
     }
   }

@@ -202,7 +202,7 @@ public class FileUtils {
 	writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename, append), encoding));
       else
 	writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename, append)));
-      writer.write("" + obj);
+      writer.write(String.valueOf(obj));
       writer.newLine();
       writer.flush();
       writer.close();

@@ -122,7 +122,7 @@ public class Regression {
     if (result.length() == 0)
       return null;
     else
-      return result.toString();
+      return result;
   }
 
   /**
@@ -273,6 +273,6 @@ public class Regression {
   public static File createReferenceFile(Class regressionClass, String suffix, String extension) {
     if (suffix == null)
       suffix = "";
-    return new File(REFERENCES + "/" + regressionClass.getName().replace(".", "/") + suffix + extension);  
+    return new File(REFERENCES + '/' + regressionClass.getName().replace(".", "/") + suffix + extension);
   }
 }

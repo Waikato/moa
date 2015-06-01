@@ -175,9 +175,7 @@ public class LimAttClassifier extends AbstractClassifier {
             if (numLeft.equals(total)) {
                 numLeft = numLeft.subtract(BigInteger.ONE);
                 int[] b = new int[a.length];
-                for (int k = 0; k < a.length; k++) {
-                    b[k] = a[k];
-                }
+                System.arraycopy(a, 0, b, 0, a.length);
                 return b;
             }
             int i = r - 1;
@@ -190,9 +188,7 @@ public class LimAttClassifier extends AbstractClassifier {
             }
             numLeft = numLeft.subtract(BigInteger.ONE);
             int[] b = new int[a.length];
-            for (int k = 0; k < a.length; k++) {
-                b[k] = a[k];
-            }
+            System.arraycopy(a, 0, b, 0, a.length);
             return b;
         }
     }

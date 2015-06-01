@@ -20,9 +20,10 @@
 
 package moa.evaluation;
 
-import java.util.ArrayList;
 import moa.cluster.Clustering;
 import moa.gui.visualization.DataPoint;
+
+import java.util.ArrayList;
 
 
 public class EntropyCollection extends MeasureCollection{
@@ -161,7 +162,7 @@ public class EntropyCollection extends MeasureCollection{
                    double m = Math.log10(mm.getClusterClassWeight(i, j)/(double)mm.getClusterSum(i)/(double)mm.getClassSum(j)*(double)n);
                    m*= mm.getClusterClassWeight(i, j)/(double)n;
                    if(debug)
-                        System.out.println("("+j+"/"+ j + "): "+m);
+                        System.out.println("("+j+ '/' + j + "): "+m);
                    mutual+=m;
                 }
         }

@@ -24,6 +24,7 @@ import com.github.javacliparser.Option;
 import weka.core.Utils;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -62,7 +63,7 @@ public class WEKAClassOption extends AbstractClassOption {
 		
 		String result = currentValue.getClass().getName();
 		if (currentValue instanceof weka.core.OptionHandler)
-			result += " " + Utils.joinOptions(((weka.core.OptionHandler) currentValue).getOptions());
+			result += ' ' + Utils.joinOptions(((weka.core.OptionHandler) currentValue).getOptions());
 		result = result.trim();
 		
 		return result;
@@ -97,7 +98,7 @@ public class WEKAClassOption extends AbstractClassOption {
 		if (obj instanceof weka.core.OptionHandler) {
 			String subOptions = Utils.joinOptions(((weka.core.OptionHandler) obj).getOptions());
 			if (subOptions.length() > 0) {
-				return new String(className + " " + subOptions).trim();
+				return (className + ' ' + subOptions).trim();
 			}
 		}
 		return className;
@@ -129,11 +130,11 @@ public class WEKAClassOption extends AbstractClassOption {
 		} catch (Throwable t1) {
 			try {
 				// try prepending default package
-				classObject = Class.forName(requiredType.getPackage().getName()	+ "." + className);
+				classObject = Class.forName(requiredType.getPackage().getName()	+ '.' + className);
 			} catch (Throwable t2) {
 				try {
 					// try prepending task package
-					classObject = Class.forName(Task.class.getPackage().getName()	+ "." + className);
+					classObject = Class.forName(Task.class.getPackage().getName()	+ '.' + className);
 				} catch (Throwable t3) {
 					throw new Exception("Class not found: " + className);
 				}
@@ -156,8 +157,7 @@ public class WEKAClassOption extends AbstractClassOption {
 			}
 			else {
 				String[] optionsTmp = Utils.splitOptions(cliString);
-				for (int i = 1; i < optionsTmp.length; i++)
-					options.add(optionsTmp[i]);
+				options.addAll(Arrays.asList(optionsTmp).subList(1, optionsTmp.length));
 			}
 			if (classInstance instanceof weka.core.OptionHandler) {
 				try {
@@ -167,8 +167,8 @@ public class WEKAClassOption extends AbstractClassOption {
 					StringBuffer optionsText = new StringBuffer();
 					while (enm.hasMoreElements()) {
 						weka.core.Option option = (weka.core.Option) enm.nextElement();
-						optionsText.append(option.synopsis() + '\n');
-						optionsText.append(option.description() + "\n");
+						optionsText.append(option.synopsis()).append('\n');
+						optionsText.append(option.description()).append('\n');
 					}
 					throw new Exception("Problem with options to '"
 							+ className
@@ -176,12 +176,12 @@ public class WEKAClassOption extends AbstractClassOption {
 							+ "\n\nValid options for "
 							+ className
 							+ ":\n"
-							+ optionsText.toString(), ex);
+							+ optionsText, ex);
 				}
 		  }
 		} else {
 			throw new Exception("Class named '" + className
-					+ "' is not an instance of " + requiredType.getName() + ".");
+					+ "' is not an instance of " + requiredType.getName() + '.');
 		}
 		return classInstance;
 	}

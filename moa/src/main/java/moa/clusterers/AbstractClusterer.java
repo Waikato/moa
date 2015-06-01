@@ -19,6 +19,7 @@
  */
 package moa.clusterers;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -140,9 +141,7 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 				measureByteSize()));
 		Measurement[] modelMeasurements = getModelMeasurementsImpl();
 		if (modelMeasurements != null) {
-			for (Measurement measurement : modelMeasurements) {
-				measurementList.add(measurement);
-			}
+			Collections.addAll(measurementList, modelMeasurements);
 		}
 		// add average of sub-model measurements
 		Clusterer[] subModels = getSubClusterers();
@@ -156,9 +155,7 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 			Measurement[] avgMeasurements = Measurement
 					.averageMeasurements(subMeasurements
 							.toArray(new Measurement[subMeasurements.size()][]));
-			for (Measurement measurement : avgMeasurements) {
-				measurementList.add(measurement);
-			}
+			Collections.addAll(measurementList, avgMeasurements);
 		}
 		return measurementList.toArray(new Measurement[measurementList.size()]);
 	}

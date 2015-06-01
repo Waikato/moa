@@ -361,7 +361,7 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
                 if(found_clustering!=null && found_clustering.size() > 0){
                     try {
                         double msec = m_measures0[i].evaluateClusteringPerformance(found_clustering, trueClustering, points);
-                        sb.append(m_measures0[i].getClass().getSimpleName()+" took "+msec+"ms (Mean:"+m_measures0[i].getMeanRunningTime()+")");
+                        sb.append(m_measures0[i].getClass().getSimpleName()).append(" took ").append(msec).append("ms (Mean:").append(m_measures0[i].getMeanRunningTime()).append(")");
                         sb.append("\n");
 
                     } catch (Exception ex) { ex.printStackTrace(); }
@@ -376,7 +376,7 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
                 if(m_clusterer1!=null && found_clustering!=null && found_clustering.size() > 0){
                     try {
                         double msec = m_measures1[i].evaluateClusteringPerformance(found_clustering, trueClustering, points);
-                        sb.append(m_measures1[i].getClass().getSimpleName()+" took "+msec+"ms (Mean:"+m_measures1[i].getMeanRunningTime()+")");
+                        sb.append(m_measures1[i].getClass().getSimpleName()).append(" took ").append(msec).append("ms (Mean:").append(m_measures1[i].getMeanRunningTime()).append(")");
                         sb.append("\n");
                     }
                     catch (Exception ex) { ex.printStackTrace(); }

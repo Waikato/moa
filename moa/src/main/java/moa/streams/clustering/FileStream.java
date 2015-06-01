@@ -191,7 +191,7 @@ public class FileStream extends ClusteringStream{
 				valuesMinMaxDiff = readMinMaxDiffValues(attributes);
 			
 			//convert hashset to array and sort array so we can delete attributes in a sequence
-			removeAttributes = attributes.toArray(new Integer[0]);
+			removeAttributes = attributes.toArray(new Integer[attributes.size()]);
 			Arrays.sort(removeAttributes);
 			
 			//set updated number of attributes (class attribute included)

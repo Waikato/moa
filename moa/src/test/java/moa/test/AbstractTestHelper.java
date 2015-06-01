@@ -106,7 +106,7 @@ public abstract class AbstractTestHelper<I, O> {
 
     input    = null;
     output   = null;
-    resource = getDataDirectory() + "/" + resource;
+    resource = getDataDirectory() + '/' + resource;
 
     try {
       input  = new BufferedInputStream(ClassLoader.getSystemResourceAsStream(resource));

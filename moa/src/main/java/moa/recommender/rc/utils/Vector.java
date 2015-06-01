@@ -35,20 +35,27 @@ public abstract class Vector implements Serializable {
     abstract public Double get(int index);
     abstract public Iterator<Pair<Integer, Double>> iterator();
     abstract public Set<Integer> getIdxs();
-    
+
     public double dotProduct(Vector vec) {
-        if (size() > vec.size()) return vec.dotProduct(this);
-        Iterator<Pair<Integer, Double>> it = iterator();
-        double ret = 0;
-        
-        while(it.hasNext()) {
-            Pair<Integer, Double> ind = it.next();
-            Double val1 = ind.getSecond();
-            Double val2 = vec.get(ind.getFirst());
-            if (val2 != null) ret += val1*val2;
+        Vector other = this;
+        while (true) {
+            if (other.size() > vec.size()) {
+                vec = this;
+                other = vec;
+                continue;
+            }
+            Iterator<Pair<Integer, Double>> it = other.iterator();
+            double ret = 0;
+
+            while (it.hasNext()) {
+                Pair<Integer, Double> ind = it.next();
+                Double val1 = ind.getSecond();
+                Double val2 = vec.get(ind.getFirst());
+                if (val2 != null) ret += val1 * val2;
+            }
+
+            return ret;
         }
-        
-        return ret;
     }
     
     public double norm() {

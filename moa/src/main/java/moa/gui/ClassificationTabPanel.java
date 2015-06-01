@@ -19,7 +19,8 @@
  */
 package moa.gui;
 
-import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * This panel allows the user to select and configure a task, and run it.
@@ -27,21 +28,35 @@ import java.awt.BorderLayout;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class ClassificationTabPanel extends AbstractTabPanel {
+public class ClassificationTabPanel extends MOATabPanel  {
 
 	private static final long serialVersionUID = 1L;
 
-	protected TaskManagerPanel taskManagerPanel;
+	protected PreviewPanel previewPanel = new PreviewPanel();
 
-	protected PreviewPanel previewPanel;
+	protected TaskManagerPanel taskManagerPanel = new TaskManagerPanel();
+
+	JPanel content = new JPanel(new BorderLayout());
 
 	public ClassificationTabPanel() {
-		this.taskManagerPanel = new TaskManagerPanel();
-		this.previewPanel = new PreviewPanel();
+		super();
+
 		this.taskManagerPanel.setPreviewPanel(this.previewPanel);
-		setLayout(new BorderLayout());
-		add(this.taskManagerPanel, BorderLayout.NORTH);
-		add(this.previewPanel, BorderLayout.CENTER);
+
+		content.add(this.taskManagerPanel, BorderLayout.NORTH);
+		content.add(this.previewPanel, BorderLayout.CENTER);
+
+
+	}
+
+	@Override
+	JComponent getContentPanel() {
+		return content;
+	}
+
+	@Override
+	JComponent getOptionsPanel() {
+		return taskManagerPanel.getOptionsPanel();
 	}
 
 	//returns the string to display as title of the tab

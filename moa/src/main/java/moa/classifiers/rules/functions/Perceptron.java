@@ -19,22 +19,19 @@
  */
 package moa.classifiers.rules.functions;
 
-import java.util.LinkedList;
-import java.util.Random;
-
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Regressor;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 
+import java.util.LinkedList;
+import java.util.Random;
+
 public class Perceptron extends AbstractClassifier implements AMRulesRegressorFunction{
 
-	private final double SD_THRESHOLD = 0.0000001; //THRESHOLD for normalizing attribute and target values
+	private static final double SD_THRESHOLD = 0.0000001; //THRESHOLD for normalizing attribute and target values
 
 	private static final long serialVersionUID = 1L;
 
@@ -370,14 +367,14 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 			for(int i=0; i< this.weightAttribute.length-1; ++i)
 			{
 				if(this.weightAttribute[i]>0 && i>0)
-					out.append(" +" + Math.round(this.weightAttribute[i]*1000)/1000.0 + " X" + i );
+					out.append(" +").append(Math.round(this.weightAttribute[i] * 1000) / 1000.0).append(" X").append(i);
 				else if(this.weightAttribute[i]<0 || i==0)
-					out.append(" " + Math.round(this.weightAttribute[i]*1000)/1000.0 + " X" + i );
+					out.append(" ").append(Math.round(this.weightAttribute[i] * 1000) / 1000.0).append(" X").append(i);
 			}
 			if(this.weightAttribute[this.weightAttribute.length-1]>=0 )
-				out.append(" +" + Math.round(this.weightAttribute[this.weightAttribute.length-1]*1000)/1000.0);
+				out.append(" +").append(Math.round(this.weightAttribute[this.weightAttribute.length - 1] * 1000) / 1000.0);
 			else 
-				out.append(" " + Math.round(this.weightAttribute[this.weightAttribute.length-1]*1000)/1000.0);
+				out.append(" ").append(Math.round(this.weightAttribute[this.weightAttribute.length - 1] * 1000) / 1000.0);
 		}	
 	}
 

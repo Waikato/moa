@@ -44,8 +44,7 @@ public class DataObject {
      */
     public double[] getFeatures() {
     	double[] filteredFeatures = new double[features.length-1];
-    	for (int i = 0; i<filteredFeatures.length; i++)
-    		filteredFeatures[i]=features[i];
+        System.arraycopy(features, 0, filteredFeatures, 0, filteredFeatures.length);
         return filteredFeatures;
     }
 
@@ -115,7 +114,7 @@ public class DataObject {
         }
         res += ")";
         
-        res += "[" + this.classLabel + "]";
+        res += "[" + this.classLabel + ']';
         
         return res;
         

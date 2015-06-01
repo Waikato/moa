@@ -58,7 +58,7 @@ public class AbstractC extends AbstractCBase {
         Println("   window_size: " + m_WindowSize);
         Println("   radius: " + m_radius);
         Println("   Fraction: " + m_Fraction);
-        Println("   (Fraction * window_size: " + String.format("%.2f", m_Fraction * m_WindowSize) + ")");
+        Println("   (Fraction * window_size: " + String.format("%.2f", m_Fraction * m_WindowSize) + ')');
         
         //bTrace = true;
         bWarning = true;

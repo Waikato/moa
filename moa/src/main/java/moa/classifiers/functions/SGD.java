@@ -351,18 +351,16 @@ public class SGD extends AbstractClassifier implements Regressor{
                 buff.append("   ");
             }
 
-            buff.append(Utils.doubleToString(m_weights.getValue(i), 12, 4) + " "
-                    // + m_data.attribute(i).name()
-                    + "\n");
+            buff.append(Utils.doubleToString(m_weights.getValue(i), 12, 4)).append(' ').append('\n');
 
             printed++;
             //}
         }
 
         if (m_bias > 0) {
-            buff.append(" + " + Utils.doubleToString(m_bias, 12, 4));
+            buff.append(" + ").append(Utils.doubleToString(m_bias, 12, 4));
         } else {
-            buff.append(" - " + Utils.doubleToString(-m_bias, 12, 4));
+            buff.append(" - ").append(Utils.doubleToString(-m_bias, 12, 4));
         }
 
         return buff.toString();

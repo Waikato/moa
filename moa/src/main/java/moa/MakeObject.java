@@ -53,7 +53,7 @@ public class MakeObject {
                 // build a single string by concatenating cli options
                 StringBuilder cliString = new StringBuilder();
                 for (int i = 1; i < args.length; i++) {
-                    cliString.append(" " + args[i]);
+                    cliString.append(' ').append(args[i]);
                 }
                 // parse options
                 System.err.println("Making object...");

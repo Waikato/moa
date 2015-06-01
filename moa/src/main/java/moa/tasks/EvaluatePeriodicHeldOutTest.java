@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.FlagOption;
@@ -219,13 +220,9 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
             measurements.add(new Measurement("test speed", this.testSizeOption.getValue()
                     / testTime));
             Measurement[] performanceMeasurements = evaluator.getPerformanceMeasurements();
-            for (Measurement measurement : performanceMeasurements) {
-                measurements.add(measurement);
-            }
+            Collections.addAll(measurements, performanceMeasurements);
             Measurement[] modelMeasurements = learner.getModelMeasurements();
-            for (Measurement measurement : modelMeasurements) {
-                measurements.add(measurement);
-            }
+            Collections.addAll(measurements, modelMeasurements);
             learningCurve.insertEntry(new LearningEvaluation(measurements.toArray(new Measurement[measurements.size()])));
             if (immediateResultStream != null) {
                 if (firstDump) {

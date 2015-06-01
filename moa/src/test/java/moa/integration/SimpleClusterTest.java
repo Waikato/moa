@@ -73,7 +73,7 @@ public class SimpleClusterTest extends TestCase {
             // build a single string by concatenating cli options
             StringBuilder cliString = new StringBuilder();
             for (int i = 0; i < args.length; i++) {
-                cliString.append(" ").append(args[i]);
+                cliString.append(' ').append(args[i]);
             }
             // parse options
             Task task = (Task) ClassOption.cliStringToObject(cliString.toString(), Task.class, extraOptions);
@@ -112,7 +112,7 @@ public class SimpleClusterTest extends TestCase {
                     }
                     progressLine.append(taskThread.getCurrentActivityString());
                     while (progressLine.length() < moa.DoTask.MAX_STATUS_STRING_LENGTH) {
-                        progressLine.append(" ");
+                        progressLine.append(' ');
                     }
                     if (progressLine.length() > moa.DoTask.MAX_STATUS_STRING_LENGTH) {
                         progressLine.setLength(moa.DoTask.MAX_STATUS_STRING_LENGTH);

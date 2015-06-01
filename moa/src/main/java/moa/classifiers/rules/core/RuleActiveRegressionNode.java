@@ -164,7 +164,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 			double 	perceptronError= this.perceptron.getCurrentError();
 			double meanTargetError =this.targetMean.getCurrentError();
 			debug("\n Check P:" + perceptronError + " M:" + meanTargetError,5);
-			debug("Rule" + this.owner.ruleNumberID + " P:" + this.perceptron.getVotesForInstance(instance)[0] + " (" + perceptronError + ")" + " M:" + this.targetMean.getVotesForInstance(instance)[0]+ " (" + meanTargetError + ")",3) ; //Commented by JD
+			debug("Rule" + this.owner.ruleNumberID + " P:" + this.perceptron.getVotesForInstance(instance)[0] + " (" + perceptronError + ')' + " M:" + this.targetMean.getVotesForInstance(instance)[0]+ " (" + meanTargetError + ')',3) ; //Commented by JD
 			debug("Observed Value: " + instance.classValue(),5);
 			if (perceptronError < meanTargetError) {
 				predictionMode = 1; //PERCEPTRON
@@ -351,7 +351,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 			AttributeSplitSuggestion secondBestSuggestion
 			= bestSplitSuggestions[bestSplitSuggestions.length - 2];
 
-			debug("Merits: " + secondBestSuggestion.merit + " " + bestSuggestion.merit, 4);
+			debug("Merits: " + secondBestSuggestion.merit + ' ' + bestSuggestion.merit, 4);
 
 			// If the upper bound of the sample mean for the ratio of SDR(best suggestion) to SDR(second best suggestion),
 			// as determined using the hoeffding bound, is less than 1, then the true mean is also less than 1, and thus at this

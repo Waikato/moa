@@ -20,23 +20,18 @@
 package moa.gui;
 
 import com.github.javacliparser.gui.OptionsConfigurationPanel;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
 import moa.core.AutoClassDiscovery;
 import moa.core.AutoExpandVector;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
 import moa.tasks.Task;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Creates a panel that displays the classes available, letting the user select
@@ -46,7 +41,7 @@ import moa.tasks.Task;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class ClassOptionSelectionPanel extends JPanel {
+public class ClassOptionSelectionPanel extends JPanel implements ListCellRenderer {
 
     // TODO: idea - why not retain matching options between classes when the
     // class type is changed
@@ -65,7 +60,10 @@ public class ClassOptionSelectionPanel extends JPanel {
         // Class<?>[] classesFound = AutoClassDiscovery.findClassesOfType("moa",
         // requiredType);
         Class<?>[] classesFound = findSuitableClasses(requiredType);
+
         this.classChoiceBox = new JComboBox(classesFound);
+        classChoiceBox.setRenderer(this);
+
         setLayout(new BorderLayout());
         add(this.classChoiceBox, BorderLayout.NORTH);
         Object initialObject = null;
@@ -92,8 +90,21 @@ public class ClassOptionSelectionPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 try {
+                    SwingUtilities.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+
+                            try {
                     Object chosen = ((Class<?>) ClassOptionSelectionPanel.this.classChoiceBox.getSelectedItem()).newInstance();
                     classChoiceChanged(chosen);
+                } catch (Exception ex) {
+                                Logger.getLogger(ClassOptionSelectionPanel.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+
+                        }
+
+                    });
                 } catch (Exception ex) {
                     GUIUtils.showExceptionDialog(
                             ClassOptionSelectionPanel.this, "Problem", ex);
@@ -124,10 +135,13 @@ public class ClassOptionSelectionPanel extends JPanel {
         return finalClasses.toArray(new Class<?>[finalClasses.size()]);
     }
 
+    public static ClassOptionSelectionPanel newSelectClassDialog(Class<?> requiredType, String initialCLIString, String nullString) {
+        return new ClassOptionSelectionPanel(
+                requiredType, initialCLIString, nullString);
+    }
     public static String showSelectClassDialog(Component parent, String title,
             Class<?> requiredType, String initialCLIString, String nullString) {
-        ClassOptionSelectionPanel panel = new ClassOptionSelectionPanel(
-                requiredType, initialCLIString, nullString);
+        ClassOptionSelectionPanel panel = newSelectClassDialog(requiredType, initialCLIString, nullString);
         if (JOptionPane.showOptionDialog(parent, panel, title,
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null,
                 null, null) == JOptionPane.OK_OPTION) {
@@ -166,5 +180,18 @@ public class ClassOptionSelectionPanel extends JPanel {
             Window window = (Window) component;
             window.pack();
         }
+        else {
+            updateUI();
+            doLayout();
+        }
     }
+
+    @Override
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        Class x = (Class)value;
+        String pkg = x.getPackage().getName();
+        String name = x.getSimpleName();
+        return new JLabel(new StringBuilder().append("<html>").append(pkg).append(".<font size=+1>").append(name).append("</font></html>").toString());
+    }
+
 }

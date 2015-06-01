@@ -104,7 +104,7 @@ public class RandomRules extends AbstractClassifier implements Regressor {
 		for (int i = 0; i < this.ensemble.length; i++) {
 			DoubleVector vote = new DoubleVector(this.ensemble[i].getVotesForInstance(transformInstance(inst,i)));
 			if (VerbosityOption.getValue()>1)
-					sb.append(vote.getValue(0) + ", ");
+					sb.append(vote.getValue(0)).append(", ");
 			if (this.isRegression == false && vote.sumOfValues() != 0.0){
 				vote.normalize();
 			}
@@ -114,7 +114,7 @@ public class RandomRules extends AbstractClassifier implements Regressor {
 			combinedVote.scaleValues(1.0/this.ensemble.length);
 		}
 		if (VerbosityOption.getValue()>1){
-			sb.append(combinedVote.getValue(0)  + ", ").append(inst.classValue());
+			sb.append(combinedVote.getValue(0)).append(", ").append(inst.classValue());
 			System.out.println(sb.toString());
 		}
 		return combinedVote.getArrayRef();
@@ -172,7 +172,7 @@ public class RandomRules extends AbstractClassifier implements Regressor {
 					System.out.print(this.listAttributes[attributeIndex][ensembleIndex]);
 				}
 				//System.out.println("Number of attributes: "+this.numAttributes+ ","+inst.numAttributes()); //JD
-				System.out.println("Number of attributes: "+this.numAttributes+ ","+(inst.numAttributes()-1));
+				System.out.println("Number of attributes: "+this.numAttributes+ ',' +(inst.numAttributes()-1));
 				attributes.addElement(inst.classAttribute());
 				this.dataset[ensembleIndex] =  new InstancesHeader(new Instances(
 						getCLICreationString(InstanceStream.class), attributes, 0));

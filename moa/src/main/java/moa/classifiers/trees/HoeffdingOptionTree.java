@@ -368,7 +368,7 @@ public class HoeffdingOptionTree extends AbstractClassifier {
                     out.append(this.splitTest.describeConditionForBranch(branch,
                             ht.getModelContext()));
                     out.append(": ");
-                    out.append("** option count = " + this.optionCount);
+                    out.append("** option count = ").append(this.optionCount);
                     StringUtils.appendNewline(out);
                     child.describeSubtree(ht, out, indent + 2);
                 }
@@ -940,7 +940,7 @@ public class HoeffdingOptionTree extends AbstractClassifier {
                 treeDepth++;
             }
             immediateResultStream.println(this.trainingWeightSeenByModel + ","
-                    + treeDepth + "," + splitAtt + "," + splitVal);
+                    + treeDepth + ',' + splitAtt + ',' + splitVal);
             immediateResultStream.flush();
             immediateResultStream.close();
         }

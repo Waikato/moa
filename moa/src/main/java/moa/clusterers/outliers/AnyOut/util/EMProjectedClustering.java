@@ -164,9 +164,7 @@ public class EMProjectedClustering {
 				i--;
 				continue;
 			} else {
-				for (int d = 0; d < dim; d++) {
-					clusterMeans[i][d] = pointArray[nextIndex][d];
-				}
+				System.arraycopy(pointArray[nextIndex], 0, clusterMeans[i], 0, dim);
 			}
 		}
 		

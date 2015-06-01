@@ -163,7 +163,7 @@ public class MetaMultilabelGenerator extends AbstractOptionHandler implements In
             mi.insertAttributeAt(new Attribute("class" + i, bfv), i);
         }
         this.multilabelStreamTemplate = mi;
-        this.multilabelStreamTemplate.setRelationName("SYN_Z" + this.labelCardinalityOption.getValue() + "L" + this.m_L + "X" + m_A + "S" + metaRandomSeedOption.getValue() + ": -C " + this.m_L);
+        this.multilabelStreamTemplate.setRelationName("SYN_Z" + this.labelCardinalityOption.getValue() + 'L' + this.m_L + 'X' + m_A + 'S' + metaRandomSeedOption.getValue() + ": -C " + this.m_L);
         this.multilabelStreamTemplate.setClassIndex(this.m_L);
         return new MultilabelInstancesHeader(multilabelStreamTemplate, m_L);
     }
@@ -212,7 +212,7 @@ public class MetaMultilabelGenerator extends AbstractOptionHandler implements In
                     queue[c].add(tinst);
                 }
             }
-            System.err.println("[Overflow] The binary stream is too skewed, could not get an example of class " + i + "");
+            System.err.println("[Overflow] The binary stream is too skewed, could not get an example of class " + i);
             System.exit(1);
             return null;
         } else {
@@ -448,7 +448,7 @@ public class MetaMultilabelGenerator extends AbstractOptionHandler implements In
         double weights[] = new double[n];
         int idx = 0;
         for (HashSet Y : top_set) {
-            System.err.println(" " + Y + " : " + (count.get(Y) * 100.0 / N) + "%");
+            System.err.println(" " + Y + " : " + (count.get(Y) * 100.0 / N) + '%');
             weights[idx++] = count.get(Y);
             if (idx == weights.length) {
                 break;
@@ -557,7 +557,7 @@ public class MetaMultilabelGenerator extends AbstractOptionHandler implements In
         System.out.println("--- MATRIX ---");
         for (int i = 0; i < M.length; i++) {
             for (int j = 0; j < M[i].length; j++) {
-                System.out.print(" " + Utils.doubleToString(M[i][j], 5, 3));
+                System.out.print(' ' + Utils.doubleToString(M[i][j], 5, 3));
             }
             System.out.println("");
         }
@@ -566,7 +566,7 @@ public class MetaMultilabelGenerator extends AbstractOptionHandler implements In
     private void printVector(double V[]) {
         System.out.println("--- VECTOR ---");
         for (int j = 0; j < V.length; j++) {
-            System.out.print(" " + Utils.doubleToString(V[j], 5, 3));
+            System.out.print(' ' + Utils.doubleToString(V[j], 5, 3));
         }
         System.out.println("");
     }

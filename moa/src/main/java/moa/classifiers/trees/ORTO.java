@@ -248,22 +248,25 @@ public class ORTO extends AbstractClassifier implements Regressor{
                 tree.maxDepth = level;
             }
         }
-        
+
         public int getLevel() {
-            Node target = (Node) this.getParent();
-            while (target instanceof OptionNode) {
-                target = (Node) target.getParent();
-            }
-            if (target == null) {
-                if (!Alternate) { 
-                    // Actual tree root
-                    return 0;
-                } else {
-                    // Root of alternate tree
-                    return alternateTree.getLevel();
+            Node other = this;
+            while (true) {
+                Node target = (Node) other.getParent();
+                while (target instanceof OptionNode) {
+                    target = (Node) target.getParent();
                 }
-            } else {
-                return target.getLevel() + 1;
+                if (target == null) {
+                    if (!other.Alternate) {
+                        // Actual tree root
+                        return 0;
+                    } else {
+                        // Root of alternate tree
+                        other = other.alternateTree;
+                    }
+                } else {
+                    return target.getLevel() + 1;
+                }
             }
         }
         

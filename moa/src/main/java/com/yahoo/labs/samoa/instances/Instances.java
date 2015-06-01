@@ -507,12 +507,12 @@ public class Instances implements Serializable {
     
     StringBuffer text = new StringBuffer();
     
-    text.append(ARFF_RELATION).append(" ").
+    text.append(ARFF_RELATION).append(' ').
       append(Utils.quote( this.instanceInformation.getRelationName())).append("\n\n");
     for (int i = 0; i < numAttributes(); i++) {
-      text.append(attribute(i).toString()).append("\n");
+      text.append(attribute(i).toString()).append('\n');
     }
-    text.append("\n").append(ARFF_DATA).append("\n");
+    text.append('\n').append(ARFF_DATA).append('\n');
 
     text.append(stringWithoutHeader());
     return text.toString();

@@ -249,8 +249,7 @@ public class ADACC extends DACC {
     	
 		//take a copy of the ensemble weights (excluding snapshots)
 		Pair[] newEnsembleWeights = new Pair[ensembleWeights.length-MAXPERMANENT];
-		for (int i = 0 ; i < newEnsembleWeights.length; i++)	
-			newEnsembleWeights[i]=ensembleWeights[i];
+		System.arraycopy(ensembleWeights, 0, newEnsembleWeights, 0, newEnsembleWeights.length);
 		
 	    //sort the weight values	
 		Arrays.sort(newEnsembleWeights,Collections.reverseOrder());

@@ -300,7 +300,7 @@ public class MCOD extends MCODBase {
                 PrintEventQueue();
             }
         } else {
-            if (bWarning) Println("AddToEventQueue: Cannot add x.id: " + x.id + " to event queue (nn_before is empty, count_after=" + x.count_after + ")"); 
+            if (bWarning) Println("AddToEventQueue: Cannot add x.id: " + x.id + " to event queue (nn_before is empty, count_after=" + x.count_after + ')');
         }
     }
     

@@ -112,7 +112,7 @@ public class MOA
 
     result.add(new Option(
     		"\tThe MOA stream generator.\n"
-    		+ "\t(default: " + MOAUtils.toCommandLine(new LEDGenerator()) + ")",
+    		+ "\t(default: " + MOAUtils.toCommandLine(new LEDGenerator()) + ')',
     		"B", 1, "-B <classname + options>"));
 
     return result.elements();

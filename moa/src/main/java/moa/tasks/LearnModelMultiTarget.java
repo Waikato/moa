@@ -90,8 +90,8 @@ public class LearnModelMultiTarget extends MultiTargetMainTask {
         for (int pass = 0; pass < numPasses; pass++) {
             long instancesProcessed = 0;
             monitor.setCurrentActivity("Training learner"
-                    + (numPasses > 1 ? (" (pass " + (pass + 1) + "/"
-                    + numPasses + ")") : "") + "...", -1.0);
+                    + (numPasses > 1 ? (" (pass " + (pass + 1) + '/'
+                    + numPasses + ')') : "") + "...", -1.0);
             if (pass > 0) {
                 stream.restart();
             }

@@ -161,16 +161,17 @@ public class RandomTreeGenerator extends AbstractOptionHandler implements
     }
 
     protected int classifyInstance(Node node, double[] attVals) {
-        if (node.children == null) {
-            return node.classLabel;
+        while (true) {
+            if (node.children == null) {
+                return node.classLabel;
+            }
+            if (node.splitAttIndex < this.numNominalsOption.getValue()) {
+                node = node.children[(int) attVals[node.splitAttIndex]];
+                continue;
+            }
+            node = node.children[attVals[node.splitAttIndex] < node.splitAttValue ? 0
+                    : 1];
         }
-        if (node.splitAttIndex < this.numNominalsOption.getValue()) {
-            return classifyInstance(
-                    node.children[(int) attVals[node.splitAttIndex]], attVals);
-        }
-        return classifyInstance(
-                node.children[attVals[node.splitAttIndex] < node.splitAttValue ? 0
-                : 1], attVals);
     }
 
     protected void generateHeader() {

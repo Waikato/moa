@@ -95,7 +95,7 @@ public class NaiveBayes extends AbstractClassifier {
             out.append(getClassNameString());
             out.append(" = ");
             out.append(getClassLabelString(i));
-            out.append(":");
+            out.append(':');
             StringUtils.appendNewlineIndented(out, indent + 1,
                     "Total observed weight = ");
             out.append(this.observedClassDistribution.getValue(i));
