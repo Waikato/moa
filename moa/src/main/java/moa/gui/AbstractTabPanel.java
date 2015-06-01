@@ -19,6 +19,8 @@
  */
 package moa.gui;
 
+import java.awt.*;
+
 /**
  * Abstract Tab Panel.
  *
@@ -26,6 +28,13 @@ package moa.gui;
  * @version $Revision: 7 $
  */
 public abstract class AbstractTabPanel extends javax.swing.JPanel {
+
+    public AbstractTabPanel(LayoutManager lm) {
+        super(lm);
+    }
+    public AbstractTabPanel() {
+        this(new BorderLayout());
+    }
 
     /**
      * Returns the string to display as title of the tab.
@@ -40,4 +49,5 @@ public abstract class AbstractTabPanel extends javax.swing.JPanel {
      * @return a short description of this tab panel.
      */
     public abstract String getDescription();
+
 }

@@ -34,29 +34,18 @@ import java.awt.*;
  * @author FracPete (fracpete at waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class GUI extends JPanel {
+public class GUI extends JTabbedPane {
 
+    final static String AppTitle = "Massive Online Analysis - MOA GUI";
     private static final long serialVersionUID = 1L;
 
-    private javax.swing.JTabbedPane panel;
     private JPanel optionPanel;
 
     public GUI() {
-        initGUI();
-    }
+        super();
 
-    private void initGUI() {
-        setLayout(new BorderLayout());
-
-        JSplitPane js = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        add(js, BorderLayout.CENTER);
-        
-        
-        optionPanel = new JPanel();
-        js.add(optionPanel);
         // Create and set up tabs
-        panel = new javax.swing.JTabbedPane();
-        js.add(panel);
+
 
         // initialize additional panels
         String[] tabs = GUIDefaults.getTabs();
@@ -67,9 +56,7 @@ public class GUI extends JPanel {
                 String classname = optionsStr[0];
                 // setup panel
                 AbstractTabPanel tabPanel = (AbstractTabPanel) Class.forName(classname).newInstance();
-                if (tabPanel instanceof OptionPanelAware)
-                    ((OptionPanelAware)tabPanel).setOptionsPanel(optionPanel);
-                panel.addTab(tabPanel.getTabTitle(), null, (JPanel) tabPanel, tabPanel.getDescription());
+                addTab(tabPanel.getTabTitle(), null, tabPanel, tabPanel.getDescription());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -77,9 +64,7 @@ public class GUI extends JPanel {
 
     }
 
-    public interface OptionPanelAware {
-        public void setOptionsPanel(JPanel p);
-    }
+
 
     public static void main(String[] args) {
         try {
@@ -92,7 +77,7 @@ public class GUI extends JPanel {
                 public void run() {
 
                     // Create and set up the window.
-                    JFrame frame = new JFrame("MOA Graphical User Interface");
+                    JFrame frame = new JFrame(AppTitle);
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     
                     try {
@@ -107,10 +92,9 @@ public class GUI extends JPanel {
 
                     GUI gui = new GUI();
                     frame.getContentPane().setLayout(new BorderLayout());
-                    frame.getContentPane().add(gui);
+                    frame.getContentPane().add(gui, BorderLayout.CENTER);
 
-                    // Display the window.
-                    frame.pack();
+                    frame.pack(); // Display the window.
                     frame.setVisible(true);
                 }
             });

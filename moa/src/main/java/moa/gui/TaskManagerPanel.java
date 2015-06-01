@@ -21,7 +21,6 @@
 package moa.gui;
 
 import moa.core.StringUtils;
-import moa.gui.GUI.OptionPanelAware;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
 import moa.tasks.EvaluatePrequential;
@@ -55,14 +54,14 @@ import static moa.gui.ClassOptionSelectionPanel.newSelectClassDialog;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class TaskManagerPanel extends JPanel implements OptionPanelAware {
+public class TaskManagerPanel extends JPanel  {
 
     private static final long serialVersionUID = 1L;
 
     public static final int MILLISECS_BETWEEN_REFRESH = 600;
 
     public static String exportFileExtension = "log";
-    private JPanel optionsPanel;
+
     private ClassOptionSelectionPanel taskOptions;
 
     public class ProgressCellRenderer extends JProgressBar implements
@@ -170,11 +169,15 @@ public class TaskManagerPanel extends JPanel implements OptionPanelAware {
         }
     }
 
+    public JPanel getOptionsPanel() {
+        return taskOptions;
+    }
+
     protected MainTask currentTask = new EvaluatePrequential();//LearnModel();
 
     protected List<TaskThread> taskList = new ArrayList<TaskThread>();
 
-    protected JButton configureTaskButton = new JButton("Configure");
+    //protected JButton configureTaskButton = new JButton("Configure");
 
     protected JTextField taskDescField = new JTextField();
 
@@ -263,20 +266,10 @@ public class TaskManagerPanel extends JPanel implements OptionPanelAware {
 
         JPanel configPanel = new JPanel();
         configPanel.setLayout(new BorderLayout());
-        configPanel.add(this.configureTaskButton, BorderLayout.WEST);
-            this.configureTaskButton.addActionListener(new ActionListener() {
 
-                @Override
-                public void actionPerformed(ActionEvent arg0) {
-                    String newTaskString = ClassOptionSelectionPanel.showSelectClassDialog(TaskManagerPanel.this,
-                            "Configure task", MainTask.class,
-                            TaskManagerPanel.this.currentTask.getCLICreationString(MainTask.class),
-                            null);
-                    setTaskString(newTaskString);
-                }
-            });
         configPanel.add(this.taskDescField, BorderLayout.CENTER);
         configPanel.add(this.runTaskButton, BorderLayout.EAST);
+
         this.taskTableModel = new TaskTableModel();
         this.taskTable = new JTable(this.taskTableModel);
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -360,6 +353,10 @@ public class TaskManagerPanel extends JPanel implements OptionPanelAware {
         });
         updateListTimer.start();
         setPreferredSize(new Dimension(0, 200));
+
+        this.taskOptions = newSelectClassDialog(MainTask.class,
+                TaskManagerPanel.this.currentTask.getCLICreationString(MainTask.class),
+                null);
     }
 
     public void setPreviewPanel(PreviewPanel previewPanel) {
@@ -482,15 +479,7 @@ public class TaskManagerPanel extends JPanel implements OptionPanelAware {
             }
         }
     }
-    @Override public void setOptionsPanel(JPanel target) {
-        this.optionsPanel = target;
-        target.add(this.taskOptions = newSelectClassDialog(MainTask.class,
-                            TaskManagerPanel.this.currentTask.getCLICreationString(MainTask.class),
-                            null));
-        
-        configureTaskButton.setVisible(false);
-        
-    }
+
 
     private static void createAndShowGUI() {
 

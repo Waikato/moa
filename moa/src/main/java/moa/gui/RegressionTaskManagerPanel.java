@@ -20,51 +20,30 @@
  */
 package moa.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.prefs.Preferences;
+import moa.core.StringUtils;
+import moa.options.ClassOption;
+import moa.options.OptionHandler;
+import moa.tasks.*;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.prefs.Preferences;
 
-import moa.core.StringUtils;
-import moa.options.ClassOption;
-import moa.options.OptionHandler;
-import moa.tasks.EvaluatePrequentialRegression;
-import moa.tasks.RegressionMainTask;
-import moa.tasks.Task;
-import moa.tasks.TaskThread;
+import static moa.gui.ClassOptionSelectionPanel.newSelectClassDialog;
 
 /**
  * This panel displays the running tasks.
@@ -79,6 +58,7 @@ public class RegressionTaskManagerPanel extends JPanel {
     public static final int MILLISECS_BETWEEN_REFRESH = 600;
 
     public static String exportFileExtension = "log";
+    private final ClassOptionSelectionPanel taskOptions;
 
     public class ProgressCellRenderer extends JProgressBar implements
             TableCellRenderer {
@@ -189,7 +169,6 @@ public class RegressionTaskManagerPanel extends JPanel {
 
     protected List<TaskThread> taskList = new ArrayList<TaskThread>();
 
-    protected JButton configureTaskButton = new JButton("Configure");
 
     protected JTextField taskDescField = new JTextField();
 
@@ -278,7 +257,6 @@ public class RegressionTaskManagerPanel extends JPanel {
 
         JPanel configPanel = new JPanel();
         configPanel.setLayout(new BorderLayout());
-        configPanel.add(this.configureTaskButton, BorderLayout.WEST);
         configPanel.add(this.taskDescField, BorderLayout.CENTER);
         configPanel.add(this.runTaskButton, BorderLayout.EAST);
         this.taskTableModel = new TaskTableModel();
@@ -308,17 +286,17 @@ public class RegressionTaskManagerPanel extends JPanel {
                         taskSelectionChanged();
                     }
                 });
-        this.configureTaskButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                String newTaskString = ClassOptionSelectionPanel.showSelectClassDialog(RegressionTaskManagerPanel.this,
-                        "Configure task", RegressionMainTask.class,
-                        RegressionTaskManagerPanel.this.currentTask.getCLICreationString(RegressionMainTask.class),
-                        null);
-                setTaskString(newTaskString);
-            }
-        });
+//        this.configureTaskButton.addActionListener(new ActionListener() {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent arg0) {
+//                String newTaskString = ClassOptionSelectionPanel.showSelectClassDialog(RegressionTaskManagerPanel.this,
+//                        "Configure task", RegressionMainTask.class,
+//                        RegressionTaskManagerPanel.this.currentTask.getCLICreationString(RegressionMainTask.class),
+//                        null);
+//                setTaskString(newTaskString);
+//            }
+//        });
         this.runTaskButton.addActionListener(new ActionListener() {
 
             @Override
@@ -365,6 +343,26 @@ public class RegressionTaskManagerPanel extends JPanel {
         });
         updateListTimer.start();
         setPreferredSize(new Dimension(0, 200));
+
+
+//        this.configureTaskButton.addActionListener(new ActionListener() {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent arg0) {
+//                String newTaskString = ClassOptionSelectionPanel.showSelectClassDialog(RegressionTaskManagerPanel.this,
+//                        "Configure task", RegressionMainTask.class,
+//                        RegressionTaskManagerPanel.this.currentTask.getCLICreationString(RegressionMainTask.class),
+//                        null);
+//                setTaskString(newTaskString);
+//            }
+//        });
+        this.taskOptions = newSelectClassDialog(RegressionMainTask.class,
+                currentTask.getCLICreationString(RegressionMainTask.class),
+                null);
+    }
+
+    public JPanel getOptionsPanel() {
+        return taskOptions;
     }
 
     public void setPreviewPanel(PreviewPanel previewPanel) {
