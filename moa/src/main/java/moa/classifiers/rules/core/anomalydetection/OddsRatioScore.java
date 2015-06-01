@@ -119,7 +119,7 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 			if(inst.attribute(i).isNumeric()){
 				double [] stats;
 				//Attribute name
-				sb.append("Attribute " + i +" (" + inst.attribute(i).name()+ ") - ");
+				sb.append("Attribute ").append(i).append(" (").append(inst.attribute(i).name()).append(") - ");
 				//Val for instance
 				double val=inst.valueInputAttribute(i);
 				sb.append("Value: ").append(val);
@@ -132,7 +132,7 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 				//Mean
 				sb.append(" - Mean: ").append(mean);
 				//SD
-				sb.append(" - Std: ").append(std).append("\n");	
+				sb.append(" - Std: ").append(std).append('\n');
 			}
 		}
 		sb.append("Score - ").append(anomaly);

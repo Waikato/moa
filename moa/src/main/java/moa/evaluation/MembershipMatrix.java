@@ -123,22 +123,22 @@ public class MembershipMatrix {
         sb.append("Membership Matrix\n");
         for (int i = 0; i < cluster_class_weights.length; i++) {
             for (int j = 0; j < cluster_class_weights[i].length; j++) {
-                sb.append(cluster_class_weights[i][j]+"\t ");
+                sb.append(cluster_class_weights[i][j]).append("\t ");
             }
-            sb.append("| "+cluster_sums[i]+"\n");
+            sb.append("| ").append(cluster_sums[i]).append('\n');
         }
         //sb.append("-----------\n");
         for (int i = 0; i < class_sums.length; i++) {
-            sb.append(class_sums[i]+"\t ");
+            sb.append(class_sums[i]).append("\t ");
         }
-        sb.append("| "+total_entries+"\n");
+        sb.append("| ").append(total_entries).append('\n');
 
 
         sb.append("Real class distribution \n");
         for (int i = 0; i < class_distribution.length; i++) {
-            sb.append(class_distribution[i]+"\t ");
+            sb.append(class_distribution[i]).append("\t ");
         }
-        sb.append("| "+total_class_entries+"\n");
+        sb.append("| ").append(total_class_entries).append('\n');
 
         return sb.toString();
     }

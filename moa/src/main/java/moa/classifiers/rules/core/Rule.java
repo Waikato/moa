@@ -292,7 +292,7 @@ public class Rule extends AbstractMOAObject {
 	public String printRule() {
 		StringBuilder out = new StringBuilder();
 		int indent = 1;
-		StringUtils.appendIndented(out, indent, "Rule Nr." + this.ruleNumberID + " Instances seen:" + this.learningNode.getInstancesSeen() + "\n"); // AC
+		StringUtils.appendIndented(out, indent, "Rule Nr." + this.ruleNumberID + " Instances seen:" + this.learningNode.getInstancesSeen() + '\n'); // AC
 		for (RuleSplitNode node : nodeList) {
 			StringUtils.appendIndented(out, indent, node.getSplitTest().toString());
 			StringUtils.appendIndented(out, indent, " ");

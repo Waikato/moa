@@ -127,7 +127,7 @@ public class DoTask {
                 // build a single string by concatenating cli options
                 StringBuilder cliString = new StringBuilder();
                 for (int i = 0; i < args.length; i++) {
-                    cliString.append(" ").append(args[i]);
+                    cliString.append(' ').append(args[i]);
                 }
                 // parse options
                 Task task = (Task) ClassOption.cliStringToObject(cliString.toString(), Task.class, extraOptions);
@@ -160,7 +160,7 @@ public class DoTask {
                         }
                         progressLine.append(taskThread.getCurrentActivityString());
                         while (progressLine.length() < MAX_STATUS_STRING_LENGTH) {
-                            progressLine.append(" ");
+                            progressLine.append(' ');
                         }
                         if (progressLine.length() > MAX_STATUS_STRING_LENGTH) {
                             progressLine.setLength(MAX_STATUS_STRING_LENGTH);

@@ -215,7 +215,7 @@ public class MoaTestCase
       result = so.getObject();
     }
     catch (Exception e) {
-      System.err.println("Failed to serialize " + o.getClass().getName() + ":");
+      System.err.println("Failed to serialize " + o.getClass().getName() + ':');
       e.printStackTrace();
       result = null;
     }
@@ -277,7 +277,7 @@ public class MoaTestCase
 
       return builder.toString().trim();
     }
-    return new String("" + value);
+    return String.valueOf(value);
   }
 
   /**

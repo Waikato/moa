@@ -82,7 +82,7 @@ public class ClassOption extends AbstractClassOption {
         if (obj instanceof OptionHandler) {
             String subOptions = ((OptionHandler) obj).getOptions().getAsCLIString();
             if (subOptions.length() > 0) {
-                return (className + " " + subOptions);
+                return (className + ' ' + subOptions);
             }
         }
         return className;
@@ -115,12 +115,12 @@ public class ClassOption extends AbstractClassOption {
             try {
                 // try prepending default package
                 classObject = Class.forName(requiredType.getPackage().getName()
-                        + "." + className);
+                        + '.' + className);
             } catch (Throwable t2) {
                 try {
                     // try prepending task package
                     classObject = Class.forName(Task.class.getPackage().getName()
-                            + "." + className);
+                            + '.' + className);
                 } catch (Throwable t3) {
                     throw new Exception("Class not found: " + className);
                 }
@@ -162,7 +162,7 @@ public class ClassOption extends AbstractClassOption {
             }
         } else {
             throw new Exception("Class named '" + className
-                    + "' is not an instance of " + requiredType.getName() + ".");
+                    + "' is not an instance of " + requiredType.getName() + '.');
         }
         return classInstance;
     }

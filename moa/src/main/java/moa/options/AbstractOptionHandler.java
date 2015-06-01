@@ -102,7 +102,7 @@ public abstract class AbstractOptionHandler extends AbstractMOAObject implements
     public String getCLICreationString(Class<?> expectedType) {
         return ClassOption.stripPackagePrefix(this.getClass().getName(),
                 expectedType)
-                + " " + getOptions().getAsCLIString();
+                + ' ' + getOptions().getAsCLIString();
     }
 
     @Override

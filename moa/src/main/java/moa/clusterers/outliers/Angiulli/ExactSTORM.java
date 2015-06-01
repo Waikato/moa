@@ -125,7 +125,7 @@ public class ExactSTORM extends STORMBase {
         sb.append("<table>");
         int i = 0;
         while(i < infoTitle.size() && i < infoValue.size()){
-            sb.append("<tr><td><b>"+infoTitle.get(i)+":</b></td><td>"+infoValue.get(i)+"</td></tr>");
+            sb.append("<tr><td><b>").append(infoTitle.get(i)).append(":</b></td><td>").append(infoValue.get(i)).append("</td></tr>");
             i++;
         }
         sb.append("</table>");

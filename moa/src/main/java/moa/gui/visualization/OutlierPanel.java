@@ -220,7 +220,7 @@ public class OutlierPanel extends JPanel {
         int radius = panel_size/2;
         
         out.append("<circle ");
-        out.append("cx='"+x+"' cy='"+y+"' r='"+radius+"'");
+        out.append("cx='").append(x).append("' cy='").append(y).append("' r='").append(radius).append("'");
         out.append(" stroke='green' stroke-width='1' fill='white' fill-opacity='0' />");
         out.append("\n");
         return out.toString();

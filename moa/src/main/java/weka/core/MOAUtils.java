@@ -65,7 +65,7 @@ public class MOAUtils {
   		}
   		catch (Exception e) {
   			// try to prepend package name
-  			result = (MOAObject) Class.forName(requiredType.getPackage().getName() + "." + classname).newInstance();
+  			result = (MOAObject) Class.forName(requiredType.getPackage().getName() + '.' + classname).newInstance();
   		}
   		if (result instanceof AbstractOptionHandler) {
   			((AbstractOptionHandler) result).getOptions().setViaCLIString(Utils.joinOptions(tmpOptions));
@@ -101,7 +101,7 @@ public class MOAUtils {
   public static String toCommandLine(MOAObject obj) {
   	String result = obj.getClass().getName();
   	if (obj instanceof AbstractOptionHandler)
-  		result += " " + ((AbstractOptionHandler) obj).getOptions().getAsCLIString();
+  		result += ' ' + ((AbstractOptionHandler) obj).getOptions().getAsCLIString();
   	return result.trim();
   }
 }

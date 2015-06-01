@@ -21,10 +21,9 @@ package moa.classifiers.meta;
 
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+
+import java.util.*;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.core.Measurement;
@@ -90,9 +89,7 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier {
     public void addOldLabel(double newPrediction) {
         int numLabels = this.oldLabels.length;
         if (numLabels > 0) {
-            for (int i = 1; i < numLabels; i++) {
-                this.oldLabels[i - 1] = this.oldLabels[i];
-            }
+            System.arraycopy(this.oldLabels, 1, this.oldLabels, 0, numLabels - 1);
             this.oldLabels[ numLabels - 1] = newPrediction;
         }
     }
@@ -109,7 +106,7 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier {
 
         ArrayList<Attribute> attrs = new ArrayList<Attribute>(numLabels + dataset.numAttributes());
         for (int i = 0; i < numLabels; i++) {
-            attrs.add(new Attribute(target.name() + "_" + i, possibleValues));
+            attrs.add(new Attribute(target.name() + '_' + i, possibleValues));
         }
         for (int i = 0; i < dataset.numAttributes(); i++) {
             Attribute attr = dataset.attribute(i);
@@ -165,9 +162,7 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier {
         List<Measurement> measurementList = new LinkedList<Measurement>();
         Measurement[] modelMeasurements = ((AbstractClassifier) this.baseLearner).getModelMeasurements();
         if (modelMeasurements != null) {
-            for (Measurement measurement : modelMeasurements) {
-                measurementList.add(measurement);
-            }
+            Collections.addAll(measurementList, modelMeasurements);
         }
         return measurementList.toArray(new Measurement[measurementList.size()]);
     }

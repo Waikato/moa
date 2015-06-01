@@ -32,14 +32,17 @@ public class Utils {
   /**
    * Returns the basic class of an array class (handles multi-dimensional
    * arrays).
-   * @param c        the array to inspect
-   * @return         the class of the innermost elements
+   *
+   * @param c the array to inspect
+   * @return the class of the innermost elements
    */
   public static Class getArrayClass(Class c) {
-    if (c.getComponentType().isArray())
-      return getArrayClass(c.getComponentType());
-    else
-      return c.getComponentType();
+    while (true) {
+      if (c.getComponentType().isArray()) {
+        c = c.getComponentType();
+      } else
+        return c.getComponentType();
+    }
   }
 
   /**
@@ -94,7 +97,7 @@ public class Utils {
     else if (dimensions == 1) {
       for (i = 0; i < Array.getLength(array); i++) {
 	if (i > 0)
-	  result.append(",");
+	  result.append(',');
 	if (Array.get(array, i) == null) {
 	  result.append("null");
 	}
@@ -115,8 +118,8 @@ public class Utils {
     else {
       for (i = 0; i < Array.getLength(array); i++) {
 	if (i > 0)
-	  result.append(",");
-	result.append("[" + arrayToString(Array.get(array, i)) + "]");
+	  result.append(',');
+	result.append('[').append(arrayToString(Array.get(array, i))).append(']');
       }
     }
 

@@ -380,7 +380,7 @@ public class CMM_GTAnalysis{
                     connections.add(avgConnection);
                 }
                 else
-                    System.out.println("Something is going really wrong with the connection listing!"+knnNeighbourhood+" "+tauConnection);
+                    System.out.println("Something is going really wrong with the connection listing!"+knnNeighbourhood+ ' ' +tauConnection);
         }
 
         
@@ -822,14 +822,14 @@ public class CMM_GTAnalysis{
      */
     public String getParameterString(){
         String para = "";
-        para+="k="+knnNeighbourhood+";";
+        para+="k="+knnNeighbourhood+ ';';
         if(useExpConnectivity){
-	        para+="lambdaConnX="+lambdaConnX+";";
-	        para+="lambdaConn="+lamdaConn+";";
-	        para+="lambdaConnRef="+lambdaConnRefXValue+";";
+	        para+="lambdaConnX="+lambdaConnX+ ';';
+	        para+="lambdaConn="+lamdaConn+ ';';
+	        para+="lambdaConnRef="+lambdaConnRefXValue+ ';';
         }
-        para+="m="+clusterConnectionMaxPoints+";";
-        para+="tauConn="+tauConnection+";";
+        para+="m="+clusterConnectionMaxPoints+ ';';
+        para+="tauConn="+tauConnection+ ';';
 
         return para;
     }    

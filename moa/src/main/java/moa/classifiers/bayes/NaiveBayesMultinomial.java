@@ -218,32 +218,32 @@ public class NaiveBayesMultinomial extends AbstractClassifier {
         result.append("--------------------------------------\n");
 
         for (int c = 0; c < m_numClasses; c++) {
-            result.append(m_headerInfo.classAttribute().value(c)).append("\t").
-                    append(Double.toString(m_probOfClass[c])).append("\n");
+            result.append(m_headerInfo.classAttribute().value(c)).append('\t').
+                    append(Double.toString(m_probOfClass[c])).append('\n');
         }
 
         result.append("\nThe probability of a word given the class\n");
         result.append("-----------------------------------------\n\t");
 
         for (int c = 0; c < m_numClasses; c++) {
-            result.append(m_headerInfo.classAttribute().value(c)).append("\t");
+            result.append(m_headerInfo.classAttribute().value(c)).append('\t');
         }
 
-        result.append("\n");
+        result.append('\n');
 
         for (int w = 0; w < m_headerInfo.numAttributes(); w++) {
             if (w == m_headerInfo.classIndex()) {
                 continue;
             }
-            result.append(m_headerInfo.attribute(w).name()).append("\t");
+            result.append(m_headerInfo.attribute(w).name()).append('\t');
             for (int c = 0; c < m_numClasses; c++) {
                 double value = m_wordTotalForClass[c].getValue(w);
                 if (value == 0){
                     value = this.laplaceCorrectionOption.getValue();
                 }
-                result.append(value / m_classTotals[c]).append("\t");
+                result.append(value / m_classTotals[c]).append('\t');
             }
-            result.append("\n");
+            result.append('\n');
         }
         StringUtils.appendNewline(result);
     }

@@ -127,21 +127,21 @@ public class EvaluatePrequentialRegression extends RegressionMainTask {
         if (evaluator instanceof WindowClassificationPerformanceEvaluator) {
             //((WindowClassificationPerformanceEvaluator) evaluator).setWindowWidth(widthOption.getValue());
             if (widthOption.getValue() != 1000) {
-                System.out.println("DEPRECATED! Use EvaluatePrequential -e (WindowClassificationPerformanceEvaluator -w " + widthOption.getValue() + ")");
+                System.out.println("DEPRECATED! Use EvaluatePrequential -e (WindowClassificationPerformanceEvaluator -w " + widthOption.getValue() + ')');
                  return learningCurve;
             }
         }
         if (evaluator instanceof EWMAClassificationPerformanceEvaluator) {
             //((EWMAClassificationPerformanceEvaluator) evaluator).setalpha(alphaOption.getValue());
             if (alphaOption.getValue() != .01) {
-                System.out.println("DEPRECATED! Use EvaluatePrequential -e (EWMAClassificationPerformanceEvaluator -a " + alphaOption.getValue() + ")");
+                System.out.println("DEPRECATED! Use EvaluatePrequential -e (EWMAClassificationPerformanceEvaluator -a " + alphaOption.getValue() + ')');
                 return learningCurve;
             }
         }
         if (evaluator instanceof FadingFactorClassificationPerformanceEvaluator) {
             //((FadingFactorClassificationPerformanceEvaluator) evaluator).setalpha(alphaOption.getValue());
             if (alphaOption.getValue() != .01) {
-                System.out.println("DEPRECATED! Use EvaluatePrequential -e (FadingFactorClassificationPerformanceEvaluator -a " + alphaOption.getValue() + ")");
+                System.out.println("DEPRECATED! Use EvaluatePrequential -e (FadingFactorClassificationPerformanceEvaluator -a " + alphaOption.getValue() + ')');
                 return learningCurve;
             }
         }

@@ -323,24 +323,24 @@ public class WithDBSCAN extends AbstractClusterer {
 	
 	public String getParameterString() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(this.getClass().getSimpleName() + " ");
+		sb.append(this.getClass().getSimpleName()).append(' ');
 
-		sb.append("-" + horizonOption.getCLIChar() + " ");
-		sb.append(horizonOption.getValueAsCLIString() + " ");
+		sb.append("-").append(horizonOption.getCLIChar()).append(' ');
+		sb.append(horizonOption.getValueAsCLIString()).append(' ');
 
-		sb.append("-" + epsilonOption.getCLIChar() + " ");
-		sb.append(epsilonOption.getValueAsCLIString() + " ");
+		sb.append("-").append(epsilonOption.getCLIChar()).append(' ');
+		sb.append(epsilonOption.getValueAsCLIString()).append(' ');
 
-		sb.append("-" + betaOption.getCLIChar() + " ");
-		sb.append(betaOption.getValueAsCLIString() + " ");
+		sb.append("-").append(betaOption.getCLIChar()).append(' ');
+		sb.append(betaOption.getValueAsCLIString()).append(' ');
 
-		sb.append("-" + muOption.getCLIChar() + " ");
-		sb.append(muOption.getValueAsCLIString() + " ");
+		sb.append("-").append(muOption.getCLIChar()).append(' ');
+		sb.append(muOption.getValueAsCLIString()).append(' ');
 
-		sb.append("-" + lambdaOption.getCLIChar() + " ");
-		sb.append(lambdaOption.getValueAsCLIString() + " ");
+		sb.append("-").append(lambdaOption.getCLIChar()).append(' ');
+		sb.append(lambdaOption.getValueAsCLIString()).append(' ');
 
-		sb.append("-" + initPointsOption.getCLIChar() + " ");
+		sb.append("-").append(initPointsOption.getCLIChar()).append(' ');
 		// NO " " at the end! results in errors on windows systems
 		sb.append(initPointsOption.getValueAsCLIString());
 

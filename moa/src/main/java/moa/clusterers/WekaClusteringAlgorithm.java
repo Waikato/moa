@@ -20,6 +20,7 @@
 package moa.clusterers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import moa.cluster.Clustering;
 import moa.core.AutoClassDiscovery;
@@ -185,9 +186,7 @@ public class WekaClusteringAlgorithm extends AbstractClusterer {
         AutoExpandVector<Class<?>> finalClasses = new AutoExpandVector<Class<?>>();
         Class<?>[] classesFound = AutoClassDiscovery.findClassesOfType("weka.clusterers",
                 weka.clusterers.AbstractClusterer.class);
-        for (Class<?> foundClass : classesFound) {
-            finalClasses.add(foundClass);
-        }
+        Collections.addAll(finalClasses, classesFound);
         return finalClasses.toArray(new Class<?>[finalClasses.size()]);
     }
 

@@ -336,7 +336,7 @@ public class RuleClassifier extends AbstractClassifier{
 		StringUtils.appendNewline(out);
 		StringUtils.appendNewline(out);
         for (int k = 0; k < this.ruleSetAnomalies.size(); k++) {
-        	StringUtils.appendIndented(out, indent, "Case: "+this.caseAnomaly.get(k).get(0)+"   Anomaly Score: "+this.caseAnomaly.get(k).get(1)+"%");
+        	StringUtils.appendIndented(out, indent, "Case: "+this.caseAnomaly.get(k).get(0)+"   Anomaly Score: "+this.caseAnomaly.get(k).get(1)+ '%');
 			StringUtils.appendNewline(out); //Ver outra parte default
 			StringUtils.appendIndented(out, indent, "Rule "+this.ruleAnomaliesIndex.get(k)+": ");
         	for (int i = 0; i < this.ruleSetAnomalies.get(k).predicateSet.size(); i++) {
@@ -359,13 +359,13 @@ public class RuleClassifier extends AbstractClassifier{
         				if (this.ruleSetAnomalies.get(k).predicateSet.get(i).getSymbol() == 0.0) {
         					String nam = this.instance.attribute((int)this.ruleSetAnomalies.get(k).predicateSet.get(i).getAttributeValue()).name();
     					    String val = this.instance.attribute((int)this.ruleSetAnomalies.get(k).predicateSet.get(i).getAttributeValue()).value((int)this.ruleSetAnomalies.get(k).predicateSet.get(i).getValue());
-    					    StringUtils.appendIndented(out, indent, nam+" = "+val+" ");
+    					    StringUtils.appendIndented(out, indent, nam+" = "+val+ ' ');
     					    } else if (this.ruleSetAnomalies.get(k).predicateSet.get(i).getSymbol()==-1.0){
     					    	String nam = this.instance.attribute((int)this.ruleSetAnomalies.get(k).predicateSet.get(i).getAttributeValue()).name();
-    					        StringUtils.appendIndented(out, indent, nam+" <= "+this.ruleSetAnomalies.get(k).predicateSet.get(i).getValue()+" ");
+    					        StringUtils.appendIndented(out, indent, nam+" <= "+this.ruleSetAnomalies.get(k).predicateSet.get(i).getValue()+ ' ');
     					        } else {
     					        	String nam = this.instance.attribute((int)this.ruleSetAnomalies.get(k).predicateSet.get(i).getAttributeValue()).name();
-    					        	StringUtils.appendIndented(out, indent, nam+" > "+this.ruleSetAnomalies.get(k).predicateSet.get(i).getValue()+" ");
+    					        	StringUtils.appendIndented(out, indent, nam+" > "+this.ruleSetAnomalies.get(k).predicateSet.get(i).getValue()+ ' ');
     					        	}
         				if (i < this.ruleSetAnomalies.get(k).predicateSet.size() - 1) {
         					StringUtils.appendIndented(out, indent, "and ");
@@ -384,12 +384,12 @@ public class RuleClassifier extends AbstractClassifier{
         	for(int z=0; z < this.ruleAttribAnomalyStatistics.get(k).size(); z++) {
         		if(this.ruleAttribAnomalyStatistics.get(k).get(z).size() == 5){
 				String s = String.format ("%.3e", this.ruleAttribAnomalyStatistics.get(k).get(z).get(4)); 
-				StringUtils.appendIndented(out, indent, instance.attribute(this.ruleAttribAnomalyStatistics.get(k).get(z).get(0).intValue()).name()+"="+round(this.ruleAttribAnomalyStatistics.get(k).get(z).get(1))+"   ("+round(this.ruleAttribAnomalyStatistics.get(k).get(z).get(2))+" +- "+round(this.ruleAttribAnomalyStatistics.get(k).get(z).get(3))+")   P="+s);
+				StringUtils.appendIndented(out, indent, instance.attribute(this.ruleAttribAnomalyStatistics.get(k).get(z).get(0).intValue()).name()+ '=' +round(this.ruleAttribAnomalyStatistics.get(k).get(z).get(1))+"   ("+round(this.ruleAttribAnomalyStatistics.get(k).get(z).get(2))+" +- "+round(this.ruleAttribAnomalyStatistics.get(k).get(z).get(3))+")   P="+s);
 				StringUtils.appendNewline(out);
 			} else {
 				String s = String.format ("%.3e", this.ruleAttribAnomalyStatistics.get(k).get(z).get(2));
 				String val = this.instance.attribute(this.ruleAttribAnomalyStatistics.get(k).get(z).get(0).intValue()).value(this.ruleAttribAnomalyStatistics.get(k).get(z).get(1).intValue());
-				StringUtils.appendIndented(out, indent, instance.attribute(this.ruleAttribAnomalyStatistics.get(k).get(z).get(0).intValue()).name()+"="+ val+"   P="+s);
+				StringUtils.appendIndented(out, indent, instance.attribute(this.ruleAttribAnomalyStatistics.get(k).get(z).get(0).intValue()).name()+ '=' + val+"   P="+s);
 				StringUtils.appendNewline(out);
 			}
     		
@@ -407,7 +407,7 @@ public void printAnomaliesSupervised(StringBuilder out, int indent) { // Get Mod
 		StringUtils.appendNewline(out);
 		StringUtils.appendNewline(out);
         for (int k = 0; k < this.ruleSetAnomaliesSupervised.size(); k++) {
-        	StringUtils.appendIndented(out, indent, "Case: "+this.caseAnomalySupervised.get(k).get(0)+"   Anomaly Score: "+this.caseAnomalySupervised.get(k).get(1)+"%");
+        	StringUtils.appendIndented(out, indent, "Case: "+this.caseAnomalySupervised.get(k).get(0)+"   Anomaly Score: "+this.caseAnomalySupervised.get(k).get(1)+ '%');
 			StringUtils.appendNewline(out); //Ver outra parte default
 			StringUtils.appendIndented(out, indent, "Rule "+this.ruleAnomaliesIndexSupervised.get(k)+": ");
         	for (int i = 0; i < this.ruleSetAnomaliesSupervised.get(k).predicateSet.size(); i++) {
@@ -430,13 +430,13 @@ public void printAnomaliesSupervised(StringBuilder out, int indent) { // Get Mod
         				if (this.ruleSetAnomaliesSupervised.get(k).predicateSet.get(i).getSymbol() == 0.0) {
         					String nam = this.instance.attribute((int)this.ruleSetAnomaliesSupervised.get(k).predicateSet.get(i).getAttributeValue()).name();
     					    String val = this.instance.attribute((int)this.ruleSetAnomaliesSupervised.get(k).predicateSet.get(i).getAttributeValue()).value((int)this.ruleSetAnomaliesSupervised.get(k).predicateSet.get(i).getValue());
-    					    StringUtils.appendIndented(out, indent, nam+" = "+val+" ");
+    					    StringUtils.appendIndented(out, indent, nam+" = "+val+ ' ');
     					    } else if (this.ruleSetAnomaliesSupervised.get(k).predicateSet.get(i).getSymbol()==-1.0){
     					    	String nam = this.instance.attribute((int)this.ruleSetAnomaliesSupervised.get(k).predicateSet.get(i).getAttributeValue()).name();
-    					        StringUtils.appendIndented(out, indent, nam+" <= "+this.ruleSetAnomaliesSupervised.get(k).predicateSet.get(i).getValue()+" ");
+    					        StringUtils.appendIndented(out, indent, nam+" <= "+this.ruleSetAnomaliesSupervised.get(k).predicateSet.get(i).getValue()+ ' ');
     					        } else {
     					        	String nam = this.instance.attribute((int)this.ruleSetAnomaliesSupervised.get(k).predicateSet.get(i).getAttributeValue()).name();
-    					        	StringUtils.appendIndented(out, indent, nam+" > "+this.ruleSetAnomaliesSupervised.get(k).predicateSet.get(i).getValue()+" ");
+    					        	StringUtils.appendIndented(out, indent, nam+" > "+this.ruleSetAnomaliesSupervised.get(k).predicateSet.get(i).getValue()+ ' ');
     					        	}
         				if (i < this.ruleSetAnomaliesSupervised.get(k).predicateSet.size() - 1) {
         					StringUtils.appendIndented(out, indent, "and ");
@@ -455,12 +455,12 @@ public void printAnomaliesSupervised(StringBuilder out, int indent) { // Get Mod
         	for(int z=0; z < this.ruleAttribAnomalyStatisticsSupervised.get(k).size(); z++) {
         		if(this.ruleAttribAnomalyStatisticsSupervised.get(k).get(z).size() == 5){
 				String s = String.format ("%.3e", this.ruleAttribAnomalyStatisticsSupervised.get(k).get(z).get(4)); 
-				StringUtils.appendIndented(out, indent, instance.attribute(this.ruleAttribAnomalyStatisticsSupervised.get(k).get(z).get(0).intValue()).name()+"="+round(this.ruleAttribAnomalyStatisticsSupervised.get(k).get(z).get(1))+"   ("+round(this.ruleAttribAnomalyStatisticsSupervised.get(k).get(z).get(2))+" +- "+round(this.ruleAttribAnomalyStatisticsSupervised.get(k).get(z).get(3))+")   P="+s);
+				StringUtils.appendIndented(out, indent, instance.attribute(this.ruleAttribAnomalyStatisticsSupervised.get(k).get(z).get(0).intValue()).name()+ '=' +round(this.ruleAttribAnomalyStatisticsSupervised.get(k).get(z).get(1))+"   ("+round(this.ruleAttribAnomalyStatisticsSupervised.get(k).get(z).get(2))+" +- "+round(this.ruleAttribAnomalyStatisticsSupervised.get(k).get(z).get(3))+")   P="+s);
 				StringUtils.appendNewline(out);
 			} else {
 				String s = String.format ("%.3e", this.ruleAttribAnomalyStatisticsSupervised.get(k).get(z).get(2));
 				String val = this.instance.attribute(this.ruleAttribAnomalyStatisticsSupervised.get(k).get(z).get(0).intValue()).value(this.ruleAttribAnomalyStatisticsSupervised.get(k).get(z).get(1).intValue());
-				StringUtils.appendIndented(out, indent, instance.attribute(this.ruleAttribAnomalyStatisticsSupervised.get(k).get(z).get(0).intValue()).name()+"="+ val+"   P="+s);
+				StringUtils.appendIndented(out, indent, instance.attribute(this.ruleAttribAnomalyStatisticsSupervised.get(k).get(z).get(0).intValue()).name()+ '=' + val+"   P="+s);
 				StringUtils.appendNewline(out);
 			}
     		
@@ -498,13 +498,13 @@ public void printAnomaliesSupervised(StringBuilder out, int indent) { // Get Mod
         				if (this.ruleSet.get(k).predicateSet.get(i).getSymbol() == 0.0) {
         					String nam = this.instance.attribute((int)this.ruleSet.get(k).predicateSet.get(i).getAttributeValue()).name();
     					    String val = this.instance.attribute((int)this.ruleSet.get(k).predicateSet.get(i).getAttributeValue()).value((int)this.ruleSet.get(k).predicateSet.get(i).getValue());
-    					    StringUtils.appendIndented(out, indent, nam+" = "+val+" ");
+    					    StringUtils.appendIndented(out, indent, nam+" = "+val+ ' ');
     					    } else if (this.ruleSet.get(k).predicateSet.get(i).getSymbol()==-1.0){
     					    	String nam = this.instance.attribute((int)this.ruleSet.get(k).predicateSet.get(i).getAttributeValue()).name();
-    					        StringUtils.appendIndented(out, indent, nam+" <= "+this.ruleSet.get(k).predicateSet.get(i).getValue()+" ");
+    					        StringUtils.appendIndented(out, indent, nam+" <= "+this.ruleSet.get(k).predicateSet.get(i).getValue()+ ' ');
     					        } else {
     					        	String nam = this.instance.attribute((int)this.ruleSet.get(k).predicateSet.get(i).getAttributeValue()).name();
-    					        	StringUtils.appendIndented(out, indent, nam+" > "+this.ruleSet.get(k).predicateSet.get(i).getValue()+" ");
+    					        	StringUtils.appendIndented(out, indent, nam+" > "+this.ruleSet.get(k).predicateSet.get(i).getValue()+ ' ');
     					        	}
         				if (i < this.ruleSet.get(k).predicateSet.size() - 1) {
         					StringUtils.appendIndented(out, indent, "and ");

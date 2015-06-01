@@ -281,65 +281,66 @@ public class ClusTree extends AbstractClusterer{
 
 	/**
 	 * Method called by insertBreadthFirst.
+	 *
 	 * @param toInsert
 	 * @param insertNode
 	 * @param timestamp
 	 * @return
 	 */
 	private Entry insertHereWithSplit(Entry toInsert, Node insertNode,
-			long timestamp) {
-		//Handle root split
-   	    if (insertNode.getEntries()[0].getParentEntry()==null){
-   	    	root.makeOlder(timestamp, negLambda);
-   	    	Entry irrelevantEntry = insertNode.getIrrelevantEntry(this.weightThreshold);
-   	        int numFreeEntries = insertNode.numFreeEntries();
-   	        if (irrelevantEntry != null) {
-   		        irrelevantEntry.overwriteOldEntry(toInsert);
-   	        }
-   	        else if (numFreeEntries>0){
-   	        	insertNode.addEntry(toInsert, timestamp);
-   	        }
-   	        else{
-	            this.numRootSplits++;
-	            this.height += this.height < this.maxHeight ? 1 : 0;
-	            Entry oldRootEntry = new Entry(this.numberDimensions,
-	                    root, timestamp, null, null);
-	            Node newRoot = new Node(this.numberDimensions,
-	                    this.height);
-	            Entry newRootEntry = split(toInsert, root, oldRootEntry, timestamp);
-	            newRoot.addEntry(oldRootEntry, timestamp);
-	            newRoot.addEntry(newRootEntry, timestamp);
-	            this.root = newRoot;
-	            for (Entry c : oldRootEntry.getChild().getEntries())
-	            	c.setParentEntry(root.getEntries()[0]);
-	            for (Entry c : newRootEntry.getChild().getEntries())
-	            	c.setParentEntry(root.getEntries()[1]);
-   	        }
-            return null;
-   	    }
-   	    insertNode.makeOlder(timestamp, negLambda);
-    	Entry irrelevantEntry = insertNode.getIrrelevantEntry(this.weightThreshold);
-        int numFreeEntries = insertNode.numFreeEntries();
-        if (irrelevantEntry != null) {
-	        irrelevantEntry.overwriteOldEntry(toInsert);
-        }
-        else if (numFreeEntries>0){
-        	insertNode.addEntry(toInsert, timestamp);
-        }
-        else {
-	            // We have to split.
-	        	Entry parentEntry = insertNode.getEntries()[0].getParentEntry();
-	        	Entry residualEntry = split(toInsert, insertNode, parentEntry, timestamp);
-	        	if (alsoUpdate!=null){
-	        		alsoUpdate = residualEntry;
-	        	}
-	        	Node nodeForResidualEntry = insertNode.getEntries()[0].getParentEntry().getNode();
-	        	//recursive call
-	        	return insertHereWithSplit(residualEntry, nodeForResidualEntry, timestamp);
-	    }
-        
-        //no Split
-        return null;
+									  long timestamp) {
+		while (true) {
+			//Handle root split
+			if (insertNode.getEntries()[0].getParentEntry() == null) {
+				root.makeOlder(timestamp, negLambda);
+				Entry irrelevantEntry = insertNode.getIrrelevantEntry(this.weightThreshold);
+				int numFreeEntries = insertNode.numFreeEntries();
+				if (irrelevantEntry != null) {
+					irrelevantEntry.overwriteOldEntry(toInsert);
+				} else if (numFreeEntries > 0) {
+					insertNode.addEntry(toInsert, timestamp);
+				} else {
+					this.numRootSplits++;
+					this.height += this.height < this.maxHeight ? 1 : 0;
+					Entry oldRootEntry = new Entry(this.numberDimensions,
+							root, timestamp, null, null);
+					Node newRoot = new Node(this.numberDimensions,
+							this.height);
+					Entry newRootEntry = split(toInsert, root, oldRootEntry, timestamp);
+					newRoot.addEntry(oldRootEntry, timestamp);
+					newRoot.addEntry(newRootEntry, timestamp);
+					this.root = newRoot;
+					for (Entry c : oldRootEntry.getChild().getEntries())
+						c.setParentEntry(root.getEntries()[0]);
+					for (Entry c : newRootEntry.getChild().getEntries())
+						c.setParentEntry(root.getEntries()[1]);
+				}
+				return null;
+			}
+			insertNode.makeOlder(timestamp, negLambda);
+			Entry irrelevantEntry = insertNode.getIrrelevantEntry(this.weightThreshold);
+			int numFreeEntries = insertNode.numFreeEntries();
+			if (irrelevantEntry != null) {
+				irrelevantEntry.overwriteOldEntry(toInsert);
+			} else if (numFreeEntries > 0) {
+				insertNode.addEntry(toInsert, timestamp);
+			} else {
+				// We have to split.
+				Entry parentEntry = insertNode.getEntries()[0].getParentEntry();
+				Entry residualEntry = split(toInsert, insertNode, parentEntry, timestamp);
+				if (alsoUpdate != null) {
+					alsoUpdate = residualEntry;
+				}
+				Node nodeForResidualEntry = insertNode.getEntries()[0].getParentEntry().getNode();
+				//recursive call
+				toInsert = residualEntry;
+				insertNode = nodeForResidualEntry;
+				continue;
+			}
+
+			//no Split
+			return null;
+		}
 	}
 
 

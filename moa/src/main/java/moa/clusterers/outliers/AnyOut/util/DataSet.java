@@ -244,7 +244,7 @@ public class DataSet implements Iterable<DataObject>{
         String res = "";
         
         for (DataObject dataObject : dataList) {
-            res += dataObject.toString() + "\n";
+            res += dataObject.toString() + '\n';
         }
         
         return res;

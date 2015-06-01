@@ -86,9 +86,7 @@ public class Node {
         this.entries = new Entry[NUMBER_ENTRIES];
         // Generate all entries when we generate a Node.
         // That no entry can be null makes it much easier to handle.
-        for (int i = 0; i < NUMBER_ENTRIES; i++) {
-            entries[i] = argEntries[i];
-        }
+        System.arraycopy(argEntries, 0, entries, 0, NUMBER_ENTRIES);
     }
 
 
@@ -310,9 +308,7 @@ public class Node {
 
         this.entries[pos1].mergeWith(this.entries[pos2]);
 
-        for (int i = pos2; i < entries.length - 1; i++) {
-            entries[i] = entries[i + 1];
-        }
+        System.arraycopy(entries, pos2 + 1, entries, pos2, entries.length - 1 - pos2);
         entries[entries.length - 1].clear();
     }
 

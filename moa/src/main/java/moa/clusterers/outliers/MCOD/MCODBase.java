@@ -143,7 +143,7 @@ public abstract class MCODBase extends MyBaseOutlierDetector {
         sb.append("<table>");
         int i = 0;
         while(i < infoTitle.size() && i < infoValue.size()){
-            sb.append("<tr><td><b>"+infoTitle.get(i)+":</b></td><td>"+infoValue.get(i)+"</td></tr>");
+            sb.append("<tr><td><b>").append(infoTitle.get(i)).append(":</b></td><td>").append(infoValue.get(i)).append("</td></tr>");
             i++;
         }
         sb.append("</table>");
@@ -180,12 +180,12 @@ public abstract class MCODBase extends MyBaseOutlierDetector {
             sb.append(String.format("  Nodes always outlier: %d (%.1f%%)\n", nOnlyOutlier, (100 * nOnlyOutlier) / (double)sum));
             sb.append(String.format("  Nodes both inlier and outlier: %d (%.1f%%)\n", nBothInlierOutlier, (100 * nBothInlierOutlier) / (double)sum));
             
-            sb.append("  (Sum: " + sum + ")\n");
+            sb.append("  (Sum: ").append(sum).append(")\n");
         }
         
-        sb.append("\n  Total range queries: " + nRangeQueriesExecuted + "\n");
-        sb.append("  Max memory usage: " + iMaxMemUsage + " MB\n");
-        sb.append("  Total process time: " + String.format("%.2f ms", nTotalRunTime / 1000.0) + "\n");
+        sb.append("\n  Total range queries: ").append(nRangeQueriesExecuted).append('\n');
+        sb.append("  Max memory usage: ").append(iMaxMemUsage).append(" MB\n");
+        sb.append("  Total process time: ").append(String.format("%.2f ms", nTotalRunTime / 1000.0)).append('\n');
         
         return sb.toString();
     }
@@ -306,7 +306,7 @@ public abstract class MCODBase extends MyBaseOutlierDetector {
     }
     
     void PrintWindow() {
-        Println("Window [" + GetWindowStart() + "-" + GetWindowEnd() + "]: ");
+        Println("Window [" + GetWindowStart() + '-' + GetWindowEnd() + "]: ");
         ISBNode node;
         for (int i = 0; i < windowNodes.size(); i++) {
             node = windowNodes.get(i);

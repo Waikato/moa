@@ -144,7 +144,7 @@ public class RandomAMRulesOld extends AbstractClassifier implements Regressor {
 			// transformInstance method visibility changed from private to protected in RandomRules
 			Vote v = ((AbstractAMRules) this.ensemble[i]).getVotes(inst);
 			if (VerbosityOption.getValue()>1)
-					sb.append(Arrays.toString(v.getVote()) + ", " + " E: " + v.getError() + " ");
+					sb.append(Arrays.toString(v.getVote())).append(", ").append(" E: ").append(v.getError()).append(' ');
 			if (this.isRegression == false && v.sumVoteDistrib() != 0.0){
 				v.normalize();
 			}
@@ -156,7 +156,7 @@ public class RandomAMRulesOld extends AbstractClassifier implements Regressor {
 		}
 		votes=combinedVote.computeWeightedVote();
 		if (VerbosityOption.getValue()>1){
-			sb.append(Arrays.toString(votes)  + ", ").append(inst.classValue()); 
+			sb.append(Arrays.toString(votes)).append(", ").append(inst.classValue());
 			System.out.println(sb.toString());
 		}
 		return votes; 
@@ -177,8 +177,7 @@ public class RandomAMRulesOld extends AbstractClassifier implements Regressor {
 		int nMeasurements=baseLearnerMeasurements.length;
 		Measurement [] m=new Measurement[nMeasurements+1];
 
-		for(int i=0; i<baseLearnerMeasurements.length; i++)
-			m[i+1]=baseLearnerMeasurements[i];
+		System.arraycopy(baseLearnerMeasurements, 0, m, 1, baseLearnerMeasurements.length);
 		
 		int ensembleSize=0;
 		if(this.ensemble !=null){	

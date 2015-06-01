@@ -182,10 +182,10 @@ public class AnyOut extends MyBaseOutlierDetector {
         StringBuilder sb = new StringBuilder();        
         sb.append("<html>");
         sb.append("<table>");
-        sb.append("<tr><td><b>ID:</b></td><td>" + id + "</td></tr>");
-        sb.append("<tr><td><b>X, Y:</b></td><td>" + String.format("%.4f", features[0]) + ", " + String.format("%.4f", features[1]) + "</td></tr>");
-        sb.append("<tr><td><b>Oscore:</b></td><td>" + String.format("%.4f", anyout.getOutlierScore(id)) + "</td></tr>");
-        sb.append("<tr><td><b>Conf:</b></td><td>" + String.format("%.4f", anyout.getConfidence(id)) + "</td></tr>");
+        sb.append("<tr><td><b>ID:</b></td><td>").append(id).append("</td></tr>");
+        sb.append("<tr><td><b>X, Y:</b></td><td>").append(String.format("%.4f", features[0])).append(", ").append(String.format("%.4f", features[1])).append("</td></tr>");
+        sb.append("<tr><td><b>Oscore:</b></td><td>").append(String.format("%.4f", anyout.getOutlierScore(id))).append("</td></tr>");
+        sb.append("<tr><td><b>Conf:</b></td><td>").append(String.format("%.4f", anyout.getConfidence(id))).append("</td></tr>");
         sb.append("</table>");
         sb.append("</html>");
         
@@ -200,9 +200,9 @@ public class AnyOut extends MyBaseOutlierDetector {
         sb.append(String.format("  Outliers found: %d (%.1f%%)\n", sum, (100 * sum) / (double)totalOutliers));
         sb.append(String.format("  True positive found: %d (%.1f%%)\n", truePositive, (100 * truePositive) / (double)totalOutliers));
         sb.append(String.format("  False positive found: %d (%.1f%%)\n", falsePositive, (100 * falsePositive) / (double)totalOutliers));
-        sb.append("\n");
-        sb.append("  Max memory usage: " + iMaxMemUsage + " MB\n");
-        sb.append("  Total process time: " + String.format("%.2f ms", nTotalRunTime / 1000.0) + "\n");
+        sb.append('\n');
+        sb.append("  Max memory usage: ").append(iMaxMemUsage).append(" MB\n");
+        sb.append("  Total process time: ").append(String.format("%.2f ms", nTotalRunTime / 1000.0)).append('\n');
         
         return sb.toString();
     }

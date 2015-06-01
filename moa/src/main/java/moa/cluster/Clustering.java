@@ -26,6 +26,7 @@
 package moa.cluster;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import moa.AbstractMOAObject;
@@ -44,9 +45,7 @@ public class Clustering extends AbstractMOAObject{
 
     public Clustering( Cluster[] clusters ) {
         this.clusters = new AutoExpandVector<Cluster>();
-        for (int i = 0; i < clusters.length; i++) {
-            this.clusters.add(clusters[i]);
-        }
+        Collections.addAll(this.clusters, clusters);
     }
 
     public Clustering(List<? extends Instance> points){

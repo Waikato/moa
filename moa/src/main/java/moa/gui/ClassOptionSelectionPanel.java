@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class ClassOptionSelectionPanel extends JPanel {
+public class ClassOptionSelectionPanel extends JPanel implements ListCellRenderer {
 
     // TODO: idea - why not retain matching options between classes when the
     // class type is changed
@@ -62,18 +62,7 @@ public class ClassOptionSelectionPanel extends JPanel {
         Class<?>[] classesFound = findSuitableClasses(requiredType);
 
         this.classChoiceBox = new JComboBox(classesFound);
-        classChoiceBox.setRenderer(new ListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                Class x = (Class)value;
-                String pkg = x.getPackage().getName();
-                String name = x.getSimpleName().toString();
-
-                //return new JLabel("<html>" + pkg + ".<b>" + name + "</b></html>");
-                return new JLabel("<html>" + pkg + ".<font size=+1>" + name + "</font></html>");
-                //x.getName().toString());
-            }
-        });
+        classChoiceBox.setRenderer(this);
 
         setLayout(new BorderLayout());
         add(this.classChoiceBox, BorderLayout.NORTH);
@@ -196,4 +185,13 @@ public class ClassOptionSelectionPanel extends JPanel {
             doLayout();
         }
     }
+
+    @Override
+    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        Class x = (Class)value;
+        String pkg = x.getPackage().getName();
+        String name = x.getSimpleName();
+        return new JLabel(new StringBuilder().append("<html>").append(pkg).append(".<font size=+1>").append(name).append("</font></html>").toString());
+    }
+
 }

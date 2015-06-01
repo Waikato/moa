@@ -324,18 +324,16 @@ public class SPegasos extends AbstractClassifier {
                 buff.append("   ");
             }
 
-            buff.append(Utils.doubleToString(m_weights[i], 12, 4) + " "
-                    //+ m_data.attribute(i).name()
-                    + "\n");
+            buff.append(Utils.doubleToString(m_weights[i], 12, 4)).append(' ').append('\n');
 
             printed++;
         }
         //}
 
         if (m_weights[m_weights.length - 1] > 0) {
-            buff.append(" + " + Utils.doubleToString(m_weights[m_weights.length - 1], 12, 4));
+            buff.append(" + ").append(Utils.doubleToString(m_weights[m_weights.length - 1], 12, 4));
         } else {
-            buff.append(" - " + Utils.doubleToString(-m_weights[m_weights.length - 1], 12, 4));
+            buff.append(" - ").append(Utils.doubleToString(-m_weights[m_weights.length - 1], 12, 4));
         }
 
         return buff.toString();

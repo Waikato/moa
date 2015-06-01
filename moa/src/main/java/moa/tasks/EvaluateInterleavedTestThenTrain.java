@@ -184,7 +184,7 @@ public class EvaluateInterleavedTestThenTrain extends MainTask {
                         immediateResultStream.println(learningCurve.headerToString());
                         firstDump = false;
                     }
-                    immediateResultStream.print(learnerString + "," + streamString + "," + this.randomSeedOption.getValueAsCLIString() + ",");
+                    immediateResultStream.print(learnerString + ',' + streamString + ',' + this.randomSeedOption.getValueAsCLIString() + ',');
                     immediateResultStream.println(learningCurve.entryToString(learningCurve.numEntries() - 1));
                     immediateResultStream.flush();
                 }

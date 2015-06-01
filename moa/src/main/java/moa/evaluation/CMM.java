@@ -267,7 +267,7 @@ public class CMM extends MeasureCollection{
                     if (matchMap[i]!=-1) {
                         match = Integer.toString(gtAnalysis.getGT0Cluster(matchMap[i]).getLabel());
                     }
-                    System.out.println(" --> " + match + "(work:"+matchMap[i]+")");
+                    System.out.println(" --> " + match + "(work:"+matchMap[i]+ ')');
              }
         }
     }
@@ -496,7 +496,7 @@ public class CMM extends MeasureCollection{
 
     public String getParameterString(){
         String para = gtAnalysis.getParameterString();
-        para+="lambdaMissed="+lamdaMissed+";";
+        para+="lambdaMissed="+lamdaMissed+ ';';
         return para;
     }
 
