@@ -70,9 +70,10 @@ public class AddNoiseFilter extends AbstractStreamFilter {
         return this.inputStream.getHeader();
     }
 
-    @Override
-    public InstanceExample nextInstance() {
-        Instance inst = (Instance) ((Instance) this.inputStream.nextInstance().getData()).copy();
+    //@Override
+    //public InstanceExample nextInstance() {
+    //    Instance inst = (Instance) ((Instance) this.inputStream.nextInstance().getData()).copy();
+    public Instance filterInstance(Instance inst){
         for (int i = 0; i < inst.numAttributes(); i++) {
             double noiseFrac = i == inst.classIndex() ? this.classNoiseFractionOption.getValue()
                     : this.attNoiseFractionOption.getValue();
@@ -104,7 +105,8 @@ public class AddNoiseFilter extends AbstractStreamFilter {
                         * obs.getStdDev() * noiseFrac);
             }
         }
-        return new InstanceExample(inst);
+        //return new InstanceExample(inst);
+        return inst;
     }
 
     @Override
