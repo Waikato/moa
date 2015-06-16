@@ -24,15 +24,15 @@ public class ReLUFilter extends AbstractStreamFilter {
 	private static final long serialVersionUID = 1L;
 	protected InstancesHeader dataset;
 	public IntOption randomSeedOption = new IntOption("randomSeed", 'r', "Seed for random noise.", 1);
-	public IntOption numLatentOption = new IntOption("numLatent", 'h', "Percent of basis functions (wrt input).", 10);
-	private int H = 100;
+	public IntOption numLatentOption = new IntOption("numLatent", 'h', "Percent of basis functions (wrt number of input attributes).", 10);
+	private int H = 200;
 	protected Random random;
 	protected double W[][];
 
-    @Override
-    public String getPurposeString() {
-        return "Creates a random projection of the feature space with ReLU functions.";
-    }
+	@Override
+	public String getPurposeString() {
+		return "Creates a random projection of the feature space with ReLU functions.";
+	}
 
 	@Override
 	public InstancesHeader getHeader() {
@@ -63,7 +63,7 @@ public class ReLUFilter extends AbstractStreamFilter {
 			for(int j = 0; j < d; j++) {
 				a_k += (x.value(j) * W[k][j]);
 			}
-			z_[k] = (a_k > 0. ? a_k : 0.);                  // <------- can change threshold here
+			z_[k] = (a_k > 0. ? a_k : 0.);				  // <------- can change threshold here
 		}
 		z_[H] = x.classValue();
 
@@ -74,9 +74,9 @@ public class ReLUFilter extends AbstractStreamFilter {
 	}
 
 	@Override
-    protected void restartImpl() {
-        this.random = new Random(this.randomSeedOption.getValue());
-    }
+	protected void restartImpl() {
+		this.random = new Random(this.randomSeedOption.getValue());
+	}
 
 	private void initialize(Instance instance) {
 		this.random = new Random(this.randomSeedOption.getValue());
