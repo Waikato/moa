@@ -25,13 +25,16 @@
 
 package moa.classifiers.trees;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
 import com.yahoo.labs.samoa.instances.Instance;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+
 import moa.options.ClassOption;
 import moa.AbstractMOAObject;
 import moa.classifiers.Regressor;
@@ -517,8 +520,10 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		}
 	}
 
-	public class FIMTDDPerceptron {
+	public class FIMTDDPerceptron implements Serializable {
 
+		private static final long serialVersionUID = 1L;
+		
 		protected FIMTDD tree;
 		
 		// The Perception weights 
