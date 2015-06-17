@@ -504,7 +504,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			}
 		}
 
-		public double getPrediction(Instance inst, FIMTDD tree) {
+		public double getPrediction(Instance inst) {
 			return children.get(splitTest.branchForInstance(inst)).getPrediction(inst);
 		}
 	}
