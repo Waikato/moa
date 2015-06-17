@@ -236,7 +236,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			return 1;
 		}
 
-		private boolean skipInLevelCount() {
+		protected boolean skipInLevelCount() {
 			return false;
 		}
 	}
@@ -422,6 +422,16 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			}
 		}
 
+		public void restartChangeDetection() {
+			if (alternateTree == null) {
+				changeDetection = true;
+				PHsum = 0;
+				PHmin = Integer.MAX_VALUE;
+				for (Node child : children)
+					child.restartChangeDetection();
+			}
+		}
+		
 		/**
 		 * Check to see if the tree needs updating
 		 */
@@ -481,16 +491,6 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		public SplitNode(InstanceConditionalTest splitTest, FIMTDD tree) {
 			super(tree);
 			this.splitTest = splitTest;
-		}
-
-		public void restartChangeDetection() {
-			if (alternateTree == null) {
-				changeDetection = true;
-				PHsum = 0;
-				PHmin = Integer.MAX_VALUE;
-				for (Node child : children)
-					child.restartChangeDetection();
-			}
 		}
 
 		public int instanceChildIndex(Instance inst) {

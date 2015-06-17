@@ -156,7 +156,7 @@ public class ORTO extends FIMTDD implements Regressor {
 		}
 		
 		@SuppressWarnings("unused")
-		private boolean skipInLevelCount() {
+		protected boolean skipInLevelCount() {
 			return true;
 		}
 	}
