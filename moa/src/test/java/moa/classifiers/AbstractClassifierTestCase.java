@@ -133,10 +133,10 @@ extends MoaTestCase {
 	 * @see		#getDataDirectory()
 	 */
 	protected Instances load(String filename, int classIndex) {
-		Instances	result;
-		ArffLoader 	loader;
+		Instances	result = null;
+		//ArffLoader 	loader;
 
-		result = null;
+		//result = null;
 
 		try {
 			/*loader = new ArffLoader();
@@ -145,7 +145,7 @@ extends MoaTestCase {
 			TmpFile tmp=new TmpFile(filename);
 			FileInputStream fileStream = new FileInputStream(tmp.getAbsolutePath());
 			Reader reader=new BufferedReader(new InputStreamReader(fileStream));
-			Range range=new Range("-1");
+			Range range = new Range("-1");
 			result = new Instances(reader,range);
 			result.setClassIndex(classIndex);
 			while (result.readInstance(null));

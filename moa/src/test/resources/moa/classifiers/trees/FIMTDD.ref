@@ -1,205 +1,155 @@
 --> regression-out0.arff
-moa.classifiers.trees.FIMTDD
+moa.classifiers.trees.FIMTDD -s VarianceReductionSplitCriterion
 
 Index
   100
 Votes
-  0: 55948.38383838
+  0: 71622.73971689
 Measurements
   classified instances: 99
-  mean absolute error: 34628.12606101
-  root mean squared error: 65078.43264825
-  relative mean absolute error: 0.99543676
-  relative root mean squared error: 1.0011017
+  mean absolute error: 99996.89404812
+  root mean squared error: 140869.24410153
+  relative mean absolute error: 2.87455879
+  relative root mean squared error: 2.16699194
 Model measurements
   model training instances: 99
   tree size (nodes): 1
   tree size (leaves): 1
-  active learning leaves: 1
-  tree depth: 0
-  active leaf byte size estimate: 0
-  inactive leaf byte size estimate: 0
-  byte size estimate overhead: 1
 
 Index
   200
 Votes
-  0: 47263.67336683
+  0: -5264.59327912
 Measurements
   classified instances: 199
-  mean absolute error: 31761.42175101
-  root mean squared error: 52002.95041982
-  relative mean absolute error: 0.99527538
-  relative root mean squared error: 1.00026386
+  mean absolute error: 86273.76746449
+  root mean squared error: 121447.35397784
+  relative mean absolute error: 2.70347334
+  relative root mean squared error: 2.33600975
 Model measurements
   model training instances: 199
   tree size (nodes): 1
   tree size (leaves): 1
-  active learning leaves: 1
-  tree depth: 0
-  active leaf byte size estimate: 0
-  inactive leaf byte size estimate: 0
-  byte size estimate overhead: 1
 
 Index
   300
 Votes
-  0: 50376.65656566
+  0: 72969.23258838
 Measurements
   classified instances: 299
-  mean absolute error: 31244.11775292
-  root mean squared error: 50582.10890601
-  relative mean absolute error: 1.01647572
-  relative root mean squared error: 1.0054441
+  mean absolute error: 77170.93816522
+  root mean squared error: 111033.54110199
+  relative mean absolute error: 2.51062889
+  relative root mean squared error: 2.20706532
 Model measurements
   model training instances: 299
   tree size (nodes): 3
   tree size (leaves): 2
-  active learning leaves: 2
-  tree depth: 1
-  active leaf byte size estimate: 0
-  inactive leaf byte size estimate: 0
-  byte size estimate overhead: 1
 
 Index
   400
 Votes
-  0: 54218.49246231
+  0: -41682.86905916
 Measurements
   classified instances: 399
-  mean absolute error: 33261.16816304
-  root mean squared error: 53757.25849474
-  relative mean absolute error: 1.0232351
-  relative root mean squared error: 1.00256362
+  mean absolute error: 73163.01242608
+  root mean squared error: 106698.55569198
+  relative mean absolute error: 2.25076167
+  relative root mean squared error: 1.98990971
 Model measurements
   model training instances: 399
   tree size (nodes): 3
   tree size (leaves): 2
-  active learning leaves: 2
-  tree depth: 1
-  active leaf byte size estimate: 0
-  inactive leaf byte size estimate: 0
-  byte size estimate overhead: 1
 
 Index
   500
 Votes
-  0: 36402.58108108
+  0: 45444.78657479
 Measurements
   classified instances: 499
-  mean absolute error: 31964.11041193
-  root mean squared error: 51484.5063389
-  relative mean absolute error: 1.0031668
-  relative root mean squared error: 1.00297056
+  mean absolute error: 65847.71613012
+  root mean squared error: 97826.30734892
+  relative mean absolute error: 2.06657535
+  relative root mean squared error: 1.905756
 Model measurements
   model training instances: 499
-  tree size (nodes): 5
-  tree size (leaves): 3
-  active learning leaves: 3
-  tree depth: 2
-  active leaf byte size estimate: 0
-  inactive leaf byte size estimate: 0
-  byte size estimate overhead: 1
+  tree size (nodes): 3
+  tree size (leaves): 2
 
 Index
   600
 Votes
-  0: 37201.76923077
+  0: 9927.64985553
 Measurements
   classified instances: 599
-  mean absolute error: 30495.6130718
-  root mean squared error: 51487.06840587
-  relative mean absolute error: 0.9606132
-  relative root mean squared error: 0.98202487
+  mean absolute error: 61072.56922293
+  root mean squared error: 91890.31722165
+  relative mean absolute error: 1.9237887
+  relative root mean squared error: 1.75264547
 Model measurements
   model training instances: 599
-  tree size (nodes): 5
-  tree size (leaves): 3
-  active learning leaves: 3
-  tree depth: 2
-  active leaf byte size estimate: 0
-  inactive leaf byte size estimate: 0
-  byte size estimate overhead: 1
+  tree size (nodes): 3
+  tree size (leaves): 2
 
 Index
   700
 Votes
-  0: 33792.71428571
+  0: 72480.26637578
 Measurements
   classified instances: 699
-  mean absolute error: 29312.01714374
-  root mean squared error: 49040.32866942
-  relative mean absolute error: 0.93204848
-  relative root mean squared error: 0.96533166
+  mean absolute error: 57600.98545608
+  root mean squared error: 87024.29804229
+  relative mean absolute error: 1.83156659
+  relative root mean squared error: 1.71302501
 Model measurements
   model training instances: 699
-  tree size (nodes): 7
-  tree size (leaves): 4
-  active learning leaves: 4
-  tree depth: 3
-  active leaf byte size estimate: 0
-  inactive leaf byte size estimate: 0
-  byte size estimate overhead: 1
+  tree size (nodes): 3
+  tree size (leaves): 2
 
 Index
   800
 Votes
-  0: 32255.70588235
+  0: 60609.45269188
 Measurements
   classified instances: 799
-  mean absolute error: 28696.12245693
-  root mean squared error: 47778.48026785
-  relative mean absolute error: 0.9105338
-  relative root mean squared error: 0.94937619
+  mean absolute error: 54288.65835249
+  root mean squared error: 83081.44102444
+  relative mean absolute error: 1.72259017
+  relative root mean squared error: 1.65085915
 Model measurements
   model training instances: 799
-  tree size (nodes): 7
-  tree size (leaves): 4
-  active learning leaves: 4
-  tree depth: 3
-  active leaf byte size estimate: 0
-  inactive leaf byte size estimate: 0
-  byte size estimate overhead: 1
+  tree size (nodes): 3
+  tree size (leaves): 2
 
 Index
   900
 Votes
-  0: 81447.67889908
+  0: 3653.33106998
 Measurements
   classified instances: 899
-  mean absolute error: 27592.02636807
-  root mean squared error: 45902.69385356
-  relative mean absolute error: 0.89069068
-  relative root mean squared error: 0.94041162
+  mean absolute error: 51283.11201856
+  root mean squared error: 79287.58006333
+  relative mean absolute error: 1.65545615
+  relative root mean squared error: 1.62437006
 Model measurements
   model training instances: 899
-  tree size (nodes): 7
-  tree size (leaves): 4
-  active learning leaves: 4
-  tree depth: 3
-  active leaf byte size estimate: 0
-  inactive leaf byte size estimate: 0
-  byte size estimate overhead: 1
+  tree size (nodes): 3
+  tree size (leaves): 2
 
 Index
   1000
 Votes
-  0: 21072
+  0: 38659.9687188
 Measurements
   classified instances: 999
-  mean absolute error: 27018.3625679
-  root mean squared error: 44867.98522094
-  relative mean absolute error: 0.86985661
-  relative root mean squared error: 0.92413097
+  mean absolute error: 48825.19907699
+  root mean squared error: 76274.17698211
+  relative mean absolute error: 1.57192805
+  relative root mean squared error: 1.57099385
 Model measurements
   model training instances: 999
-  tree size (nodes): 9
-  tree size (leaves): 5
-  active learning leaves: 5
-  tree depth: 4
-  active leaf byte size estimate: 0
-  inactive leaf byte size estimate: 0
-  byte size estimate overhead: 1
+  tree size (nodes): 3
+  tree size (leaves): 2
 
 
 

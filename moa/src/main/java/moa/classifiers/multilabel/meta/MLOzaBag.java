@@ -23,6 +23,12 @@ import moa.classifiers.Classifier;
 import moa.classifiers.meta.OzaBag;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
+import com.yahoo.labs.samoa.instances.Prediction;
+import moa.classifiers.MultiLabelLearner;
+import moa.classifiers.MultiTargetRegressor;
+import moa.core.Example;
 
 /**
  * OzaBag for Multi-label data.
@@ -30,7 +36,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Jesse Read (jesse@tsc.uc3m.es)
  * @version $Revision: 1 $
  */
-public class MLOzaBag extends OzaBag {
+public class MLOzaBag extends OzaBag implements MultiLabelLearner, MultiTargetRegressor{
 
     protected int m_L = -1;
 
@@ -91,4 +97,30 @@ public class MLOzaBag extends OzaBag {
 
         return y;
     }
+
+    @Override
+    public void trainOnInstanceImpl(MultiLabelInstance instance) {
+        trainOnInstanceImpl((Instance) instance);
+    }
+    
+    @Override
+	public Prediction getPredictionForInstance(Example<Instance> example) {
+		return getPredictionForInstance((MultiLabelInstance)example.getData());
+	} 
+    
+    @Override
+	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
+
+		double[] predictionArray = this.getVotesForInstance(instance);
+
+		//System.out.println("y = "+Arrays.toString(predictionArray));
+
+		Prediction prediction = new MultiLabelPrediction(predictionArray.length);
+		for (int j = 0; j < predictionArray.length; j++){
+			prediction.setVote(j, 1, predictionArray[j]);
+			//prediction.setVote(j, 0, 1. - predictionArray[j]);
+		}
+		return prediction;
+	}
+
 }

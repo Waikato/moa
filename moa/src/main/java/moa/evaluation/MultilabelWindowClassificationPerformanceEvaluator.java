@@ -20,10 +20,10 @@
 package moa.evaluation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import moa.core.Example;
 import moa.core.Measurement;
-import moa.core.utils.EvalUtils;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
@@ -36,25 +36,27 @@ import com.yahoo.labs.samoa.instances.Prediction;
  */
 public class MultilabelWindowClassificationPerformanceEvaluator extends WindowClassificationPerformanceEvaluator implements MultiTargetPerformanceEvaluator {
 
-    //ArrayList<Pair<double[],int[]>> result = new ArrayList<Pair<double[],int[]>>();
-    ArrayList<double[]> result_pred = new ArrayList<double[]>();
+	/** running sum of accuracy */
+    double sumAccuracy = 0.0;
+	double sumHamming = 0.0;
 
-    ArrayList<int[]> result_real = new ArrayList<int[]>();
+	/** running number of examples */
+    int sumExamples = 0;
 
-    // We have to keep track of Label Cardinality for thresholding.
-    private double LC = -1.0;
+	/** preset threshold */
+    private double t = 0.5;
 
     @Override
     public void reset() {
-        result_pred = new ArrayList<double[]>(widthOption.getValue());
-        result_real = new ArrayList<int[]>(widthOption.getValue());
+		sumAccuracy = 0.0;
+		sumHamming = 0.0;
+		sumExamples = 0;
     }
 
     @Override
     public void reset(int L) {
         numClasses = L;
-        result_pred = new ArrayList<double[]>(widthOption.getValue());
-        result_real = new ArrayList<int[]>(widthOption.getValue());
+		reset();
     }
 
     /**
@@ -64,15 +66,44 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
      * more info in x)
      */
     @Override
-    public void addResult(Example<Instance> example, double[] y) {
+    public void addResult(Example<Instance> example, double[] p_y) {
+
+		//int L = example.numOutputAttributes();      // <-- doesn't work!
+		int L = p_y.length;
+
         Instance x = example.getData();
-        if (y.length < 2) {
-            System.err.println("y.length too short (" + y.length + "). We've lost track of L at some point, unable to continue");
+        if (p_y.length < 2) {
+            System.err.println("FATAL ERROR: Not enough labels, we've lost track of the number of labels.");
             System.exit(1);
         }
-        // add to the current evaluation window
-        result_real.add(EvalUtils.toIntArray(x, y.length));
-        result_pred.add(y);
+
+		//System.out.println("------- new result -------------");
+		//System.out.println("x = "+x);
+		//System.out.println("p(y) = "+Arrays.toString(p_y));
+
+		// Threshold to binary output (optional)
+		int y[] = new int[L];
+		for(int j = 0; j < L; j++) {
+			y[j] = (p_y[j] > t) ? 1 : 0;
+		}
+		//System.out.println("y =    "+Arrays.toString(y));
+		
+		sumExamples++;
+		int correct = 0;
+		for(int j = 0; j < y.length; j++) {
+			//int y_true = //]example.valueOutputAttribute(j);  // <-- doesn't work!
+			int y_true = (int)x.value(j); 
+			//int y_pred = (p_y[j] > t) ? 1 : 0;
+			if (y_true == y[j])
+				correct++;
+		}
+
+		// Hamming Score
+		sumHamming+=(correct/(double)L);
+
+		// Exact Match
+		if (correct == L)
+			sumAccuracy++;
     }
 
     
@@ -82,46 +113,31 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
         MultiLabelInstance inst = (MultiLabelInstance) example.getData();
         if (inst.weight() > 0.0) {
             int numberOutputs = inst.numOutputAttributes();
+			if (numberOutputs <= 1) {
+				System.err.println("FATAL ERROR: This is not a multi-label dataset!");
+				System.exit(1);
+			}
+			if (prediction.numOutputAttributes()==0) {
+				System.err.println("FATAL ERROR: This is not a multi-label prediction!");
+				System.exit(1);
+			}
             double[] result = new double[numberOutputs];
             for (int i = 0; i< prediction.size();i++){
-            	result[i] = (prediction.numOutputAttributes()==0) ? 0.0 : prediction.getVote(i,0);
+				result[i] = prediction.getVote(i,1); 
             }
             addResult(example, result);
         }
             //System.out.println(inst.classValue()+", "+prediction);
     }
-    
-    
+
     @Override
     public Measurement[] getPerformanceMeasurements() {
 
-        // calculate threshold
-        double t = 0.5;
-        try {
-            t = (LC > 0.0) ? EvalUtils.calibrateThreshold(result_pred, LC) : 0.5;
-        } catch (Exception e) {
-            System.err.println("Warning: failed to calibrate threshold, continuing with default: t = " + t);
-            e.printStackTrace();
-        }
-
-        // calculate performance
-        HashMap<String, Double> result = EvalUtils.evaluateMultiLabel(result_pred, result_real, t);
-
         // gather measurements
         Measurement m[] = new Measurement[]{
-            new Measurement("Subset Accuracy", result.get("Accuracy")),
-            new Measurement("Exact Match", result.get("Exact_match")),
-            new Measurement("Hamming Accucaracy", result.get("H_acc")),
-            new Measurement("Log Loss_D", result.get("LogLossD")),
-            //new Measurement( "F1-macro_L", result.get("F1_macro_L")),
-            //new Measurement( "LCard_real", result.get("LCard_real")),
-            //new Measurement( "LCard_pred", result.get("LCard_pred")),
-            new Measurement("Threshold", result.get("Threshold")), //new Measurement( "L", result.get("L")),
-        //new Measurement( "N", result.get("N")),
+            new Measurement("Exact Match", sumAccuracy/sumExamples),
+			new Measurement("Hamming Score", sumHamming/sumExamples),
         };
-
-        // save label cardinality for the next window
-        LC = result.get("LCard_real");
 
         // reset
         reset();

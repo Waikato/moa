@@ -21,6 +21,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import moa.core.Utils;
 
 /**
  * The Class Instances.
@@ -29,6 +30,12 @@ import java.util.Random;
  */
 public class Instances implements Serializable {
 
+    /** The keyword used to denote the start of an arff header */
+    public final static String ARFF_RELATION = "@relation";
+  
+    /** The keyword used to denote the start of the arff data section */
+    public final static String ARFF_DATA = "@data";
+  
     private static final long serialVersionUID = 8110510475535581577L;
     /**
      * The instance information.
@@ -78,8 +85,6 @@ public class Instances implements Serializable {
      *
      * @param reader the reader
      * @param range
-     * @param size the size
-     * @param classAttribute the class attribute
      */
     public Instances(Reader reader, Range range) {
         this.arff = new MultiTargetArffLoader(reader, range);
@@ -134,10 +139,10 @@ public class Instances implements Serializable {
      * Instantiates a new instances.
      *
      * @param st the st
-     * @param v the v
+     * @param capacity the capacity
      */
-    public Instances(StringReader st, int v) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public Instances(StringReader st, int capacity) {
+         this.instances = new ArrayList<Instance>(capacity);
     }
 
     //Information Instances
@@ -422,6 +427,14 @@ public class Instances implements Serializable {
     public void delete() {
         this.instances = new ArrayList<Instance>();
     }
+    
+     /**
+     * Delete.
+     */
+    public void delete(int index) {
+        this.instances.remove(index);
+    }
+
 
     /**
      * Swap.
@@ -482,4 +495,48 @@ public class Instances implements Serializable {
     		this.instanceInformation= new InstanceInformation();
         this.instanceInformation.setAttributes(v, indexValues);
     }
+    
+      /**
+   * Returns the dataset as a string in ARFF format. Strings
+   * are quoted if they contain whitespace characters, or if they
+   * are a question mark.
+   *
+   * @return the dataset in ARFF format as a string
+   */
+  public String toString() {
+    
+    StringBuffer text = new StringBuffer();
+    
+    text.append(ARFF_RELATION).append(" ").
+      append(Utils.quote( this.instanceInformation.getRelationName())).append("\n\n");
+    for (int i = 0; i < numAttributes(); i++) {
+      text.append(attribute(i).toString()).append("\n");
+    }
+    text.append("\n").append(ARFF_DATA).append("\n");
+
+    text.append(stringWithoutHeader());
+    return text.toString();
+  }
+  
+    /**
+   * Returns the instances in the dataset as a string in ARFF format. Strings
+   * are quoted if they contain whitespace characters, or if they
+   * are a question mark.
+   *
+   * @return the dataset in ARFF format as a string
+   */
+  protected String stringWithoutHeader() {
+    
+    StringBuffer text = new StringBuffer();
+
+    for (int i = 0; i < numInstances(); i++) {
+      text.append(instance(i));
+      if (i < numInstances() - 1) {
+	text.append('\n');
+      }
+    }
+    return text.toString();
+    
+  }
+  
 }
