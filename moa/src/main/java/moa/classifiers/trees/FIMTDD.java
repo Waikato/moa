@@ -168,11 +168,6 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			return (int) SizeOf.fullSizeOf(this);
 		}
 
-		public boolean isLeaf() {
-			return true;
-		}
-
-
 		/**
 		 * Set the parent node
 		 */
@@ -196,7 +191,6 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		}
 		
 		public void getDescription(StringBuilder sb, int indent) {
-			
 		}
 
 		public double getPrediction(Instance inst) {
@@ -471,11 +465,6 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			// Disable the change detection mechanism bellow this node
 			disableChangeDetection();
 		}
-		
-		public boolean isLeaf() {
-			return false;
-		}
-		
 	}
 	
 	public static class SplitNode extends InnerNode {

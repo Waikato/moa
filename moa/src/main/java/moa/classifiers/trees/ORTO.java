@@ -155,7 +155,6 @@ public class ORTO extends FIMTDD implements Regressor {
 			return optionFFSSL[childIndex] / optionFFSeen[childIndex];
 		}
 		
-		@SuppressWarnings("unused")
 		protected boolean skipInLevelCount() {
 			return true;
 		}
