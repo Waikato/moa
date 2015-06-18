@@ -1,13 +1,7 @@
 /*
  *    FIMTDD.java
  *    Copyright (C) 2015 Jožef Stefan Institute, Ljubljana, Slovenia
-<<<<<<< HEAD
  *    @author Aljaž Osojnik <aljaz.osojnik@ijs.si>
-=======
- *    Copyright (C) 2013 University of Porto, Portugal
- *    @author Aljaž Osojnik <aljaz.osojnik@ijs.si>
- *    @author Katie de Lange, E. Almeida, J. Gama
->>>>>>> d8313be35fda6f1001296c8956ee87cca07f5149
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -22,11 +16,6 @@
  *    limitations under the License.
  *    
  *    
- */
-
-/* Project Knowledge Discovery from Data Streams, FCT LIAAD-INESC TEC, 
- *
- * Contact: jgama@fep.up.pt
  */
 
 package moa.classifiers.trees;
