@@ -266,7 +266,7 @@ public class ORTO extends FIMTDD implements Regressor {
 					if (currentNode instanceof SplitNode) {
 						currentNode = ((SplitNode) currentNode).descendOneStep(inst);
 					} else if (currentNode instanceof OptionNode) {
-						processInstanceOptionNode(inst, (OptionNode) node, prediction, normalError, growthAllowed, inAlternate);
+						processInstanceOptionNode(inst, (OptionNode) currentNode, prediction, normalError, growthAllowed, inAlternate);
 						break;
 					}
 				}
