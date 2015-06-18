@@ -1,7 +1,13 @@
 /*
  *    FIMTDD.java
  *    Copyright (C) 2015 Jožef Stefan Institute, Ljubljana, Slovenia
+<<<<<<< HEAD
  *    @author Aljaž Osojnik <aljaz.osojnik@ijs.si>
+=======
+ *    Copyright (C) 2013 University of Porto, Portugal
+ *    @author Aljaž Osojnik <aljaz.osojnik@ijs.si>
+ *    @author Katie de Lange, E. Almeida, J. Gama
+>>>>>>> d8313be35fda6f1001296c8956ee87cca07f5149
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -191,6 +197,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		}
 		
 		public void getDescription(StringBuilder sb, int indent) {
+			
 		}
 
 		public double getPrediction(Instance inst) {
@@ -231,6 +238,47 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		}
 
 		protected boolean skipInLevelCount() {
+			return false;
+		}
+	}
+
+	public static class LeafNode extends Node {
+
+		private static final long serialVersionUID = 1L;
+
+		// Perceptron model that carries out the actual learning in each node
+		public FIMTDDPerceptron learningModel;
+
+		protected AutoExpandVector<FIMTDDNumericAttributeClassObserver> attributeObservers = new AutoExpandVector<FIMTDDNumericAttributeClassObserver>();
+		
+		protected double examplesSeenAtLastSplitEvaluation = 0;
+
+		/**
+		 * Create a new LeafNode
+		 */
+		public LeafNode(FIMTDD tree) {
+			super(tree);
+			if (tree.buildingModelTree()) {
+				learningModel = tree.newLeafModel();
+			}
+			examplesSeen = 0;
+			sumOfValues = 0;
+			sumOfSquares = 0;
+			sumOfAbsErrors = 0;
+		}
+
+		public void setChild(int parentBranch, Node node) {
+		}
+
+		public int getChildIndex(Node child) {
+			return -1;
+		}
+
+		public int getNumSubtrees() {
+			return 1;
+		}
+
+		private boolean skipInLevelCount() {
 			return false;
 		}
 	}
@@ -366,7 +414,6 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 				StringUtils.appendNewline(out);
 			}
 		}
-
 	}
 
 	public abstract static class InnerNode extends Node {
@@ -956,3 +1003,4 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 	
 	//endregion ================ METHODS ================
 }
+
