@@ -267,34 +267,8 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			return 1;
 		}
 
-		private boolean skipInLevelCount() {
+		protected boolean skipInLevelCount() {
 			return false;
-		}
-	}
-
-	public static class LeafNode extends Node {
-
-		private static final long serialVersionUID = 1L;
-
-		// Perceptron model that carries out the actual learning in each node
-		public FIMTDDPerceptron learningModel;
-
-		protected AutoExpandVector<FIMTDDNumericAttributeClassObserver> attributeObservers = new AutoExpandVector<FIMTDDNumericAttributeClassObserver>();
-		
-		protected double examplesSeenAtLastSplitEvaluation = 0;
-
-		/**
-		 * Create a new LeafNode
-		 */
-		public LeafNode(FIMTDD tree) {
-			super(tree);
-			if (tree.buildingModelTree()) {
-				learningModel = tree.newLeafModel();
-			}
-			examplesSeen = 0;
-			sumOfValues = 0;
-			sumOfSquares = 0;
-			sumOfAbsErrors = 0;
 		}
 		
 		/**
