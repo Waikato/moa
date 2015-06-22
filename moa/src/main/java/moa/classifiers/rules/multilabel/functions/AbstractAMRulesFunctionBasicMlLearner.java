@@ -1,10 +1,10 @@
 package moa.classifiers.rules.multilabel.functions;
 
 import moa.classifiers.Classifier;
-import moa.classifiers.multitarget.BasicMultiTargetRegressor;
+import moa.classifiers.multitarget.BasicMultiLabelClassifier;
 
-abstract public class AbstractAMRulesFunctionBasicMTRegressor extends
-		BasicMultiTargetRegressor implements AMRulesFunction {
+abstract public class AbstractAMRulesFunctionBasicMlLearner extends
+BasicMultiLabelClassifier implements AMRulesFunction {
 
 	/**
 	 * 

@@ -41,9 +41,9 @@ implements MultiTargetRegressor, AMRulesFunction {
 	public AdaptiveMultiTargetRegressor(){
 		super.randomSeedOption=randomSeedOption;
 		baseLearnerOption1 = new ClassOption("baseLearner1", 'l',
-				"First base learner.", AMRulesFunction.class, MultiLabelTargetMeanRegressor.class.getName()) ;
+				"First base learner.", AMRulesFunction.class, MultiTargetMeanRegressor.class.getName()) ;
 		baseLearnerOption2= new ClassOption("baseLearner2", 'm',
-				"Second base learner.", AMRulesFunction.class, MultiLabelPerceptronRegressor.class.getName()) ;
+				"Second base learner.", AMRulesFunction.class, MultiTargetPerceptronRegressor.class.getName()) ;
 		errorMeasurerOption = new ClassOption("errorMeasurer", 'e',
 				"Measure of error for deciding which learner should predict.", AbstractMultiTargetErrorMeasurer.class, MeanAbsoluteDeviationMT.class.getName()) ;
 

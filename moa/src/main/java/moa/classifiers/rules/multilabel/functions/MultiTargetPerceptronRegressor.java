@@ -5,7 +5,7 @@ import moa.classifiers.multitarget.BasicMultiTargetRegressor;
 import moa.classifiers.rules.functions.Perceptron;
 import moa.options.ClassOption;
 
-public class MultiLabelPerceptronRegressor extends AbstractAMRulesFunctionBasicMTRegressor
+public class MultiTargetPerceptronRegressor extends AbstractAMRulesFunctionBasicMlLearner
 		implements MultiTargetRegressor, AMRulesFunction {
 
 	/**
