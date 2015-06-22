@@ -1,7 +1,8 @@
 /*
- *    EvaluatePrequentialMultiLabel.java
- *    Adapted from EvaluatePrequential.java by
- *    @author João Duarte (joaomaiaduarte@gmail.com)
+ *    EvaluatePrequentialMultiTarget.java
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
+ *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ *    @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -19,45 +20,37 @@
  */
 package moa.tasks;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
-import moa.classifiers.MultiLabelClassifier;
-import moa.classifiers.multilabel.MultilabelHoeffdingTree;
-import moa.classifiers.rules.multilabel.functions.DominantLabelsClassifier;
-import moa.core.Example;
-import moa.core.Measurement;
-import moa.core.ObjectRepository;
-import moa.core.TimingUtils;
-import moa.evaluation.EWMAClassificationPerformanceEvaluator;
-import moa.evaluation.FadingFactorClassificationPerformanceEvaluator;
-import moa.evaluation.LearningCurve;
-import moa.evaluation.LearningEvaluation;
-import moa.evaluation.LearningPerformanceEvaluator;
-import moa.evaluation.MultiLabelPerformanceEvaluator;
-import moa.evaluation.MultiTargetPerformanceEvaluator;
-import moa.evaluation.MultilabelWindowClassificationPerformanceEvaluator;
-import moa.evaluation.WindowClassificationPerformanceEvaluator;
-import moa.learners.Learner;
-import moa.options.ClassOption;
-import moa.streams.ExampleStream;
-import moa.streams.MultiTargetInstanceStream;
-
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
-/**
- * Task for evaluating a multilabel classifier on a stream by testing then training with each example in sequence.
- * Adapted from EvaluatePrequential.java
- * @author João Duarte joaomaiaduarte dot gmail dot com)
- * @version $Revision: 1 $
- */
-public class EvaluatePrequentialMultiLabel extends MainTask {
+import moa.classifiers.MultiLabelClassifier;
+import moa.classifiers.MultiTargetRegressor;
+import moa.classifiers.rules.multilabel.functions.MultiLabelNaiveBayes;
+import moa.core.Example;
+import moa.core.Measurement;
+import moa.core.ObjectRepository;
+import moa.core.TimingUtils;
+import moa.evaluation.*;
+import moa.learners.Learner;
+import moa.options.ClassOption;
+import moa.streams.ExampleStream;
+import moa.streams.MultiTargetInstanceStream;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+
+/**
+ * Task for evaluating a classifier on a stream by testing then training with each example in sequence.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
+ * @version $Revision: 7 $
+ */
+public class EvaluatePrequentialMultiLabel extends MultiLabelMainTask {
 
     @Override
     public String getPurposeString() {
@@ -67,16 +60,16 @@ public class EvaluatePrequentialMultiLabel extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption learnerOption = new ClassOption("learner", 'l',
-           "Learner to train.", MultiLabelClassifier.class, "moa.classifiers.rules.multilabel.functions.DominantLabelsClassifier");
-
+            "Learner to train.", MultiLabelClassifier.class, MultiLabelNaiveBayes.class.getName());
+    
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", MultiTargetInstanceStream.class,
             "MultiTargetArffFileStream");
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
-            "Multi label classification performance evaluation method.",
-            MultiLabelPerformanceEvaluator.class,
-            "MultilabelWindowClassificationPerformanceEvaluator");
+            "Classification performance evaluation method.",
+            MultiTargetPerformanceEvaluator.class,
+            "BasicMultiTargetPerformanceEvaluator");
 
     public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
             "Maximum number of instances to test/train on  (-1 = no limit).",
