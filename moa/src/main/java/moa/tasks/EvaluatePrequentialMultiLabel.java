@@ -68,9 +68,9 @@ public class EvaluatePrequentialMultiLabel extends MultiLabelMainTask {
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
             "Classification performance evaluation method.",
-            MultiTargetPerformanceEvaluator.class,
-            "BasicMultiTargetPerformanceEvaluator");
-
+            MultiLabelPerformanceEvaluator.class,
+            "MultilabelWindowClassificationPerformanceEvaluator");
+    
     public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
             "Maximum number of instances to test/train on  (-1 = no limit).",
             100000000, -1, Integer.MAX_VALUE);

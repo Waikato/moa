@@ -19,28 +19,27 @@
  */
 package moa.tasks;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiLabelClassifier;
-import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.rules.multilabel.functions.MultiLabelNaiveBayes;
 import moa.core.Example;
 import moa.core.ObjectRepository;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
-import moa.evaluation.MultiTargetPerformanceEvaluator;
+import moa.evaluation.MultiLabelPerformanceEvaluator;
 import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 import moa.streams.MultiTargetInstanceStream;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 
 /**
  * Task for evaluating a static model on a stream.
@@ -66,8 +65,8 @@ public class EvaluateModelMultiLabel extends MultiLabelMainTask {
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
             "Classification performance evaluation method.",
-            MultiTargetPerformanceEvaluator.class,
-            "BasicMultiTargetPerformanceEvaluator");
+            MultiLabelPerformanceEvaluator.class,
+            "MultilabelWindowClassificationPerformanceEvaluator");
 
 
     public IntOption maxInstancesOption = new IntOption("maxInstances", 'i',
