@@ -7,4 +7,6 @@ public interface Example< T extends Object> {
 	public double weight();
 	
 	public void setWeight(double weight);
+
+	public Example copy();
 } 

@@ -13,7 +13,6 @@ Measurements
   relative root mean squared error: 2.16699194
 Model measurements
   model training instances: 99
-  tree size (nodes): 1
   tree size (leaves): 1
 
 Index
@@ -28,7 +27,6 @@ Measurements
   relative root mean squared error: 2.33600975
 Model measurements
   model training instances: 199
-  tree size (nodes): 1
   tree size (leaves): 1
 
 Index
@@ -43,7 +41,6 @@ Measurements
   relative root mean squared error: 2.20706532
 Model measurements
   model training instances: 299
-  tree size (nodes): 3
   tree size (leaves): 2
 
 Index
@@ -58,7 +55,6 @@ Measurements
   relative root mean squared error: 1.98990971
 Model measurements
   model training instances: 399
-  tree size (nodes): 3
   tree size (leaves): 2
 
 Index
@@ -73,7 +69,6 @@ Measurements
   relative root mean squared error: 1.905756
 Model measurements
   model training instances: 499
-  tree size (nodes): 3
   tree size (leaves): 2
 
 Index
@@ -88,7 +83,6 @@ Measurements
   relative root mean squared error: 1.75264547
 Model measurements
   model training instances: 599
-  tree size (nodes): 3
   tree size (leaves): 2
 
 Index
@@ -103,7 +97,6 @@ Measurements
   relative root mean squared error: 1.71302501
 Model measurements
   model training instances: 699
-  tree size (nodes): 3
   tree size (leaves): 2
 
 Index
@@ -118,7 +111,6 @@ Measurements
   relative root mean squared error: 1.65085915
 Model measurements
   model training instances: 799
-  tree size (nodes): 3
   tree size (leaves): 2
 
 Index
@@ -133,7 +125,6 @@ Measurements
   relative root mean squared error: 1.62437006
 Model measurements
   model training instances: 899
-  tree size (nodes): 3
   tree size (leaves): 2
 
 Index
@@ -148,7 +139,6 @@ Measurements
   relative root mean squared error: 1.57099385
 Model measurements
   model training instances: 999
-  tree size (nodes): 3
   tree size (leaves): 2
 
 

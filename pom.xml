@@ -4,7 +4,7 @@
   <groupId>nz.ac.waikato.cms.moa</groupId>
   <artifactId>moa-pom</artifactId>
   <packaging>pom</packaging>
-  <version>2012.09-SNAPSHOT</version>
+  <version>2015.05-SNAPSHOT</version>
 
   <name>MOA: meta-package</name>
   <description>
