@@ -1,5 +1,25 @@
+/*
+ *    PairedLearners.java
+ *    Copyright (C) 2015 Instituto Federal de Pernambuco, Recife, Brazil
+ *    @author Paulo Gonçalves (paulogoncalves@recife.ifpe.edu.br)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 package moa.classifiers.meta;
 
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,10 +28,8 @@ import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.core.Measurement;
 import moa.options.ClassOption;
-import moa.options.FloatOption;
-import moa.options.IntOption;
-import weka.core.Instance;
-import weka.core.Utils;
+import com.yahoo.labs.samoa.instances.Instance;
+import moa.core.MiscUtils;
 
 /**
  * Creates two classifiers: a stable and a reactive. The first represents the
@@ -25,7 +43,7 @@ import weka.core.Utils;
  * Eighth IEEE International Conference on Data Mining (ICDM), 2008,
  * pp.23-32</p>
  *
- * @author Paulo Goncalves (paulogoncalves at recife.ifpe.edu.br)
+ * @author Paulo Gonçalves (paulogoncalves at recife.ifpe.edu.br)
  *
  */
 
@@ -75,8 +93,8 @@ public class PairedLearners extends AbstractClassifier {
     public void trainOnInstanceImpl(Instance inst) {
         this.instances[this.t] = inst;
         int trueClass = (int) inst.classValue();
-        boolean stablePrediction = Utils.maxIndex(this.stableLearner.getVotesForInstance(inst)) == trueClass;
-        boolean reactivePrediction = Utils.maxIndex(this.reactiveLearner.getVotesForInstance(inst)) == trueClass;
+        boolean stablePrediction = MiscUtils.maxIndex(this.stableLearner.getVotesForInstance(inst)) == trueClass;
+        boolean reactivePrediction = MiscUtils.maxIndex(this.reactiveLearner.getVotesForInstance(inst)) == trueClass;
 
         this.numberOfErrors = this.numberOfErrors - this.c[this.t];
         if(!stablePrediction && reactivePrediction) {
