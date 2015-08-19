@@ -40,109 +40,40 @@ import moa.core.Utils;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class EWMAClassificationPerformanceEvaluator extends AbstractOptionHandler
-        implements LearningPerformanceEvaluator<Example<Instance>> {
+public class EWMAClassificationPerformanceEvaluator extends BasicClassificationPerformanceEvaluator {
 
     private static final long serialVersionUID = 1L;
-
-    protected double TotalweightObserved;
 
     public FloatOption alphaOption = new FloatOption("alpha",
             'a', "Fading factor or exponential smoothing factor", .01);
 
+    @Override
+    protected Estimator newEstimator() {
+        return new EWMAEstimator(this.alphaOption.getValue());
+    }
+
     protected Estimator weightCorrect;
 
-    protected class Estimator {
+    public class EWMAEstimator implements Estimator {
 
         protected double alpha;
 
         protected double estimation;
 
-        public Estimator(double a) {
+        public EWMAEstimator(double a) {
             alpha = a;
             estimation = 0;
         }
 
+        @Override
         public void add(double value) {
             estimation += alpha * (value - estimation);
         }
 
+        @Override
         public double estimation() {
             return estimation;
         }
-    }
 
-    /*   public void setalpha(double a) {
-    this.alpha = a;
-    reset();
-    }*/
-    
-    @Override
-    public void reset() {
-        weightCorrect = new Estimator(this.alphaOption.getValue());
     }
-
-    @Override
-    public void addResult(Example<Instance> example, double[] classVotes) {
-        Instance inst = example.getData();
-        double weight = inst.weight();
-        int trueClass = (int) inst.classValue();
-        if (weight > 0.0) {
-            this.TotalweightObserved += weight;
-            if (Utils.maxIndex(classVotes) == trueClass) {
-                this.weightCorrect.add(1);
-            } else {
-                this.weightCorrect.add(0);
-            }
-        }
-    }
-    /*public void addClassificationAttempt(int trueClass, double[] classVotes,
-    double weight) {
-    if (weight > 0.0) {
-    this.TotalweightObserved += weight;
-    if (Utils.maxIndex(classVotes) == trueClass) {
-    this.weightCorrect.add(1);
-    } else
-    this.weightCorrect.add(0);
-    }
-    }*/
-
-    @Override
-    public Measurement[] getPerformanceMeasurements() {
-        return new Measurement[]{
-                    new Measurement("classified instances",
-                    this.TotalweightObserved),
-                    new Measurement("classifications correct (percent)",
-                    getFractionCorrectlyClassified() * 100.0)};
-    }
-
-    public double getTotalWeightObserved() {
-        return this.TotalweightObserved;
-    }
-
-    public double getFractionCorrectlyClassified() {
-        return this.weightCorrect.estimation();
-    }
-
-    public double getFractionIncorrectlyClassified() {
-        return 1.0 - getFractionCorrectlyClassified();
-    }
-
-    @Override
-    public void getDescription(StringBuilder sb, int indent) {
-        Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
-                sb, indent);
-    }
-
-    @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
-        reset();
-    }
-    
-	@Override
-	public void addResult(Example<Instance> testInst, Prediction prediction) {
-		// TODO Auto-generated method stub
-		
-	}
 }

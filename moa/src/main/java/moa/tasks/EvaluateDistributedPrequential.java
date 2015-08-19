@@ -89,9 +89,6 @@ public class EvaluateDistributedPrequential extends MainTask {
     public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
             "File to append intermediate csv results to.", null, "csv", true);
 
-    public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
-            "File to append output predictions to.", null, "pred", true);
-
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 'w',
             "The number of distributed models.", 10, 1, Integer.MAX_VALUE);
 
@@ -154,23 +151,7 @@ public class EvaluateDistributedPrequential extends MainTask {
                         "Unable to open immediate result file: " + dumpFile, ex);
             }
         }
-        //File for output predictions
-        /*File outputPredictionFile = this.outputPredictionFileOption.getFile();
-        PrintStream outputPredictionResultStream = null;
-        if (outputPredictionFile != null) {
-            try {
-                if (outputPredictionFile.exists()) {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile, true), true);
-                } else {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile), true);
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(
-                        "Unable to open prediction result file: " + outputPredictionFile, ex);
-            }
-        }*/
+
         boolean firstDump = true;
         boolean preciseCPUTiming = TimingUtils.enablePreciseTiming();
         long evaluateStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
@@ -186,13 +167,6 @@ public class EvaluateDistributedPrequential extends MainTask {
             for (int i = 0; i < learners.length; i++) {
                 evaluators[i].addResult(testInst, learners[i].getVotesForInstance(testInst));
             }
-           /* // Output prediction
-            if (outputPredictionFile != null) {
-                int trueClass = (int) ((Instance) trainInst.getData()).classValue();
-                outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," + trueClass);
-            }*/
-
-            //evaluator.addClassificationAttempt(trueClass, prediction, testInst.weight());
 
             for (int i = 0; i < learners.length; i++) {
                 int k = 1;
@@ -278,9 +252,6 @@ public class EvaluateDistributedPrequential extends MainTask {
         if (immediateResultStream != null) {
             immediateResultStream.close();
         }
-        //if (outputPredictionResultStream != null) {
-        //    outputPredictionResultStream.close();
-        //}
         return learningCurve;
     }
 
