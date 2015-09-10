@@ -82,7 +82,6 @@ public class MajorityLabelset extends AbstractMultiLabelLearner implements Multi
     //public double[] getVotesForInstance(Instance x) {
     public Prediction getPredictionForInstance(MultiLabelInstance x){
 
-		System.out.println("P"+this.majorityLabelset);
 		return (majorityLabelset!=null) ? this.majorityLabelset : null;
     }
 
