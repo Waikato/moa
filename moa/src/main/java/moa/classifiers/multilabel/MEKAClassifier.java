@@ -19,11 +19,13 @@
  */
 package moa.classifiers.multilabel;
 
+import moa.core.Measurement;
+import weka.classifiers.UpdateableClassifier;
+
 import java.util.Arrays;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.meta.WEKAClassifier;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import weka.classifiers.UpdateableClassifier;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
@@ -44,107 +46,116 @@ import moa.core.Example;
 public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner, MultiTargetRegressor {
 
 	private static final long serialVersionUID = 1L;
-	protected int m_L = -1;
+
+	private int L = 0;
 
 	@Override
-	public void setModelContext(InstancesHeader raw_header) {
-		//m_L = (m_L < 0 ? raw_header.classIndex() + 1 : m_L);
-		m_L = (m_L < 0 ? raw_header.numOutputAttributes(): m_L);
-		super.setModelContext(raw_header);
+    public void resetLearningImpl() {
 
-		weka.core.Instances D = null;
-		SamoaToWekaInstanceConverter conv = new SamoaToWekaInstanceConverter();
-		try {
-			D = conv.wekaInstances(raw_header);
-		} catch(Exception e) {
-			System.err.println("FATAL ERROR: Failed to convert InstancesHeader to Instances");
-			e.printStackTrace();
-			System.exit(1);
-		}
-		D.setClassIndex(m_L);
-		//System.out.println("L="+D.classIndex()+","+m_L);
-		this.instancesBuffer = new weka.core.Instances(D);
-		if (classifier instanceof UpdateableClassifier) {
-			this.instancesBuffer.setClassIndex(m_L);
-			// System.out.println(instancesBuffer.classIndex());
-			// System.out.println(instancesBuffer.classAttribute().name());
-			// System.out.println(instancesBuffer.classAttribute().isNumeric());
-			//System.out.println("N="+instancesBuffer.numInstances()+"\nD:\n"+instancesBuffer);
-
-			try {
-				this.classifier.buildClassifier(instancesBuffer);
-			} catch(Exception e) {
-				System.err.println("FATAL ERROR: Failed to initialize Meka classifier!");
-				e.printStackTrace();
-				System.exit(1);
-			}
-			this.isClassificationEnabled = true;
-		} else {
-			System.err.println("Only suports UpdateableClassifiers for now.");
-			System.exit(1);
-		}
-	}
-
-	@Override
-	public void trainOnInstanceImpl(Instance instance) {
-		trainOnInstanceImpl((MultiLabelInstance) instance);
-	}
-
+        try {
+            //System.out.println(baseLearnerOption.getValue());
+            String[] options = weka.core.Utils.splitOptions(baseLearnerOption.getValueAsCLIString());
+            createWekaClassifier(options);
+        } catch (Exception e) {
+            System.err.println("Creating a new classifier: " + e.getMessage());
+        }
+        numberInstances = 0;
+        isClassificationEnabled = false;
+        this.isBufferStoring = true;
+        this.instanceConverter = new SamoaToWekaInstanceConverter();
+    }
 
 	@Override
 	public void trainOnInstanceImpl(MultiLabelInstance samoaInstance) {
+
+		// Convert instance
+		L = samoaInstance.numberOutputTargets();
+		weka.core.Instance x = this.instanceConverter.wekaInstance(samoaInstance);
+		x.dataset().setClassIndex(L);
+
+		if (numberInstances == 0) {
+			// This is the first instance -- Setup!
+			this.instancesBuffer = new weka.core.Instances(x.dataset());
+			if (classifier instanceof UpdateableClassifier) {
+				try {
+					classifier.buildClassifier(instancesBuffer);
+				} catch(Exception e) {
+					System.err.println("[ERROR] Failed to build classifier");
+					e.printStackTrace();
+					System.exit(1);
+				}
+				this.isClassificationEnabled = true;
+			} else {
+				this.isBufferStoring = true;
+			}
+		}
+		numberInstances++;
+
+		// Update classifier
+		if (classifier instanceof UpdateableClassifier) {
+			if (numberInstances > 0) {
+				try {
+					((UpdateableClassifier) classifier).updateClassifier(x);
+				} catch(Exception e) {
+					System.err.println("[ERROR] Failed to update classifier");
+					e.printStackTrace();
+					System.exit(1);
+				}
+			}
+			else {
+				System.out.println("[TO-DO] Non-Updateable MEKA classifiers should also work here!");
+			}
+		}
+	}
+
+	@Override
+	public Prediction getPredictionForInstance(MultiLabelInstance samoaInstance) {
+
 		weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
-		//System.out.println(""+m_L);                   // <--  this is correct
-		//System.out.println(""+inst.classIndex());     // <--- this one is wrong
-		inst.dataset().setClassIndex(m_L);                      // <-- so, fix it!
 
-		if (m_L < 0) {
-			System.out.println("FATAL ERROR: setModelContext(..) has not been called yet!");
-			m_L = samoaInstance.numOutputAttributes();//inst.classIndex() + 1;
-			System.exit(1);
+		Prediction prediction=null;
+
+		if (isClassificationEnabled == true){ 
+			prediction = new MultiLabelPrediction(L);
+			double votes[] = new double[L];
+			try {
+				votes = this.classifier.distributionForInstance(inst);
+			} catch(Exception e) {
+				System.err.println("");
+				e.printStackTrace();
+				System.exit(1);
+			}
+			for (int j = 0; j < L; j++) {
+				prediction.setVote(j, 0, votes[j]);
+			}
 		}
-
-		//System.out.println(inst.classIndex());
-		try {
-			//System.out.println("UPDATE   WITH instances of "+instancesBuffer.classIndex()+" labels :\n"+inst);
-			((UpdateableClassifier) classifier).updateClassifier(inst);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
-
-	@Override
-	public double[] getVotesForInstance(Instance samoaInstance) {
-		weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
-		double votes[] = null;
-		try {
-			votes = this.classifier.distributionForInstance(inst);
-		} catch(Exception e) {
-			System.err.println("FATAL ERROR: Failed to get votes");
-			e.printStackTrace();
-			System.exit(1);
-		}
-		return votes;
-	}
-
-	@Override
-	public Prediction getPredictionForInstance(Example<Instance> example) {
-		return getPredictionForInstance((MultiLabelInstance)example.getData());
-	}
-
-	@Override
-	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
-
-		double[] predictionArray = this.getVotesForInstance(instance);
-
-		//System.out.println("y = "+Arrays.toString(predictionArray));
-
-		Prediction prediction = new MultiLabelPrediction(predictionArray.length);
-		for (int j = 0; j < predictionArray.length; j++){
-			prediction.setVote(j, 1, predictionArray[j]);
-			//prediction.setVote(j, 0, 1. - predictionArray[j]);
-		}
+		
 		return prediction;
 	}
+
+    @Override
+    protected Measurement[] getModelMeasurementsImpl() {
+		Measurement[] m = new Measurement[0];
+        return m;
+    }
+
+    @Override
+    public boolean isRandomizable() {
+        return false;
+    }
+
+    @Override
+    public void getModelDescription(StringBuilder out, int indent) {
+		if (classifier != null) {
+            out.append(classifier.toString());
+        }
+    }
+
+    public void createWekaClassifier(String[] options) throws Exception {
+        String classifierName = options[0];
+        String[] newoptions = options.clone();
+        newoptions[0] = "";
+        this.classifier = weka.classifiers.AbstractClassifier.forName(classifierName, newoptions);
+    }
+
 }
