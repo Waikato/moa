@@ -21,31 +21,67 @@ package moa.classifiers.multilabel;
 
 import moa.core.Measurement;
 import weka.classifiers.UpdateableClassifier;
-
-import java.util.Arrays;
+import moa.classifiers.AbstractClassifier;
+import moa.core.Measurement;
+import com.github.javacliparser.IntOption;
+import moa.options.WEKAClassOption;
+import weka.classifiers.Classifier;
+import weka.classifiers.UpdateableClassifier;
 import com.yahoo.labs.samoa.instances.Instance;
-import moa.classifiers.meta.WEKAClassifier;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
+
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 import moa.classifiers.MultiLabelLearner;
+import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
 import moa.core.Example;
 
 /**
- * Class for using a MEKA classifier. NOTE: This class only exists to adjust the
- * classIndex by +1 We can use the standard WEKAClassifier if we set -c L where,
- * L = the number of labels + 1 (Because MOA understands that L specified on the
- * command line is the (L-1)th index).
+ * Wrapper for MEKA classifiers. 
  *
- * @author Jesse Read (jesse@tsc.uc3m.es)
+ * @author Jesse Read
  * @version $Revision: 1 $
  */
-public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner, MultiTargetRegressor {
+public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTargetRegressor {
 
 	private static final long serialVersionUID = 1L;
+
+    protected SamoaToWekaInstanceConverter instanceConverter;
+
+    @Override
+    public String getPurposeString() {
+        return "Classifier from Weka";
+    }
+    
+    public WEKAClassOption baseLearnerOption = new WEKAClassOption("baseLearner", 'l',
+            "Classifier to train.", weka.classifiers.Classifier.class, "meka.classifiers.multilabel.incremental.BRUpdateable");
+
+	//TODO
+    //public IntOption widthOption = new IntOption("width",
+    //       'w', "Size of Window for training learner.", 0, 0, Integer.MAX_VALUE);
+
+    public IntOption widthInitOption = new IntOption("widthInit",
+            'i', "Size of first Window for training learner.", 1000, 0, Integer.MAX_VALUE);
+
+    public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
+            'f',
+            "How many instances between samples of the learning performance.",
+            0, 0, Integer.MAX_VALUE);
+
+    protected Classifier classifier;
+
+    protected int numberInstances;
+
+    protected weka.core.Instances instancesBuffer;
+
+    protected boolean isClassificationEnabled;
+
+    protected boolean isBufferStoring;
+
 
 	private int L = 0;
 
@@ -78,6 +114,8 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
 			this.instancesBuffer = new weka.core.Instances(x.dataset());
 			if (classifier instanceof UpdateableClassifier) {
 				try {
+					System.err.println("Setting L="+L+" to MEKA classifier");
+					instancesBuffer.setClassIndex(L);
 					classifier.buildClassifier(instancesBuffer);
 				} catch(Exception e) {
 					System.err.println("[ERROR] Failed to build classifier");
@@ -113,7 +151,7 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
 
 		weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
 
-		Prediction prediction=null;
+		MultiLabelPrediction prediction=null;
 
 		if (isClassificationEnabled == true){ 
 			prediction = new MultiLabelPrediction(L);
@@ -126,17 +164,20 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
 				System.exit(1);
 			}
 			for (int j = 0; j < L; j++) {
-				prediction.setVote(j, 0, votes[j]);
+				prediction.setVote(j, 0, 1.-votes[j]);
+				prediction.setVote(j, 1, votes[j]);
 			}
 		}
 		
+		//System.out.println(""+prediction);
 		return prediction;
 	}
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-		Measurement[] m = new Measurement[0];
-        return m;
+		//Measurement[] m = new Measurement[0];
+        //return m;
+		return null;
     }
 
     @Override
