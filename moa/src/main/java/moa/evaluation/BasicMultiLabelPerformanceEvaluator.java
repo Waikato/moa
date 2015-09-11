@@ -67,7 +67,7 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
 			sumExamples++;
 			int correct = 0;
 			for (int j = 0; j< L; j++){
-				int yp = (y.getVote(j,0) > t) ? 1 : 0;
+				int yp = (y.getVote(j,1) > t) ? 1 : 0;
 				correct += ((int)x.classValue(j) == yp) ? 1 : 0;
 			}
 			// Hamming Score

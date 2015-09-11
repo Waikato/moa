@@ -19,6 +19,7 @@
  */
 package moa.classifiers.multilabel;
 
+import java.util.Arrays;
 import moa.core.Measurement;
 import weka.classifiers.UpdateableClassifier;
 import moa.classifiers.AbstractClassifier;
@@ -54,23 +55,11 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
 
     @Override
     public String getPurposeString() {
-        return "Classifier from Weka";
+        return "Classifier from Meka";
     }
     
     public WEKAClassOption baseLearnerOption = new WEKAClassOption("baseLearner", 'l',
             "Classifier to train.", weka.classifiers.Classifier.class, "meka.classifiers.multilabel.incremental.BRUpdateable");
-
-	//TODO
-    //public IntOption widthOption = new IntOption("width",
-    //       'w', "Size of Window for training learner.", 0, 0, Integer.MAX_VALUE);
-
-    public IntOption widthInitOption = new IntOption("widthInit",
-            'i', "Size of first Window for training learner.", 1000, 0, Integer.MAX_VALUE);
-
-    public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
-            'f',
-            "How many instances between samples of the learning performance.",
-            0, 0, Integer.MAX_VALUE);
 
     protected Classifier classifier;
 
@@ -125,6 +114,7 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
 				this.isClassificationEnabled = true;
 			} else {
 				this.isBufferStoring = true;
+				System.out.println("[ERROR] Please use an Updateable Classifier");
 			}
 		}
 		numberInstances++;
@@ -154,22 +144,29 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
 		MultiLabelPrediction prediction=null;
 
 		if (isClassificationEnabled == true){ 
+
 			prediction = new MultiLabelPrediction(L);
 			double votes[] = new double[L];
 			try {
 				votes = this.classifier.distributionForInstance(inst);
 			} catch(Exception e) {
-				System.err.println("");
+				System.err.println("[ERROR] Failed to get votes from multi-label classifier.");
 				e.printStackTrace();
 				System.exit(1);
 			}
+
+			//System.out.println("[votes] "+Arrays.toString(votes));
 			for (int j = 0; j < L; j++) {
-				prediction.setVote(j, 0, 1.-votes[j]);
-				prediction.setVote(j, 1, votes[j]);
+				int pos = (votes[j] >= 0.5) ? 1 : 0;
+				prediction.setVotes(j, new double[]{1.-votes[j],votes[j]});
 			}
+			//System.out.println("[pred]  "+prediction);
+
+		}
+		else{
+			//System.out.println("Classification not enableed!");
 		}
 		
-		//System.out.println(""+prediction);
 		return prediction;
 	}
 
