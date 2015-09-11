@@ -19,6 +19,8 @@
  */
 package moa.streams.filters;
 
+import com.yahoo.labs.samoa.instances.Instance;
+import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.streams.ExampleStream;
@@ -76,4 +78,15 @@ public abstract class AbstractStreamFilter extends AbstractOptionHandler
      * <code>restart</code> uses <code>restartImpl</code> in <code>AbstractStreamFilter</code>.
      */
     protected abstract void restartImpl();
+    
+    @Override
+    public InstanceExample nextInstance() {
+         Instance inst = (Instance) ((Instance) this.inputStream.nextInstance().getData()).copy();
+         return new InstanceExample(filterInstance(inst));
+    }
+    
+    @Override
+    public Instance filterInstance(Instance inst) {
+        return inst;
+    }
 }
