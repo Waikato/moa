@@ -82,14 +82,6 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 	//region ================ OPTIONS ================
 
-	//	public ClassOption splitCriterionOption = new ClassOption(
-	//			"splitCriterion",
-	//			's',
-	//			"Split criterion to use.",
-	//			SplitCriterion.class,
-	//			"moa.classifiers.core.splitcriteria.VarianceReductionSplitCriterion");
-	// TODO not used at the moment, consider later when the implementation catches up	
-
 	public IntOption gracePeriodOption = new IntOption(
 			"gracePeriod",
 			'g',
@@ -313,10 +305,10 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		 */
 		public void learnFromInstance(MultiLabelInstance inst, double[] prediction, boolean growthAllowed) {
 			// Update the statistics for this node
-			// number of instances passing through the node
 			double[] predictionP = tree.buildingModelTree() ? getPredictionModel(inst) : null;
 			double[] predictionM = getPredictionTargetMean(inst);
 
+			// number of instances passing through the node
 			examplesSeen += inst.weight();
 
 			for (int i = 0; i < tree.getModelContext().numOutputAttributes(); i++) {
@@ -618,10 +610,6 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		public MultitargetPerceptron(ISOUPTree tree, MultitargetPerceptron original) {
 			this.tree = tree;
 			weights = original.weights.clone();
-			// TODO check if this is necessary
-//			for (int i = 0; i < this.tree.getModelContext().numOutputAttributes(); i++) {
-//				weights[i] = (DoubleVector) original.weights[i].copy();
-//			}
 		}
 
 		public MultitargetPerceptron(ISOUPTree tree) {
@@ -691,7 +679,6 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			}
 		}
 
-		
 		/**
 		 * Output the prediction made by this perceptron on the given instance
 		 */
@@ -730,352 +717,21 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		public void getModelDescription(StringBuilder out, int indent) {
 			for (int i = 0; i < tree.getModelContext().numOutputAttributes(); i++) {
 				StringUtils.appendIndented(out, indent, " [" + tree.getModelContext().outputAttribute(i).name() + "]");
-				//if (getModelContext() != null) {
-				//for (int j = 0; j < getModelContext().numAttributes() - 1; j++) {
-				//					if (getModelContext().attribute(j).isNumeric()) {
-				//						// TODO
-				//						//out.append((j == 0 || weightAttribute.getValue(j) < 0) ? " " : " + ");
-				//						//out.append(String.format("%.4f", weightAttribute.getValue(j)));
-				//						out.append(" * ");
-				//						out.append(getAttributeNameString(j));
-				//					}
-				//}
-				//out.append(" + " + weightAttribute.getValue((getModelContext().numAttributes() - 1)));
-				//}
+				if (getModelContext() != null) {
+				for (int j = 0; j < getModelContext().numOutputAttributes(); j++) {
+									if (getModelContext().attribute(j).isNumeric()) {
+										out.append((j == 0 || weights[i][j] < 0) ? " " : " + ");
+										out.append(String.format("%.4f", weights[i][j]));
+										out.append(" * ");
+										out.append(getAttributeNameString(j));
+									}
+				}
+				out.append(" + " + weights[i][getModelContext().numOutputAttributes()]);
+				}
+				StringUtils.appendNewline(out);
 			}
-			StringUtils.appendNewline(out);
 		}
 	}
-
-	//	public class SOPNumericAttributeClassObserver implements MultitargetAttributeClassObserver {
-	//
-	//		private static final long serialVersionUID = 1L;
-	//
-	//		protected class Node implements Serializable {
-	//
-	//			private static final long serialVersionUID = 1L;
-	//
-	//			// The split point to use
-	//			public double cut_point;
-	//
-	//			// E-BST statistics
-	//			public double leftCount = 0;
-	//			public double rightCount = 0;
-	//			public DoubleVector leftSums = new DoubleVector();
-	//			public DoubleVector leftSquares = new DoubleVector();
-	//			public DoubleVector rightSums = new DoubleVector();
-	//			public DoubleVector rightSquares = new DoubleVector();
-	//
-	//			// Child nodes
-	//			public Node left;
-	//			public Node right;
-	//
-	//			public Node(double val, DoubleVector labelVector, double weight) {
-	//				cut_point = val;
-	//				leftCount += 1;
-	//				for (int i = 0; i < labelVector.numValues(); i++) {
-	//					leftSums.addToValue(i, labelVector.getValue(i));
-	//					leftSquares.addToValue(i, labelVector.getValue(i) * labelVector.getValue(i));
-	//				}
-	//			}
-	//
-	//			/**
-	//			 * Insert a new value into the tree, updating both the sum of values and
-	//			 * sum of squared values arrays
-	//			 */
-	//			public void insertValue(double val, DoubleVector labelVector, double weight) {
-	//
-	//				// If the new value equals the value stored in a node, update
-	//				// the left (<=) node information
-	//				if (val == cut_point) {
-	//					leftCount += 1;
-	//					for (int i = 0; i < labelVector.numValues(); i++) {
-	//						leftSums.addToValue(i, labelVector.getValue(i));
-	//						leftSquares.addToValue(i, labelVector.getValue(i) * labelVector.getValue(i));
-	//					}
-	//				} // If the new value is less than the value in a node, update the
-	//				// left distribution and send the value down to the left child node.
-	//				// If no left child exists, create one
-	//				else if (val <= cut_point) {
-	//
-	//					leftCount += 1;
-	//					for (int i = 0; i < labelVector.numValues(); i++) {
-	//						leftSums.addToValue(i, labelVector.getValue(i));
-	//						leftSquares.addToValue(i, labelVector.getValue(i) * labelVector.getValue(i));
-	//					}
-	//					if (left == null) {
-	//						left = new Node(val, labelVector, weight);
-	//					} else {
-	//						left.insertValue(val, labelVector, weight);
-	//					}
-	//				} // If the new value is greater than the value in a node, update the
-	//				// right (>) distribution and send the value down to the right child node.
-	//				// If no right child exists, create one
-	//				else { // val > cut_point
-	//					rightCount += 1;
-	//					for (int i = 0; i < labelVector.numValues(); i++) {
-	//						rightSums.addToValue(i, labelVector.getValue(i));
-	//						rightSquares.addToValue(i, labelVector.getValue(i) * labelVector.getValue(i));
-	//					}
-	//					if (right == null) {
-	//						right = new Node(val, labelVector, weight);
-	//					} else {
-	//						right.insertValue(val, labelVector, weight);
-	//					}
-	//				}
-	//			}
-	//		}
-	//
-	//		// Root node of the E-BST structure for this attribute
-	//		protected Node root = null;
-	//
-	//		// Global variables for use in the FindBestSplit algorithm
-	//		DoubleVector sumsTotalLeft;
-	//		DoubleVector sumsTotalRight;
-	//		DoubleVector squaresTotalLeft;
-	//		DoubleVector squaresTotalRight;
-	//		double countRightTotal;
-	//		double countLeftTotal;
-	//
-	//		public void observeAttributeClass(double attVal, double classVal, double weight) {
-	//			// DEPRECATED (used for single-target cases)
-	//
-	//			//	        if (Double.isNaN(attVal)) { //Instance.isMissingValue(attVal)
-	//			//	        } else {
-	//			//	            if (root == null) {
-	//			//	                root = new Node(attVal, classVal, weight);
-	//			//	            } else {
-	//			//	                root.insertValue(attVal, classVal, weight);
-	//			//	            }
-	//			//	        }
-	//		}
-	//
-	//		public void observeAttributeClass(double attVal, DoubleVector classVector, double weight) {
-	//			if (Double.isNaN(attVal)) { //Instance.isMissingValue(attVal)
-	//			} else {
-	//				if (root == null) {
-	//					root = new Node(attVal, classVector, weight);
-	//				} else {
-	//					root.insertValue(attVal, classVector, weight);
-	//				}
-	//			}
-	//
-	//		}
-	//
-	//		public double probabilityOfAttributeValueGivenClass(double attVal, int classVal) {
-	//			// TODO: NaiveBayes broken until implemented
-	//			return 0.0;
-	//		}
-	//
-	//		@Override
-	//		public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(SplitCriterion criterion, double examlpesSeen, DoubleVector preSplitSums, DoubleVector preSplitSquares, int numTargets, int attIndex, boolean binaryOnly) {
-	//			// Initialise global variables
-	//			sumsTotalLeft = new DoubleVector();
-	//			sumsTotalRight = preSplitSums;
-	//			squaresTotalLeft = new DoubleVector();
-	//			squaresTotalRight = preSplitSquares;
-	//			countLeftTotal = 0;
-	//			countRightTotal = examplesSeen;
-	//
-	//			// Hardcoded for ICV reduction
-	//			double preSplitVariance = 0;
-	//			for (int i = 0; i < numTargets; i++) {
-	//				preSplitVariance += (preSplitSquares.getValue(i) - examplesSeen * preSplitSums.getValue(i) * preSplitSums.getValue(i)) / examplesSeen;
-	//			}
-	//
-	//			return searchForBestSplitOption(root, null, preSplitVariance, attIndex, numTargets);
-	//		}
-	//
-	//		public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(SplitCriterion criterion, double[] preSplitDist, int attIndex, boolean binaryOnly) {
-	//			// DEPRECATED
-	//			return null;
-	//		}
-	//
-	//		/**
-	//		 * Implementation of the FindBestSplit algorithm from E.Ikonomovska et al.
-	//		 */
-	//		protected AttributeSplitSuggestion searchForBestSplitOption(Node currentNode, AttributeSplitSuggestion currentBestOption, double preSplitVariance, int attIndex, int numTargets) {
-	//			// Return null if the current node is null or we have finished looking through all the possible splits
-	//			if (currentNode == null || countRightTotal == 0.0) {
-	//				return currentBestOption;
-	//			}
-	//
-	//			if (currentNode.left != null) {
-	//				currentBestOption = searchForBestSplitOption(currentNode.left, currentBestOption, preSplitVariance, attIndex, numTargets);
-	//			}
-	//
-	//			sumsTotalLeft.addValues(currentNode.leftSums);
-	//			sumsTotalRight.subtractValues(currentNode.leftSums);
-	//			squaresTotalLeft.addValues(currentNode.leftSquares);
-	//			squaresTotalRight.subtractValues(currentNode.leftSquares);
-	//			countLeftTotal += currentNode.leftCount;
-	//			countRightTotal -= currentNode.leftCount;
-	//
-	//			//	        double[][] postSplitDists = new double[][]{{countLeftTotal, sumTotalLeft, sumSqTotalLeft}, {countRightTotal, sumTotalRight, sumSqTotalRight}};
-	//			//	        double[] preSplitDist = new double[]{(countLeftTotal + countRightTotal), (sumTotalLeft + sumTotalRight), (sumSqTotalLeft + sumSqTotalRight)};
-	//			//	        double merit = criterion.getMeritOfSplit(preSplitDist, postSplitDists);
-	//
-	//			double postSplitVariance = 0;
-	//			for (int i = 0; i < numTargets; i++) {
-	//				postSplitVariance += (squaresTotalLeft.getValue(i) - examplesSeen * sumsTotalLeft.getValue(i) * sumsTotalLeft.getValue(i)) / countLeftTotal;
-	//				postSplitVariance += (squaresTotalRight.getValue(i) - examplesSeen * sumsTotalRight.getValue(i) * sumsTotalRight.getValue(i)) / countRightTotal;
-	//			}
-	//
-	//			double merit = preSplitVariance - postSplitVariance;
-	//
-	//			if ((currentBestOption == null) || (merit > currentBestOption.merit)) {
-	//				currentBestOption = new AttributeSplitSuggestion(
-	//						new NumericAttributeBinaryTest(attIndex,
-	//								currentNode.cut_point, true), new double[0][0], merit);
-	//
-	//			}
-	//
-	//			if (currentNode.right != null) {
-	//				currentBestOption = searchForBestSplitOption(currentNode.right, currentBestOption, preSplitVariance, attIndex, numTargets);
-	//			}
-	//
-	//			sumsTotalLeft.subtractValues(currentNode.leftSums);
-	//			sumsTotalRight.addValues(currentNode.leftSums);
-	//			squaresTotalLeft.subtractValues(currentNode.leftSquares);
-	//			squaresTotalRight.addValues(currentNode.leftSquares);
-	//			countLeftTotal -= currentNode.leftCount;
-	//			countRightTotal += currentNode.leftCount;
-	//
-	//			return currentBestOption;
-	//		}
-	//
-	//		/**
-	//		 * A method to remove all nodes in the E-BST in which it and all it's
-	//		 * children represent 'bad' split points
-	//		 */
-	//		public void removeBadSplits(SplitCriterion criterion, double lastCheckRatio, double lastCheckSDR, double lastCheckE, int numTargets) {
-	//			removeBadSplitNodes(criterion, root, lastCheckRatio, lastCheckSDR, lastCheckE, numTargets);
-	//		}
-	//
-	//		/**
-	//		 * Recursive method that first checks all of a node's children before
-	//		 * deciding if it is 'bad' and may be removed
-	//		 */
-	//		private boolean removeBadSplitNodes(SplitCriterion criterion, Node currentNode, double lastCheckRatio, double lastCheckSDR, double lastCheckE, int numTargets) {
-	//			boolean isBad = false;
-	//
-	//			if (currentNode == null) {
-	//				return true;
-	//			}
-	//
-	//			if (currentNode.left != null) {
-	//				isBad = removeBadSplitNodes(criterion, currentNode.left, lastCheckRatio, lastCheckSDR, lastCheckE, numTargets);
-	//			}
-	//
-	//			if (currentNode.right != null && isBad) {
-	//				isBad = removeBadSplitNodes(criterion, currentNode.left, lastCheckRatio, lastCheckSDR, lastCheckE, numTargets);
-	//			}
-	//
-	//			if (isBad) {
-	//
-	//				double preSplitVariance = 0;
-	//				for (int i = 0; i < numTargets; i++) {
-	//					preSplitVariance += (currentNode.leftSquares.getValue(i) + currentNode.rightSquares.getValue(i) - examplesSeen * 
-	//							(currentNode.leftSums.getValue(i) + currentNode.rightSums.getValue(i)) * (currentNode.leftSums.getValue(i) + currentNode.rightSums.getValue(i))) / examplesSeen;
-	//				}
-	//
-	//				double postSplitVariance = 0;
-	//				for (int i = 0; i < numTargets; i++) {
-	//					postSplitVariance += (currentNode.leftSquares.getValue(i) - currentNode.leftCount * currentNode.leftSums.getValue(i) * currentNode.leftSums.getValue(i)) / currentNode.leftCount;
-	//					postSplitVariance += (currentNode.rightSquares.getValue(i) - currentNode.rightCount * currentNode.rightSums.getValue(i) * currentNode.rightSums.getValue(i)) / currentNode.rightCount;
-	//				}
-	//
-	//
-	//				//	            double[][] postSplitDists = new double[][]{{currentNode.leftStatistics.getValue(0), currentNode.leftStatistics.getValue(1), currentNode.leftStatistics.getValue(2)}, {currentNode.rightStatistics.getValue(0), currentNode.rightStatistics.getValue(1), currentNode.rightStatistics.getValue(2)}};
-	//				//	            double[] preSplitDist = new double[]{(currentNode.leftStatistics.getValue(0) + currentNode.rightStatistics.getValue(0)), (currentNode.leftStatistics.getValue(1) + currentNode.rightStatistics.getValue(1)), (currentNode.leftStatistics.getValue(2) + currentNode.rightStatistics.getValue(2))};
-	//				//	            double merit = criterion.getMeritOfSplit(preSplitDist, postSplitDists);
-	//				double merit = preSplitVariance - postSplitVariance;
-	//
-	//				if ((merit / lastCheckSDR) < (lastCheckRatio - (2 * lastCheckE))) {
-	//					currentNode = null;
-	//					return true;
-	//				}
-	//			}
-	//
-	//			return false;
-	//		}
-	//
-	//		@Override
-	//		public void getDescription(StringBuilder sb, int indent) {
-	//			// TODO Auto-generated method stub
-	//		}
-	//
-	//		protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
-	//			// TODO Auto-generated method stub
-	//		}
-	//
-	//		@Override
-	//		public void observeAttributeClass(double attVal, int classVal,
-	//				double weight) {
-	//			// TODO Auto-generated method stub
-	//
-	//		}
-	//
-	//		@Override
-	//		public void observeAttributeTarget(double attVal, double target) {
-	//			// TODO Auto-generated method stub
-	//
-	//		}
-	//
-	//		@Override
-	//		public String getPurposeString() {
-	//			// TODO Auto-generated method stub
-	//			return null;
-	//		}
-	//
-	//		@Override
-	//		public Options getOptions() {
-	//			// TODO Auto-generated method stub
-	//			return null;
-	//		}
-	//
-	//		@Override
-	//		public void prepareForUse() {
-	//			// TODO Auto-generated method stub
-	//
-	//		}
-	//
-	//		@Override
-	//		public void prepareForUse(TaskMonitor monitor,
-	//				ObjectRepository repository) {
-	//			// TODO Auto-generated method stub
-	//
-	//		}
-	//
-	//		@Override
-	//		public OptionHandler copy() {
-	//			// TODO Auto-generated method stub
-	//			return null;
-	//		}
-	//
-	//		@Override
-	//		public String getCLICreationString(Class<?> expectedType) {
-	//			// TODO Auto-generated method stub
-	//			return null;
-	//		}
-	//
-	//		@Override
-	//		public int measureByteSize() {
-	//			// TODO Auto-generated method stub
-	//			return 0;
-	//		}
-	//
-	//
-	//
-	//		@Override
-	//		public void observeAttributeClassVector(double attVal,
-	//				DoubleVector classVector, double weight) {
-	//			// TODO Auto-generated method stub
-	//
-	//		}
-	//
-	//
-	//	}
 
 	//endregion ================ CLASSES ================
 
@@ -1085,7 +741,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 	public ISOUPTree() {}
 
 	public String getPurposeString() {
-		return "Implementation of the FIMT-DD tree as described by Ikonomovska et al.";
+		return "Implementation of the iSOUP-Tree algorithm as described by Osojnik et al.";
 	}
 
 	public void resetLearningImpl() {
