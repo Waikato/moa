@@ -100,17 +100,17 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			"Threshold below which a split will be forced to break ties.",
 			0.05, 0.0, 1.0);
 
-	public FloatOption PageHinckleyAlphaOption = new FloatOption(
-			"PageHinckleyAlpha",
-			'a',
-			"The alpha value to use in the Page Hinckley change detection tests.",
-			0.005, 0.0, 1.0);
-
-	public IntOption PageHinckleyThresholdOption = new IntOption(
-			"PageHinckleyThreshold",
-			'h',
-			"The threshold value to be used in the Page Hinckley change detection tests.",
-			50, 0, Integer.MAX_VALUE);
+//	public FloatOption PageHinckleyAlphaOption = new FloatOption(
+//			"PageHinckleyAlpha",
+//			'a',
+//			"The alpha value to use in the Page Hinckley change detection tests.",
+//			0.005, 0.0, 1.0);
+//
+//	public IntOption PageHinckleyThresholdOption = new IntOption(
+//			"PageHinckleyThreshold",
+//			'h',
+//			"The threshold value to be used in the Page Hinckley change detection tests.",
+//			50, 0, Integer.MAX_VALUE);
 
 	public FloatOption alternateTreeFadingFactorOption = new FloatOption(
 			"alternateTreeFadingFactor",
