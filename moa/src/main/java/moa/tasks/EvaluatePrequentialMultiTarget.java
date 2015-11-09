@@ -154,7 +154,6 @@ public class EvaluatePrequentialMultiTarget extends MultiTargetMainTask {
 		int secondsElapsed = 0;
 		monitor.setCurrentActivity("Evaluating learner...", -1.0);
 
-<<<<<<< HEAD
 		File dumpFile = this.dumpFileOption.getFile();
 		PrintStream immediateResultStream = null;
 		if (dumpFile != null) {
@@ -209,62 +208,6 @@ public class EvaluatePrequentialMultiTarget extends MultiTargetMainTask {
 				}
 				outputPredictionResultStream.println(prediction + "," + sb.toString());
 			}
-=======
-        File dumpFile = this.dumpFileOption.getFile();
-        PrintStream immediateResultStream = null;
-        if (dumpFile != null) {
-            try {
-                if (dumpFile.exists()) {
-                    immediateResultStream = new PrintStream(
-                            new FileOutputStream(dumpFile, true), true);
-                } else {
-                    immediateResultStream = new PrintStream(
-                            new FileOutputStream(dumpFile), true);
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(
-                        "Unable to open immediate result file: " + dumpFile, ex);
-            }
-        }
-        //File for output predictions
-        File outputPredictionFile = this.outputPredictionFileOption.getFile();
-        PrintStream outputPredictionResultStream = null;
-        if (outputPredictionFile != null) {
-            try {
-                if (outputPredictionFile.exists()) {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile, true), true);
-                } else {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile), true);
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(
-                        "Unable to open prediction result file: " + outputPredictionFile, ex);
-            }
-        }
-        boolean firstDump = true;
-        boolean preciseCPUTiming = TimingUtils.enablePreciseTiming();
-        long evaluateStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
-        long lastEvaluateStartTime = evaluateStartTime;
-        double RAMHours = 0.0;
-        while (stream.hasMoreInstances()
-                && ((maxInstances < 0) || (instancesProcessed < maxInstances))
-                && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
-            Example trainInst = stream.nextInstance();
-            Example testInst = (Example) trainInst; //.copy();
-            //testInst.setClassMissing();
-            //double[] prediction = learner.getVotesForInstance(testInst);
-            Prediction prediction = learner.getPredictionForInstance(testInst);
-            // Output prediction
-            if (outputPredictionFile != null) {
-            	StringBuilder sb = new StringBuilder();
-            	for (int i = 0; i < ((Instance) trainInst.getData()).numOutputAttributes(); i++) {
-            		sb.append("Out " + i + ": " + ((Instance) trainInst.getData()).valueOutputAttribute(i) + " ");
-            	}
-                outputPredictionResultStream.println(prediction + "," + sb.toString());
-            }
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 
 			//evaluator.addClassificationAttempt(trueClass, prediction, testInst.weight());
 			evaluator.addResult(testInst, prediction);

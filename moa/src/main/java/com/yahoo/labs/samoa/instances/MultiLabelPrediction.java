@@ -32,10 +32,7 @@ public class MultiLabelPrediction implements Prediction {
 	public MultiLabelPrediction(DoubleVector[] prediction) {
 		this.prediction = prediction;
 	}
-	
-	public MultiLabelPrediction(DoubleVector[] prediction) {
-		this.prediction = prediction;
-	}
+
 	
 	@Override
 	public int numOutputAttributes() {
