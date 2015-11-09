@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>nz.ac.waikato.cms.moa</groupId>
+    <artifactId>moa-pom</artifactId>
+    <version>2012.09-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>weka-package</artifactId>
+  <packaging>jar</packaging>
+
+  <name>MOA: WEKA Package</name>
+  <description>
+  Massive On-line Analysis is an environment for massive data mining. MOA provides a framework for data stream mining and includes tools for evaluation and a collection of machine learning algorithms. Related to the WEKA project, also written in Java, while scaling to more demanding problems.
+  This artifact enables you to use MOA from within WEKA.
+  </description>
+  <url>http://moa.cms.waikato.ac.nz/</url>
+  <organization>
+    <name>University of Waikato, Hamilton, NZ</name>
+    <url>http://www.waikato.ac.nz/</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>GNU General Public License 3</name>
+      <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>abifet</id>
+      <name>Albert Bifet</name>
+      <email>abifet@waikato.ac.nz</email>
+    </developer>
+    <developer>
+      <id>fracpete</id>
+      <name>Peter Reutemann</name>
+      <email>fracpete@waikato.ac.nz</email>
+    </developer>
+  </developers>
+
+  <dependencies>
+    <dependency>
+      <groupId>nz.ac.waikato.cms.moa</groupId>
+      <artifactId>moa</artifactId>
+      <version>[${project.version},)</version>
+    </dependency>
+  </dependencies>
+</project>
