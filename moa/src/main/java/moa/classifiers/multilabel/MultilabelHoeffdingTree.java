@@ -46,9 +46,9 @@ import moa.core.Example;
  * 
  */ 
 public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implements MultiLabelLearner, MultiTargetRegressor { 
-// Needs to use InfoGainSplitCriterionMultiLabel, since multilabel entropy is calculated in a different way 
-// Trains a mlinstance adding statistics of several class values and training node classifiers
-// Get votes from the training node classifier
+	// Needs to use InfoGainSplitCriterionMultiLabel, since multilabel entropy is calculated in a different way 
+	// Trains a mlinstance adding statistics of several class values and training node classifiers
+	// Get votes from the training node classifier
 
 	private static final long serialVersionUID = 1L;
 
@@ -56,19 +56,19 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 
 	// Converts multi-label format to single-label format
 	//protected Converter converter = null;
-	
+
 	@Override
 	public void setModelContext(InstancesHeader raw_header) {
 		//set the multilabel model context
 		this.modelContext = raw_header;
 	}
 
-   	@Override
+	@Override
 	public Prediction getPredictionForInstance(Example<Instance> example) {
 		return getPredictionForInstance((MultiLabelInstance)example.getData());
 	} 
-    
-  @Override
+
+	@Override
 	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
 
 		double[] predictionArray = this.getVotesForInstance(instance);
@@ -100,17 +100,17 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 			}
 		}
 	}
-	
+
 	// It uses classifier at nodes, and to be able to train with several class values
 	public class MultilabelLearningNodeClassifier extends LearningNodeClassifier {
-		
+
 		//protected Classifier classifier; 
 
 		private static final long serialVersionUID = 1L;
 
 		public MultilabelLearningNodeClassifier(double[] initialClassObservations, Classifier cl, MultilabelHoeffdingTree ht ) {
 			super(initialClassObservations);
-		
+
 			if (cl== null) {
 				this.classifier = ((Classifier) getPreparedClassOption(ht.learnerOption)).copy();
 				this.classifier.resetLearning();
@@ -136,13 +136,13 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		public void disableAttribute(int attIndex) {
 			// should not disable poor atts - they are used in NB calc
 		}
-		
+
 		public Classifier getClassifier() {
 			return this.classifier;
 		}
-		
+
 		//It uses different class values
-	    @Override
+		@Override
 		public void learnFromInstance(Instance mlinst, HoeffdingTree ht) {
 			this.classifier.trainOnInstance(mlinst);  
 			MultilabelHoeffdingTree mht = ((MultilabelHoeffdingTree) ht);
@@ -152,7 +152,7 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 			}
 			Instance inst = mlinst; //mht.converter.formatInstance(mlinst);
 			for (int i = 0; i < inst.numInputAttributes(); i++) {
-			//for (int i = 1; i < inst.numAttributes(); i++) {
+				//for (int i = 1; i < inst.numAttributes(); i++) {
 				int instAttIndex = inst.inputAttribute(i).index(); //modelAttIndexToInstanceAttIndex(i, inst);
 				AttributeClassObserver obs = this.attributeObservers.get(instAttIndex); //i
 				if (obs == null) {
@@ -176,13 +176,13 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		// Create new Learning Node null
 		return new MultilabelLearningNodeClassifier(initialClassObservations,null,this);
 	}
-	
+
 	//@Override
 	protected LearningNode newLearningNode(double[] initialClassObservations, Classifier cl) {
 		// Create new Learning Node
 		return new MultilabelLearningNodeClassifier(initialClassObservations,cl,this);
 	}
-	
+
 	//It uses MultilabelInactiveLearningNode since there are several class values
 	@Override
 	protected void deactivateLearningNode(ActiveLearningNode toDeactivate,
@@ -229,21 +229,21 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		// Return empty array (this should only happen once! -- before we build the root node).
 		return new double[this.m_L];
 	}
-        
+
 
 	@Override
 	public void trainOnInstanceImpl(MultiLabelInstance instance) {
-            trainOnInstanceImpl((Instance) instance);
-        }
-        
-        private List<Integer> getRelevantLabels(Instance x) {
-        List<Integer> classValues = new LinkedList<Integer>();
-        //get all class attributes
-        for (int j = 0; j < m_L; j++) {
-            if (x.value(j) > 0.0) {
-                classValues.add(j);
-            }
-        }
-        return classValues;
-    }
+		trainOnInstanceImpl((Instance) instance);
+	}
+
+	private List<Integer> getRelevantLabels(Instance x) {
+		List<Integer> classValues = new LinkedList<Integer>();
+		//get all class attributes
+		for (int j = 0; j < m_L; j++) {
+			if (x.value(j) > 0.0) {
+				classValues.add(j);
+			}
+		}
+		return classValues;
+	}
 }
