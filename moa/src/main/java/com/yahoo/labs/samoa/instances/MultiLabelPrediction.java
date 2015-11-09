@@ -29,6 +29,10 @@ public class MultiLabelPrediction implements Prediction {
 			prediction[i]= new DoubleVector();
 	}
 	
+	public MultiLabelPrediction(DoubleVector[] prediction) {
+		this.prediction = prediction;
+	}
+	
 	@Override
 	public int numOutputAttributes() {
 		return prediction.length;
@@ -94,6 +98,10 @@ public class MultiLabelPrediction implements Prediction {
     @Override
     public int size() {
         return prediction.length;
+    }
+    
+    public DoubleVector[] getPrediction() {
+    	return prediction;
     }
 
 }
