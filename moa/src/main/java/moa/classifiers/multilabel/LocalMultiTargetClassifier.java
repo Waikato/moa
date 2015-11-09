@@ -1,8 +1,12 @@
 package moa.classifiers.multilabel;
 
+<<<<<<< HEAD
 import java.util.ArrayList;
+=======
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
@@ -17,13 +21,15 @@ import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiLabelClassifier;
 import moa.classifiers.MultiTargetRegressor;
+import moa.classifiers.core.splitcriteria.SplitCriterion;
+import moa.classifiers.trees.FIMTDD;
+import moa.core.DoubleVector;
 import moa.core.Measurement;
+import moa.learners.Learner;
 import moa.options.ClassOption;
 
 public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 		implements MultiLabelClassifier, MultiTargetRegressor {
-
-	private static final long serialVersionUID = 1L;
 
 	public ClassOption classifierOption = new ClassOption(
 			"classifier",
@@ -32,11 +38,17 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 			Classifier.class,
 			"moa.classifiers.trees.FIMTDD");
 	
+<<<<<<< HEAD
 	ArrayList<Classifier> classifiers = null;
 	ArrayList<InstancesHeader> headers = null;
+=======
+	LinkedList<Classifier> classifiers = null;
+	LinkedList<InstancesHeader> headers = null;
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 	
 	@Override
 	public boolean isRandomizable() {
+		// TODO Auto-generated method stub
 		return true;
 	}
 
@@ -49,7 +61,11 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 	
 	private void makeHeaders() {
 		if (headers == null) {
+<<<<<<< HEAD
 			headers = new ArrayList<InstancesHeader>();
+=======
+			headers = new LinkedList<InstancesHeader>();
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 			for (int target = 0; target < getModelContext().numOutputAttributes(); target++) {
 				List<Attribute> attributes = new LinkedList<Attribute>();
 				List<Integer> indexValues = new LinkedList<Integer>();
@@ -79,6 +95,7 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 	
 	@Override
 	public void trainOnInstanceImpl(MultiLabelInstance instance) {
+		// TODO Auto-generated method stub
 		initializeClassifiers();
 		
 		for (int j = 0; j < instance.numberOutputTargets(); j++) {
@@ -95,6 +112,10 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 		MultiLabelPrediction prediction = new MultiLabelPrediction(getModelContext().numOutputAttributes());
 		for (int j = 0; j < inst.numberOutputTargets(); j++) {
 			Instance STInst = getSTInstance(inst, j);
+<<<<<<< HEAD
+=======
+			
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 			prediction.setVote(j, 1, classifiers.get(j).getVotesForInstance(STInst)[0]);
 		}
 		return prediction;
@@ -110,9 +131,15 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 		this.classifierRandom.setSeed(1234);
 		if (classifiers == null) {
 			makeHeaders();
+<<<<<<< HEAD
 			classifiers = new ArrayList<Classifier>();
 			for (int i = 0; i < getModelContext().numOutputAttributes(); i++) {
 				Classifier learner = ((Classifier) getPreparedClassOption(this.classifierOption)).copy();
+=======
+			classifiers = new LinkedList<Classifier>();
+			for (int i = 0; i < getModelContext().numOutputAttributes(); i++) {
+				Classifier learner = (Classifier) getPreparedClassOption(this.classifierOption);
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 				classifiers.add(learner);
 				learner.resetLearning();
 				((AbstractClassifier) learner).classifierRandom = this.classifierRandom;
