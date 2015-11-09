@@ -29,6 +29,10 @@ public class MultiLabelPrediction implements Prediction, Serializable {
 		for (int i=0; i<numOutputAttributes;i++)
 			prediction[i]= new DoubleVector();
 	}
+
+	public MultiLabelPrediction(DoubleVector[] prediction) {
+		this.prediction = prediction;
+	}
 	
 	@Override
 	public int numOutputAttributes() {
@@ -107,6 +111,10 @@ public class MultiLabelPrediction implements Prediction, Serializable {
     @Override
     public int size() {
         return prediction.length;
+    }
+    
+    public DoubleVector[] getPrediction() {
+    	return prediction;
     }
 
 }
