@@ -28,6 +28,8 @@ import moa.options.ClassOption;
 public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 		implements MultiLabelClassifier, MultiTargetRegressor {
 
+	private static final long serialVersionUID = 1L;
+
 	public ClassOption classifierOption = new ClassOption(
 			"classifier",
 			'c',
@@ -100,7 +102,6 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 		MultiLabelPrediction prediction = new MultiLabelPrediction(getModelContext().numOutputAttributes());
 		for (int j = 0; j < inst.numberOutputTargets(); j++) {
 			Instance STInst = getSTInstance(inst, j);
-			
 			prediction.setVote(j, 1, classifiers.get(j).getVotesForInstance(STInst)[0]);
 		}
 		return prediction;

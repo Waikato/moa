@@ -35,8 +35,21 @@ import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
 import moa.core.AutoExpandVector;
 import moa.core.Measurement;
+=======
+<<<<<<< HEAD
+import moa.classifiers.trees.FIMTDD.InnerNode;
+import moa.classifiers.trees.FIMTDD.Node;
+import moa.core.AutoExpandVector;
+import moa.core.Measurement;
+import moa.core.StringUtils;
+=======
+import moa.core.AutoExpandVector;
+import moa.core.Measurement;
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
 
 /*
  * Implementation of ORTO, option trees for data streams.
@@ -119,9 +132,15 @@ public class ORTO extends FIMTDD implements Regressor {
 
 		public int directionForBestTree() {
 			int d = 0;
+<<<<<<< HEAD
+			double min = Double.MAX_VALUE;
+			for (int i = 0; i < numChildren(); i++) {
+				double tmp = getFFRatio(i);
+=======
 			double tmp = 0.0, min = Double.MAX_VALUE;
 			for (int i = 0; i < children.size(); i++) {
 				tmp = getFFRatio(i);
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 				if (tmp < min) {
 					min = tmp;
 					d = i;
@@ -130,22 +149,54 @@ public class ORTO extends FIMTDD implements Regressor {
 			return d;
 		}
 
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
 		public double getPrediction(Instance inst, ORTO tree) {
+=======
+<<<<<<< HEAD
+		public double getPrediction(Instance inst) {
+=======
+		public double getPrediction(Instance inst, ORTO tree) {
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
 			double[] predictions = new double[numChildren()];
 			for (int i = 0; i < numChildren(); i++) {
 				predictions[i] = getChild(i).getPrediction(inst);
 			}
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
 			return aggregate(predictions, tree);
 		}
 
 		private double aggregate(double[] predictions, ORTO tree) {
 			if (tree.optionNodeAggregationOption.getChosenIndex() == 0) { // Average
+=======
+<<<<<<< HEAD
+			return aggregate(predictions);
+		}
+
+		private double aggregate(double[] predictions) {
+			if (((ORTO) tree).optionNodeAggregationOption.getChosenIndex() == 0) { // Average
+=======
+			return aggregate(predictions, tree);
+		}
+
+		private double aggregate(double[] predictions, ORTO tree) {
+			if (tree.optionNodeAggregationOption.getChosenIndex() == 0) { // Average
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
 				double sum = 0.0;
 				for (int i = 0; i < predictions.length; i++) {
 					sum += predictions[i];
 				}
 				return sum / predictions.length;
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
 			} else if (tree.optionNodeAggregationOption.getChosenIndex() == 1) {
+=======
+<<<<<<< HEAD
+			} else if (((ORTO) tree).optionNodeAggregationOption.getChosenIndex() == 1) {
+=======
+			} else if (tree.optionNodeAggregationOption.getChosenIndex() == 1) {
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
 				int d = directionForBestTree();
 				return predictions[d];
 			} else {
@@ -160,6 +211,24 @@ public class ORTO extends FIMTDD implements Regressor {
 		protected boolean skipInLevelCount() {
 			return true;
 		}
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
+=======
+<<<<<<< HEAD
+		
+		@Override
+		public void describeSubtree(StringBuilder out, int indent) {
+			StringUtils.appendIndented(out, indent, "[option node]");
+			StringUtils.appendNewline(out);
+			for (int childIndex = 0; childIndex < children.size(); childIndex++) {
+				Node split = getChild(childIndex);
+				StringUtils.appendIndented(out, indent, "[" + childIndex + "]");
+				StringUtils.appendNewline(out);
+				split.describeSubtree(out, indent + 2);
+			}
+		}
+=======
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
 	}
 
 	//endregion ================ CLASSES ================
@@ -194,7 +263,15 @@ public class ORTO extends FIMTDD implements Regressor {
 			Node currentNode = node;
 			while (true) {
 				if (currentNode instanceof LeafNode) {
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
 					((LeafNode) currentNode).learnFromInstance(inst, growthAllowed);
+=======
+<<<<<<< HEAD
+					((LeafNode) currentNode).learnFromInstance(inst, growthAllowed, prediction);
+=======
+					((LeafNode) currentNode).learnFromInstance(inst, growthAllowed);
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
 					break;
 				} else {
 					currentNode.examplesSeen += inst.weight();
@@ -203,7 +280,15 @@ public class ORTO extends FIMTDD implements Regressor {
 					if (!inAlternate && iNode.alternateTree != null) {
 						boolean altTree = true;
 						double lossO = Math.pow(inst.classValue() - prediction, 2);
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
 						double lossA = Math.pow(inst.classValue() - currentNode.alternateTree.getPrediction(inst), 2);
+=======
+<<<<<<< HEAD
+						double lossA = Math.pow(inst.classValue() - iNode.alternateTree.getPrediction(inst), 2);
+=======
+						double lossA = Math.pow(inst.classValue() - currentNode.alternateTree.getPrediction(inst), 2);
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
 						
 						// Loop for compatibility with bagging methods
 						for (int i = 0; i < inst.weight(); i++) {
@@ -223,7 +308,15 @@ public class ORTO extends FIMTDD implements Regressor {
 							iNode.previousWeight = iNode.lossExamplesSeen;
 							if (Qi > 0) {
 								// Switch the subtrees
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
 								Node parent = currentNode.parent;
+=======
+<<<<<<< HEAD
+								Node parent = iNode.getParent();
+=======
+								Node parent = currentNode.parent;
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
 								
 								if (parent != null) {
 									Node replacementTree = iNode.alternateTree;
@@ -233,7 +326,15 @@ public class ORTO extends FIMTDD implements Regressor {
 									treeRoot = iNode.alternateTree;
 									treeRoot.restartChangeDetection();
 								}
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
 								optionNodeCount += currentNode.alternateTree.getNumSubtrees() - currentNode.getNumSubtrees();
+=======
+<<<<<<< HEAD
+								optionNodeCount += iNode.alternateTree.getNumSubtrees() - iNode.getNumSubtrees();
+=======
+								optionNodeCount += currentNode.alternateTree.getNumSubtrees() - currentNode.getNumSubtrees();
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
 								removeExcessTrees();
 										
 								currentNode = iNode.alternateTree;
@@ -248,7 +349,15 @@ public class ORTO extends FIMTDD implements Regressor {
 						}
 						if (altTree) {
 							growthAllowed = false; // this is the growth of the original tree
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
 							processInstance(inst, currentNode.alternateTree, prediction, normalError, true, true); // growth is allowed in the alt tree
+=======
+<<<<<<< HEAD
+							processInstance(inst, iNode.alternateTree, prediction, normalError, true, true); // growth is allowed in the alt tree
+=======
+							processInstance(inst, currentNode.alternateTree, prediction, normalError, true, true); // growth is allowed in the alt tree
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
 						} else if (currentNode instanceof OptionNode) {
 							// this happens when an option node is switched into the tree
 							for (Node child : ((OptionNode) currentNode).children) {
@@ -276,18 +385,44 @@ public class ORTO extends FIMTDD implements Regressor {
 	}
 	
 	public void processInstanceOptionNode(Instance inst, OptionNode node, double prediction, double normalError, boolean growthAllowed, boolean inAlternate) {
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
+=======
+<<<<<<< HEAD
+		node.examplesSeen += inst.weight();
+		node.sumOfAbsErrors += inst.weight() * normalError;
+=======
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
 		if (node.changeDetection) {
 			double error = Math.abs(prediction - inst.classValue());
 			node.sumOfAbsErrors += error;
 			
 			if (((InnerNode) node).PageHinckleyTest(error - node.sumOfAbsErrors / node.examplesSeen + PageHinckleyAlphaOption.getValue(), PageHinckleyThresholdOption.getValue())) {
 				node.initializeAlternateTree();
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
+=======
+<<<<<<< HEAD
+				growthAllowed = false;
+=======
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
 			}
 		}
 
 		for (Node child : node.children) {
 			int index = node.getChildIndex(child);
 			double childPrediction = child.getPrediction(inst);
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
+=======
+<<<<<<< HEAD
+			node.optionFFSeen[index] = node.optionFFSeen[index] * optionFadingFactorOption.getValue() + 1;
+			node.optionFFSSL[index] = node.optionFFSSL[index] * optionFadingFactorOption.getValue() + Math.pow(childPrediction - inst.classValue(), 2);
+		}
+
+		for (Node child : node.children) {
+			processInstance(inst, child, child.getPrediction(inst), normalError, growthAllowed, inAlternate);
+=======
+>>>>>>> Revert "Removed merging artefacts"
 			// Loop for compatibility with bagging methods
 			for (int i = 0; i < inst.weight(); i++) {
 				node.optionFFSeen[index] = node.optionFFSeen[index] * optionFadingFactorOption.getValue() + 1;
@@ -297,6 +432,7 @@ public class ORTO extends FIMTDD implements Regressor {
 
 		for (Node child : node.children) {
 			processInstance(inst, child, child.getPrediction(inst), normalError, growthAllowed && node.alternateTree == null, inAlternate);
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 		}
 	}
 	
@@ -314,6 +450,10 @@ public class ORTO extends FIMTDD implements Regressor {
 	// region --- Processing methods
 
 	protected void attemptToSplit(LeafNode node, Node parent, int parentIndex) {
+<<<<<<< HEAD
+
+=======
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 		// Initialize the split criterion 
 		SplitCriterion splitCriterion = (SplitCriterion) getPreparedClassOption(splitCriterionOption);
 
@@ -321,7 +461,11 @@ public class ORTO extends FIMTDD implements Regressor {
 		AttributeSplitSuggestion[] bestSplitSuggestions = node.getBestSplitSuggestions(splitCriterion);
 		List<AttributeSplitSuggestion> acceptedSplits = new LinkedList<AttributeSplitSuggestion>();
 		Arrays.sort(bestSplitSuggestions);
+<<<<<<< HEAD
+		
+=======
 
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 		// Declare a variable to determine the number of splits to be performed
 		int numSplits = 0;
 
@@ -339,6 +483,13 @@ public class ORTO extends FIMTDD implements Regressor {
 			AttributeSplitSuggestion bestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1];
 			AttributeSplitSuggestion secondBestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 2];
 
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
+=======
+<<<<<<< HEAD
+			
+=======
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
 			// If the upper bound of the sample mean for the ratio of SDR(best suggestion) to SDR(second best suggestion),
 			// as determined using the Hoeffding bound, is less than 1, then the true mean is also less than 1, and thus at this
 			// particular moment of observation the bestSuggestion is indeed the best split option with confidence 1-delta, and
@@ -350,12 +501,30 @@ public class ORTO extends FIMTDD implements Regressor {
 				numSplits = 1;
 				acceptedSplits.add(bestSuggestion);
 			} else if (numTrees < maxTreesOption.getValue() && node.getLevel() <= maxOptionLevelOption.getValue()) {
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
+				for (AttributeSplitSuggestion suggestion : bestSplitSuggestions) {
+=======
+<<<<<<< HEAD
+				for (int i = 0; i < bestSplitSuggestions.length; i++) {
+					AttributeSplitSuggestion suggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1 - i];
+>>>>>>> Revert "Removed merging artefacts"
+					if (suggestion.merit / bestSuggestion.merit >= 1 - hoeffdingBound) {
+						numSplits++;
+						acceptedSplits.add(suggestion);
+					}
+				}
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
+=======
+				
+=======
 				for (AttributeSplitSuggestion suggestion : bestSplitSuggestions) {
 					if (suggestion.merit / bestSuggestion.merit >= 1 - hoeffdingBound) {
 						numSplits++;
 						acceptedSplits.add(suggestion);
 					}
 				}
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
 			} else if (hoeffdingBound < tieThresholdOption.getValue()) {
 				numSplits = 1;
 				acceptedSplits.add(bestSplitSuggestions[0]);
@@ -374,7 +543,11 @@ public class ORTO extends FIMTDD implements Regressor {
 		if (numSplits > 0) {
 			double optionFactor = numSplits * Math.pow(optionDecayFactorOption.getValue(), (double) node.getLevel());
 
+<<<<<<< HEAD
+			if (numSplits == 1 || optionFactor < 2.0 || maxTreesOption.getValue() - numTrees <= 0) {
+=======
 			if (numSplits == 1 || optionFactor < 2.0 || maxTreesOption.getValue() - numTrees <= 1) {
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 				AttributeSplitSuggestion splitDecision = acceptedSplits.get(0);
 				SplitNode newSplit = newSplitNode(splitDecision.splitTest);
 				for (int i = 0; i < splitDecision.numSplits(); i++) {
@@ -385,10 +558,25 @@ public class ORTO extends FIMTDD implements Regressor {
 				leafNodeCount--;
 				innerNodeCount++;
 				leafNodeCount += splitDecision.numSplits();
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
+				if (parent == null) {
+=======
+<<<<<<< HEAD
+				if (parent == null && node.originalNode == null) {
+>>>>>>> Revert "Removed merging artefacts"
+					treeRoot = newSplit;
+				} else {
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
+					parent.setChild(parent.getChildIndex(node), newSplit);
+=======
+					parent.setChild(parentIndex, newSplit);
+=======
 				if (parent == null) {
 					treeRoot = newSplit;
 				} else {
 					parent.setChild(parent.getChildIndex(node), newSplit);
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
 					newSplit.setParent(parent);
 				}
 			} else {
@@ -422,7 +610,15 @@ public class ORTO extends FIMTDD implements Regressor {
 				if (parent == null) {
 					treeRoot = optionNode;
 				} else {
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
 					parent.setChild(parent.getChildIndex(node), optionNode);
+=======
+<<<<<<< HEAD
+					parent.setChild(parentIndex, optionNode);
+=======
+					parent.setChild(parent.getChildIndex(node), optionNode);
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
 					optionNode.setParent(parent);
 				}
 
@@ -505,4 +701,11 @@ public class ORTO extends FIMTDD implements Regressor {
 	// endregion --- Option tree methods
 	
 	//endregion ================ METHODS ================
+<<<<<<< HEAD
 }
+<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
+=======
+=======
+}
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+>>>>>>> Revert "Removed merging artefacts"
