@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="moa/src/examples/java"/>
+	<classpathentry kind="src" path="moa/src/main/java"/>
+	<classpathentry kind="src" path="moa/src/test/java"/>
+	<classpathentry kind="lib" path="weka-package/lib/sizeofag-1.0.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/meka"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/weka-dev"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/home/aljazo/Work/JARs/diffutils-1.2.1.jar"/>
+	<classpathentry kind="output" path="moa/target/classes"/>
+</classpath>
