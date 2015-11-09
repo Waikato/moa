@@ -75,7 +75,7 @@ public class SEAGenerator extends AbstractOptionHandler implements
             "The number of instances for each concept.", 0, 0, Integer.MAX_VALUE);
 
     public IntOption noisePercentageOption = new IntOption("noisePercentage",
-            'n', "Percentage of noise to add to the data.", 10, 0, 100);
+            'p', "Percentage of noise to add to the data.", 10, 0, 100);
 
     protected interface ClassFunction {
 

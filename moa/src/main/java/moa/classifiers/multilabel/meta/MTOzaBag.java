@@ -93,6 +93,7 @@ public class MTOzaBag extends OzaBag implements MultiLabelLearner, MultiTargetRe
 		}
 		return new MultiLabelPrediction(prediction);
 	}
+<<<<<<< HEAD
 	
 	public Prediction getPredictionForInstanceUsingN(MultiLabelInstance inst, int n) {
 		int actual = Math.max(1, Math.min(n, this.ensemble.length));
@@ -111,6 +112,8 @@ public class MTOzaBag extends OzaBag implements MultiLabelLearner, MultiTargetRe
 		}
 		return new MultiLabelPrediction(prediction);
 	}
+=======
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 
     @Override
     public void trainOnInstanceImpl(MultiLabelInstance instance) {

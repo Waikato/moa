@@ -22,8 +22,6 @@ package moa.classifiers.lazy.neighboursearch.kdtrees;
 
 import java.io.Serializable;
 
-import weka.core.RevisionHandler;
-import weka.core.RevisionUtils;
 
 /**
  * A class representing a KDTree node. A node does not explicitly
@@ -43,24 +41,36 @@ import weka.core.RevisionUtils;
  * @version $Revision: 8034 $
  */
 public class KDTreeNode
-  implements Serializable, RevisionHandler {
-   
-  /** for serialization. */
+  implements Serializable {
+
+  /**
+   * for serialization.
+   */
   private static final long serialVersionUID = -3660396067582792648L;
 
-  /** node number (only for debug). */
+  /**
+   * node number (only for debug).
+   */
   public int m_NodeNumber;
 
-  /** left subtree; contains instances with smaller or equal to split value. */
+  /**
+   * left subtree; contains instances with smaller or equal to split value.
+   */
   public KDTreeNode m_Left = null;
 
-  /** right subtree; contains instances with larger than split value. */
+  /**
+   * right subtree; contains instances with larger than split value.
+   */
   public KDTreeNode m_Right = null;
 
-  /** value to split on. */
+  /**
+   * value to split on.
+   */
   public double m_SplitValue;
 
-  /** attribute to split on. */
+  /**
+   * attribute to split on.
+   */
   public int m_SplitDim;
 
   /**
@@ -69,22 +79,22 @@ public class KDTreeNode
    */
   public double[][] m_NodeRanges;
 
-  /** 
+  /**
    * The lo and high bounds of the hyper rectangle described by the
    * node.
    */
   public double[][] m_NodesRectBounds;
 
   /**
-   * The start index of the portion of the master index array, 
-   * which stores the indices of the instances/points the node 
+   * The start index of the portion of the master index array,
+   * which stores the indices of the instances/points the node
    * contains.
    */
   public int m_Start = 0;
-  
+
   /**
-   * The end index of the portion of the master index array, 
-   * which stores indices of the instances/points the node 
+   * The end index of the portion of the master index array,
+   * which stores indices of the instances/points the node
    * contains.
    */
   public int m_End = 0;
@@ -92,50 +102,52 @@ public class KDTreeNode
   /**
    * Constructor.
    */
-  public KDTreeNode() {}
+  public KDTreeNode() {
+  }
 
   /**
    * Constructor.
-   * 
-   * @param nodeNum The node number/id.
-   * @param startidx The start index of node's portion 
-   * in master index array.
-   * @param endidx The start index of node's portion 
-   * in master index array.
-   * @param nodeRanges The attribute ranges of the 
-   * Instances/points contained in this node.
+   *
+   * @param nodeNum    The node number/id.
+   * @param startidx   The start index of node's portion
+   *                   in master index array.
+   * @param endidx     The start index of node's portion
+   *                   in master index array.
+   * @param nodeRanges The attribute ranges of the
+   *                   Instances/points contained in this node.
    */
   public KDTreeNode(int nodeNum, int startidx, int endidx, double[][] nodeRanges) {
     m_NodeNumber = nodeNum;
-    m_Start = startidx; m_End = endidx;
+    m_Start = startidx;
+    m_End = endidx;
     m_NodeRanges = nodeRanges;
   }
 
   /**
-   * 
-   * @param nodeNum The node number/id.
-   * @param startidx The start index of node's portion 
-   * in master index array.
-   * @param endidx The start index of node's portion 
-   * in master index array.
-   * @param nodeRanges The attribute ranges of the 
-   * Instances/points contained in this node.
-   * @param rectBounds The range of the rectangular 
-   * region in the point space that this node 
-   * represents (points inside this rectangular
-   * region can have different range).
+   * @param nodeNum    The node number/id.
+   * @param startidx   The start index of node's portion
+   *                   in master index array.
+   * @param endidx     The start index of node's portion
+   *                   in master index array.
+   * @param nodeRanges The attribute ranges of the
+   *                   Instances/points contained in this node.
+   * @param rectBounds The range of the rectangular
+   *                   region in the point space that this node
+   *                   represents (points inside this rectangular
+   *                   region can have different range).
    */
   public KDTreeNode(int nodeNum, int startidx, int endidx, double[][] nodeRanges, double[][] rectBounds) {
     m_NodeNumber = nodeNum;
-    m_Start = startidx; m_End = endidx;
+    m_Start = startidx;
+    m_End = endidx;
     m_NodeRanges = nodeRanges;
     m_NodesRectBounds = rectBounds;
   }
 
   /**
    * Gets the splitting dimension.
-   * 
-   * @return 		splitting dimension
+   *
+   * @return splitting dimension
    */
   public int getSplitDim() {
     return m_SplitDim;
@@ -143,8 +155,8 @@ public class KDTreeNode
 
   /**
    * Gets the splitting value.
-   * 
-   * @return 		splitting value
+   *
+   * @return splitting value
    */
   public double getSplitValue() {
     return m_SplitValue;
@@ -152,30 +164,23 @@ public class KDTreeNode
 
   /**
    * Checks if node is a leaf.
-   * 
-   * @return 		true if it is a leaf
+   *
+   * @return true if it is a leaf
    */
   public boolean isALeaf() {
     return (m_Left == null);
-  }         
+  }
 
   /**
-   * Returns the number of Instances 
-   * in the rectangular region defined 
+   * Returns the number of Instances
+   * in the rectangular region defined
    * by this node.
+   *
    * @return The number of instances in
    * this KDTreeNode.
    */
   public int numInstances() {
-    return (m_End-m_Start+1);
+    return (m_End - m_Start + 1);
   }
-  
-  /**
-   * Returns the revision string.
-   * 
-   * @return		the revision
-   */
-  public String getRevision() {
-    return RevisionUtils.extract("$Revision: 8034 $");
-  }
+
 }

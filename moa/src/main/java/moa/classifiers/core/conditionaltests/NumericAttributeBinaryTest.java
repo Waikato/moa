@@ -52,7 +52,11 @@ public class NumericAttributeBinaryTest extends InstanceConditionalBinaryTest {
         if (inst.isMissing(instAttIndex)) {
             return -1;
         }
+<<<<<<< HEAD
         double v = inst.valueInputAttribute(instAttIndex);
+=======
+        double v = inst.valueInputAttribute(instAttIndex); // if the attIndex is not calculated above this is the correct method call
+>>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
         if (v == this.attValue) {
             return this.equalsPassesTest ? 0 : 1;
         }

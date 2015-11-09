@@ -28,6 +28,10 @@ public class MultiLabelPrediction implements Prediction {
 		for (int i=0; i<numOutputAttributes;i++)
 			prediction[i]= new DoubleVector();
 	}
+
+	public MultiLabelPrediction(DoubleVector[] prediction) {
+		this.prediction = prediction;
+	}
 	
 	public MultiLabelPrediction(DoubleVector[] prediction) {
 		this.prediction = prediction;
