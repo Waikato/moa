@@ -34,6 +34,10 @@ public class MultiLabelPrediction implements Prediction, Serializable {
 		this.prediction = prediction;
 	}
 	
+	public MultiLabelPrediction(DoubleVector[] prediction) {
+		this.prediction = prediction;
+	}
+	
 	@Override
 	public int numOutputAttributes() {
 		return prediction.length;

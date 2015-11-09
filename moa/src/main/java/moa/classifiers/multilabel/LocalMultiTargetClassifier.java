@@ -1,5 +1,6 @@
 package moa.classifiers.multilabel;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -34,8 +35,8 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 			Classifier.class,
 			"moa.classifiers.trees.FIMTDD");
 	
-	LinkedList<Classifier> classifiers = null;
-	LinkedList<InstancesHeader> headers = null;
+	ArrayList<Classifier> classifiers = null;
+	ArrayList<InstancesHeader> headers = null;
 	
 	@Override
 	public boolean isRandomizable() {
@@ -52,7 +53,7 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 	
 	private void makeHeaders() {
 		if (headers == null) {
-			headers = new LinkedList<InstancesHeader>();
+			headers = new ArrayList<InstancesHeader>();
 			for (int target = 0; target < getModelContext().numOutputAttributes(); target++) {
 				List<Attribute> attributes = new LinkedList<Attribute>();
 				List<Integer> indexValues = new LinkedList<Integer>();
@@ -115,9 +116,9 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 		this.classifierRandom.setSeed(1234);
 		if (classifiers == null) {
 			makeHeaders();
-			classifiers = new LinkedList<Classifier>();
+			classifiers = new ArrayList<Classifier>();
 			for (int i = 0; i < getModelContext().numOutputAttributes(); i++) {
-				Classifier learner = (Classifier) getPreparedClassOption(this.classifierOption);
+				Classifier learner = ((Classifier) getPreparedClassOption(this.classifierOption)).copy();
 				classifiers.add(learner);
 				learner.resetLearning();
 				((AbstractClassifier) learner).classifierRandom = this.classifierRandom;

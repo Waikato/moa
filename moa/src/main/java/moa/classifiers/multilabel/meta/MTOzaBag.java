@@ -93,6 +93,24 @@ public class MTOzaBag extends OzaBag implements MultiLabelLearner, MultiTargetRe
 		}
 		return new MultiLabelPrediction(prediction);
 	}
+	
+	public Prediction getPredictionForInstanceUsingN(MultiLabelInstance inst, int n) {
+		int actual = Math.max(1, Math.min(n, this.ensemble.length));
+		DoubleVector[][] predictions = new DoubleVector[actual][getModelContext().numOutputAttributes()];
+		for (int i = 0; i < actual; i++) {
+			Prediction basePrediction = this.ensemble[i].getPredictionForInstance(inst);
+			predictions[i] = ((MultiLabelPrediction) basePrediction).getPrediction();
+		}
+		DoubleVector[] prediction = new DoubleVector[getModelContext().numOutputAttributes()];
+		for (int j = 0; j < getModelContext().numOutputAttributes(); j++) {
+			prediction[j] = new DoubleVector();
+			for (int i = 0; i < actual; i++) {
+				prediction[j].addValues(predictions[i][j]);
+			}
+			prediction[j].scaleValues(1.0 / actual);
+		}
+		return new MultiLabelPrediction(prediction);
+	}
 
     @Override
     public void trainOnInstanceImpl(MultiLabelInstance instance) {
