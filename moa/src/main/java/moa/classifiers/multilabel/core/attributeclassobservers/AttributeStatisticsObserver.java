@@ -17,10 +17,10 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.classifiers.rules.multilabel.attributeclassobservers;
+package moa.classifiers.multilabel.core.attributeclassobservers;
 
-import moa.classifiers.rules.multilabel.core.AttributeExpansionSuggestion;
-import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
+import moa.classifiers.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
+import moa.classifiers.rules.core.AttributeExpansionSuggestion;
 import moa.core.DoubleVector;
 import moa.options.OptionHandler;
 

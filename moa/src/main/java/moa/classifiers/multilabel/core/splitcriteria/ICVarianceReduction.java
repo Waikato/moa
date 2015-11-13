@@ -5,7 +5,6 @@ import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
-import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;;
 
 
 

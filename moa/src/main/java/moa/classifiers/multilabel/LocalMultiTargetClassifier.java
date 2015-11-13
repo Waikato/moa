@@ -18,17 +18,11 @@ import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiLabelClassifier;
 import moa.classifiers.MultiTargetRegressor;
-import moa.classifiers.core.splitcriteria.SplitCriterion;
-import moa.classifiers.trees.FIMTDD;
-import moa.core.DoubleVector;
 import moa.core.Measurement;
-import moa.learners.Learner;
 import moa.options.ClassOption;
 
 public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 		implements MultiLabelClassifier, MultiTargetRegressor {
-
-	private static final long serialVersionUID = 1L;
 
 	public ClassOption classifierOption = new ClassOption(
 			"classifier",

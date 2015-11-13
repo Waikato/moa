@@ -66,10 +66,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 	private static final long serialVersionUID = 1L;
 
-	protected Node treeRoot;
-
-	private int leafNodeCount = 0;
-	private int splitNodeCount = 0;
+	public Node treeRoot;
 
 	private double examplesSeen = 0.0;
 	private DoubleVector sumOfValues = new DoubleVector();
@@ -81,14 +78,6 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 	public int maxID = 0;
 
 	//region ================ OPTIONS ================
-
-	//	public ClassOption splitCriterionOption = new ClassOption(
-	//			"splitCriterion",
-	//			's',
-	//			"Split criterion to use.",
-	//			SplitCriterion.class,
-	//			"moa.classifiers.core.splitcriteria.VarianceReductionSplitCriterion");
-	// TODO not used at the moment, consider later when the implementation catches up	
 
 	public IntOption gracePeriodOption = new IntOption(
 			"gracePeriod",
@@ -108,17 +97,17 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			"Threshold below which a split will be forced to break ties.",
 			0.05, 0.0, 1.0);
 
-//	public FloatOption PageHinckleyAlphaOption = new FloatOption(
-//			"PageHinckleyAlpha",
-//			'a',
-//			"The alpha value to use in the Page Hinckley change detection tests.",
-//			0.005, 0.0, 1.0);
-//
-//	public IntOption PageHinckleyThresholdOption = new IntOption(
-//			"PageHinckleyThreshold",
-//			'h',
-//			"The threshold value to be used in the Page Hinckley change detection tests.",
-//			50, 0, Integer.MAX_VALUE);
+	public FloatOption PageHinckleyAlphaOption = new FloatOption(
+			"PageHinckleyAlpha",
+			'a',
+			"The alpha value to use in the Page Hinckley change detection tests.",
+			0.005, 0.0, 1.0);
+
+	public IntOption PageHinckleyThresholdOption = new IntOption(
+			"PageHinckleyThreshold",
+			'h',
+			"The threshold value to be used in the Page Hinckley change detection tests.",
+			50, 0, Integer.MAX_VALUE);
 
 	public FloatOption alternateTreeFadingFactorOption = new FloatOption(
 			"alternateTreeFadingFactor",
@@ -164,7 +153,6 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			"doNotNormalize",
 			'n',
 			"Don't normalize.");
-
 
 	//endregion ================ OPTIONS ================
 
@@ -313,7 +301,6 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		 */
 		public void learnFromInstance(MultiLabelInstance inst, double[] prediction, boolean growthAllowed) {
 			// Update the statistics for this node
-			
 			double[] predictionP = tree.buildingModelTree() ? getPredictionModel(inst) : null;
 			double[] predictionM = getPredictionTargetMean(inst);
 
@@ -332,7 +319,6 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 					errorM.setValue(i, errorM.getValue(i) * 0.95 + Math.abs(predictionM[i] - inst.valueOutputAttribute(i)));
 				}
 			}
-
 			if (tree.buildingModelTree()) learningModel.updatePerceptron(inst);
 
 			for (int i = 0; i < inst.numInputAttributes(); i++) {
@@ -405,8 +391,8 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 		public double[] getPredictionTargetMean(MultiLabelInstance inst) {
 			double[] pred = new double[inst.numOutputAttributes()];
-			if (examplesSeen > 0) {
-				for (int i = 0; i < inst.numOutputAttributes(); i++) {
+			for (int i = 0; i < inst.numOutputAttributes(); i++) {
+				if (examplesSeen > 0) {
 					pred[i] = sumOfValues.getValue(i) / examplesSeen;
 				} else {
 					pred[i] = 0;
@@ -612,7 +598,6 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		// The Perception weights 
 		public double[][] weights; 
 
-
 		// The number of instances contributing to this model
 		protected int instancesSeen = 0;
 
@@ -670,7 +655,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			if (instancesSeen > 1.0) {
 				// Compute the normalized instance and the delta
 				double[] normalizedInput = tree.normalizedInputVector(inst); 
-			    double[] normalizedPrediction = prediction(normalizedInput);
+				double[] normalizedPrediction = prediction(normalizedInput);
 
 				double[] normalizedTarget = tree.normalizedTargetVector(inst);
 				for (int i = 0; i < inst.numOutputAttributes(); i++){
@@ -732,19 +717,18 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			for (int i = 0; i < tree.getModelContext().numOutputAttributes(); i++) {
 				StringUtils.appendIndented(out, indent, " [" + tree.getModelContext().outputAttribute(i).name() + "]");
 				if (getModelContext() != null) {
-				for (int j = 0; j < getModelContext().numOutputAttributes(); j++) {
-									if (getModelContext().attribute(j).isNumeric()) {
-										out.append((j == 0 || weights[i][j] < 0) ? " " : " + ");
-										out.append(String.format("%.4f", weights[i][j]));
-										out.append(" * ");
-										out.append(getAttributeNameString(j));
-									}
-				}
-				out.append(" + " + weights[i][getModelContext().numOutputAttributes()]);
+					for (int j = 0; j < getModelContext().numOutputAttributes(); j++) {
+						if (getModelContext().attribute(j).isNumeric()) {
+							out.append((j == 0 || weights[i][j] < 0) ? " " : " + ");
+							out.append(String.format("%.4f", weights[i][j]));
+							out.append(" * ");
+							out.append(getAttributeNameString(j));
+						}
+					}
+					out.append(" + " + weights[i][getModelContext().numOutputAttributes()]);
 				}
 				StringUtils.appendNewline(out);
 			}
-			StringUtils.appendNewline(out);
 		}
 	}
 
@@ -916,23 +900,23 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		if (inst.weight() > 0) {
 			checkRoot();
 
-			double[] prediction = treeRoot.getPrediction(inst);
-			double[] normalError = getNormalizedError(inst, prediction);
-			
-			processInstance(inst, treeRoot, prediction, normalError, true, false);
-			
-			examplesSeen += inst.weight();
-			for (int i = 0; i < inst.numberOutputTargets(); i++) {
-				sumOfValues.addToValue(i, inst.weight() * inst.valueOutputAttribute(i));
-				sumOfSquares.addToValue(i, inst.weight() * inst.valueOutputAttribute(i) * inst.valueOutputAttribute(i));
-			}
+			 double[] prediction = treeRoot.getPrediction(inst);
+			 double[] normalError = getNormalizedError(inst, prediction);
 
-			for (int i = 0; i < inst.numInputAttributes(); i++) {
-				sumOfAttrValues.addToValue(i, inst.weight() * inst.valueInputAttribute(i));
-				sumOfAttrSquares.addToValue(i, inst.weight() * inst.valueInputAttribute(i) * inst.valueInputAttribute(i));
-			}
-		}
-	}
+			 processInstance(inst, treeRoot, prediction, normalError, true, false);
+
+			 examplesSeen += inst.weight();
+			 for (int i = 0; i < inst.numberOutputTargets(); i++) {
+				 sumOfValues.addToValue(i, inst.weight() * inst.valueOutputAttribute(i));
+				 sumOfSquares.addToValue(i, inst.weight() * inst.valueOutputAttribute(i) * inst.valueOutputAttribute(i));
+			 }
+
+			 for (int i = 0; i < inst.numInputAttributes(); i++) {
+				 sumOfAttrValues.addToValue(i, inst.weight() * inst.valueInputAttribute(i));
+				 sumOfAttrSquares.addToValue(i, inst.weight() * inst.valueInputAttribute(i) * inst.valueInputAttribute(i));
+			 }
+		 }
+	 }
 
 	public void processInstance(MultiLabelInstance inst, Node node, double[] prediction, double[] normalError, boolean growthAllowed, boolean inAlternate) {
 		Node currentNode = node;
@@ -1031,18 +1015,18 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		return new LeafNode(this);
 	}
 
-	public MultitargetPerceptron newLeafModel() {
-		return new MultitargetPerceptron(this);
-	}
+	 public MultitargetPerceptron newLeafModel() {
+		 return new MultitargetPerceptron(this);
+	 }
 
 	//endregion --- Object instatiation methods
 
-	//region --- Processing methods
-	protected void checkRoot() {
-		if (treeRoot == null) {
-			treeRoot = newLeafNode();
-		}
-	}
+	 //region --- Processing methods
+	 protected void checkRoot() {
+		 if (treeRoot == null) {
+			 treeRoot = newLeafNode();
+		 }
+	 }
 
 	public static double computeHoeffdingBound(double range, double confidence, double n) {
 		return Math.sqrt(( (range * range) * Math.log(1 / confidence)) / (2.0 * n));
@@ -1081,66 +1065,66 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			AttributeExpansionSuggestion bestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1];
 			AttributeExpansionSuggestion secondBestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 2];
 
-			// If the upper bound of the sample mean for the ratio of SDR(best suggestion) to SDR(second best suggestion),
-			// as determined using the Hoeffding bound, is less than 1, then the true mean is also less than 1, and thus at this
-			// particular moment of observation the bestSuggestion is indeed the best split option with confidence 1-delta, and
-			// splitting should occur.
-			// Alternatively, if two or more splits are very similar or identical in terms of their splits, then a threshold limit
-			// (default 0.05) is applied to the Hoeffding bound; if the Hoeffding bound is smaller than this limit then the two
-			// competing attributes are equally good, and the split will be made on the one with the higher SDR value.
-			//System.out.print(hoeffdingBound);
-			//System.out.print(" ");
-			///System.out.println(secondBestSuggestion.merit / bestSuggestion.merit);
-			if ((secondBestSuggestion.merit / bestSuggestion.merit < 1 - hoeffdingBound) || (hoeffdingBound < this.tieThresholdOption.getValue())) {
-				shouldSplit = true;
-			}
-			// If the splitting criterion was not met, initiate pruning of the E-BST structures in each attribute observer
-			else {
-				// TODO pruning is currently disabled
-				for (int i = 0; i < node.attributeObservers.size(); i++) {
-					AttributeStatisticsObserver obs = node.attributeObservers.get(i);
-					if (obs != null) {
-						if (getModelContext().attribute(i).isNumeric());
-						//TODO obs.removeBadSplits(null, secondBestSuggestion.merit / bestSuggestion.merit, bestSuggestion.merit, hoeffdingBound, getModelContext().numOutputAttributes());
-						if (getModelContext().attribute(i).isNominal());
-						// TODO nominal class observers
-					}
-				}
-			}
-		}
+			 // If the upper bound of the sample mean for the ratio of SDR(best suggestion) to SDR(second best suggestion),
+			 // as determined using the Hoeffding bound, is less than 1, then the true mean is also less than 1, and thus at this
+			 // particular moment of observation the bestSuggestion is indeed the best split option with confidence 1-delta, and
+			 // splitting should occur.
+			 // Alternatively, if two or more splits are very similar or identical in terms of their splits, then a threshold limit
+			 // (default 0.05) is applied to the Hoeffding bound; if the Hoeffding bound is smaller than this limit then the two
+			 // competing attributes are equally good, and the split will be made on the one with the higher SDR value.
+			 //System.out.print(hoeffdingBound);
+			 //System.out.print(" ");
+			 ///System.out.println(secondBestSuggestion.merit / bestSuggestion.merit);
+			 if ((secondBestSuggestion.merit / bestSuggestion.merit < 1 - hoeffdingBound) || (hoeffdingBound < this.tieThresholdOption.getValue())) {
+				 shouldSplit = true;
+			 }
+			 // If the splitting criterion was not met, initiate pruning of the E-BST structures in each attribute observer
+			 else {
+				 // TODO pruning is currently disabled
+				 for (int i = 0; i < node.attributeObservers.size(); i++) {
+					 AttributeStatisticsObserver obs = node.attributeObservers.get(i);
+					 if (obs != null) {
+						 if (getModelContext().attribute(i).isNumeric());
+						 //TODO obs.removeBadSplits(null, secondBestSuggestion.merit / bestSuggestion.merit, bestSuggestion.merit, hoeffdingBound, getModelContext().numOutputAttributes());
+						 if (getModelContext().attribute(i).isNominal());
+						 // TODO nominal class observers
+					 }
+				 }
+			 }
+		 }
 
-		// If the splitting criterion were met, split the current node using the chosen attribute test, and
-		// make two new branches leading to (empty) leaves
-		if (shouldSplit) {
-			AttributeExpansionSuggestion splitDecision = bestSplitSuggestions[bestSplitSuggestions.length - 1];
+		 // If the splitting criterion were met, split the current node using the chosen attribute test, and
+		 // make two new branches leading to (empty) leaves
+		 if (shouldSplit) {
+			 AttributeExpansionSuggestion splitDecision = bestSplitSuggestions[bestSplitSuggestions.length - 1];
 
-			SplitNode newSplit = newSplitNode(splitDecision.predicate);
-			newSplit.copyStatistics(node);
-			newSplit.changeDetection = node.changeDetection;
-			newSplit.ID = node.ID;
-			//System.out.println("Splitting");
-			//System.out.println(examplesSeen);
-			for (int i = 0; i < 2; i++) { // Hardcoded for 2 values (due to the use of the Predicate class)
-				LeafNode newChild = newLeafNode();
-				if (buildingModelTree()) {
-					// Copy the splitting node's perceptron to it's children
-					newChild.learningModel = new MultitargetPerceptron(this, (MultitargetPerceptron) node.learningModel);
+			 SplitNode newSplit = newSplitNode(splitDecision.predicate);
+			 newSplit.copyStatistics(node);
+			 newSplit.changeDetection = node.changeDetection;
+			 newSplit.ID = node.ID;
+			 for (int i = 0; i < 2; i++) { // Hardcoded for 2 values (due to the use of the Predicate class)
+				 LeafNode newChild = newLeafNode();
+				 if (buildingModelTree()) {
+					 // Copy the splitting node's perceptron to it's children
+					 newChild.learningModel = new MultitargetPerceptron(this, (MultitargetPerceptron) node.learningModel);
 
-				}
-				newChild.changeDetection = node.changeDetection;
-				newChild.setParent(newSplit);
-				newSplit.setChild(i, newChild);
-			}
-			if (parent == null && node.originalNode == null) {
-				treeRoot = newSplit;
-			} else if (parent == null && node.originalNode != null) {
-				node.originalNode.alternateTree = newSplit;
-			} else {
-				parent.setChild(parentIndex, newSplit);
-				newSplit.setParent(parent);
-			}
-		}
-	}
+				 }
+				 newChild.changeDetection = node.changeDetection;
+				 newChild.setParent(newSplit);
+				 newSplit.setChild(i, newChild);
+			 }
+			 if (parent == null && node.originalNode == null) {
+				 treeRoot = newSplit;
+			 } else if (parent == null && node.originalNode != null) {
+				 node.originalNode.alternateTree = newSplit;
+			 } else {
+				 parent.setChild(parentIndex, newSplit);
+				 newSplit.setParent(parent);
+			 }
+		 }
+	 }
+
+
 
 	public  double computeSD(double squaredVal, double val, double size) {
 		if (size > 1)

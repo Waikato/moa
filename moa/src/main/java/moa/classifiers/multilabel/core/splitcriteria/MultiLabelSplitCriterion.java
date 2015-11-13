@@ -1,4 +1,4 @@
-package moa.classifiers.rules.multilabel.core.splitcriteria;
+package moa.classifiers.multilabel.core.splitcriteria;
 
 
 import moa.core.DoubleVector;

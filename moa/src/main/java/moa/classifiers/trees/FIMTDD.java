@@ -1,6 +1,3 @@
-<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
-=======
-<<<<<<< HEAD
 /*
  *    FIMTDD.java
  *    Copyright (C) 2015 Jožef Stefan Institute, Ljubljana, Slovenia
@@ -831,7 +828,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 					}
 				}
 
-				if (false && iNode.changeDetection && !inAlternate) {
+				if (iNode.changeDetection && !inAlternate) {
 					if (iNode.PageHinckleyTest(normalError - iNode.sumOfAbsErrors / iNode.examplesSeen - PageHinckleyAlphaOption.getValue(), PageHinckleyThresholdOption.getValue())) {
 						iNode.initializeAlternateTree();
 						growthAllowed = false;
@@ -928,20 +925,11 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 					}
 				}
 			}
-//			if (hoeffdingBound < this.tieThresholdOption.getValue() && !(secondBestSuggestion.merit / bestSuggestion.merit < 1 - hoeffdingBound)) {
-//				System.out.println("Forced to split due to tie at " + this.examplesSeen);
-//				System.out.println(SizeOf.fullSizeOf(node.attributeObservers) / 1000000.0);
-//			}
 		}
 
 		// If the splitting criterion were met, split the current node using the chosen attribute test, and
 		// make two new branches leading to (empty) leaves
 		if (shouldSplit) {
-//			System.out.println("splitting node");
-//			System.out.println(SizeOf.fullSizeOf(node.attributeObservers) / 1000000.0);
-//			if (node.parent == null) {
-//				System.out.println("splitting root node at " + this.examplesSeen);
-//			}
 			AttributeSplitSuggestion splitDecision = bestSplitSuggestions[bestSplitSuggestions.length - 1];
 						
 			SplitNode newSplit = newSplitNode(splitDecision.splitTest);
@@ -994,7 +982,6 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 }
 
 =======
->>>>>>> Revert "Removed merging artefacts"
 /*
  *    FIMTDD.java
  *    Copyright (C) 2015 Jožef Stefan Institute, Ljubljana, Slovenia
@@ -1964,7 +1951,4 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 	//endregion ================ METHODS ================
 }
 
-<<<<<<< 5a48cb8458f9db3cf55cf428d50f81dc14c31ee3
-=======
 >>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
->>>>>>> Revert "Removed merging artefacts"
