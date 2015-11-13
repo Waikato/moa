@@ -3,15 +3,7 @@ package moa.classifiers.multilabel.trees;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
-import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-
-import moa.classifiers.multilabel.trees.ISOUPTree.LeafNode;
-import moa.classifiers.multilabel.trees.ISOUPTree.Node;
-import moa.classifiers.multilabel.trees.ISOUPTree.SplitNode;
-import moa.classifiers.trees.ORTO;
-import moa.classifiers.trees.FIMTDD.InnerNode;
-import moa.classifiers.trees.ORTO.OptionNode;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
@@ -20,7 +12,6 @@ public class ISOUPOptionTree extends ISOUPTree {
 
 	private static final long serialVersionUID = 1L;
 
-	private int innerNodeCount = 0;
 	private int optionNodeCount = 0;
 
 	private int numTrees = 1;
@@ -62,6 +53,11 @@ public class ISOUPOptionTree extends ISOUPTree {
 	//region ================ CLASSES ================
 	
 	public static class OptionNode extends InnerNode {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
 		protected AutoExpandVector<DoubleVector> optionFFSSL;
 		protected AutoExpandVector<DoubleVector> optionFFSeen;
 		
@@ -152,7 +148,6 @@ public class ISOUPOptionTree extends ISOUPTree {
 
 	public void resetLearningImpl() {
 		super.resetLearningImpl();
-		this.innerNodeCount = 0;
 		this.optionNodeCount = 0;
 	}
 

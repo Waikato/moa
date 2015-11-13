@@ -41,15 +41,15 @@ import com.yahoo.labs.samoa.instances.Prediction;
 import moa.AbstractMOAObject;
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
+import moa.classifiers.multilabel.core.attributeclassobservers.AttributeStatisticsObserver;
+import moa.classifiers.multilabel.core.attributeclassobservers.MultiLabelBSTree;
+import moa.classifiers.multilabel.core.attributeclassobservers.MultiLabelNominalAttributeObserver;
+import moa.classifiers.multilabel.core.attributeclassobservers.NominalStatisticsObserver;
+import moa.classifiers.multilabel.core.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.multilabel.core.splitcriteria.ICVarianceReduction;
+import moa.classifiers.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
+import moa.classifiers.rules.core.AttributeExpansionSuggestion;
 import moa.classifiers.rules.core.Predicate;
-import moa.classifiers.rules.multilabel.attributeclassobservers.AttributeStatisticsObserver;
-import moa.classifiers.rules.multilabel.attributeclassobservers.MultiLabelBSTree;
-import moa.classifiers.rules.multilabel.attributeclassobservers.MultiLabelNominalAttributeObserver;
-import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatisticsObserver;
-import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
-import moa.classifiers.rules.multilabel.core.AttributeExpansionSuggestion;
-import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
@@ -66,14 +66,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 	private static final long serialVersionUID = 1L;
 
-<<<<<<< HEAD
 	public Node treeRoot;
-=======
-	protected Node treeRoot;
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
-
-	private int leafNodeCount = 0;
-	private int splitNodeCount = 0;
 
 	private double examplesSeen = 0.0;
 	private DoubleVector sumOfValues = new DoubleVector();
@@ -86,17 +79,6 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 	//region ================ OPTIONS ================
 
-<<<<<<< HEAD
-	//	public ClassOption splitCriterionOption = new ClassOption(
-	//			"splitCriterion",
-	//			's',
-	//			"Split criterion to use.",
-	//			SplitCriterion.class,
-	//			"moa.classifiers.core.splitcriteria.VarianceReductionSplitCriterion");
-	// TODO not used at the moment, consider later when the implementation catches up	
-
-=======
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 	public IntOption gracePeriodOption = new IntOption(
 			"gracePeriod",
 			'g',
@@ -115,7 +97,6 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			"Threshold below which a split will be forced to break ties.",
 			0.05, 0.0, 1.0);
 
-<<<<<<< HEAD
 	public FloatOption PageHinckleyAlphaOption = new FloatOption(
 			"PageHinckleyAlpha",
 			'a',
@@ -127,19 +108,6 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			'h',
 			"The threshold value to be used in the Page Hinckley change detection tests.",
 			50, 0, Integer.MAX_VALUE);
-=======
-//	public FloatOption PageHinckleyAlphaOption = new FloatOption(
-//			"PageHinckleyAlpha",
-//			'a',
-//			"The alpha value to use in the Page Hinckley change detection tests.",
-//			0.005, 0.0, 1.0);
-//
-//	public IntOption PageHinckleyThresholdOption = new IntOption(
-//			"PageHinckleyThreshold",
-//			'h',
-//			"The threshold value to be used in the Page Hinckley change detection tests.",
-//			50, 0, Integer.MAX_VALUE);
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 
 	public FloatOption alternateTreeFadingFactorOption = new FloatOption(
 			"alternateTreeFadingFactor",
@@ -185,15 +153,6 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			"doNotNormalize",
 			'n',
 			"Don't normalize.");
-<<<<<<< HEAD
-	
-	public FlagOption printLogsOption = new FlagOption(
-			"printLogs",
-			'z',
-			"Print logs.");
-=======
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
-
 
 	//endregion ================ OPTIONS ================
 
@@ -342,17 +301,11 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		 */
 		public void learnFromInstance(MultiLabelInstance inst, double[] prediction, boolean growthAllowed) {
 			// Update the statistics for this node
-<<<<<<< HEAD
-			// number of instances passing through the node
-			double[] predictionP = tree.buildingModelTree() ? getPredictionModel(inst) : null;
-			double[] predictionM = getPredictionTargetMean(inst);
 
-=======
 			double[] predictionP = tree.buildingModelTree() ? getPredictionModel(inst) : null;
 			double[] predictionM = getPredictionTargetMean(inst);
 
 			// number of instances passing through the node
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 			examplesSeen += inst.weight();
 
 			for (int i = 0; i < tree.getModelContext().numOutputAttributes(); i++) {
@@ -367,10 +320,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 					errorM.setValue(i, errorM.getValue(i) * 0.95 + Math.abs(predictionM[i] - inst.valueOutputAttribute(i)));
 				}
 			}
-<<<<<<< HEAD
-			
-=======
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
+
 			if (tree.buildingModelTree()) learningModel.updatePerceptron(inst);
 
 			for (int i = 0; i < inst.numInputAttributes(); i++) {
@@ -443,17 +393,11 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 		public double[] getPredictionTargetMean(MultiLabelInstance inst) {
 			double[] pred = new double[inst.numOutputAttributes()];
-<<<<<<< HEAD
 			for (int i = 0; i < inst.numOutputAttributes(); i++) {
 				if (examplesSeen > 0) {
 					pred[i] = sumOfValues.getValue(i) / examplesSeen;
 				} else {
 					pred[i] = 0;
-=======
-			if (examplesSeen > 0) {
-				for (int i = 0; i < inst.numOutputAttributes(); i++) {
-					pred[i] = sumOfValues.getValue(i) / examplesSeen;
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 				}
 			}
 			return pred;
@@ -513,7 +457,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 		// Sum of absolute errors
 		protected DoubleVector sumOfAbsErrors = new DoubleVector(); // Needed for PH tracking of mean error
-		
+
 		protected DoubleVector PHsums = new DoubleVector();
 		protected DoubleVector PHmins = new DoubleVector();
 
@@ -654,11 +598,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		protected ISOUPTree tree;
 
 		// The Perception weights 
-<<<<<<< HEAD
 		public double[][] weights; 
-=======
-		protected double[][] weights; 
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 
 		// The number of instances contributing to this model
 		protected int instancesSeen = 0;
@@ -670,13 +610,6 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		public MultitargetPerceptron(ISOUPTree tree, MultitargetPerceptron original) {
 			this.tree = tree;
 			weights = original.weights.clone();
-<<<<<<< HEAD
-			// TODO check if this is necessary
-//			for (int i = 0; i < this.tree.getModelContext().numOutputAttributes(); i++) {
-//				weights[i] = (DoubleVector) original.weights[i].copy();
-//			}
-=======
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 		}
 
 		public MultitargetPerceptron(ISOUPTree tree) {
@@ -696,10 +629,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 					weights[i][j] = 2 * tree.classifierRandom.nextDouble() - 1;
 				}
 			}
-<<<<<<< HEAD
 			normalizeWeights();
-=======
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 		}
 
 		/**
@@ -708,7 +638,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		public void updatePerceptron(MultiLabelInstance inst) {
 			// Update attribute statistics
 			instancesSeen += inst.weight();
-			
+
 			// Update weights
 			double learningRatio = 0.0;
 			if (tree.learningRatioConstOption.isSet()) {
@@ -727,7 +657,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			if (instancesSeen > 1.0) {
 				// Compute the normalized instance and the delta
 				double[] normalizedInput = tree.normalizedInputVector(inst); 
-			    double[] normalizedPrediction = prediction(normalizedInput);
+				double[] normalizedPrediction = prediction(normalizedInput);
 
 				double[] normalizedTarget = tree.normalizedTargetVector(inst);
 				for (int i = 0; i < inst.numOutputAttributes(); i++){
@@ -750,10 +680,6 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			}
 		}
 
-<<<<<<< HEAD
-		
-=======
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 		/**
 		 * Output the prediction made by this perceptron on the given instance
 		 */
@@ -792,372 +718,22 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		public void getModelDescription(StringBuilder out, int indent) {
 			for (int i = 0; i < tree.getModelContext().numOutputAttributes(); i++) {
 				StringUtils.appendIndented(out, indent, " [" + tree.getModelContext().outputAttribute(i).name() + "]");
-<<<<<<< HEAD
-				//if (getModelContext() != null) {
-				//for (int j = 0; j < getModelContext().numAttributes() - 1; j++) {
-				//					if (getModelContext().attribute(j).isNumeric()) {
-				//						// TODO
-				//						//out.append((j == 0 || weightAttribute.getValue(j) < 0) ? " " : " + ");
-				//						//out.append(String.format("%.4f", weightAttribute.getValue(j)));
-				//						out.append(" * ");
-				//						out.append(getAttributeNameString(j));
-				//					}
-				//}
-				//out.append(" + " + weightAttribute.getValue((getModelContext().numAttributes() - 1)));
-				//}
-			}
-			StringUtils.appendNewline(out);
-		}
-	}
-
-	//	public class SOPNumericAttributeClassObserver implements MultitargetAttributeClassObserver {
-	//
-	//		private static final long serialVersionUID = 1L;
-	//
-	//		protected class Node implements Serializable {
-	//
-	//			private static final long serialVersionUID = 1L;
-	//
-	//			// The split point to use
-	//			public double cut_point;
-	//
-	//			// E-BST statistics
-	//			public double leftCount = 0;
-	//			public double rightCount = 0;
-	//			public DoubleVector leftSums = new DoubleVector();
-	//			public DoubleVector leftSquares = new DoubleVector();
-	//			public DoubleVector rightSums = new DoubleVector();
-	//			public DoubleVector rightSquares = new DoubleVector();
-	//
-	//			// Child nodes
-	//			public Node left;
-	//			public Node right;
-	//
-	//			public Node(double val, DoubleVector labelVector, double weight) {
-	//				cut_point = val;
-	//				leftCount += 1;
-	//				for (int i = 0; i < labelVector.numValues(); i++) {
-	//					leftSums.addToValue(i, labelVector.getValue(i));
-	//					leftSquares.addToValue(i, labelVector.getValue(i) * labelVector.getValue(i));
-	//				}
-	//			}
-	//
-	//			/**
-	//			 * Insert a new value into the tree, updating both the sum of values and
-	//			 * sum of squared values arrays
-	//			 */
-	//			public void insertValue(double val, DoubleVector labelVector, double weight) {
-	//
-	//				// If the new value equals the value stored in a node, update
-	//				// the left (<=) node information
-	//				if (val == cut_point) {
-	//					leftCount += 1;
-	//					for (int i = 0; i < labelVector.numValues(); i++) {
-	//						leftSums.addToValue(i, labelVector.getValue(i));
-	//						leftSquares.addToValue(i, labelVector.getValue(i) * labelVector.getValue(i));
-	//					}
-	//				} // If the new value is less than the value in a node, update the
-	//				// left distribution and send the value down to the left child node.
-	//				// If no left child exists, create one
-	//				else if (val <= cut_point) {
-	//
-	//					leftCount += 1;
-	//					for (int i = 0; i < labelVector.numValues(); i++) {
-	//						leftSums.addToValue(i, labelVector.getValue(i));
-	//						leftSquares.addToValue(i, labelVector.getValue(i) * labelVector.getValue(i));
-	//					}
-	//					if (left == null) {
-	//						left = new Node(val, labelVector, weight);
-	//					} else {
-	//						left.insertValue(val, labelVector, weight);
-	//					}
-	//				} // If the new value is greater than the value in a node, update the
-	//				// right (>) distribution and send the value down to the right child node.
-	//				// If no right child exists, create one
-	//				else { // val > cut_point
-	//					rightCount += 1;
-	//					for (int i = 0; i < labelVector.numValues(); i++) {
-	//						rightSums.addToValue(i, labelVector.getValue(i));
-	//						rightSquares.addToValue(i, labelVector.getValue(i) * labelVector.getValue(i));
-	//					}
-	//					if (right == null) {
-	//						right = new Node(val, labelVector, weight);
-	//					} else {
-	//						right.insertValue(val, labelVector, weight);
-	//					}
-	//				}
-	//			}
-	//		}
-	//
-	//		// Root node of the E-BST structure for this attribute
-	//		protected Node root = null;
-	//
-	//		// Global variables for use in the FindBestSplit algorithm
-	//		DoubleVector sumsTotalLeft;
-	//		DoubleVector sumsTotalRight;
-	//		DoubleVector squaresTotalLeft;
-	//		DoubleVector squaresTotalRight;
-	//		double countRightTotal;
-	//		double countLeftTotal;
-	//
-	//		public void observeAttributeClass(double attVal, double classVal, double weight) {
-	//			// DEPRECATED (used for single-target cases)
-	//
-	//			//	        if (Double.isNaN(attVal)) { //Instance.isMissingValue(attVal)
-	//			//	        } else {
-	//			//	            if (root == null) {
-	//			//	                root = new Node(attVal, classVal, weight);
-	//			//	            } else {
-	//			//	                root.insertValue(attVal, classVal, weight);
-	//			//	            }
-	//			//	        }
-	//		}
-	//
-	//		public void observeAttributeClass(double attVal, DoubleVector classVector, double weight) {
-	//			if (Double.isNaN(attVal)) { //Instance.isMissingValue(attVal)
-	//			} else {
-	//				if (root == null) {
-	//					root = new Node(attVal, classVector, weight);
-	//				} else {
-	//					root.insertValue(attVal, classVector, weight);
-	//				}
-	//			}
-	//
-	//		}
-	//
-	//		public double probabilityOfAttributeValueGivenClass(double attVal, int classVal) {
-	//			// TODO: NaiveBayes broken until implemented
-	//			return 0.0;
-	//		}
-	//
-	//		@Override
-	//		public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(SplitCriterion criterion, double examlpesSeen, DoubleVector preSplitSums, DoubleVector preSplitSquares, int numTargets, int attIndex, boolean binaryOnly) {
-	//			// Initialise global variables
-	//			sumsTotalLeft = new DoubleVector();
-	//			sumsTotalRight = preSplitSums;
-	//			squaresTotalLeft = new DoubleVector();
-	//			squaresTotalRight = preSplitSquares;
-	//			countLeftTotal = 0;
-	//			countRightTotal = examplesSeen;
-	//
-	//			// Hardcoded for ICV reduction
-	//			double preSplitVariance = 0;
-	//			for (int i = 0; i < numTargets; i++) {
-	//				preSplitVariance += (preSplitSquares.getValue(i) - examplesSeen * preSplitSums.getValue(i) * preSplitSums.getValue(i)) / examplesSeen;
-	//			}
-	//
-	//			return searchForBestSplitOption(root, null, preSplitVariance, attIndex, numTargets);
-	//		}
-	//
-	//		public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(SplitCriterion criterion, double[] preSplitDist, int attIndex, boolean binaryOnly) {
-	//			// DEPRECATED
-	//			return null;
-	//		}
-	//
-	//		/**
-	//		 * Implementation of the FindBestSplit algorithm from E.Ikonomovska et al.
-	//		 */
-	//		protected AttributeSplitSuggestion searchForBestSplitOption(Node currentNode, AttributeSplitSuggestion currentBestOption, double preSplitVariance, int attIndex, int numTargets) {
-	//			// Return null if the current node is null or we have finished looking through all the possible splits
-	//			if (currentNode == null || countRightTotal == 0.0) {
-	//				return currentBestOption;
-	//			}
-	//
-	//			if (currentNode.left != null) {
-	//				currentBestOption = searchForBestSplitOption(currentNode.left, currentBestOption, preSplitVariance, attIndex, numTargets);
-	//			}
-	//
-	//			sumsTotalLeft.addValues(currentNode.leftSums);
-	//			sumsTotalRight.subtractValues(currentNode.leftSums);
-	//			squaresTotalLeft.addValues(currentNode.leftSquares);
-	//			squaresTotalRight.subtractValues(currentNode.leftSquares);
-	//			countLeftTotal += currentNode.leftCount;
-	//			countRightTotal -= currentNode.leftCount;
-	//
-	//			//	        double[][] postSplitDists = new double[][]{{countLeftTotal, sumTotalLeft, sumSqTotalLeft}, {countRightTotal, sumTotalRight, sumSqTotalRight}};
-	//			//	        double[] preSplitDist = new double[]{(countLeftTotal + countRightTotal), (sumTotalLeft + sumTotalRight), (sumSqTotalLeft + sumSqTotalRight)};
-	//			//	        double merit = criterion.getMeritOfSplit(preSplitDist, postSplitDists);
-	//
-	//			double postSplitVariance = 0;
-	//			for (int i = 0; i < numTargets; i++) {
-	//				postSplitVariance += (squaresTotalLeft.getValue(i) - examplesSeen * sumsTotalLeft.getValue(i) * sumsTotalLeft.getValue(i)) / countLeftTotal;
-	//				postSplitVariance += (squaresTotalRight.getValue(i) - examplesSeen * sumsTotalRight.getValue(i) * sumsTotalRight.getValue(i)) / countRightTotal;
-	//			}
-	//
-	//			double merit = preSplitVariance - postSplitVariance;
-	//
-	//			if ((currentBestOption == null) || (merit > currentBestOption.merit)) {
-	//				currentBestOption = new AttributeSplitSuggestion(
-	//						new NumericAttributeBinaryTest(attIndex,
-	//								currentNode.cut_point, true), new double[0][0], merit);
-	//
-	//			}
-	//
-	//			if (currentNode.right != null) {
-	//				currentBestOption = searchForBestSplitOption(currentNode.right, currentBestOption, preSplitVariance, attIndex, numTargets);
-	//			}
-	//
-	//			sumsTotalLeft.subtractValues(currentNode.leftSums);
-	//			sumsTotalRight.addValues(currentNode.leftSums);
-	//			squaresTotalLeft.subtractValues(currentNode.leftSquares);
-	//			squaresTotalRight.addValues(currentNode.leftSquares);
-	//			countLeftTotal -= currentNode.leftCount;
-	//			countRightTotal += currentNode.leftCount;
-	//
-	//			return currentBestOption;
-	//		}
-	//
-	//		/**
-	//		 * A method to remove all nodes in the E-BST in which it and all it's
-	//		 * children represent 'bad' split points
-	//		 */
-	//		public void removeBadSplits(SplitCriterion criterion, double lastCheckRatio, double lastCheckSDR, double lastCheckE, int numTargets) {
-	//			removeBadSplitNodes(criterion, root, lastCheckRatio, lastCheckSDR, lastCheckE, numTargets);
-	//		}
-	//
-	//		/**
-	//		 * Recursive method that first checks all of a node's children before
-	//		 * deciding if it is 'bad' and may be removed
-	//		 */
-	//		private boolean removeBadSplitNodes(SplitCriterion criterion, Node currentNode, double lastCheckRatio, double lastCheckSDR, double lastCheckE, int numTargets) {
-	//			boolean isBad = false;
-	//
-	//			if (currentNode == null) {
-	//				return true;
-	//			}
-	//
-	//			if (currentNode.left != null) {
-	//				isBad = removeBadSplitNodes(criterion, currentNode.left, lastCheckRatio, lastCheckSDR, lastCheckE, numTargets);
-	//			}
-	//
-	//			if (currentNode.right != null && isBad) {
-	//				isBad = removeBadSplitNodes(criterion, currentNode.left, lastCheckRatio, lastCheckSDR, lastCheckE, numTargets);
-	//			}
-	//
-	//			if (isBad) {
-	//
-	//				double preSplitVariance = 0;
-	//				for (int i = 0; i < numTargets; i++) {
-	//					preSplitVariance += (currentNode.leftSquares.getValue(i) + currentNode.rightSquares.getValue(i) - examplesSeen * 
-	//							(currentNode.leftSums.getValue(i) + currentNode.rightSums.getValue(i)) * (currentNode.leftSums.getValue(i) + currentNode.rightSums.getValue(i))) / examplesSeen;
-	//				}
-	//
-	//				double postSplitVariance = 0;
-	//				for (int i = 0; i < numTargets; i++) {
-	//					postSplitVariance += (currentNode.leftSquares.getValue(i) - currentNode.leftCount * currentNode.leftSums.getValue(i) * currentNode.leftSums.getValue(i)) / currentNode.leftCount;
-	//					postSplitVariance += (currentNode.rightSquares.getValue(i) - currentNode.rightCount * currentNode.rightSums.getValue(i) * currentNode.rightSums.getValue(i)) / currentNode.rightCount;
-	//				}
-	//
-	//
-	//				//	            double[][] postSplitDists = new double[][]{{currentNode.leftStatistics.getValue(0), currentNode.leftStatistics.getValue(1), currentNode.leftStatistics.getValue(2)}, {currentNode.rightStatistics.getValue(0), currentNode.rightStatistics.getValue(1), currentNode.rightStatistics.getValue(2)}};
-	//				//	            double[] preSplitDist = new double[]{(currentNode.leftStatistics.getValue(0) + currentNode.rightStatistics.getValue(0)), (currentNode.leftStatistics.getValue(1) + currentNode.rightStatistics.getValue(1)), (currentNode.leftStatistics.getValue(2) + currentNode.rightStatistics.getValue(2))};
-	//				//	            double merit = criterion.getMeritOfSplit(preSplitDist, postSplitDists);
-	//				double merit = preSplitVariance - postSplitVariance;
-	//
-	//				if ((merit / lastCheckSDR) < (lastCheckRatio - (2 * lastCheckE))) {
-	//					currentNode = null;
-	//					return true;
-	//				}
-	//			}
-	//
-	//			return false;
-	//		}
-	//
-	//		@Override
-	//		public void getDescription(StringBuilder sb, int indent) {
-	//			// TODO Auto-generated method stub
-	//		}
-	//
-	//		protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
-	//			// TODO Auto-generated method stub
-	//		}
-	//
-	//		@Override
-	//		public void observeAttributeClass(double attVal, int classVal,
-	//				double weight) {
-	//			// TODO Auto-generated method stub
-	//
-	//		}
-	//
-	//		@Override
-	//		public void observeAttributeTarget(double attVal, double target) {
-	//			// TODO Auto-generated method stub
-	//
-	//		}
-	//
-	//		@Override
-	//		public String getPurposeString() {
-	//			// TODO Auto-generated method stub
-	//			return null;
-	//		}
-	//
-	//		@Override
-	//		public Options getOptions() {
-	//			// TODO Auto-generated method stub
-	//			return null;
-	//		}
-	//
-	//		@Override
-	//		public void prepareForUse() {
-	//			// TODO Auto-generated method stub
-	//
-	//		}
-	//
-	//		@Override
-	//		public void prepareForUse(TaskMonitor monitor,
-	//				ObjectRepository repository) {
-	//			// TODO Auto-generated method stub
-	//
-	//		}
-	//
-	//		@Override
-	//		public OptionHandler copy() {
-	//			// TODO Auto-generated method stub
-	//			return null;
-	//		}
-	//
-	//		@Override
-	//		public String getCLICreationString(Class<?> expectedType) {
-	//			// TODO Auto-generated method stub
-	//			return null;
-	//		}
-	//
-	//		@Override
-	//		public int measureByteSize() {
-	//			// TODO Auto-generated method stub
-	//			return 0;
-	//		}
-	//
-	//
-	//
-	//		@Override
-	//		public void observeAttributeClassVector(double attVal,
-	//				DoubleVector classVector, double weight) {
-	//			// TODO Auto-generated method stub
-	//
-	//		}
-	//
-	//
-	//	}
-
-=======
 				if (getModelContext() != null) {
-				for (int j = 0; j < getModelContext().numOutputAttributes(); j++) {
-									if (getModelContext().attribute(j).isNumeric()) {
-										out.append((j == 0 || weights[i][j] < 0) ? " " : " + ");
-										out.append(String.format("%.4f", weights[i][j]));
-										out.append(" * ");
-										out.append(getAttributeNameString(j));
-									}
-				}
-				out.append(" + " + weights[i][getModelContext().numOutputAttributes()]);
+					for (int j = 0; j < getModelContext().numOutputAttributes(); j++) {
+						if (getModelContext().attribute(j).isNumeric()) {
+							out.append((j == 0 || weights[i][j] < 0) ? " " : " + ");
+							out.append(String.format("%.4f", weights[i][j]));
+							out.append(" * ");
+							out.append(getAttributeNameString(j));
+						}
+					}
+					out.append(" + " + weights[i][getModelContext().numOutputAttributes()]);
 				}
 				StringUtils.appendNewline(out);
 			}
 		}
 	}
 
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 	//endregion ================ CLASSES ================
 
 	//region ================ METHODS ================
@@ -1166,27 +742,17 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 	public ISOUPTree() {}
 
 	public String getPurposeString() {
-<<<<<<< HEAD
-		return "Implementation of the FIMT-DD tree as described by Ikonomovska et al.";
-=======
 		return "Implementation of the iSOUP-Tree algorithm as described by Osojnik et al.";
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 	}
 
 	public void resetLearningImpl() {
 		treeRoot = null;
-		leafNodeCount = 0;
-		splitNodeCount = 0;
-<<<<<<< HEAD
 		examplesSeen = 0.0;
 		sumOfValues = new DoubleVector();
 		sumOfSquares = new DoubleVector();
 
 		sumOfAttrValues = new DoubleVector();
 		sumOfAttrSquares = new DoubleVector();
-=======
-		maxID = 0;
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 	}
 
 	public boolean isRandomizable() {
@@ -1280,11 +846,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 				double sd = computeSD(sumOfSquares.getValue(i), sumOfValues.getValue(i), examplesSeen);
 				double average = sumOfValues.getValue(i) / examplesSeen;
 				if (sd > 0 && examplesSeen > 1)
-<<<<<<< HEAD
 					out[i] = (value - average) / sd;
-=======
-					out[i] = (value - average) / (3 * sd);
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 				else
 					out[i] = 0;
 			}
@@ -1300,11 +862,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 				double sd = computeSD(sumOfSquares.getValue(i), sumOfValues.getValue(i), examplesSeen);
 				double average = sumOfValues.getValue(i) / examplesSeen;
 				if (sd > 0)
-<<<<<<< HEAD
 					return (value - average) / sd;
-=======
-					return (value - average) / (3 * sd);
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 				else
 					return 0;
 			}
@@ -1318,11 +876,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 				double sd = computeSD(sumOfSquares.getValue(i), sumOfValues.getValue(i), examplesSeen);
 				double average = sumOfValues.getValue(i) / examplesSeen;
 				if (sd > 0)
-<<<<<<< HEAD
 					return (value - average) / sd;
-=======
-					return (value - average) / (3 * sd);
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
 				else
 					return 0;
 			}
@@ -1344,283 +898,249 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 	/**
 	 * Method for updating (training) the model using a new instance
 	 */
-	public void trainOnInstanceImpl(MultiLabelInstance inst) {
-		if (inst.weight() > 0) {
-			checkRoot();
+	 public void trainOnInstanceImpl(MultiLabelInstance inst) {
+		 if (inst.weight() > 0) {
+			 checkRoot();
 
-			double[] prediction = treeRoot.getPrediction(inst);
-			double[] normalError = getNormalizedError(inst, prediction);
-<<<<<<< HEAD
-			
-			processInstance(inst, treeRoot, prediction, normalError, true, false);
-			
-=======
-			//normalError.scaleValues(inst.weight());
-			processInstance(inst, treeRoot, prediction, normalError, true, false);
+			 double[] prediction = treeRoot.getPrediction(inst);
+			 double[] normalError = getNormalizedError(inst, prediction);
 
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
-			examplesSeen += inst.weight();
-			for (int i = 0; i < inst.numberOutputTargets(); i++) {
-				sumOfValues.addToValue(i, inst.weight() * inst.valueOutputAttribute(i));
-				sumOfSquares.addToValue(i, inst.weight() * inst.valueOutputAttribute(i) * inst.valueOutputAttribute(i));
-			}
+			 processInstance(inst, treeRoot, prediction, normalError, true, false);
 
-			for (int i = 0; i < inst.numInputAttributes(); i++) {
-				sumOfAttrValues.addToValue(i, inst.weight() * inst.valueInputAttribute(i));
-				sumOfAttrSquares.addToValue(i, inst.weight() * inst.valueInputAttribute(i) * inst.valueInputAttribute(i));
-			}
-<<<<<<< HEAD
-			
-			//normalError.scaleValues(inst.weight());
+			 examplesSeen += inst.weight();
+			 for (int i = 0; i < inst.numberOutputTargets(); i++) {
+				 sumOfValues.addToValue(i, inst.weight() * inst.valueOutputAttribute(i));
+				 sumOfSquares.addToValue(i, inst.weight() * inst.valueOutputAttribute(i) * inst.valueOutputAttribute(i));
+			 }
 
-=======
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
-		}
-	}
+			 for (int i = 0; i < inst.numInputAttributes(); i++) {
+				 sumOfAttrValues.addToValue(i, inst.weight() * inst.valueInputAttribute(i));
+				 sumOfAttrSquares.addToValue(i, inst.weight() * inst.valueInputAttribute(i) * inst.valueInputAttribute(i));
+			 }
+		 }
+	 }
 
-	public void processInstance(MultiLabelInstance inst, Node node, double[] prediction, double[] normalError, boolean growthAllowed, boolean inAlternate) {
-		Node currentNode = node;
-		while (true) {
-			if (currentNode instanceof LeafNode) {
-				((LeafNode) currentNode).learnFromInstance(inst, prediction, growthAllowed);
-				break;
-			} else {
-				currentNode.examplesSeen += inst.weight();
-				//currentNode.sumOfAbsErrors.addValues(normalError);
-				//				SplitNode iNode = (SplitNode) currentNode;
-				//				if (!inAlternate && iNode.alternateTree != null) {
-				//					boolean altTree = true;
-				//					double lossO = Math.pow(inst.valueOutputAttribute() - prediction, 2);
-				//					double lossA = Math.pow(inst.valueOutputAttribute() - iNode.alternateTree.getPrediction(inst), 2);
-				//
-				//					iNode.lossFadedSumOriginal = lossO + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumOriginal;
-				//					iNode.lossFadedSumAlternate = lossA + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumAlternate;
-				//					iNode.lossExamplesSeen++;
-				//
-				//					double Qi = Math.log((iNode.lossFadedSumOriginal) / (iNode.lossFadedSumAlternate));
-				//					double previousQiAverage = iNode.lossSumQi / iNode.lossNumQiTests;
-				//					iNode.lossSumQi += Qi;
-				//					iNode.lossNumQiTests += 1;
-				//					double QiAverage = iNode.lossSumQi / iNode.lossNumQiTests;
-				//
-				//					if (iNode.lossExamplesSeen - iNode.previousWeight >= alternateTreeTMinOption.getValue()) {
-				//						iNode.previousWeight = iNode.lossExamplesSeen;
-				//						if (Qi > 0) {
-				//							SplitNode parent = currentNode.getParent();
-				//
-				//							if (parent != null) {
-				//								Node replacementTree = iNode.alternateTree;
-				//								parent.setChild(parent.getChildIndex(currentNode), replacementTree);
-				//								if (growthAllowed) replacementTree.restartChangeDetection();
-				//							} else {
-				//								treeRoot = iNode.alternateTree;
-				//								treeRoot.restartChangeDetection();
-				//							}
-				//
-				//							currentNode = iNode.alternateTree;
-				//							altTree = false;
-				//						} else if (
-				//								(QiAverage < previousQiAverage && iNode.lossExamplesSeen >= (10 * this.gracePeriodOption.getValue()))
-				//								|| iNode.lossExamplesSeen >= alternateTreeTimeOption.getValue()
-				//								) {
-				//							iNode.alternateTree = null;
-				//							if (growthAllowed) iNode.restartChangeDetection();
-				//							altTree = false;
-				//						}
-				//					}
-				//
-				//					if (altTree) {
-				//						growthAllowed = false;
-				//						processInstance(inst, iNode.alternateTree, prediction, normalError, true, true);
-				//					}
-				//				}
+	 public void processInstance(MultiLabelInstance inst, Node node, double[] prediction, double[] normalError, boolean growthAllowed, boolean inAlternate) {
+		 Node currentNode = node;
+		 while (true) {
+			 if (currentNode instanceof LeafNode) {
+				 ((LeafNode) currentNode).learnFromInstance(inst, prediction, growthAllowed);
+				 break;
+			 } else {
+				 currentNode.examplesSeen += inst.weight();
+				 //currentNode.sumOfAbsErrors.addValues(normalError);
+				 //				SplitNode iNode = (SplitNode) currentNode;
+				 //				if (!inAlternate && iNode.alternateTree != null) {
+				 //					boolean altTree = true;
+				 //					double lossO = Math.pow(inst.valueOutputAttribute() - prediction, 2);
+				 //					double lossA = Math.pow(inst.valueOutputAttribute() - iNode.alternateTree.getPrediction(inst), 2);
+				 //
+				 //					iNode.lossFadedSumOriginal = lossO + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumOriginal;
+				 //					iNode.lossFadedSumAlternate = lossA + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumAlternate;
+				 //					iNode.lossExamplesSeen++;
+				 //
+				 //					double Qi = Math.log((iNode.lossFadedSumOriginal) / (iNode.lossFadedSumAlternate));
+				 //					double previousQiAverage = iNode.lossSumQi / iNode.lossNumQiTests;
+				 //					iNode.lossSumQi += Qi;
+				 //					iNode.lossNumQiTests += 1;
+				 //					double QiAverage = iNode.lossSumQi / iNode.lossNumQiTests;
+				 //
+				 //					if (iNode.lossExamplesSeen - iNode.previousWeight >= alternateTreeTMinOption.getValue()) {
+				 //						iNode.previousWeight = iNode.lossExamplesSeen;
+				 //						if (Qi > 0) {
+				 //							SplitNode parent = currentNode.getParent();
+				 //
+				 //							if (parent != null) {
+				 //								Node replacementTree = iNode.alternateTree;
+				 //								parent.setChild(parent.getChildIndex(currentNode), replacementTree);
+				 //								if (growthAllowed) replacementTree.restartChangeDetection();
+				 //							} else {
+				 //								treeRoot = iNode.alternateTree;
+				 //								treeRoot.restartChangeDetection();
+				 //							}
+				 //
+				 //							currentNode = iNode.alternateTree;
+				 //							altTree = false;
+				 //						} else if (
+				 //								(QiAverage < previousQiAverage && iNode.lossExamplesSeen >= (10 * this.gracePeriodOption.getValue()))
+				 //								|| iNode.lossExamplesSeen >= alternateTreeTimeOption.getValue()
+				 //								) {
+				 //							iNode.alternateTree = null;
+				 //							if (growthAllowed) iNode.restartChangeDetection();
+				 //							altTree = false;
+				 //						}
+				 //					}
+				 //
+				 //					if (altTree) {
+				 //						growthAllowed = false;
+				 //						processInstance(inst, iNode.alternateTree, prediction, normalError, true, true);
+				 //					}
+				 //				}
 
-				//				if (iNode.changeDetection && !inAlternate) {
-				//					if (iNode.PageHinckleyTest(normalError - iNode.sumOfAbsErrors / iNode.examplesSeen - PageHinckleyAlphaOption.getValue(), PageHinckleyThresholdOption.getValue())) {
-				//						iNode.initializeAlternateTree(this);
-				//					}
-				//				}
-				if (currentNode instanceof SplitNode) {
-					currentNode = ((SplitNode) currentNode).getChild(((SplitNode) currentNode).instanceChildIndex(inst));
-				} else { // if the replaced alternate tree is just a leaf node
-					((LeafNode) currentNode).learnFromInstance(inst, prediction, growthAllowed);
-					break;
-				}
-			}
-		}
-	}
+				 //				if (iNode.changeDetection && !inAlternate) {
+				 //					if (iNode.PageHinckleyTest(normalError - iNode.sumOfAbsErrors / iNode.examplesSeen - PageHinckleyAlphaOption.getValue(), PageHinckleyThresholdOption.getValue())) {
+				 //						iNode.initializeAlternateTree(this);
+				 //					}
+				 //				}
+				 if (currentNode instanceof SplitNode) {
+					 currentNode = ((SplitNode) currentNode).getChild(((SplitNode) currentNode).instanceChildIndex(inst));
+				 } else { // if the replaced alternate tree is just a leaf node
+					 ((LeafNode) currentNode).learnFromInstance(inst, prediction, growthAllowed);
+					 break;
+				 }
+			 }
+		 }
+	 }
 
-	//region --- Object instatiation methods
+	 //region --- Object instatiation methods
 
-	protected NumericStatisticsObserver newNumericClassObserver() {
-		return new MultiLabelBSTree();
-	}
+	 protected NumericStatisticsObserver newNumericClassObserver() {
+		 return new MultiLabelBSTree();
+	 }
 
-	public NominalStatisticsObserver newNominalClassObserver() {
-		return new MultiLabelNominalAttributeObserver();
-	}
+	 public NominalStatisticsObserver newNominalClassObserver() {
+		 return new MultiLabelNominalAttributeObserver();
+	 }
 
-	//	protected SplitNode newSplitNode(InstanceConditionalTest splitTest) {
-	//		maxID++;
-	//		return new SplitNode(splitTest, this);
-	//	}
+	 //	protected SplitNode newSplitNode(InstanceConditionalTest splitTest) {
+	 //		maxID++;
+	 //		return new SplitNode(splitTest, this);
+	 //	}
 
-	protected SplitNode newSplitNode(Predicate predicate) {
-		maxID++;
-		return new SplitNode(predicate, this);
-	}
+	 protected SplitNode newSplitNode(Predicate predicate) {
+		 maxID++;
+		 return new SplitNode(predicate, this);
+	 }
 
-	protected LeafNode newLeafNode() {
-		maxID++;
-		return new LeafNode(this);
-	}
+	 protected LeafNode newLeafNode() {
+		 maxID++;
+		 return new LeafNode(this);
+	 }
 
-<<<<<<< HEAD
-	public MultitargetPerceptron newLeafModel() {
-=======
-	protected MultitargetPerceptron newLeafModel() {
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
-		return new MultitargetPerceptron(this);
-	}
+	 public MultitargetPerceptron newLeafModel() {
+		 return new MultitargetPerceptron(this);
+	 }
 
-	//endregion --- Object instatiation methods
+	 //endregion --- Object instatiation methods
 
-	//region --- Processing methods
-	protected void checkRoot() {
-		if (treeRoot == null) {
-			treeRoot = newLeafNode();
-			leafNodeCount = 1;
-		}
-	}
+	 //region --- Processing methods
+	 protected void checkRoot() {
+		 if (treeRoot == null) {
+			 treeRoot = newLeafNode();
+		 }
+	 }
 
-	public static double computeHoeffdingBound(double range, double confidence, double n) {
-		return Math.sqrt(( (range * range) * Math.log(1 / confidence)) / (2.0 * n));
-	}
+	 public static double computeHoeffdingBound(double range, double confidence, double n) {
+		 return Math.sqrt(( (range * range) * Math.log(1 / confidence)) / (2.0 * n));
+	 }
 
-	public boolean buildingModelTree() {
-		return !regressionTreeOption.isSet();
-	}
+	 public boolean buildingModelTree() {
+		 return !regressionTreeOption.isSet();
+	 }
 
-	public boolean normalize() {
-		return !doNotNormalizeOption.isSet();
-	}
+	 public boolean normalize() {
+		 return !doNotNormalizeOption.isSet();
+	 }
 
-	protected void attemptToSplit(LeafNode node, SplitNode parent, int parentIndex) {
-		//System.out.println("Evaluating splits");
-		//System.out.println(examplesSeen);
-		// Set the split criterion to use to the SDR split criterion as described by Ikonomovska et al. 
-		MultiLabelSplitCriterion splitCriterion = new ICVarianceReduction();
+	 protected void attemptToSplit(LeafNode node, SplitNode parent, int parentIndex) {
+		 //System.out.println("Evaluating splits");
+		 //System.out.println(examplesSeen);
+		 // Set the split criterion to use to the SDR split criterion as described by Ikonomovska et al. 
+		 MultiLabelSplitCriterion splitCriterion = new ICVarianceReduction();
 
-		// Using this criterion, find the best split per attribute and rank the results
-		AttributeExpansionSuggestion[] bestSplitSuggestions = node.getBestSplitSuggestions(splitCriterion); // TODO update with split criterion option
-		Arrays.sort(bestSplitSuggestions);
+		 // Using this criterion, find the best split per attribute and rank the results
+		 AttributeExpansionSuggestion[] bestSplitSuggestions = node.getBestSplitSuggestions(splitCriterion); // TODO update with split criterion option
+		 Arrays.sort(bestSplitSuggestions);
 
-		// Declare a variable to determine if any of the splits should be performed
-		boolean shouldSplit = false;
+		 // Declare a variable to determine if any of the splits should be performed
+		 boolean shouldSplit = false;
 
-		// If only one split was returned, use it
-		if (bestSplitSuggestions.length < 2) {
-			shouldSplit = bestSplitSuggestions.length > 0;
-		} else { // Otherwise, consider which of the splits proposed may be worth trying
+		 // If only one split was returned, use it
+		 if (bestSplitSuggestions.length < 2) {
+			 shouldSplit = bestSplitSuggestions.length > 0;
+		 } else { // Otherwise, consider which of the splits proposed may be worth trying
 
-			// Determine the Hoeffding bound value, used to select how many instances should be used to make a test decision
-			// to feel reasonably confident that the test chosen by this sample is the same as what would be chosen using infinite examples
-			double hoeffdingBound = computeHoeffdingBound(1, splitConfidenceOption.getValue(), node.examplesSeen);
-			// Determine the top two ranked splitting suggestions
-			AttributeExpansionSuggestion bestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1];
-			AttributeExpansionSuggestion secondBestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 2];
+			 // Determine the Hoeffding bound value, used to select how many instances should be used to make a test decision
+			 // to feel reasonably confident that the test chosen by this sample is the same as what would be chosen using infinite examples
+			 double hoeffdingBound = computeHoeffdingBound(1, splitConfidenceOption.getValue(), node.examplesSeen);
+			 // Determine the top two ranked splitting suggestions
+			 AttributeExpansionSuggestion bestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1];
+			 AttributeExpansionSuggestion secondBestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 2];
 
-			// If the upper bound of the sample mean for the ratio of SDR(best suggestion) to SDR(second best suggestion),
-			// as determined using the Hoeffding bound, is less than 1, then the true mean is also less than 1, and thus at this
-			// particular moment of observation the bestSuggestion is indeed the best split option with confidence 1-delta, and
-			// splitting should occur.
-			// Alternatively, if two or more splits are very similar or identical in terms of their splits, then a threshold limit
-			// (default 0.05) is applied to the Hoeffding bound; if the Hoeffding bound is smaller than this limit then the two
-			// competing attributes are equally good, and the split will be made on the one with the higher SDR value.
-			//System.out.print(hoeffdingBound);
-			//System.out.print(" ");
-			///System.out.println(secondBestSuggestion.merit / bestSuggestion.merit);
-			if ((secondBestSuggestion.merit / bestSuggestion.merit < 1 - hoeffdingBound) || (hoeffdingBound < this.tieThresholdOption.getValue())) {
-				shouldSplit = true;
-			}
-			// If the splitting criterion was not met, initiate pruning of the E-BST structures in each attribute observer
-			else {
-				// TODO pruning is currently disabled
-				for (int i = 0; i < node.attributeObservers.size(); i++) {
-					AttributeStatisticsObserver obs = node.attributeObservers.get(i);
-					if (obs != null) {
-						if (getModelContext().attribute(i).isNumeric());
-						//TODO obs.removeBadSplits(null, secondBestSuggestion.merit / bestSuggestion.merit, bestSuggestion.merit, hoeffdingBound, getModelContext().numOutputAttributes());
-						if (getModelContext().attribute(i).isNominal());
-						// TODO nominal class observers
-					}
-				}
-			}
-<<<<<<< HEAD
-			
-			if (hoeffdingBound < this.tieThresholdOption.getValue() && this.printLogsOption.isSet()) System.out.println("Forced to split due to tie at " + this.examplesSeen); 
-=======
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
-		}
+			 // If the upper bound of the sample mean for the ratio of SDR(best suggestion) to SDR(second best suggestion),
+			 // as determined using the Hoeffding bound, is less than 1, then the true mean is also less than 1, and thus at this
+			 // particular moment of observation the bestSuggestion is indeed the best split option with confidence 1-delta, and
+			 // splitting should occur.
+			 // Alternatively, if two or more splits are very similar or identical in terms of their splits, then a threshold limit
+			 // (default 0.05) is applied to the Hoeffding bound; if the Hoeffding bound is smaller than this limit then the two
+			 // competing attributes are equally good, and the split will be made on the one with the higher SDR value.
+			 //System.out.print(hoeffdingBound);
+			 //System.out.print(" ");
+			 ///System.out.println(secondBestSuggestion.merit / bestSuggestion.merit);
+			 if ((secondBestSuggestion.merit / bestSuggestion.merit < 1 - hoeffdingBound) || (hoeffdingBound < this.tieThresholdOption.getValue())) {
+				 shouldSplit = true;
+			 }
+			 // If the splitting criterion was not met, initiate pruning of the E-BST structures in each attribute observer
+			 else {
+				 // TODO pruning is currently disabled
+				 for (int i = 0; i < node.attributeObservers.size(); i++) {
+					 AttributeStatisticsObserver obs = node.attributeObservers.get(i);
+					 if (obs != null) {
+						 if (getModelContext().attribute(i).isNumeric());
+						 //TODO obs.removeBadSplits(null, secondBestSuggestion.merit / bestSuggestion.merit, bestSuggestion.merit, hoeffdingBound, getModelContext().numOutputAttributes());
+						 if (getModelContext().attribute(i).isNominal());
+						 // TODO nominal class observers
+					 }
+				 }
+			 }
+		 }
 
-		// If the splitting criterion were met, split the current node using the chosen attribute test, and
-		// make two new branches leading to (empty) leaves
-		if (shouldSplit) {
-<<<<<<< HEAD
-			if (node.parent == null && this.printLogsOption.isSet()) {
-				System.out.println("splitting root node at " + this.examplesSeen);
-			}
-=======
->>>>>>> 5c49882b22b3a8314c6dfcc8c026456c887262fa
-			AttributeExpansionSuggestion splitDecision = bestSplitSuggestions[bestSplitSuggestions.length - 1];
+		 // If the splitting criterion were met, split the current node using the chosen attribute test, and
+		 // make two new branches leading to (empty) leaves
+		 if (shouldSplit) {
+			 AttributeExpansionSuggestion splitDecision = bestSplitSuggestions[bestSplitSuggestions.length - 1];
 
-			SplitNode newSplit = newSplitNode(splitDecision.predicate);
-			newSplit.copyStatistics(node);
-			newSplit.changeDetection = node.changeDetection;
-			newSplit.ID = node.ID;
-			leafNodeCount--;
-			//System.out.println("Splitting");
-			//System.out.println(examplesSeen);
-			for (int i = 0; i < 2; i++) { // Hardcoded for 2 values (due to the use of the Predicate class)
-				LeafNode newChild = newLeafNode();
-				if (buildingModelTree()) {
-					// Copy the splitting node's perceptron to it's children
-					newChild.learningModel = new MultitargetPerceptron(this, (MultitargetPerceptron) node.learningModel);
+			 SplitNode newSplit = newSplitNode(splitDecision.predicate);
+			 newSplit.copyStatistics(node);
+			 newSplit.changeDetection = node.changeDetection;
+			 newSplit.ID = node.ID;
+			 for (int i = 0; i < 2; i++) { // Hardcoded for 2 values (due to the use of the Predicate class)
+				 LeafNode newChild = newLeafNode();
+				 if (buildingModelTree()) {
+					 // Copy the splitting node's perceptron to it's children
+					 newChild.learningModel = new MultitargetPerceptron(this, (MultitargetPerceptron) node.learningModel);
 
-				}
-				newChild.changeDetection = node.changeDetection;
-				newChild.setParent(newSplit);
-				newSplit.setChild(i, newChild);
-				leafNodeCount++;
-			}
-			if (parent == null && node.originalNode == null) {
-				treeRoot = newSplit;
-			} else if (parent == null && node.originalNode != null) {
-				node.originalNode.alternateTree = newSplit;
-			} else {
-				parent.setChild(parentIndex, newSplit);
-				newSplit.setParent(parent);
-			}
+				 }
+				 newChild.changeDetection = node.changeDetection;
+				 newChild.setParent(newSplit);
+				 newSplit.setChild(i, newChild);
+			 }
+			 if (parent == null && node.originalNode == null) {
+				 treeRoot = newSplit;
+			 } else if (parent == null && node.originalNode != null) {
+				 node.originalNode.alternateTree = newSplit;
+			 } else {
+				 parent.setChild(parentIndex, newSplit);
+				 newSplit.setParent(parent);
+			 }
+		 }
+	 }
 
-			splitNodeCount++;
-		}
-	}
+	 public  double computeSD(double squaredVal, double val, double size) {
+		 if (size > 1)
+			 return Math.sqrt((squaredVal - ((val * val) / size)) / size);
+		 else
+			 return 0.0;
+	 }
 
-	public  double computeSD(double squaredVal, double val, double size) {
-		if (size > 1)
-			return Math.sqrt((squaredVal - ((val * val) / size)) / size);
-		else
-			return 0.0;
-	}
+	 public static double scalarProduct(DoubleVector u, DoubleVector v) {
+		 double ret = 0.0;
+		 for (int i = 0; i < Math.max(u.numValues(), v.numValues()); i++) {
+			 ret += u.getValue(i) * v.getValue(i);
+		 }
+		 return ret;
+	 }
+	 //endregion --- Processing methods
 
-	public static double scalarProduct(DoubleVector u, DoubleVector v) {
-		double ret = 0.0;
-		for (int i = 0; i < Math.max(u.numValues(), v.numValues()); i++) {
-			ret += u.getValue(i) * v.getValue(i);
-		}
-		return ret;
-	}
-	//endregion --- Processing methods
-
-	//endregion ================ METHODS ================
+	 //endregion ================ METHODS ================
 }

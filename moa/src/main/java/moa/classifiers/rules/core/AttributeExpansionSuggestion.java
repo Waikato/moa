@@ -17,10 +17,9 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.classifiers.rules.multilabel.core;
+package moa.classifiers.rules.core;
 
 import moa.AbstractMOAObject;
-import moa.classifiers.rules.core.Predicate;
 import moa.core.DoubleVector;
 
 /**

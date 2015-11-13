@@ -1,13 +1,13 @@
-package moa.classifiers.rules.multilabel.attributeclassobservers;
+package moa.classifiers.multilabel.core.attributeclassobservers;
 
 import java.io.Serializable;
 
 import com.github.javacliparser.IntOption;
 
+import moa.classifiers.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
+import moa.classifiers.rules.core.AttributeExpansionSuggestion;
 import moa.classifiers.rules.core.NumericRulePredicate;
 import moa.classifiers.rules.core.Utils;
-import moa.classifiers.rules.multilabel.core.AttributeExpansionSuggestion;
-import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
