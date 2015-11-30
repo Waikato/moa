@@ -246,6 +246,11 @@ public class BICO extends AbstractClusterer {
 	@Override
 	public void trainOnInstanceImpl(Instance inst) {
 		double[] x = inst.toDoubleArray();
+		if (this.numDimensions != x.length) {
+			System.out.println("Line skipped because line dimension is "
+					+ x.length + " instead of " + this.numDimensions);
+			return;
+		}
 		// Starts with the buffer phase to calculate the starting threshold
 		if (this.bufferPhase) {
 			// Calculates the pairwise distance to all unequal point in the
