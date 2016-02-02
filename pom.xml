@@ -4,7 +4,7 @@
   <groupId>nz.ac.waikato.cms.moa</groupId>
   <artifactId>moa-pom</artifactId>
   <packaging>pom</packaging>
-  <version>2012.09-SNAPSHOT</version>
+  <version>2015.05-SNAPSHOT</version>
 
   <name>MOA: meta-package</name>
   <description>
@@ -111,6 +111,15 @@
                 </goals>
               </execution>
             </executions>
+          </plugin>
+	  <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.5</version>
+            <configuration>
+               <source>1.7</source>
+               <target>1.7</target>
+            </configuration>
           </plugin>
         </plugins>
       </build>
