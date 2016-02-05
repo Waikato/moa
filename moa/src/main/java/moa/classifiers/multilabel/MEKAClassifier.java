@@ -81,6 +81,7 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
             //System.out.println(baseLearnerOption.getValue());
             String[] options = weka.core.Utils.splitOptions(baseLearnerOption.getValueAsCLIString());
             createWekaClassifier(options);
+			System.out.println(""+this.classifier.m_Classifier);
         } catch (Exception e) {
             System.err.println("Creating a new classifier: " + e.getMessage());
         }
