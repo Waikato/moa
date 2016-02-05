@@ -81,7 +81,7 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
             //System.out.println(baseLearnerOption.getValue());
             String[] options = weka.core.Utils.splitOptions(baseLearnerOption.getValueAsCLIString());
             createWekaClassifier(options);
-			//System.out.println(""+this.classifier.m_Classifier);
+			System.out.println("[DEBUG] BASE CLASSIFIER: "+this.classifier);
         } catch (Exception e) {
             System.err.println("Creating a new classifier: " + e.getMessage());
         }
@@ -144,7 +144,7 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
 
 		MultiLabelPrediction prediction=null;
 
-		if (isClassificationEnabled == true){ 
+		if (isClassificationEnabled == true) { 
 
 			prediction = new MultiLabelPrediction(L);
 			double votes[] = new double[L];
@@ -158,13 +158,13 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
 
 			//System.out.println("[votes] "+Arrays.toString(votes));
 			for (int j = 0; j < L; j++) {
-				int pos = (votes[j] >= 0.5) ? 1 : 0;
+				//int pos = (votes[j] >= 0.5) ? 1 : 0;
 				prediction.setVotes(j, new double[]{1.-votes[j],votes[j]});
 			}
 			//System.out.println("[pred]  "+prediction);
 
 		}
-		else{
+		else {
 			//System.out.println("Classification not enableed!");
 		}
 		

@@ -81,7 +81,7 @@ public class MajorityLabelset extends AbstractMultiLabelLearner implements Multi
     @Override
     public Prediction getPredictionForInstance(MultiLabelInstance x){
 
-		return (majorityLabelset!=null) ? this.majorityLabelset : null;
+		return this.majorityLabelset;
     }
 
     @Override
