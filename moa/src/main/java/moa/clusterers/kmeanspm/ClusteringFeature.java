@@ -15,9 +15,9 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
-package moa.clusterers.bico;
+package moa.clusterers.kmeanspm;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -27,8 +27,8 @@ import moa.cluster.SphereCluster;
 
 /**
  * Provides a ClusteringFeature.
- * 
- * Citation: Hendrik Fichtenberger, Marc Gillé, Melanie Schmidt, 
+ *
+ * Citation: Hendrik Fichtenberger, Marc Gillé, Melanie Schmidt,
  * Chris Schwiegelshohn, Christian Sohler:
  * BICO: BIRCH Meets Coresets for k-Means Clustering.
  * ESA 2013: 481-492 (2013)
@@ -45,7 +45,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/**
 	 * Creates a ClusteringFeature.
-	 * 
+	 *
 	 * @param center
 	 *            the center point
 	 * @param numPoints
@@ -68,7 +68,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/**
 	 * Creates a ClusteringFeature.
-	 * 
+	 *
 	 * @param center
 	 *            the center point
 	 * @param radius
@@ -84,7 +84,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/**
 	 * Adds a point to the ClusteringFeature.
-	 * 
+	 *
 	 * @param numPoints
 	 *            the number of points to add
 	 * @param sumPoints
@@ -104,7 +104,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/**
 	 * Merges the ClusteringFeature with an other ClusteringFeature.
-	 * 
+	 *
 	 * @param x
 	 *            the ClusteringFeature to merge with
 	 */
@@ -120,7 +120,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/**
 	 * Creates a Cluster of the ClusteringFeature.
-	 * 
+	 *
 	 * @return a Cluster
 	 */
 	public Cluster toCluster() {
@@ -134,7 +134,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/**
 	 * Creates the cluster center of the ClusteringFeature.
-	 * 
+	 *
 	 * @return the cluster center
 	 */
 	public double[] toClusterCenter() {
@@ -149,7 +149,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/**
 	 * Writes the cluster center to a given stream.
-	 * 
+	 *
 	 * @param stream
 	 *            the stream
 	 * @throws IOException
@@ -166,7 +166,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/**
 	 * Returns the number of points of the ClusteringFeature.
-	 * 
+	 *
 	 * @return the number of points
 	 */
 	public int getNumPoints() {
@@ -175,7 +175,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/**
 	 * Sets the number of points of the ClusteringFeature.
-	 * 
+	 *
 	 * @param numPoints
 	 *            the number of points of the ClusteringFeature to set
 	 */
@@ -186,7 +186,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/**
 	 * Returns the sum of points of the ClusteringFeature.
-	 * 
+	 *
 	 * @return the sum of points
 	 */
 	public double[] getSumPoints() {
@@ -195,7 +195,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/**
 	 * Sets the sum of points of the ClusteringFeature.
-	 * 
+	 *
 	 * @param sumPoints
 	 *            the sum of points of the ClusteringFeature to set
 	 */
@@ -206,7 +206,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/**
 	 * Returns the sum of the squared lengths of the ClusteringFeature.
-	 * 
+	 *
 	 * @return the sum of the squared lengths
 	 */
 	public double getSumSquaredLength() {
@@ -215,7 +215,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/**
 	 * Sets the sum of the squared lengths of the ClusteringFeature.
-	 * 
+	 *
 	 * @param sumSquaredLength
 	 *            the sum of the squared lengths of the ClusteringFeature to set
 	 */
@@ -225,7 +225,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/**
 	 * Returns the threshold of the ClusteringFeature.
-	 * 
+	 *
 	 * @return the threshold
 	 */
 	public double getThreshold() {
@@ -234,7 +234,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/**
 	 * Sets the threshold of the ClusteringFeature.
-	 * 
+	 *
 	 * @param threshold
 	 *            the threshold of the ClusteringFeature to set
 	 */
@@ -244,7 +244,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.cluster.Cluster#getDescription(java.lang.StringBuilder, int)
 	 */
 	@Override
@@ -254,7 +254,7 @@ public class ClusteringFeature extends SphereCluster {
 
 	/**
 	 * Calculates the k-means costs of the ClusteringFeature too a center.
-	 * 
+	 *
 	 * @param center
 	 *            the center too calculate the costs
 	 * @return the costs
@@ -269,7 +269,7 @@ public class ClusteringFeature extends SphereCluster {
 	/**
 	 * Calculates the k-means costs of the ClusteringFeature and a point too a
 	 * center.
-	 * 
+	 *
 	 * @param center
 	 *            the center too calculate the costs
 	 * @param point
@@ -277,7 +277,7 @@ public class ClusteringFeature extends SphereCluster {
 	 * @return the costs
 	 */
 	public double calcKMeansCosts(double[] center, double[] point) {
-		assert (this.sumPoints.length == center.length && 
+		assert (this.sumPoints.length == center.length &&
 				this.sumPoints.length == point.length);
 		return (this.sumSquaredLength + Metric.distanceSquared(point)) - 2
 				* Metric.dotProductWithAddition(this.sumPoints, point, center)
@@ -287,7 +287,7 @@ public class ClusteringFeature extends SphereCluster {
 	/**
 	 * Calculates the k-means costs of the ClusteringFeature and another
 	 * ClusteringFeature too a center.
-	 * 
+	 *
 	 * @param center
 	 *            the center too calculate the costs
 	 * @param points
@@ -295,7 +295,7 @@ public class ClusteringFeature extends SphereCluster {
 	 * @return the costs
 	 */
 	public double calcKMeansCosts(double[] center, ClusteringFeature points) {
-		assert (this.sumPoints.length == center.length && 
+		assert (this.sumPoints.length == center.length &&
 				this.sumPoints.length == points.sumPoints.length);
 		return (this.sumSquaredLength + points.sumSquaredLength)
 				- 2 * Metric.dotProductWithAddition(this.sumPoints,

@@ -15,9 +15,9 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
-package moa.clusterers.bico;
+package moa.clusterers.kmeanspm;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,7 +27,7 @@ import java.util.Random;
 /**
  * Provides methods to execute the k-means and k-means++ algorithm with a
  * clustering.
- * 
+ *
  * Citation: David Arthur, Sergei Vassilvitskii:
  * k-means++: the advantages of careful seeding.
  * SODA 2007: 1027-1035
@@ -37,7 +37,7 @@ public class CoresetKMeans {
 
 	/**
 	 * Generates the initial centroids like the k-means++ algorithm.
-	 * 
+	 *
 	 * @param k
 	 *            number of centroids
 	 * @param input
@@ -96,7 +96,7 @@ public class CoresetKMeans {
 	/**
 	 * Executes the k-means algorithm with the given initial centroids until the
 	 * costs converges.
-	 * 
+	 *
 	 * @param centroids
 	 *            initial centroids
 	 * @param input

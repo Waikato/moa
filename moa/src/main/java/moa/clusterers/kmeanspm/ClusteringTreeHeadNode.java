@@ -15,9 +15,9 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
-package moa.clusterers.bico;
+package moa.clusterers.kmeanspm;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,8 +27,8 @@ import java.util.Random;
 /**
  * Provides a ClusteringTreeNode with an extended nearest neighbor search in the
  * root.
- * 
- * Citation: Hendrik Fichtenberger, Marc Gillé, Melanie Schmidt, 
+ *
+ * Citation: Hendrik Fichtenberger, Marc Gillé, Melanie Schmidt,
  * Chris Schwiegelshohn, Christian Sohler:
  * BICO: BIRCH Meets Coresets for k-Means Clustering.
  * ESA 2013: 481-492 (2013)
@@ -48,7 +48,7 @@ public class ClusteringTreeHeadNode extends ClusteringTreeNode {
 	/**
 	 * Creates a ClusteringTreeNode with an extended nearest neighbor search in
 	 * the root.
-	 * 
+	 *
 	 * @param dimension
 	 *            the number of dimensions of the points
 	 * @param numProjections
@@ -91,7 +91,7 @@ public class ClusteringTreeHeadNode extends ClusteringTreeNode {
 
 	/**
 	 * Projects a point to a random projection.
-	 * 
+	 *
 	 * @param pointA
 	 *            the point to project
 	 * @param i
@@ -99,14 +99,14 @@ public class ClusteringTreeHeadNode extends ClusteringTreeNode {
 	 * @return the position of the point
 	 */
 	private double project(double[] pointA, int i) {
-		assert (this.projections.size() < i && 
+		assert (this.projections.size() < i &&
 				this.projections.get(i).length == pointA.length);
 		return Metric.dotProduct(pointA, this.projections.get(i));
 	}
 
 	/**
 	 * Projects a point to a random projection.
-	 * 
+	 *
 	 * @param pointA
 	 *            the point to project
 	 * @param i
@@ -120,7 +120,7 @@ public class ClusteringTreeHeadNode extends ClusteringTreeNode {
 
 	/**
 	 * Calculates the bucket number.
-	 * 
+	 *
 	 * @param val
 	 *            position of the point
 	 * @return the bucket number
@@ -131,12 +131,12 @@ public class ClusteringTreeHeadNode extends ClusteringTreeNode {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.evaluation.bico.ClusteringTreeNode#nearestChild(double[])
 	 */
 	@Override
 	public ClusteringTreeNode nearestChild(double[] pointA) {
-		assert (this.projections.size() > 0 && 
+		assert (this.projections.size() > 0 &&
 				this.projections.get(0).length == pointA.length);
 		int minBucketProjection = -1;
 		int minSize = Integer.MAX_VALUE;
@@ -182,7 +182,7 @@ public class ClusteringTreeHeadNode extends ClusteringTreeNode {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.evaluation.bico.ClusteringTreeNode#addChild(moa.evaluation.bico.
 	 * ClusteringTreeNode)
 	 */
@@ -212,7 +212,7 @@ public class ClusteringTreeHeadNode extends ClusteringTreeNode {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.evaluation.bico.ClusteringTreeNode#clearChildren()
 	 */
 	@Override

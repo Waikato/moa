@@ -15,15 +15,15 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
-package moa.clusterers.bico;
+package moa.clusterers.kmeanspm;
 
 import java.util.Random;
 
 /**
  * Provides a Dietzfelbinger hash function.
- * 
+ *
  * Citation: Mikkel Thorup:
  * High Speed Hashing for Integers and Strings.
  * CoRR abs/1504.06804 (2015)
@@ -39,7 +39,7 @@ public class DietzfelbingerHash {
 
 	/**
 	 * Creates a Dietzfelbinger hash function.
-	 * 
+	 *
 	 * @param hashSize
 	 *            size of the hash function (must be smaller than 31)
 	 * @param random
@@ -54,7 +54,7 @@ public class DietzfelbingerHash {
 
 	/**
 	 * Generates a new Dietzfelbinger hash function.
-	 * 
+	 *
 	 */
 	public void nextHashFunction() {
 		this.randomFactor = random.nextLong();
@@ -63,7 +63,7 @@ public class DietzfelbingerHash {
 
 	/**
 	 * Dietzfelbinger hash function.
-	 * 
+	 *
 	 * @param value
 	 *            to hash
 	 * @return the result

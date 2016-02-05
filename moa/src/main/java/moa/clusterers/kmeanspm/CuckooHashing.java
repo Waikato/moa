@@ -15,9 +15,9 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
-package moa.clusterers.bico;
+package moa.clusterers.kmeanspm;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,11 +25,11 @@ import java.util.Random;
 
 /**
  * Provides a hash table based on Cuckoo Hashing.
- * 
+ *
  * Citation: Rasmus Pagh, Flemming Friche Rodler:
  * Cuckoo Hashing.
  * ESA 2001: 121-133
- * 
+ *
  * @param <T>
  *            class of stored elements
  */
@@ -54,7 +54,7 @@ public class CuckooHashing<T> {
 
 	/**
 	 * Creates a new hash table based on Cuckoo Hashing.
-	 * 
+	 *
 	 * @param startHashSize
 	 *            size of the hash function at the beginning (must be smaller
 	 *            than 31)
@@ -95,7 +95,7 @@ public class CuckooHashing<T> {
 
 	/**
 	 * Creates a new hash table based on Cuckoo Hashing.
-	 * 
+	 *
 	 * @param hashSize
 	 *            size of the hash function
 	 * @param random
@@ -107,7 +107,7 @@ public class CuckooHashing<T> {
 
 	/**
 	 * Adds an element to the hash table.
-	 * 
+	 *
 	 * @param key
 	 *            key value of the element
 	 * @param element
@@ -122,11 +122,11 @@ public class CuckooHashing<T> {
 
 	/**
 	 * Adds an element to one of the tables for Cuckoo Hashing.
-	 * 
+	 *
 	 * @param currentElement
 	 *            entry to add in a table
 	 * @param rehash
-	 *            if <code>true</code> the hash table will be rebuild when the 
+	 *            if <code>true</code> the hash table will be rebuild when the
 	 *            stash became too big.
 	 */
 	private void fileElement(Entry<T> currentElement, boolean rehash) {
@@ -157,7 +157,7 @@ public class CuckooHashing<T> {
 
 	/**
 	 * Adds a new table and rebuild the hash table.
-	 * 
+	 *
 	 */
 	private void increaseAndReset() {
 		if (this.hashSize < 30) {
@@ -180,7 +180,7 @@ public class CuckooHashing<T> {
 
 	/**
 	 * Gets an element of the hash table.
-	 * 
+	 *
 	 * @param key
 	 *            key value of the element
 	 */
@@ -202,7 +202,7 @@ public class CuckooHashing<T> {
 
 	/**
 	 * Rebuilds the hash table.
-	 * 
+	 *
 	 */
 	private void reset() {
 		for (DietzfelbingerHash hashfunction : this.hashfunctions) {
@@ -228,7 +228,7 @@ public class CuckooHashing<T> {
 	/**
 	 * Removes all of the elements from this hash table. The hash table will be
 	 * empty after this call returns.
-	 * 
+	 *
 	 */
 	public void clear() {
 		this.hashSize = this.startHashSize;
@@ -254,7 +254,7 @@ public class CuckooHashing<T> {
 
 	/**
 	 * Returns the number of elements in the hash table.
-	 * 
+	 *
 	 * @return the number of elements in the hash table
 	 */
 	public int size() {
@@ -263,7 +263,7 @@ public class CuckooHashing<T> {
 
 	/**
 	 * Returns <code>true</code> if this hash table contains no elements.
-	 * 
+	 *
 	 * @return <code>true</code> if this hash table contains no elements
 	 */
 	public boolean isEmpty() {
@@ -283,7 +283,7 @@ public class CuckooHashing<T> {
 
 		/**
 		 * Creates a new entry for an element.
-		 * 
+		 *
 		 * @param key
 		 *            key of element
 		 * @param value
@@ -296,7 +296,7 @@ public class CuckooHashing<T> {
 
 		/**
 		 * Gets the key of the element.
-		 * 
+		 *
 		 * @return key of the element
 		 */
 		public long getKey() {
@@ -305,7 +305,7 @@ public class CuckooHashing<T> {
 
 		/**
 		 * Gets the value of the element.
-		 * 
+		 *
 		 * @return value of the element
 		 */
 		public V getValue() {

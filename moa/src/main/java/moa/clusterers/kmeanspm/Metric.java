@@ -15,9 +15,9 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
-package moa.clusterers.bico;
+package moa.clusterers.kmeanspm;
 
 /**
  * Provides methods to calculate different distances of points.
@@ -27,7 +27,7 @@ public class Metric {
 
 	/**
 	 * Calculates the squared Euclidean length of a point.
-	 * 
+	 *
 	 * @param pointA
 	 *            point
 	 * @return the squared Euclidean length
@@ -42,7 +42,7 @@ public class Metric {
 
 	/**
 	 * Calculates the Euclidean length of a point.
-	 * 
+	 *
 	 * @param pointA
 	 *            point
 	 * @return the Euclidean length
@@ -54,7 +54,7 @@ public class Metric {
 	/**
 	 * Calculates the squared Euclidean distance of two points. Starts at dimension
 	 * offset + 1 of pointB.
-	 * 
+	 *
 	 * @param pointA
 	 *            first point
 	 * @param pointB
@@ -77,7 +77,7 @@ public class Metric {
 	/**
 	 * Calculates the Euclidean distance of two points. Starts at dimension offset
 	 * + 1 of pointB.
-	 * 
+	 *
 	 * @param pointA
 	 *            first point
 	 * @param pointB
@@ -92,7 +92,7 @@ public class Metric {
 
 	/**
 	 * Calculates the squared Euclidean distance of two points.
-	 * 
+	 *
 	 * @param pointA
 	 *            first point
 	 * @param pointB
@@ -111,7 +111,7 @@ public class Metric {
 
 	/**
 	 * Calculates the Euclidean distance of two points.
-	 * 
+	 *
 	 * @param pointA
 	 *            first point
 	 * @param pointB
@@ -124,7 +124,7 @@ public class Metric {
 
 	/**
 	 * Calculates the squared Euclidean length of a point divided by a scalar.
-	 * 
+	 *
 	 * @param pointA
 	 *            point
 	 * @param dA
@@ -142,7 +142,7 @@ public class Metric {
 
 	/**
 	 * Calculates the Euclidean length of a point divided by a scalar.
-	 * 
+	 *
 	 * @param pointA
 	 *            point
 	 * @param dA
@@ -156,7 +156,7 @@ public class Metric {
 	/**
 	 * Calculates the squared Euclidean distance of the first point divided by a
 	 * scalar and another second point.
-	 * 
+	 *
 	 * @param pointA
 	 *            first point
 	 * @param dA
@@ -179,7 +179,7 @@ public class Metric {
 	/**
 	 * Calculates the Euclidean distance of the first point divided by a scalar and
 	 * another second point.
-	 * 
+	 *
 	 * @param pointA
 	 *            first point
 	 * @param dA
@@ -196,7 +196,7 @@ public class Metric {
 	/**
 	 * Calculates the squared Euclidean distance of the first point divided by a
 	 * first scalar and another second point divided by a second scalar.
-	 * 
+	 *
 	 * @param pointA
 	 *            first point
 	 * @param dA
@@ -221,7 +221,7 @@ public class Metric {
 	/**
 	 * Calculates the Euclidean distance of the first point divided by a first scalar
 	 * and another second point divided by a second scalar.
-	 * 
+	 *
 	 * @param pointA
 	 *            first point
 	 * @param dA
@@ -239,7 +239,7 @@ public class Metric {
 
 	/**
 	 * Calculates the dot product of the point with itself.
-	 * 
+	 *
 	 * @param pointA
 	 *            point
 	 * @return the dot product
@@ -254,7 +254,7 @@ public class Metric {
 
 	/**
 	 * Calculates the dot product of the first point with a second point.
-	 * 
+	 *
 	 * @param pointA
 	 *            first point
 	 * @param pointB
@@ -273,7 +273,7 @@ public class Metric {
 	/**
 	 * Calculates the dot product of the addition of the first and the second
 	 * point with the third point.
-	 * 
+	 *
 	 * @param pointA1
 	 *            first point
 	 * @param pointA2
@@ -295,7 +295,7 @@ public class Metric {
 	/**
 	 * Calculates the dot product of the addition of the first and the second
 	 * point with the addition of the third and the fourth point.
-	 * 
+	 *
 	 * @param pointA1
 	 *            first point
 	 * @param pointA2

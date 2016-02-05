@@ -15,9 +15,9 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
-package moa.clusterers.bico;
+package moa.clusterers.kmeanspm;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -30,8 +30,8 @@ import moa.cluster.Clustering;
 
 /**
  * Provides a tree of ClusterFeatures.
- * 
- * Citation: Hendrik Fichtenberger, Marc Gillé, Melanie Schmidt, 
+ *
+ * Citation: Hendrik Fichtenberger, Marc Gillé, Melanie Schmidt,
  * Chris Schwiegelshohn, Christian Sohler:
  * BICO: BIRCH Meets Coresets for k-Means Clustering.
  * ESA 2013: 481-492 (2013)
@@ -48,7 +48,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 
 	/**
 	 * Creates a tree node for a ClusterFeature.
-	 * 
+	 *
 	 * @param center
 	 *            representation of the ClusterFeature
 	 * @param cf
@@ -63,7 +63,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 
 	/**
 	 * Counts the elements in tree with this node as the root.
-	 * 
+	 *
 	 * @deprecated
 	 * @return the number of elements
 	 */
@@ -79,7 +79,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 	/**
 	 * Adds all ClusterFeatures of the tree with this node as the root to a
 	 * Clustering.
-	 * 
+	 *
 	 * @param clustering
 	 *            the Clustering to add the ClusterFeatures too.
 	 * @return the input Clustering
@@ -97,7 +97,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 	/**
 	 * Adds all clustering centers of the ClusterFeatures of the tree with this
 	 * node as the root to a List of points.
-	 * 
+	 *
 	 * @param clustering
 	 *            the List to add the clustering centers too.
 	 * @return the input List
@@ -115,7 +115,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 	/**
 	 * Writes all clustering centers of the ClusterFeatures of the tree with this
 	 * node as the root to a given stream.
-	 * 
+	 *
 	 * @param stream
 	 *            the stream
 	 * @throws IOException
@@ -132,7 +132,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 
 	/**
 	 * Gets the representation of the ClusteringFeature
-	 * 
+	 *
 	 * @return the representation of the ClusteringFeature
 	 */
 	public double[] getCenter() {
@@ -141,7 +141,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 
 	/**
 	 * Sets the representation of the ClusteringFeature
-	 * 
+	 *
 	 * @param center
 	 *            the representation of the ClusteringFeature to set
 	 */
@@ -152,7 +152,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 
 	/**
 	 * Gets the ClusteringFeature of this node.
-	 * 
+	 *
 	 * @return the ClusteringFeature
 	 */
 	public ClusteringFeature getClusteringFeature() {
@@ -161,7 +161,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 
 	/**
 	 * Gets a <code>List</code> of the children nodes.
-	 * 
+	 *
 	 * @return a <code>List</code> of the children nodes
 	 */
 	public List<ClusteringTreeNode> getChildren() {
@@ -170,7 +170,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.MOAObject#getDescription(java.lang.StringBuilder, int)
 	 */
 	@Override
@@ -180,7 +180,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 
 	/**
 	 * Searches for the nearest child node by comparing each representation.
-	 * 
+	 *
 	 * @param pointA
 	 *            to find the nearest child for
 	 * @return the child node which is the nearest
@@ -201,7 +201,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 
 	/**
 	 * Adds a child node.
-	 * 
+	 *
 	 * @param e
 	 *            the child node to add
 	 * @return <code>true</code>
@@ -214,7 +214,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 
 	/**
 	 * Removes all children nodes.
-	 * 
+	 *
 	 * @see java.util.List#clear()
 	 */
 	public void clearChildren() {
@@ -223,7 +223,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 
 	/**
 	 * Returns <code>true</code> if this node contains no children nodes.
-	 * 
+	 *
 	 * @return <code>true</code> if this node contains no children nodes
 	 * @see java.util.List#isEmpty()
 	 */
@@ -233,7 +233,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 
 	/**
 	 * Gets the threshold of this node.
-	 * 
+	 *
 	 * @return the threshold
 	 */
 	public double getThreshold() {
@@ -242,7 +242,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 
 	/**
 	 * Gets the threshold of this node.
-	 * 
+	 *
 	 * @param threshold
 	 *            the threshold to set
 	 */

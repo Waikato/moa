@@ -15,9 +15,9 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
-package moa.clusterers.bico;
+package moa.clusterers.kmeanspm;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -38,13 +38,13 @@ import moa.core.Measurement;
 
 /**
  * A instance of this class provides the BICO clustering algorithm.
- * 
- * Citation: Hendrik Fichtenberger, Marc Gillé, Melanie Schmidt, 
+ *
+ * Citation: Hendrik Fichtenberger, Marc Gillé, Melanie Schmidt,
  * Chris Schwiegelshohn, Christian Sohler:
  * BICO: BIRCH Meets Coresets for k-Means Clustering.
  * ESA 2013: 481-492 (2013)
  * http://ls2-www.cs.tu-dortmund.de/bico/
- * 
+ *
  */
 public class BICO extends AbstractClusterer {
 
@@ -81,7 +81,7 @@ public class BICO extends AbstractClusterer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.clusterers.Clusterer#isRandomizable()
 	 */
 	@Override
@@ -91,7 +91,7 @@ public class BICO extends AbstractClusterer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.clusterers.AbstractClusterer#implementsMicroClusterer()
 	 */
 	@Override
@@ -101,7 +101,7 @@ public class BICO extends AbstractClusterer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.clusterers.AbstractClusterer#getMicroClusteringResult()
 	 */
 	@Override
@@ -112,7 +112,7 @@ public class BICO extends AbstractClusterer {
 
 	/**
 	 * Writes all micro cluster to a given stream.
-	 * 
+	 *
 	 * @param stream
 	 *            the stream
 	 * @throws IOException
@@ -124,7 +124,7 @@ public class BICO extends AbstractClusterer {
 
 	/**
 	 * Returns the current size of the micro clustering.
-	 * 
+	 *
 	 * @return The size of the micro clustering
 	 */
 	public int getMicroClusteringSize() {
@@ -133,7 +133,7 @@ public class BICO extends AbstractClusterer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.clusterers.Clusterer#getVotesForInstance(weka.core.Instance)
 	 */
 	@Override
@@ -143,7 +143,7 @@ public class BICO extends AbstractClusterer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.clusterers.Clusterer#getClusteringResult()
 	 */
 	@Override
@@ -212,7 +212,7 @@ public class BICO extends AbstractClusterer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.clusterers.AbstractClusterer#resetLearningImpl()
 	 */
 	@Override
@@ -239,7 +239,7 @@ public class BICO extends AbstractClusterer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * moa.clusterers.AbstractClusterer#trainOnInstanceImpl(weka.core.Instance)
 	 */
@@ -287,7 +287,7 @@ public class BICO extends AbstractClusterer {
 
 	/**
 	 * Inserts a new point into the ClusteringFeature tree.
-	 * 
+	 *
 	 * @param x
 	 *            the point
 	 */
@@ -331,7 +331,7 @@ public class BICO extends AbstractClusterer {
 	 * If the number of ClusteringTreeNodes exceeds the maximum bound, the
 	 * global threshold T will be doubled and the tree will be rebuild with the
 	 * new threshold.
-	 * 
+	 *
 	 */
 	protected void rebuild() {
 		// Checks if the number of nodes in the tree exceeds the maximum number
@@ -356,7 +356,7 @@ public class BICO extends AbstractClusterer {
 
 	/**
 	 * Inserts a ClusteringTreeNode into the ClusteringFeature tree.
-	 * 
+	 *
 	 * @param x
 	 *            the ClusteringTreeNode
 	 */
@@ -396,7 +396,7 @@ public class BICO extends AbstractClusterer {
 	/**
 	 * Calculates the squared threshold at a specific level in the
 	 * ClusteringFeature tree.
-	 * 
+	 *
 	 * @param level
 	 *            level in the tree
 	 * @return the squared threshold
@@ -408,7 +408,7 @@ public class BICO extends AbstractClusterer {
 	/**
 	 * Calculates the threshold at a specific level in the ClusteringFeature
 	 * tree.
-	 * 
+	 *
 	 * @param level
 	 *            level in the tree
 	 * @return the threshold
@@ -419,7 +419,7 @@ public class BICO extends AbstractClusterer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.clusterers.AbstractClusterer#getModelMeasurementsImpl()
 	 */
 	@Override
@@ -429,7 +429,7 @@ public class BICO extends AbstractClusterer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * moa.clusterers.AbstractClusterer#getModelDescription(java.lang.StringBuilder, int)
 	 */
