@@ -135,11 +135,10 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
 
 		weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
 
-		MultiLabelPrediction prediction=null;
+		MultiLabelPrediction prediction = new MultiLabelPrediction(L);
 
 		if (isClassificationEnabled == true) { 
 
-			prediction = new MultiLabelPrediction(L);
 			double votes[] = new double[L];
 			try {
 				votes = this.classifier.distributionForInstance(inst);
@@ -149,17 +148,12 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
 				System.exit(1);
 			}
 
-			//System.out.println("[votes] "+Arrays.toString(votes));
 			for (int j = 0; j < L; j++) {
-				//int pos = (votes[j] >= 0.5) ? 1 : 0;
 				prediction.setVotes(j, new double[]{1.-votes[j],votes[j]});
 			}
-			//System.out.println("[pred]  "+prediction);
 
 		}
-		else {
-			//System.out.println("Classification not enableed!");
-		}
+		// else there's no model yet... (just return empty prediction).
 		
 		return prediction;
 	}
