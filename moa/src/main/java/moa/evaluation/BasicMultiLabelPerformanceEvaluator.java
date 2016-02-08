@@ -64,10 +64,10 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
 		}
 
 		if (y != null && (y.numOutputAttributes() == L)) {
-			System.out.println("CURRENT NUMBER OF LABELS = "+y.numOutputAttributes());
+			//System.out.println("CURRENT NUMBER OF LABELS = "+y.numOutputAttributes());
 			sumExamples++;
 			int correct = 0;
-			System.out.println("y: "+y);
+			//System.out.println("y: "+y);
 			for (int j = 0; j< L; j++) {
 				//int value = 
 				int yp = (y.getVote(j,1) > t) ? 1 : 0;
@@ -85,7 +85,7 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
 				System.err.println("Only "+y.numOutputAttributes()+" labels found! (Expecting "+L+")");
 			}
 			else
-				System.err.println("Prediction is null!");
+				System.err.println("Prediction is null! (Ignoring this prediction)");
 		}
 
     }
