@@ -1,7 +1,7 @@
 /*
  *    MEKAClassifier.java
  *    Copyright (C) 2012 University of Waikato, Hamilton, New Zealand
- *    @author Jesse Read (jesse@tsc.uc3m.es)
+ *    @author Jesse Read
  * 
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
 
     protected boolean isClassificationEnabled;
 
-    protected boolean isBufferStoring;
+    //protected boolean isBufferStoring;
 
 
 	private int L = 0;
@@ -81,59 +81,53 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
             //System.out.println(baseLearnerOption.getValue());
             String[] options = weka.core.Utils.splitOptions(baseLearnerOption.getValueAsCLIString());
             createWekaClassifier(options);
-        } catch (Exception e) {
-            System.err.println("Creating a new classifier: " + e.getMessage());
+		} catch (Exception e) {
+            System.err.println("[ERROR] Creating a new classifier: " + e.getMessage());
         }
         numberInstances = 0;
         isClassificationEnabled = false;
-        this.isBufferStoring = true;
+        //this.isBufferStoring = true;
         this.instanceConverter = new SamoaToWekaInstanceConverter();
+
     }
 
 	@Override
 	public void trainOnInstanceImpl(MultiLabelInstance samoaInstance) {
 
-		// Convert instance
+		// Convert Samoa instance to Weka instance (as used in Meka)
 		L = samoaInstance.numberOutputTargets();
 		weka.core.Instance x = this.instanceConverter.wekaInstance(samoaInstance);
 		x.dataset().setClassIndex(L);
 
 		if (numberInstances == 0) {
-			// This is the first instance -- Setup!
+			/*
+			 *  INITIALISE
+			 */
 			this.instancesBuffer = new weka.core.Instances(x.dataset());
-			if (classifier instanceof UpdateableClassifier) {
-				try {
-					System.err.println("Setting L="+L+" to MEKA classifier");
-					instancesBuffer.setClassIndex(L);
-					classifier.buildClassifier(instancesBuffer);
-				} catch(Exception e) {
-					System.err.println("[ERROR] Failed to build classifier");
-					e.printStackTrace();
-					System.exit(1);
-				}
-				this.isClassificationEnabled = true;
-			} else {
-				this.isBufferStoring = true;
-				System.out.println("[ERROR] Please use an Updateable Classifier");
+			try {
+				instancesBuffer.setClassIndex(L);
+				classifier.buildClassifier(instancesBuffer);
+			} catch(Exception e) {
+				System.err.println("[ERROR] Failed to build classifier, L="+L);
+				e.printStackTrace();
+				//System.exit(1);
+			}
+			this.isClassificationEnabled = true;
+		}
+		else {
+			/*
+			 *  UPDATE
+			 */
+			try {
+				((UpdateableClassifier) classifier).updateClassifier(x);
+			} catch(Exception e) {
+				System.err.println("[ERROR] Failed to update classifier");
+				e.printStackTrace();
+				//System.exit(1);
 			}
 		}
 		numberInstances++;
 
-		// Update classifier
-		if (classifier instanceof UpdateableClassifier) {
-			if (numberInstances > 0) {
-				try {
-					((UpdateableClassifier) classifier).updateClassifier(x);
-				} catch(Exception e) {
-					System.err.println("[ERROR] Failed to update classifier");
-					e.printStackTrace();
-					System.exit(1);
-				}
-			}
-			else {
-				System.out.println("[TO-DO] Non-Updateable MEKA classifiers should also work here!");
-			}
-		}
 	}
 
 	@Override
@@ -194,6 +188,11 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
         String[] newoptions = options.clone();
         newoptions[0] = "";
         this.classifier = weka.classifiers.AbstractClassifier.forName(classifierName, newoptions);
-    }
+		if (! (this.classifier instanceof UpdateableClassifier)) {
+			// TODO: Non-Updateable MEKA classifiers could also work here.
+			System.err.println("[ERROR] You must use an Updateable Classifier");
+			throw new Exception("Only Updateable MEKA classifiers can be used.");
+		}
+	}
 
 }
