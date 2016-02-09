@@ -24,6 +24,7 @@ import java.util.List;
 import moa.classifiers.Classifier;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.trees.HoeffdingTree;
+import moa.core.StringUtils;
 import moa.core.utils.Converter;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
@@ -71,10 +72,11 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		return getPredictionForInstance((MultiLabelInstance)example.getData());
 	} 
     
-  @Override
+ /* @Override
 	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
 
 		m_L = instance.numberOutputTargets();
+
 			
 		if (this.isClassificationEnabled == false) { 
 			return null;
@@ -97,15 +99,16 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 			return null;
 		}
 
-		//System.out.println("[votes] "+Arrays.toString(votes));
+		System.out.println(m_L+" [votes] "+Arrays.toString(votes));
 		for (int j = 0; j < m_L; j++) {
-			prediction.setVotes(j, new double[]{1.-votes[j],votes[j]});
+			double vote = j < votes.length ? votes[j] : 0;
+			prediction.setVotes(j, new double[]{1.-vote,vote});
 			//prediction.setVote(j, 1, votes[j]);
 			//prediction.setVote(j, 0, 1. - votes[j]);
 		}
 
 		return prediction;
-	}
+	}*/
 
 	//It uses several class values
 	public static class MultilabelInactiveLearningNode extends InactiveLearningNode {
@@ -153,6 +156,11 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 			return this.classifier.getVotesForInstance(inst); 			
 		}
 
+		public Prediction getPredictionForInstance(Instance inst, HoeffdingTree ht) {
+
+			return this.classifier.getPredictionForInstance(inst);
+		}
+
 		@Override
 		public void disableAttribute(int attIndex) {
 			// should not disable poor atts - they are used in NB calc
@@ -165,26 +173,47 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		//It uses different class values
 	    @Override
 		public void learnFromInstance(Instance mlinst, HoeffdingTree ht) {
-			this.classifier.trainOnInstance(mlinst);  
+			this.classifier.trainOnInstance(mlinst);
 			MultilabelHoeffdingTree mht = ((MultilabelHoeffdingTree) ht);
 			List<Integer> labels = mht.getRelevantLabels(mlinst);
+
+			//System.out.print("Labels: ");
 			for (int l : labels){
+				//System.out.print(l+", ");
 				this.observedClassDistribution.addToValue( l, mlinst.weight());
 			}
+			//System.out.println("");
+
 			Instance inst = mlinst; //mht.converter.formatInstance(mlinst);
+			//System.out.print("Instance "+inst.numInputAttributes()+": ");
 			for (int i = 0; i < inst.numInputAttributes(); i++) {
-			//for (int i = 1; i < inst.numAttributes(); i++) {
-				int instAttIndex = inst.inputAttribute(i).index(); //modelAttIndexToInstanceAttIndex(i, inst);
+				int instAttIndex = i; //inst.inputAttribute(i).index(); //modelAttIndexToInstanceAttIndex(i, inst);
+				//System.out.print(i+":"+instAttIndex+", ");
 				AttributeClassObserver obs = this.attributeObservers.get(instAttIndex); //i
 				if (obs == null) {
 					obs = inst.inputAttribute(i).isNominal() ? mht.newNominalClassObserver() : mht.newNumericClassObserver();
 					this.attributeObservers.set(i, obs);
 				}
+
 				for (int l : labels){
 					obs.observeAttributeClass(inst.valueInputAttribute(i), l, inst.weight());
 					//obs.observeAttributeClass(inst.value(instAttIndex), 0, inst.weight());
 				}
+
 			}
+			//System.out.println("");
+		}
+
+		public void describeSubtree(HoeffdingTree ht, StringBuilder out,
+									int indent) {
+			StringUtils.appendIndented(out, indent, "Leaf ");
+			//out.append(ht.getClassNameString());
+			out.append(" = ");
+			//out.append(ht.getClassLabelString(this.observedClassDistribution.maxIndex()));
+			out.append(" weights: ");
+			this.observedClassDistribution.getSingleLineDescription(out,
+					this.observedClassDistribution.numValues());
+			StringUtils.appendNewline(out);
 		}
 	}
 
@@ -219,7 +248,7 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		this.inactiveLeafNodeCount++;
 	}
 
-	@Override
+	/*@Override
 	public double[] getVotesForInstance(Instance inst) {
 
 		//int L = inst.numberOutputTargets(); // inst.classIndex()+1;
@@ -242,7 +271,33 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		return null;
 		// return new double[L];
 	}
-        
+    */
+
+
+
+	public Prediction getPredictionForInstance(MultiLabelInstance inst){
+		//int L = inst.numberOutputTargets(); // inst.classIndex()+1;
+
+		if (this.treeRoot != null) {
+			FoundNode foundNode = this.treeRoot.filterInstanceToLeaf(inst, null, -1);
+			Node leafNode = (MultilabelLearningNodeClassifier) foundNode.node;
+			MultilabelLearningNodeClassifier multilabelLeafNode = (MultilabelLearningNodeClassifier) leafNode;
+			if (leafNode == null) {
+				//System.out.println("null leafNode");
+				leafNode = foundNode.parent;
+			}
+			//System.out.println("y[] = "+multilabelLeafNode.getPredictionForInstance(inst, this).toString());
+			return multilabelLeafNode.getPredictionForInstance(inst, this);
+		}
+		else {
+			System.out.println("[WARNING] Root Node == Null !!!!!!");
+		}
+
+		//MultiLabelPrediction prediction=null;
+		// Return empty array (this should only happen once! -- before we build the root node).
+		return null;
+		// return new double[L];
+	}
 
 	@Override
 	public void trainOnInstance(Instance inst) {
@@ -255,15 +310,17 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 
 	@Override
 	public void trainOnInstanceImpl(MultiLabelInstance instance) {
+		//System.out.println("Training");
 		trainOnInstanceImpl((Instance) instance);
 		this.isClassificationEnabled = true;
 	}
         
 	private List<Integer> getRelevantLabels(Instance x) {
+		//Move to Instance?
 		List<Integer> classValues = new LinkedList<Integer>();
 		//get all class attributes
-		for (int j = 0; j < m_L; j++) {
-			if (x.value(j) > 0.0) {
+		for (int j = 0; j < x.numberOutputTargets(); j++) {
+			if (x.classValue(j) > 0.0) {
 				classValues.add(j);
 			}
 		}
