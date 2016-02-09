@@ -64,7 +64,7 @@ public class NumericAttributeBinaryTest extends InstanceConditionalBinaryTest {
         if ((branch == 0) || (branch == 1)) {
             char compareChar = branch == 0 ? '<' : '>';
             int equalsBranch = this.equalsPassesTest ? 0 : 1;
-            return InstancesHeader.getAttributeNameString(context,
+            return InstancesHeader.getInputAttributeNameString(context,
                     this.attIndex)
                     + ' '
                     + compareChar
