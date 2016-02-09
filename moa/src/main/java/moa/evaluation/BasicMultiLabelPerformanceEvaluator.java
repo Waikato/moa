@@ -63,21 +63,29 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
 			L = x.numberOutputTargets();
 		}
 
-		if (y == null) {
-			System.err.print("[WARNING] Prediction is null! (Ignoring this prediction)");
-		}
-		else if (y.numOutputAttributes() < x.numOutputAttributes()) {
-			System.err.println("[WARNING] Only "+y.numOutputAttributes()+" labels found! (Expecting "+x.numOutputAttributes()+")\n (Ignoring this prediction)");
-		}
-		else {
+		if (y != null && (y.numOutputAttributes() == L)) {
+			//System.out.println("CURRENT NUMBER OF LABELS = "+y.numOutputAttributes());
 			sumExamples++;
 			int correct = 0;
-			for (int j = 0; j < y.numOutputAttributes; j++) {
+			//System.out.println("y: "+y);
+			for (int j = 0; j< L; j++) {
+				//int value = 
 				int yp = (y.getVote(j,1) > t) ? 1 : 0;
 				correct += ((int)x.classValue(j) == yp) ? 1 : 0;
 			}
-			sumHamming+=(correct/(double)L); 			// Hamming Score
-			sumAccuracy += (correct == L) ? 1 : 0; 		// Exact Match
+			// Hamming Score
+			sumHamming+=(correct/(double)L);
+			// Exact Match
+			sumAccuracy += (correct == L) ? 1 : 0;
+		}
+		else {
+			System.err.print("[WARNING]: ");
+			if (y != null) {
+				//System.err.println(""+y);
+				System.err.println("Only "+y.numOutputAttributes()+" labels found! (Expecting "+L+")");
+			}
+			else
+				System.err.println("Prediction is null!");
 		}
 
     }

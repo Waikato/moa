@@ -29,6 +29,7 @@ import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
+import moa.core.StringUtils;
 
 /**
  * Majority Labelset classifier. Each labelset combination of relevances, e.g.
@@ -47,7 +48,7 @@ public class MajorityLabelset extends AbstractMultiLabelLearner implements Multi
         return "Majority labelset classifier: always predicts the labelvector most frequently seen so far.";
     }
 
-    private double maxValue = 0.0;
+    private double maxValue = -1.0;
 
     private MultiLabelPrediction majorityLabelset = null;
 
@@ -62,20 +63,20 @@ public class MajorityLabelset extends AbstractMultiLabelLearner implements Multi
     public void trainOnInstanceImpl(MultiLabelInstance x) {
 		int L = x.numberOutputTargets();
 
-		Prediction y = new MultiLabelPrediction(L);
+        MultiLabelPrediction y = new MultiLabelPrediction(L);
 		for(int j=0; j<L;j++)
-    		y.setVotes(j,new double[]{x.classValue(j)});
+    		y.setVotes(j,new double[]{1- x.classValue(j), x.classValue(j)});
 
+        double freq = x.weight();
 		if (this.vectorCounts.containsKey(y.toString())) {
-            double freq = this.vectorCounts.get(y.toString()) + x.weight();
-            this.vectorCounts.put(y.toString(), (Double)freq);
-            if (freq >= this.maxValue) {
-                this.maxValue = freq;
-				this.majorityLabelset = (MultiLabelPrediction)y;
-			}
-        } else {
-            this.vectorCounts.put(y.toString(), (Double)x.weight());
+            freq += this.vectorCounts.get(y.toString());
         }
+        this.vectorCounts.put(y.toString(), (Double)freq);
+        if (freq > this.maxValue) {
+            this.maxValue = freq;
+            this.majorityLabelset = y;
+        }
+        //System.out.println("---"+this.majorityLabelset);
     }
 
     @Override
@@ -96,6 +97,10 @@ public class MajorityLabelset extends AbstractMultiLabelLearner implements Multi
 
     @Override
     public void getModelDescription(StringBuilder out, int indent) {
+        StringUtils.appendIndented(out, indent, "");
+        out.append(this.majorityLabelset.toString());
+        StringUtils.appendNewline(out);
+
     }
 
 }
