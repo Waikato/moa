@@ -15,8 +15,9 @@
 package com.yahoo.labs.samoa.instances;
 
 import moa.core.DoubleVector;
+import java.io.Serializable;
 
-public class MultiLabelPrediction implements Prediction {
+public class MultiLabelPrediction implements Prediction, Serializable {
 	protected DoubleVector [] prediction;
 
 	public MultiLabelPrediction() {

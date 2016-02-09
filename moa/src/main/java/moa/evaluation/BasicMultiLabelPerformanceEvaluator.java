@@ -63,26 +63,21 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
 			L = x.numberOutputTargets();
 		}
 
-		if (y != null && (y.numOutputAttributes() != 0)) {
+		if (y == null) {
+			System.err.print("[WARNING] Prediction is null! (Ignoring this prediction)");
+		}
+		else if (y.numOutputAttributes() < x.numOutputAttributes()) {
+			System.err.println("[WARNING] Only "+y.numOutputAttributes()+" labels found! (Expecting "+x.numOutputAttributes()+")\n (Ignoring this prediction)");
+		}
+		else {
 			sumExamples++;
 			int correct = 0;
-			for (int j = 0; j< L; j++){
+			for (int j = 0; j < y.numOutputAttributes; j++) {
 				int yp = (y.getVote(j,1) > t) ? 1 : 0;
 				correct += ((int)x.classValue(j) == yp) ? 1 : 0;
 			}
-			// Hamming Score
-			sumHamming+=(correct/(double)L);
-			// Exact Match
-			sumAccuracy += (correct == L) ? 1 : 0;
-		}
-		else {
-			System.err.println("[WARNING]: Not a multi-label prediction! Continuing ...");
-			if (y != null) {
-				System.err.println(""+y);
-				System.err.println(""+y.numOutputAttributes());
-			}
-			else
-				System.err.println("Prediction is null!");
+			sumHamming+=(correct/(double)L); 			// Hamming Score
+			sumAccuracy += (correct == L) ? 1 : 0; 		// Exact Match
 		}
 
     }
