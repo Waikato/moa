@@ -16,13 +16,14 @@
 package com.yahoo.labs.samoa.instances;
 
 import java.util.ArrayList;
+import java.io.Serializable;
 
 /**
  * The Class SamoaToWekaInstanceConverter.
  *
  * @author abifet
  */
-public class SamoaToWekaInstanceConverter {
+public class SamoaToWekaInstanceConverter implements Serializable {
 
     /** The weka instance information. */
     protected weka.core.Instances wekaInstanceInformation;

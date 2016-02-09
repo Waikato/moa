@@ -20,6 +20,7 @@
 package moa.classifiers.multilabel;
 
 import java.util.Arrays;
+import java.io.Serializable;
 import moa.core.Measurement;
 import weka.classifiers.UpdateableClassifier;
 import moa.classifiers.AbstractClassifier;
@@ -47,7 +48,7 @@ import moa.core.Example;
  * @author Jesse Read
  * @version $Revision: 1 $
  */
-public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTargetRegressor {
+public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTargetRegressor, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -62,8 +63,6 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
             "Classifier to train.", weka.classifiers.Classifier.class, "meka.classifiers.multilabel.incremental.BRUpdateable");
 
     protected Classifier classifier;
-
-    protected int numberInstances;
 
     protected weka.core.Instances instancesBuffer;
 
@@ -84,7 +83,6 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
 		} catch (Exception e) {
             System.err.println("[ERROR] Creating a new classifier: " + e.getMessage());
         }
-        numberInstances = 0;
         isClassificationEnabled = false;
         //this.isBufferStoring = true;
         this.instanceConverter = new SamoaToWekaInstanceConverter();
@@ -99,7 +97,7 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
 		weka.core.Instance x = this.instanceConverter.wekaInstance(samoaInstance);
 		x.dataset().setClassIndex(L);
 
-		if (numberInstances == 0) {
+		if (this.isClassificationEnabled == false) {
 			/*
 			 *  INITIALISE
 			 */
@@ -126,27 +124,35 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
 				//System.exit(1);
 			}
 		}
-		numberInstances++;
 
+	}
+
+	@Override
+	public double[] getVotesForInstance(Instance samoaInstance) {
+
+		weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
+
+		double votes[] = new double[L];
+
+		try {
+			votes = this.classifier.distributionForInstance(inst);
+		} catch(Exception e) {
+			System.err.println("[WARNING] Failed to get votes from multi-label classifier (not trained yet?).");
+			//e.printStackTrace();
+			//System.exit(1);
+		}
+
+		return votes;
 	}
 
 	@Override
 	public Prediction getPredictionForInstance(MultiLabelInstance samoaInstance) {
 
-		weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
-
 		MultiLabelPrediction prediction = new MultiLabelPrediction(L);
 
 		if (isClassificationEnabled == true) { 
 
-			double votes[] = new double[L];
-			try {
-				votes = this.classifier.distributionForInstance(inst);
-			} catch(Exception e) {
-				System.err.println("[ERROR] Failed to get votes from multi-label classifier.");
-				e.printStackTrace();
-				System.exit(1);
-			}
+			double votes[] = getVotesForInstance(samoaInstance);
 
 			for (int j = 0; j < L; j++) {
 				prediction.setVotes(j, new double[]{1.-votes[j],votes[j]});
