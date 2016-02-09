@@ -1,9 +1,7 @@
 /*
  *    FIMTDD.java
- *    Copyright (C) 2014 Jožef Stefan Institute, Ljubljana, Slovenia
- *    Copyright (C) 2013 University of Porto, Portugal
+ *    Copyright (C) 2015 Jožef Stefan Institute, Ljubljana, Slovenia
  *    @author Aljaž Osojnik <aljaz.osojnik@ijs.si>
- *    @author Katie de Lange, E. Almeida, J. Gama
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -20,23 +18,19 @@
  *    
  */
 
-/* Project Knowledge Discovery from Data Streams, FCT LIAAD-INESC TEC, 
- *
- * Contact: jgama@fep.up.pt
- */
-
 package moa.classifiers.trees;
 
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.Instance;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
-import java.util.Stack;
 
+import com.yahoo.labs.samoa.instances.Instance;
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+
+import moa.options.ClassOption;
 import moa.AbstractMOAObject;
 import moa.classifiers.Regressor;
 import moa.classifiers.core.AttributeSplitSuggestion;
@@ -49,7 +43,6 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.SizeOf;
 import moa.core.StringUtils;
-import moa.options.ClassOption;
 
 /*
  * Implementation of FIMTDD, regression and model trees for data streams.
@@ -61,96 +54,69 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 	protected Node treeRoot;
 
-	private int leafNodeCount = 0;
-	private int splitNodeCount = 0;
+	protected int leafNodeCount = 0;
+	protected int splitNodeCount = 0;
 
-	private double examplesSeen = 0.0;
-	private double sumOfValues = 0.0;
-	private double sumOfSquares = 0.0;
+	protected double examplesSeen = 0.0;
+	protected double sumOfValues = 0.0;
+	protected double sumOfSquares = 0.0;
 
-	private DoubleVector sumOfAttrValues = new DoubleVector();
-	private DoubleVector sumOfAttrSquares = new DoubleVector();
+	protected DoubleVector sumOfAttrValues = new DoubleVector();
+	protected DoubleVector sumOfAttrSquares = new DoubleVector();
 
 	public int maxID = 0;
 
 	//region ================ OPTIONS ================
 
 	public ClassOption splitCriterionOption = new ClassOption(
-			"splitCriterion",
-			's',
-			"Split criterion to use.",
-			SplitCriterion.class,
-			"moa.classifiers.core.splitcriteria.VarianceReductionSplitCriterion");
+			"splitCriterion", 's', "Split criterion to use.",
+			SplitCriterion.class, "moa.classifiers.core.splitcriteria.VarianceReductionSplitCriterion");
 
 	public IntOption gracePeriodOption = new IntOption(
-			"gracePeriod",
-			'g',
-			"The number of instances a leaf should observe between split attempts.",
+			"gracePeriod", 'g', "Number of instances a leaf should observe between split attempts.",
 			200, 0, Integer.MAX_VALUE);
 
 	public FloatOption splitConfidenceOption = new FloatOption(
-			"splitConfidence",
-			'c',
-			"The allowable error in split decision, values closer to 0 will take longer to decide.",
+			"splitConfidence", 'c', "Allowed error in split decision, values close to 0 will take long to decide.",
 			0.0000001, 0.0, 1.0);
 
 	public FloatOption tieThresholdOption = new FloatOption(
-			"tieThreshold",
-			't',
-			"Threshold below which a split will be forced to break ties.",
+			"tieThreshold", 't', "Threshold below which a split will be forced to break ties.",
 			0.05, 0.0, 1.0);
 
 	public FloatOption PageHinckleyAlphaOption = new FloatOption(
-			"PageHinckleyAlpha",
-			'a',
-			"The alpha value to use in the Page Hinckley change detection tests.",
+			"PageHinckleyAlpha", 'a', "Alpha value to use in the Page Hinckley change detection tests.",
 			0.005, 0.0, 1.0);
 
 	public IntOption PageHinckleyThresholdOption = new IntOption(
-			"PageHinckleyThreshold",
-			'h',
-			"The threshold value to be used in the Page Hinckley change detection tests.",
+			"PageHinckleyThreshold", 'h', "Threshold value used in the Page Hinckley change detection tests.",
 			50, 0, Integer.MAX_VALUE);
 
 	public FloatOption alternateTreeFadingFactorOption = new FloatOption(
-			"alternateTreeFadingFactor",
-			'f',
-			"The fading factor to use when deciding if an alternate tree should replace an original.",
+			"alternateTreeFadingFactor", 'f', "Fading factor used to decide if an alternate tree should replace an original.",
 			0.995, 0.0, 1.0);
 
 	public IntOption alternateTreeTMinOption = new IntOption(
-			"alternateTreeTMin",
-			'y',
-			"The Tmin value to use when deciding if an alternate tree should replace an original.",
+			"alternateTreeTMin", 'y', "Tmin value used to decide if an alternate tree should replace an original.",
 			150, 0, Integer.MAX_VALUE);
 
 	public IntOption alternateTreeTimeOption = new IntOption(
-			"alternateTreeTime",
-			'u',
-			"The 'time' (in terms of number of instances) value to use when deciding if an alternate tree should be discarded.",
+			"alternateTreeTime", 'u', "The number of instances used to decide if an alternate tree should be discarded.",
 			1500, 0, Integer.MAX_VALUE);
 
 	public FlagOption regressionTreeOption = new FlagOption(
-			"regressionTree",
-			'e',
-			"Build a regression tree instead of a model tree.");
+			"regressionTree", 'e', "Build a regression tree instead of a model tree.");
 
 	public FloatOption learningRatioOption = new FloatOption(
-			"learningRatio", 
-			'l',
-			"Learning ratio to use for training the Perceptrons in the leaves.",
-			0.02);
+			"learningRatio", 'l', "Learning ratio to used for training the Perceptrons in the leaves.",
+			0.02, 0, 1.00);
 
 	public FloatOption learningRateDecayFactorOption = new FloatOption(
-			"learningRatioDecayFactor",
-			'd',
-			"Learning rate decay factor (not used when learning rate is constant).",
-			0.001);
+			"learningRatioDecayFactor", 'd', "Learning rate decay factor (not used when learning rate is constant).",
+			0.001, 0, 1.00);
 
 	public FlagOption learningRatioConstOption = new FlagOption(
-			"learningRatioConst",
-			'o',
-			"Keep learning rate constant instead of decaying (if kept constant learning ratio is suggested to be 0.001).");
+			"learningRatioConst", 'p', "Keep learning rate constant instead of decaying.");
 
 	//endregion ================ OPTIONS ================
 
@@ -160,24 +126,16 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 		private static final long serialVersionUID = 1L;
 
-		protected double weightSeenAtLastSplitEvaluation;
-
 		public int ID;
 
-		// The parent of this particular node
-		protected SplitNode parent;
+		protected FIMTDD tree;
+		
+		protected boolean changeDetection = true;
+		
+		protected Node parent;
 
 		protected Node alternateTree;
 		protected Node originalNode;
-
-		protected AutoExpandVector<FIMTDDNumericAttributeClassObserver> attributeObservers = new AutoExpandVector<FIMTDDNumericAttributeClassObserver>();
-
-		// The error values for the Page Hinckley test
-		// PHmT = the cumulative sum of the errors
-		// PHMT = the minimum error value seen so far
-		protected boolean changeDetection = true;
-		protected double PHsum = 0;
-		protected double PHmin = Double.MAX_VALUE;
 
 		// The statistics for this node:
 		// Number of instances that have reached it
@@ -189,7 +147,9 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		// Sum of absolute errors
 		protected double sumOfAbsErrors; // Needed for PH tracking of mean error
 
-		public Node() {
+		public Node(FIMTDD tree) {
+			this.tree = tree;
+			ID = tree.maxID; 
 		}
 
 		public void copyStatistics(Node node) {
@@ -197,36 +157,23 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			sumOfValues = node.sumOfValues;
 			sumOfSquares = node.sumOfSquares;
 			sumOfAbsErrors = node.sumOfAbsErrors;
-			// sumOfSquaredErrors = node.sumOfSquaredErrors;
 		}
 
 		public int calcByteSize() {
-			return (int) (SizeOf.sizeOf(this)) + (int) (SizeOf.fullSizeOf(this.attributeObservers));
-		}
-
-		public int calcByteSizeIncludingSubtree() {
-			return calcByteSize();
-		}
-
-		public boolean isLeaf() {
-			return true;
-		}
-
-		public double examplesSeen() {
-			return examplesSeen;
+			return (int) SizeOf.fullSizeOf(this);
 		}
 
 		/**
 		 * Set the parent node
 		 */
-		public void setParent(SplitNode parent) {
+		public void setParent(Node parent) {
 			this.parent = parent;    
 		}
 
 		/**
 		 * Return the parent node
 		 */
-		public SplitNode getParent() {
+		public Node getParent() {
 			return parent;
 		}
 
@@ -236,11 +183,259 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 		public void restartChangeDetection() {
 			changeDetection = true;
-			PHsum = 0;
-			PHmin = Integer.MAX_VALUE;
+		}
+		
+		public void getDescription(StringBuilder sb, int indent) {
+			
 		}
 
+		public double getPrediction(Instance inst) {
+			return 0;
+		}
+		
+		public void describeSubtree(StringBuilder out, int indent) {
+			StringUtils.appendIndented(out, indent, "Leaf");
+		}
+		
+		public int getLevel() {
+			Node target = this;
+			int level = 0;
+			while (target.getParent() != null) {
+				if (target.skipInLevelCount()) {
+					target = target.getParent();
+					continue;
+				}
+				level = level + 1;
+				target = target.getParent();
+			}
+			if (target.originalNode == null) {
+				return level;
+			} else {
+				return level + originalNode.getLevel();
+			}
+		}
 
+		public void setChild(int parentBranch, Node node) {
+		}
+
+		public int getChildIndex(Node child) {
+			return -1;
+		}
+
+		public int getNumSubtrees() {
+			return 1;
+		}
+
+		protected boolean skipInLevelCount() {
+			return false;
+		}
+	}
+
+	public static class LeafNode extends Node {
+
+		private static final long serialVersionUID = 1L;
+
+		// Perceptron model that carries out the actual learning in each node
+		public FIMTDDPerceptron learningModel;
+
+		protected AutoExpandVector<FIMTDDNumericAttributeClassObserver> attributeObservers = new AutoExpandVector<FIMTDDNumericAttributeClassObserver>();
+		
+		protected double examplesSeenAtLastSplitEvaluation = 0;
+
+		/**
+		 * Create a new LeafNode
+		 */
+		public LeafNode(FIMTDD tree) {
+			super(tree);
+			if (tree.buildingModelTree()) {
+				learningModel = tree.newLeafModel();
+			}
+			examplesSeen = 0;
+			sumOfValues = 0;
+			sumOfSquares = 0;
+			sumOfAbsErrors = 0;
+		}
+
+		public void setChild(int parentBranch, Node node) {
+		}
+
+		public int getChildIndex(Node child) {
+			return -1;
+		}
+
+		public int getNumSubtrees() {
+			return 1;
+		}
+
+		protected boolean skipInLevelCount() {
+			return false;
+		}
+		
+		/**
+		 * Method to learn from an instance that passes the new instance to the perceptron learner,
+		 * and also prevents the class value from being truncated to an int when it is passed to the
+		 * attribute observer
+		 */
+		public void learnFromInstance(Instance inst, boolean growthAllowed) {
+			//The prediction must be calculated here -- it may be different from the tree's prediction due to alternate trees
+			
+			// Update the statistics for this node
+			// number of instances passing through the node
+			examplesSeen += inst.weight();
+
+			// sum of y values
+			sumOfValues += inst.weight() * inst.classValue();
+
+			// sum of squared y values
+			sumOfSquares += inst.weight() * inst.classValue() * inst.classValue();
+
+			// sum of absolute errors
+			sumOfAbsErrors += inst.weight() * Math.abs(tree.normalizeTargetValue(Math.abs(inst.classValue() - getPrediction(inst))));
+
+			if (tree.buildingModelTree()) learningModel.updatePerceptron(inst);
+
+			for (int i = 0; i < inst.numAttributes() - 1; i++) {
+				int instAttIndex = modelAttIndexToInstanceAttIndex(i, inst);
+				FIMTDDNumericAttributeClassObserver obs = attributeObservers.get(i);
+				if (obs == null) {
+					// At this stage all nominal attributes are ignored
+					if (inst.attribute(instAttIndex).isNumeric()) {
+						obs = tree.newNumericClassObserver();
+						this.attributeObservers.set(i, obs);
+					}
+				}
+				if (obs != null) {
+					obs.observeAttributeClass(inst.value(instAttIndex), inst.classValue(), inst.weight());
+				}
+			}
+
+			if (growthAllowed) {
+				checkForSplit(tree);
+			}
+		}
+
+		/**
+		 * Return the best split suggestions for this node using the given split criteria
+		 */
+		public AttributeSplitSuggestion[] getBestSplitSuggestions(SplitCriterion criterion) {
+
+			List<AttributeSplitSuggestion> bestSuggestions = new LinkedList<AttributeSplitSuggestion>();
+
+			// Set the nodeStatistics up as the preSplitDistribution, rather than the observedClassDistribution
+			double[] nodeSplitDist = new double[] {examplesSeen, sumOfValues, sumOfSquares};
+
+			for (int i = 0; i < this.attributeObservers.size(); i++) {
+				FIMTDDNumericAttributeClassObserver obs = this.attributeObservers.get(i);
+				if (obs != null) {
+
+					// AT THIS STAGE NON-NUMERIC ATTRIBUTES ARE IGNORED
+					AttributeSplitSuggestion bestSuggestion = null;
+					if (obs instanceof FIMTDDNumericAttributeClassObserver) {
+						bestSuggestion = obs.getBestEvaluatedSplitSuggestion(criterion, nodeSplitDist, i, true);
+					}
+
+					if (bestSuggestion != null) {
+						bestSuggestions.add(bestSuggestion);
+					}
+				}
+			}
+			return bestSuggestions.toArray(new AttributeSplitSuggestion[bestSuggestions.size()]);
+		}
+
+		/**
+		 * Retrieve the class votes using the perceptron learner
+		 */
+		public double getPredictionModel(Instance inst) {
+			return learningModel.prediction(inst);
+		}
+
+		public double getPredictionTargetMean(Instance inst) {
+			return (examplesSeen > 0.0) ? sumOfValues / examplesSeen : 0.0;
+		}
+
+		public double getPrediction(Instance inst) {
+			return (tree.buildingModelTree()) ? getPredictionModel(inst) : getPredictionTargetMean(inst);
+		}
+		
+		public void checkForSplit(FIMTDD tree) {
+			// If it has seen Nmin examples since it was last tested for splitting, attempt a split of this node
+			if (examplesSeen - examplesSeenAtLastSplitEvaluation >= tree.gracePeriodOption.getValue()) {
+				int index = (parent != null) ? parent.getChildIndex(this) : 0;
+				tree.attemptToSplit(this, parent, index);
+
+				// Take note of how many instances were seen when this split evaluation was made, so we know when to perform the next split evaluation
+				examplesSeenAtLastSplitEvaluation = examplesSeen;
+			}
+		}
+
+		public void describeSubtree(StringBuilder out, int indent) {
+			StringUtils.appendIndented(out, indent, "Leaf ");
+			if (tree.buildingModelTree()) {
+				learningModel.getModelDescription(out, 0);
+			} else {
+				out.append(tree.getClassNameString() + " = " + String.format("%.4f", (sumOfValues / examplesSeen)));
+				StringUtils.appendNewline(out);
+			}
+		}
+	}
+
+	public abstract static class InnerNode extends Node {
+		// The InnerNode and SplitNode design is used for easy extension in ORTO
+		private static final long serialVersionUID = 1L;
+
+		protected AutoExpandVector<Node> children = new AutoExpandVector<Node>();
+
+		// The error values for the Page Hinckley test
+		// PHmT = the cumulative sum of the errors
+		// PHMT = the minimum error value seen so far
+		protected double PHsum = 0;
+		protected double PHmin = Double.MAX_VALUE;
+
+		// Keep track of the statistics for loss error calculations
+		protected double lossExamplesSeen;
+		protected double lossFadedSumOriginal;
+		protected double lossFadedSumAlternate;
+		protected double lossNumQiTests;
+		protected double lossSumQi;
+		protected double previousWeight = 0;
+		
+		public InnerNode(FIMTDD tree) {
+			super(tree);
+		}
+
+		public int numChildren() {
+			return children.size();
+		}
+
+		public Node getChild(int index) {
+			return children.get(index);
+		}
+
+		public int getChildIndex(Node child) {
+			return children.indexOf(child);
+		}
+
+		public void setChild(int index, Node child) {
+			children.set(index, child);
+		}
+
+		public void disableChangeDetection() {
+			changeDetection = false;
+			for (Node child : children) {
+				child.disableChangeDetection();
+			}
+		}
+
+		public void restartChangeDetection() {
+			if (alternateTree == null) {
+				changeDetection = true;
+				PHsum = 0;
+				PHmin = Integer.MAX_VALUE;
+				for (Node child : children)
+					child.restartChangeDetection();
+			}
+		}
+		
 		/**
 		 * Check to see if the tree needs updating
 		 */
@@ -257,225 +452,8 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			// greater than the current threshold (in which case we should adapt)
 			return PHsum - PHmin > threshold;
 		}
-
-		public void getDescription(StringBuilder sb, int i) {}
-
-		public int countLeaves() {
-			return 1;
-		}
-
-		public void describeSubtree(FIMTDD tree, StringBuilder out, int indent) {
-			StringUtils.appendIndented(out, indent, "Leaf");
-		}
-
-		public double getPrediction(Instance inst, FIMTDD tree) {
-			return 0;
-		}
-
-	}
-
-	public static class LeafNode extends Node {
-
-		private static final long serialVersionUID = 1L;
-
-		// Perceptron model that carries out the actual learning in each node
-		public FIMTDDPerceptron learningModel;
-
-		protected double examplesSeenAtLastSplitEvaluation = 0;
-
-		public double examplesSeenAtLastSplitEvaluation() {
-			return examplesSeenAtLastSplitEvaluation;
-		}
-
-		public void setExamplesSeenAtLastSplitEvaluation(double seen) {
-			examplesSeenAtLastSplitEvaluation = seen;
-		}
-
-		/**
-		 * Create a new LeafNode
-		 */
-		public LeafNode(FIMTDD tree) {
-			ID = tree.maxID; 
-			if (tree.buildingModelTree()) {
-				learningModel = tree.newLeafModel();
-			}
-			examplesSeen = 0;
-			sumOfValues = 0;
-			sumOfSquares = 0;
-			sumOfAbsErrors = 0;
-			// sumOfSquaredErrors = 0;
-		}
-
-		/**
-		 * Method to learn from an instance that passes the new instance to the perceptron learner,
-		 * and also prevents the class value from being truncated to an int when it is passed to the
-		 * attribute observer
-		 */
-		public void learnFromInstance(Instance inst, FIMTDD tree, boolean growthAllowed) {
-			// Update the statistics for this node
-			// number of instances passing through the node
-			examplesSeen += 1;
-
-			// sum of y values
-			sumOfValues += inst.classValue();
-
-			// sum of squared y values
-			sumOfSquares += inst.classValue() * inst.classValue();
-
-			// sum of absolute errors
-			sumOfAbsErrors += Math.abs(tree.normalizeTargetValue(inst.classValue()) - tree.normalizeTargetValue(getPrediction(inst, tree)));
-
-			if (tree.buildingModelTree()) learningModel.updatePerceptron(inst, tree);;
-
-			for (int i = 0; i < inst.numAttributes() - 1; i++) {
-				int instAttIndex = modelAttIndexToInstanceAttIndex(i, inst);
-				FIMTDDNumericAttributeClassObserver obs = attributeObservers.get(i);
-				if (obs == null) {
-					// At this stage all nominal attributes are ignored
-					if (inst.attribute(instAttIndex).isNumeric()) {
-						obs = tree.newNumericClassObserver();
-						this.attributeObservers.set(i, obs);
-					}
-				}
-				if (obs != null) {
-					obs.observeAttributeClass(inst.value(instAttIndex),inst.classValue(), inst.weight());
-				}
-			}
-
-			if (growthAllowed) {
-				checkForSplit(tree);
-			}
-		}
-
-		/**
-		 * Return the best split suggestions for this node using the given split criteria
-		 */
-		public AttributeSplitSuggestion[] getBestSplitSuggestions(SplitCriterion criterion, FIMTDD tree) {
-
-			List<AttributeSplitSuggestion> bestSuggestions = new LinkedList<AttributeSplitSuggestion>();
-
-			// Set the nodeStatistics up as the preSplitDistribution, rather than the observedClassDistribution
-			double[] nodeSplitDist = new double[] {examplesSeen, sumOfValues, sumOfSquares};
-
-			for (int i = 0; i < this.attributeObservers.size(); i++) {
-				FIMTDDNumericAttributeClassObserver obs = this.attributeObservers.get(i);
-				if (obs != null) {
-
-					// AT THIS STAGE NON-NUMERIC ATTRIBUTES ARE IGNORED
-					AttributeSplitSuggestion bestSuggestion = null;
-					if (obs instanceof FIMTDDNumericAttributeClassObserver) {
-						bestSuggestion = obs.getBestEvaluatedSplitSuggestion(criterion, nodeSplitDist, i, false);
-					}
-
-					if (bestSuggestion != null) {
-						bestSuggestions.add(bestSuggestion);
-					}
-				}
-			}
-			return bestSuggestions.toArray(new AttributeSplitSuggestion[bestSuggestions.size()]);
-		}
-
-		/**
-		 * Retrieve the class votes using the perceptron learner
-		 */
-		public double getPredictionModel(Instance inst, FIMTDD tree) {
-			return learningModel.prediction(inst, tree);
-		}
-
-		public double getPredictionTargetMean(Instance inst, FIMTDD tree) {
-			return (examplesSeen > 0.0) ? sumOfValues / examplesSeen : 0.0;
-		}
-
-		public double getPrediction(Instance inst, FIMTDD tree) {
-			return (tree.buildingModelTree()) ? getPredictionModel(inst, tree) : getPredictionTargetMean(inst, tree);
-		}
-
-		public double[] getClassVotes(Instance inst, FIMTDD tree) {
-			return new double[] {getPrediction(inst, tree)};
-		}
-
-		public void checkForSplit(FIMTDD tree) {
-			// If it has seen Nmin examples since it was last tested for splitting, attempt a split of this node
-			if (examplesSeen - examplesSeenAtLastSplitEvaluation >= tree.gracePeriodOption.getValue()) {
-				int index = (parent != null) ? parent.getChildIndex(this) : 0;
-				tree.attemptToSplit(this, parent, index);
-
-				// Take note of how many instances were seen when this split evaluation was made, so we know when to perform the next split evaluation
-				examplesSeenAtLastSplitEvaluation = examplesSeen;
-			}
-		}
-
-		public void describeSubtree(FIMTDD tree, StringBuilder out, int indent) {
-			StringUtils.appendIndented(out, indent, "Leaf ");
-			if (tree.buildingModelTree()) {
-				learningModel.getModelDescription(out, 0);
-			} else {
-				out.append(tree.getClassNameString() + " = " + String.format("%.4f", (sumOfValues / examplesSeen)));
-				StringUtils.appendNewline(out);
-			}
-		}
-
-	}
-
-	public static class SplitNode extends Node {
-
-		private static final long serialVersionUID = 1L;
-
-		protected InstanceConditionalTest splitTest;
-
-		protected AutoExpandVector<Node> children = new AutoExpandVector<Node>();
-
-		// Keep track of the statistics for loss error calculations
-		protected double lossExamplesSeen;
-		protected double lossFadedSumOriginal;
-		protected double lossFadedSumAlternate;
-		protected double lossNumQiTests;
-		protected double lossSumQi;
-		protected double previousWeight = 0;
-
-		/**
-		 * Create a new SplitNode
-		 * @param tree 
-		 */
-		public SplitNode(InstanceConditionalTest splitTest, FIMTDD tree) {
-			this.splitTest = splitTest;
-			ID = tree.maxID;
-		}
-
-		public void disableChangeDetection() {
-			changeDetection = false;
-			for (Node child : children) {
-				child.disableChangeDetection();
-			}
-		}
-
-		public void restartChangeDetection() {
-			if (this.alternateTree == null) {
-				changeDetection = true;
-				PHsum = 0;
-				PHmin = Integer.MAX_VALUE;
-				for (Node child : children)
-					child.restartChangeDetection();
-			}
-		}
 		
-		protected void setChild(int i, Node child) {
-			children.set(i, child);
-		}
-
-		public int instanceChildIndex(Instance inst) {
-			return this.splitTest.branchForInstance(inst);
-		}
-
-		public Node getChild(int i) {
-			return children.get(i);
-		}
-
-		public int getChildIndex(Node child) {
-			return children.indexOf(child);
-		}
-
-		public void initializeAlternateTree(FIMTDD tree) {
+		public void initializeAlternateTree() {
 			// Start a new alternate tree, beginning with a learning node
 			alternateTree = tree.newLeafNode();
 			alternateTree.originalNode = this;
@@ -497,25 +475,32 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			// Disable the change detection mechanism bellow this node
 			disableChangeDetection();
 		}
+	}
+	
+	public static class SplitNode extends InnerNode {
 
+		private static final long serialVersionUID = 1L;
 
-		public int countLeaves() {
-			Stack<Node> stack = new Stack<Node>();
-			stack.addAll(children);
-			int ret = 0;
-			while (!stack.isEmpty()) {
-				Node node = stack.pop();
-				if (node instanceof LeafNode) {
-					ret++;
-				} else if (node instanceof SplitNode) {
-					stack.addAll(((SplitNode) node).children);
-				}
-			}
-			return ret;
+		protected InstanceConditionalTest splitTest;
+
+		/**
+		 * Create a new SplitNode
+		 * @param tree 
+		 */
+		public SplitNode(InstanceConditionalTest splitTest, FIMTDD tree) {
+			super(tree);
+			this.splitTest = splitTest;
 		}
 
-		@Override
-		public void describeSubtree(FIMTDD tree, StringBuilder out, int indent) {
+		public int instanceChildIndex(Instance inst) {
+			return splitTest.branchForInstance(inst);
+		}
+		
+		public Node descendOneStep(Instance inst) {
+			return children.get(splitTest.branchForInstance(inst));
+		}
+
+		public void describeSubtree(StringBuilder out, int indent) {
 			for (int branch = 0; branch < children.size(); branch++) {
 				Node child = getChild(branch);
 				if (child != null) {
@@ -524,18 +509,22 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 							tree.getModelContext()));
 					out.append(": ");
 					StringUtils.appendNewline(out);
-					child.describeSubtree(tree, out, indent + 2);
+					child.describeSubtree(out, indent + 2);
 				}
 			}
 		}
 
-		public double getPrediction(Instance inst, FIMTDD tree) {
-			return children.get(splitTest.branchForInstance(inst)).getPrediction(inst, tree);
+		public double getPrediction(Instance inst) {
+			return children.get(splitTest.branchForInstance(inst)).getPrediction(inst);
 		}
 	}
 
-	public class FIMTDDPerceptron {
+	public class FIMTDDPerceptron implements Serializable {
 
+		private static final long serialVersionUID = 1L;
+		
+		protected FIMTDD tree;
+		
 		// The Perception weights 
 		protected DoubleVector weightAttribute = new DoubleVector(); 
 
@@ -543,7 +532,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		protected double sumOfSquares;
 
 		// The number of instances contributing to this model
-		protected int instancesSeen = 0;
+		protected double instancesSeen = 0;
 
 		// If the model should be reset or not
 		protected boolean reset;
@@ -553,11 +542,13 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		}
 
 		public FIMTDDPerceptron(FIMTDDPerceptron original) {
+			this.tree = original.tree;
 			weightAttribute = (DoubleVector) original.weightAttribute.copy();
 			reset = false;
 		}
 
-		public FIMTDDPerceptron() {
+		public FIMTDDPerceptron(FIMTDD tree) {
+			this.tree = tree;
 			reset = true;
 		}
 
@@ -569,10 +560,10 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		/**
 		 * Update the model using the provided instance
 		 */
-		public void updatePerceptron(Instance inst, FIMTDD tree) {
+		public void updatePerceptron(Instance inst) {
 
 			// Initialize perceptron if necessary   
-			if (this.reset == true) {
+			if (reset == true) {
 				reset = false;
 				weightAttribute = new DoubleVector();
 				instancesSeen = 0;
@@ -582,7 +573,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			}
 
 			// Update attribute statistics
-			instancesSeen++;
+			instancesSeen += inst.weight();
 
 			// Update weights
 			double learningRatio = 0.0;
@@ -592,15 +583,18 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 				learningRatio = learningRatioOption.getValue() / (1 + instancesSeen * tree.learningRateDecayFactorOption.getValue());
 			}
 
-			sumOfValues += inst.classValue();
-			sumOfSquares += inst.classValue() * inst.classValue();
+			sumOfValues += inst.weight() * inst.classValue();
+			sumOfSquares += inst.weight() * inst.classValue() * inst.classValue();
 
-			updateWeights(inst, learningRatio, tree);
+			// Loop for compatibility with bagging methods 
+			for (int i = 0; i < (int) inst.weight(); i++) {
+				updateWeights(inst, learningRatio);
+			}
 		}
 
-		public void updateWeights(Instance inst, double learningRatio, FIMTDD tree) {
+		public void updateWeights(Instance inst, double learningRatio) {
 			// Compute the normalized instance and the delta
-			DoubleVector normalizedInstance = normalizedInstance(inst, tree); 
+			DoubleVector normalizedInstance = normalizedInstance(inst); 
 			double normalizedPrediction = prediction(normalizedInstance);
 			double normalizedValue = tree.normalizeTargetValue(inst.classValue());
 			double delta = normalizedValue - normalizedPrediction;
@@ -609,7 +603,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			weightAttribute.addValues(normalizedInstance);
 		}
 
-		public DoubleVector normalizedInstance(Instance inst, FIMTDD tree) {
+		public DoubleVector normalizedInstance(Instance inst) {
 			// Normalize Instance
 			DoubleVector normalizedInstance = new DoubleVector();
 			for (int j = 0; j < inst.numAttributes() - 1; j++) {
@@ -622,7 +616,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 					normalizedInstance.setValue(j, 0);
 			}
 			if (tree.examplesSeen > 1)
-                                normalizedInstance.setValue(inst.numAttributes() - 1, 1.0); // Value to be multiplied with the constant factor
+				normalizedInstance.setValue(inst.numAttributes() - 1, 1.0); // Value to be multiplied with the constant factor
 			else
 				normalizedInstance.setValue(inst.numAttributes() - 1, 0.0);
 			return normalizedInstance;
@@ -631,13 +625,12 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		/**
 		 * Output the prediction made by this perceptron on the given instance
 		 */
-		public double prediction(DoubleVector instanceValues)
-		{
+		public double prediction(DoubleVector instanceValues) {
 			return scalarProduct(weightAttribute, instanceValues);
 		}
 
-		private double prediction(Instance inst, FIMTDD tree) {
-			DoubleVector normalizedInstance = normalizedInstance(inst, tree);
+		protected double prediction(Instance inst) {
+			DoubleVector normalizedInstance = normalizedInstance(inst);
 			double normalizedPrediction = prediction(normalizedInstance);
 			return denormalizePrediction(normalizedPrediction, tree);
 		}
@@ -646,7 +639,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			double mean = tree.sumOfValues / tree.examplesSeen;
 			double sd = computeSD(tree.sumOfSquares, tree.sumOfValues, tree.examplesSeen);
 			if (examplesSeen > 1) 
-                                return normalizedPrediction * sd * 3 + mean;
+				return normalizedPrediction * sd * 3 + mean;
 			else
 				return 0.0;
 		}
@@ -673,9 +666,8 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 	//region ================ METHODS ================
 
-	// Regressor methods
-	public FIMTDD() {}
-
+	// region --- Regressor methods
+	
 	public String getPurposeString() {
 		return "Implementation of the FIMT-DD tree as described by Ikonomovska et al.";
 	}
@@ -685,6 +677,12 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		this.leafNodeCount = 0;
 		this.splitNodeCount = 0;
 		this.maxID = 0;
+		this.examplesSeen = 0;
+		this.sumOfValues = 0.0;
+		this.sumOfSquares = 0.0;
+
+		this.sumOfAttrValues = new DoubleVector();
+		this.sumOfAttrSquares = new DoubleVector();
 	}
 
 	public boolean isRandomizable() {
@@ -692,22 +690,17 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 	}
 
 	public void getModelDescription(StringBuilder out, int indent) {
-		if (treeRoot != null) treeRoot.describeSubtree(this, out, indent);
+		if (treeRoot != null) treeRoot.describeSubtree(out, indent);
 	}
 
 	protected Measurement[] getModelMeasurementsImpl() {
 		return new Measurement[]{ 
-				new Measurement("tree size (nodes)", this.leafNodeCount + this.splitNodeCount),
 				new Measurement("tree size (leaves)", this.leafNodeCount)
 		};
 	}
 
 	public int calcByteSize() {
-		int size = (int) SizeOf.sizeOf(this);
-		if (this.treeRoot != null) {
-			size += this.treeRoot.calcByteSize();
-		}
-		return size;
+		return (int) SizeOf.fullSizeOf(this);
 	}
 
 	public double[] getVotesForInstance(Instance inst) {
@@ -715,7 +708,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			return new double[] {0};
 		}
 
-		double prediction = treeRoot.getPrediction(inst, this);
+		double prediction = treeRoot.getPrediction(inst);
 
 		return new double[] {prediction};
 	}
@@ -732,8 +725,8 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		return 0.0;
 	}
 
-	public double getNormalizedError(Instance inst) {
-		double normalPrediction = normalizeTargetValue(treeRoot.getPrediction(inst, this));
+	public double getNormalizedError(Instance inst, double prediction) {
+		double normalPrediction = normalizeTargetValue(prediction);
 		double normalValue = normalizeTargetValue(inst.classValue());
 		return Math.abs(normalValue - normalPrediction);
 	}
@@ -745,48 +738,54 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 	public void trainOnInstanceImpl(Instance inst) {
 		checkRoot();
 
-		examplesSeen++;
-		sumOfValues += inst.classValue();
-		sumOfSquares += inst.classValue() * inst.classValue();
+		examplesSeen += inst.weight();
+		sumOfValues += inst.weight() * inst.classValue();
+		sumOfSquares += inst.weight() * inst.classValue() * inst.classValue();
 
 		for (int i = 0; i < inst.numAttributes() - 1; i++) {
 			int aIndex = modelAttIndexToInstanceAttIndex(i, inst);
-			sumOfAttrValues.addToValue(aIndex, inst.value(aIndex));
-			sumOfAttrSquares.addToValue(aIndex, inst.value(aIndex) * inst.value(aIndex));
+			sumOfAttrValues.addToValue(i, inst.weight() * inst.value(aIndex));
+			sumOfAttrSquares.addToValue(i, inst.weight() * inst.value(aIndex) * inst.value(aIndex));
 		}
 
-		processInstance(inst, treeRoot, treeRoot.getPrediction(inst, this), getNormalizedError(inst), true, false);
+		double prediction = treeRoot.getPrediction(inst);
+		processInstance(inst, treeRoot, prediction, getNormalizedError(inst, prediction), true, false);
 	}
 
 	public void processInstance(Instance inst, Node node, double prediction, double normalError, boolean growthAllowed, boolean inAlternate) {
 		Node currentNode = node;
 		while (true) {
 			if (currentNode instanceof LeafNode) {
-				((LeafNode) currentNode).learnFromInstance(inst, this, growthAllowed);
+				((LeafNode) currentNode).learnFromInstance(inst, growthAllowed);
 				break;
 			} else {
-				currentNode.examplesSeen++;
-				currentNode.sumOfAbsErrors += normalError;
+				currentNode.examplesSeen += inst.weight();
+				currentNode.sumOfAbsErrors += inst.weight() * normalError;
 				SplitNode iNode = (SplitNode) currentNode;
 				if (!inAlternate && iNode.alternateTree != null) {
 					boolean altTree = true;
 					double lossO = Math.pow(inst.classValue() - prediction, 2);
-					double lossA = Math.pow(inst.classValue() - iNode.alternateTree.getPrediction(inst, this), 2);
-
-					iNode.lossFadedSumOriginal = lossO + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumOriginal;
-					iNode.lossFadedSumAlternate = lossA + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumAlternate;
-					iNode.lossExamplesSeen++;
-
+					double lossA = Math.pow(inst.classValue() - iNode.alternateTree.getPrediction(inst), 2);
+					
+					// Loop for compatibility with bagging methods
+					for (int i = 0; i < inst.weight(); i++) {
+						iNode.lossFadedSumOriginal = lossO + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumOriginal;
+						iNode.lossFadedSumAlternate = lossA + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumAlternate;
+						iNode.lossExamplesSeen++;
+						
+						double Qi = Math.log((iNode.lossFadedSumOriginal) / (iNode.lossFadedSumAlternate));
+						iNode.lossSumQi += Qi;
+						iNode.lossNumQiTests += 1;
+					}
 					double Qi = Math.log((iNode.lossFadedSumOriginal) / (iNode.lossFadedSumAlternate));
 					double previousQiAverage = iNode.lossSumQi / iNode.lossNumQiTests;
-					iNode.lossSumQi += Qi;
-					iNode.lossNumQiTests += 1;
 					double QiAverage = iNode.lossSumQi / iNode.lossNumQiTests;
-
+					
 					if (iNode.lossExamplesSeen - iNode.previousWeight >= alternateTreeTMinOption.getValue()) {
 						iNode.previousWeight = iNode.lossExamplesSeen;
 						if (Qi > 0) {
-							SplitNode parent = currentNode.getParent();
+							// Switch the subtrees
+							Node parent = currentNode.getParent();
 
 							if (parent != null) {
 								Node replacementTree = iNode.alternateTree;
@@ -798,11 +797,13 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 							}
 
 							currentNode = iNode.alternateTree;
+							currentNode.originalNode = null;
 							altTree = false;
 						} else if (
 								(QiAverage < previousQiAverage && iNode.lossExamplesSeen >= (10 * this.gracePeriodOption.getValue()))
 								|| iNode.lossExamplesSeen >= alternateTreeTimeOption.getValue()
 								) {
+							// Remove the alternate tree
 							iNode.alternateTree = null;
 							if (growthAllowed) iNode.restartChangeDetection();
 							altTree = false;
@@ -817,27 +818,26 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 				if (iNode.changeDetection && !inAlternate) {
 					if (iNode.PageHinckleyTest(normalError - iNode.sumOfAbsErrors / iNode.examplesSeen - PageHinckleyAlphaOption.getValue(), PageHinckleyThresholdOption.getValue())) {
-						iNode.initializeAlternateTree(this);
+						iNode.initializeAlternateTree();
 					}
 				}
 				if (currentNode instanceof SplitNode) {
-					currentNode = ((SplitNode) currentNode).getChild(iNode.instanceChildIndex(inst));
-				} else { // if the replaced alternate tree is just a leaf node
-					((LeafNode) currentNode).learnFromInstance(inst, this, growthAllowed);
-					break;
-				}
+					currentNode = ((SplitNode) currentNode).descendOneStep(inst);
+				} 
 			}
 		}
 	}
 
-	//region --- Object instatiation methods
+	// endregion --- Regressor methods
+	
+	// region --- Object instatiation methods
 
 	protected FIMTDDNumericAttributeClassObserver newNumericClassObserver() {
 		return new FIMTDDNumericAttributeClassObserver();
 	}
 
 	protected SplitNode newSplitNode(InstanceConditionalTest splitTest) {
-		//maxID++;
+		maxID++;
 		return new SplitNode(splitTest, this);
 	}
 
@@ -847,12 +847,13 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 	}
 
 	protected FIMTDDPerceptron newLeafModel() {
-		return new FIMTDDPerceptron();
+		return new FIMTDDPerceptron(this);
 	}
 
 	//endregion --- Object instatiation methods
 	
-	//region --- Processing methods
+	// region --- Processing methods
+	
 	protected void checkRoot() {
 		if (treeRoot == null) {
 			treeRoot = newLeafNode();
@@ -868,12 +869,12 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		return !regressionTreeOption.isSet();
 	}
 
-	protected void attemptToSplit(LeafNode node, SplitNode parent, int parentIndex) {
+	protected void attemptToSplit(LeafNode node, Node parent, int parentIndex) {
 		// Set the split criterion to use to the SDR split criterion as described by Ikonomovska et al. 
 		SplitCriterion splitCriterion = (SplitCriterion) getPreparedClassOption(this.splitCriterionOption);
 
 		// Using this criterion, find the best split per attribute and rank the results
-		AttributeSplitSuggestion[] bestSplitSuggestions = node.getBestSplitSuggestions(splitCriterion, this);
+		AttributeSplitSuggestion[] bestSplitSuggestions = node.getBestSplitSuggestions(splitCriterion);
 		Arrays.sort(bestSplitSuggestions);
 
 		// Declare a variable to determine if any of the splits should be performed
@@ -886,7 +887,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 			// Determine the Hoeffding bound value, used to select how many instances should be used to make a test decision
 			// to feel reasonably confident that the test chosen by this sample is the same as what would be chosen using infinite examples
-			double hoeffdingBound = computeHoeffdingBound(1, this.splitConfidenceOption.getValue(), node.examplesSeen());
+			double hoeffdingBound = computeHoeffdingBound(1, this.splitConfidenceOption.getValue(), node.examplesSeen);
 			// Determine the top two ranked splitting suggestions
 			AttributeSplitSuggestion bestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1];
 			AttributeSplitSuggestion secondBestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 2];
@@ -939,7 +940,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			} else if (parent == null && node.originalNode != null) {
 				node.originalNode.alternateTree = newSplit;
 			} else {
-				parent.setChild(parentIndex, newSplit);
+				((SplitNode) parent).setChild(parentIndex, newSplit);
 				newSplit.setParent(parent);
 			}
 			
@@ -947,7 +948,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		}
 	}
 	
-	public  double computeSD(double squaredVal, double val, double size) {
+	public double computeSD(double squaredVal, double val, double size) {
 		if (size > 1)
 			return Math.sqrt((squaredVal - ((val * val) / size)) / size);
 		else
@@ -965,3 +966,4 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 	
 	//endregion ================ METHODS ================
 }
+

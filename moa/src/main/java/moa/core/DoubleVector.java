@@ -114,6 +114,14 @@ public class DoubleVector extends AbstractMOAObject {
         }
         return sum;
     }
+    
+    public double sumOfAbsoluteValues() {
+        double sum = 0.0;
+        for (double element : this.array) {
+            sum += (element > 0.0) ? element : -element;
+        }
+        return sum;
+    }
 
     public int maxIndex() {
         int max = -1;
@@ -126,7 +134,7 @@ public class DoubleVector extends AbstractMOAObject {
     }
 
     public void normalize() {
-        scaleValues(1.0 / sumOfValues());
+        scaleValues(1.0 / sumOfAbsoluteValues());
     }
 
     public int numNonZeroEntries() {
