@@ -92,7 +92,7 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
         };
 
         // reset
-        reset();
+        // reset();
 
         return m;
     }

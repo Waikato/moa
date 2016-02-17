@@ -166,8 +166,6 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-		//Measurement[] m = new Measurement[0];
-        //return m;
 		return null;
     }
 

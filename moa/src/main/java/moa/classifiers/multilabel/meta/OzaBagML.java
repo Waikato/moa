@@ -38,7 +38,8 @@ import moa.core.Example;
  */
 public class OzaBagML extends OzaBag implements MultiLabelLearner, MultiTargetRegressor{
 
-    @Override
+	/*
+   @Override
 	public double[] getVotesForInstance(Instance x) {
 
 		int m_L = x.numClasses();
@@ -48,34 +49,64 @@ public class OzaBagML extends OzaBag implements MultiLabelLearner, MultiTargetRe
         for (int i = 0; i < this.ensemble.length; i++) {
 			try {
 				double w[] = this.ensemble[i].getVotesForInstance(x);
+				System.out.println("w"+w.length);
+				System.out.println("y"+y.length);
 				for (int j = 0; j < w.length; j++) {
 					y[j] += w[j];
 				}
 			} catch(NullPointerException e) {
 				System.err.println("NullPointer");
+			} catch(ArrayIndexOutOfBoundsException e) {
+				System.err.println("OutofBounds");
 			}
+
         }
 
         return y;
     }
-	/*
-    public double[] getVotesForInstance(Instance inst) {
-		double votes[] = this.ensemble[0].getVotesForInstance(inst);
-		for (int i = 1; i < this.ensemble.length; i++) {
-			double more_votes[] = this.ensemble[i].getVotesForInstance(inst);
-			for(int j = 0; j < more_votes.length; j++) {
-				votes[j] = votes[j] + more_votes[j];
+	*/
+
+	public static Prediction makePrediction(double predictionArray[]) {
+		//System.out.println("y = "+Arrays.toString(predictionArray));
+        Prediction prediction = new MultiLabelPrediction(predictionArray.length);
+        for (int j = 0; j < predictionArray.length; j++) {
+            prediction.setVote(j, 1, predictionArray[j]);
+            //prediction.setVote(j, 0, 1. - predictionArray[j]);
+        }
+        return prediction;
+	}
+
+	public static double[] compileVotes(Classifier h[], Instance inst) {
+		double votes[] = h[0].getVotesForInstance(inst);
+		for (int i = 1; i < h.length; i++) {
+			try {
+				double more_votes[] = h[i].getVotesForInstance(inst);
+				for(int j = 0; j < more_votes.length; j++) {
+					votes[j] = votes[j] + more_votes[j];
+				}
+			} catch(NullPointerException e) {
+				System.err.println("NullPointer");
+			} catch(ArrayIndexOutOfBoundsException e) {
+				System.err.println("OutofBounds");
 			}
 		}
-		for(int j = 0; j < votes.length; j++) {
-			votes[j] = votes[j] / this.ensemble.length;
+		try {
+			for(int j = 0; j < votes.length; j++) {
+				votes[j] = votes[j] / h.length;
+			}
+		} catch(NullPointerException e) {
+			System.err.println("NullPointer");
 		}
 		return votes;
 	}
-	*/
 
 	@Override
-    public void trainOnInstanceImpl(MultiLabelInstance inst) {
+    public double[] getVotesForInstance(Instance inst) {
+		return compileVotes(this.ensemble, inst);
+	}
+
+	@Override
+	public void trainOnInstanceImpl(MultiLabelInstance inst) {
 		super.trainOnInstance((Instance)inst);
 		/*
         for (int i = 0; i < this.ensemble.length; i++) {
@@ -98,14 +129,10 @@ public class OzaBagML extends OzaBag implements MultiLabelLearner, MultiTargetRe
     public Prediction getPredictionForInstance(MultiLabelInstance instance) {
 
         double[] predictionArray = this.getVotesForInstance(instance);
-
-		//System.out.println("y = "+Arrays.toString(predictionArray));
-        Prediction prediction = new MultiLabelPrediction(predictionArray.length);
-        for (int j = 0; j < predictionArray.length; j++) {
-            prediction.setVote(j, 1, predictionArray[j]);
-            //prediction.setVote(j, 0, 1. - predictionArray[j]);
-        }
-        return prediction;
+		if (predictionArray == null)
+			return null;
+		else
+			return OzaBagML.makePrediction(predictionArray);
     }
 
 }
