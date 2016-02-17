@@ -44,7 +44,7 @@ public class OzaBagAdwinML extends OzaBagAdwin implements MultiLabelLearner, Mul
     @Override
     public void trainOnInstanceImpl(Instance inst) {
 
-        int Change = -1;
+        //int Change = -1;
 
 		// train
 		try {
@@ -68,16 +68,18 @@ public class OzaBagAdwinML extends OzaBagAdwin implements MultiLabelLearner, Mul
 				actual[j] = (double)inst.classValue(j);
 			}
 
-			// compute accuracy
-			double accuracy = Metrics.L_ZeroOne(A.toIntArray(actual,0.5), A.toIntArray(prediction,0.5));
+			// compute loss
+			double loss = Metrics.L_ZeroOne(A.toIntArray(actual,0.5), A.toIntArray(prediction,0.5));
+			//System.err.println("loss["+i+"] = "+loss);
 
 			// adwin stuff
 			double ErrEstim = this.ADError[i].getEstimation();
-			if (this.ADError[i].setInput(1.0 - accuracy)) {
+			if (this.ADError[i].setInput(loss)) {
 				if (this.ADError[i].getEstimation() > ErrEstim) {
 					System.err.println("Change model "+i+"!");
-					this.ensemble[i] = (Classifier) getPreparedClassOption(this.baseLearnerOption);
-					this.ensemble[i].setModelContext(this.modelContext);
+					this.ensemble[i].resetLearning();
+					//this.ensemble[i] = (Classifier) getPreparedClassOption(this.baseLearnerOption);
+					//this.ensemble[i].setModelContext(this.modelContext);
 					this.ensemble[i].trainOnInstance(inst);
 					this.ADError[i] = new ADWIN();
 				}
@@ -106,6 +108,7 @@ public class OzaBagAdwinML extends OzaBagAdwin implements MultiLabelLearner, Mul
         double[] predictionArray = this.getVotesForInstance(instance);
 		if (predictionArray == null)
 			return null;
+			//return new MultiLabelPrediction(instance.numClasses());
 		else
 			return OzaBagML.makePrediction(predictionArray);
 
