@@ -56,7 +56,7 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 
 	protected boolean isClassificationEnabled;
 
-	public int m_L = 0;
+	//public int m_L = 0;
 
 	// Converts multi-label format to single-label format
 	//protected Converter converter = null;
@@ -67,11 +67,7 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		this.modelContext = raw_header;
 	}
 
-   	@Override
-	public Prediction getPredictionForInstance(Example<Instance> example) {
-		return getPredictionForInstance((MultiLabelInstance)example.getData());
-	} 
-    
+
  /* @Override
 	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
 
@@ -274,10 +270,16 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
     */
 
 
+	@Override
+	public Prediction getPredictionForInstance(Example<Instance> example) {
+		//System.err.println("Example getPredictionForInstance");
+		return getPredictionForInstance((MultiLabelInstance)example.getData());
+	}
 
+	@Override
 	public Prediction getPredictionForInstance(MultiLabelInstance inst){
 		//int L = inst.numberOutputTargets(); // inst.classIndex()+1;
-
+		//System.err.println("getPredictionForInstance");
 		if (this.treeRoot != null) {
 			FoundNode foundNode = this.treeRoot.filterInstanceToLeaf(inst, null, -1);
 			Node leafNode = (MultilabelLearningNodeClassifier) foundNode.node;
@@ -287,6 +289,7 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 				leafNode = foundNode.parent;
 			}
 			//System.out.println("y[] = "+multilabelLeafNode.getPredictionForInstance(inst, this).toString());
+			//System.err.println("Return pred array");
 			return multilabelLeafNode.getPredictionForInstance(inst, this);
 		}
 		else {
@@ -295,16 +298,19 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 
 		//MultiLabelPrediction prediction=null;
 		// Return empty array (this should only happen once! -- before we build the root node).
+		System.err.println("Return empty array");
 		return null;
 		// return new double[L];
 	}
 
 	@Override
 	public void trainOnInstance(Instance inst) {
+		//System.err.println(" trainOnInstance");
 		boolean isTraining = (inst.weight() > 0.0);
 		if (isTraining) {
 			this.trainingWeightSeenByModel += inst.weight();
 			trainOnInstanceImpl((MultiLabelInstance) inst);
+			isClassificationEnabled = true;
 		}
 	}
 
@@ -312,7 +318,6 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 	public void trainOnInstanceImpl(MultiLabelInstance instance) {
 		//System.out.println("Training");
 		trainOnInstanceImpl((Instance) instance);
-		this.isClassificationEnabled = true;
 	}
         
 	private List<Integer> getRelevantLabels(Instance x) {

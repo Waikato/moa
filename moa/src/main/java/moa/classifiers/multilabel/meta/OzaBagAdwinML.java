@@ -104,14 +104,14 @@ public class OzaBagAdwinML extends OzaBagAdwin implements MultiLabelLearner, Mul
 
     @Override
     public Prediction getPredictionForInstance(MultiLabelInstance instance) {
-
-        double[] predictionArray = this.getVotesForInstance(instance);
+		return  OzaBagML.compilePredictions(this.ensemble, instance);
+        /*double[] predictionArray = this.getVotesForInstance(instance);
 		if (predictionArray == null)
 			return null;
 			//return new MultiLabelPrediction(instance.numClasses());
 		else
 			return OzaBagML.makePrediction(predictionArray);
-
+        */
     }
 
 }

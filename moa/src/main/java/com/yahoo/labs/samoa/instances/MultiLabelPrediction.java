@@ -37,12 +37,20 @@ public class MultiLabelPrediction implements Prediction, Serializable {
 
 	@Override
 	public int numClasses(int outputAttributeIndex) {
-		return prediction[outputAttributeIndex].numValues();
+		int ret = 0;
+		if (prediction.length > outputAttributeIndex) {
+			ret =  prediction[outputAttributeIndex].numValues();
+		}
+		return ret;
 	}
 
 	@Override
 	public double[] getVotes(int outputAttributeIndex) {
-		return prediction[outputAttributeIndex].getArrayCopy();
+		double ret[] = null;
+		if (prediction.length > outputAttributeIndex) {
+			ret = prediction[outputAttributeIndex].getArrayCopy();
+		}
+		return ret;
 	}
 	
 	@Override
@@ -52,7 +60,11 @@ public class MultiLabelPrediction implements Prediction, Serializable {
 
 	@Override
 	public double getVote(int outputAttributeIndex, int classIndex) {
-		return prediction[outputAttributeIndex].getValue(classIndex);
+		double ret = 0.0;
+		if (prediction.length > outputAttributeIndex) {
+			ret = prediction[outputAttributeIndex].getValue(classIndex);
+		}
+		return ret;
 	}
 
 	@Override
