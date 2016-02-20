@@ -50,63 +50,27 @@ import java.util.Arrays;
 public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implements MultiLabelLearner, MultiTargetRegressor { 
 // Needs to use InfoGainSplitCriterionMultiLabel, since multilabel entropy is calculated in a different way 
 // Trains a mlinstance adding statistics of several class values and training node classifiers
-// Get votes from the training node classifier
+// Get votes from the classifier in the learning node of the tree
 
 	private static final long serialVersionUID = 1L;
 
-	protected boolean isClassificationEnabled;
 
-	//public int m_L = 0;
-
-	// Converts multi-label format to single-label format
-	//protected Converter converter = null;
-	
-	@Override
-	public void setModelContext(InstancesHeader raw_header) {
-		//set the multilabel model context
-		this.modelContext = raw_header;
-	}
-
-
- /* @Override
-	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
-
-		m_L = instance.numberOutputTargets();
-
-			
-		if (this.isClassificationEnabled == false) { 
-			return null;
-		}
-
-		MultiLabelPrediction prediction = new MultiLabelPrediction(m_L);
-
-		double votes[] = new double[m_L];
-
-		try {
-			votes = this.getVotesForInstance(instance); //this.classifier.distributionForInstance(inst);
-		} catch(Exception e) {
-			System.err.println("[ERROR] Failed to get votes from tree.");
-			e.printStackTrace();
-			System.exit(1);
-		}
-		 
-		if (votes == null) {
-			System.out.println("VOTES = NULL");
-			return null;
-		}
-
-		System.out.println(m_L+" [votes] "+Arrays.toString(votes));
-		for (int j = 0; j < m_L; j++) {
-			double vote = j < votes.length ? votes[j] : 0;
-			prediction.setVotes(j, new double[]{1.-vote,vote});
-			//prediction.setVote(j, 1, votes[j]);
-			//prediction.setVote(j, 0, 1. - votes[j]);
-		}
-
-		return prediction;
+	/*public MultilabelHoeffdingTree() {
+		this.removePoorAttsOption = null;
 	}*/
 
-	//It uses several class values
+	@Override
+	protected LearningNode newLearningNode(double[] initialClassObservations) {
+		// Create new Learning Node with a null classifier
+		return new MultilabelLearningNodeClassifier(initialClassObservations,null,this);
+	}
+
+	//@Override
+	protected LearningNode newLearningNode(double[] initialClassObservations, Classifier cl) {
+		// Create new Learning Node
+		return new MultilabelLearningNodeClassifier(initialClassObservations,cl,this);
+	}
+
 	public static class MultilabelInactiveLearningNode extends InactiveLearningNode {
 
 		private static final long serialVersionUID = 1L;
@@ -123,11 +87,9 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 			}
 		}
 	}
-	
-	// It uses classifier at nodes, and to be able to train with several class values
+
 	public class MultilabelLearningNodeClassifier extends LearningNodeClassifier {
-		
-		//protected Classifier classifier; 
+		// It uses classifier at nodes, and to be able to train with several class values
 
 		private static final long serialVersionUID = 1L;
 
@@ -165,47 +127,35 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		public Classifier getClassifier() {
 			return this.classifier;
 		}
-		
-		//It uses different class values
+
 	    @Override
-		public void learnFromInstance(Instance mlinst, HoeffdingTree ht) {
-			this.classifier.trainOnInstance(mlinst);
+		public void learnFromInstance(Instance inst, HoeffdingTree ht) {
+
+			//It uses different class values, not only one
+			this.classifier.trainOnInstance(inst);
 			MultilabelHoeffdingTree mht = ((MultilabelHoeffdingTree) ht);
-			List<Integer> labels = mht.getRelevantLabels(mlinst);
-
-			//System.out.print("Labels: ");
+			List<Integer> labels = mht.getRelevantLabels(inst);
 			for (int l : labels){
-				//System.out.print(l+", ");
-				this.observedClassDistribution.addToValue( l, mlinst.weight());
+				this.observedClassDistribution.addToValue( l, inst.weight());
 			}
-			//System.out.println("");
 
-			Instance inst = mlinst; //mht.converter.formatInstance(mlinst);
-			//System.out.print("Instance "+inst.numInputAttributes()+": ");
 			for (int i = 0; i < inst.numInputAttributes(); i++) {
-				int instAttIndex = i; //inst.inputAttribute(i).index(); //modelAttIndexToInstanceAttIndex(i, inst);
-				//System.out.print(i+":"+instAttIndex+", ");
+				int instAttIndex = i;
 				AttributeClassObserver obs = this.attributeObservers.get(instAttIndex); //i
 				if (obs == null) {
 					obs = inst.inputAttribute(i).isNominal() ? mht.newNominalClassObserver() : mht.newNumericClassObserver();
 					this.attributeObservers.set(i, obs);
 				}
-
 				for (int l : labels){
 					obs.observeAttributeClass(inst.valueInputAttribute(i), l, inst.weight());
-					//obs.observeAttributeClass(inst.value(instAttIndex), 0, inst.weight());
 				}
-
 			}
-			//System.out.println("");
 		}
 
 		public void describeSubtree(HoeffdingTree ht, StringBuilder out,
 									int indent) {
 			StringUtils.appendIndented(out, indent, "Leaf ");
-			//out.append(ht.getClassNameString());
 			out.append(" = ");
-			//out.append(ht.getClassLabelString(this.observedClassDistribution.maxIndex()));
 			out.append(" weights: ");
 			this.observedClassDistribution.getSingleLineDescription(out,
 					this.observedClassDistribution.numValues());
@@ -213,26 +163,10 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		}
 	}
 
-	public MultilabelHoeffdingTree() {
-		this.removePoorAttsOption = null;
-	}
-
-	@Override
-	protected LearningNode newLearningNode(double[] initialClassObservations) {
-		// Create new Learning Node null
-		return new MultilabelLearningNodeClassifier(initialClassObservations,null,this);
-	}
-	
-	//@Override
-	protected LearningNode newLearningNode(double[] initialClassObservations, Classifier cl) {
-		// Create new Learning Node
-		return new MultilabelLearningNodeClassifier(initialClassObservations,cl,this);
-	}
-	
-	//It uses MultilabelInactiveLearningNode since there are several class values
 	@Override
 	protected void deactivateLearningNode(ActiveLearningNode toDeactivate,
 			SplitNode parent, int parentBranch) {
+		//It uses MultilabelInactiveLearningNode since there are several class values
 		Node newLeaf = new MultilabelInactiveLearningNode(toDeactivate
 				.getObservedClassDistribution());
 		if (parent == null) {
@@ -244,84 +178,47 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		this.inactiveLeafNodeCount++;
 	}
 
-	/*@Override
-	public double[] getVotesForInstance(Instance inst) {
-
-		//int L = inst.numberOutputTargets(); // inst.classIndex()+1;
-
-		if (this.treeRoot != null) {
-			FoundNode foundNode = this.treeRoot.filterInstanceToLeaf(inst, null, -1);
-			Node leafNode = foundNode.node;
-			if (leafNode == null) {
-				leafNode = foundNode.parent;
-			}
-			System.out.println("y[] = "+Arrays.toString(leafNode.getClassVotes(inst,this)));
-			return leafNode.getClassVotes(inst, this);
-		}
-		else {
-			System.out.println("[WARNING] Root Node == Null !!!!!!");
-		}
-
-		//MultiLabelPrediction prediction=null;
-		// Return empty array (this should only happen once! -- before we build the root node).
-		return null;
-		// return new double[L];
-	}
-    */
-
 
 	@Override
 	public Prediction getPredictionForInstance(Example<Instance> example) {
-		//System.err.println("Example getPredictionForInstance");
 		return getPredictionForInstance((MultiLabelInstance)example.getData());
 	}
 
 	@Override
 	public Prediction getPredictionForInstance(MultiLabelInstance inst){
-		//int L = inst.numberOutputTargets(); // inst.classIndex()+1;
-		//System.err.println("getPredictionForInstance");
+
 		if (this.treeRoot != null) {
 			FoundNode foundNode = this.treeRoot.filterInstanceToLeaf(inst, null, -1);
 			Node leafNode = (MultilabelLearningNodeClassifier) foundNode.node;
 			MultilabelLearningNodeClassifier multilabelLeafNode = (MultilabelLearningNodeClassifier) leafNode;
 			if (leafNode == null) {
-				//System.out.println("null leafNode");
 				leafNode = foundNode.parent;
 			}
-			//System.out.println("y[] = "+multilabelLeafNode.getPredictionForInstance(inst, this).toString());
-			//System.err.println("Return pred array");
 			return multilabelLeafNode.getPredictionForInstance(inst, this);
 		}
 		else {
-			System.out.println("[WARNING] Root Node == Null !!!!!!");
+			System.err.println("[WARNING] Root Node == Null !!!!!!");
 		}
 
-		//MultiLabelPrediction prediction=null;
 		// Return empty array (this should only happen once! -- before we build the root node).
-		System.err.println("Return empty array");
 		return null;
-		// return new double[L];
 	}
 
 	@Override
 	public void trainOnInstance(Instance inst) {
-		//System.err.println(" trainOnInstance");
 		boolean isTraining = (inst.weight() > 0.0);
 		if (isTraining) {
 			this.trainingWeightSeenByModel += inst.weight();
 			trainOnInstanceImpl((MultiLabelInstance) inst);
-			isClassificationEnabled = true;
 		}
 	}
 
 	@Override
 	public void trainOnInstanceImpl(MultiLabelInstance instance) {
-		//System.out.println("Training");
 		trainOnInstanceImpl((Instance) instance);
 	}
         
-	private List<Integer> getRelevantLabels(Instance x) {
-		//Move to Instance?
+	public static List<Integer> getRelevantLabels(Instance x) {
 		List<Integer> classValues = new LinkedList<Integer>();
 		//get all class attributes
 		for (int j = 0; j < x.numberOutputTargets(); j++) {

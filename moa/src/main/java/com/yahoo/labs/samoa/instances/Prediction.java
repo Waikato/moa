@@ -93,6 +93,11 @@ public interface Prediction {
      */
      public int size();
 
+    /**
+     * The text of the prediction, that is the description of the values of the prediction
+     *
+     * @return the text
+     */
      public String toString();
 		
 
