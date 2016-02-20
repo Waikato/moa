@@ -27,8 +27,11 @@ import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
+import moa.core.InstanceExample;
 import moa.core.MiscUtils;
 import moa.core.Example;
+
+import java.util.Arrays;
 
 /**
  * OzaBag for Multi-label data.
@@ -38,42 +41,57 @@ import moa.core.Example;
  */
 public class OzaBagML extends OzaBag implements MultiLabelLearner, MultiTargetRegressor{
 
-	/*
-   @Override
-	public double[] getVotesForInstance(Instance x) {
+	//Training
+	@Override
+	public void trainOnInstanceImpl(MultiLabelInstance inst) {
+		trainOnInstanceImpl((Instance) inst);
+	}
 
-		int m_L = x.numClasses();
+	// Predictions
+	@Override
+	public Prediction getPredictionForInstance(Example<Instance> example) {
+		return compilePredictions(this.ensemble, example);
+	}
 
-        double y[] = new double[m_L];
+	public static Prediction compilePredictions(Classifier h[], Example example) {
+		Prediction[] predictions = new Prediction[h.length];
+		for (int i = 0; i < h.length; i++) {
+			predictions[i] = h[i].getPredictionForInstance(example);
+		}
+		return combinePredictions(predictions, (Instance) example.getData());
+	}
 
-        for (int i = 0; i < this.ensemble.length; i++) {
+	public static Prediction combinePredictions(Prediction[] predictions, Instance inst) {
+		Prediction result = new MultiLabelPrediction(inst.numOutputAttributes());
+		for (int i = 0; i < predictions.length; i++) {
 			try {
-				double w[] = this.ensemble[i].getVotesForInstance(x);
-				System.out.println("w"+w.length);
-				System.out.println("y"+y.length);
-				for (int j = 0; j < w.length; j++) {
-					y[j] += w[j];
+				Prediction more_votes = predictions[i];
+				if (more_votes != null) {
+					for (int numOutputAttribute = 0; numOutputAttribute < inst.numOutputAttributes(); numOutputAttribute++) {
+						int length = 0;
+						if (more_votes.getVotes(numOutputAttribute) != null)
+							length = more_votes.getVotes(numOutputAttribute).length;
+						for (int numValueAttribute = 0; numValueAttribute < length; numValueAttribute++) {
+							result.setVote(numOutputAttribute, numValueAttribute,
+									(result.getVote(numOutputAttribute, numValueAttribute) +
+											more_votes.getVote(numOutputAttribute, numValueAttribute) / (double) predictions.length));
+						}
+					}
 				}
-			} catch(NullPointerException e) {
+			} catch (NullPointerException e) {
 				System.err.println("NullPointer");
-			} catch(ArrayIndexOutOfBoundsException e) {
+			} catch (ArrayIndexOutOfBoundsException e) {
 				System.err.println("OutofBounds");
 			}
+		}
+		return result;
+	}
 
-        }
 
-        return y;
-    }
-	*/
-
-	public static Prediction makePrediction(double predictionArray[]) {
-		//System.out.println("y = "+Arrays.toString(predictionArray));
-        Prediction prediction = new MultiLabelPrediction(predictionArray.length);
-        for (int j = 0; j < predictionArray.length; j++) {
-            prediction.setVote(j, 1, predictionArray[j]);
-            //prediction.setVote(j, 0, 1. - predictionArray[j]);
-        }
-        return prediction;
+	//Legacy code: not used now, only Predictions are used
+	@Override
+    public double[] getVotesForInstance(Instance inst) {
+		return compileVotes(this.ensemble, inst);
 	}
 
 	public static double[] compileVotes(Classifier h[], Instance inst) {
@@ -100,39 +118,9 @@ public class OzaBagML extends OzaBag implements MultiLabelLearner, MultiTargetRe
 		return votes;
 	}
 
-	@Override
-    public double[] getVotesForInstance(Instance inst) {
-		return compileVotes(this.ensemble, inst);
-	}
-
-	@Override
-	public void trainOnInstanceImpl(MultiLabelInstance inst) {
-		super.trainOnInstance((Instance)inst);
-		/*
-        for (int i = 0; i < this.ensemble.length; i++) {
-            int k = MiscUtils.poisson(1.0, this.classifierRandom);
-            if (k > 0) {
-                Instance weightedInst = (Instance) inst.copy();
-                weightedInst.setWeight(inst.weight() * k);
-                this.ensemble[i].trainOnInstance(weightedInst);
-            }
-        }
-		*/
-    }
-
-	@Override
-    public Prediction getPredictionForInstance(Example<Instance> example) {
-        return getPredictionForInstance((MultiLabelInstance) example.getData());
-    }
-
-	@Override
+	 @Override
     public Prediction getPredictionForInstance(MultiLabelInstance instance) {
-
-        double[] predictionArray = this.getVotesForInstance(instance);
-		if (predictionArray == null)
-			return null;
-		else
-			return OzaBagML.makePrediction(predictionArray);
+        return getPredictionForInstance((new InstanceExample(instance)));
     }
 
 }

@@ -22,6 +22,7 @@ import moa.classifiers.Classifier;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.classifiers.meta.OzaBagAdwin;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import moa.core.InstanceExample;
 import moa.core.MiscUtils;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
@@ -43,9 +44,6 @@ public class OzaBagAdwinML extends OzaBagAdwin implements MultiLabelLearner, Mul
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
-
-        //int Change = -1;
-
 		// train
 		try {
 			super.trainOnInstanceImpl(inst);
@@ -78,8 +76,6 @@ public class OzaBagAdwinML extends OzaBagAdwin implements MultiLabelLearner, Mul
 				if (this.ADError[i].getEstimation() > ErrEstim) {
 					System.err.println("Change model "+i+"!");
 					this.ensemble[i].resetLearning();
-					//this.ensemble[i] = (Classifier) getPreparedClassOption(this.baseLearnerOption);
-					//this.ensemble[i].setModelContext(this.modelContext);
 					this.ensemble[i].trainOnInstance(inst);
 					this.ADError[i] = new ADWIN();
 				}
@@ -93,26 +89,21 @@ public class OzaBagAdwinML extends OzaBagAdwin implements MultiLabelLearner, Mul
 	}
 
 	@Override
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Example<Instance> example) {
+        return OzaBagML.compilePredictions(this.ensemble, example);
+    }
+
+
+	//Legacy code: not used now, only Predictions are used
+	@Override
+	public double[] getVotesForInstance(Instance inst) {
 		return OzaBagML.compileVotes(this.ensemble, inst);
 	}
 
 	@Override
-    public Prediction getPredictionForInstance(Example<Instance> example) {
-        return getPredictionForInstance((MultiLabelInstance) example.getData());
-    }
-
-    @Override
-    public Prediction getPredictionForInstance(MultiLabelInstance instance) {
-
-        double[] predictionArray = this.getVotesForInstance(instance);
-		if (predictionArray == null)
-			return null;
-			//return new MultiLabelPrediction(instance.numClasses());
-		else
-			return OzaBagML.makePrediction(predictionArray);
-
-    }
+	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
+		return getPredictionForInstance((new InstanceExample(instance)));
+	}
 
 }
 
