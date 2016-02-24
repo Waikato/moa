@@ -11,6 +11,7 @@ Measurements
   classifications correct (percent): 66.42664266
   Kappa Statistic (percent): 23.91775441
   Kappa Temporal Statistic (percent): 29.23693086
+  Kappa M Statistic (percent): 18.02197802
 Model measurements
   model training instances: 9999
   tree size (nodes): 13
@@ -31,6 +32,7 @@ Measurements
   classifications correct (percent): 69.08845442
   Kappa Statistic (percent): 32.26713233
   Kappa Temporal Statistic (percent): 35.46299196
+  Kappa M Statistic (percent): 25.89307121
 Model measurements
   model training instances: 19999
   tree size (nodes): 24
@@ -51,6 +53,7 @@ Measurements
   classifications correct (percent): 71.60572019
   Kappa Statistic (percent): 38.66406524
   Kappa Temporal Statistic (percent): 41.16184292
+  Kappa M Statistic (percent): 31.7905189
 Model measurements
   model training instances: 29999
   tree size (nodes): 75
@@ -71,6 +74,7 @@ Measurements
   classifications correct (percent): 73.12182805
   Kappa Statistic (percent): 42.57061339
   Kappa Temporal Statistic (percent): 44.44214769
+  Kappa M Statistic (percent): 35.69976077
 Model measurements
   model training instances: 39999
   tree size (nodes): 83
@@ -91,6 +95,7 @@ Measurements
   classifications correct (percent): 74.05748115
   Kappa Statistic (percent): 44.83693349
   Kappa Temporal Statistic (percent): 46.30764136
+  Kappa M Statistic (percent): 37.92591884
 Model measurements
   model training instances: 49999
   tree size (nodes): 97
@@ -111,6 +116,7 @@ Measurements
   classifications correct (percent): 74.76291272
   Kappa Statistic (percent): 46.60204008
   Kappa Temporal Statistic (percent): 47.81320007
+  Kappa M Statistic (percent): 39.91746687
 Model measurements
   model training instances: 59999
   tree size (nodes): 115
@@ -131,6 +137,7 @@ Measurements
   classifications correct (percent): 75.45964942
   Kappa Statistic (percent): 48.30379711
   Kappa Temporal Statistic (percent): 49.4154716
+  Kappa M Statistic (percent): 41.77738612
 Model measurements
   model training instances: 69999
   tree size (nodes): 147
@@ -151,6 +158,7 @@ Measurements
   classifications correct (percent): 75.91344892
   Kappa Statistic (percent): 49.36116901
   Kappa Temporal Statistic (percent): 50.4002677
+  Kappa M Statistic (percent): 42.84909242
 Model measurements
   model training instances: 79999
   tree size (nodes): 158
@@ -171,6 +179,7 @@ Measurements
   classifications correct (percent): 76.3064034
   Kappa Statistic (percent): 50.26736574
   Kappa Temporal Statistic (percent): 51.18690626
+  Kappa M Statistic (percent): 43.76582278
 Model measurements
   model training instances: 89999
   tree size (nodes): 183
@@ -191,6 +200,7 @@ Measurements
   classifications correct (percent): 76.70476705
   Kappa Statistic (percent): 51.18764009
   Kappa Temporal Statistic (percent): 52.01260712
+  Kappa M Statistic (percent): 44.77502252
 Model measurements
   model training instances: 99999
   tree size (nodes): 208
