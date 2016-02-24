@@ -91,7 +91,14 @@ public interface Prediction {
      *
      * @return the votes for the first output attribute outputAttributeIndex.
      */
-        public int size();
+     public int size();
+
+    /**
+     * The text of the prediction, that is the description of the values of the prediction
+     *
+     * @return the text
+     */
+     public String toString();
 		
 
 }

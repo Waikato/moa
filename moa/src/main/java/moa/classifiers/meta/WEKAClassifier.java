@@ -171,15 +171,15 @@ public class WEKAClassifier
             for (int i = 0; i < inst.numClasses(); i++) {
                 votes[i] = 1.0 / inst.numClasses();
             }
-        } else {
-            try {
-                votes = this.classifier.distributionForInstance(inst);
-            } catch (Exception e) {
-                System.err.println(e.getMessage());
-            }
-        }
-        return votes;
-    }
+		} else {
+			try {
+				votes = this.classifier.distributionForInstance(inst);
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
+			}
+		}
+		return votes;
+	}
 
     @Override
     public boolean isRandomizable() {

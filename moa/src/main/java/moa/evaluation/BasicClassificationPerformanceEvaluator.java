@@ -23,11 +23,16 @@ package moa.evaluation;
 import moa.AbstractMOAObject;
 import moa.core.Example;
 import moa.core.Measurement;
+import moa.core.ObjectRepository;
 import moa.core.Utils;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.Prediction;
+import moa.options.AbstractOptionHandler;
+import moa.tasks.TaskMonitor;
+
+import java.io.Serializable;
 
 /**
  * Classification evaluator that performs basic incremental evaluation.
@@ -36,24 +41,26 @@ import com.yahoo.labs.samoa.instances.Prediction;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
+public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandler
         implements LearningPerformanceEvaluator<Example<Instance>> {
 
     private static final long serialVersionUID = 1L;
 
-    protected double weightObserved;
+    protected Estimator weightCorrect;
 
-    protected double weightCorrect;
+    protected Estimator[] columnKappa;
 
-    protected double[] columnKappa;
-
-    protected double[] rowKappa;
+    protected Estimator[] rowKappa;
 
     protected int numClasses;
 
-    private double weightCorrectNoChangeClassifier;
+    private Estimator weightCorrectNoChangeClassifier;
+
+    private Estimator weightMajorityClassifier;
 
     private int lastSeenClass;
+
+    private double totalWeightObserved;
 
     @Override
     public void reset() {
@@ -62,16 +69,17 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
 
     public void reset(int numClasses) {
         this.numClasses = numClasses;
-        this.rowKappa = new double[numClasses];
-        this.columnKappa = new double[numClasses];
+        this.rowKappa = new  Estimator[numClasses];
+        this.columnKappa = new  Estimator[numClasses];
         for (int i = 0; i < this.numClasses; i++) {
-            this.rowKappa[i] = 0.0;
-            this.columnKappa[i] = 0.0;
+            this.rowKappa[i] = newEstimator();
+            this.columnKappa[i] = newEstimator();
         }
-        this.weightObserved = 0.0;
-        this.weightCorrect = 0.0;
-        this.weightCorrectNoChangeClassifier = 0.0;
+        this.weightCorrect = newEstimator();
+        this.weightCorrectNoChangeClassifier = newEstimator();
+        this.weightMajorityClassifier = newEstimator();
         this.lastSeenClass = 0;
+        this.totalWeightObserved = 0;
     }
 
     @Override
@@ -80,47 +88,59 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
         double weight = inst.weight();
         if (inst.classIsMissing() == false){
             int trueClass = (int) inst.classValue();
+            int predictedClass = Utils.maxIndex(classVotes);
             if (weight > 0.0) {
-                if (this.weightObserved == 0) {
+                if (this.totalWeightObserved == 0) {
                     reset(inst.dataset().numClasses());
                 }
-                this.weightObserved += weight;
-                int predictedClass = Utils.maxIndex(classVotes);
-                if (predictedClass == trueClass) {
-                    this.weightCorrect += weight;
+                this.totalWeightObserved += weight;
+                this.weightCorrect.add(predictedClass == trueClass ? weight : 0);
+                for (int i = 0; i < this.numClasses; i++) {
+                    this.rowKappa[i].add(predictedClass == i ? weight: 0);
+                    this.columnKappa[i].add(trueClass == i ? weight: 0);
                 }
-                this.rowKappa[predictedClass] += weight;
-                this.columnKappa[trueClass] += weight;
             }
-            if (this.lastSeenClass == trueClass) {
-                this.weightCorrectNoChangeClassifier += weight;
-            }
+            this.weightCorrectNoChangeClassifier.add(this.lastSeenClass == trueClass ? weight: 0);
+            this.weightMajorityClassifier.add(getMajorityClass() == trueClass ? weight: 0);
             this.lastSeenClass = trueClass;
         }
+    }
+
+    private int getMajorityClass() {
+        int majorityClass = 0;
+        double maxProbClass = 0.0;
+        for (int i = 0; i < this.numClasses; i++) {
+            if (this.columnKappa[i].estimation() > maxProbClass) {
+                majorityClass = i;
+                maxProbClass = this.columnKappa[i].estimation();
+            }
+        }
+        return majorityClass;
     }
 
     @Override
     public Measurement[] getPerformanceMeasurements() {
         return new Measurement[]{
-            new Measurement("classified instances",
-            getTotalWeightObserved()),
-            new Measurement("classifications correct (percent)",
-            getFractionCorrectlyClassified() * 100.0),
-            new Measurement("Kappa Statistic (percent)",
-            getKappaStatistic() * 100.0),
-            new Measurement("Kappa Temporal Statistic (percent)",
-            getKappaTemporalStatistic() * 100.0)
+                new Measurement("classified instances",
+                    getTotalWeightObserved()),
+                new Measurement("classifications correct (percent)",
+                    getFractionCorrectlyClassified() * 100.0),
+                new Measurement("Kappa Statistic (percent)",
+                    getKappaStatistic() * 100.0),
+                new Measurement("Kappa Temporal Statistic (percent)",
+                    getKappaTemporalStatistic() * 100.0),
+                new Measurement("Kappa M Statistic (percent)",
+                        getKappaMStatistic() * 100.0)
         };
 
     }
 
     public double getTotalWeightObserved() {
-        return this.weightObserved;
+        return this.totalWeightObserved;
     }
 
     public double getFractionCorrectlyClassified() {
-        return this.weightObserved > 0.0 ? this.weightCorrect
-                / this.weightObserved : 0.0;
+        return this.weightCorrect.estimation();
     }
 
     public double getFractionIncorrectlyClassified() {
@@ -128,12 +148,12 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
     }
 
     public double getKappaStatistic() {
-        if (this.weightObserved > 0.0) {
+        if (this.getTotalWeightObserved() > 0.0) {
             double p0 = getFractionCorrectlyClassified();
             double pc = 0.0;
             for (int i = 0; i < this.numClasses; i++) {
-                pc += (this.rowKappa[i] / this.weightObserved)
-                        * (this.columnKappa[i] / this.weightObserved);
+                pc += this.rowKappa[i].estimation()
+                        * this.columnKappa[i].estimation();
             }
             return (p0 - pc) / (1.0 - pc);
         } else {
@@ -142,9 +162,20 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
     }
 
     public double getKappaTemporalStatistic() {
-        if (this.weightObserved > 0.0) {
-            double p0 = this.weightCorrect / this.weightObserved;
-            double pc = this.weightCorrectNoChangeClassifier / this.weightObserved;
+        if (this.getTotalWeightObserved() > 0.0) {
+            double p0 = getFractionCorrectlyClassified();
+            double pc = this.weightCorrectNoChangeClassifier.estimation();
+
+            return (p0 - pc) / (1.0 - pc);
+        } else {
+            return 0;
+        }
+    }
+
+    private double getKappaMStatistic() {
+        if (this.getTotalWeightObserved() > 0.0) {
+            double p0 = getFractionCorrectlyClassified();
+            double pc = this.weightMajorityClassifier.estimation();
 
             return (p0 - pc) / (1.0 - pc);
         } else {
@@ -165,4 +196,39 @@ public class BasicClassificationPerformanceEvaluator extends AbstractMOAObject
 		// TODO Auto-generated method stub
 		
 	}
+
+    @Override
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
+
+    }
+
+    public interface Estimator extends Serializable {
+
+        void add(double value);
+
+        double estimation();
+    }
+
+    public class BasicEstimator implements Estimator {
+
+        protected double len;
+
+        protected double sum;
+
+        @Override
+        public void add(double value) {
+            sum += value;
+            len++;
+        }
+
+        @Override
+        public double estimation(){
+            return sum/len;
+        }
+
+    }
+
+    protected Estimator newEstimator() {
+        return new BasicEstimator();
+    }
 }
