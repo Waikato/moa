@@ -11,6 +11,7 @@ Measurements
   classifications correct (percent): 52.55525553
   Kappa Statistic (percent): 1.89955031
   Kappa Temporal Statistic (percent): 0
+  Kappa M Statistic (percent): -15.84859585
 Model measurements
   model training instances: 9999
 
@@ -24,6 +25,7 @@ Measurements
   classifications correct (percent): 52.10260513
   Kappa Statistic (percent): 1.50048921
   Kappa Temporal Statistic (percent): 0
+  Kappa M Statistic (percent): -14.82857828
 Model measurements
   model training instances: 19999
 
@@ -37,6 +39,7 @@ Measurements
   classifications correct (percent): 51.74172472
   Kappa Statistic (percent): 0.70062138
   Kappa Temporal Statistic (percent): 0
+  Kappa M Statistic (percent): -15.9272902
 Model measurements
   model training instances: 29999
 
@@ -50,6 +53,7 @@ Measurements
   classifications correct (percent): 51.62129053
   Kappa Statistic (percent): 0.56980333
   Kappa Temporal Statistic (percent): 0
+  Kappa M Statistic (percent): -15.73564593
 Model measurements
   model training instances: 39999
 
@@ -63,6 +67,7 @@ Measurements
   classifications correct (percent): 51.68303366
   Kappa Statistic (percent): 0.69036614
   Kappa Temporal Statistic (percent): 0
+  Kappa M Statistic (percent): -15.61064319
 Model measurements
   model training instances: 49999
 
@@ -76,6 +81,7 @@ Measurements
   classifications correct (percent): 51.64086068
   Kappa Statistic (percent): 0.74385468
   Kappa Temporal Statistic (percent): 0
+  Kappa M Statistic (percent): -15.12975161
 Model measurements
   model training instances: 59999
 
@@ -89,6 +95,7 @@ Measurements
   classifications correct (percent): 51.48644981
   Kappa Statistic (percent): 0.52076593
   Kappa Temporal Statistic (percent): 0
+  Kappa M Statistic (percent): -15.09964751
 Model measurements
   model training instances: 69999
 
@@ -102,6 +109,7 @@ Measurements
   classifications correct (percent): 51.43814298
   Kappa Statistic (percent): 0.41931454
   Kappa Temporal Statistic (percent): 0
+  Kappa M Statistic (percent): -15.22422589
 Model measurements
   model training instances: 79999
 
@@ -115,6 +123,7 @@ Measurements
   classifications correct (percent): 51.46057178
   Kappa Statistic (percent): 0.45773781
   Kappa Temporal Statistic (percent): 0
+  Kappa M Statistic (percent): -15.20305907
 Model measurements
   model training instances: 89999
 
@@ -128,6 +137,7 @@ Measurements
   classifications correct (percent): 51.45551456
   Kappa Statistic (percent): 0.4781364
   Kappa Temporal Statistic (percent): 0
+  Kappa M Statistic (percent): -15.08226258
 Model measurements
   model training instances: 99999
 
