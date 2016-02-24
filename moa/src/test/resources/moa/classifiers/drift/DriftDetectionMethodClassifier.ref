@@ -11,6 +11,7 @@ Measurements
   classifications correct (percent): 72.89728973
   Kappa Statistic (percent): 41.81847765
   Kappa Temporal Statistic (percent): 42.87521079
+  Kappa M Statistic (percent): 33.82173382
 Model measurements
   model training instances: 9999
   Change detected: 0
@@ -27,6 +28,7 @@ Measurements
   classifications correct (percent): 73.16865843
   Kappa Statistic (percent): 42.93623835
   Kappa Temporal Statistic (percent): 43.98162647
+  Kappa M Statistic (percent): 35.67489811
 Model measurements
   model training instances: 19999
   Change detected: 0
@@ -43,6 +45,7 @@ Measurements
   classifications correct (percent): 73.27244241
   Kappa Statistic (percent): 43.15271423
   Kappa Temporal Statistic (percent): 44.61559715
+  Kappa M Statistic (percent): 35.79436259
 Model measurements
   model training instances: 29999
   Change detected: 0
@@ -59,6 +62,7 @@ Measurements
   classifications correct (percent): 73.38433461
   Kappa Statistic (percent): 43.54638422
   Kappa Temporal Statistic (percent): 44.98475531
+  Kappa M Statistic (percent): 36.3277512
 Model measurements
   model training instances: 39999
   Change detected: 0
@@ -75,6 +79,7 @@ Measurements
   classifications correct (percent): 73.35746715
   Kappa Statistic (percent): 43.48652952
   Kappa Temporal Statistic (percent): 44.85884593
+  Kappa M Statistic (percent): 36.25095712
 Model measurements
   model training instances: 49999
   Change detected: 0
@@ -91,6 +96,7 @@ Measurements
   classifications correct (percent): 73.36122269
   Kappa Statistic (percent): 43.62514295
   Kappa Temporal Statistic (percent): 44.91469929
+  Kappa M Statistic (percent): 36.58043012
 Model measurements
   model training instances: 59999
   Change detected: 0
@@ -107,6 +113,7 @@ Measurements
   classifications correct (percent): 73.3810483
   Kappa Statistic (percent): 43.73709504
   Kappa Temporal Statistic (percent): 45.13089314
+  Kappa M Statistic (percent): 36.84585141
 Model measurements
   model training instances: 69999
   Change detected: 0
@@ -123,6 +130,7 @@ Measurements
   classifications correct (percent): 73.36341704
   Kappa Statistic (percent): 43.71144848
   Kappa Temporal Statistic (percent): 45.14916729
+  Kappa M Statistic (percent): 36.79855262
 Model measurements
   model training instances: 79999
   Change detected: 0
@@ -139,6 +147,7 @@ Measurements
   classifications correct (percent): 73.39081545
   Kappa Statistic (percent): 43.77125988
   Kappa Temporal Statistic (percent): 45.18026783
+  Kappa M Statistic (percent): 36.84599156
 Model measurements
   model training instances: 89999
   Change detected: 0
@@ -155,6 +164,7 @@ Measurements
   classifications correct (percent): 73.38573386
   Kappa Statistic (percent): 43.79308354
   Kappa Temporal Statistic (percent): 45.17551088
+  Kappa M Statistic (percent): 36.90673747
 Model measurements
   model training instances: 99999
   Change detected: 0
