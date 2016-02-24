@@ -41,17 +41,22 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Task for distributed evaluation of a classifier on a stream by testing then training with each example in sequence.
+ * Task for prequential cross-validation evaluation of a classifier on a stream by testing then training with each
+ * example in sequence and doing cross-validation at the same time.
+ *
+ * <p>Albert Bifet, Gianmarco De Francisci Morales, Jesse Read, Geoff Holmes, Bernhard Pfahringer: Efficient Online
+ * Evaluation of Big Data Stream Classifiers. KDD 2015: 59-68</p>
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class EvaluateDistributedPrequential extends MainTask {
+public class EvaluatePrequentialCV extends MainTask {
 
     @Override
     public String getPurposeString() {
-        return "Evaluates distributely a classifier on a stream by testing then training with each example in sequence.";
+        return "Evaluates a classifier on a stream by doing prequential evaluation (testing then training with each" +
+                " example in sequence) and doing cross-validation.";
     }
 
     private static final long serialVersionUID = 1L;
