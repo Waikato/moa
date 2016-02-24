@@ -51,7 +51,7 @@ public class NominalAttributeBinaryTest extends InstanceConditionalBinaryTest {
     @Override
     public String describeConditionForBranch(int branch, InstancesHeader context) {
         if ((branch == 0) || (branch == 1)) {
-            return InstancesHeader.getAttributeNameString(context,
+            return InstancesHeader.getInputAttributeNameString(context,
                     this.attIndex)
                     + (branch == 0 ? " = " : " != ")
                     + InstancesHeader.getNominalValueString(context,
