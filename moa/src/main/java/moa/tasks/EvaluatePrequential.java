@@ -198,7 +198,8 @@ public class EvaluatePrequential extends MainTask {
             // Output prediction
             if (outputPredictionFile != null) {
                 int trueClass = (int) ((Instance) trainInst.getData()).classValue();
-                outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," + trueClass);
+                outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," + (
+                 ((Instance) testInst.getData()).classIsMissing() == true ? " ? " : trueClass));
             }
 
             //evaluator.addClassificationAttempt(trueClass, prediction, testInst.weight());

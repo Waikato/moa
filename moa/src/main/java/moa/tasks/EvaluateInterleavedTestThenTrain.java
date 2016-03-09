@@ -102,7 +102,7 @@ public class EvaluateInterleavedTestThenTrain extends MainTask {
         String learnerString = this.learnerOption.getValueAsCLIString();
         String streamString = this.streamOption.getValueAsCLIString();
         //this.learnerOption.setValueViaCLIString(this.learnerOption.getValueAsCLIString() + " -r " +this.randomSeedOption);
-        this.streamOption.setValueViaCLIString(streamString + " -i " + this.randomSeedOption.getValueAsCLIString());
+       // this.streamOption.setValueViaCLIString(streamString + " -i " + this.randomSeedOption.getValueAsCLIString());
         
         Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
         if (learner.isRandomizable()) {
