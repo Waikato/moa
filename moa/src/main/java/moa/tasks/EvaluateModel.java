@@ -121,7 +121,8 @@ public class EvaluateModel extends MainTask {
             //evaluator.addClassificationAttempt(trueClass, prediction, testInst
             //		.weight());
             if (outputPredictionFile != null) {
-                outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," + trueClass);
+                outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," +(
+                        ((Instance) testInst.getData()).classIsMissing() == true ? " ? " : trueClass));
             }
             evaluator.addResult(testInst, prediction);
             instancesProcessed++;
