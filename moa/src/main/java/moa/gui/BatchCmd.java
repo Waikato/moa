@@ -262,7 +262,7 @@ public class BatchCmd implements ClusterEventListener{
 				out.write(v + delimiter);
 
 				// Events
-				if (event != null && event.getTimestamp() <= horizon) {
+				if (event != null && event.getTimestamp() <= ((v+1) * horizon)) {
 					out.write(event.getType() + delimiter);
 					if (eventIt != null && eventIt.hasNext()) {
 						event = eventIt.next();
