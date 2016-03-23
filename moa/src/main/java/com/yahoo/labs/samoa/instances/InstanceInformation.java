@@ -18,6 +18,8 @@ package com.yahoo.labs.samoa.instances;
 import java.io.Serializable;
 import java.util.List;
 
+import moa.AbstractMOAObject;
+
 /**
  * The Class InstanceInformation.
  *
@@ -31,6 +33,8 @@ public class InstanceInformation implements Serializable {
     protected String relationName;
 
     protected AttributesInformation attributesInformation;
+    
+    protected AttributeStructure structure = null;
 
     /**
      * The class index.
@@ -58,6 +62,7 @@ public class InstanceInformation implements Serializable {
     public InstanceInformation(InstanceInformation chunk) {
         this.relationName = chunk.relationName;
         this.attributesInformation = chunk.attributesInformation;
+        this.structure = chunk.structure;
         this.classIndex = chunk.classIndex;
     }
 
@@ -211,6 +216,10 @@ public class InstanceInformation implements Serializable {
     		this.attributesInformation= new AttributesInformation();
         this.attributesInformation.setAttributes(v,indexValues);
 		
+	}
+	
+	public AttributeStructure getStructure() {
+		return this.structure;
 	}
 
 }

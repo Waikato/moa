@@ -24,7 +24,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.meta.WEKAClassifier;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import weka.classifiers.UpdateableClassifier;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
@@ -87,12 +87,12 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
 
 	@Override
 	public void trainOnInstanceImpl(Instance instance) {
-		trainOnInstanceImpl((MultiLabelInstance) instance);
+		trainOnInstanceImpl((StructuredInstance) instance);
 	}
 
 
 	@Override
-	public void trainOnInstanceImpl(MultiLabelInstance samoaInstance) {
+	public void trainOnInstanceImpl(StructuredInstance samoaInstance) {
 		weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
 		//System.out.println(""+m_L);                   // <--  this is correct
 		//System.out.println(""+inst.classIndex());     // <--- this one is wrong
@@ -130,11 +130,11 @@ public class MEKAClassifier extends WEKAClassifier implements MultiLabelLearner,
 
 	@Override
 	public Prediction getPredictionForInstance(Example<Instance> example) {
-		return getPredictionForInstance((MultiLabelInstance)example.getData());
+		return getPredictionForInstance((StructuredInstance)example.getData());
 	}
 
 	@Override
-	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
+	public Prediction getPredictionForInstance(StructuredInstance instance) {
 
 		double[] predictionArray = this.getVotesForInstance(instance);
 

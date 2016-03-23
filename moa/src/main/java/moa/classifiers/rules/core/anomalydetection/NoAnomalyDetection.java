@@ -2,7 +2,7 @@ package moa.classifiers.rules.core.anomalydetection;
 
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 
 public class NoAnomalyDetection extends AbstractAnomalyDetector{
 
@@ -17,7 +17,7 @@ public class NoAnomalyDetection extends AbstractAnomalyDetector{
 	}
 
 	@Override
-	public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance) {
+	public boolean updateAndCheckAnomalyDetection(StructuredInstance instance) {
 		return false;
 	}
 

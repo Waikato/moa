@@ -22,9 +22,14 @@ import moa.AbstractMOAObject;
  *
  * @author abifet
  */
-public class InstanceImpl implements StructuredInstance {
+public class HierarhicalInstanceImpl implements StructuredInstance {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
      * The weight.
      */
     protected double weight;
@@ -44,7 +49,7 @@ public class InstanceImpl implements StructuredInstance {
      *
      * @param inst the inst
      */
-    public InstanceImpl(InstanceImpl inst) {
+    public HierarhicalInstanceImpl(HierarhicalInstanceImpl inst) {
         this.weight = inst.weight;
         this.instanceData = inst.instanceData.copy();
         this.instanceHeader = inst.instanceHeader;
@@ -57,7 +62,7 @@ public class InstanceImpl implements StructuredInstance {
      * @param weight the weight
      * @param res the res
      */
-    public InstanceImpl(double weight, double[] res) {
+    public HierarhicalInstanceImpl(double weight, double[] res) {
         this.weight = weight;
         this.instanceData = new DenseInstanceData(res);
     }
@@ -71,7 +76,7 @@ public class InstanceImpl implements StructuredInstance {
      * @param indexValues the index values
      * @param numberAttributes the number attributes
      */
-    public InstanceImpl(double weight, double[] attributeValues, int[] indexValues, int numberAttributes) {
+    public HierarhicalInstanceImpl(double weight, double[] attributeValues, int[] indexValues, int numberAttributes) {
         this.weight = weight;
         this.instanceData = new SparseInstanceData(attributeValues, indexValues, numberAttributes);
     }
@@ -82,7 +87,7 @@ public class InstanceImpl implements StructuredInstance {
      * @param weight the weight
      * @param instanceData the instance data
      */
-    public InstanceImpl(double weight, InstanceData instanceData) {
+    public HierarhicalInstanceImpl(double weight, InstanceData instanceData) {
         this.weight = weight;
         this.instanceData = instanceData;
     }
@@ -92,7 +97,7 @@ public class InstanceImpl implements StructuredInstance {
      *
      * @param numAttributes the num attributes
      */
-    public InstanceImpl(int numAttributes) {
+    public HierarhicalInstanceImpl(int numAttributes) {
         this.instanceData = new DenseInstanceData(new double[numAttributes]); //JD
         this.weight = 1;
     }
@@ -336,7 +341,7 @@ public class InstanceImpl implements StructuredInstance {
      */
     @Override
     public Instance copy() {
-        InstanceImpl inst = new InstanceImpl(this);
+        HierarhicalInstanceImpl inst = new HierarhicalInstanceImpl(this);
         return inst;
     }
 
@@ -438,10 +443,10 @@ public class InstanceImpl implements StructuredInstance {
     }
     
     public int structureType() {
-    	return (numOutputAttributes() > 1) ? Instance.STRUCTURE_TYPE_MULTI_TARGET : Instance.STRUCTURE_TYPE_SINGLE_TARGET;
+    	return Instance.STRUCTURE_TYPE_HIERARHICAL;
     }
     
     public AttributeStructure getStructure() {
-    	return null;
+    	return this.instanceHeader.getInstanceStructure();
     }
 }

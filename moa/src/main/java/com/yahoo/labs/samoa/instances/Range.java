@@ -15,7 +15,9 @@
  */
 package com.yahoo.labs.samoa.instances;
 
-public class Range {
+import java.io.Serializable;
+
+public class Range implements Serializable {
 
     //Only works for ranges "start-end"
     private int start = 0;

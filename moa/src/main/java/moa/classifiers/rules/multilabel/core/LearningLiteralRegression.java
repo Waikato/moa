@@ -2,7 +2,7 @@ package moa.classifiers.rules.multilabel.core;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import java.util.Arrays;
@@ -157,7 +157,7 @@ public class LearningLiteralRegression extends LearningLiteral {
 	}
 
 	@Override
-	public void trainOnInstance(MultiLabelInstance instance)  {
+	public void trainOnInstance(StructuredInstance instance)  {
 		if (attributesMask==null)
 			initializeAttibutesMask(instance);
 		

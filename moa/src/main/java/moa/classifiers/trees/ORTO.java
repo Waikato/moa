@@ -334,7 +334,7 @@ public class ORTO extends FIMTDD implements Regressor {
 
 	// region --- Processing methods
 
-	protected void attemptToSplit(LeafNode node, Node parent, int parentIndex) {
+	protected void attemptToSplit(LeafNode node, Node parent, int parentIndex, Instance inst, double prediction) {
 		// Initialize the split criterion 
 		SplitCriterion splitCriterion = (SplitCriterion) getPreparedClassOption(splitCriterionOption);
 
@@ -380,12 +380,10 @@ public class ORTO extends FIMTDD implements Regressor {
 					} else {
 						break;
 					}
-						
 				}
-
 			} else if (hoeffdingBound < tieThresholdOption.getValue()) {
 				numSplits = 1;
-				acceptedSplits.add(bestSplitSuggestions[0]);
+				acceptedSplits.add(bestSuggestion);
 			} else { // If the splitting criterion was not met, initiate pruning of the E-BST structures in each attribute observer
 				for (int i = 0; i < node.attributeObservers.size(); i++) {
 					AttributeClassObserver obs = node.attributeObservers.get(i);

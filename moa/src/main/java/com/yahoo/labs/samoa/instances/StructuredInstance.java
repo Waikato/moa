@@ -16,12 +16,12 @@
 package com.yahoo.labs.samoa.instances;
 
 /**
- * The Interface MultiLabelInstance.
+ * The Interface StructuredInstance.
  *
  * @author abifet
  */
    
-public interface MultiLabelInstance extends Instance {
+public interface StructuredInstance extends Instance {
 
 }
  

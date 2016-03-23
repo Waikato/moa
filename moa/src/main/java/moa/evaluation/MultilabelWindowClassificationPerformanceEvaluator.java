@@ -25,7 +25,7 @@ import java.util.HashMap;
 import moa.core.Example;
 import moa.core.Measurement;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
@@ -110,7 +110,7 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
     @Override
     public void addResult(Example<Instance> example, Prediction prediction) {
 
-        MultiLabelInstance inst = (MultiLabelInstance) example.getData();
+        StructuredInstance inst = (StructuredInstance) example.getData();
         if (inst.weight() > 0.0) {
             int numberOutputs = inst.numOutputAttributes();
 			if (numberOutputs <= 1) {

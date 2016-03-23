@@ -8,7 +8,7 @@ import java.util.Random;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
@@ -95,9 +95,9 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 		this.outputsToLearn=outputsToLearn.clone();
 	}
 
-	abstract public void trainOnInstance(MultiLabelInstance instance);
+	abstract public void trainOnInstance(StructuredInstance instance);
 
-	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
+	public Prediction getPredictionForInstance(StructuredInstance instance) {
 		if (learner!=null)
 			return learner.getPredictionForInstance(instance);
 		else
@@ -107,7 +107,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 
 	public abstract boolean tryToExpand(double splitConfidence, double tieThresholdOption);
 
-	public boolean updateAndCheckChange(MultiLabelInstance instance) {
+	public boolean updateAndCheckChange(StructuredInstance instance) {
 		boolean hasChanged=false;
 		if (hasStarted){
 			if (changeDetectors==null){
@@ -133,7 +133,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	protected abstract double[] getNormalizedErrors(Prediction prediction,
 			Instance inst);
 
-	public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance) {
+	public boolean updateAndCheckAnomalyDetection(StructuredInstance instance) {
 		if(hasStarted)
 			return anomalyDetector.updateAndCheckAnomalyDetection(instance);
 		else
@@ -239,7 +239,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 		this.attributesPercentage=attributesPercentage;
 	}
 	
-	protected void initializeAttibutesMask(MultiLabelInstance inst) {
+	protected void initializeAttibutesMask(StructuredInstance inst) {
 		int numInputAttributes=inst.numInputAttributes();
 		int numAttributesSelected=(int)Math.round(numInputAttributes*attributesPercentage/100);
 		

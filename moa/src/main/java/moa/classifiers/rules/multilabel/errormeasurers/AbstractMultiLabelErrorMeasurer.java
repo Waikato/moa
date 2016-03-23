@@ -5,7 +5,7 @@ import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
 import com.github.javacliparser.FloatOption;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 public abstract class AbstractMultiLabelErrorMeasurer  extends AbstractOptionHandler implements MultiTargetErrorMeasurer{
@@ -27,7 +27,7 @@ public abstract class AbstractMultiLabelErrorMeasurer  extends AbstractOptionHan
 		addPrediction(prediction, trueClass);
 	}
 	
-	abstract public void addPrediction(Prediction prediction, MultiLabelInstance inst);
+	abstract public void addPrediction(Prediction prediction, StructuredInstance inst);
 	
 	abstract public double getCurrentError();
 	

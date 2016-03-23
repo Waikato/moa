@@ -2,7 +2,7 @@ package moa.classifiers;
 
 import moa.core.Example;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 public abstract class AbstractMultiLabelLearner extends AbstractClassifier implements MultiLabelLearner {
@@ -13,11 +13,11 @@ public abstract class AbstractMultiLabelLearner extends AbstractClassifier imple
     private static final long serialVersionUID = 1L;
 
     @Override
-    abstract public void trainOnInstanceImpl(MultiLabelInstance instance);
+    abstract public void trainOnInstanceImpl(StructuredInstance instance);
 
     @Override
     public void trainOnInstanceImpl(Instance instance) {
-        trainOnInstanceImpl((MultiLabelInstance) instance);
+        trainOnInstanceImpl((StructuredInstance) instance);
     }
 
     @Override
@@ -27,10 +27,10 @@ public abstract class AbstractMultiLabelLearner extends AbstractClassifier imple
 
     @Override
     public Prediction getPredictionForInstance(Instance inst) {
-        return getPredictionForInstance((MultiLabelInstance) inst);
+        return getPredictionForInstance((StructuredInstance) inst);
     }
 
-    abstract public Prediction getPredictionForInstance(MultiLabelInstance inst);
+    abstract public Prediction getPredictionForInstance(StructuredInstance inst);
 
     @Override
     public double[] getVotesForInstance(Instance inst) {

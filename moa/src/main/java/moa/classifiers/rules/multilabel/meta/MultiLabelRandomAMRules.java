@@ -18,7 +18,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 public class MultiLabelRandomAMRules extends AbstractMultiLabelLearner
@@ -93,7 +93,7 @@ implements MultiTargetRegressor {
 		this.isRegression = (baseLearner instanceof MultiTargetRegressor);
 	}
 
-	public void trainOnInstanceImpl(MultiLabelInstance instance) {
+	public void trainOnInstanceImpl(StructuredInstance instance) {
 		for (int i = 0; i < this.ensemble.length; i++) {
 			Instance inst=instance.copy();
 			int k = 1;
@@ -114,7 +114,7 @@ implements MultiTargetRegressor {
 	}
 
 	@Override
-	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
+	public Prediction getPredictionForInstance(StructuredInstance inst) {
 		Prediction vote=null;
 		//ErrorWeightedVote combinedVote = (ErrorWeightedVote)((ErrorWeightedVote) votingTypeOption.getPreMaterializedObject()).copy();
 		ErrorWeightedVoteMultiLabel combinedVote = (ErrorWeightedVoteMultiLabel)((ErrorWeightedVoteMultiLabel) getPreparedClassOption(this.votingFunctionOption)).copy();

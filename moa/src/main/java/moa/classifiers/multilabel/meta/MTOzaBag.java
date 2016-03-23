@@ -21,7 +21,7 @@ package moa.classifiers.multilabel.meta;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
@@ -41,7 +41,12 @@ import moa.options.ClassOption;
  */
 public class MTOzaBag extends OzaBag implements MultiLabelLearner, MultiTargetRegressor {
 
-    public MTOzaBag() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public MTOzaBag() {
     	super();
     	this.baseLearnerOption = new ClassOption("baseLearner", 'l',
                 "Classifier to train.", MultiLabelLearner.class, "multilabel.trees.ISOUPTree");
@@ -51,23 +56,9 @@ public class MTOzaBag extends OzaBag implements MultiLabelLearner, MultiTargetRe
     public void resetLearningImpl() {
         this.ensemble = new Classifier[this.ensembleSizeOption.getValue()];
         MultiLabelLearner baseLearner = (MultiLabelLearner) getPreparedClassOption(this.baseLearnerOption);
-        baseLearner.resetLearning();
+        baseLearner.setModelContext(this.modelContext);
         for (int i = 0; i < this.ensemble.length; i++) {
             this.ensemble[i] = baseLearner.copy();
-        }
-    }
-
-    @Override
-    public void setModelContext(InstancesHeader raw_header) {
-
-        //set the multilabel model context
-        this.modelContext = raw_header;
-
-        // reset ensemble
-        this.resetLearningImpl();
-
-        for (int i = 0; i < this.ensemble.length; i++) {
-            this.ensemble[i].setModelContext(raw_header);
             this.ensemble[i].resetLearning();
         }
     }
@@ -77,14 +68,15 @@ public class MTOzaBag extends OzaBag implements MultiLabelLearner, MultiTargetRe
         return true;
     }
 
-	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
-		DoubleVector[][] predictions = new DoubleVector[this.ensemble.length][getModelContext().numOutputAttributes()];
+	public Prediction getPredictionForInstance(StructuredInstance inst) {
+		int numTargets = getModelContext().numOutputAttributes();
+		DoubleVector[][] predictions = new DoubleVector[this.ensemble.length][numTargets];
 		for (int i = 0; i < this.ensemble.length; i++) {
 			Prediction basePrediction = this.ensemble[i].getPredictionForInstance(inst);
 			predictions[i] = ((MultiLabelPrediction) basePrediction).getPrediction();
 		}
-		DoubleVector[] prediction = new DoubleVector[getModelContext().numOutputAttributes()];
-		for (int j = 0; j < getModelContext().numOutputAttributes(); j++) {
+		DoubleVector[] prediction = new DoubleVector[numTargets];
+		for (int j = 0; j < numTargets; j++) {
 			prediction[j] = new DoubleVector();
 			for (int i = 0; i < this.ensemble.length; i++) {
 				prediction[j].addValues(predictions[i][j]);
@@ -94,7 +86,7 @@ public class MTOzaBag extends OzaBag implements MultiLabelLearner, MultiTargetRe
 		return new MultiLabelPrediction(prediction);
 	}
 	
-	public Prediction getPredictionForInstanceUsingN(MultiLabelInstance inst, int n) {
+	public Prediction getPredictionForInstanceUsingN(StructuredInstance inst, int n) {
 		int actual = Math.max(1, Math.min(n, this.ensemble.length));
 		DoubleVector[][] predictions = new DoubleVector[actual][getModelContext().numOutputAttributes()];
 		for (int i = 0; i < actual; i++) {
@@ -113,13 +105,13 @@ public class MTOzaBag extends OzaBag implements MultiLabelLearner, MultiTargetRe
 	}
 
     @Override
-    public void trainOnInstanceImpl(MultiLabelInstance instance) {
+    public void trainOnInstanceImpl(StructuredInstance instance) {
         trainOnInstanceImpl((Instance) instance);
     }
     
     @Override
 	public Prediction getPredictionForInstance(Example<Instance> example) {
-		return getPredictionForInstance((MultiLabelInstance)example.getData());
+		return getPredictionForInstance((StructuredInstance)example.getData());
 	}
     
 }

@@ -26,15 +26,23 @@
 package moa.classifiers.multilabel.trees;
 
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
+import com.github.javacliparser.FileOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
@@ -46,8 +54,8 @@ import moa.classifiers.multilabel.core.attributeclassobservers.MultiLabelBSTree;
 import moa.classifiers.multilabel.core.attributeclassobservers.MultiLabelNominalAttributeObserver;
 import moa.classifiers.multilabel.core.attributeclassobservers.NominalStatisticsObserver;
 import moa.classifiers.multilabel.core.attributeclassobservers.NumericStatisticsObserver;
-import moa.classifiers.multilabel.core.splitcriteria.ICVarianceReduction;
 import moa.classifiers.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
+import moa.classifiers.multilabel.core.splitcriteria.WeightedICVarianceReduction;
 import moa.classifiers.rules.core.AttributeExpansionSuggestion;
 import moa.classifiers.rules.core.Predicate;
 import moa.core.AutoExpandVector;
@@ -57,18 +65,18 @@ import moa.core.SizeOf;
 import moa.core.StringUtils;
 
 /**
- * iSOUPTrees class for structured output prediction.
+ * iSOUPTree class for structured output prediction.
  *
  * @author Aljaž Osojnik (aljaz.osojnik@ijs.si)
  * @version $Revision: 1 $
  */
 public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetRegressor {
-
+	
 	private static final long serialVersionUID = 1L;
 
 	public Node treeRoot;
 
-	private double examplesSeen = 0.0;
+	protected double examplesSeen = 0.0;
 	private DoubleVector sumOfValues = new DoubleVector();
 	private DoubleVector sumOfSquares = new DoubleVector();
 
@@ -76,6 +84,10 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 	private DoubleVector sumOfAttrSquares = new DoubleVector();
 
 	public int maxID = 0;
+	
+	private BufferedWriter writer;
+	
+	public DoubleVector targetWeights;
 
 	//region ================ OPTIONS ================
 
@@ -154,6 +166,13 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			'n',
 			"Don't normalize.");
 
+	public FlagOption randomForestBaseModelOption = new FlagOption(
+			"randomForestBaseModel",
+			'z',
+			"Use the learner as a base model in a random forest.");
+	
+	public FileOption weightFile = new FileOption("targetWeightFile", 'w', "File with the weights of the targets.", null, null, false);
+
 	//endregion ================ OPTIONS ================
 
 	//region ================ CLASSES ================
@@ -169,7 +188,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		protected ISOUPTree tree;
 
 		// The parent of this particular node
-		protected SplitNode parent;
+		protected InnerNode parent;
 
 		protected Node alternateTree;
 		protected Node originalNode;
@@ -191,6 +210,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 		public Node(ISOUPTree tree) {
 			this.tree = tree;
+			this.ID = tree.maxID;
 		}
 
 		public void copyStatistics(Node node) {
@@ -206,7 +226,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		/**
 		 * Set the parent node
 		 */
-		public void setParent(SplitNode parent) {
+		public void setParent(InnerNode parent) {
 			this.parent = parent;    
 		}
 
@@ -227,10 +247,10 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 		public void getDescription(StringBuilder sb, int i) {}
 
-		public double[] getPrediction(MultiLabelInstance inst) {
+		public double[] getPrediction(StructuredInstance inst) {
 			return null;
 		}
-
+		
 		public void describeSubtree(StringBuilder out, int indent) {
 			StringUtils.appendIndented(out, indent, "Leaf");
 		}
@@ -278,6 +298,8 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 		public DoubleVector errorP = new DoubleVector();
 		public DoubleVector errorM = new DoubleVector();
+		
+		public List<Integer> inputIndexes = null;
 
 		protected double examplesSeenAtLastSplitEvaluation = 0;
 
@@ -289,17 +311,38 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			if (tree.buildingModelTree()) {
 				learningModel = tree.newLeafModel();
 			}
+			initializeInputIndexes();
 			examplesSeen = 0;
 			sumOfValues = new DoubleVector();
 			sumOfSquares = new DoubleVector();
 		}
 
+		public void initializeInputIndexes() {
+			List<Integer> indexes = new Vector<Integer>();
+			int numAttrs = tree.getModelContext().numInputAttributes();
+			for (int i = 0; i < numAttrs; i++) {
+				indexes.add(i, i);
+			}
+			if (tree.buildingRandomForestTree()) {
+				// Select the first sqrt(n) attribute indexes
+				for (int i = 0; i < Math.ceil(Math.sqrt(numAttrs)); i++) {
+					int swap = i + tree.classifierRandom.nextInt(numAttrs - i);
+					int temp = indexes.get(i);
+					indexes.set(i, indexes.get(swap));
+					indexes.set(swap, temp);
+				}
+				inputIndexes = indexes.subList(0, (int) Math.ceil(Math.sqrt(numAttrs)));
+			} else {
+				inputIndexes = indexes;
+			}
+		}
+		
 		/**
 		 * Method to learn from an instance that passes the new instance to the perceptron learner,
 		 * and also prevents the class value from being truncated to an int when it is passed to the
 		 * attribute observer
 		 */
-		public void learnFromInstance(MultiLabelInstance inst, double[] prediction, boolean growthAllowed) {
+		public void learnFromInstance(StructuredInstance inst, double[] prediction, boolean growthAllowed) {
 			// Update the statistics for this node
 
 			double[] predictionP = tree.buildingModelTree() ? getPredictionModel(inst) : null;
@@ -323,7 +366,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 			if (tree.buildingModelTree()) learningModel.updatePerceptron(inst);
 
-			for (int i = 0; i < inst.numInputAttributes(); i++) {
+			for (int i : inputIndexes) {
 				AttributeStatisticsObserver obs = attributeObservers.get(i);
 				if (obs == null) {
 					// At this stage all nominal attributes are ignored
@@ -362,7 +405,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 			List<AttributeExpansionSuggestion> bestSuggestions = new LinkedList<AttributeExpansionSuggestion>();
 
-			for (int i = 0; i < attributeObservers.size(); i++) {
+			for (int i : inputIndexes) {
 				AttributeStatisticsObserver obs = attributeObservers.get(i);
 				if (obs != null) {
 					DoubleVector[] preSplitStatistics = new DoubleVector[tree.getModelContext().numOutputAttributes()];
@@ -387,11 +430,11 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		/**
 		 * Retrieve the class votes using the perceptron learner
 		 */
-		public double[] getPredictionModel(MultiLabelInstance inst) {
+		public double[] getPredictionModel(StructuredInstance inst) {
 			return learningModel.prediction(inst);
 		}
 
-		public double[] getPredictionTargetMean(MultiLabelInstance inst) {
+		public double[] getPredictionTargetMean(StructuredInstance inst) {
 			double[] pred = new double[inst.numOutputAttributes()];
 			for (int i = 0; i < inst.numOutputAttributes(); i++) {
 				if (examplesSeen > 0) {
@@ -403,7 +446,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			return pred;
 		}
 
-		public double[] getPrediction(MultiLabelInstance inst) {
+		public double[] getPrediction(StructuredInstance inst) {
 			if (tree.buildingModelTree()) {
 				double[] predictionP = getPredictionModel(inst);
 				double[] predictionM = getPredictionTargetMean(inst);
@@ -438,11 +481,14 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		}
 
 		public void describeSubtree(StringBuilder out, int indent) {
-			StringUtils.appendIndented(out, indent, "Leaf ");
+			StringUtils.appendIndented(out, indent, "Leaf");
+			StringUtils.appendNewline(out);
+			
 			if (tree.buildingModelTree()) {
-				learningModel.getModelDescription(out, 0);
+				learningModel.getModelDescription(out, indent + 2);
 			} else {
 				//out.append(tree.getClassNameString() + " = " + String.format("%.4f", (sumOfValues / examplesSeen)));
+				out.append("Leaf node");
 				StringUtils.appendNewline(out);
 			}
 		}
@@ -567,7 +613,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			ID = tree.maxID;
 		}
 
-		public int instanceChildIndex(MultiLabelInstance inst) {
+		public int instanceChildIndex(StructuredInstance inst) {
 			return (predicate.evaluate(inst)) ? 0 : 1;
 		}
 
@@ -577,7 +623,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 				if (child != null) {
 					if (branch == 0) {
 						StringUtils.appendIndented(out, indent, "if ");
-						this.predicate.getDescription(out, 0);
+						this.predicate.getDescription(out, 0, tree.getModelContext());
 					} else {
 						StringUtils.appendIndented(out, indent, "else");
 					}
@@ -588,7 +634,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			}
 		}
 
-		public double[] getPrediction(MultiLabelInstance inst) {
+		public double[] getPrediction(StructuredInstance inst) {
 			return children.get(predicate.evaluate(inst) ? 0 : 1).getPrediction(inst);
 		}
 	}
@@ -635,7 +681,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		/**
 		 * Update the model using the provided instance
 		 */
-		public void updatePerceptron(MultiLabelInstance inst) {
+		public void updatePerceptron(StructuredInstance inst) {
 			// Update attribute statistics
 			instancesSeen += inst.weight();
 
@@ -653,7 +699,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			}
 		}
 
-		public void updateWeights(MultiLabelInstance inst, double learningRatio) {
+		public void updateWeights(StructuredInstance inst, double learningRatio) {
 			if (instancesSeen > 1.0) {
 				// Compute the normalized instance and the delta
 				double[] normalizedInput = tree.normalizedInputVector(inst); 
@@ -694,7 +740,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			return out;
 		}
 
-		private double[] prediction(MultiLabelInstance inst) {
+		private double[] prediction(StructuredInstance inst) {
 			double[] normalizedInput = tree.normalizedInputVector(inst);
 			double[] normalizedPrediction = prediction(normalizedInput);
 			return denormalizePrediction(normalizedPrediction);
@@ -716,18 +762,18 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		}
 
 		public void getModelDescription(StringBuilder out, int indent) {
-			for (int i = 0; i < tree.getModelContext().numOutputAttributes(); i++) {
-				StringUtils.appendIndented(out, indent, " [" + tree.getModelContext().outputAttribute(i).name() + "]");
-				if (getModelContext() != null) {
-					for (int j = 0; j < getModelContext().numOutputAttributes(); j++) {
-						if (getModelContext().attribute(j).isNumeric()) {
-							out.append((j == 0 || weights[i][j] < 0) ? " " : " + ");
-							out.append(String.format("%.4f", weights[i][j]));
+			if (getModelContext() != null) {
+				for (int i = 0; i < tree.getModelContext().numOutputAttributes(); i++) {
+					StringUtils.appendIndented(out, indent, " [" + tree.getModelContext().outputAttribute(i).name() + "] =");
+					for (int j = 0; j < getModelContext().numInputAttributes(); j++) {
+						if (getModelContext().inputAttribute(j).isNumeric()) {
+							out.append((j == 0 && weights[i][j] >= 0) ? " " : (weights[i][j] < 0) ? " - " : " + ");
+							out.append(String.format("%.4f", Math.abs(weights[i][j])));
 							out.append(" * ");
-							out.append(getAttributeNameString(j));
+							out.append(getModelContext().inputAttribute(j).name());
 						}
 					}
-					out.append(" + " + weights[i][getModelContext().numOutputAttributes()]);
+					out.append((weights[i][getModelContext().numInputAttributes()] < 0 ? " - " : " + ") + String.format("%.4f", Math.abs(weights[i][getModelContext().numInputAttributes()])));
 				}
 				StringUtils.appendNewline(out);
 			}
@@ -739,7 +785,9 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 	//region ================ METHODS ================
 
 	// Regressor methods
-	public ISOUPTree() {}
+	public ISOUPTree() {
+		super();
+	}
 
 	public String getPurposeString() {
 		return "Implementation of the iSOUP-Tree algorithm as described by Osojnik et al.";
@@ -753,8 +801,19 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 		sumOfAttrValues = new DoubleVector();
 		sumOfAttrSquares = new DoubleVector();
+		loadWeights();
 	}
 
+	public void loadWeights() {
+		targetWeights = new DoubleVector();
+		try {
+			List<String> lines = Files.readAllLines(Paths.get(weightFile.getValue()), Charset.defaultCharset());
+			for (int i = 0 ; i < lines.size(); i++) targetWeights.setValue(i, Double.valueOf(lines.get(i)));
+		} catch (Exception e) {
+			for (int i = 0; i < getModelContext().numOutputAttributes(); i++) targetWeights.setValue(i, 1.0);
+		}
+	}
+	
 	public boolean isRandomizable() {
 		return true;
 	}
@@ -762,7 +821,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 	public void getModelDescription(StringBuilder out, int indent) {
 		if (treeRoot != null) treeRoot.describeSubtree(out, indent);
 	}
-
+	
 	protected Measurement[] getModelMeasurementsImpl() {
 		return new Measurement[]{ 
 				//new Measurement("tree size (nodes)", this.leafNodeCount + this.splitNodeCount),
@@ -778,7 +837,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		return size;
 	}
 
-	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
+	public Prediction getPredictionForInstance(StructuredInstance inst) {
 		checkRoot();
 		double[] predictionVector = treeRoot.getPrediction(inst);
 		MultiLabelPrediction prediction = new MultiLabelPrediction(getModelContext().numOutputAttributes());
@@ -788,7 +847,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		return prediction;
 	}
 
-	public double[] normalizedInputVector(MultiLabelInstance inst) {
+	public double[] normalizedInputVector(StructuredInstance inst) {
 		// Normalize Instance
 		double[] normalizedInput = new double[inst.numInputAttributes()+1];
 		if (normalize()) {
@@ -818,7 +877,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		return normalizedInput;
 	}
 
-	public double[] normalizedTargetVector(MultiLabelInstance inst) {
+	public double[] normalizedTargetVector(StructuredInstance inst) {
 		double[] out = new double[getModelContext().numOutputAttributes()];
 		if (normalize()) {
 			for (int i = 0; i < inst.numOutputAttributes(); i++) {
@@ -855,7 +914,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 	}
 
 
-	public double normalizeTargetValue(MultiLabelInstance inst, int i) {
+	public double normalizeTargetValue(StructuredInstance inst, int i) {
 		if (normalize()) {
 			if (examplesSeen > 1) {
 				double value = inst.valueOutputAttribute(i);
@@ -884,7 +943,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		} else return value;
 	}
 
-	public double[] getNormalizedError(MultiLabelInstance inst, double[] prediction) {
+	public double[] getNormalizedError(StructuredInstance inst, double[] prediction) {
 		double[] normalPrediction = normalizeTargetVector(prediction);
 		double[] normalValue = normalizedTargetVector(inst);
 		double[] out = new double[getModelContext().numOutputAttributes()];
@@ -898,7 +957,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 	/**
 	 * Method for updating (training) the model using a new instance
 	 */
-	 public void trainOnInstanceImpl(MultiLabelInstance inst) {
+	 public void trainOnInstanceImpl(StructuredInstance inst) {
 		 if (inst.weight() > 0) {
 			 checkRoot();
 
@@ -920,7 +979,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		 }
 	 }
 
-	 public void processInstance(MultiLabelInstance inst, Node node, double[] prediction, double[] normalError, boolean growthAllowed, boolean inAlternate) {
+	 public void processInstance(StructuredInstance inst, Node node, double[] prediction, double[] normalError, boolean growthAllowed, boolean inAlternate) {
 		 Node currentNode = node;
 		 while (true) {
 			 if (currentNode instanceof LeafNode) {
@@ -1031,22 +1090,24 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 	 }
 
 	 public static double computeHoeffdingBound(double range, double confidence, double n) {
-		 return Math.sqrt(( (range * range) * Math.log(1 / confidence)) / (2.0 * n));
+		 return Math.sqrt(((range * range) * Math.log(1 / confidence)) / (2.0 * n));
 	 }
 
 	 public boolean buildingModelTree() {
 		 return !regressionTreeOption.isSet();
+	 }
+	 
+	 public boolean buildingRandomForestTree() {
+		 return randomForestBaseModelOption.isSet();
 	 }
 
 	 public boolean normalize() {
 		 return !doNotNormalizeOption.isSet();
 	 }
 
-	 protected void attemptToSplit(LeafNode node, SplitNode parent, int parentIndex) {
-		 //System.out.println("Evaluating splits");
-		 //System.out.println(examplesSeen);
+	 protected void attemptToSplit(LeafNode node, InnerNode parent, int parentIndex) {
 		 // Set the split criterion to use to the SDR split criterion as described by Ikonomovska et al. 
-		 MultiLabelSplitCriterion splitCriterion = new ICVarianceReduction();
+		 MultiLabelSplitCriterion splitCriterion = new WeightedICVarianceReduction(targetWeights);
 
 		 // Using this criterion, find the best split per attribute and rank the results
 		 AttributeExpansionSuggestion[] bestSplitSuggestions = node.getBestSplitSuggestions(splitCriterion); // TODO update with split criterion option
@@ -1054,7 +1115,6 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 		 // Declare a variable to determine if any of the splits should be performed
 		 boolean shouldSplit = false;
-
 		 // If only one split was returned, use it
 		 if (bestSplitSuggestions.length < 2) {
 			 shouldSplit = bestSplitSuggestions.length > 0;
@@ -1074,9 +1134,6 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			 // Alternatively, if two or more splits are very similar or identical in terms of their splits, then a threshold limit
 			 // (default 0.05) is applied to the Hoeffding bound; if the Hoeffding bound is smaller than this limit then the two
 			 // competing attributes are equally good, and the split will be made on the one with the higher SDR value.
-			 //System.out.print(hoeffdingBound);
-			 //System.out.print(" ");
-			 ///System.out.println(secondBestSuggestion.merit / bestSuggestion.merit);
 			 if ((secondBestSuggestion.merit / bestSuggestion.merit < 1 - hoeffdingBound) || (hoeffdingBound < this.tieThresholdOption.getValue())) {
 				 shouldSplit = true;
 			 }
@@ -1101,9 +1158,11 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			 AttributeExpansionSuggestion splitDecision = bestSplitSuggestions[bestSplitSuggestions.length - 1];
 
 			 SplitNode newSplit = newSplitNode(splitDecision.predicate);
+			 newSplit.ID = node.ID;
 			 newSplit.copyStatistics(node);
 			 newSplit.changeDetection = node.changeDetection;
 			 newSplit.ID = node.ID;
+			 log(Integer.toString(node.ID) + ',' + Integer.toString((int) this.examplesSeen));
 			 for (int i = 0; i < 2; i++) { // Hardcoded for 2 values (due to the use of the Predicate class)
 				 LeafNode newChild = newLeafNode();
 				 if (buildingModelTree()) {
@@ -1126,7 +1185,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		 }
 	 }
 
-	 public  double computeSD(double squaredVal, double val, double size) {
+	 public double computeSD(double squaredVal, double val, double size) {
 		 if (size > 1)
 			 return Math.sqrt((squaredVal - ((val * val) / size)) / size);
 		 else
@@ -1141,6 +1200,38 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		 return ret;
 	 }
 	 //endregion --- Processing methods
-
+	 
+	 public void initWriter(String filename) {
+		 try {
+			 writer = new BufferedWriter(new FileWriter(filename));
+			 writer.write("");
+			 writer.close();
+			 writer = new BufferedWriter(new FileWriter(filename, true));
+		 } catch (Exception e) {
+			 e.printStackTrace();
+		 }
+	 }
+	 
+	 public void closeWriter() {
+		 try {
+		 writer.close();
+		 } catch (Exception e) {
+			 e.printStackTrace();
+		 }
+		 writer = null;
+		 
+	 }
+	 
+	 public void log(String s) {
+		 if (writer != null) {
+			 try {
+				 writer.write(s + "\n");
+				 writer.flush();
+			 } catch (Exception e) {
+				 e.printStackTrace();
+			 }
+		 }
+	 }
+	 
 	 //endregion ================ METHODS ================
 }

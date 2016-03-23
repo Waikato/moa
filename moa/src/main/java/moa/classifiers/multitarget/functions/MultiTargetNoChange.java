@@ -4,7 +4,7 @@ package moa.classifiers.multitarget.functions;
 import com.yahoo.labs.samoa.instances.DenseInstanceData;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
@@ -37,7 +37,7 @@ public class MultiTargetNoChange extends AbstractMultiLabelLearner implements Mu
     }
 
     @Override
-    public void trainOnInstanceImpl(MultiLabelInstance inst) {
+    public void trainOnInstanceImpl(StructuredInstance inst) {
     	int numOutputs = inst.numberOutputTargets();
     	Prediction prediction = new MultiLabelPrediction(numOutputs);
     	
@@ -65,7 +65,7 @@ public class MultiTargetNoChange extends AbstractMultiLabelLearner implements Mu
     }
 
 	@Override
-	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
+	public Prediction getPredictionForInstance(StructuredInstance inst) {
 		//return (lastSeenClasses!=null) ? this.lastSeenClasses : new MultiLabelPrediction();
 		return (lastSeenClasses!=null) ? this.lastSeenClasses : null;
 	}

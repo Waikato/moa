@@ -27,7 +27,7 @@ import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.DenseInstanceData;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
@@ -59,7 +59,7 @@ public class BasicMultiTargetPerformanceEvaluator extends AbstractMOAObject
     @Override
     public void addResult(Example<Instance> example, Prediction prediction) {
 
-    MultiLabelInstance inst = (MultiLabelInstance) example.getData();
+    StructuredInstance inst = (StructuredInstance) example.getData();
     if (numberOutputs == 0) {
     	numberOutputs = inst.numberOutputTargets();
     }

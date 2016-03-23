@@ -7,7 +7,7 @@ import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
@@ -64,7 +64,7 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 		}
 	}
 	
-	private Instance getSTInstance(MultiLabelInstance inst, int target) {
+	private Instance getSTInstance(StructuredInstance inst, int target) {
 		double[] instanceData = new double[getModelContext().numInputAttributes() + 1];
 		for (int i = 0; i < inst.numInputAttributes(); i++)
 			instanceData[i] = inst.valueInputAttribute(i);
@@ -75,7 +75,7 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 	}
 	
 	@Override
-	public void trainOnInstanceImpl(MultiLabelInstance instance) {
+	public void trainOnInstanceImpl(StructuredInstance instance) {
 		initializeClassifiers();
 		
 		for (int j = 0; j < instance.numberOutputTargets(); j++) {
@@ -86,7 +86,7 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 	}
 
 	@Override
-	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
+	public Prediction getPredictionForInstance(StructuredInstance inst) {
 		initializeClassifiers();
 
 		MultiLabelPrediction prediction = new MultiLabelPrediction(getModelContext().numOutputAttributes());

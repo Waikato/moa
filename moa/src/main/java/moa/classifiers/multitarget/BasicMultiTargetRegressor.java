@@ -16,7 +16,7 @@ import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
@@ -47,7 +47,7 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 	}
 
 	@Override
-	public void trainOnInstanceImpl(MultiLabelInstance instance) {
+	public void trainOnInstanceImpl(StructuredInstance instance) {
 		if (this.hasStarted == false){		
 			this.ensemble = new Classifier[instance.numberOutputTargets()];
 			Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
@@ -65,7 +65,7 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 
 	protected InstancesHeader[] header;
 
-	protected Instance transformInstance(MultiLabelInstance inst, int outputIndex) {
+	protected Instance transformInstance(StructuredInstance inst, int outputIndex) {
 		if (header == null) {
 			this.header = new InstancesHeader[this.ensemble.length];
 		}
@@ -128,7 +128,7 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 	
 
 	@Override
-	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
+	public Prediction getPredictionForInstance(StructuredInstance instance) {
 		Prediction prediction=null;
 		if (this.hasStarted){ 
 			prediction=new MultiLabelPrediction(ensemble.length);

@@ -24,7 +24,7 @@ import java.util.HashMap;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.Measurement;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import moa.classifiers.AbstractMultiLabelLearner;
@@ -91,13 +91,13 @@ public class MajorityLabelset extends AbstractMultiLabelLearner implements Multi
     }
 
     @Override
-    public void trainOnInstanceImpl(MultiLabelInstance x) {
+    public void trainOnInstanceImpl(StructuredInstance x) {
         updateCount(x, m_L);
     }
 
     @Override
     //public double[] getVotesForInstance(Instance x) {
-    public Prediction getPredictionForInstance(MultiLabelInstance x){
+    public Prediction getPredictionForInstance(StructuredInstance x){
         
 		System.out.println("-------- start MC vote   ---------------");
         int L = x.numOutputAttributes(); //x.classIndex() + 1;

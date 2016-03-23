@@ -52,7 +52,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 	private static final long serialVersionUID = 1L;
 
-	protected Node treeRoot;
+	public Node treeRoot;
 
 	protected int leafNodeCount = 0;
 	protected int splitNodeCount = 0;
@@ -321,7 +321,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			}
 
 			if (growthAllowed) {
-				checkForSplit();
+				checkForSplit(inst, prediction);
 			}
 		}
 
@@ -366,17 +366,16 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 		public double getPrediction(Instance inst) {
 			if (tree.buildingModelTree()) {
-				//return getPredictionModel(inst);
 				return (errorModel < errorTargetMean) ? getPredictionModel(inst) : getPredictionTargetMean(inst);
 			} else
 				return getPredictionTargetMean(inst);
 		}
 		
-		public void checkForSplit() {
+		public void checkForSplit(Instance inst, double prediction) {
 			// If it has seen Nmin examples since it was last tested for splitting, attempt a split of this node
 			if (examplesSeen - examplesSeenAtLastSplitEvaluation >= tree.gracePeriodOption.getValue()) {
 				int index = (parent != null) ? parent.getChildIndex(this) : 0;
-				tree.attemptToSplit(this, parent, index);
+				tree.attemptToSplit(this, parent, index, inst, prediction);
 
 				// Take note of how many instances were seen when this split evaluation was made, so we know when to perform the next split evaluation
 				examplesSeenAtLastSplitEvaluation = examplesSeen;
@@ -553,6 +552,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		public FIMTDDPerceptron(FIMTDDPerceptron original) {
 			this.tree = original.tree;
 			weightAttribute = original.weightAttribute.clone();
+			instancesSeen = original.instancesSeen / 2;
 		}
 
 		public FIMTDDPerceptron(FIMTDD tree) {
@@ -742,6 +742,18 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		return Math.abs(normalValue - normalPrediction);
 	}
 
+	
+	public void updateStatistics(Instance inst) {
+		examplesSeen += inst.weight();
+		sumOfValues += inst.weight() * inst.classValue();
+		sumOfSquares += inst.weight() * inst.classValue() * inst.classValue();
+
+		for (int i = 0; i < inst.numAttributes() - 1; i++) {
+			int aIndex = modelAttIndexToInstanceAttIndex(i, inst);
+			sumOfAttrValues.addToValue(i, inst.weight() * inst.value(aIndex));
+			sumOfAttrSquares.addToValue(i, inst.weight() * inst.value(aIndex) * inst.value(aIndex));
+		}
+	}
 
 	/**
 	 * Method for updating (training) the model using a new instance
@@ -754,16 +766,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 	
 		processInstance(inst, treeRoot, prediction, normalError, true, false);
 		
-		examplesSeen += inst.weight();
-		sumOfValues += inst.weight() * inst.classValue();
-		sumOfSquares += inst.weight() * inst.classValue() * inst.classValue();
-
-		for (int i = 0; i < inst.numAttributes() - 1; i++) {
-			int aIndex = modelAttIndexToInstanceAttIndex(i, inst);
-			sumOfAttrValues.addToValue(i, inst.weight() * inst.value(aIndex));
-			sumOfAttrSquares.addToValue(i, inst.weight() * inst.value(aIndex) * inst.value(aIndex));
-		}
-
+		updateStatistics(inst);
 
 	}
 
@@ -867,7 +870,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 	
 	// region --- Processing methods
 	
-	protected void checkRoot() {
+	public void checkRoot() {
 		if (treeRoot == null) {
 			treeRoot = newLeafNode();
 			leafNodeCount = 1;
@@ -882,7 +885,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		return !regressionTreeOption.isSet();
 	}
 
-	protected void attemptToSplit(LeafNode node, Node parent, int parentIndex) {
+	protected void attemptToSplit(LeafNode node, Node parent, int parentIndex, Instance inst, double prediction) {
 
 		// Set the split criterion to use to the SDR split criterion as described by Ikonomovska et al. 
  		SplitCriterion splitCriterion = (SplitCriterion) getPreparedClassOption(this.splitCriterionOption);

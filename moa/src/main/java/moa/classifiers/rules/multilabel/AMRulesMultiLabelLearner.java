@@ -55,7 +55,7 @@ import moa.options.ClassOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 
@@ -147,7 +147,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 
 
 	@Override
-	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
+	public Prediction getPredictionForInstance(StructuredInstance inst) {
 		/*MultiLabelVote vote=getVotes(inst);
 		if(vote!=null)	
 			return vote.getVote();
@@ -166,7 +166,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	 * returns the prediction of the instance.
 	 * Called in WeightedRandomRules
 	 */
-	public ErrorWeightedVoteMultiLabel getVotes(MultiLabelInstance instance) {
+	public ErrorWeightedVoteMultiLabel getVotes(StructuredInstance instance) {
 		ErrorWeightedVoteMultiLabel errorWeightedVote=newErrorWeightedVote();
 		//DoubleVector combinedVote = new DoubleVector();
 		debug("Test",3);    
@@ -237,7 +237,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	private double numInstances; //Just for statistics
 
 	@Override
-	public void trainOnInstanceImpl(MultiLabelInstance instance) {
+	public void trainOnInstanceImpl(StructuredInstance instance) {
 		/**
 		 * AMRules Algorithm
 		 * 
@@ -398,7 +398,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		}
 	}
 
-	protected void VerboseToConsole(MultiLabelInstance inst) {
+	protected void VerboseToConsole(StructuredInstance inst) {
 		if(VerbosityOption.getValue()>=5){	
 			System.out.println(); 
 			System.out.println("I) Dataset: "+inst.dataset().getRelationName()); 

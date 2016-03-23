@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.AbstractMOAObject;
@@ -63,7 +63,7 @@ public class MultiLabelRule extends AbstractMOAObject {
 		this.ruleNumberID = ruleNumberID;
 	}
 	
-	public boolean isCovering(MultiLabelInstance inst) {
+	public boolean isCovering(StructuredInstance inst) {
 		boolean isCovering = true;
 		for (Literal l : literalList) {
 			if (l.evaluate(inst) == false) {
@@ -90,15 +90,15 @@ public class MultiLabelRule extends AbstractMOAObject {
 		StringUtils.appendNewline(out);
 	}
 
-	public boolean updateChangeDetection(MultiLabelInstance instance) {
+	public boolean updateChangeDetection(StructuredInstance instance) {
 		return this.learningLiteral.updateAndCheckChange(instance);
 	}
 
-	public boolean updateAnomalyDetection(MultiLabelInstance instance) {
+	public boolean updateAnomalyDetection(StructuredInstance instance) {
 		return this.learningLiteral.updateAndCheckAnomalyDetection(instance);
 	}
 
-	public void trainOnInstance(MultiLabelInstance instance) {
+	public void trainOnInstance(StructuredInstance instance) {
 		learningLiteral.trainOnInstance(instance);
 	}
 
@@ -114,7 +114,7 @@ public class MultiLabelRule extends AbstractMOAObject {
 		return learningLiteral.getErrors();
 	}
 
-	public  Prediction getPredictionForInstance(MultiLabelInstance instance) {
+	public  Prediction getPredictionForInstance(StructuredInstance instance) {
 		return learningLiteral.getPredictionForInstance(instance);
 	}
 	
