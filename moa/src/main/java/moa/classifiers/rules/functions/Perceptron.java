@@ -25,7 +25,7 @@ import java.util.Random;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Regressor;

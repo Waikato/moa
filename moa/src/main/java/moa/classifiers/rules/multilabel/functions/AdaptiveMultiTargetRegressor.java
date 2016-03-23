@@ -8,7 +8,7 @@ import moa.core.Measurement;
 import moa.learners.Learner;
 import moa.options.ClassOption;
 
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 public class AdaptiveMultiTargetRegressor extends AbstractMultiLabelLearner
@@ -43,7 +43,7 @@ implements MultiTargetRegressor, AMRulesFunction {
 
 	}
 	@Override
-	public void trainOnInstanceImpl(MultiLabelInstance instance) {
+	public void trainOnInstanceImpl(StructuredInstance instance) {
 		if (!this.hasStarted){	
 			baseLearner=new MultiTargetRegressor[NUM_LEARNERS];
 			errorMeasurer= new MultiTargetErrorMeasurer[NUM_LEARNERS];
@@ -67,7 +67,7 @@ implements MultiTargetRegressor, AMRulesFunction {
 	}
 
 	@Override
-	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
+	public Prediction getPredictionForInstance(StructuredInstance inst) {
 		Prediction prediction=null;
 		if(hasStarted){
 			int bestIndex=0;

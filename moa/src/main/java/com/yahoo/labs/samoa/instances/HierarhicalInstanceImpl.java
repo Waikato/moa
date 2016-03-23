@@ -15,14 +15,21 @@
  */
 package com.yahoo.labs.samoa.instances;
 
+import moa.AbstractMOAObject;
+
 /**
  * The Class InstanceImpl.
  *
  * @author abifet
  */
-public class InstanceImpl implements MultiLabelInstance {
+public class HierarhicalInstanceImpl implements StructuredInstance {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
      * The weight.
      */
     protected double weight;
@@ -42,7 +49,7 @@ public class InstanceImpl implements MultiLabelInstance {
      *
      * @param inst the inst
      */
-    public InstanceImpl(InstanceImpl inst) {
+    public HierarhicalInstanceImpl(HierarhicalInstanceImpl inst) {
         this.weight = inst.weight;
         this.instanceData = inst.instanceData.copy();
         this.instanceHeader = inst.instanceHeader;
@@ -55,7 +62,7 @@ public class InstanceImpl implements MultiLabelInstance {
      * @param weight the weight
      * @param res the res
      */
-    public InstanceImpl(double weight, double[] res) {
+    public HierarhicalInstanceImpl(double weight, double[] res) {
         this.weight = weight;
         this.instanceData = new DenseInstanceData(res);
     }
@@ -69,7 +76,7 @@ public class InstanceImpl implements MultiLabelInstance {
      * @param indexValues the index values
      * @param numberAttributes the number attributes
      */
-    public InstanceImpl(double weight, double[] attributeValues, int[] indexValues, int numberAttributes) {
+    public HierarhicalInstanceImpl(double weight, double[] attributeValues, int[] indexValues, int numberAttributes) {
         this.weight = weight;
         this.instanceData = new SparseInstanceData(attributeValues, indexValues, numberAttributes);
     }
@@ -80,7 +87,7 @@ public class InstanceImpl implements MultiLabelInstance {
      * @param weight the weight
      * @param instanceData the instance data
      */
-    public InstanceImpl(double weight, InstanceData instanceData) {
+    public HierarhicalInstanceImpl(double weight, InstanceData instanceData) {
         this.weight = weight;
         this.instanceData = instanceData;
     }
@@ -90,7 +97,7 @@ public class InstanceImpl implements MultiLabelInstance {
      *
      * @param numAttributes the num attributes
      */
-    public InstanceImpl(int numAttributes) {
+    public HierarhicalInstanceImpl(int numAttributes) {
         this.instanceData = new DenseInstanceData(new double[numAttributes]); //JD
         this.weight = 1;
     }
@@ -334,7 +341,7 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public Instance copy() {
-        InstanceImpl inst = new InstanceImpl(this);
+        HierarhicalInstanceImpl inst = new HierarhicalInstanceImpl(this);
         return inst;
     }
 
@@ -375,23 +382,12 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public String toString() {
+        double[] aux = this.instanceData.toDoubleArray();
         StringBuilder str = new StringBuilder();
-        for (int attIndex = 0; attIndex < this.numAttributes(); attIndex++) {
-            if (!this.isMissing(attIndex)) {
-                if (this.attribute(attIndex).isNominal()) {
-                    int valueIndex = (int) this.value(attIndex);
-                    String stringValue = this.attribute(attIndex).value(valueIndex);
-                    str.append(stringValue).append(",");
-                } else if (this.attribute(attIndex).isNumeric()) {
-                    str.append(this.value(attIndex)).append(",");
-                } else if (this.attribute(attIndex).isDate()) {
-                    SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                    str.append(dateFormatter.format(this.value(attIndex))).append(",");
-                }
-            } else {
-                str.append("?,");
-            }
+        for (int i = 0; i < aux.length; i++) {
+            str.append(aux[i]).append(" ");
         }
+
         return str.toString();
     }
 
@@ -445,23 +441,12 @@ public class InstanceImpl implements MultiLabelInstance {
         InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
         return this.instanceData.value(instanceInformation.outputAttributeIndex(attributeIndex));
     }
-
-    @Override
-    public void setMissing(int instAttIndex) {
-        this.setValue(instAttIndex, Double.NaN);
-    }
-
-    @Override
-    public void setMissing(Attribute attribute) {
-        int index = this.instanceHeader.indexOf(attribute);
-        this.setMissing(index);
-    }
     
     public int structureType() {
-    	return (numOutputAttributes() > 1) ? Instance.STRUCTURE_TYPE_MULTI_TARGET : Instance.STRUCTURE_TYPE_SINGLE_TARGET;
+    	return Instance.STRUCTURE_TYPE_HIERARHICAL;
     }
     
     public AttributeStructure getStructure() {
-    	return null;
+    	return this.instanceHeader.getInstanceStructure();
     }
 }

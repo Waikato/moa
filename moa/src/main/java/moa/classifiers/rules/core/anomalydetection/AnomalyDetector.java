@@ -1,5 +1,5 @@
 package moa.classifiers.rules.core.anomalydetection;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 
 import moa.options.OptionHandler;
 
@@ -18,7 +18,7 @@ public interface AnomalyDetector extends OptionHandler {
      *
      * @return true if anomaly is detected and false otherwise
      */
-    public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance);
+    public boolean updateAndCheckAnomalyDetection(StructuredInstance instance);
 
     
     @Override

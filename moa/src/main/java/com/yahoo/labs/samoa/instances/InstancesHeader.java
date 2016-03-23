@@ -123,4 +123,8 @@ public class InstancesHeader extends Instances {
     public InstanceInformation getInstanceInformation() {
         return this.instanceInformation;
     }
+    
+    public AttributeStructure getInstanceStructure() {
+    	return this.instanceInformation.getStructure();
+    }
 }

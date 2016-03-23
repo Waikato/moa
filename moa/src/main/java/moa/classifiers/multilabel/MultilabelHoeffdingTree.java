@@ -30,7 +30,7 @@ import moa.core.utils.Converter;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import java.util.LinkedList;
@@ -149,9 +149,11 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 				}
 				for (int l : labels){
 					obs.observeAttributeClass(inst.valueInputAttribute(i), l, inst.weight());
+					//obs.observeAttributeClass(inst.value(instAttIndex), 0, inst.weight());
 				}
 			}
 		}
+	}
 
 		public void describeSubtree(HoeffdingTree ht, StringBuilder out,
 									int indent) {
@@ -182,11 +184,11 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 
 	@Override
 	public Prediction getPredictionForInstance(Example<Instance> example) {
-		return getPredictionForInstance((MultiLabelInstance)example.getData());
+		return getPredictionForInstance((StructuredInstance)example.getData());
 	}
 
 	@Override
-	public Prediction getPredictionForInstance(MultiLabelInstance inst){
+	public Prediction getPredictionForInstance(StructuredInstance inst){
 
 		if (this.treeRoot != null) {
 			FoundNode foundNode = this.treeRoot.filterInstanceToLeaf(inst, null, -1);
@@ -215,7 +217,7 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 	}
 
 	@Override
-	public void trainOnInstanceImpl(MultiLabelInstance instance) {
+	public void trainOnInstanceImpl(StructuredInstance instance) {
 		trainOnInstanceImpl((Instance) instance);
 	}
         
@@ -229,5 +231,4 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		}
 		return classValues;
 	}
-
 }

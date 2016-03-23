@@ -352,10 +352,6 @@ public class ArffLoader {
     	//commented JD
         //this.range.setUpper(10000); //TO DO: Create a new range object with isInRange that does not need the upper limit
         String relation = "file stream";
-        //System.out.println("RELATION " + relation);
-        //inputAttributes = new ArrayList<Attribute>();
-        //outputAttributes = new ArrayList<Attribute>();
-        //ArrayList<Attribute> 
         auxAttributes = new ArrayList<Attribute>();//JD
         int numAttributes = 0;
         try {
@@ -405,6 +401,17 @@ public class ArffLoader {
                              }*/
                             auxAttributes.add(new Attribute(name, attributeLabels));
                             numAttributes++;
+                        } else if (streamTokenizer.sval != null && streamTokenizer.sval.toUpperCase() == "HIERARCHICAL") {
+                        	streamTokenizer.nextToken();
+                        	DAGStructure attributeStructure = new DAGStructure();
+                        	if (streamTokenizer.ttype == '{') {
+                        		while(streamTokenizer.ttype == '}') {
+                        			streamTokenizer.nextToken();
+                        			System.out.println(streamTokenizer.sval);
+                        		}
+                        		
+                        	}
+                        	
                         } else {
                             // Add attribute
                             //commented JD

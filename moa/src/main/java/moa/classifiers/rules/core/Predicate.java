@@ -20,6 +20,7 @@
 package moa.classifiers.rules.core;
 
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 public interface Predicate {
 	
@@ -28,5 +29,6 @@ public interface Predicate {
 	 public int getAttributeIndex();
 	 public boolean isEqualOrLess();
 	 public void getDescription(StringBuilder sb, int indent);
+	 public void getDescription(StringBuilder sb, int indent, InstancesHeader header);
 	 
 }

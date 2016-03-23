@@ -17,6 +17,8 @@ package com.yahoo.labs.samoa.instances;
 
 import java.io.Serializable;
 
+import moa.AbstractMOAObject;
+
 /**
  * The Interface Instance.
  *
@@ -24,6 +26,11 @@ import java.io.Serializable;
  */
 public interface Instance extends Serializable {
 
+	public static int STRUCTURE_TYPE_SINGLE_TARGET = 0;
+	public static int STRUCTURE_TYPE_MULTI_TARGET = 1;
+	public static int STRUCTURE_TYPE_TIME_SERIES = 2;
+	public static int STRUCTURE_TYPE_HIERARHICAL = 3;
+	
     /**
      * Gets the weight of the instance.
      *
@@ -327,5 +334,9 @@ public interface Instance extends Serializable {
      * @return the value
      */
     public double valueOutputAttribute(int attributeIndex);
+    
+    public int structureType();
+    
+    public AttributeStructure getStructure();
 
 }

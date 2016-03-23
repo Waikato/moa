@@ -1,15 +1,13 @@
 package moa.classifiers.multilabel;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
@@ -36,7 +34,6 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 	
 	@Override
 	public boolean isRandomizable() {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
@@ -51,8 +48,8 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 		if (headers == null) {
 			headers = new ArrayList<InstancesHeader>();
 			for (int target = 0; target < getModelContext().numOutputAttributes(); target++) {
-				List<Attribute> attributes = new LinkedList<Attribute>();
-				List<Integer> indexValues = new LinkedList<Integer>();
+				List<Attribute> attributes = new ArrayList<Attribute>();
+				List<Integer> indexValues = new ArrayList<Integer>();
 				for (int i = 0; i < getModelContext().numInputAttributes(); i++) {
 					attributes.add(getModelContext().inputAttribute(i));
 					indexValues.add(i);
@@ -67,7 +64,7 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 		}
 	}
 	
-	private Instance getSTInstance(MultiLabelInstance inst, int target) {
+	private Instance getSTInstance(StructuredInstance inst, int target) {
 		double[] instanceData = new double[getModelContext().numInputAttributes() + 1];
 		for (int i = 0; i < inst.numInputAttributes(); i++)
 			instanceData[i] = inst.valueInputAttribute(i);
@@ -78,8 +75,7 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 	}
 	
 	@Override
-	public void trainOnInstanceImpl(MultiLabelInstance instance) {
-		// TODO Auto-generated method stub
+	public void trainOnInstanceImpl(StructuredInstance instance) {
 		initializeClassifiers();
 		
 		for (int j = 0; j < instance.numberOutputTargets(); j++) {
@@ -90,7 +86,7 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 	}
 
 	@Override
-	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
+	public Prediction getPredictionForInstance(StructuredInstance inst) {
 		initializeClassifiers();
 
 		MultiLabelPrediction prediction = new MultiLabelPrediction(getModelContext().numOutputAttributes());

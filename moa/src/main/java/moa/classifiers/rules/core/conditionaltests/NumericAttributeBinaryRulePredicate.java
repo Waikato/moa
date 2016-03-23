@@ -169,4 +169,11 @@ public class NumericAttributeBinaryRulePredicate extends InstanceConditionalBina
 		return state;
 	}
 
+	@Override
+	public void getDescription(StringBuilder sb, int indent, InstancesHeader header) {
+		String compareChar = (operator == 0) ? "=" : (operator == 1) ? "<=" : ">";
+		StringUtils.appendIndented(sb, indent, InstancesHeader.getAttributeNameString(header, attIndex) + compareChar + attValue);		
+	}
+	
+
 }

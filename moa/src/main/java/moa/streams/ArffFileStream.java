@@ -41,8 +41,7 @@ import moa.tasks.TaskMonitor;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class ArffFileStream extends AbstractOptionHandler implements
-        InstanceStream {
+public class ArffFileStream extends AbstractOptionHandler implements InstanceStream {
 
     @Override
     public String getPurposeString() {
@@ -82,8 +81,7 @@ public class ArffFileStream extends AbstractOptionHandler implements
     }
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         restart();
     }
 
@@ -127,8 +125,7 @@ public class ArffFileStream extends AbstractOptionHandler implements
             InputStream fileStream = new FileInputStream(this.arffFileOption.getFile());
             this.fileProgressMonitor = new InputStreamProgressMonitor(
                     fileStream);
-            this.fileReader = new BufferedReader(new InputStreamReader(
-                    this.fileProgressMonitor));
+            this.fileReader = new BufferedReader(new InputStreamReader(this.fileProgressMonitor));
             int classIndex = this.classIndexOption.getValue();
             this.instances = new Instances(this.fileReader, 1, classIndex);
             if (classIndex < 0) {

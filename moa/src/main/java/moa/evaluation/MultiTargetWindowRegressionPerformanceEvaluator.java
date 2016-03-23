@@ -30,7 +30,7 @@ import moa.tasks.TaskMonitor;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
@@ -152,7 +152,7 @@ implements MultiTargetPerformanceEvaluator, RegressionPerformanceEvaluator {
 
 	@Override
 	public void addResult(Example<Instance> testInst, Prediction prediction) {
-		MultiLabelInstance inst=(MultiLabelInstance) testInst.getData();
+		StructuredInstance inst=(StructuredInstance) testInst.getData();
        double weight = inst.weight();
         if (numberOutputs == 0) {
         	numberOutputs = inst.numberOutputTargets();

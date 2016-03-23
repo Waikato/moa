@@ -11,7 +11,7 @@ import moa.tasks.TaskMonitor;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 
 public class OddsRatioScore extends AbstractAnomalyDetector {
 
@@ -48,7 +48,7 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 	private ProbabilityFunction probabilityFunction;
 
 	@Override
-	public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance) {
+	public boolean updateAndCheckAnomalyDetection(StructuredInstance instance) {
 		boolean isAnomaly=false;
 		if(probabilityFunction==null){
 			weightSeen=0.0;

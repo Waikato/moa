@@ -1,7 +1,7 @@
 package moa.classifiers.rules.core.anomalydetection;
 
 import moa.options.AbstractOptionHandler;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 
 
 public abstract class AbstractAnomalyDetector extends AbstractOptionHandler implements AnomalyDetector {
@@ -12,7 +12,7 @@ public abstract class AbstractAnomalyDetector extends AbstractOptionHandler impl
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public abstract boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance);
+	public abstract boolean updateAndCheckAnomalyDetection(StructuredInstance instance);
 
 	@Override
 	public AnomalyDetector copy() {

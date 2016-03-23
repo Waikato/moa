@@ -1,7 +1,8 @@
 package moa.classifiers.rules.core;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 
 import moa.AbstractMOAObject;
 import moa.core.StringUtils;
@@ -23,10 +24,10 @@ public class NumericRulePredicate extends AbstractMOAObject implements Predicate
 	}
 	@Override
 	public boolean evaluate(Instance instance){
-		return evaluate((MultiLabelInstance) instance);
+		return evaluate((StructuredInstance) instance);
 	}
 
-	public boolean evaluate(MultiLabelInstance instance) {
+	public boolean evaluate(StructuredInstance instance) {
 		if (instance.isMissing(inputAttributeIndex)) {
 			return false;
 		}
@@ -69,5 +70,14 @@ public class NumericRulePredicate extends AbstractMOAObject implements Predicate
 		return isEqualOrLower;
 	}
 
+	public double getAttributeValue() {
+		return attributeValue;
+	}
+	@Override
+	public void getDescription(StringBuilder sb, int indent, InstancesHeader header) {
+		if(isEqualOrLower)
+			StringUtils.appendIndented(sb, indent, InstancesHeader.getAttributeNameString(header, inputAttributeIndex) + " <= " + attributeValue);
+		else
+			StringUtils.appendIndented(sb, indent, InstancesHeader.getAttributeNameString(header, inputAttributeIndex) + " > " + attributeValue);	}
 
 }

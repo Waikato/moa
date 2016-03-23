@@ -1,7 +1,7 @@
 /*
  *    MEKAClassifier.java
  *    Copyright (C) 2012 University of Waikato, Hamilton, New Zealand
- *    @author Jesse Read
+ *    @author Jesse Read (jesse@tsc.uc3m.es)
  * 
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
@@ -111,6 +111,9 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
 				//System.exit(1);
 			}
 			this.isClassificationEnabled = true;
+		} else {
+			System.err.println("Only suports UpdateableClassifiers for now.");
+			System.exit(1);
 		}
 		else {
 			/*
@@ -130,10 +133,30 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
 	@Override
 	public double[] getVotesForInstance(Instance samoaInstance) {
 
+
+	@Override
+	public void trainOnInstanceImpl(MultiLabelInstance samoaInstance) {
 		weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
+		//System.out.println(""+m_L);                   // <--  this is correct
+		//System.out.println(""+inst.classIndex());     // <--- this one is wrong
+		inst.dataset().setClassIndex(m_L);                      // <-- so, fix it!
 
 		double votes[] = new double[L];
 
+		//System.out.println(inst.classIndex());
+		try {
+			//System.out.println("UPDATE   WITH instances of "+instancesBuffer.classIndex()+" labels :\n"+inst);
+			((UpdateableClassifier) classifier).updateClassifier(inst);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+
+	@Override
+	public double[] getVotesForInstance(Instance samoaInstance) {
+		weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
+		double votes[] = null;
 		try {
 			votes = this.classifier.distributionForInstance(inst);
 		} catch(Exception e) {
@@ -141,7 +164,6 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
 			//e.printStackTrace();
 			//System.exit(1);
 		}
-
 		return votes;
 	}
 

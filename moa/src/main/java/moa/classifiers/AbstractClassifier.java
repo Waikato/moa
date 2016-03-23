@@ -85,14 +85,15 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     }
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         if (this.randomSeedOption != null) {
             this.randomSeed = this.randomSeedOption.getValue();
         }
-        if (!trainingHasStarted()) {
-            resetLearning();
-        }
+        
+        // resetLearning should not be called if the classifier has not yet received the context
+//        if (!trainingHasStarted()) {
+//            resetLearning();
+//        }
     }
 
 	
