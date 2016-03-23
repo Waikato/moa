@@ -62,6 +62,16 @@ public class InstancesHeader extends Instances {
                 + context.attribute(instAttIndex).name() + "]";
     }
 
+    public static String getInputAttributeNameString(InstancesHeader context,
+                                                int attIndex) {
+        if ((context == null) || (attIndex >= context.numInputAttributes())) {
+            return "[att " + (attIndex + 1) + "]";
+        }
+        int instAttIndex = attIndex;
+        return "[att " + (attIndex + 1) + ":"
+                + context.inputAttribute(instAttIndex).name() + "]";
+    }
+
     // is impervious to class index changes - attIndex is true attribute index
     // regardless of class position
     public static String getNominalValueString(InstancesHeader context,

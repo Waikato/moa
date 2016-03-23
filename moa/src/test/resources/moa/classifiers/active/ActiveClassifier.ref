@@ -11,6 +11,7 @@ Measurements
   classifications correct (percent): 70.2170217
   Kappa Statistic (percent): 35.62968955
   Kappa Temporal Statistic (percent): 37.22596965
+  Kappa M Statistic (percent): 27.27716728
 Model measurements
   model training instances: 9999
   labeling cost: 988
@@ -32,6 +33,7 @@ Measurements
   classifications correct (percent): 71.50357518
   Kappa Statistic (percent): 39.10842476
   Kappa Temporal Statistic (percent): 40.50527195
+  Kappa M Statistic (percent): 31.68304963
 Model measurements
   model training instances: 19999
   labeling cost: 2000
@@ -53,6 +55,7 @@ Measurements
   classifications correct (percent): 71.99573319
   Kappa Statistic (percent): 40.21938951
   Kappa Temporal Statistic (percent): 41.97002141
+  Kappa M Statistic (percent): 32.72741832
 Model measurements
   model training instances: 29999
   labeling cost: 2996
@@ -74,6 +77,7 @@ Measurements
   classifications correct (percent): 72.33930848
   Kappa Statistic (percent): 41.20711772
   Kappa Temporal Statistic (percent): 42.82466022
+  Kappa M Statistic (percent): 33.8277512
 Model measurements
   model training instances: 39999
   labeling cost: 3991
@@ -95,6 +99,7 @@ Measurements
   classifications correct (percent): 72.37544751
   Kappa Statistic (percent): 41.33690695
   Kappa Temporal Statistic (percent): 42.82639291
+  Kappa M Statistic (percent): 33.90122511
 Model measurements
   model training instances: 49999
   labeling cost: 4958
@@ -116,6 +121,7 @@ Measurements
   classifications correct (percent): 72.45954099
   Kappa Statistic (percent): 41.70608975
   Kappa Temporal Statistic (percent): 43.05014648
+  Kappa M Statistic (percent): 34.4337751
 Model measurements
   model training instances: 59999
   labeling cost: 5972
@@ -137,6 +143,7 @@ Measurements
   classifications correct (percent): 72.5410363
   Kappa Statistic (percent): 42.02757691
   Kappa Temporal Statistic (percent): 43.39939339
+  Kappa M Statistic (percent): 34.8529013
 Model measurements
   model training instances: 69999
   labeling cost: 6989
@@ -158,6 +165,7 @@ Measurements
   classifications correct (percent): 72.58965737
   Kappa Statistic (percent): 42.17160145
   Kappa Temporal Statistic (percent): 43.55581868
+  Kappa M Statistic (percent): 34.96262902
 Model measurements
   model training instances: 79999
   labeling cost: 7994
@@ -179,6 +187,7 @@ Measurements
   classifications correct (percent): 72.68969655
   Kappa Statistic (percent): 42.40012894
   Kappa Temporal Statistic (percent): 43.7358361
+  Kappa M Statistic (percent): 35.18196203
 Model measurements
   model training instances: 89999
   labeling cost: 8998
@@ -200,6 +209,7 @@ Measurements
   classifications correct (percent): 72.73672737
   Kappa Statistic (percent): 42.55540926
   Kappa Temporal Statistic (percent): 43.83857943
+  Kappa M Statistic (percent): 35.36816652
 Model measurements
   model training instances: 99999
   labeling cost: 9987

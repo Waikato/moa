@@ -4,7 +4,7 @@
   <parent>
     <groupId>nz.ac.waikato.cms.moa</groupId>
     <artifactId>moa-pom</artifactId>
-    <version>2014.04</version>
+    <version>2016.03-SNAPSHOT</version>
   </parent>
 
   <artifactId>moa</artifactId>
@@ -52,6 +52,12 @@
       <groupId>com.googlecode.sizeofag</groupId>
       <artifactId>sizeofag</artifactId>
     </dependency>
+
+	<dependency>
+		<groupId>net.sf.meka</groupId>
+		<artifactId>meka</artifactId>
+		<version>1.9.0</version>
+	</dependency> 
 
     <dependency>
       <groupId>junit</groupId>
@@ -125,7 +131,7 @@
     								</goals>
     							</pluginExecutionFilter>
     							<action>
-    								<ignore></ignore>
+    								<ignore />
     							</action>
     						</pluginExecution>
     					</pluginExecutions>
