@@ -225,6 +225,14 @@ public interface Instance extends Serializable {
     public boolean classIsMissing();
 
     /**
+     * Are any of the output values missing.
+     *
+     * @return true, if any output has missing value
+     */
+    public boolean missingOutputs();
+
+    
+    /**
      * Class value.
      *
      * @return the double
@@ -257,14 +265,14 @@ public interface Instance extends Serializable {
      *
      * @param dataset the new dataset
      */
-    public void setDataset(Instances dataset);
+    public void setDataset(InstancesHeader dataset);
 
     /**
      * Dataset.
      *
      * @return the instances
      */
-    public Instances dataset();
+    public InstancesHeader dataset();
 
     /**
      * Gets the number of input attributes.

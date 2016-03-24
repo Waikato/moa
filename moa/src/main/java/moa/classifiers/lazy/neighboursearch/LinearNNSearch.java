@@ -22,7 +22,7 @@ package moa.classifiers.lazy.neighboursearch;
 
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 //import weka.core.Option;
 //import weka.core.RevisionUtils;
 //import weka.core.Utils;
@@ -73,7 +73,7 @@ public class LinearNNSearch
    * 
    * @param insts	the instances to use
    */
-  public LinearNNSearch(Instances insts) {
+  public LinearNNSearch(InstancesHeader insts) {
     super(insts);
     m_DistanceFunction.setInstances(insts);
   }
@@ -143,7 +143,7 @@ public class LinearNNSearch
    * @return		the k nearest neighbors
    * @throws Exception  if the neighbours could not be found.
    */
-  public Instances kNearestNeighbours(Instance target, int kNN) throws Exception {
+  public InstancesHeader kNearestNeighbours(Instance target, int kNN) throws Exception {
   
     //debug
     boolean print=false;
@@ -182,7 +182,7 @@ public class LinearNNSearch
       }
     }
     
-    Instances neighbours = new Instances(m_Instances, (heap.size()+heap.noOfKthNearest()));
+    InstancesHeader neighbours = new InstancesHeader(m_Instances, (heap.size()+heap.noOfKthNearest()));
     m_Distances = new double[heap.size()+heap.noOfKthNearest()];
     int [] indices = new int[heap.size()+heap.noOfKthNearest()];
     int i=1; MyHeapElement h;
@@ -240,7 +240,7 @@ public class LinearNNSearch
    * 			training set. 
    * @throws Exception	if setting of instances fails
    */
-  public void setInstances(Instances insts) throws Exception {
+  public void setInstances(InstancesHeader insts) throws Exception {
     m_Instances = insts;
     m_DistanceFunction.setInstances(insts);
   }

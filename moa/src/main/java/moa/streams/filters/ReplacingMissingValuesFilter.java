@@ -23,6 +23,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;

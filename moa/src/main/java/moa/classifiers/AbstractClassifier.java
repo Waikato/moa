@@ -44,7 +44,7 @@ import moa.tasks.TaskMonitor;
 import com.yahoo.labs.samoa.instances.DenseInstanceData;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
@@ -68,7 +68,7 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     protected int randomSeed = 1;
 
     /** Option for randomizable learners to change the random seed */
-    protected IntOption randomSeedOption;
+    public IntOption randomSeedOption;
 
     /** Random Generator used in randomizable learners  */
     public Random classifierRandom;
@@ -91,9 +91,9 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
         }
         
         // resetLearning should not be called if the classifier has not yet received the context
-//        if (!trainingHasStarted()) {
-//            resetLearning();
-//        }
+        if (!trainingHasStarted()) {
+            resetLearning();
+        }
     }
 
 	
@@ -120,7 +120,7 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     
     @Override
     public void setModelContext(InstancesHeader ih) {
-        if ((ih != null) && (ih.classIndex() < 0)) {
+        if ((ih != null) && (ih.numOutputAttributes() < 1)) {
             throw new IllegalArgumentException(
                     "Context for a classifier must include a class to learn");
         }
@@ -131,6 +131,10 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
                     "New context is not compatible with existing model");
         }
         this.modelContext = ih;
+        this.modelContextSet();
+    }
+    
+    public void modelContextSet() {
     }
 
     @Override
@@ -170,7 +174,7 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     public void trainOnInstance(Instance inst) {
         boolean isTraining = (inst.weight() > 0.0);
         if (this instanceof SemiSupervisedLearner == false &&
-                inst.classIsMissing() == true){
+                inst.missingOutputs() == true){
             isTraining = false;
         }
         if (isTraining) {
@@ -430,7 +434,7 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
      * @return the index of the attribute in the instances
      */
     protected static int modelAttIndexToInstanceAttIndex(int index,
-            Instances insts) {
+            InstancesHeader insts) {
         return insts.classIndex() > index ? index : index + 1;
     }
 }

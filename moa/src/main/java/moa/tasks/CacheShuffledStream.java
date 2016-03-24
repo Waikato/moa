@@ -21,7 +21,7 @@ package moa.tasks;
 
 import java.util.Random;
 
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
 import com.github.javacliparser.IntOption;
@@ -58,7 +58,7 @@ public class CacheShuffledStream extends AbstractTask {
     @Override
     protected Object doTaskImpl(TaskMonitor monitor, ObjectRepository repository) {
         InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
-        Instances cache = new Instances(stream.getHeader(), 0);
+        InstancesHeader cache = new InstancesHeader(stream.getHeader(), 0);
         monitor.setCurrentActivity("Caching instances...", -1.0);
         while ((cache.numInstances() < this.maximumCacheSizeOption.getValue())
                 && stream.hasMoreInstances()) {

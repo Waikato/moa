@@ -22,7 +22,7 @@
 package moa.classifiers.lazy.neighboursearch;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Interface for any class that can compute and return distances between two
@@ -38,14 +38,14 @@ public interface DistanceFunction  {
    * 
    * @param insts 	the instances to use
    */
-  public void setInstances(Instances insts);
+  public void setInstances(InstancesHeader insts);
 
   /**
    * returns the instances currently set.
    * 
    * @return 		the current instances
    */
-  public Instances getInstances();
+  public InstancesHeader getInstances();
 
   /**
    * Sets the range of attributes to use in the calculation of the distance.

@@ -14,7 +14,7 @@ import moa.streams.InstanceStream;
 
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
@@ -77,7 +77,7 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 			}
 			//System.out.println("Number of attributes: "+this.numAttributes+ ","+inst.numAttributes());
 			attributes.addElement(inst.outputAttribute(outputIndex));
-			this.header[outputIndex] =  new InstancesHeader(new Instances(
+			this.header[outputIndex] =  new InstancesHeader(new InstancesHeader(
 					getCLICreationString(InstanceStream.class), attributes, 0));
 			this.header[outputIndex].setClassIndex(attributes.size()-1);
 			this.ensemble[outputIndex].setModelContext(this.header[outputIndex]);

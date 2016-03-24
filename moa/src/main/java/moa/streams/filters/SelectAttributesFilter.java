@@ -3,6 +3,7 @@ package moa.streams.filters;
 import java.util.ArrayList;
 import java.util.List;
 
+import moa.core.Example;
 import moa.core.InstanceExample;
 import moa.streams.MultiTargetInstanceStream;
 
@@ -10,11 +11,12 @@ import com.github.javacliparser.StringOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceImpl;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Range;
 
 public class SelectAttributesFilter extends AbstractMultiLabelStreamFilter implements MultiLabelStreamFilter{
+
 	/**
 	 * 
 	 */
@@ -48,15 +50,18 @@ public class SelectAttributesFilter extends AbstractMultiLabelStreamFilter imple
 		inputsSelected=getSelection(inputStringOption.getValue());
 		outputsSelected=getSelection(outputStringOption.getValue());
 		int totAttributes=inputsSelected.numValues()+outputsSelected.numValues();
-		Instances ds= new Instances();
+		InstancesHeader ds= new InstancesHeader();
 		List<Attribute> v = new ArrayList<Attribute>(totAttributes);
 		List<Integer> indexValues = new ArrayList<Integer>(totAttributes);
 		int ct=0;
+		List<Integer> inputIndexes = new ArrayList<Integer>();
+		List<Integer> outputIndexes = new ArrayList<Integer>();
 		for (int i=0; i<inputsSelected.numEntries();i++)
 		{
 			for (int j=inputsSelected.getStart(i); j<=inputsSelected.getEnd(i);j++){
 				v.add(instance.attribute(j-1));
 				indexValues.add(ct);
+				inputIndexes.add(ct);
 				ct++;
 			}
 		}
@@ -66,13 +71,13 @@ public class SelectAttributesFilter extends AbstractMultiLabelStreamFilter imple
 			for (int j=outputsSelected.getStart(i); j<=outputsSelected.getEnd(i);j++){
 				v.add(instance.attribute(j-1));
 				indexValues.add(ct);
+				outputIndexes.add(ct);
 				ct++;
 			}
 		}		
 		ds.setAttributes(v,indexValues);
-		Range r= new Range("-" + outputsSelected.numValues());
-		r.setUpper(totAttributes);
-		ds.setRangeOutputIndices(r);
+		ds.setOutputIndexes(outputIndexes);
+		ds.setInputIndexes(inputIndexes);
 		dataset=(new InstancesHeader(ds));
 	}
 
@@ -128,5 +133,4 @@ public class SelectAttributesFilter extends AbstractMultiLabelStreamFilter imple
 		newInstance.setDataset(dataset);
 		return newInstance;
 	}
-
 }

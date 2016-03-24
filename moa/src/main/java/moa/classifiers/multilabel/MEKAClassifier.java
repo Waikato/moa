@@ -30,7 +30,7 @@ import moa.options.WEKAClassOption;
 import weka.classifiers.Classifier;
 import weka.classifiers.UpdateableClassifier;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 
 import com.yahoo.labs.samoa.instances.StructuredInstance;
@@ -90,7 +90,7 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
     }
 
 	@Override
-	public void trainOnInstanceImpl(MultiLabelInstance samoaInstance) {
+	public void trainOnInstanceImpl(StructuredInstance samoaInstance) {
 
 		// Convert Samoa instance to Weka instance (as used in Meka)
 		L = samoaInstance.numberOutputTargets();
@@ -168,7 +168,7 @@ public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTa
 	}
 
 	@Override
-	public Prediction getPredictionForInstance(MultiLabelInstance samoaInstance) {
+	public Prediction getPredictionForInstance(StructuredInstance samoaInstance) {
 
 		MultiLabelPrediction prediction = new MultiLabelPrediction(L);
 

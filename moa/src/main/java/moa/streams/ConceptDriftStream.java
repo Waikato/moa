@@ -22,8 +22,6 @@ package moa.streams;
 import java.util.Random;
 import moa.core.Example;
 import moa.core.InstanceExample;
-
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
@@ -31,6 +29,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Stream generator that adds concept drift to examples in a stream.

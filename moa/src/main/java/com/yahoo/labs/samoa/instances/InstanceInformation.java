@@ -16,6 +16,7 @@
 package com.yahoo.labs.samoa.instances;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import moa.AbstractMOAObject;
@@ -34,18 +35,10 @@ public class InstanceInformation implements Serializable {
 
     protected AttributesInformation attributesInformation;
     
-    protected AttributeStructure structure = null;
-
-    /**
-     * The class index.
-     */
-    protected int classIndex = Integer.MAX_VALUE; //By default is multilabel
-
-    /**
-     * Range for multi-label instances.
-     */
-    protected Range range;
-
+    protected List<Integer> outputIndexes;
+    protected List<Integer> inputIndexes;
+    
+    
     public Attribute inputAttribute(int w) {
         return this.attributesInformation.attribute(inputAttributeIndex(w));
     }
@@ -54,6 +47,8 @@ public class InstanceInformation implements Serializable {
         return this.attributesInformation.attribute(outputAttributeIndex(w));
     }
 
+    
+    
     /**
      * Instantiates a new instance information.
      *
@@ -61,9 +56,9 @@ public class InstanceInformation implements Serializable {
      */
     public InstanceInformation(InstanceInformation chunk) {
         this.relationName = chunk.relationName;
+        this.outputIndexes = chunk.outputIndexes;
+        this.inputIndexes = chunk.inputIndexes;
         this.attributesInformation = chunk.attributesInformation;
-        this.structure = chunk.structure;
-        this.classIndex = chunk.classIndex;
     }
 
     /**
@@ -72,16 +67,38 @@ public class InstanceInformation implements Serializable {
      * @param st the st
      * @param v the v
      */
-    public InstanceInformation(String st, List<Attribute> input) {
+    public InstanceInformation(String st, List<Attribute> attributes, List<Integer> outputIndexes, List<Integer> inputIndexes) {
         this.relationName = st;
-        this.attributesInformation = new AttributesInformation(input, input.size());
+        this.outputIndexes = outputIndexes;
+        this.inputIndexes = inputIndexes;
+        this.attributesInformation = new AttributesInformation(attributes, attributes.size());
+    }
+    
+    public InstanceInformation(String st, List<Attribute> input, List<Integer> indexes) {
+        this.relationName = st;
+        this.outputIndexes = new ArrayList<Integer>();
+        this.inputIndexes = new ArrayList<Integer>();
+        this.attributesInformation = new AttributesInformation(input, indexes, indexes.size());
     }
 
+    public InstanceInformation(String st, List<Attribute> input) {
+        this.relationName = st;
+        this.outputIndexes = new ArrayList<Integer>();
+        this.inputIndexes = new ArrayList<Integer>();
+        List<Integer> indexes = new ArrayList<Integer>();
+        for (int i = 0; i < input.size(); i++) {
+        	indexes.add(i);
+        }
+        this.attributesInformation = new AttributesInformation(input, indexes, indexes.size());
+    }
+    
     /**
      * Instantiates a new instance information.
      */
     public InstanceInformation() {
         this.relationName = null;
+        this.inputIndexes = null;
+        this.outputIndexes = null;
         this.attributesInformation = null;
     }
 
@@ -104,15 +121,16 @@ public class InstanceInformation implements Serializable {
      * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#classIndex()
      */
     public int classIndex() {
-        return this.classIndex;
+    	if (this.outputIndexes.size() > 1)
+    		throw new UnsupportedOperationException("This instance has multiple output attributes.");
+        return this.outputIndexes.get(0);
     }
 
-    /* (non-Javadoc)
-     * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#setClassIndex(int)
-     */
-    public void setClassIndex(int classIndex) {
-        this.classIndex = classIndex;
+    public void setClassIndex(int index) {
+    	this.outputIndexes = new ArrayList<Integer>();
+    	this.outputIndexes.add(index);
     }
+    
 
     /* (non-Javadoc)
      * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#classAttribute()
@@ -163,63 +181,48 @@ public class InstanceInformation implements Serializable {
     }
 
     public int inputAttributeIndex(int index) {
-        int ret = 0;
-        if (classIndex == Integer.MAX_VALUE) {//Multi Label
-        	if(index<range.getStart())//JD
-        		ret= index;
-        	else 
-        		ret= index+range.getSelectionLength();
-	
-        } else { //Single Label
-            ret = classIndex() > index ? index : index + 1;
-        }
-        return ret;
+    	// Returns actual instance attribute index!
+        return inputIndexes.get(index);
     }
 
-    public int outputAttributeIndex(int attributeIndex) {
-        int ret = 0;
-        if (classIndex == Integer.MAX_VALUE) {//Multi Label
-        		ret=attributeIndex+range.getStart(); //JD - Range should be a "block"
-        } else { //Single Label
-            ret = classIndex;
-        }
-        return ret;
+    public int outputAttributeIndex(int index) {
+    	// Returns actual instance attribute index!
+    	return outputIndexes.get(index);    
     }
 
     public int numInputAttributes() {
-        int ret = 0;
-        if (classIndex == Integer.MAX_VALUE) {//Multi Label
-        	ret=this.numAttributes()-range.getSelectionLength(); //JD
-        } else { //Single Label
-            ret = this.numAttributes() - 1;
-        }
-        return ret;
+        return inputIndexes.size();
     }
 
     public int numOutputAttributes() {
-        int ret = 0;
-        if (classIndex == Integer.MAX_VALUE) {//Multi Label
-        	ret=range.getSelectionLength(); //JD
-        } else { //Single Label
-            ret = 1;
-        }
-        return ret;
-    }
 
-    public void setRangeOutputIndices(Range range) {
-        this.setClassIndex(Integer.MAX_VALUE);
-        this.range = range;
+    	return outputIndexes.size();
     }
 
 	public void setAttributes(List<Attribute> v, List<Integer> indexValues) {
     	if(this.attributesInformation==null)
     		this.attributesInformation= new AttributesInformation();
         this.attributesInformation.setAttributes(v,indexValues);
-		
+	}
+
+	public void setOutputIndexes(List<Integer> outputIndexes) {
+		this.outputIndexes = outputIndexes;
 	}
 	
-	public AttributeStructure getStructure() {
-		return this.structure;
+	public void setInputIndexes(List<Integer> inputIndexes) {
+		this.inputIndexes = inputIndexes;
+	}
+
+	/** 
+	 * Sets all non-output attributes as input attributes.
+	 */
+	public void setInputIndexes() {
+		this.inputIndexes = new ArrayList<Integer>();
+		for (int i = 0; i < attributesInformation.indexValues.size(); i++) {
+			if (!outputIndexes.contains(attributesInformation.indexValues.get(i))) {
+				inputIndexes.add(attributesInformation.indexValues.get(i));
+			}
+		}
 	}
 
 }

@@ -80,16 +80,7 @@ public class MajorityLabelset extends AbstractMultiLabelLearner implements Multi
     }
 
     @Override
-    //public double[] getVotesForInstance(Instance x) {
     public Prediction getPredictionForInstance(StructuredInstance x){
-        
-		System.out.println("-------- start MC vote   ---------------");
-        int L = x.numOutputAttributes(); //x.classIndex() + 1;
-        if (m_L != L) {
-            System.err.println("set L = " + L);
-            m_L = L;
-            predictionArray = new double[m_L];
-        }
 
 		if (this.majorityLabelset == null)  {
 			int L = x.numberOutputTargets();

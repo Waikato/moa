@@ -19,6 +19,8 @@
  */
 package moa.streams;
 
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.core.Example;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
@@ -28,8 +30,6 @@ import moa.streams.filters.MultiLabelStreamFilter;
 import moa.streams.filters.SelectAttributesFilter;
 import moa.streams.filters.StreamFilter;
 import moa.tasks.TaskMonitor;
-
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Class for representing a stream that is filtered.

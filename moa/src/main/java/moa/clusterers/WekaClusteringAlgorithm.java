@@ -33,7 +33,7 @@ import moa.core.FastVector;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 
 import weka.core.Utils;
@@ -52,7 +52,7 @@ public class WekaClusteringAlgorithm extends AbstractClusterer {
     
     private Class<?>[] clustererClasses;
     
-    private Instances instances;
+    private InstancesHeader instances;
     
     private weka.clusterers.AbstractClusterer clusterer;
     
@@ -136,7 +136,7 @@ public class WekaClusteringAlgorithm extends AbstractClusterer {
             
             clusterer.buildClusterer(wekaInstances);
             int numClusters = clusterer.numberOfClusters();
-            Instances dataset = getDataset(instances.numAttributes(), numClusters);
+            InstancesHeader dataset = getDataset(instances.numAttributes(), numClusters);
             List<Instance> newInstances = new ArrayList<Instance>() ; //Instances(dataset);
 
             for (int i = 0; i < wekaInstances.numInstances(); i++) {
@@ -159,7 +159,7 @@ public class WekaClusteringAlgorithm extends AbstractClusterer {
         return clustering;
     }
 
-    public Instances getDataset(int numdim, int numclass) {
+    public InstancesHeader getDataset(int numdim, int numclass) {
         FastVector attributes = new FastVector();
         for (int i = 0; i < numdim; i++) {
             attributes.addElement(new Attribute("att" + (i + 1)));
@@ -173,7 +173,7 @@ public class WekaClusteringAlgorithm extends AbstractClusterer {
             attributes.addElement(new Attribute("class", classLabels));
         }
 
-        Instances myDataset = new Instances("horizion", attributes, 0);
+        InstancesHeader myDataset = new InstancesHeader("horizion", attributes, 0);
         if (numclass > 0) {
             myDataset.setClassIndex(myDataset.numAttributes() - 1);
         }

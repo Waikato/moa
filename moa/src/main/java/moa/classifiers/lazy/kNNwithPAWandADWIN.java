@@ -20,7 +20,7 @@ package moa.classifiers.lazy;
 import java.util.ArrayList;
 import moa.classifiers.core.driftdetection.ADWIN;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * k Nearest Neighbor ADAPTIVE with ADWIN+PAW.<p>
@@ -67,7 +67,7 @@ public class kNNwithPAWandADWIN extends kNN {
         }
         // ADWIN
         if (this.window == null) {
-            this.window = new Instances(inst.dataset());
+            this.window = new InstancesHeader(inst.dataset());
         }
 
         if (this.timeStamp == null) {

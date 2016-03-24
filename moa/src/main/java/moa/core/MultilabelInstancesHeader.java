@@ -19,7 +19,7 @@
  */
 package moa.core;
 
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
@@ -33,7 +33,7 @@ public class MultilabelInstancesHeader extends InstancesHeader {
 
     private int m_NumLabels = -1;
 
-    public MultilabelInstancesHeader(Instances i, int numLabels) {
+    public MultilabelInstancesHeader(InstancesHeader i, int numLabels) {
         super(i);
         m_NumLabels = numLabels;
     }

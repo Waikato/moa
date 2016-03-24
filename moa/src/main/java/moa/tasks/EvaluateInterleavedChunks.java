@@ -38,7 +38,7 @@ import com.github.javacliparser.IntOption;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 public class EvaluateInterleavedChunks extends MainTask {
 
@@ -169,7 +169,7 @@ public class EvaluateInterleavedChunks extends MainTask {
 				&& ((maxInstances < 0) || (instancesProcessed < maxInstances))
 				&& ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
 			
-			Instances chunkInstances = new Instances(stream.getHeader(), chunkSize);
+			InstancesHeader chunkInstances = new InstancesHeader(stream.getHeader(), chunkSize);
 			
 			while (stream.hasMoreInstances() && chunkInstances.numInstances() < chunkSize) {
 				chunkInstances.add((Instance) stream.nextInstance().getData());

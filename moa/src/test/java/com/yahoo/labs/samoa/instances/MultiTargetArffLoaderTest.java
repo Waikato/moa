@@ -23,18 +23,18 @@ import org.junit.Test;
 
 public class MultiTargetArffLoaderTest {
 	private static double EPS=0.00000001;
-	private static Instances instancesRegression;
-	private static Instances instancesClassification;
+	private static InstancesHeader instancesRegression;
+	private static InstancesHeader instancesClassification;
 	
 	@BeforeClass
 	public static void setUpBeforeClassRegression() throws Exception {
 		try {
             InputStream fileStream = new FileInputStream(ClassLoader.getSystemResource("moa/classifiers/data/small_regression.arff").getPath());
             Reader  reader= new BufferedReader(new InputStreamReader(fileStream));
-    		instancesRegression = new Instances(reader,new Range("4-6"));
+    		instancesRegression = new InstancesHeader(reader,"4-6");
     		fileStream = new FileInputStream(ClassLoader.getSystemResource("moa/classifiers/data/small_classification.arff").getPath());
     		reader = new BufferedReader(new InputStreamReader(fileStream));
-    		instancesClassification = new Instances(reader,new Range("2"));
+    		instancesClassification = new InstancesHeader(reader,"2");
         } catch (IOException ioe) {
             throw new RuntimeException("ArffFileStream restart failed.", ioe);
         }
@@ -43,12 +43,13 @@ public class MultiTargetArffLoaderTest {
 	/*
 	 * TESTS REGRESSION DATASET
 	 */
-	@Test
-	public void testRangeRegression(){
-		assertEquals(3,instancesRegression.arff.range.getStart());
-		assertEquals(5,instancesRegression.arff.range.getEnd());
-	}
+//	@Test
+//	public void testRangeRegression(){
+//		assertEquals(3,instancesRegression.);
+//		assertEquals(5,instancesRegression.arff.range.getEnd());
+//	}
 	
+	@Test
 	public void testClassRegression(){
 		assertEquals(3,instancesRegression.arff.instanceInformation.numOutputAttributes());
 		assertTrue(instancesRegression.arff.instanceInformation.outputAttribute(0).name.equals("R1"));
@@ -155,12 +156,14 @@ public class MultiTargetArffLoaderTest {
 	 * TESTS REGRESSION DATASET
 	 */
 
-	@Test
-	public void testRangeClassification(){
-		assertEquals(0,instancesClassification.arff.range.getStart());
-		assertEquals(1,instancesClassification.arff.range.getEnd());
-	}
+	// DEPRECATED
 	
+//	@Test
+//	public void testRangeClassification(){
+//		assertEquals(0,instancesClassification.arff.range.getStart());
+//		assertEquals(1,instancesClassification.arff.range.getEnd());
+//	}
+	@Test
 	public void testClassClassification(){
 		assertEquals(2,instancesClassification.arff.instanceInformation.numOutputAttributes());
 		assertTrue(instancesClassification.arff.instanceInformation.outputAttribute(0).name.equals("C1"));

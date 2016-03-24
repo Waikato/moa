@@ -24,7 +24,7 @@ import moa.core.Example;
 import moa.core.Measurement;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
@@ -57,7 +57,7 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
     @Override
 	public void addResult(Example<Instance> example, Prediction y) {
 
-		MultiLabelInstance x = (MultiLabelInstance) example.getData();
+		StructuredInstance x = (StructuredInstance) example.getData();
 
 		if (L == 0) {
 			L = x.numberOutputTargets();

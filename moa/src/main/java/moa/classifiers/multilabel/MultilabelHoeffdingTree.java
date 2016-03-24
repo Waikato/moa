@@ -28,7 +28,6 @@ import moa.classifiers.trees.HoeffdingTree;
 import moa.core.StringUtils;
 import moa.core.utils.Converter;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
@@ -212,7 +211,7 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		boolean isTraining = (inst.weight() > 0.0);
 		if (isTraining) {
 			this.trainingWeightSeenByModel += inst.weight();
-			trainOnInstanceImpl((MultiLabelInstance) inst);
+			trainOnInstanceImpl((StructuredInstance) inst);
 		}
 	}
 

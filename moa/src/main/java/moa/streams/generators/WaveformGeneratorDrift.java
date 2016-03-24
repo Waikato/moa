@@ -24,6 +24,7 @@ import moa.core.InstanceExample;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.core.ObjectRepository;
 import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;

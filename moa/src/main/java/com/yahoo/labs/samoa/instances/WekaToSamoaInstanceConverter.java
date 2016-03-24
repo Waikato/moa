@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class WekaToSamoaInstanceConverter implements Serializable{
 
-    protected Instances samoaInstanceInformation;
+    protected InstancesHeader samoaInstanceInformation;
     
     /**
      * Samoa instance from weka instance.
@@ -65,8 +65,8 @@ public class WekaToSamoaInstanceConverter implements Serializable{
      * @param instances the instances
      * @return the instances
      */
-    public Instances samoaInstances(weka.core.Instances instances) {
-        Instances samoaInstances = samoaInstancesInformation(instances);
+    public InstancesHeader samoaInstances(weka.core.Instances instances) {
+        InstancesHeader samoaInstances = samoaInstancesInformation(instances);
         //We assume that we have only one samoaInstanceInformation for WekaToSamoaInstanceConverter
         this.samoaInstanceInformation = samoaInstances;
         for (int i = 0; i < instances.numInstances(); i++) {
@@ -81,13 +81,13 @@ public class WekaToSamoaInstanceConverter implements Serializable{
      * @param instances the instances
      * @return the instances
      */
-    public Instances samoaInstancesInformation(weka.core.Instances instances) {
-        Instances samoaInstances;
+    public InstancesHeader samoaInstancesInformation(weka.core.Instances instances) {
+        InstancesHeader samoaInstances;
         List<Attribute> attInfo = new ArrayList<Attribute>();
         for (int i = 0; i < instances.numAttributes(); i++) {
             attInfo.add(samoaAttribute(i, instances.attribute(i)));
         }
-        samoaInstances = new Instances(instances.relationName(), attInfo, 0);
+        samoaInstances = new InstancesHeader(instances.relationName(), attInfo, 0);
         samoaInstances.setClassIndex(instances.classIndex());
         return samoaInstances;
     }

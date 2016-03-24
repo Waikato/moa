@@ -25,13 +25,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
-import com.yahoo.labs.samoa.instances.*;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.core.Measurement;
 import moa.core.Utils;
 import moa.options.ClassOption;
+import com.yahoo.labs.samoa.instances.Attribute;
+import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Include labels of previous instances into the training data
@@ -63,7 +65,7 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier {
     
     protected double[] oldLabels;
     
-    protected Instances header;
+    protected InstancesHeader header;
 
     public FlagOption labelDelayOption = new FlagOption("labelDelay", 'd',
         "Labels arrive with Delay. Use predictions instead of true Labels.");
@@ -95,7 +97,7 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier {
         }
     }
 
-    public void initHeader(Instances dataset) {
+    public void initHeader(InstancesHeader dataset) {
         int numLabels = this.numOldLabelsOption.getValue();
         Attribute target = dataset.classAttribute();
 
@@ -122,14 +124,13 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier {
                 attrs.add(newAttribute);
             }
         }
-        this.header = new Instances("extended_" + dataset.getRelationName(), attrs, 0);
+        this.header = new InstancesHeader("extended_" + dataset.getRelationName(), attrs, 0);
         this.header.setClassIndex(numLabels + dataset.classIndex());
     }
 
     public Instance extendWithOldLabels(Instance instance) {
         if (this.header == null) {
             initHeader(instance.dataset());
-            this.baseLearner.setModelContext(new InstancesHeader(this.header));
         }
         int numLabels = this.oldLabels.length;
         if (numLabels == 0) {

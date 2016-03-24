@@ -30,7 +30,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import moa.core.FastVector;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import weka.core.AttributeStats;
 import weka.experiment.Stats;
 import weka.filters.unsupervised.attribute.Add;
@@ -73,7 +73,7 @@ public class CobWeb extends AbstractClusterer {
         /**
          * Instances at this node
          */
-        protected Instances m_clusterInstances = null;
+        protected InstancesHeader m_clusterInstances = null;
         /**
          * Children of this node
          */
@@ -107,7 +107,7 @@ public class CobWeb extends AbstractClusterer {
             if (m_clusterInstances == null) {
 		//System.out.println(leafInstance.numAttributes()+"-"+leafInstance.value(0)+"-"+leafInstance.value(1)+"-"+leafInstance.value(2));
 		//System.out.println(leafInstance.numAttributes()+"-"+leafInstance.attribute(0).type()+"-"+leafInstance.attribute(1).type()+"-"+leafInstance.attribute(2).type());
-                m_clusterInstances = new Instances(leafInstance.dataset(), 1);
+                m_clusterInstances = new InstancesHeader(leafInstance.dataset(), 1);
             }
             m_clusterInstances.add(leafInstance);
             updateStats(leafInstance, false);
@@ -122,7 +122,7 @@ public class CobWeb extends AbstractClusterer {
             // Add the instance to this cluster
 
             if (m_clusterInstances == null) {
-                m_clusterInstances = new Instances(newInstance.dataset(), 1);
+                m_clusterInstances = new InstancesHeader(newInstance.dataset(), 1);
                 m_clusterInstances.add(newInstance);
                 updateStats(newInstance, false);
                 return;
@@ -196,7 +196,7 @@ public class CobWeb extends AbstractClusterer {
             double mergedCU = -Double.MAX_VALUE;
             // consider merging the best and second
             // best.
-            merged.m_clusterInstances = new Instances(m_clusterInstances, 1);
+            merged.m_clusterInstances = new InstancesHeader(m_clusterInstances, 1);
 
             merged.addChildNode(a);
             merged.addChildNode(b);
@@ -620,11 +620,11 @@ public class CobWeb extends AbstractClusterer {
 
             // construct instances string with cluster numbers attached
             CNode tempNode = new CNode(m_numAttributes);
-            tempNode.m_clusterInstances = new Instances(m_clusterInstances, 1);
+            tempNode.m_clusterInstances = new InstancesHeader(m_clusterInstances, 1);
             for (int i = 0; i < m_children.size(); i++) {
                 tempNode.addChildNode((CNode) m_children.elementAt(i));
             }
-            Instances tempInst = tempNode.m_clusterInstances;
+            InstancesHeader tempInst = tempNode.m_clusterInstances;
             tempNode = null;
 
             Add af = new Add();

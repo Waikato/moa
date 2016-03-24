@@ -23,13 +23,16 @@ import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import moa.core.FastVector;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import moa.core.InstanceExample;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
+import moa.core.utils.AttributeDefinitionUtil;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
 import com.github.javacliparser.FloatOption;
@@ -111,8 +114,8 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
         }
 
         // generate header
-        Instances first = this.inputStream.getHeader();
-        Instances second = this.driftStream.getHeader();
+        InstancesHeader first = this.inputStream.getHeader();
+        InstancesHeader second = this.driftStream.getHeader();
         FastVector newAttributes = new FastVector();
         for (int i = 0; i < first.numAttributes() - 1; i++) {
             newAttributes.addElement(first.attribute(i));
@@ -130,9 +133,11 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
         }
         newAttributes.addElement(classLabels);
 
-        this.streamHeader = new InstancesHeader(new Instances(
+        this.streamHeader = new InstancesHeader(new InstancesHeader(
                 getCLICreationString(InstanceStream.class), newAttributes, 0));
         this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
+        // TODO adapt for multi-target streaming
+        this.streamHeader.setInputIndexes();
         restart();
 
     }

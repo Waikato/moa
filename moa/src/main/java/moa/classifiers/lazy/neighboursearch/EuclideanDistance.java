@@ -22,7 +22,7 @@
 package moa.classifiers.lazy.neighboursearch;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  <!-- globalinfo-start -->
@@ -92,7 +92,7 @@ public class EuclideanDistance
    * 
    * @param data 	the instances the distance function should work on
    */
-  public EuclideanDistance(Instances data) {
+  public EuclideanDistance(InstancesHeader data) {
     super(data);
   }
 
@@ -195,7 +195,7 @@ public class EuclideanDistance
    * @return 		the index of the closest point
    * @throws Exception	if something goes wrong
    */
-  public int closestPoint(Instance instance, Instances allPoints,
+  public int closestPoint(Instance instance, InstancesHeader allPoints,
       			  int[] pointList) throws Exception {
     double minDist = Integer.MAX_VALUE;
     int bestPoint = 0;

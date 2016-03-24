@@ -34,7 +34,7 @@ public class SizeOf {
     protected static Boolean m_Present;
 
     /**
-     * Checks whteher the agent is present.
+     * Checks whether the agent is present.
      *
      * @return true if the agent is present, false otherwise
      */

@@ -25,7 +25,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.classifiers.AbstractClassifier;
@@ -174,7 +174,7 @@ public class RandomRules extends AbstractClassifier implements Regressor {
 				//System.out.println("Number of attributes: "+this.numAttributes+ ","+inst.numAttributes()); //JD
 				System.out.println("Number of attributes: "+this.numAttributes+ ","+(inst.numAttributes()-1));
 				attributes.addElement(inst.classAttribute());
-				this.dataset[ensembleIndex] =  new InstancesHeader(new Instances(
+				this.dataset[ensembleIndex] =  new InstancesHeader(new InstancesHeader(
 						getCLICreationString(InstanceStream.class), attributes, 0));
 				this.dataset[ensembleIndex].setClassIndex(this.numAttributes);
 				this.ensemble[ensembleIndex].setModelContext(this.dataset[ensembleIndex]);

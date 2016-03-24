@@ -24,7 +24,7 @@ import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import java.util.ArrayList;
 import java.util.Random;
@@ -96,7 +96,7 @@ public abstract class AbstractConceptDriftGenerator extends AbstractOptionHandle
         attributes.addElement(new Attribute("change", binaryLabels));
         attributes.addElement(new Attribute("ground truth input"));
 
-        this.streamHeader = new InstancesHeader(new Instances(
+        this.streamHeader = new InstancesHeader(new InstancesHeader(
                 getCLICreationString(InstanceStream.class), attributes, 0));
         this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
 

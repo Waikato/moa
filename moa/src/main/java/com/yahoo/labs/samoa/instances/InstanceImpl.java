@@ -306,6 +306,19 @@ public class InstanceImpl implements MultiLabelInstance {
     public boolean classIsMissing() {
         return this.instanceData.isMissing(classIndex());
     }
+    
+    public boolean missingOutputs() {
+    	if (this.instanceHeader.numOutputAttributes() == 1)
+    		return classIsMissing();
+    	else {
+    		for (int i = 0; i < this.instanceHeader.numOutputAttributes(); i++) {
+    			if (this.instanceData.isMissing(outputAttribute(i).index)) {
+    				return true;
+    			}
+    		}
+    	}
+    	return false;
+    }
 
     /**
      * Class attribute.
@@ -344,7 +357,7 @@ public class InstanceImpl implements MultiLabelInstance {
      * @return the instances
      */
     @Override
-    public Instances dataset() {
+    public InstancesHeader dataset() {
         return this.instanceHeader;
     }
 
@@ -354,7 +367,7 @@ public class InstanceImpl implements MultiLabelInstance {
      * @param dataset the new dataset
      */
     @Override
-    public void setDataset(Instances dataset) {
+    public void setDataset(InstancesHeader dataset) {
         this.instanceHeader = new InstancesHeader(dataset);
     }
 

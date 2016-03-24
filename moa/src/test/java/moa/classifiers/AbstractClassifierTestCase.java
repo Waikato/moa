@@ -37,7 +37,7 @@ import weka.core.MOAUtils;
 
 import com.yahoo.labs.samoa.instances.ArffLoader;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Range;
 
@@ -132,8 +132,8 @@ extends MoaTestCase {
 	 * @return		the data, null if it could not be loaded
 	 * @see		#getDataDirectory()
 	 */
-	protected Instances load(String filename, int classIndex) {
-		Instances	result = null;
+	protected InstancesHeader load(String filename, int classIndex) {
+		InstancesHeader	result = null;
 		//ArffLoader 	loader;
 
 		//result = null;
@@ -145,8 +145,7 @@ extends MoaTestCase {
 			TmpFile tmp=new TmpFile(filename);
 			FileInputStream fileStream = new FileInputStream(tmp.getAbsolutePath());
 			Reader reader=new BufferedReader(new InputStreamReader(fileStream));
-			Range range = new Range("-1");
-			result = new Instances(reader,range);
+			result = new InstancesHeader(reader,"-1");
 			result.setClassIndex(classIndex);
 			while (result.readInstance(null));
 		}
@@ -168,7 +167,7 @@ extends MoaTestCase {
 	 * @param scheme		the scheme to process the data with
 	 * @return			the processed data
 	 */
-	protected InspectionData[] inspect(Instances data, int[] inspectionPoints, LearningPerformanceEvaluator<Example<Instance>>  evaluator, Classifier scheme) {
+	protected InspectionData[] inspect(InstancesHeader data, int[] inspectionPoints, LearningPerformanceEvaluator<Example<Instance>>  evaluator, Classifier scheme) {
 		InspectionData[]	result;
 		int			i;
 		int			point;
@@ -178,6 +177,7 @@ extends MoaTestCase {
 		result = new InspectionData[inspectionPoints.length];
 
 		scheme.prepareForUse();
+		scheme.setModelContext(data);
 
 		point = 0;
 		for (i = 0; i < data.numInstances(); i++) {
@@ -296,7 +296,7 @@ extends MoaTestCase {
 	 * Compares the processed data against previously saved output data.
 	 */
 	public void testRegression() {
-		Instances					data;
+		InstancesHeader					data;
 		InspectionData[]				processed;
 		boolean					ok;
 		String					regression;
