@@ -23,6 +23,11 @@ package com.yahoo.labs.samoa.instances;
 public class InstanceImpl implements MultiLabelInstance {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7908832747696137766L;
+
+	/**
      * The weight.
      */
     protected double weight;

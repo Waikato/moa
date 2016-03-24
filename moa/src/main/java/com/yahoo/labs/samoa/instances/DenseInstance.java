@@ -21,6 +21,11 @@ package com.yahoo.labs.samoa.instances;
 public class DenseInstance extends InstanceImpl {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2470663722464623836L;
+
+	/**
      * Instantiates a new dense instance.
      *
      * @param weight the weight

@@ -38,6 +38,8 @@ import moa.core.InputStreamProgressMonitor;
 import moa.core.InstanceExample;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
+import moa.core.utils.AttributeDefinitionUtil;
+
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
@@ -48,7 +50,6 @@ import com.github.javacliparser.StringOption;
 import moa.tasks.TaskMonitor;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 public class FileStream extends ClusteringStream{
 
@@ -65,11 +66,6 @@ public class FileStream extends ClusteringStream{
 	public FileOption arffFileOption = new FileOption("arffFile", 'f',
 			"ARFF file to load.", defaultfile, "arff", false);
 
-//	public IntOption classIndexOption = new IntOption(
-//			"classIndex",
-//			'c',
-//			"Class index of data. 0 for none or -1 for last attribute in file.",
-//			-1, -1, Integer.MAX_VALUE);
 
     public StringOption outputIndicesOption = new StringOption(
     		"outputIndices",
@@ -81,7 +77,7 @@ public class FileStream extends ClusteringStream{
     		"outputIndices",
     		'i',
     		"Indices of input (class) attributes. Can be provided in a comma or semicolon separated list of single values or ranges. Leave blank for all non-output attributes.",
-    		"");
+    		AttributeDefinitionUtil.nonIgnoredDefinition);
 	
     public FlagOption normalizeOption = 
     		new FlagOption("normalize", 'n', 
@@ -169,7 +165,7 @@ public class FileStream extends ClusteringStream{
 			InputStream fileStream = new FileInputStream(arffFileOption.getFile());
 			fileProgressMonitor = new InputStreamProgressMonitor(fileStream);
 			fileReader = new BufferedReader(new InputStreamReader(fileProgressMonitor));
-            instances = new InstancesHeader(fileReader, 1, this.outputIndicesOption.getValue(), this.inputIndicesOption.getValue());
+            instances = new InstancesHeader(fileReader, this.outputIndicesOption.getValue(), this.inputIndicesOption.getValue());
 
 
 			//use hashset to delete duplicates and attributes numbers that aren't valid
@@ -287,7 +283,7 @@ public class FileStream extends ClusteringStream{
 			InputStream fileStream = new FileInputStream(arffFileOption.getFile());
 			InputStreamProgressMonitor fileProgressMonitor = new InputStreamProgressMonitor(fileStream);
 			Reader fileReader = new BufferedReader(new InputStreamReader(fileProgressMonitor));
-            InstancesHeader instances = new InstancesHeader(fileReader, 1, this.outputIndicesOption.getValue(), this.inputIndicesOption.getValue());
+            InstancesHeader instances = new InstancesHeader(fileReader, this.outputIndicesOption.getValue(), this.inputIndicesOption.getValue());
 
 			valuesMinMaxDiff = new ArrayList<Double[]>();
 			for (int i = 0; i < instances.numAttributes()-ignoredAttributes.size(); i++) {
