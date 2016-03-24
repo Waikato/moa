@@ -4,16 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import moa.core.InstanceExample;
-import moa.streams.MultiTargetInstanceStream;
-
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceImpl;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.Range;
 
 public class ReLUFilter extends AbstractStreamFilter {
 
@@ -111,7 +106,7 @@ public class ReLUFilter extends AbstractStreamFilter {
 		indexValues.add(H);
 
 
-		ds.setAttributes(v,indexValues);
+		ds.setAttributes(v);
 		dataset=(new InstancesHeader(ds));
 		dataset.setClassIndex(H);
 

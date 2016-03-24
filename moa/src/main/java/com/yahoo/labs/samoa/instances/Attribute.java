@@ -25,6 +25,11 @@ import moa.core.Utils;
  */
 public class Attribute implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3739913325563469730L;
+
 	/** The keyword used to denote the start of an arff attribute declaration */
 	public final static String ARFF_ATTRIBUTE = "@attribute";
 

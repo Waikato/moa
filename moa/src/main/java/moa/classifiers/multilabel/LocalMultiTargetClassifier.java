@@ -7,7 +7,6 @@ import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
@@ -22,6 +21,11 @@ import moa.options.ClassOption;
 
 public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 		implements MultiLabelClassifier, MultiTargetRegressor {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5437749202546674734L;
 
 	public ClassOption classifierOption = new ClassOption(
 			"classifier",
@@ -50,15 +54,12 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 			headers = new ArrayList<InstancesHeader>();
 			for (int target = 0; target < getModelContext().numOutputAttributes(); target++) {
 				List<Attribute> attributes = new ArrayList<Attribute>();
-				List<Integer> indexValues = new ArrayList<Integer>();
 				for (int i = 0; i < getModelContext().numInputAttributes(); i++) {
 					attributes.add(getModelContext().inputAttribute(i));
-					indexValues.add(i);
 				}
 				attributes.add(getModelContext().outputAttribute(target));
-				indexValues.add(getModelContext().numInputAttributes());
 				InstancesHeader STHeader = new InstancesHeader();
-				STHeader.setAttributes(attributes, indexValues);
+				STHeader.setAttributes(attributes);
 				STHeader.setClassIndex(getModelContext().numInputAttributes());
 				headers.add(STHeader);
 			}

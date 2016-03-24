@@ -22,6 +22,11 @@ package com.yahoo.labs.samoa.instances;
 public class DenseInstanceData implements InstanceData{
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 8799186995568094103L;
+
+	/**
      * Instantiates a new dense instance data.
      *
      * @param array the array

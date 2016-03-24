@@ -17,8 +17,6 @@ package com.yahoo.labs.samoa.instances;
 
 import java.io.Serializable;
 
-import moa.AbstractMOAObject;
-
 /**
  * The Interface Instance.
  *

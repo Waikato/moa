@@ -15,8 +15,6 @@
  */
 package com.yahoo.labs.samoa.instances;
 
-import moa.AbstractMOAObject;
-
 /**
  * The Class InstanceImpl.
  *
@@ -25,6 +23,11 @@ import moa.AbstractMOAObject;
 public class InstanceImpl implements StructuredInstance {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7908832747696137766L;
+
+	/**
      * The weight.
      */
     protected double weight;

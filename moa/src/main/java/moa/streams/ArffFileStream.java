@@ -155,7 +155,7 @@ public class ArffFileStream extends AbstractOptionHandler implements InstanceStr
             this.fileProgressMonitor = new InputStreamProgressMonitor(
                     fileStream);
             this.fileReader = new BufferedReader(new InputStreamReader(this.fileProgressMonitor));
-            this.instances = new InstancesHeader(this.fileReader, 1, this.outputIndexesOption.getValue(), this.inputIndexesOption.getValue());
+            this.instances = new InstancesHeader(this.fileReader, this.outputIndexesOption.getValue(), this.inputIndexesOption.getValue());
             this.numInstancesRead = 0;
             this.lastInstanceRead = null;
             this.hitEndOfFile = !readNextInstanceFromFile();

@@ -5,15 +5,12 @@ import java.util.List;
 import java.util.Random;
 
 import moa.core.InstanceExample;
-import moa.streams.MultiTargetInstanceStream;
 
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceImpl;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.Range;
 
 public class RBFFilter extends AbstractStreamFilter {
 
@@ -53,14 +50,12 @@ public class RBFFilter extends AbstractStreamFilter {
 
 		int d = x.numAttributes();
 		int h = numLatentOption.getValue();
-		int j_c = x.classIndex();
 
 		for(int k = 0; k < h; k++) {
 			double sum_k = 0.;
 			for(int j = 0; j < d; j++) {
 				sum_k += (x.value(j) - c[k]);
 			}
-			double v = sum_k / Math.pow(r[k],2);
 			z.setValue(k,Math.exp(-sum_k));
 		}
 		z.setValue(h,x.classValue());
@@ -100,7 +95,7 @@ public class RBFFilter extends AbstractStreamFilter {
 		indexValues.add(h);
 
 
-		ds.setAttributes(v,indexValues);
+		ds.setAttributes(v);
 		dataset=(new InstancesHeader(ds));
 		dataset.setClassIndex(h);
 		System.out.println(""+dataset);

@@ -19,8 +19,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import moa.AbstractMOAObject;
-
 /**
  * The Class InstanceInformation.
  *
@@ -28,7 +26,9 @@ import moa.AbstractMOAObject;
  */
 public class InstanceInformation implements Serializable {
 
-    /**
+	private static final long serialVersionUID = 4240189973932498979L;
+
+	/**
      * The dataset's name.
      */
     protected String relationName;
@@ -39,15 +39,25 @@ public class InstanceInformation implements Serializable {
     protected List<Integer> inputIndexes;
     
     
+    /**
+     * Returns the input attribute.
+     * 
+     * @param w the input attribute index (indexes only input attributes)
+     * @return the input attribute.
+     */
     public Attribute inputAttribute(int w) {
         return this.attributesInformation.attribute(inputAttributeIndex(w));
     }
 
+    /**
+     * Returns the output attribute.
+     * 
+     * @param w the output attribute index (indexes only output attributes)
+     * @return the output attribute.
+     */
     public Attribute outputAttribute(int w) {
         return this.attributesInformation.attribute(outputAttributeIndex(w));
     }
-
-    
     
     /**
      * Instantiates a new instance information.
@@ -71,27 +81,16 @@ public class InstanceInformation implements Serializable {
         this.relationName = st;
         this.outputIndexes = outputIndexes;
         this.inputIndexes = inputIndexes;
-        this.attributesInformation = new AttributesInformation(attributes, attributes.size());
+        this.attributesInformation = new AttributesInformation(attributes);
     }
     
-    public InstanceInformation(String st, List<Attribute> input, List<Integer> indexes) {
-        this.relationName = st;
-        this.outputIndexes = new ArrayList<Integer>();
-        this.inputIndexes = new ArrayList<Integer>();
-        this.attributesInformation = new AttributesInformation(input, indexes, indexes.size());
-    }
-
     public InstanceInformation(String st, List<Attribute> input) {
         this.relationName = st;
         this.outputIndexes = new ArrayList<Integer>();
         this.inputIndexes = new ArrayList<Integer>();
-        List<Integer> indexes = new ArrayList<Integer>();
-        for (int i = 0; i < input.size(); i++) {
-        	indexes.add(i);
-        }
-        this.attributesInformation = new AttributesInformation(input, indexes, indexes.size());
+        this.attributesInformation = new AttributesInformation(input);
     }
-    
+
     /**
      * Instantiates a new instance information.
      */
@@ -143,7 +142,7 @@ public class InstanceInformation implements Serializable {
      * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#numAttributes()
      */
     public int numAttributes() {
-        return this.attributesInformation.numberAttributes;
+        return this.attributesInformation.numAttributes();
     }
 
     /* (non-Javadoc)
@@ -175,7 +174,7 @@ public class InstanceInformation implements Serializable {
     }
 
     public void setAttributes(List<Attribute> v) {
-    	if(this.attributesInformation==null)
+    	if(this.attributesInformation == null)
     		this.attributesInformation= new AttributesInformation();
         this.attributesInformation.setAttributes(v);
     }
@@ -198,17 +197,21 @@ public class InstanceInformation implements Serializable {
 
     	return outputIndexes.size();
     }
-
-	public void setAttributes(List<Attribute> v, List<Integer> indexValues) {
-    	if(this.attributesInformation==null)
-    		this.attributesInformation= new AttributesInformation();
-        this.attributesInformation.setAttributes(v,indexValues);
-	}
-
+    
+    /**
+     * Sets the output attribute indexes, i.e., the targets. 
+     * 
+     * @param outputIndexes
+     */
 	public void setOutputIndexes(List<Integer> outputIndexes) {
 		this.outputIndexes = outputIndexes;
 	}
 	
+	/**
+     * Sets the input attribute indexes. 
+     * 
+     * @param inputIndexes
+     */
 	public void setInputIndexes(List<Integer> inputIndexes) {
 		this.inputIndexes = inputIndexes;
 	}
@@ -218,9 +221,9 @@ public class InstanceInformation implements Serializable {
 	 */
 	public void setInputIndexes() {
 		this.inputIndexes = new ArrayList<Integer>();
-		for (int i = 0; i < attributesInformation.indexValues.size(); i++) {
-			if (!outputIndexes.contains(attributesInformation.indexValues.get(i))) {
-				inputIndexes.add(attributesInformation.indexValues.get(i));
+		for (int i = 0; i < attributesInformation.numAttributes(); i++) {
+			if (!outputIndexes.contains(i)) {
+				inputIndexes.add(i);
 			}
 		}
 	}

@@ -18,6 +18,11 @@ import moa.core.DoubleVector;
 import java.io.Serializable;
 
 public class MultiLabelPrediction implements Prediction, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1413498152667626736L;
+	
 	protected DoubleVector [] prediction;
 
 	public MultiLabelPrediction() {
