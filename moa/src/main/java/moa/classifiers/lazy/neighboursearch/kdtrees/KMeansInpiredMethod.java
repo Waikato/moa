@@ -21,7 +21,7 @@
 package moa.classifiers.lazy.neighboursearch.kdtrees;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  <!-- globalinfo-start -->
@@ -227,7 +227,7 @@ public class KMeansInpiredMethod
    * that should be partitioned.
    * @return the index of the middle element
    */
-  protected static int partition(Instances insts, int[] index, int attidx, int l, int r) {
+  protected static int partition(InstancesHeader insts, int[] index, int attidx, int l, int r) {
     
     double pivot = insts.instance(index[(l + r) / 2]).value(attidx);
     int help;
@@ -270,7 +270,7 @@ public class KMeansInpiredMethod
    * @param right The end index of the portion of the master index 
    * array that needs to be sorted.
    */
-  protected static void quickSort(Instances insts, int[] indices, int attidx, int left, int right) {
+  protected static void quickSort(InstancesHeader insts, int[] indices, int attidx, int left, int right) {
 
     if (left < right) {
       int middle = partition(insts, indices, attidx, left, right);
@@ -295,7 +295,7 @@ public class KMeansInpiredMethod
    * @throws Exception If the indices of the instances 
    * are not in sorted order.
    */
-  private static void checkSort(Instances insts, int[] indices, int attidx, 
+  private static void checkSort(InstancesHeader insts, int[] indices, int attidx, 
                                int start, int end) throws Exception {
     for(int i=start+1; i<=end; i++) {
       if( insts.instance(indices[i-1]).value(attidx) > 

@@ -59,7 +59,7 @@ import moa.streams.clustering.RandomRBFGeneratorEvents;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 public class RunOutlierVisualizer implements Runnable, ActionListener, ClusterEventListener{	
     /** the pause interval, being read from the gui at startup */
@@ -646,7 +646,7 @@ public class RunOutlierVisualizer implements Runnable, ActionListener, ClusterEv
         for(int i = 0; i < dims; i++)
                 attributes.addElement( new Attribute("att" + i) );
 
-        Instances instances = new Instances("trainset",attributes,0);
+        InstancesHeader instances = new InstancesHeader("trainset",attributes,0);
 
         for(int c = 0; c < wekaClustering.size(); c++){
             Cluster cluster = wekaClustering.get(c);

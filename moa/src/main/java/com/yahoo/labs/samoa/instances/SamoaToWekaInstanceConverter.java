@@ -77,7 +77,7 @@ public class SamoaToWekaInstanceConverter implements Serializable {
      * @param instances the instances
      * @return the weka.core. instances
      */
-    public weka.core.Instances wekaInstances(Instances instances) {
+    public weka.core.Instances wekaInstances(InstancesHeader instances) {
         weka.core.Instances wekaInstances = wekaInstancesInformation(instances);
         //We assume that we have only one WekaInstanceInformation for SamoaToWekaInstanceConverter
         this.wekaInstanceInformation = wekaInstances;
@@ -93,7 +93,7 @@ public class SamoaToWekaInstanceConverter implements Serializable {
      * @param instances the instances
      * @return the weka.core. instances
      */
-    public weka.core.Instances wekaInstancesInformation(Instances instances) {
+    public weka.core.Instances wekaInstancesInformation(InstancesHeader instances) {
         weka.core.Instances wekaInstances;
         ArrayList<weka.core.Attribute> attInfo = new ArrayList<weka.core.Attribute>();
         for (int i = 0; i < instances.numAttributes(); i++) {

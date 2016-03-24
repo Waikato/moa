@@ -27,7 +27,7 @@ import moa.classifiers.lazy.neighboursearch.kdtrees.KDTreeNode;
 import moa.classifiers.lazy.neighboursearch.kdtrees.KDTreeNodeSplitter;
 import moa.classifiers.lazy.neighboursearch.kdtrees.SlidingMidPointOfWidestSide;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 
 
@@ -151,7 +151,7 @@ public class KDTree
    * @param insts The instances/points on which the BallTree 
    * should be built on.
    */
-  public KDTree(Instances insts) {
+  public KDTree(InstancesHeader insts) {
     super(insts);
   }
 
@@ -166,7 +166,7 @@ public class KDTree
    * @param instances	The instances to build the tree on
    * @throws Exception	if something goes wrong
    */
-  protected void buildKDTree(Instances instances) throws Exception {
+  protected void buildKDTree(InstancesHeader instances) throws Exception {
 
     checkMissing(instances);
     if (m_EuclideanDistance == null)
@@ -325,13 +325,13 @@ public class KDTree
    * one neighbours at the kth boundary). 
    * @throws Exception 	if the nearest neighbour could not be found.
    */
-  public Instances kNearestNeighbours(Instance target, int k) throws Exception {
+  public InstancesHeader kNearestNeighbours(Instance target, int k) throws Exception {
     checkMissing(target);
     
     MyHeap heap = new MyHeap(k);
     findNearestNeighbours(target, m_Root, k, heap, 0.0);
 
-    Instances neighbours = new Instances(m_Instances, (heap.size() + heap
+    InstancesHeader neighbours = new InstancesHeader(m_Instances, (heap.size() + heap
         .noOfKthNearest()));
     m_DistanceList = new double[heap.size() + heap.noOfKthNearest()];
     int[] indices = new int[heap.size() + heap.noOfKthNearest()];
@@ -399,7 +399,7 @@ public class KDTree
    * @throws Exception If some error occurs while 
    * building the KDTree
    */
-  public void setInstances(Instances instances) throws Exception {
+  public void setInstances(InstancesHeader instances) throws Exception {
     super.setInstances(instances);
     buildKDTree(instances);
   }
@@ -527,7 +527,7 @@ public class KDTree
    * @param instances	the instances to check
    * @throws Exception	if missing values are encountered
    */
-  protected void checkMissing(Instances instances) throws Exception {
+  protected void checkMissing(InstancesHeader instances) throws Exception {
     for (int i = 0; i < instances.numInstances(); i++) {
       Instance ins = instances.instance(i);
       for (int j = 0; j < ins.numValues(); j++) {
@@ -698,7 +698,7 @@ public class KDTree
    * @throws Exception If there is some problem 
    * assigning instances to centers.
    */
-  public void centerInstances(Instances centers, int[] assignments, double pc)
+  public void centerInstances(InstancesHeader centers, int[] assignments, double pc)
       throws Exception {
 
     int[] centList = new int[centers.numInstances()];
@@ -719,7 +719,7 @@ public class KDTree
    * @throws Exception If there is some problem assigning 
    * instances to centers.
    */
-  protected void determineAssignments(KDTreeNode node, Instances centers,
+  protected void determineAssignments(KDTreeNode node, InstancesHeader centers,
       int[] candidates, int[] assignments, double pc) throws Exception {
 
     // reduce number of owners for current hyper rectangle
@@ -752,7 +752,7 @@ public class KDTree
    * @return list of owners
    * @throws Exception If some problem occurs in refining.
    */
-  protected int[] refineOwners(KDTreeNode node, Instances centers,
+  protected int[] refineOwners(KDTreeNode node, InstancesHeader centers,
       int[] candidates) throws Exception {
 
     int[] owners = new int[candidates.length];
@@ -907,7 +907,7 @@ public class KDTree
    * @param assignments	index list of last assignments
    * @throws Exception If there is error assigning the instances.
    */
-  public void assignSubToCenters(KDTreeNode node, Instances centers,
+  public void assignSubToCenters(KDTreeNode node, InstancesHeader centers,
       int[] centList, int[] assignments) throws Exception {
     // todo: undecided situations
     int numCent = centList.length;

@@ -22,7 +22,7 @@ package moa.classifiers.lazy.neighboursearch;
 
 import java.io.Serializable;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Abstract class for nearest neighbour search. All algorithms (classes) that
@@ -482,7 +482,7 @@ public abstract class NearestNeighbourSearch
   }
   
   /** The neighbourhood of instances to find neighbours in. */
-  protected Instances m_Instances;
+  protected InstancesHeader m_Instances;
   
   /** The number of neighbours to find. */
   protected int m_kNN;
@@ -504,7 +504,7 @@ public abstract class NearestNeighbourSearch
    * 
    * @param insts 	The set of instances that constitute the neighbourhood.
    */
-  public NearestNeighbourSearch(Instances insts) {
+  public NearestNeighbourSearch(InstancesHeader insts) {
     this();
     m_Instances = insts;
   }
@@ -592,7 +592,7 @@ public abstract class NearestNeighbourSearch
    * @return		the k nearest neighbors
    * @throws Exception 	if the neighbours could not be found.
    */
-  public abstract Instances kNearestNeighbours(Instance target, int k) throws Exception;
+  public abstract InstancesHeader kNearestNeighbours(Instance target, int k) throws Exception;
  
   /**
    * Returns the distances of the k nearest neighbours. The kNearestNeighbours
@@ -629,7 +629,7 @@ public abstract class NearestNeighbourSearch
    * @param insts	the instances to use
    * @throws Exception	if setting fails
    */
-  public void setInstances(Instances insts) throws Exception {
+  public void setInstances(InstancesHeader insts) throws Exception {
     m_Instances = insts;
   }
   
@@ -638,7 +638,7 @@ public abstract class NearestNeighbourSearch
    * 
    * @return		the current instances
    */
-  public Instances getInstances() {
+  public InstancesHeader getInstances() {
     return m_Instances;
   }
 

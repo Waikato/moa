@@ -23,7 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import moa.AbstractMOAObject;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Converter. This class can be used to convert a multi-label instance into a
@@ -34,7 +34,7 @@ import com.yahoo.labs.samoa.instances.Instances;
  */
 public class Converter extends AbstractMOAObject {
 
-    protected Instances m_InstancesTemplate = null;
+    protected InstancesHeader m_InstancesTemplate = null;
 
     protected int m_L = -1;
 
@@ -49,8 +49,8 @@ public class Converter extends AbstractMOAObject {
         m_L = n;
     }
 
-    public Instances createTemplate(Instances i) {
-        this.m_InstancesTemplate = new Instances(i, 0, 0);
+    public InstancesHeader createTemplate(InstancesHeader i) {
+        this.m_InstancesTemplate = new InstancesHeader(i, 0, 0);
         return this.m_InstancesTemplate;
     }
 

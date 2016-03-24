@@ -34,7 +34,7 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 public abstract class AbstractClusterer extends AbstractOptionHandler
 		implements Clusterer {
@@ -286,7 +286,7 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 	}
 
 	protected static int modelAttIndexToInstanceAttIndex(int index,
-			Instances insts) {
+			InstancesHeader insts) {
 		return insts.classIndex() > index ? index : index + 1;
 	}
 

@@ -47,7 +47,7 @@ import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import moa.core.FastVector;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 
 public class RandomRBFGeneratorEvents extends ClusteringStream {
@@ -510,7 +510,7 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         if (noiseLevelOption.getValue() > 0) classLabels.add("noise");	// The last label = "noise"
         
         attributes.add(new Attribute("class", classLabels));
-        streamHeader = new InstancesHeader(new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
+        streamHeader = new InstancesHeader(new InstancesHeader(getCLICreationString(InstanceStream.class), attributes, 0));
         streamHeader.setClassIndex(streamHeader.numAttributes() - 1);
     }
 

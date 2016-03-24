@@ -30,7 +30,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.Utils;
 
 /**
@@ -119,7 +119,7 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier {
 
     protected Classifier candidateClassifier;
 
-    protected Instances currentChunk;
+    protected InstancesHeader currentChunk;
 
     @Override
     public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
@@ -168,7 +168,7 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier {
      */
     private void initVariables() {
         if (this.currentChunk == null) {
-            this.currentChunk = new Instances(this.getModelContext());
+            this.currentChunk = new InstancesHeader(this.getModelContext());
         }
 
         if (this.classDistributions == null) {
@@ -243,18 +243,18 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier {
      * @param useMseR Determines whether to use the MSEr threshold.
      * @return Candidate classifier weight.
      */
-    protected double computeCandidateWeight(Classifier candidate, Instances chunk, int numFolds) {
+    protected double computeCandidateWeight(Classifier candidate, InstancesHeader chunk, int numFolds) {
         double candidateWeight = 0.0;
         Random random = new Random(1);
-        Instances randData = new Instances(chunk);
+        InstancesHeader randData = new InstancesHeader(chunk);
         randData.randomize(random);
         if (randData.classAttribute().isNominal()) {
             randData.stratify(numFolds);
         }
 
         for (int n = 0; n < numFolds; n++) {
-            Instances train = randData.trainCV(numFolds, n, random);
-            Instances test = randData.testCV(numFolds, n);
+            InstancesHeader train = randData.trainCV(numFolds, n, random);
+            InstancesHeader test = randData.testCV(numFolds, n);
 
             Classifier learner = candidate.copy();
 
@@ -282,7 +282,7 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier {
      * @param useMseR Determines whether to use the MSEr threshold.
      * @return The given classifier's weight.
      */
-    protected double computeWeight(Classifier learner, Instances chunk) {
+    protected double computeWeight(Classifier learner, InstancesHeader chunk) {
         double mse_i = 0;
         double mse_r = 0;
 

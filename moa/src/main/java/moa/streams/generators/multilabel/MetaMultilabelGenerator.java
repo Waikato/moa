@@ -31,7 +31,6 @@ import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.SparseInstance;
 import moa.core.FastVector;
@@ -75,7 +74,7 @@ public class MetaMultilabelGenerator extends AbstractOptionHandler implements In
 
     protected InstanceStream m_BinaryGenerator = null;
 
-    protected Instances multilabelStreamTemplate = null;
+    protected InstancesHeader multilabelStreamTemplate = null;
 
     protected Random m_MetaRandom = new Random();
 
@@ -152,8 +151,8 @@ public class MetaMultilabelGenerator extends AbstractOptionHandler implements In
      *
      * @param	si	single-label Instances
      */
-    protected MultilabelInstancesHeader generateMultilabelHeader(Instances si) {
-        Instances mi = new Instances(si, 0, 0);
+    protected MultilabelInstancesHeader generateMultilabelHeader(InstancesHeader si) {
+        InstancesHeader mi = new InstancesHeader(si, 0, 0);
         mi.setClassIndex(-1);
         mi.deleteAttributeAt(mi.numAttributes() - 1);
         FastVector bfv = new FastVector();

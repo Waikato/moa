@@ -19,6 +19,9 @@ package com.yahoo.labs.samoa.instances;
  * The Interface StructuredInstance.
  *
  * @author abifet
+ * 
+ * A placeholder for structured instances.
+ * 
  */
    
 public interface StructuredInstance extends Instance {

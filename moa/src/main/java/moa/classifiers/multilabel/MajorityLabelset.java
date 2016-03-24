@@ -60,7 +60,7 @@ public class MajorityLabelset extends AbstractMultiLabelLearner implements Multi
     }
 
     @Override
-    public void trainOnInstanceImpl(MultiLabelInstance x) {
+    public void trainOnInstanceImpl(StructuredInstance x) {
 		int L = x.numberOutputTargets();
 
         MultiLabelPrediction y = new MultiLabelPrediction(L);
@@ -80,7 +80,7 @@ public class MajorityLabelset extends AbstractMultiLabelLearner implements Multi
     }
 
     @Override
-    public Prediction getPredictionForInstance(MultiLabelInstance x){
+    public Prediction getPredictionForInstance(StructuredInstance x){
 
 		if (this.majorityLabelset == null)  {
 			int L = x.numberOutputTargets();

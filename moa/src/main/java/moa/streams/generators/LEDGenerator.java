@@ -23,7 +23,7 @@ import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import moa.core.FastVector;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import java.util.Random;
 import moa.core.InstanceExample;
@@ -96,7 +96,7 @@ public class LEDGenerator extends AbstractOptionHandler implements
             classLabels.addElement(Integer.toString(i));
         }
         attributes.addElement(new Attribute("class", classLabels));
-        this.streamHeader = new InstancesHeader(new Instances(
+        this.streamHeader = new InstancesHeader(new InstancesHeader(
                 getCLICreationString(InstanceStream.class), attributes, 0));
         this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
         restart();

@@ -11,7 +11,7 @@ import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceImpl;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Range;
 
@@ -99,7 +99,7 @@ public class ReLUFilter extends AbstractStreamFilter {
 		}
 
 		// initialize instance space
-		Instances ds = new Instances();
+		InstancesHeader ds = new InstancesHeader();
 		List<Attribute> v = new ArrayList<Attribute>(H);
 		List<Integer> indexValues = new ArrayList<Integer>(H);
 
@@ -112,8 +112,6 @@ public class ReLUFilter extends AbstractStreamFilter {
 
 
 		ds.setAttributes(v,indexValues);
-		Range r= new Range("start-end");
-		ds.setRangeOutputIndices(r);
 		dataset=(new InstancesHeader(ds));
 		dataset.setClassIndex(H);
 

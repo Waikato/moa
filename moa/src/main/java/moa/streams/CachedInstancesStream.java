@@ -23,7 +23,7 @@ import moa.AbstractMOAObject;
 import moa.core.InstanceExample;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Stream generator for representing a stream that is cached in memory.
@@ -38,11 +38,11 @@ public class CachedInstancesStream extends AbstractMOAObject implements
 
 	private static final long serialVersionUID = 1L;
 
-	protected Instances toStream;
+	protected InstancesHeader toStream;
 
 	protected int streamPos;
 
-	public CachedInstancesStream(Instances toStream) {
+	public CachedInstancesStream(InstancesHeader toStream) {
 		this.toStream = toStream;
 	}
 

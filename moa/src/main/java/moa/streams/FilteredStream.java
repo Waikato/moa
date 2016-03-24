@@ -19,8 +19,9 @@
  */
 package moa.streams;
 
-import moa.core.Example;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
+import moa.core.Example;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;

@@ -33,7 +33,7 @@ import moa.options.ClassOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Include labels of previous instances into the training data
@@ -65,7 +65,7 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier {
     
     protected double[] oldLabels;
     
-    protected Instances header;
+    protected InstancesHeader header;
 
     public FlagOption labelDelayOption = new FlagOption("labelDelay", 'd',
         "Labels arrive with Delay. Use predictions instead of true Labels.");
@@ -97,7 +97,7 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier {
         }
     }
 
-    public void initHeader(Instances dataset) {
+    public void initHeader(InstancesHeader dataset) {
         int numLabels = this.numOldLabelsOption.getValue();
         Attribute target = dataset.classAttribute();
 
@@ -124,7 +124,7 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier {
                 attrs.add(newAttribute);
             }
         }
-        this.header = new Instances("extended_" + dataset.getRelationName(), attrs, 0);
+        this.header = new InstancesHeader("extended_" + dataset.getRelationName(), attrs, 0);
         this.header.setClassIndex(numLabels + dataset.classIndex());
     }
 

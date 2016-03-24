@@ -21,7 +21,8 @@ package moa.streams;
 
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.github.javacliparser.StringOption;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -41,7 +42,7 @@ import moa.tasks.TaskMonitor;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class ArffFileStream extends AbstractOptionHandler implements InstanceStream {
+public class ArffFileStream extends AbstractOptionHandler implements InstanceStream, MultiTargetInstanceStream {
 
     @Override
     public String getPurposeString() {
@@ -53,13 +54,26 @@ public class ArffFileStream extends AbstractOptionHandler implements InstanceStr
     public FileOption arffFileOption = new FileOption("arffFile", 'f',
             "ARFF file to load.", null, "arff", false);
 
-    public IntOption classIndexOption = new IntOption(
-            "classIndex",
-            'c',
-            "Class index of data. 0 for none or -1 for last attribute in file.",
-            -1, -1, Integer.MAX_VALUE);
+//    public IntOption classIndexOption = new IntOption(
+//            "classIndex",
+//            'c',
+//            "Class index of data. 0 for none or -1 for last attribute in file.",
+//            -1, -1, Integer.MAX_VALUE);
 
-    protected Instances instances;
+    public StringOption outputIndexesOption = new StringOption(
+    		"outputIndexes",
+    		'c',
+    		"Indices of output (class) attributes. Can be provided in a comma or semicolon separated list of single values or ranges.",
+    		"-1");
+
+    public StringOption inputIndexesOption = new StringOption(
+    		"inputIndexes",
+    		'i',
+    		"Indices of input (class) attributes. Can be provided in a comma or semicolon separated list of single values or ranges. Leave blank for all non-output attributes.",
+    		"");
+
+    
+    protected InstancesHeader instances;
 
     protected Reader fileReader;
 
@@ -76,7 +90,22 @@ public class ArffFileStream extends AbstractOptionHandler implements InstanceStr
 
     public ArffFileStream(String arffFileName, int classIndex) {
         this.arffFileOption.setValue(arffFileName);
-        this.classIndexOption.setValue(classIndex);
+        this.outputIndexesOption.setValue(Integer.toString(classIndex));
+        this.inputIndexesOption.setValue("");
+        restart();
+    }
+
+    
+    public ArffFileStream(String arffFileName, String outputIndexes) {
+        this.arffFileOption.setValue(arffFileName);
+        this.outputIndexesOption.setValue(outputIndexes);
+        restart();
+    }
+    
+    public ArffFileStream(String arffFileName, String outputIndexes, String inputIndexes) {
+        this.arffFileOption.setValue(arffFileName);
+        this.outputIndexesOption.setValue(outputIndexes);
+        this.inputIndexesOption.setValue(inputIndexes);
         restart();
     }
 
@@ -126,13 +155,7 @@ public class ArffFileStream extends AbstractOptionHandler implements InstanceStr
             this.fileProgressMonitor = new InputStreamProgressMonitor(
                     fileStream);
             this.fileReader = new BufferedReader(new InputStreamReader(this.fileProgressMonitor));
-            int classIndex = this.classIndexOption.getValue();
-            this.instances = new Instances(this.fileReader, 1, classIndex);
-            if (classIndex < 0) {
-		this.instances.setClassIndex(this.instances.numAttributes() - 1);
-            } else if (this.classIndexOption.getValue() > 0) {
-                this.instances.setClassIndex(this.classIndexOption.getValue() - 1);
-				}
+            this.instances = new InstancesHeader(this.fileReader, 1, this.outputIndexesOption.getValue(), this.inputIndexesOption.getValue());
             this.numInstancesRead = 0;
             this.lastInstanceRead = null;
             this.hitEndOfFile = !readNextInstanceFromFile();

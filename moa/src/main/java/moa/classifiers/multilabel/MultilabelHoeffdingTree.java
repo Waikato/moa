@@ -27,7 +27,6 @@ import moa.classifiers.trees.HoeffdingTree;
 import moa.core.StringUtils;
 import moa.core.utils.Converter;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
@@ -181,11 +180,11 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 
 	@Override
 	public Prediction getPredictionForInstance(Example<Instance> example) {
-		return getPredictionForInstance((MultiLabelInstance)example.getData());
+		return getPredictionForInstance((StructuredInstance)example.getData());
 	}
 
 	@Override
-	public Prediction getPredictionForInstance(MultiLabelInstance inst){
+	public Prediction getPredictionForInstance(StructuredInstance inst){
 
 		if (this.treeRoot != null) {
 			FoundNode foundNode = this.treeRoot.filterInstanceToLeaf(inst, null, -1);
@@ -209,12 +208,12 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		boolean isTraining = (inst.weight() > 0.0);
 		if (isTraining) {
 			this.trainingWeightSeenByModel += inst.weight();
-			trainOnInstanceImpl((MultiLabelInstance) inst);
+			trainOnInstanceImpl((StructuredInstance) inst);
 		}
 	}
 
 	@Override
-	public void trainOnInstanceImpl(MultiLabelInstance instance) {
+	public void trainOnInstanceImpl(StructuredInstance instance) {
 		trainOnInstanceImpl((Instance) instance);
 	}
         

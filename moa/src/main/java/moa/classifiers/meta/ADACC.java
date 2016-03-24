@@ -23,7 +23,7 @@ package moa.classifiers.meta;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.classifiers.Classifier;
 import moa.core.Measurement;
 
@@ -74,7 +74,7 @@ public class ADACC extends DACC {
     /**
      * Last chunk of data of size (tau_size) to compute the stability index   
      */
-    protected Instances recentChunk;
+    protected InstancesHeader recentChunk;
     /**
      * Threshold values for the stability index and concept equivalence
      */
@@ -112,7 +112,7 @@ public class ADACC extends DACC {
     public void trainOnInstanceImpl(Instance inst) {
 	
     	if (recentChunk == null)
-            recentChunk = new Instances(this.getModelContext());
+            recentChunk = new InstancesHeader(this.getModelContext());
     	
     	if (recentChunk.size() < this.tau_size)
     		recentChunk.add(inst);

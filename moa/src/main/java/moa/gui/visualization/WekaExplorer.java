@@ -36,7 +36,7 @@ import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 
 
@@ -46,7 +46,7 @@ public class WekaExplorer {
     /** for monitoring the Memory consumption */
     private static Memory m_Memory = new Memory(true);
 
-    public WekaExplorer(Instances instances) {
+    public WekaExplorer(InstancesHeader instances) {
         //weka.core.logging.Logger.log(weka.core.logging.Logger.Level.INFO, "Logging started");
         try {
             javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");

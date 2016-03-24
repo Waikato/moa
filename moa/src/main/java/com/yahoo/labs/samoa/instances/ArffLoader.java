@@ -20,9 +20,12 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import moa.core.utils.AttributeDefinitionUtil;
 
 /**
  * The Class ArffLoader. Loads an Arff file with sparse or dense format.
@@ -41,8 +44,9 @@ public class ArffLoader {
      */
     protected StreamTokenizer streamTokenizer;
 
+   
     /**
-     * Instantiates a new arff loader.
+     * Instantiates a new arff loader. Constructor for backwards compatibility.
      *
      * @param reader the reader
      * @param size the size
@@ -50,39 +54,18 @@ public class ArffLoader {
      */
     public ArffLoader(Reader reader, int size, int classAttribute) {
         // size is not used
-        this(reader);
-        if (classAttribute < 0) {
-            this.instanceInformation.setClassIndex(this.instanceInformation.numAttributes() - 1);
-            //System.out.print(this.instanceInformation.classIndex());
-        } else if (classAttribute > 0) {
-            this.instanceInformation.setClassIndex(classAttribute - 1);
-        }
+    	this(reader,String.valueOf(classAttribute));
     }
 
-    protected Range range;
 
     /**
      * Instantiates a new arff loader.
      *
      * @param reader the reader
-     * @param range
-     * @param size the size
-     * @param classAttribute the class attribute
+     * @param outputDefinition the string definition of output attributes
+     * @param inputDefinition the string definition of input attributes
      */
-    public ArffLoader(Reader reader) {
-        this(reader, null);
-    }
-
-    /**
-     * Instantiates a new arff loader.
-     *
-     * @param reader the reader
-     * @param range
-     * @param size the size
-     * @param classAttribute the class attribute
-     */
-    public ArffLoader(Reader reader, Range range) {
-        this.range = range;
+    public ArffLoader(Reader reader, String outputDefinition, String inputDefinition) {
         BufferedReader br = new BufferedReader(reader);
 
         //Init streamTokenizer
@@ -98,23 +81,34 @@ public class ArffLoader {
         streamTokenizer.ordinaryChar('}');
         streamTokenizer.eolIsSignificant(true);
 
-        this.instanceInformation = this.getHeader();
-
-        if (range != null) { //is MultiLabel
-            this.instanceInformation.setRangeOutputIndices(range);
-        }
-
+        this.instanceInformation = this.getHeader(outputDefinition, inputDefinition);
     }
 
     /**
-     * Gets the structure.
+     * Instantiates a new arff loader.
      *
-     * @return the structure
+     * @param reader the reader
+     * @param outputDefinition the string definition of output attributes (others are taken as inputs)
      */
-    public InstanceInformation getStructure() {
-        return this.instanceInformation;
-    }
+    public ArffLoader(Reader reader, String outputDefinition) {
+        BufferedReader br = new BufferedReader(reader);
 
+        //Init streamTokenizer
+        streamTokenizer = new StreamTokenizer(br);
+        streamTokenizer.resetSyntax();
+        streamTokenizer.whitespaceChars(0, ' ');
+        streamTokenizer.wordChars(' ' + 1, '\u00FF');
+        streamTokenizer.whitespaceChars(',', ',');
+        streamTokenizer.commentChar('%');
+        streamTokenizer.quoteChar('"');
+        streamTokenizer.quoteChar('\'');
+        streamTokenizer.ordinaryChar('{');
+        streamTokenizer.ordinaryChar('}');
+        streamTokenizer.eolIsSignificant(true);
+
+        this.instanceInformation = this.getHeader(outputDefinition, AttributeDefinitionUtil.nonIgnoredDefinition);
+    }
+    
     /**
      * Reads instance. It detects if it is dense or sparse.
      *
@@ -144,7 +138,6 @@ public class ArffLoader {
      */
     public Instance readInstanceDense() {
         Instance instance = newDenseInstance(this.instanceInformation.numAttributes());
-        //System.out.println(this.instanceInformation.numAttributes());
         int numAttribute = 0;
         try {
             while (numAttribute == 0 && streamTokenizer.ttype != StreamTokenizer.TT_EOF) {
@@ -196,7 +189,7 @@ public class ArffLoader {
             valueAttribute = value;
             //System.out.println(value +"/"+valueAttribute+" ");
         }
-        if (this.instanceInformation.classIndex() == numAttribute) {
+        if (this.instanceInformation.numOutputAttributes() == 1 && this.instanceInformation.classIndex() == numAttribute) {
             setClassValue(instance, valueAttribute);
             //System.out.println(value +"<"+this.instanceInformation.classIndex()+">");
         } else {
@@ -219,17 +212,11 @@ public class ArffLoader {
         ArrayList<Double> attributeValues = new ArrayList<Double>();
         List<Integer> indexValues = new ArrayList<Integer>();
         try {
-            //while (streamTokenizer.ttype != StreamTokenizer.TT_EOF) {
-            streamTokenizer.nextToken(); // Remove the '{' char
             //For each line
             while (streamTokenizer.ttype != StreamTokenizer.TT_EOL
                     && streamTokenizer.ttype != StreamTokenizer.TT_EOF) {
                 while (streamTokenizer.ttype != '}') {
                     //For each item
-                    //streamTokenizer.nextToken();
-                    //while (streamTokenizer.ttype != '}'){
-                    //System.out.println(streamTokenizer.nval +"-"+ streamTokenizer.sval);
-                    //numAttribute = (int) streamTokenizer.nval;
                     if (streamTokenizer.ttype == StreamTokenizer.TT_NUMBER) {
                         numAttribute = (int) streamTokenizer.nval;
                     } else {
@@ -342,25 +329,20 @@ public class ArffLoader {
         }
         return instance;
     }
-
-    //protected List<Attribute> inputAttributes;
-   // protected List<Attribute> outputAttributes;
     
     protected List<Attribute> auxAttributes;
 
-    private InstanceInformation getHeader() {
-    	//commented JD
-        //this.range.setUpper(10000); //TO DO: Create a new range object with isInRange that does not need the upper limit
+    private InstanceInformation getHeader(String outputDefinition, String inputDefinition) {
         String relation = "file stream";
         auxAttributes = new ArrayList<Attribute>();//JD
         int numAttributes = 0;
+        List<Integer> inputIndexes = new ArrayList<Integer>();
+        List<Integer> outputIndexes = new ArrayList<Integer>();
         try {
             streamTokenizer.nextToken();
             while (streamTokenizer.ttype != StreamTokenizer.TT_EOF) {
                 //For each line
-                //if (streamTokenizer.ttype == '@') {
                 if (streamTokenizer.ttype == StreamTokenizer.TT_WORD && streamTokenizer.sval.startsWith("@") == true) {
-                    //streamTokenizer.nextToken();
                     String token = streamTokenizer.sval.toUpperCase();
                     if (token.startsWith("@RELATION")) {
                         streamTokenizer.nextToken();
@@ -369,13 +351,11 @@ public class ArffLoader {
                     } else if (token.startsWith("@ATTRIBUTE")) {
                         streamTokenizer.nextToken();
                         String name = streamTokenizer.sval;
-                        //System.out.println("* " + name);
                         if (name == null) {
                             name = Double.toString(streamTokenizer.nval);
                         }
                         streamTokenizer.nextToken();
                         String type = streamTokenizer.sval;
-                       // System.out.println("* " + name + ":" + type + " ");
                         if (streamTokenizer.ttype == '{') {
                             streamTokenizer.nextToken();
                             List<String> attributeLabels = new ArrayList<String>();
@@ -391,35 +371,21 @@ public class ArffLoader {
 
                                 streamTokenizer.nextToken();
                             }
-                           // System.out.println();
-                            //attributes.add(new Attribute(name, attributeLabels));
-                            //commented JD
-                           /* if (this.range.isInRange(numAttribute)) {
-                             outputAttributes.add(new Attribute(name, attributeLabels));
-                             } else {
-                             inputAttributes.add(new Attribute(name, attributeLabels));
-                             }*/
                             auxAttributes.add(new Attribute(name, attributeLabels));
                             numAttributes++;
-                        } else if (streamTokenizer.sval != null && streamTokenizer.sval.toUpperCase() == "HIERARCHICAL") {
-                        	streamTokenizer.nextToken();
-                        	DAGStructure attributeStructure = new DAGStructure();
-                        	if (streamTokenizer.ttype == '{') {
-                        		while(streamTokenizer.ttype == '}') {
-                        			streamTokenizer.nextToken();
-                        			System.out.println(streamTokenizer.sval);
-                        		}
-                        		
-                        	}
-                        	
+//                        } else if (streamTokenizer.sval != null && streamTokenizer.sval.toUpperCase() == "HIERARCHICAL") {
+//                        	streamTokenizer.nextToken();
+//                        	DAGStructure attributeStructure = new DAGStructure();
+//                        	if (streamTokenizer.ttype == '{') {
+//                        		while(streamTokenizer.ttype != '}') {
+//                        			streamTokenizer.nextToken();
+//                        			System.out.println(streamTokenizer.sval);
+//                        		}
+//                        		
+//                        	}
+//                        	
                         } else {
-                            // Add attribute
-                            //commented JD
-                        	/*if (this.range.isInRange(numAttribute)) {
-                             outputAttributes.add(new Attribute(name));
-                             } else {
-                             inputAttributes.add(new Attribute(name));
-                             }*/
+
                             auxAttributes.add(new Attribute(name));
                             numAttributes++;
                         }
@@ -432,29 +398,16 @@ public class ArffLoader {
                 }
                 streamTokenizer.nextToken();
             }
-            if (range != null) {
-                this.range.setUpper(numAttributes);
-            }
-            /*if (range==null) //is single-target. All instances should go to inputAtrributes (see setClassIndex(int) from InstanceInformation )
-             inputAttributes=auxAttributes;
-             else//is multi-target
-             {
-             this.range.setUpper(numAttribute);
-             for (int i=0; i<auxAttributes.size();i++)
-             {
-             //if (this.range.isInRange(i))
-             //	outputAttributes.add(auxAttributes.get(i));
-             //else
-             inputAttributes.add(auxAttributes.get(i));
-	            	
-             }
-             }*/
+            
+            outputIndexes = AttributeDefinitionUtil.parseAttributeDefinition(outputDefinition, numAttributes, null);
+            // TODO don't remove output attributes for online PCTs 
+            inputIndexes = AttributeDefinitionUtil.parseAttributeDefinition(inputDefinition, numAttributes, outputIndexes);
 
         } catch (IOException ex) {
             Logger.getLogger(ArffLoader.class.getName()).log(Level.SEVERE, null, ex);
         }
         // this.range.setUpper(inputAttributes.size()+outputAttributes.size());
-        return new InstanceInformation(relation, auxAttributes);
+        return new InstanceInformation(relation, auxAttributes, outputIndexes, inputIndexes);
     }
 
     protected Instance newSparseInstance(double d, double[] res) {

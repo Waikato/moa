@@ -25,7 +25,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 import moa.classifiers.lazy.neighboursearch.EuclideanDistance;
 
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Class that splits up a KDTreeNode.
@@ -37,7 +37,7 @@ public abstract class KDTreeNodeSplitter
   implements Serializable {
   
   /** The instances that'll be used for tree construction. */
-  protected Instances m_Instances;
+  protected InstancesHeader m_Instances;
   
   /** The distance function used for building the tree. */
   protected EuclideanDistance m_EuclideanDistance;
@@ -78,7 +78,7 @@ public abstract class KDTreeNodeSplitter
    * @param e The EuclideanDistance object that is used
    * in tree contruction.
    */
-  public KDTreeNodeSplitter(int[] instList, Instances insts, EuclideanDistance e) { 
+  public KDTreeNodeSplitter(int[] instList, InstancesHeader insts, EuclideanDistance e) { 
     m_InstList = instList;
     m_Instances = insts;
     m_EuclideanDistance = e;
@@ -155,7 +155,7 @@ public abstract class KDTreeNodeSplitter
    * to be) built. 
    * @param inst The training instances.
    */
-  public void setInstances(Instances inst) {
+  public void setInstances(InstancesHeader inst) {
     m_Instances = inst;
   }
   

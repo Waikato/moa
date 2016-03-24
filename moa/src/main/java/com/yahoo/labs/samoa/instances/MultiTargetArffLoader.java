@@ -19,24 +19,31 @@ import java.io.Reader;
 
 public class MultiTargetArffLoader extends ArffLoader {
 
-    public MultiTargetArffLoader(Reader reader) {
-        super(reader);
-    }
+	public MultiTargetArffLoader(Reader reader, String outputDefinition, String inputDefinition) {
+		super(reader, outputDefinition, inputDefinition);
+		// TODO Auto-generated constructor stub
+	}
 
-    public MultiTargetArffLoader(Reader reader, Range range) {
-        super(reader, range);
-    }
-
-    @Override
-    protected Instance newSparseInstance(double d, double[] res) {
-        return new SparseInstance(d, res); // TODO
-    }
-
-    @Override
-    protected Instance newDenseInstance(int numAttributes) {
-        // numAttributes is this.instanceInformation.numAttributes()
-        this.range.setUpper(numAttributes);
-        return new DenseInstance(numAttributes);
-    }
+// DEPRECATED
+	
+//    public MultiTargetArffLoader(Reader reader) {
+//        super(reader);
+//    }
+//
+//    public MultiTargetArffLoader(Reader reader, Range range) {
+//        super(reader, range);
+//    }
+//
+//    @Override
+//    protected Instance newSparseInstance(double d, double[] res) {
+//        return new SparseInstance(d, res); // TODO
+//    }
+//
+//    @Override
+//    protected Instance newDenseInstance(int numAttributes) {
+//        // numAttributes is this.instanceInformation.numAttributes()
+//        this.range.setUpper(numAttributes);
+//        return new DenseInstance(numAttributes);
+//    }
 
 }

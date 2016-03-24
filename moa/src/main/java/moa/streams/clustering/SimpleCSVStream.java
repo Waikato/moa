@@ -33,7 +33,7 @@ import com.github.javacliparser.IntOption;
 import com.github.javacliparser.StringOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.core.InputStreamProgressMonitor;
@@ -61,7 +61,7 @@ public class SimpleCSVStream extends ClusteringStream {
 	public FlagOption classIndexOption = new FlagOption("classIndex", 'c',
 			"Last attribute is class index.");
 
-	protected Instances dataset;
+	protected InstancesHeader dataset;
 
 	protected BufferedReader fileReader;
 
@@ -252,7 +252,7 @@ public class SimpleCSVStream extends ClusteringStream {
 				ArrayList<String> classLabels = new ArrayList<String>();
 				classLabels.add("0");
 		        attributes.add(new Attribute("class", classLabels));
-				this.dataset = new Instances(csvFileOption.getFile().getName(),
+				this.dataset = new InstancesHeader(csvFileOption.getFile().getName(),
 						attributes, 0);
 				this.dataset.setClassIndex(this.numAttributes - 1);
 				numAttsOption = new IntOption("numAtts", 'a', "",

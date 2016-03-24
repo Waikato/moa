@@ -25,7 +25,7 @@ import moa.core.InstanceExample;
 import moa.streams.InstanceStream;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.SparseInstance;
 import moa.core.FastVector;
@@ -74,7 +74,7 @@ public class RemoveDiscreteAttributeFilter extends AbstractStreamFilter {
             }
             attributes.addElement(inst.classAttribute());
             numericAttributes.add(inst.classIndex());
-            this.streamHeader = new InstancesHeader(new Instances(
+            this.streamHeader = new InstancesHeader(new InstancesHeader(
                     getCLICreationString(InstanceStream.class), attributes, 0));
             this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
 

@@ -41,7 +41,7 @@ import moa.options.ClassOption;
 import moa.streams.CachedInstancesStream;
 import moa.streams.ExampleStream;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Task for evaluating a classifier on a stream by periodically testing on a heldout set.
@@ -121,7 +121,7 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
         int testSize = this.testSizeOption.getValue();
         if (this.cacheTestOption.isSet()) {
             monitor.setCurrentActivity("Caching test examples...", -1.0);
-            Instances testInstances = new Instances(stream.getHeader(),
+            InstancesHeader testInstances = new InstancesHeader(stream.getHeader(),
                     this.testSizeOption.getValue());
             while (testInstances.numInstances() < testSize) {
                 testInstances.add((Instance) stream.nextInstance().getData());

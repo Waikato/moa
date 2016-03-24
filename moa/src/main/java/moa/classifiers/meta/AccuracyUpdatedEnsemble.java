@@ -29,7 +29,7 @@ import moa.options.ClassOption;
 import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * The revised version of the Accuracy Updated Ensemble as proposed by
@@ -94,7 +94,7 @@ public class AccuracyUpdatedEnsemble extends AbstractClassifier {
 	/**
 	 * Current chunk of instances.
 	 */
-	protected Instances currentChunk;
+	protected InstancesHeader currentChunk;
 
 	@Override
 	public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
@@ -247,7 +247,7 @@ public class AccuracyUpdatedEnsemble extends AbstractClassifier {
 	 * @param chunk chunk of examples
 	 * @return the computed error.
 	 */
-	protected double computeMse(Classifier learner, Instances chunk) {
+	protected double computeMse(Classifier learner, InstancesHeader chunk) {
 		double mse_i = 0;
 
 		double f_ci;
@@ -348,7 +348,7 @@ public class AccuracyUpdatedEnsemble extends AbstractClassifier {
 	 */
 	private void initVariables() {
 		if (this.currentChunk == null) {
-			this.currentChunk = new Instances(this.getModelContext());
+			this.currentChunk = new InstancesHeader(this.getModelContext());
 		}
 
 		if (this.classDistributions == null) {

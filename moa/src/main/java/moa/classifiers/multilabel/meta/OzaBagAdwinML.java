@@ -25,7 +25,7 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.InstanceExample;
 import moa.core.MiscUtils;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import moa.classifiers.MultiLabelLearner;
@@ -84,7 +84,7 @@ public class OzaBagAdwinML extends OzaBagAdwin implements MultiLabelLearner, Mul
 	}
 
 	@Override
-	public void trainOnInstanceImpl(MultiLabelInstance instance) {
+	public void trainOnInstanceImpl(StructuredInstance instance) {
 		trainOnInstanceImpl((Instance) instance);
 	}
 
@@ -101,7 +101,7 @@ public class OzaBagAdwinML extends OzaBagAdwin implements MultiLabelLearner, Mul
 	}
 
 	@Override
-	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
+	public Prediction getPredictionForInstance(StructuredInstance instance) {
 		return getPredictionForInstance((new InstanceExample(instance)));
 	}
 

@@ -22,7 +22,7 @@ import moa.classifiers.Classifier;
 import moa.classifiers.meta.OzaBag;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import moa.classifiers.MultiLabelLearner;
@@ -43,7 +43,7 @@ public class OzaBagML extends OzaBag implements MultiLabelLearner, MultiTargetRe
 
 	//Training
 	@Override
-	public void trainOnInstanceImpl(MultiLabelInstance inst) {
+	public void trainOnInstanceImpl(StructuredInstance inst) {
 		trainOnInstanceImpl((Instance) inst);
 	}
 
@@ -119,7 +119,7 @@ public class OzaBagML extends OzaBag implements MultiLabelLearner, MultiTargetRe
 	}
 
 	 @Override
-    public Prediction getPredictionForInstance(MultiLabelInstance instance) {
+    public Prediction getPredictionForInstance(StructuredInstance instance) {
         return getPredictionForInstance((new InstanceExample(instance)));
     }
 

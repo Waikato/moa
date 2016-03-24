@@ -23,7 +23,7 @@ package moa.classifiers.lazy.neighboursearch;
 
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Represents the abstract ancestor for normalizable distance functions, like
@@ -48,7 +48,7 @@ public abstract class NormalizableDistance
   public static final int R_WIDTH = 2;
 
   /** the instances used internally. */
-  protected Instances m_Data = null;
+  protected InstancesHeader m_Data = null;
 
   /** True if normalization is turned off (default false).*/
   protected boolean m_DontNormalize = false;
@@ -78,7 +78,7 @@ public abstract class NormalizableDistance
    * 
    * @param data 	the instances the distance function should work on
    */
-  public NormalizableDistance(Instances data) {
+  public NormalizableDistance(InstancesHeader data) {
     setInstances(data);
   }
   
@@ -230,7 +230,7 @@ public abstract class NormalizableDistance
    * 
    * @param insts 	the instances to use
    */
-  public void setInstances(Instances insts) {
+  public void setInstances(InstancesHeader insts) {
     m_Data = insts;
     invalidate();
   }
@@ -240,7 +240,7 @@ public abstract class NormalizableDistance
    * 
    * @return 		the current instances
    */
-  public Instances getInstances() {
+  public InstancesHeader getInstances() {
     return m_Data;
   }
 

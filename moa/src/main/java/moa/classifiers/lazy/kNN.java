@@ -24,7 +24,6 @@ import moa.classifiers.lazy.neighboursearch.LinearNNSearch;
 import moa.classifiers.lazy.neighboursearch.NearestNeighbourSearch;
 import moa.core.Measurement;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
@@ -62,12 +61,12 @@ public class kNN extends AbstractClassifier {
         return "kNN: special.";
     }
 
-    protected Instances window; 
+    protected InstancesHeader window; 
 
 	@Override
 	public void setModelContext(InstancesHeader context) {
 		try {
-			this.window = new Instances(context,0); //new StringReader(context.toString())
+			this.window = new InstancesHeader(context,0); //new StringReader(context.toString())
 			this.window.setClassIndex(context.classIndex());
 		} catch(Exception e) {
 			System.err.println("Error: no Model Context available.");
@@ -86,7 +85,7 @@ public class kNN extends AbstractClassifier {
 		if (inst.classValue() > C)
 			C = (int)inst.classValue();
 		if (this.window == null) {
-			this.window = new Instances(inst.dataset());
+			this.window = new InstancesHeader(inst.dataset());
 		}
 		if (this.limitOption.getValue() <= this.window.numInstances()) {
 			this.window.delete(0);
@@ -106,7 +105,7 @@ public class kNN extends AbstractClassifier {
 				search.setInstances(this.window);
 			}	
 			if (this.window.numInstances()>0) {	
-				Instances neighbours = search.kNearestNeighbours(inst,Math.min(kOption.getValue(),this.window.numInstances()));
+				InstancesHeader neighbours = search.kNearestNeighbours(inst,Math.min(kOption.getValue(),this.window.numInstances()));
 				for(int i = 0; i < neighbours.numInstances(); i++) {
 					v[(int)neighbours.instance(i).classValue()]++;
 				}

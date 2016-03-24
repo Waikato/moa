@@ -43,10 +43,12 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.ListOption;
 import com.github.javacliparser.Option;
+import com.github.javacliparser.StringOption;
+
 import moa.tasks.TaskMonitor;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 public class FileStream extends ClusteringStream{
 
@@ -63,12 +65,24 @@ public class FileStream extends ClusteringStream{
 	public FileOption arffFileOption = new FileOption("arffFile", 'f',
 			"ARFF file to load.", defaultfile, "arff", false);
 
-	public IntOption classIndexOption = new IntOption(
-			"classIndex",
-			'c',
-			"Class index of data. 0 for none or -1 for last attribute in file.",
-			-1, -1, Integer.MAX_VALUE);
+//	public IntOption classIndexOption = new IntOption(
+//			"classIndex",
+//			'c',
+//			"Class index of data. 0 for none or -1 for last attribute in file.",
+//			-1, -1, Integer.MAX_VALUE);
 
+    public StringOption outputIndicesOption = new StringOption(
+    		"outputIndices",
+    		'c',
+    		"Indices of output (class) attributes. Can be provided in a comma or semicolon separated list of single values or ranges.",
+    		"-1");
+
+    public StringOption inputIndicesOption = new StringOption(
+    		"outputIndices",
+    		'i',
+    		"Indices of input (class) attributes. Can be provided in a comma or semicolon separated list of single values or ranges. Leave blank for all non-output attributes.",
+    		"");
+	
     public FlagOption normalizeOption = 
     		new FlagOption("normalize", 'n', 
     				"Numerical data will be normalized to 0-1 " +
@@ -90,7 +104,7 @@ public class FileStream extends ClusteringStream{
 
     
   
-	protected Instances instances;
+	protected InstancesHeader instances;
 
 	protected Reader fileReader;
 
@@ -104,7 +118,7 @@ public class FileStream extends ClusteringStream{
 	
 	private Integer[] removeAttributes = null;
     
-	private Instances filteredDataset = null;
+	private InstancesHeader filteredDataset = null;
     
 	private ArrayList<Double[]> valuesMinMaxDiff = null;
 
@@ -155,12 +169,7 @@ public class FileStream extends ClusteringStream{
 			InputStream fileStream = new FileInputStream(arffFileOption.getFile());
 			fileProgressMonitor = new InputStreamProgressMonitor(fileStream);
 			fileReader = new BufferedReader(new InputStreamReader(fileProgressMonitor));
-            instances = new Instances(fileReader, 1, this.classIndexOption.getValue());
-			if (classIndexOption.getValue() < 0) {
-				instances.setClassIndex(instances.numAttributes() - 1);
-			} else if (classIndexOption.getValue() > 0) {
-				instances.setClassIndex(classIndexOption.getValue() - 1);
-			}
+            instances = new InstancesHeader(fileReader, 1, this.outputIndicesOption.getValue(), this.inputIndicesOption.getValue());
 
 
 			//use hashset to delete duplicates and attributes numbers that aren't valid
@@ -206,7 +215,7 @@ public class FileStream extends ClusteringStream{
 			}
             
 			//create filtered dataset
-			filteredDataset = new Instances(instances);
+			filteredDataset = new InstancesHeader(instances);
 			for (int i = removeAttributes.length-1; i >= 0 ; i--) {
 				filteredDataset.deleteAttributeAt(removeAttributes[i]);
 				if(true){
@@ -278,7 +287,7 @@ public class FileStream extends ClusteringStream{
 			InputStream fileStream = new FileInputStream(arffFileOption.getFile());
 			InputStreamProgressMonitor fileProgressMonitor = new InputStreamProgressMonitor(fileStream);
 			Reader fileReader = new BufferedReader(new InputStreamReader(fileProgressMonitor));
-            Instances instances = new Instances(fileReader, 1, this.classIndexOption.getValue());
+            InstancesHeader instances = new InstancesHeader(fileReader, 1, this.outputIndicesOption.getValue(), this.inputIndicesOption.getValue());
 
 			valuesMinMaxDiff = new ArrayList<Double[]>();
 			for (int i = 0; i < instances.numAttributes()-ignoredAttributes.size(); i++) {

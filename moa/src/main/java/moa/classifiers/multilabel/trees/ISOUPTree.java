@@ -801,6 +801,11 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 		sumOfAttrValues = new DoubleVector();
 		sumOfAttrSquares = new DoubleVector();
+		
+	}
+	
+	@Override
+	public void modelContextSet() {
 		loadWeights();
 	}
 
