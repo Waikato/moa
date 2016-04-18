@@ -52,7 +52,7 @@ public class EvaluateModel extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption modelOption = new ClassOption("model", 'm',
-            "Learner to evaluate.", Learner.class, "LearnModel");
+            "Learner to evaluate.", Classifier.class, "LearnModel");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to evaluate on.", ExampleStream.class,

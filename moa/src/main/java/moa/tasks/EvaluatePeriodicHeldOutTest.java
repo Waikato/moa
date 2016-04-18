@@ -28,6 +28,7 @@ import java.util.List;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
+import moa.classifiers.Classifier;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
@@ -59,7 +60,7 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Classifier to train.", Learner.class, "moa.classifiers.trees.HoeffdingTree");
+            "Classifier to train.", Classifier.class, "moa.classifiers.trees.HoeffdingTree");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,
