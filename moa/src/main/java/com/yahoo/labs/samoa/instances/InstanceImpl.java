@@ -15,6 +15,8 @@
  */
 package com.yahoo.labs.samoa.instances;
 
+import java.text.SimpleDateFormat;
+
 /**
  * The Class InstanceImpl.
  *
@@ -375,12 +377,19 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public String toString() {
-        double[] aux = this.instanceData.toDoubleArray();
-        StringBuilder str = new StringBuilder();
-        for (int i = 0; i < aux.length; i++) {
-            str.append(aux[i]).append(" ");
-        }
-
+        StringBuilder str = new StringBuilder();        
+        for(int attIndex = 0; attIndex < this.numAttributes(); attIndex++){
+            if(this.attribute(attIndex).isNominal()){
+                int valueIndex = (int) this.value(attIndex);
+                String stringValue = this.attribute(attIndex).value(valueIndex);
+                str.append(stringValue).append(",");
+            }else if(this.attribute(attIndex).isNumeric()){
+                str.append(this.value(attIndex)).append(",");
+            }else if(this.attribute(attIndex).isDate()){
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");               
+                str.append(dateFormatter.format(this.value(attIndex))).append(",");
+            }
+        }       
         return str.toString();
     }
 
