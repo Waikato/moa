@@ -108,6 +108,21 @@ public interface Instance extends Serializable {
     public double value(Attribute attribute);
 
     /**
+     * Sets an attribute as missing
+     *
+     * @param instAttIndex, the attribute's index     
+     */
+    public void setMissing(int instAttIndex);        
+    
+    
+    /**
+     * Sets an attribute as missing
+     *
+     * @param attribute, the Attribute
+     */
+    public void setMissing(Attribute attribute);
+    
+    /**
      * Sets the value of an attribute.
      *
      * @param instAttIndex the index
@@ -115,6 +130,15 @@ public interface Instance extends Serializable {
      */
     public void setValue(int instAttIndex, double value);
 
+    
+    /**
+     * Sets the value of an attribute.
+     *
+     * @param attribute, the Attribute
+     * @param value the value
+     */
+    public void setValue(Attribute attribute, double value);
+    
     /**
      * Checks if an attribute is missing.
      *
@@ -123,6 +147,14 @@ public interface Instance extends Serializable {
      */
     public boolean isMissing(int instAttIndex);
 
+    /**
+     * Checks if an attribute is missing.
+     *
+     * @param attribute, the Attribute
+     * @return true, if is missing
+     */
+    public boolean isMissing(Attribute attribute);
+    
     /**
      * Gets the index of the attribute given the index of the array in a sparse
      * representation.
