@@ -570,7 +570,7 @@ public class Instances implements Serializable {
      * Completes the hashset with attributes indices.
      */
     private void computeAttributesIndices() {
-        this.hsAttributesIndices = new HashMap<>();
+        this.hsAttributesIndices = new HashMap<Attribute, Integer>();
         // iterates through all existing attributes 
         // and sets an unique identifier for each one of them
         for (int i = 0; i < this.numAttributes(); i++) {
