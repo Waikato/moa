@@ -53,17 +53,10 @@
       <artifactId>sizeofag</artifactId>
     </dependency>
 
-	<dependency>
-		<groupId>net.sf.meka</groupId>
-		<artifactId>meka</artifactId>
-		<version>1.9.0</version>
-        <exclusions>
-            <exclusion>
-                <groupId>nz.ac.waikato.cms.moa</groupId>
-                <artifactId>moa</artifactId>
-            </exclusion>
-        </exclusions>
-	</dependency> 
+      <dependency>
+          <groupId>net.sf.meka</groupId>
+          <artifactId>meka</artifactId>
+      </dependency>
 
     <dependency>
       <groupId>junit</groupId>
