@@ -562,7 +562,7 @@ public class Instances implements Serializable {
      *
      * @param att, the attribute.
      */
-    protected int indexOf(Attribute att) {
+    public int indexOf(Attribute att) {
         return this.hsAttributesIndices.get(att);
     }
 
