@@ -128,6 +128,10 @@ public class InstanceImpl implements MultiLabelInstance {
         return this.instanceHeader.attribute(instAttIndex);
     }
 
+    public int indexOfAttribute(Attribute attribute){
+        return this.instanceHeader.indexOf(attribute);
+    }
+    
     /**
      * Delete attribute at.
      *
