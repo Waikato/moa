@@ -151,7 +151,6 @@ public class OzaBagASHT extends AbstractClassifier {
         }
     }
 
-    @Override
     public double[] getVotesForInstance(Instance inst) {
         DoubleVector combinedVote = new DoubleVector();
         for (int i = 0; i < this.ensemble.length; i++) {
@@ -180,6 +179,12 @@ public class OzaBagASHT extends AbstractClassifier {
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        return null;
+        return new Measurement[]{new Measurement("ensemble size",
+                    this.ensemble != null ? this.ensemble.length : 0)};
+    }
+    
+    @Override
+    public Classifier[] getSubClassifiers() {
+        return this.ensemble.clone();
     }
 }
