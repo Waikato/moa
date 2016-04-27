@@ -47,6 +47,14 @@ public interface Instance extends Serializable {
     public Attribute attribute(int instAttIndex);
 
     /**
+     * Index of an Attribute.
+     *
+     * @param Attribute, the attribute to be found.
+     * @return the index of an attribute
+     */
+    public int indexOfAttribute(Attribute attribute);
+    
+    /**
      * Delete attribute at.
      *
      * @param i the index

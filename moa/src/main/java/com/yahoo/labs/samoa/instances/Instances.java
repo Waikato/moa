@@ -129,6 +129,7 @@ public class Instances implements Serializable {
      */
     public Instances(String st, List<Attribute> v, int capacity) {
         this.instanceInformation = new InstanceInformation(st, v);
+        this.instances = new ArrayList<Instance>(capacity);
         this.computeAttributesIndices();
     }
 
