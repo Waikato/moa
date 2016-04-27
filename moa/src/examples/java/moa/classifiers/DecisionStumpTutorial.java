@@ -1,11 +1,17 @@
 package moa.classifiers;
 
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
+import moa.classifiers.core.AttributeSplitSuggestion;
+import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
+import moa.classifiers.core.attributeclassobservers.GaussianNumericAttributeClassObserver;
+import moa.classifiers.core.attributeclassobservers.NominalAttributeClassObserver;
+import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
+import moa.core.Measurement;
 import moa.options.ClassOption;
-import moa.options.FlagOption;
-import moa.options.IntOption;
-import weka.core.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 public class DecisionStumpTutorial extends AbstractClassifier {
 
