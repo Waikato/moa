@@ -131,6 +131,7 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier {
     public Instance extendWithOldLabels(Instance instance) {
         if (this.header == null) {
             initHeader(instance.dataset());
+            this.baseLearner.setModelContext(this.getModelContext());
         }
         int numLabels = this.oldLabels.length;
         if (numLabels == 0) {
