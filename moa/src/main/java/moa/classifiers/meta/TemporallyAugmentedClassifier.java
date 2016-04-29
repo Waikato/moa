@@ -124,13 +124,12 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier {
         }
         this.header = new Instances("extended_" + dataset.getRelationName(), attrs, 0);
         this.header.setClassIndex(numLabels + dataset.classIndex());
-        this.setModelContext(new InstancesHeader(this.header));
     }
 
     public Instance extendWithOldLabels(Instance instance) {
         if (this.header == null) {
             initHeader(instance.dataset());
-            this.baseLearner.setModelContext(this.getModelContext());
+            this.baseLearner.setModelContext(new InstancesHeader(this.header));
         }
         int numLabels = this.oldLabels.length;
         if (numLabels == 0) {
