@@ -5,7 +5,7 @@
     <groupId>nz.ac.waikato.cms.moa</groupId>
     <artifactId>moa-pom</artifactId>
     <packaging>pom</packaging>
-    <version>2016.03-SNAPSHOT</version>
+    <version>2016.04</version>
 
     <name>MOA: meta-package</name>
     <description>
@@ -70,7 +70,7 @@
             <dependency>
                 <groupId>nz.ac.waikato.cms.weka</groupId>
                 <artifactId>weka-dev</artifactId>
-                <version>3.7.13</version>
+                <version>3.7.12</version>
             </dependency>
 
             <dependency>
