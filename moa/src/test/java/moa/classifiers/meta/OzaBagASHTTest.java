@@ -55,7 +55,6 @@ public class OzaBagASHTTest
     OzaBagASHT[]	result;
     result    = new OzaBagASHT[1];
     result[0] = new OzaBagASHT();
-    result[0].baseLearnerOption.setValueViaCLIString("trees.ASHoeffdingTree");
     return result;
     
   }
