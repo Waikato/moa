@@ -4,7 +4,7 @@
   <parent>
     <groupId>nz.ac.waikato.cms.moa</groupId>
     <artifactId>moa-pom</artifactId>
-    <version>2015.11</version>  <!-- adjust -->
+    <version>2016.04</version>  <!-- adjust -->
   </parent>
 
   <artifactId>moa-release</artifactId>

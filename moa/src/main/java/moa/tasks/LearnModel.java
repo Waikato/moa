@@ -43,7 +43,7 @@ public class LearnModel extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Classifier to train.", Learner.class, "moa.classifiers.bayes.NaiveBayes");
+            "Classifier to train.", Classifier.class, "moa.classifiers.bayes.NaiveBayes");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,
