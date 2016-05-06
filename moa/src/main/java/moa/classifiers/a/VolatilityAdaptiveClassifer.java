@@ -1,4 +1,4 @@
-package moa.classifiers.lin;
+package moa.classifiers.a;
 
 import java.security.AlgorithmConstraints;
 
@@ -8,25 +8,39 @@ import com.yahoo.labs.samoa.instances.Prediction;
 import classifiers.selectors.ClassifierSelector;
 import classifiers.selectors.NaiveClassifierSelector;
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
+import moa.classifiers.core.attributeclassobservers.NumericAttributeClassObserver;
 import moa.classifiers.trees.HoeffdingAdaptiveTree;
 import moa.classifiers.trees.HoeffdingTree;
 import cutpointdetection.ADWIN;
 import moa.core.Measurement;
+import moa.options.ClassOption;
+import moa.streams.ExampleStream;
 import volatilityevaluation.RelativeVolatilityDetector;
 
 public class VolatilityAdaptiveClassifer extends AbstractClassifier
 {
-	/**
-	 * 
-	 */
+
+	
+	
 	private static final long serialVersionUID = -220640148754624744L;
+	
+	
+	public ClassOption classifier1Option = new ClassOption("classifier1", 'a', "The classifier used in low volatility mode",
+			Classifier.class, "moa.classifiers.trees.HoeffdingTree");
+	public ClassOption classifier2Option = new ClassOption("classifier2", 'b', "The classifier used in high volatility mode",
+			Classifier.class, "moa.classifiers.trees.HoeffdingAdaptiveTree");
+
 	
 	private AbstractClassifier classifier1;
 	private AbstractClassifier classifier2;
-	
 	private AbstractClassifier activeClassifier;
+	private int activeClassifierIndex; 
+	
 	private RelativeVolatilityDetector volatilityDetector;
 	private ClassifierSelector classiferSelector;
+	
+	
 	
 	
 	@Override
@@ -77,18 +91,18 @@ public class VolatilityAdaptiveClassifer extends AbstractClassifier
 		classiferSelector = new NaiveClassifierSelector(100);
 		volatilityDetector = new RelativeVolatilityDetector(new ADWIN(), 32);
 		
+		activeClassifierIndex = 1;
 		activeClassifier = classifier1;
+		
 	}
 	
 	private void initClassifiers()
 	{
 		// classifier 1
-		HoeffdingTree ht = new HoeffdingTree();
-		classifier1 = ht;
+		this.classifier1 = (AbstractClassifier) getPreparedClassOption(this.classifier1Option);
 		
 		//classifier 2 
-		HoeffdingAdaptiveTree hat = new HoeffdingAdaptiveTree();
-		classifier2 = hat;
+		this.classifier2 = (AbstractClassifier) getPreparedClassOption(this.classifier2Option);
 	}
 
 	@Override
@@ -102,10 +116,16 @@ public class VolatilityAdaptiveClassifer extends AbstractClassifier
 			double avgInterval = volatilityDetector.getBufferMean();
 			int decision = classiferSelector.makeDecision(avgInterval);
 			
-			activeClassifier = (decision==1)?classifier1:classifier2;
+			if(activeClassifierIndex!=decision)
+			{
+				activeClassifier = (decision==1)?classifier1:classifier2;
+				System.out.println(decision);
+			}
+
 		}
 		
 		activeClassifier.trainOnInstance(inst);
+		
 	}
 	
 }

@@ -1,7 +1,5 @@
 package volatilityevaluation;
 
-import java.io.IOException;
-
 import cutpointdetection.CutPointDetector;
 
 public class RelativeVolatilityDetector
