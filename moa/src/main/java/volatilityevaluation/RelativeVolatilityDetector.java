@@ -28,7 +28,7 @@ public class RelativeVolatilityDetector
 		this.confidence = confidence;
 	}
 	
-	public double getBufferIntervalsMean()
+	public double getBufferMean()
 	{
 		return buffer.getIntervalsMean();
 	}

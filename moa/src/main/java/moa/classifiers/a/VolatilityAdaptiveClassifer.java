@@ -1,22 +1,15 @@
 package moa.classifiers.a;
 
-import java.security.AlgorithmConstraints;
-
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Prediction;
 
+import classifiers.selectors.AlwaysFirstClassifierSelector;
 import classifiers.selectors.ClassifierSelector;
 import classifiers.selectors.NaiveClassifierSelector;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
-import moa.classifiers.core.attributeclassobservers.NumericAttributeClassObserver;
-import moa.classifiers.trees.HoeffdingAdaptiveTree;
-import moa.classifiers.trees.HoeffdingTree;
 import cutpointdetection.ADWIN;
 import moa.core.Measurement;
 import moa.options.ClassOption;
-import moa.streams.ExampleStream;
-import volatilityevaluation.Buffer;
 import volatilityevaluation.RelativeVolatilityDetector;
 
 public class VolatilityAdaptiveClassifer extends AbstractClassifier
@@ -31,7 +24,6 @@ public class VolatilityAdaptiveClassifer extends AbstractClassifier
 			Classifier.class, "moa.classifiers.trees.HoeffdingTree");
 	public ClassOption classifier2Option = new ClassOption("classifier2", 'b', "The classifier used in high volatility mode",
 			Classifier.class, "moa.classifiers.trees.HoeffdingAdaptiveTree");
-
 	
 	private AbstractClassifier classifier1;
 	private AbstractClassifier classifier2;
@@ -40,6 +32,8 @@ public class VolatilityAdaptiveClassifer extends AbstractClassifier
 	
 	private RelativeVolatilityDetector volatilityDetector;
 	private ClassifierSelector classiferSelector;
+	
+	private int instanceCount;
 	
 	
 	
@@ -88,8 +82,14 @@ public class VolatilityAdaptiveClassifer extends AbstractClassifier
 	public void resetLearningImpl()
 	{
 		initClassifiers();
-		classiferSelector = new NaiveClassifierSelector(100);
+		
+		//selector option
+		classiferSelector = new AlwaysFirstClassifierSelector();
+		
+		
+		
 		volatilityDetector = new RelativeVolatilityDetector(new ADWIN(), 32);
+		instanceCount = 0;
 		
 		activeClassifierIndex = 1;
 		activeClassifier = classifier1;
@@ -109,21 +109,24 @@ public class VolatilityAdaptiveClassifer extends AbstractClassifier
 	public void trainOnInstanceImpl(Instance inst)
 	{
 		// if there is a volatility shift.
-		if(volatilityDetector.setInputVar(
-				correctlyClassifies(inst) ? 0.0 : 1.0))
+		if(volatilityDetector.setInputVar(correctlyClassifies(inst) ? 0.0 : 1.0))
 		{
 			
-			double avgInterval = volatilityDetector.getBufferIntervalsMean();
+			double avgInterval = volatilityDetector.getBufferMean();
 			int decision = classiferSelector.makeDecision(avgInterval);
+			
+			//test
+			System.out.printf("%d, %f \n", instanceCount, avgInterval);
 			
 			if(activeClassifierIndex!=decision)
 			{
 				activeClassifier = (decision==1)?classifier1:classifier2;
+				//test
 				System.out.println(decision);
 			}
 
 		}
-		
+		instanceCount++;
 		activeClassifier.trainOnInstance(inst);
 		
 	}
