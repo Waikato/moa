@@ -18,6 +18,38 @@ public class Buffer
 
 		this.total = 0;
 	}
+	
+	/**
+	 * Calculate intervals between elements in the buffer. And returns the mean of all intervals.
+	 * @return mean of all intervals
+	 */
+	public double getIntervalsMean()
+	{
+		
+		if (isFull)
+		{
+			double sum = 0;
+			int intervalsNum = size - 1;
+			
+			for(int i=0;i<intervalsNum;i++)
+			{
+				sum += buffer[i+1] - buffer[i];
+			}
+			return sum / intervalsNum;
+			
+		} else
+		{
+			double sum = 0;
+			int intervalsNum = slidingIndex-1;
+			
+			for(int i=0;i<intervalsNum;i++)
+			{
+				sum += buffer[i+1] - buffer[i];
+			}
+			return sum / intervalsNum;
+		}
+		
+	}
 
 	public double add(double value)
 	{

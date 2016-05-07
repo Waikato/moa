@@ -16,6 +16,7 @@ import cutpointdetection.ADWIN;
 import moa.core.Measurement;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
+import volatilityevaluation.Buffer;
 import volatilityevaluation.RelativeVolatilityDetector;
 
 public class VolatilityAdaptiveClassifer extends AbstractClassifier
@@ -39,7 +40,6 @@ public class VolatilityAdaptiveClassifer extends AbstractClassifier
 	
 	private RelativeVolatilityDetector volatilityDetector;
 	private ClassifierSelector classiferSelector;
-	
 	
 	
 	
@@ -98,7 +98,7 @@ public class VolatilityAdaptiveClassifer extends AbstractClassifier
 	
 	private void initClassifiers()
 	{
-		// classifier 1
+		//classifier 1
 		this.classifier1 = (AbstractClassifier) getPreparedClassOption(this.classifier1Option);
 		
 		//classifier 2 
@@ -113,7 +113,7 @@ public class VolatilityAdaptiveClassifer extends AbstractClassifier
 				correctlyClassifies(inst) ? 0.0 : 1.0))
 		{
 			
-			double avgInterval = volatilityDetector.getBufferMean();
+			double avgInterval = volatilityDetector.getBufferIntervalsMean();
 			int decision = classiferSelector.makeDecision(avgInterval);
 			
 			if(activeClassifierIndex!=decision)
