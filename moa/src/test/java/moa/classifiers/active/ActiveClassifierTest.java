@@ -52,7 +52,7 @@ public class ActiveClassifierTest
   @Override
   protected Classifier[] getRegressionClassifierSetups() {
     return new Classifier[]{
-	new ActiveClassifier(),
+	new ALZliobaite2011(),
     };
   }
   

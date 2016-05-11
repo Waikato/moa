@@ -66,11 +66,15 @@ import com.github.javacliparser.MultiChoiceOption;
  * threshold</li> <li>-s : Floating budget step</li> <li>-n : Number of
  * instances at beginning without active learning</li>
  *
+ * <p>Structural changes to match active learning framework by Daniel Kottke.
+ * </p>
+ *
  * @author Indre Zliobaite (zliobaite at gmail dot com)
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
+ * @author Daniel Kottke (daniel.kottke@ovgu.de)
  * @version $Revision: 7 $
  */
-public class ActiveClassifier extends AbstractClassifier {
+public class ALZliobaite2011 extends AbstractClassifier implements ALClassifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -109,6 +113,8 @@ public class ActiveClassifier extends AbstractClassifier {
 
     public Classifier classifier;
 
+    public int lastLabelAcq = 0;
+    
     public int costLabeling;
 
     public int costLabelingRandom;
@@ -142,6 +148,7 @@ public class ActiveClassifier extends AbstractClassifier {
             this.classifier.trainOnInstance(inst);
             this.costLabeling++;
             this.costLabelingRandom++;
+            this.lastLabelAcq += 1;
         }
 
     }
@@ -150,6 +157,7 @@ public class ActiveClassifier extends AbstractClassifier {
         if (incomingPosterior < this.fixedThresholdOption.getValue()) {
             this.classifier.trainOnInstance(inst);
             this.costLabeling++;
+            this.lastLabelAcq += 1;
         }
     }
 
@@ -157,6 +165,7 @@ public class ActiveClassifier extends AbstractClassifier {
         if (incomingPosterior < this.newThreshold) {
             this.classifier.trainOnInstance(inst);
             this.costLabeling++;
+            this.lastLabelAcq += 1;
             this.newThreshold *= (1 - this.stepOption.getValue());
         } else {
             this.newThreshold *= (1 + this.stepOption.getValue());
@@ -169,6 +178,7 @@ public class ActiveClassifier extends AbstractClassifier {
         if (this.classifierRandom.nextDouble() < budget) {
             this.classifier.trainOnInstance(inst);
             this.costLabeling++;
+            this.lastLabelAcq += 1;
         }
     }
 
@@ -199,7 +209,6 @@ public class ActiveClassifier extends AbstractClassifier {
         } else {
             costNow = (this.costLabeling - this.numInstancesInitOption.getValue()) / ((double) this.iterationControl - this.numInstancesInitOption.getValue());
         }
-
 
         if (costNow < this.budgetOption.getValue()) { //allow to label
             switch (this.activeLearningStrategyOption.getChosenIndex()) {
@@ -257,4 +266,12 @@ public class ActiveClassifier extends AbstractClassifier {
         }
         return measurementList.toArray(new Measurement[measurementList.size()]);
     }
+
+	@Override
+	public int getLastLabelAcqReport() {
+		// TODO Auto-generated method stub
+		int help = this.lastLabelAcq;
+		this.lastLabelAcq = 0;
+		return help; 
+	}
 }
