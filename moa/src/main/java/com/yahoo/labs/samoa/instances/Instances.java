@@ -59,7 +59,7 @@ public class Instances implements Serializable {
     /**
      * A Hash that stores the indices of features.
      */
-    protected HashMap<Attribute, Integer> hsAttributesIndices;
+    protected HashMap<String, Integer> hsAttributesIndices;
 
     /**
      * Instantiates a new instances.
@@ -564,18 +564,18 @@ public class Instances implements Serializable {
      * @param att, the attribute.
      */
     protected int indexOf(Attribute att) {
-        return this.hsAttributesIndices.get(att);
+        return this.hsAttributesIndices.get(att.name());
     }
 
     /**
      * Completes the hashset with attributes indices.
      */
     private void computeAttributesIndices() {
-        this.hsAttributesIndices = new HashMap<Attribute, Integer>();
+        this.hsAttributesIndices = new HashMap<String, Integer>();
         // iterates through all existing attributes 
         // and sets an unique identifier for each one of them
         for (int i = 0; i < this.numAttributes(); i++) {
-            hsAttributesIndices.put(this.attribute(i), i);
+            hsAttributesIndices.put(this.attribute(i).name(), i);
         }
     }
 
