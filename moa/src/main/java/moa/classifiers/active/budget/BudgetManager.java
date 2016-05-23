@@ -1,5 +1,5 @@
 /*
- *    ALClassifier.java
+ *    BudgetManager.java
  *    Copyright (C) 2016 Otto von Guericke University, Magdeburg, Germany
  *    @author Daniel Kottke (daniel dot kottke at ovgu dot de)
  *
@@ -17,22 +17,37 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.classifiers.active;
 
-import moa.classifiers.Classifier;
+package moa.classifiers.active.budget;
 
 /**
- * Active Learning Classifier Interface to make AL Classifiers selectable in AL tasks.
+ * Budget Manager Interface to make AL Classifiers select the most beneficial
+ * instances. A Budget Manager is defined in that way that it defines a
+ * threshold internally and tests if the internal value is above or equal that
+ * threshold.
+ * 
+ * This Budget Manager assumes that a new instance is processed each time the
+ * method 'isAbove' is called and that the number of acquired instances equals
+ * the number of returned 'true's.
  *
  * @author Daniel Kottke (daniel dot kottke at ovgu dot de)
  * @version $Revision: 1 $
  */
-public interface ALClassifier{
+public interface BudgetManager {
 
-   /**
-     * Returns true if the previously chosen instance was added to the training set 
-     * of the active learner.
-     *
-     */
+	/**
+	 * Returns true if the previously value is above an internal threshold.
+	 */
+	public boolean isAbove(double value);
+
+	/**
+	 * Returns the number of labels that have been chosen for acquisition since
+	 * the last report.
+	 */
 	public int getLastLabelAcqReport();
+
+	/**
+	 * Resets the budget manager.
+	 */
+	public void resetLearning();
 }

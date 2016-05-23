@@ -1,7 +1,7 @@
 /*
  *    ALBasicClassificationPerformanceEvaluator.java
  *    Copyright (C) 2016 Otto von Guericke University, Magdeburg, Germany
- *    @author Daniel Kottke (daniel.kottke@ovgu.de)
+ *    @author Daniel Kottke (daniel dot kottke at ovgu dot de)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by

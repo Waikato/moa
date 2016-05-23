@@ -71,7 +71,7 @@ import com.github.javacliparser.MultiChoiceOption;
  *
  * @author Indre Zliobaite (zliobaite at gmail dot com)
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
- * @author Daniel Kottke (daniel.kottke@ovgu.de)
+ * @author Daniel Kottke (daniel dot kottke at ovgu dot de) - adapted to AL framework
  * @version $Revision: 7 $
  */
 public class ALZliobaite2011 extends AbstractClassifier implements ALClassifier {
@@ -191,6 +191,7 @@ public class ALZliobaite2011 extends AbstractClassifier implements ALClassifier 
         this.iterationControl = 0;
         this.newThreshold = 1.0;
         this.accuracyBaseLearner = 0;
+        this.lastLabelAcq = 0;
     }
 
     @Override
@@ -269,7 +270,6 @@ public class ALZliobaite2011 extends AbstractClassifier implements ALClassifier 
 
 	@Override
 	public int getLastLabelAcqReport() {
-		// TODO Auto-generated method stub
 		int help = this.lastLabelAcq;
 		this.lastLabelAcq = 0;
 		return help; 
