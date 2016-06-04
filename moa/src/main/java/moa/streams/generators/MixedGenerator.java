@@ -37,22 +37,13 @@ import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
 /**
- * 1.SINE1. Abrupt concept drift, noise-free examples. It has two relevant 
- * attributes. Each attributes has values uniformly distributed in [0; 1]. In 
- * the first context all points below the curve y = sin(x) are classified as 
- * positive. After the context change the classification is reversed.
- * 2.SINE2. The same two relevant attributes. The classification function is 
- * y &lt; 0.5 + 0.3 sin(3 * PI * x). After the context change the classification 
- * is reversed.
- * 3.SINIRREL1. Presence of irrelevant attributes. The same classification
- * function of SINE1 but the examples have two more random attributes
- * with no influence on the classification function.
- * 4.SINIRREL2. The same classification function of SINE2 but the examples
- * have two more random attributes with no influence on the classification
- * function.
- * Based on proposal by "Gama, Joao, et al. "Learning with drift 
- * detection." Advances in artificial intelligence–SBIA 2004. Springer Berlin 
- * Heidelberg, 2004. 286-295."
+ * Abrupt concept drift, boolean noise-free examples. Four relevant attributes, 
+ * two boolean attributes v,w and two numeric attributes from [0; 1]. The 
+ * examples are classified positive if two of three conditions are satisfied: 
+ * v,w, y &lt; 0,5 + 0,3 sin(3 * PI * x). After each context change the 
+ * classification is reversed. Proposed by "Gama, Joao, et al. "Learning with 
+ * drift detection." Advances in artificial intelligence–SBIA 2004. Springer 
+ * Berlin Heidelberg, 2004. 286-295."
  *
  * @author Paulo Gonçalves (paulogoncalves@recife.ifpe.edu.br)
  * @version $Revision: 1 $
