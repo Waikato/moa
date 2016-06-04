@@ -37,10 +37,13 @@ import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
 /**
- * Stream generator for the problem of identifying a Sine curve. Based on
- * Sine1, Sine2, Sinirrel1, and Sinirrel2 as proposed by
- * "Gama, Joao, et al. "Learning with drift detection." Advances in artificial 
- * intelligence–SBIA 2004. Springer Berlin Heidelberg, 2004. 286-295."
+ * Abrupt concept drift, boolean noise-free examples. Four relevant attributes, 
+ * two boolean attributes v,w and two numeric attributes from [0; 1]. The 
+ * examples are classified positive if two of three conditions are satisfied: 
+ * v,w, y &lt; 0,5 + 0,3 sin(3 * PI * x). After each context change the 
+ * classification is reversed. Proposed by "Gama, Joao, et al. "Learning with 
+ * drift detection." Advances in artificial intelligence–SBIA 2004. Springer 
+ * Berlin Heidelberg, 2004. 286-295."
  *
  * @author Paulo Gonçalves (paulogoncalves@recife.ifpe.edu.br)
  * @version $Revision: 1 $
