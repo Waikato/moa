@@ -267,6 +267,14 @@ public class LearnNSE extends AbstractClassifier {
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        return null;
+        Measurement[] measurements = null;
+        if (this.ensembleWeights != null) {
+            measurements = new Measurement[this.ensembleWeights.size()];
+            for (int i = 0; i < this.ensembleWeights.size(); i++) {
+                measurements[i] = new Measurement("member weight " + (i + 1),
+                        this.ensembleWeights.get(i));
+            }
+        }
+        return measurements;
     }
 }
