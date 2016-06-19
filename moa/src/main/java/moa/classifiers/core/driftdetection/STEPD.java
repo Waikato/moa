@@ -64,7 +64,6 @@ public class STEPD extends AbstractChangeDetector {
     	alphaWarning = this.alphaWarningOption.getValue();
         storedPredictions = new byte[windowSize];
         resetLearning();
-        System.out.println("STEPD - Parameters: Window Size = " + windowSize + ", Alpha Drift = " + alphaDrift + ", Alpha Warning = " + alphaWarning);
     }
 
     @Override
