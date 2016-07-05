@@ -36,9 +36,9 @@ public class AssetNegotiationGenerator
 	extends AbstractOptionHandler
 	implements InstanceStream {
 
-    /////////////
-    // OPTIONS //
-    /////////////
+    /*
+     * OPTIONS
+     */        
     public IntOption functionOption = new IntOption("function", 'f',
 	    "Classification function used, as defined in the original paper.",
 	    1, 1, 5);
@@ -49,19 +49,21 @@ public class AssetNegotiationGenerator
 	    "instanceRandomSeed", 'i',
 	    "Seed for random generation of instances.", 1);
 
-    ///////////////
-    // INTERNALS //
-    ///////////////
+    /*
+     * INTERNALS
+     */
     protected InstancesHeader streamHeader;
 
     protected Random instanceRandom;
 
     protected boolean nextClassShouldBeZero;
     
+    protected ClassFunction classFunction;
+    
 
-    /////////////////////////
-    // FEATURES DEFINITION //
-    /////////////////////////
+    /*
+     * FEATURE DEFINITIONS
+     */
     protected static String colorValues[] = {"black",
 	"blue",
 	"cyan",
@@ -107,9 +109,9 @@ public class AssetNegotiationGenerator
 
     protected static String classValues[] = {"interested", "notInterested"};
 
-    ///////////////////////////////////
-    // Class Function Implementation //
-    ///////////////////////////////////
+    /*
+     * Labeling functions
+     */
     protected interface ClassFunction {
 
 	public int determineClass(String color,
@@ -290,11 +292,10 @@ public class AssetNegotiationGenerator
 	    }	    
 	}
     };
-
-    //////////////////////////////
-    // INTERFACE IMPLEMENTATION //
-    //////////////////////////////
-    protected ClassFunction classFunction;
+    
+    /*
+     * Generator core
+     */
 
     @Override
     public void getDescription(StringBuilder sb, int indent) {
@@ -412,9 +413,6 @@ public class AssetNegotiationGenerator
 	this.nextClassShouldBeZero = false;
     }
 
-    //////////////////////
-    // AUXILIAR METHODS //
-    //////////////////////
     int addNoise(int classObtained) {
 	if (this.instanceRandom.nextFloat() <= this.noisePercentage.getValue()) {
 	    classObtained = classObtained == 0 ? 1 : 0;
