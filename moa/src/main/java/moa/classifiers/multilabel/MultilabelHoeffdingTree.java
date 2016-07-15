@@ -19,6 +19,7 @@
  */
 package moa.classifiers.multilabel;
 
+import moa.classifiers.trees.HoeffdingTreeClassifLeaves;
 import java.io.StringReader;
 import java.util.List;
 import moa.classifiers.Classifier;
