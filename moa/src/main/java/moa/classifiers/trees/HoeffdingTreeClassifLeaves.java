@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.classifiers.multilabel;
+package moa.classifiers.trees;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -65,7 +65,7 @@ public class HoeffdingTreeClassifLeaves extends HoeffdingTree {
                 this.classifier = cl.copy();
             }
         }
-
+	
         @Override
         public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
             if (getWeightSeen() >= ((HoeffdingTreeClassifLeaves) ht).nbThresholdOption.getValue()) {
