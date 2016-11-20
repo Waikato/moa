@@ -43,30 +43,16 @@ import moa.core.Utils;
 <!-- globalinfo-end -->
  *
  */
-public class AdaGrad extends AbstractClassifier implements Regressor{
+public class AdaGrad extends SGD{
 
     /** For serialization */
     private static final long serialVersionUID = -3732968666673530291L;
 
-      @Override
+    @Override
     public String getPurposeString() {
         return "An online optimiser for learning various linear models (binary class SVM, binary class logistic regression and linear regression).";
     }
-
-    /** The regularization parameter */
-    protected double m_lambda = 0.0001;
-
-    public FloatOption lambdaRegularizationOption = new FloatOption("lambdaRegularization",
-            'l', "Lambda regularization parameter .",
-            0.0001, 0.00, Integer.MAX_VALUE);
-
-    /** The learning rate */
-    protected double m_learningRate = 0.01;
-
-    public FloatOption learningRateOption = new FloatOption("learningRate",
-            'r', "Learning rate parameter.",
-            0.01, 0.00, Integer.MAX_VALUE);
-
+ 
     /** The epsilon value */
     protected double m_epsilon = 1e-8;
 
@@ -75,85 +61,9 @@ public class AdaGrad extends AbstractClassifier implements Regressor{
             1e-8, 0.00, 1);
 
     /** Stores the weights (+ bias in the last element) */
-    protected DoubleVector m_weights;
     protected DoubleVector m_gradients;
     protected DoubleVector m_velocity;
-    protected double m_bias;
-    protected double m_biasGradient;
     protected double m_biasVelocity;
-
-    /** Holds the current iteration number */
-    protected double m_t;
-
-    protected static final int HINGE = 0;
-
-    protected static final int LOGLOSS = 1;
-
-    protected static final int SQUAREDLOSS = 2;
-
-    /** The current loss function to minimize */
-    protected int m_loss = HINGE;
-
-    public MultiChoiceOption lossFunctionOption = new MultiChoiceOption(
-            "lossFunction", 'o', "The loss function to use.", new String[]{
-                "HINGE", "LOGLOSS", "SQUAREDLOSS"}, new String[]{
-                "Hinge loss (SVM)",
-                "Log loss (logistic regression)",
-                "Squared loss (regression)"}, 0);
-
-    /**
-     * Set the value of lambda to use
-     *
-     * @param lambda the value of lambda to use
-     */
-    public void setLambda(double lambda) {
-        m_lambda = lambda;
-    }
-
-    /**
-     * Get the current value of lambda
-     *
-     * @return the current value of lambda
-     */
-    public double getLambda() {
-        return m_lambda;
-    }
-
-    /**
-     * Set the loss function to use.
-     *
-     * @param function the loss function to use.
-     */
-    public void setLossFunction(int function) {
-        m_loss = function;
-    }
-
-    /**
-     * Get the current loss function.
-     *
-     * @return the current loss function.
-     */
-    public int getLossFunction() {
-        return m_loss;
-    }
-
-    /**
-     * Set the learning rate.
-     *
-     * @param lr the learning rate to use.
-     */
-    public void setLearningRate(double lr) {
-        m_learningRate = lr;
-    }
-
-    /**
-     * Get the learning rate.
-     *
-     * @return the learning rate
-     */
-    public double getLearningRate() {
-        return m_learningRate;
-    }
 
     /**
      * Set the epsilon value.
@@ -171,43 +81,6 @@ public class AdaGrad extends AbstractClassifier implements Regressor{
      */
     public double getEpsilon() {
         return m_epsilon;
-    }
-
-    /**
-     * Reset the classifier.
-     */
-    public void reset() {
-        m_t = 1;
-        m_weights = null;
-        m_gradients = null;
-        m_velocity = null;
-        m_bias = 0;
-        m_biasGradient = 0;
-        m_biasVelocity = 0;
-    }
-
-    protected static double dotProd(Instance inst1, DoubleVector weights, int classIndex) {
-        double result = 0;
-
-        int n1 = inst1.numValues();
-        int n2 = weights.numValues();
-
-        for (int p1 = 0, p2 = 0; p1 < n1 && p2 < n2;) {
-            int ind1 = inst1.index(p1);
-            int ind2 = p2;
-            if (ind1 == ind2) {
-                if (ind1 != classIndex && !inst1.isMissingSparse(p1)) {
-                    result += inst1.valueSparse(p1) * weights.getValue(p2);
-                }
-                p1++;
-                p2++;
-            } else if (ind1 > ind2) {
-                p2++;
-            } else {
-                p1++;
-            }
-        }
-        return (result);
     }
 
     @Override
@@ -288,69 +161,18 @@ public class AdaGrad extends AbstractClassifier implements Regressor{
         }
 
         //Weight update for the bias
-        m_biasGradient = dldz;
-        m_biasVelocity += m_biasGradient * m_biasGradient;
-        m_bias -= (m_learningRate / Math.sqrt(m_biasVelocity)) * m_biasGradient;
+        double biasGradient = dldz;
+        m_biasVelocity += biasGradient * biasGradient;
+        m_bias -= (m_learningRate / (Math.sqrt(m_biasVelocity) + m_epsilon)) * biasGradient;
 
         for(int i = 0; i < m_weights.numValues(); i++) {
             //Weight update
             double g = m_gradients.getValue(i);
             m_velocity.addToValue(i, g * g);
-            m_weights.addToValue(i, -(m_learningRate / Math.sqrt(m_velocity.getValue(i))) * g);
+            m_weights.addToValue(i, -(m_learningRate / (Math.sqrt(m_velocity.getValue(i)) + m_epsilon)) * g);
         }
 
         m_t += 1.0;
-    }
-
-    /**
-     * Calculates the class membership probabilities for the given test
-     * instance.
-     *
-     * @param instance    the instance to be classified
-     * @return        predicted class probability distribution
-     */
-    @Override
-    public double[] getVotesForInstance(Instance inst) {
-
-        if (m_weights == null) {
-            return new double[inst.numClasses()];
-        }
-        double[] result = (inst.classAttribute().isNominal())
-                ? new double[2]
-                : new double[1];
-
-
-        double wx = dotProd(inst, m_weights, inst.classIndex());// * m_wScale;
-        double z = (wx + m_bias);
-
-        if (inst.classAttribute().isNumeric()) {
-            result[0] = z;
-            return result;
-        }
-
-        if (z <= 0) {
-            //  z = 0;
-            if (m_loss == LOGLOSS) {
-                result[0] = 1.0 / (1.0 + Math.exp(z));
-                result[1] = 1.0 - result[0];
-            } else {
-                result[0] = 1;
-            }
-        } else {
-            if (m_loss == LOGLOSS) {
-                result[1] = 1.0 / (1.0 + Math.exp(-z));
-                result[0] = 1.0 - result[1];
-            } else {
-                result[1] = 1;
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public void getModelDescription(StringBuilder result, int indent) {
-        StringUtils.appendIndented(result, indent, toString());
-        StringUtils.appendNewline(result);
     }
 
     /**
@@ -398,15 +220,5 @@ public class AdaGrad extends AbstractClassifier implements Regressor{
         }
 
         return buff.toString();
-    }
-
-    @Override
-    protected Measurement[] getModelMeasurementsImpl() {
-        return null;
-    }
-
-    @Override
-    public boolean isRandomizable() {
-        return false;
     }
 }
