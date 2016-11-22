@@ -38,9 +38,24 @@ import moa.core.Utils;
 
 /**
 <!-- globalinfo-start -->
- * Implements the AdaGrad oneline optimiser for learning various linear models (binary class SVM, binary class logistic regression and linear regression). 
+ * Implements the AdaGrad oneline optimiser for learning various linear models (binary class SVM, binary class logistic regression and linear regression). For more information, see<br/> <br/> Duchi, J., Hazan, E., &amp; Singer, Y. (2011). Adaptive subgradient methods for online learning and stochastic optimization. Journal of Machine Learning Research, 12 (Jul), 2121-2159.
  * <p/>
-<!-- globalinfo-end -->
+ * <!-- globalinfo-end -->
+ * *
+<!-- technical-bibtex-start --> BibTeX:
+ * <pre>
+ * &#64;inproceedings{duchi2011,
+ *    author = {Duchi, John and Hazan, Elad and Singer, Yoram},
+ *    booktitle = {Journal of Machine Learning Research},
+ *    pages = {2121--2159},
+ *    volume={12},
+ *    number={Jul},
+ *    title = {Adaptive subgradient methods for online learning and stochastic optimization},
+ *    year = {2011}
+ * }
+ * </pre>
+ * <p/>
+ * <!-- technical-bibtex-end -->
  *
  */
 public class AdaGrad extends SGD{
