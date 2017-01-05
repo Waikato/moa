@@ -12,8 +12,7 @@ public class NumericRulePredicate extends AbstractMOAObject implements Predicate
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private int inputAttributeIndex;
+        private int inputAttributeIndex=1;     //index do input-attribute
 	private double attributeValue;
 	private boolean isEqualOrLower; 
 

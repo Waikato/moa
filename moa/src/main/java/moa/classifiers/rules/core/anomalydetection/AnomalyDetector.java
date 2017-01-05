@@ -20,6 +20,7 @@ public interface AnomalyDetector extends OptionHandler {
      */
     public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance);
 
+    public double getAnomalyScore();
     
     @Override
     public AnomalyDetector copy();

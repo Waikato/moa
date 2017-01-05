@@ -158,11 +158,13 @@ public class BasicMultiLabelLearner extends AbstractMultiLabelLearner{
 	@Override
 	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
 		Prediction prediction=null;
+                double [] votes= new double[instance.numClasses()];
+                double vote;
 		if (this.hasStarted){ 
 			prediction=new MultiLabelPrediction(ensemble.length);
 			DoubleVector combinedVote = new DoubleVector();
 			for (int i = 0; i < this.ensemble.length; i++) {
-				double vote=this.ensemble[i].getVotesForInstance(transformInstance(instance,i))[0];
+                        vote= this.ensemble[i].getVotesForInstance(transformInstance(instance,i))[0];
 				prediction.setVote(i, 0, vote);
 			}
 		}

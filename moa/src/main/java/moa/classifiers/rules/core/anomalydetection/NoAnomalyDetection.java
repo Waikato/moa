@@ -28,6 +28,12 @@ public class NoAnomalyDetection extends AbstractAnomalyDetector{
 		
 	}
 	
+        public double anomalyScore;
+
+        @Override 
+        public double getAnomalyScore(){
+            return anomalyScore;
+        }
     @Override
     public String getPurposeString() {
         return "Use this class to NOT detect anomalies.";

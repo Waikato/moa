@@ -75,6 +75,7 @@
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
+		  <encode>UTF-8</encode>
         </configuration>
       </plugin>
 

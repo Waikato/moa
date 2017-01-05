@@ -1,24 +1,11 @@
 /*
- *    NaiveBayes.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
- *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package moa.classifiers.bayes;
 
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.GaussianNumericAttributeClassObserver;
@@ -27,25 +14,12 @@ import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
- * Naive Bayes incremental learner.
  *
- * <p>Performs classic bayesian prediction while making naive assumption that
- * all inputs are independent.<br /> Naive Bayes is a classiﬁer algorithm known
- * for its simplicity and low computational cost. Given n different classes, the
- * trained Naive Bayes classiﬁer predicts for every unlabelled instance I the
- * class C to which it belongs with high accuracy.</p>
- *
- * <p>Parameters:</p> <ul> <li>-r : Seed for random behaviour of the
- * classifier</li> </ul>
- *
- * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $
+ * @author RSousa
  */
-public class NaiveBayes extends AbstractClassifier {
+public class MajorityLabel extends AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -65,13 +39,18 @@ public class NaiveBayes extends AbstractClassifier {
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
+        
+        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        //System.out.print("\n MajorityLabel.trainOnInstanceImpl:\n");        
+        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+        
+        
         this.observedClassDistribution.addToValue((int) inst.classValue(), inst.weight());
         for (int i = 0; i < inst.numAttributes() - 1; i++) {
             int instAttIndex = modelAttIndexToInstanceAttIndex(i, inst);
             AttributeClassObserver obs = this.attributeObservers.get(i);
             if (obs == null) {
-                obs = inst.attribute(instAttIndex).isNominal() ? newNominalClassObserver()
-                        : newNumericClassObserver();
+                obs = inst.attribute(instAttIndex).isNominal() ? newNominalClassObserver(): newNumericClassObserver();
                 this.attributeObservers.set(i, obs);
             }
             obs.observeAttributeClass(inst.value(instAttIndex), (int) inst.classValue(), inst.weight());
@@ -80,9 +59,10 @@ public class NaiveBayes extends AbstractClassifier {
 
     @Override
     public double[] getVotesForInstance(Instance inst) {
-        double [] v = doNaiveBayesPrediction(inst, this.observedClassDistribution, this.attributeObservers); 
+       
+        double [] v = doMajorityLabelPrediction(inst, this.observedClassDistribution, this.attributeObservers); 
         //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        //System.out.print("NaiveBayes.getVotesForInstance: v[]= " + v[0] + " " + v[1] + "\n");
+        //System.out.print("MajorityLabel.getVotesForInstance: v[]= " + v[0] + " " + v[1] + "\n");
         //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx    
         double [] vote=new double[1];
         vote[0]=v[0]<v[1]?1:0;
@@ -134,7 +114,7 @@ public class NaiveBayes extends AbstractClassifier {
         return new GaussianNumericAttributeClassObserver();
     }
 
-    public static double[] doNaiveBayesPrediction(Instance inst,DoubleVector observedClassDistribution,AutoExpandVector<AttributeClassObserver> attributeObservers) {
+    public static double[] doMajorityLabelPrediction(Instance inst,DoubleVector observedClassDistribution,AutoExpandVector<AttributeClassObserver> attributeObservers) {
         
         
         //RS
@@ -142,29 +122,48 @@ public class NaiveBayes extends AbstractClassifier {
         // A predição está a usar outros outputAttributes
      
         //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        //System.out.print("NaiveBayes.doNaiveBayesPrediction: numAttributes = " + inst.numAttributes() + "\n");
-        //System.out.print("NaiveBayes.doNaiveBayesPrediction: numOutputAttributes = " + inst.numOutputAttributes() + "\n");
-        //System.out.print("NaiveBayes.doNaiveBayesPrediction: numInputAttributes = " + inst.numInputAttributes() + "\n");
+        //System.out.print("MajorityLabel.doMajorityLabelPrediction: numAttributes = " + inst.numAttributes() + "\n");
+        //System.out.print("MajorityLabel.doMajorityLabelPrediction: numOutputAttributes = " + inst.numOutputAttributes() + "\n");
+        //System.out.print("MajorityLabel.doMajorityLabelPrediction: numInputAttributes = " + inst.numInputAttributes() + "\n");
         //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         
         //RS
         //==============================
         //double[] votes = new double[observedClassDistribution.numValues()];
         double[] votes = new double[inst.numClasses()];
+        //==============================
+        
         double observedClassSum = observedClassDistribution.sumOfValues();
+        
         for (int classIndex = 0; classIndex < votes.length; classIndex++) {
-            votes[classIndex] = observedClassDistribution.getValue(classIndex)
-                    / observedClassSum;
-            for (int attIndex = 0; attIndex < inst.numAttributes() - 1; attIndex++) {
-                int instAttIndex = modelAttIndexToInstanceAttIndex(attIndex,
-                        inst);
+            
+            votes[classIndex] = observedClassDistribution.getValue(classIndex)/ observedClassSum;
+            
+            //==================================================================
+            /*for (int attIndex = 0; attIndex < inst.numAttributes() - 1; attIndex++) {
+                
+                int instAttIndex = modelAttIndexToInstanceAttIndex(attIndex,inst);
                 AttributeClassObserver obs = attributeObservers.get(attIndex);
+                
                 if ((obs != null) && !inst.isMissing(instAttIndex)) {
                     votes[classIndex] *= obs.probabilityOfAttributeValueGivenClass(inst.value(instAttIndex), classIndex);
                 }
-            }
+                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                //System.out.print("MajorityLabel.doMajorityLabelPrediction: attIndex=" + attIndex + "instAttIndex = " + instAttIndex + " AttName=" + inst.attribute(instAttIndex).name() + "\n");
+                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            }*/
+            //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            //System.out.print("MajorityLabel.doMajorityLabelPrediction:" + classIndex + " " + votes[classIndex] + "\n");
+            //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+            //==================================================================
         }
         // TODO: need logic to prevent underflow?
+        
+        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        //System.out.print("MajorityLabel.doMajorityLabelPrediction:" + votes[1] + " " + votes.length + "\n");
+        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
         return votes;
     }
 
@@ -201,3 +200,4 @@ public class NaiveBayes extends AbstractClassifier {
         // TODO Auto-generated method stub
     }
 }
+

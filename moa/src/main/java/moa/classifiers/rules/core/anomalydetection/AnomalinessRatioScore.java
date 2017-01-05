@@ -49,6 +49,12 @@ public class AnomalinessRatioScore extends AbstractAnomalyDetector {
 	AutoExpandVector<double[]> sufficientStatistics;
 	private ProbabilityFunction probabilityFunction;
 
+        public double anomalyScore;
+
+        @Override 
+        public double getAnomalyScore(){
+            return anomalyScore;
+        }
 
 
 	@Override
@@ -89,6 +95,7 @@ public class AnomalinessRatioScore extends AbstractAnomalyDetector {
 			if(total>0)
 				anomaly=anomaly/total;
 			isAnomaly=(anomalousTotal/((double)total)>percentageAnomalous);
+                        anomalyScore=anomaly;
 		}
 		//update stats
 		if(!isAnomaly){

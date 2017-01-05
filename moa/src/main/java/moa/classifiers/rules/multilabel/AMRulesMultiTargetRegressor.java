@@ -1,5 +1,6 @@
 package moa.classifiers.rules.multilabel;
 
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.core.driftdetection.ChangeDetector;

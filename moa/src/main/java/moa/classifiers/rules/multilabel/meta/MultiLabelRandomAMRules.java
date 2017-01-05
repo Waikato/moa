@@ -83,6 +83,7 @@ implements MultiTargetRegressor {
 	protected boolean isRegression;
 	protected FeatureRanking featureRanking;
 	
+        double [] Var;
 	
 	@Override
 	public void resetLearningImpl() {
@@ -102,7 +103,7 @@ implements MultiTargetRegressor {
 			this.errorMeasurer[i]=(MultiLabelErrorMeasurer)measurer.copy();
 		}
 		this.isRegression = (baseLearner instanceof MultiTargetRegressor);
-		featureRanking=null; 
+                featureRanking=  (FeatureRanking) getPreparedClassOption(this.featureRankingOption);
 	}
 
 	public void trainOnInstanceImpl(MultiLabelInstance instance) {

@@ -94,4 +94,22 @@ public final class Utils {
 		return indices;
 	}
 	
+	public static double computeEntropy(DoubleVector statistics)
+	{
+
+            return computeEntropy(statistics.getValue(0),statistics.getValue(1));
+	}
+        
+        public static double computeEntropy(double count, double sum)
+	{
+            //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX 
+            //System.out.print("Utils.computeEntropy: count,sum " +  count + "   " + sum + "\n\n");
+            //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+            
+            if(sum/count==1 || sum==0)
+                return 0;
+            else
+                return -(sum/count*Math.log(sum/count) + (1-sum/count)*Math.log(1-sum/count) );
+            
+	}
 }

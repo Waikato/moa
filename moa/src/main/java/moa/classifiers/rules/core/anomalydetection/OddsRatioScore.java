@@ -46,6 +46,12 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 	private double threshold;
 	AutoExpandVector<double[]> sufficientStatistics;
 	private ProbabilityFunction probabilityFunction;
+        public double anomalyScore;
+
+        @Override 
+        public double getAnomalyScore(){
+            return anomalyScore;
+        }
 
 	@Override
 	public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance) {
@@ -84,6 +90,7 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 			if(ct>0)
 				anomaly=anomaly/ct;
 			isAnomaly=anomaly<threshold;
+                        anomalyScore=anomaly;
 		}
 		//update stats
 		if(!isAnomaly){
