@@ -217,7 +217,16 @@ public class InstancesHeader implements Serializable {
 	public void setInputIndexes(List<Integer> inputIndexes) {
 		this.instanceInformation.setInputIndexes(inputIndexes);
 	}
+	
+	public int getInputInstanceIndex(int index) {
+		return this.instanceInformation.inputAttributeIndex(index);
+	}
 
+	public int getOutputInstanceIndex(int index) {
+		return this.instanceInformation.outputAttributeIndex(index);
+	}
+
+	
 	/** 
 	 * Sets all non-output attributes as input attributes.
 	 */
@@ -478,6 +487,10 @@ public class InstancesHeader implements Serializable {
 		this.instances.remove(index);
 	}
 
+	
+	public void setInstances(List<Instance> instances) {
+		this.instances = instances;
+	}
 
 	/**
 	 * Swap.

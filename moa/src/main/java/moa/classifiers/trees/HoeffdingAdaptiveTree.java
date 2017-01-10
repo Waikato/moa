@@ -22,13 +22,15 @@ package moa.classifiers.trees;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.bayes.NaiveBayes;
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.core.DoubleVector;
 import moa.core.MiscUtils;
 import moa.core.Utils;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Hoeffding Adaptive Tree for evolving data streams.

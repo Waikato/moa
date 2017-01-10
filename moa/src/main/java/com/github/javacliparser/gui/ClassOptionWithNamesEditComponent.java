@@ -23,9 +23,10 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import moa.options.ClassOptionWithNames;
 import com.github.javacliparser.Option;
+
 import moa.gui.ClassOptionWithNamesSelectionPanel;
+import moa.options.ClassOptionWithNames;
 
 public class ClassOptionWithNamesEditComponent extends JPanel implements OptionEditComponent {
 

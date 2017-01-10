@@ -19,13 +19,11 @@
  */
 package moa.classifiers.meta;
 
-import moa.options.ClassOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.classifiers.AbstractClassifier;
@@ -35,6 +33,7 @@ import moa.core.DoubleVector;
 import moa.core.FastVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
+import moa.options.ClassOption;
 import moa.streams.InstanceStream;
 
 

@@ -20,18 +20,20 @@
 package moa.classifiers.meta;
 
 import java.util.Random;
+
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
-import moa.options.ClassOption;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-import moa.tasks.TaskMonitor;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.Utils;
+import moa.options.ClassOption;
+import moa.tasks.TaskMonitor;
 
 /**
  * The Accuracy Weighted Ensemble classifier as proposed by Wang et al. in
@@ -433,9 +435,9 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier {
      *
      * @return the size of the removed classifier.
      */
-    protected int removePoorestModelBytes() {
+    protected long removePoorestModelBytes() {
         int poorestIndex = Utils.minIndex(this.ensembleWeights);
-        int byteSize = this.ensemble[poorestIndex].measureByteSize();
+        long byteSize = this.ensemble[poorestIndex].measureByteSize();
         discardModel(poorestIndex);
         return byteSize;
     }

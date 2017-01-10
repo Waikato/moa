@@ -22,11 +22,12 @@ package moa.gui.clustertab;
 import java.awt.GridBagConstraints;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+
 import moa.core.AutoClassDiscovery;
 import moa.core.AutoExpandVector;
-import moa.evaluation.ClassificationMeasureCollection;
 import moa.evaluation.MeasureCollection;
 
 public class ClusteringEvalPanel extends javax.swing.JPanel {

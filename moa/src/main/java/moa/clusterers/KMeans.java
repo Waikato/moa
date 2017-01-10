@@ -22,6 +22,7 @@ package moa.clusterers;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import moa.cluster.CFCluster;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;

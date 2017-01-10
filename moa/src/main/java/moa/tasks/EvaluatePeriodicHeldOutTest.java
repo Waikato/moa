@@ -25,10 +25,17 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
+<<<<<<< c4a46917f06a4f4c3c08e67d06f6762cca1b47f9
 import moa.classifiers.Classifier;
+=======
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
+>>>>>>> Instances rework, new iSOUPTree models and import cleanup
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
@@ -41,8 +48,6 @@ import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.CachedInstancesStream;
 import moa.streams.ExampleStream;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Task for evaluating a classifier on a stream by periodically testing on a heldout set.

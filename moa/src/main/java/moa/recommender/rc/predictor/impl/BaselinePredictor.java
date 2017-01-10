@@ -22,6 +22,7 @@ package moa.recommender.rc.predictor.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import moa.recommender.rc.data.RecommenderData;
 import moa.recommender.rc.predictor.RatingPredictor;
 

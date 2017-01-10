@@ -20,17 +20,16 @@
  */
 package moa.gui.conceptdrift;
 
-import moa.gui.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -60,6 +59,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import moa.core.StringUtils;
+import moa.gui.ClassOptionSelectionPanel;
+import moa.gui.FileExtensionFilter;
+import moa.gui.GUIUtils;
+import moa.gui.PreviewPanel;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
 import moa.tasks.ConceptDriftMainTask;

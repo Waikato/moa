@@ -22,17 +22,17 @@ package moa.classifiers.active;
 
 import java.util.LinkedList;
 import java.util.List;
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
 
-import com.yahoo.labs.samoa.instances.Instance;
-import moa.core.Utils;
-
-import moa.core.DoubleVector;
-import moa.core.Measurement;
-import moa.options.ClassOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.MultiChoiceOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
+import moa.core.DoubleVector;
+import moa.core.Measurement;
+import moa.core.Utils;
+import moa.options.ClassOption;
 
 /**
  * Active learning setting for evolving data streams.

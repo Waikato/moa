@@ -23,7 +23,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
-import static moa.test.MoaTestCase.runTest;
 
 /**
  * Tests the Perceptron classifier.

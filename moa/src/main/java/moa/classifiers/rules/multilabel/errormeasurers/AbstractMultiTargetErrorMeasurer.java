@@ -1,8 +1,8 @@
 package moa.classifiers.rules.multilabel.errormeasurers;
 
-import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 
 public abstract class AbstractMultiTargetErrorMeasurer extends AbstractMultiLabelErrorMeasurer implements MultiLabelErrorMeasurer{
 

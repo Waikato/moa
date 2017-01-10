@@ -19,6 +19,8 @@
  */
 package moa.classifiers.bayes;
 
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.GaussianNumericAttributeClassObserver;
@@ -27,7 +29,6 @@ import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Naive Bayes incremental learner.

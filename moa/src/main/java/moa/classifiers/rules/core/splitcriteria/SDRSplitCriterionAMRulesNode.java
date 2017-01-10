@@ -19,8 +19,6 @@
  */
 package moa.classifiers.rules.core.splitcriteria;
 
-import moa.classifiers.core.splitcriteria.SplitCriterion;
-
 public class SDRSplitCriterionAMRulesNode extends SDRSplitCriterionAMRules implements AMRulesSplitCriterion {
 
     private static final long serialVersionUID = 1L;

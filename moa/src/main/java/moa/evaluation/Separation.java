@@ -1,5 +1,8 @@
 package moa.evaluation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /*
  * #%L
  * SAMOA
@@ -22,13 +25,11 @@ package moa.evaluation;
 
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.gui.visualization.DataPoint;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Separation extends MeasureCollection {
 

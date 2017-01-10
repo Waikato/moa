@@ -27,17 +27,20 @@
 
 package moa.gui.visualization;
 
-import weka.gui.explorer.Explorer;
-import weka.core.Memory;
 //import weka.gui.LookAndFeel;
 import java.awt.BorderLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 import javax.swing.JFrame;
+
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
+
+import weka.core.Memory;
+import weka.gui.explorer.Explorer;
 
 
 public class WekaExplorer {

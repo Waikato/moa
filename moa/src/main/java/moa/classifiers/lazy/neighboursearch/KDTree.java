@@ -23,11 +23,13 @@ package moa.classifiers.lazy.neighboursearch;
 
 import java.util.Enumeration;
 import java.util.Vector;
+
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.classifiers.lazy.neighboursearch.kdtrees.KDTreeNode;
 import moa.classifiers.lazy.neighboursearch.kdtrees.KDTreeNodeSplitter;
 import moa.classifiers.lazy.neighboursearch.kdtrees.SlidingMidPointOfWidestSide;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 
 

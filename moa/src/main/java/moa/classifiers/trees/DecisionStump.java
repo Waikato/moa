@@ -21,6 +21,8 @@ package moa.classifiers.trees;
 
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
@@ -31,7 +33,6 @@ import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.options.ClassOption;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Decision trees of one level.<br />

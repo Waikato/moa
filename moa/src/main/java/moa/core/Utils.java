@@ -21,17 +21,9 @@
 
 package moa.core;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.lang.reflect.Array;
-import java.net.URL;
 import java.text.BreakIterator;
-import java.util.Enumeration;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Vector;
 

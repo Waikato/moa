@@ -19,7 +19,6 @@
  */
 package moa.classifiers.multilabel;
 
-import moa.classifiers.trees.HoeffdingTreeClassifLeaves;
 import java.io.StringReader;
 import java.util.List;
 import moa.classifiers.Classifier;
@@ -47,7 +46,7 @@ import java.util.Arrays;
  * 
  * 
  */ 
-public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implements MultiLabelLearner, MultiTargetRegressor { 
+public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implements MultiLabelLearner, MultiTargetRegressor, Classifier { 
 // Needs to use InfoGainSplitCriterionMultiLabel, since multilabel entropy is calculated in a different way 
 // Trains a mlinstance adding statistics of several class values and training node classifiers
 // Get votes from the classifier in the learning node of the tree
@@ -83,7 +82,7 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		public void learnFromInstance(Instance inst, HoeffdingTree ht) {
 			List<Integer> labels = ((MultilabelHoeffdingTree) ht).getRelevantLabels(inst);
 			for (int l : labels){
-				this.observedClassDistribution.addToValue( l, inst.weight());
+				this.observedClassDistribution.addToValue(l, inst.weight());
 			}
 		}
 	}
@@ -95,7 +94,7 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 
 		public MultilabelLearningNodeClassifier(double[] initialClassObservations, Classifier cl, MultilabelHoeffdingTree ht ) {
 			super(initialClassObservations);
-		
+
 			if (cl== null) {
 				this.classifier = ((Classifier) getPreparedClassOption(ht.learnerOption)).copy();
 				this.classifier.resetLearning();
@@ -123,7 +122,7 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		public void disableAttribute(int attIndex) {
 			// should not disable poor atts - they are used in NB calc
 		}
-		
+
 		public Classifier getClassifier() {
 			return this.classifier;
 		}
@@ -148,11 +147,9 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 				}
 				for (int l : labels){
 					obs.observeAttributeClass(inst.valueInputAttribute(i), l, inst.weight());
-					//obs.observeAttributeClass(inst.value(instAttIndex), 0, inst.weight());
 				}
 			}
 		}
-	}
 
 		public void describeSubtree(HoeffdingTree ht, StringBuilder out,
 									int indent) {
@@ -186,8 +183,12 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 		return getPredictionForInstance((StructuredInstance)example.getData());
 	}
 
+	public Prediction getPredictionForInstance(StructuredInstance inst) {
+		return getPredictionForInstance((Instance) inst);
+	}
+	
 	@Override
-	public Prediction getPredictionForInstance(StructuredInstance inst){
+	public Prediction getPredictionForInstance(Instance inst){
 
 		if (this.treeRoot != null) {
 			FoundNode foundNode = this.treeRoot.filterInstanceToLeaf(inst, null, -1);

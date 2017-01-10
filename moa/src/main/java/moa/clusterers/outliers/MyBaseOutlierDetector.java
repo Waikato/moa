@@ -27,13 +27,15 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
+
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;
-import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.Instance;
 
 public abstract class MyBaseOutlierDetector extends AbstractClusterer { 
     public static class Outlier implements Comparable<Outlier> {

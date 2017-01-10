@@ -1,6 +1,13 @@
 
 package moa.classifiers.multitarget;
 
+import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
+import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.Classifier;
@@ -11,14 +18,6 @@ import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
 import moa.streams.InstanceStream;
-
-import com.yahoo.labs.samoa.instances.DenseInstance;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
-import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
-import com.yahoo.labs.samoa.instances.Prediction;
 
 
 public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner implements MultiTargetRegressor{

@@ -21,10 +21,11 @@ package moa.tasks;
 
 import java.util.Random;
 
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
-import com.github.javacliparser.IntOption;
 import moa.streams.CachedInstancesStream;
 import moa.streams.InstanceStream;
 

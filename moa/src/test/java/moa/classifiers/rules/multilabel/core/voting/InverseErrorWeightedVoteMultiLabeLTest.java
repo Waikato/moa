@@ -1,7 +1,6 @@
 package moa.classifiers.rules.multilabel.core.voting;
 
-import static org.junit.Assert.*;
-import moa.classifiers.rules.core.voting.InverseErrorWeightedVote;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.BeforeClass;
 import org.junit.Test;

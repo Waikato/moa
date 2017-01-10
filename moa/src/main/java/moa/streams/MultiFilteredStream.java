@@ -19,18 +19,17 @@
  */
 package moa.streams;
 
+import com.github.javacliparser.ListOption;
+import com.github.javacliparser.Option;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.core.Example;
-import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
-import com.github.javacliparser.ListOption;
-import com.github.javacliparser.Option;
 import moa.options.OptionHandler;
 import moa.streams.filters.StreamFilter;
 import moa.tasks.TaskMonitor;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Class for representing a stream that is filtered.

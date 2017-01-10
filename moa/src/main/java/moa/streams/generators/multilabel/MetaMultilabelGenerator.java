@@ -19,22 +19,32 @@
  */
 package moa.streams.generators.multilabel;
 
-import java.util.*;
-import moa.core.InstanceExample;
-import moa.core.MultilabelInstancesHeader;
-import moa.core.ObjectRepository;
-import moa.options.AbstractOptionHandler;
-import moa.options.ClassOption;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import moa.streams.InstanceStream;
-import moa.tasks.TaskMonitor;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.SparseInstance;
+
 import moa.core.FastVector;
+import moa.core.InstanceExample;
+import moa.core.MultilabelInstancesHeader;
+import moa.core.ObjectRepository;
 import moa.core.Utils;
+import moa.options.AbstractOptionHandler;
+import moa.options.ClassOption;
+import moa.streams.InstanceStream;
+import moa.tasks.TaskMonitor;
 
 /**
  * Stream generator for multilabel data.

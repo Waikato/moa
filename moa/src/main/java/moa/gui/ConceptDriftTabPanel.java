@@ -20,6 +20,7 @@
 package moa.gui;
 
 import java.awt.BorderLayout;
+
 import moa.gui.PreviewPanel.TypePanel;
 import moa.gui.conceptdrift.CDTaskManagerPanel;
 

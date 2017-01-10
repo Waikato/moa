@@ -19,13 +19,14 @@
  */
 package moa.clusterers;
 
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.MOAObject;
 import moa.cluster.Clustering;
 import moa.core.Measurement;
 import moa.gui.AWTRenderable;
 import moa.options.OptionHandler;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 public interface Clusterer extends MOAObject, OptionHandler, AWTRenderable {
 

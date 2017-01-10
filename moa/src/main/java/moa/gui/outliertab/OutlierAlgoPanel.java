@@ -20,7 +20,11 @@
 
 package moa.gui.outliertab;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -28,16 +32,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import moa.clusterers.outliers.MyBaseOutlierDetector;
-import moa.gui.GUIUtils;
-import moa.options.ClassOption;
+
 import com.github.javacliparser.Option;
 import com.github.javacliparser.gui.OptionEditComponent;
 import com.github.javacliparser.gui.OptionsConfigurationPanel;
+
+import moa.clusterers.outliers.MyBaseOutlierDetector;
+import moa.gui.GUIUtils;
+import moa.options.ClassOption;
 import moa.streams.clustering.ClusteringStream;
 
 public class OutlierAlgoPanel extends javax.swing.JPanel implements ActionListener{

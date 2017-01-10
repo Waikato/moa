@@ -2,13 +2,12 @@ package moa.streams.filters;
 
 import static org.junit.Assert.assertEquals;
 
-import moa.streams.ArffFileStream;
-import moa.streams.MultiTargetArffFileStream;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.streams.ArffFileStream;
 
 public class SelectAttributesFilterTest {
 	private static double EPS=0.00000001;

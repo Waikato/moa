@@ -22,7 +22,6 @@ import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.core.Example;
 import moa.evaluation.BasicClassificationPerformanceEvaluator;
-import moa.evaluation.BasicRegressionPerformanceEvaluator;
 import moa.evaluation.LearningPerformanceEvaluator;
 
 /**

@@ -31,19 +31,19 @@ package moa.classifiers.rules;
  * 
  **/
 
+import java.util.Arrays;
+import java.util.Iterator;
+
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
-import java.util.Arrays;
-import java.util.Iterator;
-
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.rules.core.Rule;
+import moa.classifiers.rules.core.Rule.Builder;
 import moa.classifiers.rules.core.RuleActiveLearningNode;
 import moa.classifiers.rules.core.RuleSet;
-import moa.classifiers.rules.core.Rule.Builder;
 import moa.classifiers.rules.core.attributeclassobservers.FIMTDDNumericAttributeClassLimitObserver;
 import moa.classifiers.rules.core.voting.ErrorWeightedVote;
 import moa.classifiers.rules.core.voting.Vote;

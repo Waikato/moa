@@ -30,11 +30,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -48,11 +45,12 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 
-import moa.classifiers.trees.HoeffdingTree;
 import com.github.javacliparser.Option;
-import moa.options.OptionHandler;
 import com.github.javacliparser.Options;
+
+import moa.classifiers.trees.HoeffdingTree;
 import moa.gui.GUIUtils;
+import moa.options.OptionHandler;
 
 /**
  * This panel displays an options configuration.

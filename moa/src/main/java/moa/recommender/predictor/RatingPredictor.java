@@ -22,6 +22,7 @@ package moa.recommender.predictor;
 
 import java.io.Serializable;
 import java.util.List;
+
 import moa.recommender.rc.data.RecommenderData;
 
 /**

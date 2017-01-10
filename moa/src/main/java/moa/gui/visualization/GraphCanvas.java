@@ -22,9 +22,11 @@ package moa.gui.visualization;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.ArrayList;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JViewport;
+
 import moa.evaluation.MeasureCollection;
 import moa.streams.clustering.ClusterEvent;
 

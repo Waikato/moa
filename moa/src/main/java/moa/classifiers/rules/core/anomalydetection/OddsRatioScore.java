@@ -1,5 +1,10 @@
 package moa.classifiers.rules.core.anomalydetection;
 
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
+
 import moa.classifiers.rules.core.Utils;
 import moa.classifiers.rules.core.anomalydetection.probabilityfunctions.CantellisInequality;
 import moa.classifiers.rules.core.anomalydetection.probabilityfunctions.ProbabilityFunction;
@@ -7,11 +12,6 @@ import moa.core.AutoExpandVector;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
-
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
 
 public class OddsRatioScore extends AbstractAnomalyDetector {
 

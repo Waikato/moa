@@ -20,6 +20,7 @@
 package moa.classifiers.core.splitcriteria;
 
 import com.github.javacliparser.FloatOption;
+
 import moa.core.ObjectRepository;
 import moa.core.Utils;
 import moa.options.AbstractOptionHandler;

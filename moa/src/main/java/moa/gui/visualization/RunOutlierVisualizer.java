@@ -39,6 +39,12 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.yahoo.labs.samoa.instances.Attribute;
+import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.clusterers.outliers.MyBaseOutlierDetector;
@@ -56,10 +62,6 @@ import moa.streams.clustering.ClusterEvent;
 import moa.streams.clustering.ClusterEventListener;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
-import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 public class RunOutlierVisualizer implements Runnable, ActionListener, ClusterEventListener{	
     /** the pause interval, being read from the gui at startup */

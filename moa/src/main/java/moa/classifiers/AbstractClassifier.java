@@ -25,30 +25,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import moa.MOAObject;
-import moa.core.Example;
-
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-
-import moa.core.Measurement;
-import moa.core.ObjectRepository;
-import moa.core.StringUtils;
-import moa.gui.AWTRenderer;
-import moa.learners.Learner;
-import moa.options.AbstractOptionHandler;
-
 import com.github.javacliparser.IntOption;
-
-import moa.tasks.TaskMonitor;
-
-import com.yahoo.labs.samoa.instances.DenseInstanceData;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
+import moa.MOAObject;
+import moa.core.Example;
+import moa.core.Measurement;
+import moa.core.ObjectRepository;
+import moa.core.StringUtils;
 import moa.core.Utils;
+import moa.gui.AWTRenderer;
+import moa.learners.Learner;
+import moa.options.AbstractOptionHandler;
+import moa.tasks.TaskMonitor;
 
 public abstract class AbstractClassifier extends AbstractOptionHandler
         implements Classifier { //Learner<Example<Instance>> {
@@ -78,10 +70,10 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
      * if the classifier is randomizable.
      */
     public AbstractClassifier() {
-        if (isRandomizable()) {
-            this.randomSeedOption = new IntOption("randomSeed", 'r',
-                    "Seed for random behaviour of the classifier.", 1);
-        }
+//        if (isRandomizable()) {
+//            this.randomSeedOption = new IntOption("randomSeed", 'r',
+//                    "Seed for random behaviour of the classifier.", 1);
+//        }
     }
 
     @Override
@@ -112,8 +104,8 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
 
     @Override
     public Prediction getPredictionForInstance(Instance inst){
-    	Prediction prediction= new MultiLabelPrediction(1);
-    	prediction.setVotes(getVotesForInstance(inst));
+    	Prediction prediction= new MultiLabelPrediction(inst.numOutputAttributes());
+  		prediction.setVotes(getVotesForInstance(inst));
     	return prediction;
     }
 

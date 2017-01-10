@@ -20,12 +20,13 @@
 
 package moa.clusterers.outliers;
 
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.clusterers.outliers.AbstractC.AbstractC;
 import moa.clusterers.outliers.Angiulli.ExactSTORM;
 import moa.clusterers.outliers.MCOD.MCOD;
 import moa.clusterers.outliers.SimpleCOD.SimpleCOD;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
-import com.yahoo.labs.samoa.instances.Instance;
 
 public class TestSpeed {    
     public static void main(String[] args) throws Exception 

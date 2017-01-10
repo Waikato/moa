@@ -21,21 +21,22 @@ package moa.clusterers;
 
 import java.util.ArrayList;
 import java.util.List;
-import moa.cluster.Clustering;
-import moa.core.AutoClassDiscovery;
-import moa.core.AutoExpandVector;
-import moa.core.Measurement;
-import moa.options.ClassOption;
+
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.github.javacliparser.StringOption;
-import moa.core.FastVector;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 
+import moa.cluster.Clustering;
+import moa.core.AutoClassDiscovery;
+import moa.core.AutoExpandVector;
+import moa.core.FastVector;
+import moa.core.Measurement;
+import moa.options.ClassOption;
 import weka.core.Utils;
 
 public class WekaClusteringAlgorithm extends AbstractClusterer {

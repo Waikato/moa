@@ -21,23 +21,23 @@
 
 package weka.classifiers.meta;
 
+import java.util.Enumeration;
+import java.util.Vector;
+
+import com.yahoo.labs.samoa.instances.WekaToSamoaInstanceConverter;
+
+import moa.classifiers.Classifier;
+import moa.classifiers.trees.DecisionStump;
+import moa.options.ClassOption;
 import weka.classifiers.UpdateableClassifier;
 import weka.core.Capabilities;
+import weka.core.Capabilities.Capability;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.MOAUtils;
 import weka.core.Option;
 import weka.core.RevisionUtils;
 import weka.core.Utils;
-import weka.core.Capabilities.Capability;
-
-import java.util.Enumeration;
-import java.util.Vector;
-
-import moa.classifiers.Classifier;
-import moa.classifiers.trees.DecisionStump;
-import moa.options.ClassOption;
-import com.yahoo.labs.samoa.instances.WekaToSamoaInstanceConverter;
 
 /**
  <!-- globalinfo-start -->

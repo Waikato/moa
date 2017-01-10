@@ -19,16 +19,16 @@
  */
 package moa.classifiers.meta;
 
-import moa.classifiers.core.driftdetection.ADWIN;
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
+import moa.classifiers.core.driftdetection.ADWIN;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;
-import com.github.javacliparser.IntOption;
 
 /**
  * Bagging for evolving data streams using ADWIN.
@@ -141,7 +141,7 @@ public class OzaBagAdwin extends AbstractClassifier {
             }
             if (imax != -1) {
                 this.ensemble[imax].resetLearning();
-                //this.ensemble[imax].trainOnInstance(inst);
+                this.ensemble[imax].trainOnInstance(inst);
                 this.ADError[imax] = new ADWIN();
             }
         }

@@ -18,18 +18,19 @@
  */
 package moa.classifiers.meta;
 
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.core.Measurement;
-import moa.options.ClassOption;
-import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.MiscUtils;
+import moa.options.ClassOption;
 
 /**
  * Creates two classifiers: a stable and a reactive. The first represents the

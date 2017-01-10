@@ -25,24 +25,24 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.yahoo.labs.samoa.instances.Instance;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
 
-import moa.options.ClassOption;
 import moa.AbstractMOAObject;
+import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Regressor;
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
-import moa.classifiers.AbstractClassifier;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.SizeOf;
 import moa.core.StringUtils;
+import moa.options.ClassOption;
 
 /*
  * Implementation of FIMTDD, regression and model trees for data streams.
@@ -159,8 +159,8 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			sumOfAbsErrors = node.sumOfAbsErrors;
 		}
 
-		public int calcByteSize() {
-			return (int) SizeOf.fullSizeOf(this);
+		public long calcByteSize() {
+			return SizeOf.sizeOf(this) + (originalNode == null && alternateTree != null ? alternateTree.calcByteSize() : 0);
 		}
 
 		/**
@@ -259,6 +259,14 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			sumOfAbsErrors = 0;
 		}
 
+		public long calcByteSize() {
+			long size = super.calcByteSize();
+			if (tree.buildingModelTree())
+				size += learningModel.calcByteSize();
+			size += SizeOf.fullSizeOf(attributeObservers);
+			return size;
+		}
+		
 		public void setChild(int parentBranch, Node node) {
 		}
 
@@ -416,6 +424,13 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		public InnerNode(FIMTDD tree) {
 			super(tree);
 		}
+		
+		public long calcByteSize() {
+			long size = super.calcByteSize();
+			for (Node child : children)
+				size += child.calcByteSize();
+			return size;
+		}
 
 		public int numChildren() {
 			return children.size();
@@ -505,6 +520,12 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			super(tree);
 			this.splitTest = splitTest;
 		}
+		
+		public long calcByteSize() {
+			long size = super.calcByteSize();
+			size += SizeOf.sizeOf(splitTest);
+			return size;
+		}
 
 		public int instanceChildIndex(Instance inst) {
 			return splitTest.branchForInstance(inst);
@@ -561,6 +582,10 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 		}
 
+		public long calcByteSize() {
+			return SizeOf.sizeOf(this);
+		}
+		
 		public void initializeWeights() {
 			weightAttribute = new double[tree.getModelContext().numInputAttributes()+1];
 			instancesSeen = 0;
@@ -710,8 +735,15 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		};
 	}
 
-	public int calcByteSize() {
-		return (int) SizeOf.fullSizeOf(this);
+	@Override
+	public long measureByteSize() {
+		return calcByteSize();
+	}
+	
+	public long calcByteSize() {
+		long size = (long) (SizeOf.sizeOf(this)) + this.treeRoot.calcByteSize();
+		size += (long) (SizeOf.sizeOf(this.sumOfAttrValues)) + (int) (SizeOf.sizeOf(this.sumOfAttrSquares));
+		return size;
 	}
 
 	public double[] getVotesForInstance(Instance inst) {

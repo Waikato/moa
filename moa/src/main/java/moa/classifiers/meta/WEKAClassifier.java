@@ -20,15 +20,15 @@
  */
 package moa.classifiers.meta;
 
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
+
 import moa.classifiers.AbstractClassifier;
 import moa.core.Measurement;
-import com.github.javacliparser.IntOption;
 import moa.options.WEKAClassOption;
 import weka.classifiers.Classifier;
 import weka.classifiers.UpdateableClassifier;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 
 /**
  * Class for using a classifier from WEKA.

@@ -21,7 +21,6 @@
 package moa.gui.clustertab;
 
 import java.awt.BorderLayout;
-
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -32,20 +31,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.github.javacliparser.Option;
+import com.github.javacliparser.gui.OptionEditComponent;
+import com.github.javacliparser.gui.OptionsConfigurationPanel;
+
 import moa.clusterers.AbstractClusterer;
 import moa.clusterers.Clusterer;
 import moa.gui.GUIUtils;
-import com.github.javacliparser.gui.OptionEditComponent;
-import com.github.javacliparser.gui.OptionsConfigurationPanel;
 import moa.options.ClassOption;
-import com.github.javacliparser.Option;
 import moa.streams.clustering.ClusteringStream;
-import moa.streams.generators.RandomRBFGenerator;
 
 public class ClusteringAlgoPanel extends javax.swing.JPanel implements ActionListener{
 

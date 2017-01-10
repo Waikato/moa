@@ -20,8 +20,9 @@
 
 package moa.clusterers.outliers.SimpleCOD;
 
-import moa.streams.ArffFileStream;
 import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.streams.ArffFileStream;
 
 
 public class Test {    

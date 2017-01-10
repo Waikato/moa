@@ -34,25 +34,25 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.yahoo.labs.samoa.instances.Attribute;
+import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
 import moa.clusterers.ClusterGenerator;
+import moa.core.FastVector;
 import moa.evaluation.MeasureCollection;
 import moa.gui.TextViewerPanel;
 import moa.gui.clustertab.ClusteringSetupTab;
 import moa.gui.clustertab.ClusteringVisualEvalPanel;
 import moa.gui.clustertab.ClusteringVisualTab;
 import moa.streams.clustering.ClusterEvent;
-import com.yahoo.labs.samoa.instances.Instance;
-import moa.gui.clustertab.ClusteringSetupTab;
 import moa.streams.clustering.ClusterEventListener;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
-import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
-import moa.core.FastVector;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 public class RunVisualizer implements Runnable, ActionListener, ClusterEventListener{
 

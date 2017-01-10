@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
 import moa.recommender.rc.utils.Rating;
 import moa.recommender.rc.utils.SparseVector;
 import moa.recommender.rc.utils.Updatable;

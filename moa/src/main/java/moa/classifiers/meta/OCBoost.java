@@ -19,15 +19,15 @@
  */
 package moa.classifiers.meta;
 
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
-import com.yahoo.labs.samoa.instances.Instance;
-import moa.core.Utils;
-
-import moa.core.Measurement;
-import moa.options.ClassOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
+import moa.core.Measurement;
+import moa.core.Utils;
+import moa.options.ClassOption;
 
 /**
  * Online Coordinate boosting for two classes evolving data streams. 

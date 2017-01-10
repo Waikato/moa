@@ -23,12 +23,14 @@ package moa.clusterers.outliers.MCOD;
 import java.util.ArrayList;
 import java.util.TreeSet;
 import java.util.Vector;
-import moa.clusterers.outliers.MCOD.ISBIndex.ISBNode;
-import moa.clusterers.outliers.MCOD.ISBIndex.ISBNode.NodeType;
-import moa.clusterers.outliers.MCOD.ISBIndex.ISBSearchResult;
+
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.clusterers.outliers.MCOD.ISBIndex.ISBNode;
+import moa.clusterers.outliers.MCOD.ISBIndex.ISBNode.NodeType;
+import moa.clusterers.outliers.MCOD.ISBIndex.ISBSearchResult;
 
 
 //The algorithm is described in 

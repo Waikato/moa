@@ -1,8 +1,9 @@
 package moa.classifiers.rules.core.anomalydetection;
 
+import com.yahoo.labs.samoa.instances.StructuredInstance;
+
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
 
 public class NoAnomalyDetection extends AbstractAnomalyDetector{
 

@@ -22,6 +22,7 @@ package moa.recommender.rc.predictor;
 
 import java.io.Serializable;
 import java.util.List;
+
 import moa.recommender.rc.data.RecommenderData;
 
 public interface RatingPredictor extends Serializable {

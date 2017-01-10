@@ -26,7 +26,6 @@ import java.util.List;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.AbstractMOAObject;
-import moa.core.DoubleVector;
 
 /**
  * AbstractErrorWeightedVote class for weighted votes based on estimates of errors. 

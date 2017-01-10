@@ -19,21 +19,23 @@
  */
 package moa.classifiers.meta;
 
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.IntOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Attribute;
+import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.core.Measurement;
 import moa.core.Utils;
 import moa.options.ClassOption;
-import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Include labels of previous instances into the training data

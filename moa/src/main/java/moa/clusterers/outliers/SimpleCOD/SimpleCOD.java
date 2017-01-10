@@ -21,11 +21,13 @@
 package moa.clusterers.outliers.SimpleCOD;
 
 import java.util.Vector;
-import moa.clusterers.outliers.SimpleCOD.ISBIndex.ISBNode;
-import moa.clusterers.outliers.SimpleCOD.ISBIndex.ISBSearchResult;
+
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.clusterers.outliers.SimpleCOD.ISBIndex.ISBNode;
+import moa.clusterers.outliers.SimpleCOD.ISBIndex.ISBSearchResult;
 
 
 ////The algorithm is described in 

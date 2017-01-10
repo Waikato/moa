@@ -20,15 +20,16 @@
 
 package moa.classifiers.meta;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.classifiers.Classifier;
 import moa.core.Measurement;
-
-import java.util.Arrays;
-import java.util.Collections;
 import moa.core.Utils;
 
 /**

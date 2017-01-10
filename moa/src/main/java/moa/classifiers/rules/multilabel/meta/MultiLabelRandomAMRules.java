@@ -1,9 +1,15 @@
 package moa.classifiers.rules.multilabel.meta;
 
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.MultiChoiceOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
+
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
-import moa.classifiers.rules.AbstractAMRules;
-import moa.classifiers.rules.core.voting.ErrorWeightedVote;
 import moa.classifiers.rules.multilabel.AMRulesMultiLabelLearner;
 import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
 import moa.classifiers.rules.multilabel.core.voting.UniformWeightedVoteMultiLabel;
@@ -12,14 +18,6 @@ import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;
-
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-import com.github.javacliparser.MultiChoiceOption;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
-import com.yahoo.labs.samoa.instances.Prediction;
 
 public class MultiLabelRandomAMRules extends AbstractMultiLabelLearner
 implements MultiTargetRegressor {

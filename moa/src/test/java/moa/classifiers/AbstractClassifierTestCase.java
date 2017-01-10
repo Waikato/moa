@@ -24,6 +24,9 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.core.Example;
 import moa.core.InstanceExample;
 import moa.core.Measurement;
@@ -33,9 +36,6 @@ import moa.test.MoaTestCase;
 import moa.test.TestHelper;
 import moa.test.TmpFile;
 import weka.core.MOAUtils;
-
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Ancestor for all classifier test cases.
@@ -130,14 +130,8 @@ extends MoaTestCase {
 	 */
 	protected InstancesHeader load(String filename, int classIndex) {
 		InstancesHeader	result = null;
-		//ArffLoader 	loader;
-
-		//result = null;
 
 		try {
-			/*loader = new ArffLoader();
-      loader.setFile(new TmpFile(filename));
-      result = loader.getDataSet();*/ // JD: weka's ARffLoader
 			TmpFile tmp=new TmpFile(filename);
 			FileInputStream fileStream = new FileInputStream(tmp.getAbsolutePath());
 			Reader reader=new BufferedReader(new InputStreamReader(fileStream));

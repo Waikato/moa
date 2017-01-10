@@ -20,22 +20,21 @@
 
 package moa.classifiers.trees;
 
-import java.util.Stack;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 
-import com.yahoo.labs.samoa.instances.Instance;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.Regressor;
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
-
 import moa.core.AutoExpandVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
@@ -100,7 +99,7 @@ public class ORTO extends FIMTDD implements Regressor {
 		public OptionNode(FIMTDD tree) {
 			super(tree);
 		}
-
+		
 		public void resetFF() {
 			optionFFSSL = new double[children.size()];
 			optionFFSeen = new double[children.size()];

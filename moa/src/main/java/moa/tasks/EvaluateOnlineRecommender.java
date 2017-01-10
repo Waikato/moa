@@ -19,12 +19,13 @@
  */
 package moa.tasks;
 
+import com.github.javacliparser.IntOption;
+
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
 import moa.options.ClassOption;
-import com.github.javacliparser.IntOption;
 import moa.recommender.dataset.Dataset;
 import moa.recommender.predictor.RatingPredictor;
 import moa.recommender.rc.data.RecommenderData;

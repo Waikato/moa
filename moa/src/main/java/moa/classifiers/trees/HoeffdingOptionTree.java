@@ -28,11 +28,14 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.AbstractMOAObject;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.bayes.NaiveBayes;
@@ -51,7 +54,6 @@ import moa.core.SizeOf;
 import moa.core.StringUtils;
 import moa.core.Utils;
 import moa.options.ClassOption;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Hoeffding Option Tree.
@@ -612,8 +614,8 @@ public class HoeffdingOptionTree extends AbstractClassifier {
 
     protected int maxPredictionPaths;
 
-    public int calcByteSize() {
-        int size = (int) SizeOf.sizeOf(this);
+    public long calcByteSize() {
+        long size = SizeOf.sizeOf(this);
         if (this.treeRoot != null) {
             size += this.treeRoot.calcByteSizeIncludingSubtree();
         }
@@ -621,7 +623,7 @@ public class HoeffdingOptionTree extends AbstractClassifier {
     }
 
     @Override
-    public int measureByteSize() {
+    public long measureByteSize() {
         return calcByteSize();
     }
 
@@ -1035,7 +1037,7 @@ public class HoeffdingOptionTree extends AbstractClassifier {
             this.inactiveLeafByteSizeEstimate = (double) totalInactiveSize
                     / this.inactiveLeafNodeCount;
         }
-        int actualModelSize = this.measureByteSize();
+        long actualModelSize = this.measureByteSize();
         double estimatedModelSize = (this.activeLeafNodeCount
                 * this.activeLeafByteSizeEstimate + this.inactiveLeafNodeCount
                 * this.inactiveLeafByteSizeEstimate);

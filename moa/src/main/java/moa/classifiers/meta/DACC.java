@@ -20,18 +20,19 @@
 
 package moa.classifiers.meta;
 
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.MultiChoiceOption;
-import com.yahoo.labs.samoa.instances.Instance;
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
-import moa.core.DoubleVector;
-import moa.core.Measurement;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.MultiChoiceOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
+import moa.core.DoubleVector;
+import moa.core.Measurement;
 import moa.options.ClassOption;
 
 /**

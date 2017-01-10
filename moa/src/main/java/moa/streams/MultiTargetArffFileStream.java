@@ -19,21 +19,6 @@
  */
 package moa.streams;
 
-import com.github.javacliparser.FileOption;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader; 
-import moa.core.InputStreamProgressMonitor;
-import moa.core.InstanceExample;
-import moa.core.ObjectRepository;
-import moa.options.AbstractOptionHandler;
-import moa.tasks.TaskMonitor;
-
 /**
  * Stream reader of ARFF files.
  *

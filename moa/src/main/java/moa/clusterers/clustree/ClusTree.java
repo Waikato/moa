@@ -21,15 +21,22 @@
 package moa.clusterers.clustree;
 
 import java.util.ArrayList;
-
 import java.util.LinkedList;
-import moa.clusterers.clustree.util.*;
+
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
+import moa.clusterers.clustree.util.Budget;
+import moa.clusterers.clustree.util.SimpleBudget;
 import moa.core.Measurement;
+<<<<<<< c4a46917f06a4f4c3c08e67d06f6762cca1b47f9
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.FlagOption;
 import com.yahoo.labs.samoa.instances.Instance;
+=======
+>>>>>>> Instances rework, new iSOUPTree models and import cleanup
 
 /**
  * Citation: ClusTree: Philipp Kranen, Ira Assent, Corinna Baldauf, Thomas Seidl:

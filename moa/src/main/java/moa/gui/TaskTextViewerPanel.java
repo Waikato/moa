@@ -40,9 +40,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import moa.evaluation.Accuracy;
+
 import moa.evaluation.MeasureCollection;
-import moa.evaluation.RegressionAccuracy;
 import moa.gui.PreviewPanel.TypePanel;
 import moa.gui.conceptdrift.CDTaskManagerPanel;
 import moa.streams.clustering.ClusterEvent;

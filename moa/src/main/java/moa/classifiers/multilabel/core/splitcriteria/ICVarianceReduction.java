@@ -31,14 +31,14 @@ public class ICVarianceReduction extends AbstractOptionHandler implements MultiL
 
 	}
 	
-	private double computeVariance(double n, double sum, double squares) {
+	public double computeVariance(double n, double sum, double squares) {
 		if (n > 1) {
 			return (squares - sum * sum / n) / (n - 1);
 		}
 		return 0;
 	}
 	
-	private double computeVariance(DoubleVector v) {
+	public double computeVariance(DoubleVector v) {
 		return computeVariance(v.getValue(0), v.getValue(1), v.getValue(2));
 	}
 
@@ -62,10 +62,10 @@ public class ICVarianceReduction extends AbstractOptionHandler implements MultiL
 	}
 	
 	protected double getMeritOfSplitForOutput(DoubleVector[] preSplitDist, DoubleVector[][] postSplitDists, int outputAttributeIndex){
-		return getMeritOfSplitForOutput(preSplitDist[outputAttributeIndex],postSplitDists[outputAttributeIndex]);
+		return getMeritOfSplitForAttribute(preSplitDist[outputAttributeIndex],postSplitDists[outputAttributeIndex]);
 	}
 
-	protected double getMeritOfSplitForOutput(DoubleVector preSplitDist, DoubleVector[] postSplitDists) {
+	protected double getMeritOfSplitForAttribute(DoubleVector preSplitDist, DoubleVector[] postSplitDists) {
 		double merit=0;
 		//count number of branches with weightSeen higher than threshold
 		int count = 0; 

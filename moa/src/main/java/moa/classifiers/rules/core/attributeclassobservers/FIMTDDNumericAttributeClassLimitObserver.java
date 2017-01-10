@@ -20,6 +20,7 @@
 package moa.classifiers.rules.core.attributeclassobservers;
 
 import com.github.javacliparser.IntOption;
+
 import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;
 
 
@@ -99,9 +100,6 @@ public class FIMTDDNumericAttributeClassLimitObserver extends FIMTDDNumericAttri
 		// right (>) distribution and send the value down to the right child node.
 		// If no right child exists, create one
 		else { // val > cut_point
-			this.rightStatistics.addToValue(0,1);
-			this.rightStatistics.addToValue(1,label);
-			this.rightStatistics.addToValue(2,label*label);
 			if (this.right == null) {
 				if(numNodes<maxNodes){
 					this.right = new Node(val, label, weight);

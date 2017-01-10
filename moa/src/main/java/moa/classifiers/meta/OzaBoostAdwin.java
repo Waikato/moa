@@ -19,17 +19,18 @@
  */
 package moa.classifiers.meta;
 
-import moa.classifiers.core.driftdetection.ADWIN;
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
-import moa.core.DoubleVector;
-import moa.core.Measurement;
-import moa.core.MiscUtils;
-import moa.options.ClassOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
+import moa.classifiers.core.driftdetection.ADWIN;
+import moa.core.DoubleVector;
+import moa.core.Measurement;
+import moa.core.MiscUtils;
+import moa.options.ClassOption;
 
 /**
  * Boosting for evolving data streams using ADWIN.

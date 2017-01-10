@@ -21,7 +21,6 @@ package moa.classifiers.rules.core.conditionaltests;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.classifiers.core.conditionaltests.InstanceConditionalBinaryTest;
 import moa.classifiers.rules.core.Predicate;

@@ -21,14 +21,16 @@
 package moa.classifiers.bayes;
 
 import java.util.Arrays;
+
 import com.github.javacliparser.FloatOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.classifiers.AbstractClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.core.Utils;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * <!-- globalinfo-start --> Class for building and using a multinomial Naive

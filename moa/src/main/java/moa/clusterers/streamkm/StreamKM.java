@@ -1,10 +1,11 @@
 package moa.clusterers.streamkm;
 
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  *

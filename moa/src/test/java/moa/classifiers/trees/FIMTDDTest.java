@@ -23,7 +23,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import moa.classifiers.AbstractMultipleRegressorTestCase;
 import moa.classifiers.Classifier;
-import static moa.test.MoaTestCase.runTest;
 
 /**
  * Tests the FIMTDD classifier.
@@ -31,8 +30,7 @@ import static moa.test.MoaTestCase.runTest;
  * @author  fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class FIMTDDTest
-  extends AbstractMultipleRegressorTestCase {  
+public class FIMTDDTest extends AbstractMultipleRegressorTestCase {  
 
   /**
    * Constructs the test case. Called by subclasses.

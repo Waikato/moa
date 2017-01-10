@@ -19,10 +19,11 @@
  */
 package moa.classifiers.trees;
 
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.bayes.NaiveBayes;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.core.Utils;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Random decision trees for data streams.

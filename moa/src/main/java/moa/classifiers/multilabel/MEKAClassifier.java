@@ -19,28 +19,20 @@
  */
 package moa.classifiers.multilabel;
 
-import java.util.Arrays;
 import java.io.Serializable;
-import moa.core.Measurement;
-import weka.classifiers.UpdateableClassifier;
-import moa.classifiers.AbstractClassifier;
-import moa.core.Measurement;
-import com.github.javacliparser.IntOption;
-import moa.options.WEKAClassOption;
-import weka.classifiers.Classifier;
-import weka.classifiers.UpdateableClassifier;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 
-import com.yahoo.labs.samoa.instances.StructuredInstance;
+import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
-import moa.classifiers.MultiLabelLearner;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
+
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
-import moa.core.Example;
+import moa.core.Measurement;
+import moa.options.WEKAClassOption;
+import weka.classifiers.Classifier;
+import weka.classifiers.UpdateableClassifier;
 
 /**
  * Wrapper for MEKA classifiers. 

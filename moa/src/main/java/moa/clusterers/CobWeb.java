@@ -21,16 +21,16 @@ package moa.clusterers;
 
 import java.io.Serializable;
 
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
+import moa.core.FastVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-import moa.core.FastVector;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import weka.core.AttributeStats;
 import weka.experiment.Stats;
 import weka.filters.unsupervised.attribute.Add;

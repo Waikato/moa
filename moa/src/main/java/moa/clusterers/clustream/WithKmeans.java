@@ -32,15 +32,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.cluster.CFCluster;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;
-import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.DenseInstance;
-import com.yahoo.labs.samoa.instances.Instance;
 
 public class WithKmeans extends AbstractClusterer {
 	

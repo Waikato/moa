@@ -19,14 +19,14 @@
  */
 package moa.tasks;
 
+import com.github.javacliparser.IntOption;
+
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
 import moa.evaluation.LearningEvaluation;
 import moa.options.ClassOption;
-import com.github.javacliparser.IntOption;
 import moa.streams.ExampleStream;
-import moa.streams.InstanceStream;
 
 /**
  * Task for measuring the speed of the stream.

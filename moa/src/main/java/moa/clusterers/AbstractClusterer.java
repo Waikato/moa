@@ -22,19 +22,19 @@ package moa.clusterers;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import moa.cluster.Clustering;
 
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
+import moa.cluster.Clustering;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.StringUtils;
 import moa.gui.AWTRenderer;
 import moa.options.AbstractOptionHandler;
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 public abstract class AbstractClusterer extends AbstractOptionHandler
 		implements Clusterer {

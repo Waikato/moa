@@ -1,6 +1,7 @@
 package com.yahoo.labs.samoa.instances;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -9,15 +10,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import moa.core.InputStreamProgressMonitor;
-import moa.streams.ArffFileStream;
-import moa.streams.MultiTargetArffFileStream;
-import moa.test.MoaTestCase;
-import moa.test.TmpFile;
-
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

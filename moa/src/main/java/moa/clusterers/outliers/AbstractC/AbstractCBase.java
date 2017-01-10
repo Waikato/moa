@@ -23,8 +23,9 @@ package moa.clusterers.outliers.AbstractC;
 
 import java.util.ArrayList;
 import java.util.Vector;
-import moa.clusterers.outliers.AbstractC.ISBIndex.ISBNode;
+
 import moa.clusterers.outliers.MyBaseOutlierDetector;
+import moa.clusterers.outliers.AbstractC.ISBIndex.ISBNode;
 
 public abstract class AbstractCBase extends MyBaseOutlierDetector {    
     protected static final Long FIRST_OBJ_ID = 1L;
