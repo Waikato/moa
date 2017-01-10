@@ -23,13 +23,15 @@ package moa.clusterers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.core.Measurement;
 import moa.gui.visualization.DataPoint;
-import com.yahoo.labs.samoa.instances.Instance;
 
 public class ClusterGenerator extends AbstractClusterer{
 

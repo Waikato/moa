@@ -21,14 +21,16 @@
 package moa.clusterers.clustree;
 
 import java.util.ArrayList;
-
 import java.util.LinkedList;
-import moa.clusterers.clustree.util.*;
-import moa.cluster.Clustering;
-import moa.clusterers.AbstractClusterer;
-import moa.core.Measurement;
+
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.cluster.Clustering;
+import moa.clusterers.AbstractClusterer;
+import moa.clusterers.clustree.util.Budget;
+import moa.clusterers.clustree.util.SimpleBudget;
+import moa.core.Measurement;
 
 /**
  * Citation: ClusTree: Philipp Kranen, Ira Assent, Corinna Baldauf, Thomas Seidl:

@@ -19,9 +19,10 @@
  */
 package moa.classifiers.trees;
 
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.bayes.NaiveBayes;
 import moa.core.Utils;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Adaptive decision option tree for streaming data with adaptive Naive

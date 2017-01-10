@@ -21,13 +21,20 @@
 
 package moa.gui.visualization;
 
-import java.awt.*;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.PointerInfo;
+import java.awt.RenderingHints;
+
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import moa.cluster.SphereCluster;
 import moa.clusterers.outliers.MyBaseOutlierDetector;
 import moa.clusterers.outliers.MyBaseOutlierDetector.Outlier;

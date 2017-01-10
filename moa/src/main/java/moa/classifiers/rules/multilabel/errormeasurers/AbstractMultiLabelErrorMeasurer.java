@@ -1,12 +1,12 @@
 package moa.classifiers.rules.multilabel.errormeasurers;
 
+import com.github.javacliparser.FloatOption;
+import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
+
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
-
-import com.github.javacliparser.FloatOption;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
-import com.yahoo.labs.samoa.instances.Prediction;
 
 public abstract class AbstractMultiLabelErrorMeasurer  extends AbstractOptionHandler implements MultiTargetErrorMeasurer{
 

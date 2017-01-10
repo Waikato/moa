@@ -19,12 +19,12 @@
  */
 package moa.streams.generators.multilabel;
 
-import moa.streams.ArffFileStream;
-import moa.streams.MultiTargetInstanceStream;
-import moa.core.MultilabelInstancesHeader;
-
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
+import moa.core.MultilabelInstancesHeader;
+import moa.streams.ArffFileStream;
+import moa.streams.MultiTargetInstanceStream;
 
 /**
  * Stream reader for ARFF files of multilabel data.

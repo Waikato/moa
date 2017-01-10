@@ -17,16 +17,16 @@
  */
 package moa.classifiers.lazy;
 
-import java.io.StringReader;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.MultiChoiceOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.lazy.neighboursearch.KDTree;
 import moa.classifiers.lazy.neighboursearch.LinearNNSearch;
 import moa.classifiers.lazy.neighboursearch.NearestNeighbourSearch;
 import moa.core.Measurement;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.github.javacliparser.IntOption;
-import com.github.javacliparser.MultiChoiceOption;
 
 /**
  * k Nearest Neighbor.<p>

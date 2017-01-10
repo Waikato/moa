@@ -20,7 +20,6 @@
 package moa.core;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Class for storing the header or context of a multilabel data stream.

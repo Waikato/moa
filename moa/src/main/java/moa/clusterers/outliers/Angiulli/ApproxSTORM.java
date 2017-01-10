@@ -26,11 +26,13 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
-import moa.clusterers.outliers.Angiulli.ISBIndex.ISBNode;
-import moa.clusterers.outliers.Angiulli.ISBIndex.ISBSearchResult;
+
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.clusterers.outliers.Angiulli.ISBIndex.ISBNode;
+import moa.clusterers.outliers.Angiulli.ISBIndex.ISBSearchResult;
 
 
 public class ApproxSTORM extends STORMBase {

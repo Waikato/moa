@@ -1,9 +1,9 @@
 package moa.clusterers.streamkm;
 
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.cluster.Cluster;
 import moa.cluster.SphereCluster;
-
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  *

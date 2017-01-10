@@ -19,19 +19,7 @@
  */
 package moa.evaluation;
 
-import moa.core.Example;
-import moa.core.Measurement;
-import moa.core.ObjectRepository;
-import moa.options.AbstractOptionHandler;
-
 import com.github.javacliparser.IntOption;
-
-import moa.tasks.TaskMonitor;
-import moa.core.Utils;
-
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Classification evaluator that updates evaluation results using a sliding

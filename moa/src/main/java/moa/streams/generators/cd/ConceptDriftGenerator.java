@@ -20,6 +20,7 @@
 package moa.streams.generators.cd;
 
 import java.util.ArrayList;
+
 import moa.streams.InstanceStream;
 import moa.streams.clustering.ClusterEvent;
 

@@ -5,22 +5,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 
 import moa.AbstractMOAObject;
 import moa.classifiers.MultiLabelLearner;
-import moa.classifiers.core.attributeclassobservers.NumericAttributeClassObserver;
-import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
-import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.multilabel.core.attributeclassobservers.NominalStatisticsObserver;
 import moa.classifiers.multilabel.core.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
-import moa.classifiers.rules.core.RuleActiveLearningNode;
-import moa.classifiers.rules.core.RuleSplitNode;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
-import moa.classifiers.rules.core.conditionaltests.NumericAttributeBinaryRulePredicate;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.core.StringUtils;

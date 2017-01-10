@@ -21,15 +21,14 @@ package moa.streams.filters;
 
 import java.util.Random;
 
-import moa.core.AutoExpandVector;
-import moa.core.DoubleVector;
-import moa.core.GaussianEstimator;
-import moa.core.InstanceExample;
-
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
+import moa.core.AutoExpandVector;
+import moa.core.DoubleVector;
+import moa.core.GaussianEstimator;
 
 /**
  * Filter for adding random noise to examples in a stream.

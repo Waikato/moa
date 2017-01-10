@@ -19,11 +19,10 @@
  */
 package moa.classifiers.multilabel.meta;
 
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiLabelLearner;
@@ -51,18 +50,25 @@ public class MTOzaBag extends OzaBag implements MultiLabelLearner, MultiTargetRe
     	this.baseLearnerOption = new ClassOption("baseLearner", 'l',
                 "Classifier to train.", MultiLabelLearner.class, "multilabel.trees.ISOUPTree");
     	}
-	
-    @Override
+
+	@Override
     public void resetLearningImpl() {
         this.ensemble = new Classifier[this.ensembleSizeOption.getValue()];
         MultiLabelLearner baseLearner = (MultiLabelLearner) getPreparedClassOption(this.baseLearnerOption);
-        baseLearner.setModelContext(this.modelContext);
         for (int i = 0; i < this.ensemble.length; i++) {
             this.ensemble[i] = baseLearner.copy();
             this.ensemble[i].resetLearning();
+            this.ensemble[i].setRandomSeed(this.randomSeed + i * 100);
         }
     }
 
+    
+    @Override    
+    public void modelContextSet() {
+        for (int i = 0; i < this.ensemble.length; i++) {
+            this.ensemble[i].setModelContext(this.getModelContext());;
+        }
+    }
     @Override // @note don't need this here
     public boolean isRandomizable() {
         return true;

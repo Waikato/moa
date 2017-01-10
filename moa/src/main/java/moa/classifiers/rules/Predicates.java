@@ -21,6 +21,8 @@
 
 package moa.classifiers.rules;
 
+import com.yahoo.labs.samoa.instances.Instance;
+
 /**
  * Class that creates and evaluates the predicates
  * 
@@ -32,7 +34,6 @@ package moa.classifiers.rules;
  */
 
 import moa.AbstractMOAObject;
-import com.yahoo.labs.samoa.instances.Instance;
 
 public class Predicates extends AbstractMOAObject{
 	

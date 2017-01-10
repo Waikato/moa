@@ -18,9 +18,11 @@
 package moa.classifiers.lazy;
 
 import java.util.ArrayList;
-import moa.classifiers.core.driftdetection.ADWIN;
+
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
+import moa.classifiers.core.driftdetection.ADWIN;
 
 /**
  * k Nearest Neighbor ADAPTIVE with ADWIN+PAW.<p>

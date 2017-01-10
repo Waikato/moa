@@ -19,17 +19,17 @@
  */
 package moa.streams;
 
-import com.github.javacliparser.FileOption;
-import com.github.javacliparser.IntOption;
-import com.github.javacliparser.StringOption;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader; 
+import java.io.Reader;
+
+import com.github.javacliparser.FileOption;
+import com.github.javacliparser.StringOption;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.core.InputStreamProgressMonitor;
 import moa.core.InstanceExample;
 import moa.core.ObjectRepository;

@@ -18,13 +18,15 @@
  */
 package moa.classifiers.core.driftdetection;
 
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-import moa.core.ObjectRepository;
-import moa.tasks.TaskMonitor;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+
 import moa.AbstractMOAObject;
+import moa.core.ObjectRepository;
+import moa.tasks.TaskMonitor;
 
 /**
  * SeqDriftChangeDetector.java. This extends Abstract Change Detector 

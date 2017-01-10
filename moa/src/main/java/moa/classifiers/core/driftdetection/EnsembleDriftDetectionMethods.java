@@ -22,6 +22,7 @@ import com.github.javacliparser.IntOption;
 import com.github.javacliparser.ListOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.github.javacliparser.Option;
+
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;

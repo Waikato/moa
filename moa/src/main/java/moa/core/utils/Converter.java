@@ -21,9 +21,11 @@ package moa.core.utils;
 
 import java.util.LinkedList;
 import java.util.List;
-import moa.AbstractMOAObject;
+
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
+import moa.AbstractMOAObject;
 
 /**
  * Converter. This class can be used to convert a multi-label instance into a

@@ -20,6 +20,7 @@
 package moa.tasks;
 
 import java.util.ArrayList;
+
 import moa.streams.clustering.ClusterEvent;
 
 public abstract class ConceptDriftMainTask extends MainTask {

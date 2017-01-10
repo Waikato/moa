@@ -19,17 +19,17 @@
  */
 package moa.classifiers.core.attributeclassobservers;
 
+import com.github.javacliparser.IntOption;
+
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
-import moa.core.Utils;
-
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.GreenwaldKhannaQuantileSummary;
 import moa.core.ObjectRepository;
+import moa.core.Utils;
 import moa.options.AbstractOptionHandler;
-import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 
 /**

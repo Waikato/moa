@@ -129,6 +129,22 @@ public interface Instance extends Serializable {
     public boolean isMissing(int instAttIndex);
 
     /**
+     * Checks if an attribute is missing.
+     *
+     * @param index the instance input attribute index
+     * @return true, if is missing
+     */
+    public boolean isInputMissing(int index);
+
+    /**
+     * Checks if an attribute is missing.
+     *
+     * @param index the instance output attribute index
+     * @return true, if is missing
+     */
+    public boolean isOutputMissing(int index);
+    
+    /**
      * Gets the index of the attribute given the index of the array in a sparse
      * representation.
      *

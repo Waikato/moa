@@ -21,6 +21,7 @@
 package moa.classifiers.core.attributeclassobservers;
 
 import java.io.Serializable;
+
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
 import moa.classifiers.core.splitcriteria.SplitCriterion;

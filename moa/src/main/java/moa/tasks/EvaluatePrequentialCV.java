@@ -20,18 +20,6 @@
  */
 package moa.tasks;
 
-import com.github.javacliparser.FileOption;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-import com.github.javacliparser.MultiChoiceOption;
-import com.yahoo.labs.samoa.instances.Instance;
-import moa.classifiers.Classifier;
-import moa.core.*;
-import moa.evaluation.*;
-import moa.learners.Learner;
-import moa.options.ClassOption;
-import moa.streams.ExampleStream;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -39,6 +27,22 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+
+import com.github.javacliparser.FileOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.MultiChoiceOption;
+
+import moa.core.Example;
+import moa.core.Measurement;
+import moa.core.MiscUtils;
+import moa.core.ObjectRepository;
+import moa.core.TimingUtils;
+import moa.evaluation.LearningCurve;
+import moa.evaluation.LearningEvaluation;
+import moa.evaluation.LearningPerformanceEvaluator;
+import moa.learners.Learner;
+import moa.options.ClassOption;
+import moa.streams.ExampleStream;
 
 /**
  * Task for prequential cross-validation evaluation of a classifier on a stream by testing then training with each

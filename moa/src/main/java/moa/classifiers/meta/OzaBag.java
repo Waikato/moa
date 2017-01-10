@@ -19,15 +19,15 @@
  */
 package moa.classifiers.meta;
 
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;
-import com.github.javacliparser.IntOption;
 
 /**
  * Incremental on-line bagging of Oza and Russell.
@@ -66,6 +66,14 @@ public class OzaBag extends AbstractClassifier {
 
     protected Classifier[] ensemble;
 
+    @Override
+    public long measureByteSize() {
+    	long size = 0;
+    	for (Classifier c : ensemble) 
+    		size += c.measureByteSize();
+    	return size;
+    }
+    
     @Override
     public void resetLearningImpl() {
         this.ensemble = new Classifier[this.ensembleSizeOption.getValue()];

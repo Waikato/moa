@@ -21,6 +21,7 @@
 package moa.recommender.predictor;
 
 import java.util.List;
+
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;

@@ -22,6 +22,7 @@ package moa.evaluation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import moa.cluster.Clustering;
 import moa.gui.visualization.DataPoint;
 

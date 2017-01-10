@@ -21,6 +21,7 @@
 package moa.clusterers.outliers.MCOD;
 
 import java.util.ArrayList;
+
 import moa.clusterers.outliers.MCOD.ISBIndex.ISBNode;
 import moa.clusterers.outliers.utils.mtree.DistanceFunctions.EuclideanCoordinate;
 

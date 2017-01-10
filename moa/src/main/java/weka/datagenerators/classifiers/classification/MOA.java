@@ -22,6 +22,16 @@
 
 package weka.datagenerators.classifiers.classification;
 
+import java.util.Enumeration;
+import java.util.Random;
+import java.util.Vector;
+
+import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
+
+import moa.options.AbstractOptionHandler;
+import moa.options.ClassOption;
+import moa.streams.InstanceStream;
+import moa.streams.generators.LEDGenerator;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.MOAUtils;
@@ -29,17 +39,6 @@ import weka.core.Option;
 import weka.core.RevisionUtils;
 import weka.core.Utils;
 import weka.datagenerators.ClassificationGenerator;
-
-import java.util.Enumeration;
-import java.util.Random;
-import java.util.Vector;
-
-import moa.options.AbstractOptionHandler;
-import moa.options.ClassOption;
-import moa.streams.InstanceStream;
-import moa.streams.generators.LEDGenerator;
-import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
-import com.yahoo.labs.samoa.instances.WekaToSamoaInstanceConverter;
 
 /**
  <!-- globalinfo-start -->

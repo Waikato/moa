@@ -20,12 +20,6 @@
  */
 package moa.gui;
 
-import com.github.javacliparser.gui.OptionEditComponent;
-import moa.core.Utils;
-import weka.gui.GenericObjectEditor;
-import weka.gui.PropertyDialog;
-import weka.gui.GenericObjectEditor.GOEPanel;
-
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,7 +29,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.github.javacliparser.Option;
+import com.github.javacliparser.gui.OptionEditComponent;
+
+import moa.core.Utils;
 import moa.options.WEKAClassOption;
+import weka.gui.GenericObjectEditor;
+import weka.gui.GenericObjectEditor.GOEPanel;
+import weka.gui.PropertyDialog;
 
 /**
  * An OptionEditComponent that lets the user edit a WEKA class option.

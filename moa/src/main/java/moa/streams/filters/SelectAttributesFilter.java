@@ -3,13 +3,13 @@ package moa.streams.filters;
 import java.util.ArrayList;
 import java.util.List;
 
-import moa.core.InstanceExample;
-
 import com.github.javacliparser.StringOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceImpl;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
+import moa.core.InstanceExample;
 
 public class SelectAttributesFilter extends AbstractMultiLabelStreamFilter implements MultiLabelStreamFilter{
 

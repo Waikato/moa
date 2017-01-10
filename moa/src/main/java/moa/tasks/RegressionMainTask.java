@@ -5,7 +5,7 @@
 package moa.tasks;
 
 import java.util.ArrayList;
-import moa.streams.InstanceStream;
+
 import moa.streams.clustering.ClusterEvent;
 
 /**

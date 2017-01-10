@@ -1,15 +1,14 @@
 package moa.classifiers.rules.multilabel.functions;
 
+import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
+
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.rules.multilabel.errormeasurers.AbstractMultiTargetErrorMeasurer;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiTargetErrorMeasurer;
 import moa.core.Measurement;
-import moa.learners.Learner;
 import moa.options.ClassOption;
-
-import com.yahoo.labs.samoa.instances.StructuredInstance;
-import com.yahoo.labs.samoa.instances.Prediction;
 
 public class AdaptiveMultiTargetRegressor extends AbstractMultiLabelLearner
 implements MultiTargetRegressor, AMRulesFunction {

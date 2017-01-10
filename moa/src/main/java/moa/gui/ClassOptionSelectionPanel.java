@@ -19,7 +19,6 @@
  */
 package moa.gui;
 
-import com.github.javacliparser.gui.OptionsConfigurationPanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Window;
@@ -31,6 +30,8 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import com.github.javacliparser.gui.OptionsConfigurationPanel;
 
 import moa.core.AutoClassDiscovery;
 import moa.core.AutoExpandVector;

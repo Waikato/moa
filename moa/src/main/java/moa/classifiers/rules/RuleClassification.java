@@ -33,11 +33,13 @@ package moa.classifiers.rules;
  */
 
 import java.util.ArrayList;
+
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.AbstractMOAObject;
-import moa.classifiers.core.attributeclassobservers.*;
+import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
-import com.yahoo.labs.samoa.instances.Instance;
 
 public class RuleClassification extends AbstractMOAObject{
 	

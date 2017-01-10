@@ -73,7 +73,6 @@ public class JavaCLIParser implements Serializable {
         Field[] fields = c.getFields();
         List<Option> optList = new LinkedList<Option>();
         for (Field field : fields) {
-            String fName = field.getName();
             Class<?> fType = field.getType();
             if (fType.getName().endsWith("Option")) {
                 if (Option.class.isAssignableFrom(fType)) {

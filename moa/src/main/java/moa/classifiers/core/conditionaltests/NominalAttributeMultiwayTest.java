@@ -19,7 +19,6 @@
  */
 package moa.classifiers.core.conditionaltests;
 
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 

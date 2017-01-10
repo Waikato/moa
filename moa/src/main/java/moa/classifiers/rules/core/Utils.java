@@ -14,6 +14,11 @@ public final class Utils {
 		return computeVariance(statistics.getValue(0),statistics.getValue(1),statistics.getValue(2));
 	}
 
+	public static double computeVariance(double[] statistics)
+	{
+		return computeVariance(statistics[0],statistics[1],statistics[2]);
+	}
+	
 	public static double computeSD(double squaredSum, double sum, double weightSeen) {
 		if (weightSeen > 1) {
 			return Math.sqrt((squaredSum - ((sum * sum) / weightSeen)) / (weightSeen - 1.0));

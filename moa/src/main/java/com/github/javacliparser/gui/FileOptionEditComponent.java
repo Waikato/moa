@@ -31,6 +31,7 @@ import javax.swing.JTextField;
 
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.Option;
+
 import moa.gui.FileExtensionFilter;
 
 /**

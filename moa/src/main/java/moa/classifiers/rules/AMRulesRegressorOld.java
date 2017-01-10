@@ -64,11 +64,10 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.MultiChoiceOption;
 
 import moa.classifiers.Regressor;
-import moa.classifiers.core.splitcriteria.VarianceReductionSplitCriterion;
 import moa.classifiers.rules.core.Rule;
+import moa.classifiers.rules.core.Rule.Builder;
 import moa.classifiers.rules.core.RuleActiveLearningNode;
 import moa.classifiers.rules.core.RuleActiveRegressionNode;
-import moa.classifiers.rules.core.Rule.Builder;
 import moa.classifiers.rules.core.splitcriteria.AMRulesSplitCriterion;
 import moa.classifiers.rules.core.voting.ErrorWeightedVote;
 import moa.classifiers.rules.functions.Perceptron;

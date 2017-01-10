@@ -211,6 +211,7 @@ public class ArffLoader {
         ArrayList<Double> attributeValues = new ArrayList<Double>();
         List<Integer> indexValues = new ArrayList<Integer>();
         try {
+        	streamTokenizer.nextToken(); // Remove the '{' char
             //For each line
             while (streamTokenizer.ttype != StreamTokenizer.TT_EOL
                     && streamTokenizer.ttype != StreamTokenizer.TT_EOF) {

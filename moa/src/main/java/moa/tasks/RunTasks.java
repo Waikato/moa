@@ -20,10 +20,11 @@
  */
 package moa.tasks;
 
-import moa.core.ObjectRepository;
-import moa.options.ClassOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.StringOption;
+
+import moa.core.ObjectRepository;
+import moa.options.ClassOption;
 
 /**
  * Task for running several experiments modifying values of parameters.

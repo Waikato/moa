@@ -23,9 +23,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
+import com.github.javacliparser.FileOption;
+
 import moa.core.ObjectRepository;
 import moa.core.SerializeUtils;
-import com.github.javacliparser.FileOption;
 
 /**
  * Abstract Main Task. All tasks that want to write their result 

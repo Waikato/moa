@@ -23,13 +23,12 @@ import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.conditionaltests.NominalAttributeBinaryTest;
 import moa.classifiers.core.conditionaltests.NominalAttributeMultiwayTest;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
-import moa.core.ObjectRepository;
-import moa.tasks.TaskMonitor;
-import moa.core.Utils;
-
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
+import moa.core.ObjectRepository;
+import moa.core.Utils;
 import moa.options.AbstractOptionHandler;
+import moa.tasks.TaskMonitor;
 
 /**
  * Class for observing the class data distribution for a nominal attribute.

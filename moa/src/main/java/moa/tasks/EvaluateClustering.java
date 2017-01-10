@@ -8,13 +8,14 @@
  */
 package moa.tasks;
 
+import com.github.javacliparser.FileOption;
+import com.github.javacliparser.IntOption;
+
 import moa.clusterers.AbstractClusterer;
 import moa.core.ObjectRepository;
 import moa.evaluation.LearningCurve;
 import moa.gui.BatchCmd;
 import moa.options.ClassOption;
-import com.github.javacliparser.FileOption;
-import com.github.javacliparser.IntOption;
 import moa.streams.clustering.ClusteringStream;
 
 /**

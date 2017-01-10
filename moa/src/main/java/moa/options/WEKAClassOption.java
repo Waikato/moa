@@ -20,17 +20,17 @@
  */
 package moa.options;
 
-import com.github.javacliparser.Option;
-import weka.core.Utils;
-
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
+
+import com.github.javacliparser.Option;
 
 //import javax.swing.JComponent;
 
 //import moa.gui.WEKAClassOptionEditComponent;
 import moa.tasks.Task;
+import weka.core.Utils;
 
 /**
  * WEKA class option. This option is used to access options in WEKA.

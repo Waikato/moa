@@ -23,9 +23,10 @@ package moa.classifiers.lazy.neighboursearch.kdtrees;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Vector;
-import moa.classifiers.lazy.neighboursearch.EuclideanDistance;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
+import moa.classifiers.lazy.neighboursearch.EuclideanDistance;
 
 /**
  * Class that splits up a KDTreeNode.

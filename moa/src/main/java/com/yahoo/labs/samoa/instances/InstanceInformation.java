@@ -194,7 +194,6 @@ public class InstanceInformation implements Serializable {
     }
 
     public int numOutputAttributes() {
-
     	return outputIndexes.size();
     }
     

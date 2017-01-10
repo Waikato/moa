@@ -20,14 +20,14 @@
  */
 package moa.gui;
 
-import moa.core.PropertiesReader;
-import moa.core.Utils;
-
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
+
+import moa.core.PropertiesReader;
+import moa.core.Utils;
 
 /**
  * This class offers get methods for the default GUI settings in 

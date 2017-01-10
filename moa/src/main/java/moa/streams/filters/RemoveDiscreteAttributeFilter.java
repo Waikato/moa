@@ -21,14 +21,15 @@ package moa.streams.filters;
 
 import java.util.ArrayList;
 import java.util.List;
-import moa.core.InstanceExample;
-import moa.streams.InstanceStream;
+
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.SparseInstance;
+
 import moa.core.FastVector;
+import moa.core.InstanceExample;
+import moa.streams.InstanceStream;
 
 /**
  * Filter for removing discrete attributes in instances of a stream.

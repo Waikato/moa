@@ -20,9 +20,10 @@
 package moa.clusterers.clustream;
 
 import java.util.ArrayList;
-import java.util.Random;
-import moa.cluster.CFCluster;
+
 import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.cluster.CFCluster;
 
 public class ClustreamKernel extends CFCluster {
 	private static final long serialVersionUID = 1L;

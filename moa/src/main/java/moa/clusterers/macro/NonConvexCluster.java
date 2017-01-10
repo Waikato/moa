@@ -26,9 +26,10 @@ package moa.clusterers.macro;
 import java.util.List;
 import java.util.Vector;
 
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.cluster.CFCluster;
 import moa.cluster.Clustering;
-import com.yahoo.labs.samoa.instances.Instance;
 
 public class NonConvexCluster extends CFCluster implements IDenseMacroCluster {
 

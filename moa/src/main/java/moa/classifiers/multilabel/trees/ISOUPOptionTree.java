@@ -10,21 +10,13 @@ import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.StructuredInstance;
 
-import moa.classifiers.core.AttributeSplitSuggestion;
-import moa.classifiers.multilabel.core.attributeclassobservers.AttributeStatisticsObserver;
-import moa.classifiers.multilabel.core.splitcriteria.ICVarianceReduction;
 import moa.classifiers.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.multilabel.core.splitcriteria.WeightedICVarianceReduction;
-import moa.classifiers.multilabel.trees.ISOUPTree.LeafNode;
-import moa.classifiers.multilabel.trees.ISOUPTree.MultitargetPerceptron;
-import moa.classifiers.multilabel.trees.ISOUPTree.Node;
-import moa.classifiers.multilabel.trees.ISOUPTree.SplitNode;
 import moa.classifiers.rules.core.AttributeExpansionSuggestion;
-import moa.classifiers.trees.FIMTDD.InnerNode;
-import moa.classifiers.trees.ORTO.OptionNode;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+import moa.core.SizeOf;
 import moa.core.StringUtils;
 
 public class ISOUPOptionTree extends ISOUPTree {
@@ -41,13 +33,13 @@ public class ISOUPOptionTree extends ISOUPTree {
 			"maxTrees",
 			'm',
 			"The maximum number of trees contained in the option tree.",
-			10, 1, Integer.MAX_VALUE);
+			125, 1, Integer.MAX_VALUE);
 
 	public IntOption maxOptionLevelOption = new IntOption(
 			"maxOptionLevel",
 			'x',
 			"The maximal depth at which option nodes can be created.",
-			10, 0, Integer.MAX_VALUE);
+			3, 0, Integer.MAX_VALUE);
 
 	public FloatOption optionDecayFactorOption = new FloatOption(
 			"optionDecayFactor",
@@ -82,6 +74,12 @@ public class ISOUPOptionTree extends ISOUPTree {
 
 		public OptionNode(ISOUPTree tree) {
 			super(tree);
+		}
+		
+		public long calcByteSize() {
+			long size = super.calcByteSize();
+			size += SizeOf.fullSizeOf(optionFFSSL) + SizeOf.fullSizeOf(optionFFSeen); 
+			return size;
 		}
 
 		public void resetFF() {
@@ -293,24 +291,21 @@ public class ISOUPOptionTree extends ISOUPTree {
 		//			}
 		//		}
 
+		double[][] childPredictions = new double[node.numChildren()][];
 		for (Node child : node.children) {
 			int i = node.getChildIndex(child);
-			double[] childPrediction = child.getPrediction(inst);
+			childPredictions[i] = child.getPrediction(inst);
 			for (int j = 0; j < getModelContext().numOutputAttributes(); j++)  {
 				node.optionFFSeen.get(i).setValue(j, node.optionFFSeen.get(i).getValue(j) * optionFadingFactorOption.getValue() + 1);
-				node.optionFFSSL.get(i).setValue(j, node.optionFFSSL.get(i).getValue(j) * optionFadingFactorOption.getValue() + Math.pow(childPrediction[j] - inst.valueOutputAttribute(j), 2));
+				node.optionFFSSL.get(i).setValue(j, node.optionFFSSL.get(i).getValue(j) * optionFadingFactorOption.getValue() + (childPredictions[i][j] - inst.valueOutputAttribute(j)) * (childPredictions[i][j] - inst.valueOutputAttribute(j)));
 			}
-		}
-
-		for (Node child : node.children) {
-			processInstance(inst, child, child.getPrediction(inst), normalError, growthAllowed && node.alternateTree == null, inAlternate);
+			processInstance(inst, child, childPredictions[node.getChildIndex(child)], normalError, growthAllowed && node.alternateTree == null, inAlternate);
 		}
 	}
 
 	//endregion ================ METHODS ================
 
 	protected void attemptToSplit(LeafNode node, InnerNode parent, int parentIndex) {
-		//System.out.println("Evaluating splits");
 		//System.out.println(examplesSeen);
 		// Set the split criterion to use to the SDR split criterion as described by Ikonomovska et al. 
 		MultiLabelSplitCriterion splitCriterion = new WeightedICVarianceReduction(targetWeights);
@@ -364,28 +359,30 @@ public class ISOUPOptionTree extends ISOUPTree {
 				numSplits = 1;
 				acceptedSplits.add(bestSuggestion);
 			}
-			else {
-				// If the splitting criterion was not met, initiate pruning of the E-BST structures in each attribute observer
-				// TODO pruning is currently disabled
-				for (int i = 0; i < node.attributeObservers.size(); i++) {
-					AttributeStatisticsObserver obs = node.attributeObservers.get(i);
-					if (obs != null) {
-						if (getModelContext().attribute(i).isNumeric());
-						//TODO obs.removeBadSplits(null, secondBestSuggestion.merit / bestSuggestion.merit, bestSuggestion.merit, hoeffdingBound, getModelContext().numOutputAttributes());
-						if (getModelContext().attribute(i).isNominal());
-						// TODO nominal class observers
-					}
-				}
-			}
+//			else {
+//				// If the splitting criterion was not met, initiate pruning of the E-BST structures in each attribute observer
+//				// TODO pruning is currently disabled
+////				for (int i = 0; i < node.attributeObservers.size(); i++) {
+////					AttributeStatisticsObserver obs = node.attributeObservers.get(i);
+////					if (obs != null) {
+////						if (getModelContext().attribute(i).isNumeric());
+////						//TODO obs.removeBadSplits(null, secondBestSuggestion.merit / bestSuggestion.merit, bestSuggestion.merit, hoeffdingBound, getModelContext().numOutputAttributes());
+////						if (getModelContext().attribute(i).isNominal());
+////						// TODO nominal class observers
+////					}
+////				}
+//			}
 		}
 
+		//System.out.println("Found " + numSplits + " candidates.");
+		
 		// If the splitting criterion were met, split the current node using the chosen attribute test, and
 		// make two new branches leading to (empty) leaves
 		if (numSplits > 0) {
 			double optionFactor = numSplits * Math.pow(optionDecayFactorOption.getValue(), (double) node.getLevel());
 			log(Integer.toString(node.ID) + ',' + Integer.toString((int) this.examplesSeen));
 
-			if (numSplits == 1 || optionFactor < 2.0 || maxTreesOption.getValue() - numTrees <= 1) {
+			if (numSplits == 1) {
 				AttributeExpansionSuggestion splitDecision = acceptedSplits.get(0);
 				SplitNode newSplit = newSplitNode(splitDecision.getPredicate());
 				newSplit.ID = node.ID;
@@ -406,7 +403,7 @@ public class ISOUPOptionTree extends ISOUPTree {
 					parent.setChild(parentIndex, newSplit);
 					newSplit.setParent(parent);
 				}
-			} else {
+			} else if (optionFactor >= 2.0 || maxTreesOption.getValue() - numTrees > 1) {
 
 				OptionNode optionNode = newOptionNode();
 				optionNode.ID = node.ID;
@@ -415,7 +412,7 @@ public class ISOUPOptionTree extends ISOUPTree {
 				int j = 0;
 
 				for (AttributeExpansionSuggestion splitDecision : acceptedSplits) {
-					if (j > optionFactor || maxTreesOption.getValue() - numTrees <= 0) {
+					if (j > optionFactor || maxTreesOption.getValue() - numTrees <= 0 || j > 4) {
 						break;
 					}
 					SplitNode newSplit = newSplitNode(splitDecision.getPredicate());
@@ -447,6 +444,7 @@ public class ISOUPOptionTree extends ISOUPTree {
 				optionNode.resetFF();
 			}
 		}
+		//System.out.println("Splits finished...");
 	}
 
 	// region --- Option tree methods

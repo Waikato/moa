@@ -34,7 +34,6 @@ import com.github.javacliparser.StringOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.core.InputStreamProgressMonitor;
 import moa.core.InstanceExample;

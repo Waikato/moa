@@ -28,11 +28,13 @@ package moa.cluster;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import com.yahoo.labs.samoa.instances.Attribute;
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.AbstractMOAObject;
 import moa.core.AutoExpandVector;
 import moa.gui.visualization.DataPoint;
-import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.Instance;
 
 public class Clustering extends AbstractMOAObject{
 

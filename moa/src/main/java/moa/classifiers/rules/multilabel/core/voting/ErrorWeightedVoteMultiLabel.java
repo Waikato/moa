@@ -20,8 +20,6 @@
 
 package moa.classifiers.rules.multilabel.core.voting;
 
-import java.util.List;
-
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.MOAObject;

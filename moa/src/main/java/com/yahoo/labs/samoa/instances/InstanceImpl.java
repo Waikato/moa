@@ -185,6 +185,28 @@ public class InstanceImpl implements StructuredInstance {
     }
 
     /**
+     * Checks if is missing.
+     *
+     * @param instAttIndex the instance input attribute index
+     * @return true, if is missing
+     */
+    @Override
+    public boolean isInputMissing(int index) {
+        return this.instanceData.isMissing(this.instanceHeader.getInputInstanceIndex(index));
+    }
+
+    /**
+     * Checks if is missing.
+     *
+     * @param instAttIndex the instance output attribute index
+     * @return true, if is missing
+     */
+    @Override
+    public boolean isOutputMissing(int index) {
+        return this.instanceData.isMissing(this.instanceHeader.getOutputInstanceIndex(index));
+    }
+    
+    /**
      * Num values.
      *
      * @return the int

@@ -1,7 +1,8 @@
 package moa.classifiers.rules.core.anomalydetection;
 
-import moa.options.AbstractOptionHandler;
 import com.yahoo.labs.samoa.instances.StructuredInstance;
+
+import moa.options.AbstractOptionHandler;
 
 
 public abstract class AbstractAnomalyDetector extends AbstractOptionHandler implements AnomalyDetector {

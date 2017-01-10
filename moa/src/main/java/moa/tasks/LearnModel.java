@@ -19,11 +19,12 @@
  */
 package moa.tasks;
 
+import com.github.javacliparser.IntOption;
+
 import moa.classifiers.Classifier;
 import moa.core.ObjectRepository;
 import moa.learners.Learner;
 import moa.options.ClassOption;
-import com.github.javacliparser.IntOption;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 

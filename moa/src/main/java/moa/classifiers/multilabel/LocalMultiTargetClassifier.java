@@ -7,9 +7,9 @@ import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.AbstractMultiLabelLearner;
@@ -17,6 +17,7 @@ import moa.classifiers.Classifier;
 import moa.classifiers.MultiLabelClassifier;
 import moa.classifiers.MultiTargetRegressor;
 import moa.core.Measurement;
+import moa.core.SizeOf;
 import moa.options.ClassOption;
 
 public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
@@ -36,6 +37,17 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 	
 	ArrayList<Classifier> classifiers = null;
 	ArrayList<InstancesHeader> headers = null;
+
+	@Override
+	public long measureByteSize() {
+		long size = 0;
+		for (Classifier c : classifiers)
+			size += c.measureByteSize();
+		for (InstancesHeader h : headers) {
+			size += SizeOf.sizeOf(h);
+		}
+		return size;
+	}
 	
 	@Override
 	public boolean isRandomizable() {
@@ -60,6 +72,7 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 				attributes.add(getModelContext().outputAttribute(target));
 				InstancesHeader STHeader = new InstancesHeader();
 				STHeader.setAttributes(attributes);
+				STHeader.setInstances(new ArrayList<Instance>()); 
 				STHeader.setClassIndex(getModelContext().numInputAttributes());
 				headers.add(STHeader);
 			}
@@ -77,9 +90,7 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 	}
 	
 	@Override
-	public void trainOnInstanceImpl(StructuredInstance instance) {
-		initializeClassifiers();
-		
+	public void trainOnInstanceImpl(StructuredInstance instance) {		
 		for (int j = 0; j < instance.numberOutputTargets(); j++) {
 			Instance STInst = getSTInstance(instance, j);
 			
@@ -89,8 +100,6 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 
 	@Override
 	public Prediction getPredictionForInstance(StructuredInstance inst) {
-		initializeClassifiers();
-
 		MultiLabelPrediction prediction = new MultiLabelPrediction(getModelContext().numOutputAttributes());
 		for (int j = 0; j < inst.numberOutputTargets(); j++) {
 			Instance STInst = getSTInstance(inst, j);
@@ -102,21 +111,22 @@ public class LocalMultiTargetClassifier extends AbstractMultiLabelLearner
 	@Override
 	public void resetLearningImpl() {
 		classifiers = null;
-
+	}
+	
+	public void modelContextSet() {
+		initializeClassifiers();
+		makeHeaders();
+		for (int i = 0; i < classifiers.size(); i++)
+			classifiers.get(i).setModelContext(getHeader(i));
 	}
 
 	public void initializeClassifiers() {
-		this.classifierRandom.setSeed(1234);
-		if (classifiers == null) {
-			makeHeaders();
-			classifiers = new ArrayList<Classifier>();
-			for (int i = 0; i < getModelContext().numOutputAttributes(); i++) {
-				Classifier learner = ((Classifier) getPreparedClassOption(this.classifierOption)).copy();
-				classifiers.add(learner);
-				learner.resetLearning();
-				((AbstractClassifier) learner).classifierRandom = this.classifierRandom;
-				learner.setModelContext(getHeader(i));
-			}
+		classifiers = new ArrayList<Classifier>();
+		for (int i = 0; i < getModelContext().numOutputAttributes(); i++) {
+			Classifier learner = ((Classifier) getPreparedClassOption(this.classifierOption)).copy();
+			classifiers.add(learner);
+			learner.resetLearning();
+			((AbstractClassifier) learner).classifierRandom = this.classifierRandom;
 		}
 	}
 	

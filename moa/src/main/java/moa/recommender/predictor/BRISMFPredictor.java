@@ -21,11 +21,13 @@
 package moa.recommender.predictor;
 
 import java.util.List;
+
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
 import moa.recommender.data.RecommenderData;
 import moa.tasks.TaskMonitor;
 

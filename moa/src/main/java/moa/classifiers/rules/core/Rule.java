@@ -19,6 +19,10 @@
  */
 package moa.classifiers.rules.core;
 
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Class that stores an arrayList of predicates of a rule and the observers
  * (statistics). This class implements a function that evaluates a rule.
@@ -35,10 +39,6 @@ package moa.classifiers.rules.core;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
-
-import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
 
 import moa.AbstractMOAObject;
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;

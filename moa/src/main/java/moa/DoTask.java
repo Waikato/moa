@@ -19,7 +19,10 @@
  */
 package moa;
 
-import weka.core.Version;
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.Option;
+
 import moa.core.Globals;
 import moa.core.Measurement;
 import moa.core.StringUtils;
@@ -29,10 +32,7 @@ import moa.options.ClassOption;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
-
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.IntOption;
-import com.github.javacliparser.Option;
+import weka.core.Version;
 
 /**
  * Class for running a MOA task from the command line.

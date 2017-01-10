@@ -19,9 +19,9 @@
  */
 package com.github.javacliparser.gui;
 
-import com.github.javacliparser.Option;
+import javax.swing.JTextField;
 
-import javax.swing.*;
+import com.github.javacliparser.Option;
 
 /**
  * An OptionEditComponent that lets the user edit a list option.

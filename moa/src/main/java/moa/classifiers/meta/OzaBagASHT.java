@@ -19,13 +19,14 @@
  */
 package moa.classifiers.meta;
 
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.Classifier;
 import moa.classifiers.trees.ASHoeffdingTree;
 import moa.core.DoubleVector;
 import moa.core.MiscUtils;
-import com.github.javacliparser.IntOption;
-import com.github.javacliparser.FlagOption;
-import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.Utils;
 
 /**

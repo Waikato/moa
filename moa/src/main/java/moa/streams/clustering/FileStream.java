@@ -34,22 +34,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import moa.core.InputStreamProgressMonitor;
-import moa.core.InstanceExample;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import moa.core.ObjectRepository;
-import moa.core.utils.AttributeDefinitionUtil;
-
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.ListOption;
 import com.github.javacliparser.Option;
 import com.github.javacliparser.StringOption;
-
-import moa.tasks.TaskMonitor;
-
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
+import moa.core.InputStreamProgressMonitor;
+import moa.core.InstanceExample;
+import moa.core.ObjectRepository;
+import moa.core.utils.AttributeDefinitionUtil;
+import moa.tasks.TaskMonitor;
 
 public class FileStream extends ClusteringStream{
 

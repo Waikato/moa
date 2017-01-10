@@ -24,31 +24,27 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import com.github.javacliparser.FileOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Prediction;
+
+import moa.classifiers.Regressor;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
-import moa.evaluation.WindowClassificationPerformanceEvaluator;
 import moa.evaluation.EWMAClassificationPerformanceEvaluator;
 import moa.evaluation.FadingFactorClassificationPerformanceEvaluator;
 import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
+import moa.evaluation.RegressionPerformanceEvaluator;
+import moa.evaluation.WindowClassificationPerformanceEvaluator;
 import moa.learners.Learner;
 import moa.options.ClassOption;
-
-import com.github.javacliparser.FileOption;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-
-import moa.classifiers.Regressor;
 import moa.streams.ExampleStream;
-
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.Prediction;
-
-import moa.evaluation.RegressionPerformanceEvaluator;
 
 /**
  * Task for evaluating a classifier on a stream by testing then training with each example in sequence.

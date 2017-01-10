@@ -28,10 +28,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import moa.core.ObjectRepository;
-import moa.options.AbstractOptionHandler;
+
 import com.github.javacliparser.FileOption;
 
+import moa.core.ObjectRepository;
+import moa.options.AbstractOptionHandler;
 import moa.recommender.dataset.Dataset;
 import moa.tasks.TaskMonitor;
 

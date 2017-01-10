@@ -27,6 +27,7 @@
 package moa.classifiers.core.attributeclassobservers;
 
 import java.io.Serializable;
+
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
@@ -47,7 +48,7 @@ public class FIMTDDNumericAttributeClassObserver extends BinaryTreeNumericAttrib
 
         // E-BST statistics
         public DoubleVector leftStatistics = new DoubleVector();
-        public DoubleVector rightStatistics = new DoubleVector();
+        //public DoubleVector rightStatistics = new DoubleVector();
 
         // Child nodes
         public Node left;
@@ -55,9 +56,9 @@ public class FIMTDDNumericAttributeClassObserver extends BinaryTreeNumericAttrib
 
         public Node(double val, double label, double weight) {
             this.cut_point = val;
-            this.leftStatistics.addToValue(0, 1);
-            this.leftStatistics.addToValue(1, label);
-            this.leftStatistics.addToValue(2, label * label);
+            this.leftStatistics.addToValue(0, weight);
+            this.leftStatistics.addToValue(1, weight * label);
+            this.leftStatistics.addToValue(2, weight * label * label);
         }
 
         /**
@@ -69,16 +70,16 @@ public class FIMTDDNumericAttributeClassObserver extends BinaryTreeNumericAttrib
 		// If the new value equals the value stored in a node, update
             // the left (<=) node information
             if (val == this.cut_point) {
-                this.leftStatistics.addToValue(0, 1);
-                this.leftStatistics.addToValue(1, label);
-                this.leftStatistics.addToValue(2, label * label);
+                this.leftStatistics.addToValue(0, weight);
+                this.leftStatistics.addToValue(1, weight * label);
+                this.leftStatistics.addToValue(2, weight * label * label);
             } // If the new value is less than the value in a node, update the
             // left distribution and send the value down to the left child node.
             // If no left child exists, create one
             else if (val <= this.cut_point) {
-                this.leftStatistics.addToValue(0, 1);
-                this.leftStatistics.addToValue(1, label);
-                this.leftStatistics.addToValue(2, label * label);
+                this.leftStatistics.addToValue(0, weight);
+                this.leftStatistics.addToValue(1, weight * label);
+                this.leftStatistics.addToValue(2, weight * label * label);
                 if (this.left == null) {
                     this.left = new Node(val, label, weight);
                 } else {
@@ -88,14 +89,14 @@ public class FIMTDDNumericAttributeClassObserver extends BinaryTreeNumericAttrib
             // right (>) distribution and send the value down to the right child node.
             // If no right child exists, create one
             else { // val > cut_point
-                this.rightStatistics.addToValue(0, 1);
-                this.rightStatistics.addToValue(1, label);
-                this.rightStatistics.addToValue(2, label * label);
-                if (this.right == null) {
-                    this.right = new Node(val, label, weight);
-                } else {
-                    this.right.insertValue(val, label, weight);
-                }
+                //this.rightStatistics.addToValue(0, weight);
+                //this.rightStatistics.addToValue(1, weight * label);
+                //this.rightStatistics.addToValue(2, weight * label * label);
+                //if (this.right == null) {
+                //    this.right = new Node(val, label, weight);
+                //} else {
+                //    this.right.insertValue(val, label, weight);
+                //}
             }
         }
     }
@@ -111,10 +112,20 @@ public class FIMTDDNumericAttributeClassObserver extends BinaryTreeNumericAttrib
     double countRightTotal;
     double countLeftTotal;
 
+	public static double roundToSignificantFigures(double num, int n) {
+	    final double d = Math.ceil(Math.log10(num < 0 ? -num: num));
+	    final int power = n - (int) d;
+
+	    final double magnitude = Math.pow(10, power);
+	    final long shifted = (long) (num*magnitude);
+	    return shifted/magnitude;
+	}
+    
     public void observeAttributeClass(double attVal, double classVal, double weight) {
         if (Double.isNaN(attVal)) { //Instance.isMissingValue(attVal)
         } else {
             if (this.root == null) {
+//            	if ((long) attVal != attVal) attVal = roundToSignificantFigures(attVal, 4);
                 this.root = new Node(attVal, classVal, weight);
             } else {
                 this.root.insertValue(attVal, classVal, weight);
@@ -215,14 +226,14 @@ public class FIMTDDNumericAttributeClassObserver extends BinaryTreeNumericAttrib
 
         if (isBad) {
 
-            double[][] postSplitDists = new double[][]{{currentNode.leftStatistics.getValue(0), currentNode.leftStatistics.getValue(1), currentNode.leftStatistics.getValue(2)}, {currentNode.rightStatistics.getValue(0), currentNode.rightStatistics.getValue(1), currentNode.rightStatistics.getValue(2)}};
-            double[] preSplitDist = new double[]{(currentNode.leftStatistics.getValue(0) + currentNode.rightStatistics.getValue(0)), (currentNode.leftStatistics.getValue(1) + currentNode.rightStatistics.getValue(1)), (currentNode.leftStatistics.getValue(2) + currentNode.rightStatistics.getValue(2))};
-            double merit = criterion.getMeritOfSplit(preSplitDist, postSplitDists);
+            //double[][] postSplitDists = new double[][]{{currentNode.leftStatistics.getValue(0), currentNode.leftStatistics.getValue(1), currentNode.leftStatistics.getValue(2)}, {currentNode.rightStatistics.getValue(0), currentNode.rightStatistics.getValue(1), currentNode.rightStatistics.getValue(2)}};
+            //double[] preSplitDist = new double[]{(currentNode.leftStatistics.getValue(0) + currentNode.rightStatistics.getValue(0)), (currentNode.leftStatistics.getValue(1) + currentNode.rightStatistics.getValue(1)), (currentNode.leftStatistics.getValue(2) + currentNode.rightStatistics.getValue(2))};
+            //double merit = criterion.getMeritOfSplit(preSplitDist, postSplitDists);
 
-            if ((merit / lastCheckSDR) < (lastCheckRatio - (2 * lastCheckE))) {
-                currentNode = null;
-                return true;
-            }
+            //if ((merit / lastCheckSDR) < (lastCheckRatio - (2 * lastCheckE))) {
+            //    currentNode = null;
+            //    return true;
+            //}
         }
 
         return false;

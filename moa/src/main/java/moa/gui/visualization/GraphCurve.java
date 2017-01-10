@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.ArrayList;
+
 import moa.evaluation.MeasureCollection;
 import moa.streams.clustering.ClusterEvent;
 

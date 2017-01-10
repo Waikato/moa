@@ -19,9 +19,10 @@
 package moa.learners;
 
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.AbstractClassifier;
-import moa.core.Measurement;
 import moa.classifiers.core.driftdetection.ChangeDetector;
+import moa.core.Measurement;
 import moa.options.ClassOption;
 
 /**

@@ -18,21 +18,17 @@
  */
 package moa.classifiers.multilabel.meta;
 
-import moa.classifiers.Classifier;
-import moa.classifiers.core.driftdetection.ADWIN;
-import moa.classifiers.meta.OzaBagAdwin;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import moa.core.InstanceExample;
-import moa.core.MiscUtils;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
-import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
+
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
+import moa.classifiers.core.driftdetection.ADWIN;
+import moa.classifiers.meta.OzaBagAdwin;
 import moa.core.Example;
-import meka.core.Metrics;
-import meka.core.A;
+import moa.core.InstanceExample;
+import moa.core.MiscUtils;
 
 /**
  * OzaBagAdwinML: Changes the way to compute accuracy as an input for Adwin
@@ -45,44 +41,93 @@ public class OzaBagAdwinML extends OzaBagAdwin implements MultiLabelLearner, Mul
     @Override
     public void trainOnInstanceImpl(Instance inst) {
 		// train
-		try {
-			super.trainOnInstanceImpl(inst);
-		} catch(NullPointerException e) {
-			System.err.println("[Warning] NullPointer on train.");
-			//e.printStackTrace();
-		}
-
-		for (int i = 0; i < this.ensemble.length; i++) {
+        boolean Change = false;
+        for (int i = 0; i < this.ensemble.length; i++) {
+            int k = MiscUtils.poisson(1.0, this.classifierRandom);
+            if (k > 0) {
+                Instance weightedInst = (Instance) inst.copy();
+                weightedInst.setWeight(inst.weight() * k);
+                this.ensemble[i].trainOnInstance(weightedInst);
+            }
 
 			// get prediction
-			double prediction[] = this.ensemble[i].getVotesForInstance(inst);
-			if (prediction == null) {
-				prediction = new double[]{};
+			Prediction P = this.ensemble[i].getPredictionForInstance(inst);
+			if (P == null) {
+				continue; // TODO what to do here?
 			}
 
-			// get true value
-			double actual[] = new double[prediction.length];
-			for (int j = 0; j < prediction.length; j++) {
-				actual[j] = (double)inst.classValue(j);
+			// get true value and prediction arrays
+			double actual[] = new double[inst.numOutputAttributes()];
+			double prediction[] = new double[inst.numOutputAttributes()];
+			for (int j = 0; j < inst.numOutputAttributes(); j++) {
+				actual[j] = (double)inst.valueOutputAttribute(j);
+				prediction[j] = P.getVote(j, 1);
 			}
 
 			// compute loss
-			double loss = Metrics.L_ZeroOne(A.toIntArray(actual,0.5), A.toIntArray(prediction,0.5));
+			//double loss = Metrics.L_ZeroOne(A.toIntArray(actual,0.5), A.toIntArray(prediction,0.5));
 			//System.err.println("loss["+i+"] = "+loss);
 
+			int p_sum = 0, r_sum = 0;
+			int set_union = 0;
+			int set_inter = 0;
+			double t = 0.01;
+			for(int j = 0; j < prediction.length; j++) {
+				int p = (prediction[j] >= t) ? 1 : 0;
+				int R = (int) actual[j];
+				if (p==1) {
+					p_sum++;
+					// predt 1, real 1
+					if(R==1) {
+						set_inter++;
+						set_union++;
+					}
+					// predt 1, real 0
+					else {
+						set_union++;
+					}
+				}
+				else {                      
+					// predt 0, real 1
+					if(R==1) { 
+						set_union++;
+					}
+					// predt 0, real 0
+					else {   
+					}
+				}
+			}
+			double accuracy = 0.0;
+			if(set_union > 0)	//avoid NaN
+				accuracy = ((double)set_inter / (double)set_union);
+			
 			// adwin stuff
 			double ErrEstim = this.ADError[i].getEstimation();
-			if (this.ADError[i].setInput(loss)) {
+			
+			if (this.ADError[i].setInput(1-accuracy)) {
 				if (this.ADError[i].getEstimation() > ErrEstim) {
-					System.err.println("Change model "+i+"!");
-					this.ensemble[i].resetLearning();
-					this.ensemble[i].trainOnInstance(inst);
-					this.ADError[i] = new ADWIN();
+				Change = true;
 				}
 			}
 		}
+        
+        if (Change) {
+			double max=0.0; int imax=-1;
+			for (int i = 0; i < this.ensemble.length; i++) {
+				if (max<this.ADError[i].getEstimation()) {
+					max=this.ADError[i].getEstimation();
+					imax=i;
+				}
+			}
+			if (imax!=-1) {
+				 
+				this.ensemble[imax].resetLearning();
+				this.ensemble[imax].trainOnInstance(inst);
+				this.ADError[imax]=new ADWIN();
+			}
+        }
 	}
-
+    
 	@Override
 	public void trainOnInstanceImpl(StructuredInstance instance) {
 		trainOnInstanceImpl((Instance) instance);

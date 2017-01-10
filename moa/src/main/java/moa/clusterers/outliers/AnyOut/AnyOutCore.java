@@ -21,12 +21,14 @@
 
 package moa.clusterers.outliers.AnyOut;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.DenseInstance;
-import java.util.ArrayList;
-import java.util.HashMap;
+
 import moa.clusterers.clustree.ClusKernel;
 import moa.clusterers.clustree.ClusTree;
 import moa.clusterers.clustree.Entry;

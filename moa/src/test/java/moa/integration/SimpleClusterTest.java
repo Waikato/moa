@@ -1,5 +1,11 @@
 package moa.integration;
 
+import org.junit.Test;
+
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.Option;
+
 import junit.framework.TestCase;
 import moa.core.Globals;
 import moa.core.Measurement;
@@ -9,12 +15,6 @@ import moa.options.ClassOption;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
-
-import org.junit.Test;
-
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.IntOption;
-import com.github.javacliparser.Option;
 
 /* test that all clusterers run, i.e., do not die on simpe input **/
 public class SimpleClusterTest extends TestCase {

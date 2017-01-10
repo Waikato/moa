@@ -24,7 +24,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+
 import javax.swing.JPanel;
+
 import moa.cluster.SphereCluster;
 
 public class ClusterPanel extends JPanel {

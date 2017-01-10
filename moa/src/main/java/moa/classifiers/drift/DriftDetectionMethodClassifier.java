@@ -18,15 +18,17 @@
  */
 package moa.classifiers.drift;
 
-import com.yahoo.labs.samoa.instances.Instance;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
+import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.meta.WEKAClassifier;
 import moa.core.Measurement;
 import moa.core.Utils;
-import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.options.ClassOption;
 
 /**

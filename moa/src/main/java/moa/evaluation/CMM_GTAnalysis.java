@@ -36,10 +36,12 @@ package moa.evaluation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.cluster.Clustering;
 import moa.core.AutoExpandVector;
 import moa.gui.visualization.DataPoint;
-import com.yahoo.labs.samoa.instances.Instance;
 
 public class CMM_GTAnalysis{
 	

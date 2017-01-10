@@ -20,28 +20,20 @@
 
 package moa.classifiers.rules.core;
 
-import com.yahoo.labs.samoa.instances.Instance;
-
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.classifiers.rules.AMRulesRegressorOld;
-import moa.classifiers.rules.AbstractAMRules;
 import moa.classifiers.rules.core.splitcriteria.AMRulesSplitCriterion;
-import moa.classifiers.rules.core.splitcriteria.SDRSplitCriterionAMRules;
 import moa.classifiers.rules.functions.Perceptron;
 import moa.classifiers.rules.functions.TargetMean;
 import moa.core.DoubleVector;

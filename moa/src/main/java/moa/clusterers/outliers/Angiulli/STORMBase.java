@@ -21,9 +21,11 @@
 package moa.clusterers.outliers.Angiulli;
 
 import java.util.Vector;
-import moa.clusterers.outliers.Angiulli.ISBIndex.ISBNode;
-import moa.clusterers.outliers.MyBaseOutlierDetector;
+
 import com.github.javacliparser.FlagOption;
+
+import moa.clusterers.outliers.MyBaseOutlierDetector;
+import moa.clusterers.outliers.Angiulli.ISBIndex.ISBNode;
 
 public abstract class STORMBase extends MyBaseOutlierDetector {   
     public FlagOption waitWinFullOption = new FlagOption("waitWinFull", 'a', "Output outliers when windows is full.");

@@ -20,19 +20,17 @@
  */
 package moa.tasks;
 
-import com.github.javacliparser.FileOption;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.Prediction;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import com.github.javacliparser.FileOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Prediction;
+
 import moa.classifiers.MultiTargetRegressor;
-import moa.classifiers.Regressor;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
@@ -43,7 +41,6 @@ import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
 import moa.evaluation.MultiTargetPerformanceEvaluator;
-import moa.evaluation.RegressionPerformanceEvaluator;
 import moa.evaluation.WindowClassificationPerformanceEvaluator;
 import moa.learners.Learner;
 import moa.options.ClassOption;

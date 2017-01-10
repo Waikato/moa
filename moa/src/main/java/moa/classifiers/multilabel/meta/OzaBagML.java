@@ -18,20 +18,17 @@
  */
 package moa.classifiers.multilabel.meta;
 
-import moa.classifiers.Classifier;
-import moa.classifiers.meta.OzaBag;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.StructuredInstance;
+
+import moa.classifiers.Classifier;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
-import moa.core.InstanceExample;
-import moa.core.MiscUtils;
+import moa.classifiers.meta.OzaBag;
 import moa.core.Example;
-
-import java.util.Arrays;
+import moa.core.InstanceExample;
 
 /**
  * OzaBag for Multi-label data.

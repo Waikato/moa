@@ -32,9 +32,10 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import moa.options.ClassOption;
 import com.github.javacliparser.Option;
+
 import moa.gui.ClassOptionSelectionPanel;
+import moa.options.ClassOption;
 
 /**
  * An OptionEditComponent that lets the user edit a class option.

@@ -20,8 +20,9 @@
 
 package moa.clusterers.outliers.MCOD;
 
-import moa.streams.clustering.RandomRBFGeneratorEvents;
 import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.streams.clustering.RandomRBFGeneratorEvents;
 
 
 public class Test {    
