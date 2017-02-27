@@ -19,20 +19,18 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.tasks;
+package moa.tasks.active;
 
 import com.github.javacliparser.FileOption;
-import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
-import com.yahoo.labs.samoa.instances.Instance;
-import moa.classifiers.Classifier;
 import moa.classifiers.active.ALClassifier;
 import moa.core.*;
 import moa.evaluation.*;
 import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
+import moa.tasks.TaskMonitor;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -57,7 +55,7 @@ import java.util.Random;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class EvaluateALPrequentialCV extends MainTask {
+public class EvaluateALPrequentialCV extends ALMainTask {
 
     @Override
     public String getPurposeString() {
