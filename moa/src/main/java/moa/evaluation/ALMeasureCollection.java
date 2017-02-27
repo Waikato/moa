@@ -19,11 +19,6 @@
  */
 package moa.evaluation;
 
-import java.util.ArrayList;
-
-import moa.cluster.Clustering;
-import moa.gui.visualization.DataPoint;
-
 /**
  * Collection of measures used to evaluate AL tasks.
  * 
@@ -31,23 +26,10 @@ import moa.gui.visualization.DataPoint;
  * @version $Revision: 1 $
  *
  */
-public class ALMeasureCollection extends MeasureCollection {
+public class ALMeasureCollection extends Accuracy {
 
 	private static final long serialVersionUID = 1L;
-
-	@Override
-	protected String[] getNames() {
-		// TODO implement
-		String[] names = {"test"};
-		return names;
-	}
-
-	@Override
-	protected void evaluateClustering(Clustering clustering, Clustering trueClustering, ArrayList<DataPoint> points)
-			throws Exception {
-		// TODO implement
-		
-	}
-
+	
+	// TODO implement
 
 }
