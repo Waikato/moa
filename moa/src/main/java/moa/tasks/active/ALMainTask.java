@@ -42,7 +42,7 @@ public abstract class ALMainTask extends MainTask {
 	 * 
 	 * @return list of subtask threads, recursively generated
 	 */
-	public abstract List<TaskThread> getSubtaskThreads();
+	public abstract List<ALTaskThread> getSubtaskThreads();
 	
 	/**
 	 * Get the task's display name consisting of the general task name and 

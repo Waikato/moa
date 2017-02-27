@@ -51,7 +51,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 	}
 	
 	@Override
-	public List<TaskThread> getSubtaskThreads() {
+	public List<ALTaskThread> getSubtaskThreads() {
 		// TODO Auto-generated method stub
 		return null;
 	}
