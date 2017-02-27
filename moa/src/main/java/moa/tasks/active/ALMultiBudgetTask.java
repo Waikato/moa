@@ -23,7 +23,6 @@ import java.util.List;
 
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
-import moa.tasks.TaskThread;
 
 /**
  * This task individually evaluates an active learning classifier for each 

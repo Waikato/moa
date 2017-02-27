@@ -20,7 +20,6 @@
 package moa.tasks.active;
 
 import moa.tasks.MainTask;
-import moa.tasks.TaskThread;
 
 import java.util.List;
 

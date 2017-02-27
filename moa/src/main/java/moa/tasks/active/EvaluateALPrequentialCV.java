@@ -35,6 +35,7 @@ import moa.tasks.TaskMonitor;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -290,4 +291,20 @@ public class EvaluateALPrequentialCV extends ALMainTask {
         }
         return measurementList.toArray(new Measurement[measurementList.size()]);
     }
+
+	@Override
+	public List<ALTaskThread> getSubtaskThreads() {
+		// there are no subtasks -> return an empty list 
+		return new ArrayList<ALTaskThread>();
+	}
+
+	@Override
+	public String getDisplayName() {
+		return "EvaluateALPrequentialCV";
+	}
+
+	@Override
+	public boolean isSubtask() {
+		return false;
+	}
 }
