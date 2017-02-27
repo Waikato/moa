@@ -65,7 +65,6 @@ import moa.options.ClassOption;
 import moa.options.OptionHandler;
 import moa.tasks.active.EvaluateALPrequentialCV;
 import moa.tasks.Task;
-import moa.tasks.TaskThread;
 import moa.tasks.active.ALMainTask;
 import moa.tasks.active.ALTaskThread;
 
@@ -167,7 +166,7 @@ public class ALTaskManagerPanel extends JPanel{
 
         @Override
         public Object getValueAt(int row, int col) {
-            TaskThread thread = ALTaskManagerPanel.this.taskList.get(row);
+        	ALTaskThread thread = ALTaskManagerPanel.this.taskList.get(row);
             switch (col) {
                 case 0:
                     return ((ALMainTask) thread.getTask()).getDisplayName();
@@ -413,7 +412,7 @@ public class ALTaskManagerPanel extends JPanel{
     }
 
     public void taskSelectionChanged() {
-        TaskThread[] selectedTasks = getSelectedTasks();
+        ALTaskThread[] selectedTasks = getSelectedTasks();
         if (selectedTasks.length == 1) {
             setTaskString(((OptionHandler) selectedTasks[0].getTask()).getCLICreationString(ALMainTask.class));
             if (this.previewPanel != null) {
@@ -424,9 +423,9 @@ public class ALTaskManagerPanel extends JPanel{
         }
     }
 
-    public TaskThread[] getSelectedTasks() {
+    public ALTaskThread[] getSelectedTasks() {
         int[] selectedRows = this.taskTable.getSelectedRows();
-        TaskThread[] selectedTasks = new TaskThread[selectedRows.length];
+        ALTaskThread[] selectedTasks = new ALTaskThread[selectedRows.length];
         for (int i = 0; i < selectedRows.length; i++) {
             selectedTasks[i] = this.taskList.get(selectedRows[i]);
         }
@@ -434,29 +433,29 @@ public class ALTaskManagerPanel extends JPanel{
     }
 
     public void pauseSelectedTasks() {
-        TaskThread[] selectedTasks = getSelectedTasks();
-        for (TaskThread thread : selectedTasks) {
+        ALTaskThread[] selectedTasks = getSelectedTasks();
+        for (ALTaskThread thread : selectedTasks) {
             thread.pauseTask();
         }
     }
 
     public void resumeSelectedTasks() {
-        TaskThread[] selectedTasks = getSelectedTasks();
-        for (TaskThread thread : selectedTasks) {
+        ALTaskThread[] selectedTasks = getSelectedTasks();
+        for (ALTaskThread thread : selectedTasks) {
             thread.resumeTask();
         }
     }
 
     public void cancelSelectedTasks() {
-        TaskThread[] selectedTasks = getSelectedTasks();
-        for (TaskThread thread : selectedTasks) {
+        ALTaskThread[] selectedTasks = getSelectedTasks();
+        for (ALTaskThread thread : selectedTasks) {
             thread.cancelTask();
         }
     }
 
     public void deleteSelectedTasks() {
-        TaskThread[] selectedTasks = getSelectedTasks();
-        for (TaskThread thread : selectedTasks) {
+    	ALTaskThread[] selectedTasks = getSelectedTasks();
+        for (ALTaskThread thread : selectedTasks) {
             thread.cancelTask();
             this.taskList.remove(thread);
         }
@@ -473,8 +472,8 @@ public class ALTaskManagerPanel extends JPanel{
 
     public void saveLogSelectedTasks() {
         String tasksLog = "";
-        TaskThread[] selectedTasks = getSelectedTasks();
-        for (TaskThread thread : selectedTasks) {
+        ALTaskThread[] selectedTasks = getSelectedTasks();
+        for (ALTaskThread thread : selectedTasks) {
         	tasksLog += ((OptionHandler) thread.getTask()).getCLICreationString(ALMainTask.class) + "\n";
         }
 
