@@ -3,7 +3,7 @@
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  *    Modified Work: Copyright (C) 2017 Otto-von-Guericke-University, Magdeburg, Germany
- *    @author Tuan Pham Minh (tuan dot pham at ovgu dot de)
+ *    @author Tuan Pham Minh (tuan.pham@ovgu.de)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ import moa.tasks.TaskThread;
 /**
  * Task Thread for ALMainTask which supports pausing/resuming and cancelling of child threads
  *
- * @author Tuan Pham Minh (tuan dot pham at ovgu dot de)
+ * @author Tuan Pham Minh (tuan.pham@ovgu.de)
  * @version $Revision: 1 $
  */
 public class ALTaskThread extends TaskThread {
@@ -53,6 +53,7 @@ public class ALTaskThread extends TaskThread {
             this.currentStatus = Status.PAUSED;
         }
         
+        // pause all subtask threads
         for(int i = 0; i < threads.size(); ++i)
         {
         	threads.get(i).pauseTask();
@@ -69,7 +70,7 @@ public class ALTaskThread extends TaskThread {
             this.currentStatus = Status.RUNNING;
         }
 
-        
+        // resume all subtask threads
         for(int i = 0; i < threads.size(); ++i)
         {
         	threads.get(i).pauseTask();
@@ -87,6 +88,7 @@ public class ALTaskThread extends TaskThread {
             this.currentStatus = Status.CANCELLING;
         }
 
+        // cancel all subtask threads
         for(int i = 0; i < threads.size(); ++i)
         {
         	threads.get(i).pauseTask();

@@ -4,7 +4,7 @@
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  *    @author Manuel Martín (msalvador@bournemouth.ac.uk)
  *    Modified Work: Copyright (C) 2017 Otto-von-Guericke-University, Magdeburg, Germany
- *    @author Tuan Pham Minh (tuan dot pham at ovgu dot de)
+ *    @author Tuan Pham Minh (tuan.pham@ovgu.de)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ import moa.tasks.active.ALTaskThread;
 /**
  * This panel displays the running tasks for active learning experiments.
  *
- * @author Tuan Pham Minh (tuan dot pham at ovgu dot de)
+ * @author Tuan Pham Minh (tuan.pham@ovgu.de)
  * @version $Revision: 1 $
  */
 public class ALTaskManagerPanel extends JPanel{
@@ -169,6 +169,7 @@ public class ALTaskManagerPanel extends JPanel{
         	ALTaskThread thread = ALTaskManagerPanel.this.taskList.get(row);
             switch (col) {
                 case 0:
+                	// display the name specified by the task
                     return ((ALMainTask) thread.getTask()).getDisplayName();
                 case 1:
                     return thread.getCurrentStatusString();
@@ -403,8 +404,9 @@ public class ALTaskManagerPanel extends JPanel{
         this.taskTable.setRowSelectionInterval(0, 0);
         thread.start();
         
+        // get the threads for all subtasks
         List<ALTaskThread> subThreads = ((ALMainTask) thread.getTask()).getSubtaskThreads();
-
+        // add the subtask threads to the list of available tasks
         for(int i = 0; i < subThreads.size(); ++i)
         {
         	this.taskList.add(subThreads.get(i));
