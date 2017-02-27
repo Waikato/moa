@@ -23,6 +23,8 @@ package moa.gui;
 
 import java.awt.BorderLayout;
 
+import moa.gui.PreviewPanel.TypePanel;
+
 /**
  * This panel allows the user to select and configure a task, and run it.
  *
@@ -39,7 +41,7 @@ public class ALTabPanel extends AbstractTabPanel {
 
 	public ALTabPanel() {
 		this.taskManagerPanel = new ALTaskManagerPanel();
-		this.previewPanel = new PreviewPanel();
+		this.previewPanel = new PreviewPanel(TypePanel.ACTIVE);
 		this.taskManagerPanel.setPreviewPanel(this.previewPanel);
 		setLayout(new BorderLayout());
 		add(this.taskManagerPanel, BorderLayout.NORTH);

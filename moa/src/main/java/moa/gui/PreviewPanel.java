@@ -29,6 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import moa.core.StringUtils;
+import moa.evaluation.ALMeasureCollection;
 import moa.evaluation.Accuracy;
 import moa.evaluation.ChangeDetectionMeasures;
 import moa.evaluation.MeasureCollection;
@@ -70,7 +71,8 @@ public class PreviewPanel extends JPanel implements ResultPreviewListener {
     public enum TypePanel {
         CLASSIFICATION(new Accuracy()),
         REGRESSION(new RegressionAccuracy()),
-        CONCEPT_DRIFT(new ChangeDetectionMeasures());
+        CONCEPT_DRIFT(new ChangeDetectionMeasures()),
+        ACTIVE(new ALMeasureCollection());
         private final MeasureCollection measureCollection;
         //Constructor
         TypePanel(MeasureCollection measureCollection){
