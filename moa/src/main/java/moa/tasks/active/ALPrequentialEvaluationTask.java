@@ -1,5 +1,5 @@
 /*
- *    ALMainTask.java
+ *    ALPrequentialEvaluationTask.java
  *    Copyright (C) 2017 Otto-von-Guericke-University, Magdeburg, Germany
  *    @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  *
@@ -19,43 +19,50 @@
  */
 package moa.tasks.active;
 
-import moa.tasks.MainTask;
-import moa.tasks.TaskThread;
-
 import java.util.List;
 
+import moa.core.ObjectRepository;
+import moa.tasks.TaskMonitor;
+import moa.tasks.TaskThread;
+
 /**
- * This class provides a superclass for Active Learning tasks, which 
- * enables convenient searching for those tasks for example when showing 
- * a list of available Active Learning tasks.
+ * This task performs prequential evaluation for an active learning classifier 
+ * (testing, then training with each example in sequence).
  * 
  * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  * @version $Revision: 1 $
  */
-public abstract class ALMainTask extends MainTask {
+public class ALPrequentialEvaluationTask extends ALMainTask {
 	
 	private static final long serialVersionUID = 1L;
+
+	@Override
+	public Class<?> getTaskResultType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
-	/**
-	 * Get the list of threads for all subtasks and recursively the children's
-	 * subtasks.
-	 * 
-	 * @return list of subtask threads, recursively generated
-	 */
-	public abstract List<TaskThread> getSubtaskThreads();
+	@Override
+	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
-	/**
-	 * Get the task's display name consisting of the general task name and 
-	 * potentially extensions for the parent's name, fold or budget indices.
-	 * 
-	 * @return display name
-	 */
-	public abstract String getDisplayName();
+	@Override
+	public List<TaskThread> getSubtaskThreads() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
-	/**
-	 * Check if the task is a subtask of another parent.
-	 * 
-	 * @return if the task is a subtask
-	 */
-	public abstract boolean isSubtask();
+	@Override
+	public String getDisplayName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public boolean isSubtask() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
