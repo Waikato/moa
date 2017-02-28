@@ -19,6 +19,7 @@
  */
 package moa.tasks.active;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.github.javacliparser.FloatOption;
@@ -60,16 +61,15 @@ public class ALCrossValidationTask extends ALMainTask {
     }
 	
 	/* options actually used in ALPrequentialEvaluationTask */
-	public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Learner to train.", ALClassifier.class, 
-            "moa.classifiers.active.ALZliobaite2011");
+    public ClassOption learnerOption = new ClassOption("learner", 'l',
+            "Learner to train.", ALClassifier.class, "moa.classifiers.active.ALZliobaite2011");
 	
 	public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,
             "generators.RandomTreeGenerator");
 	
 	public ClassOption prequentialEvaluatorOption = new ClassOption(
-			"prequential evaluator", 'e',
+			"prequentialEvaluator", 'e',
             "Prequential classification performance evaluation method.",
             ALEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
@@ -81,7 +81,7 @@ public class ALCrossValidationTask extends ALMainTask {
 			new Option[0], ',');
 	
 	public ClassOption multiBudgetEvaluatorOption = new ClassOption(
-			"multi budget evaluator", 'm',
+			"multiBudgetEvaluator", 'm',
             "Multi-budget classification performance evaluation method.",
             ALEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
@@ -94,7 +94,7 @@ public class ALCrossValidationTask extends ALMainTask {
             "Seed for random behaviour of the task.", 1);
 	
 	public ClassOption crossValEvaluatorOption = new ClassOption(
-			"corss validation evaluator", 'c',
+			"corssValidationEvaluator", 'c',
             "Cross validation evaluation method.",
             ALEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
@@ -110,25 +110,17 @@ public class ALCrossValidationTask extends ALMainTask {
 	 */
 	
 	
-	private List<ALMultiBudgetTask> subtasks;
-	private List<ALTaskThread> subtaskThreads;
-	
-	
-	@Override
-	public Class<?> getTaskResultType() {
-		return LearningCurve.class;
-	}
+	private ArrayList<ALMultiBudgetTask> subtasks = new ArrayList<>();
+	private ArrayList<ALTaskThread> subtaskThreads = new ArrayList<>();
+	private ArrayList<ALTaskThread> flattenedSubtaskThreads = new ArrayList<>();
 	
 	@Override
-	protected Object doMainTask(
-			TaskMonitor monitor, ObjectRepository repository) 
-	{
-		// setup learning curve
-		LearningCurve learningCurve = new LearningCurve(
-                "cross validation evaluation");
-		
+	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
+		// TODO Auto-generated method stub
+		super.prepareForUseImpl(monitor, repository);
+
+		System.out.println(String.valueOf(this.numFoldsOption.getValue()));
 		// setup subtask for each cross validation fold
-		monitor.setCurrentActivity("Performing cross validation...", -1.0);
 		for (int i = 0; i < this.numFoldsOption.getValue(); i++) {
 			
 			// wrap base stream into a KFoldStream to split up data
@@ -159,6 +151,7 @@ public class ALCrossValidationTask extends ALMainTask {
 				case "learner":
 					opt.setValueViaCLIString(
 							this.learnerOption.getValueAsCLIString());
+					break;
 				case "stream": 
 					opt.setValueViaCLIString(
 							ClassOption.objectToCLIString(
@@ -181,18 +174,50 @@ public class ALCrossValidationTask extends ALMainTask {
 				}
 			}
 			
+			foldTask.prepareForUse();
+			
+			List<ALTaskThread> childSubtasks = foldTask.getSubtaskThreads();
+			
 			// add new subtask to list
 			this.subtasks.add(foldTask);
 			
+			
+			ALTaskThread subtaskThread = new ALTaskThread(foldTask);
 			// TODO: run task and perform evaluation
+			this.subtaskThreads.add(subtaskThread);
+
+			this.flattenedSubtaskThreads.add(subtaskThread);
+			this.flattenedSubtaskThreads.addAll(childSubtasks);
 		}
+		
+	}
+	
+	@Override
+	public Class<?> getTaskResultType() {
+		return LearningCurve.class;
+	}
+	
+	@Override
+	protected Object doMainTask(
+			TaskMonitor monitor, ObjectRepository repository) 
+	{
+		// setup learning curve
+		LearningCurve learningCurve = new LearningCurve(
+                "cross validation evaluation");
+		
+		for(int i = 0; i < this.subtaskThreads.size(); ++i)
+		{
+			subtaskThreads.get(i).run();
+		}
+		//monitor.setCurrentActivity("Performing cross validation...", -1.0);
+		
 		
 		return learningCurve;
 	}
 	
 	@Override
 	public List<ALTaskThread> getSubtaskThreads() {
-		return this.subtaskThreads;
+		return this.flattenedSubtaskThreads;
 	}
 	
 	@Override

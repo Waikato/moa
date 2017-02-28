@@ -65,6 +65,7 @@ import moa.options.ClassOption;
 import moa.options.OptionHandler;
 import moa.tasks.active.EvaluateALPrequentialCV;
 import moa.tasks.Task;
+import moa.tasks.active.ALCrossValidationTask;
 import moa.tasks.active.ALMainTask;
 import moa.tasks.active.ALTaskThread;
 
@@ -190,7 +191,7 @@ public class ALTaskManagerPanel extends JPanel{
     }
     
     
-    protected ALMainTask currentTask = new EvaluateALPrequentialCV();
+    protected ALMainTask currentTask = new ALCrossValidationTask();
     
     protected List<ALTaskThread> taskList = new ArrayList<ALTaskThread>();
 	
@@ -329,7 +330,7 @@ public class ALTaskManagerPanel extends JPanel{
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
-            	runTask((Task) ALTaskManagerPanel.this.currentTask.copy());
+            	runTask((ALMainTask) ALTaskManagerPanel.this.currentTask.copy());
             }
         });
         this.pauseTaskButton.addActionListener(new ActionListener() {
@@ -389,15 +390,17 @@ public class ALTaskManagerPanel extends JPanel{
             
             this.taskDescField.setText(taskText);
             if (storePreference == true){
-            //Save task text as a preference
-            prefs.put(PREF_NAME, taskText);
+	            //Save task text as a preference
+	            prefs.put(PREF_NAME, taskText);
             }
         } catch (Exception ex) {
             GUIUtils.showExceptionDialog(this, "Problem with task", ex);
         }
     }
 
-    public void runTask(Task task) {
+    public void runTask(ALMainTask task) {
+
+        task.prepareForUse();
     	ALTaskThread thread = new ALTaskThread(task);
         this.taskList.add(0, thread);
         this.taskTableModel.fireTableDataChanged();

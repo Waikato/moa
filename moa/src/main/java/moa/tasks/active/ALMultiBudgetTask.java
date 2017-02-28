@@ -19,6 +19,7 @@
  */
 package moa.tasks.active;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.github.javacliparser.FloatOption;
@@ -56,7 +57,7 @@ public class ALMultiBudgetTask extends ALMainTask {
             "generators.RandomTreeGenerator");
 	
 	public ClassOption prequentialEvaluatorOption = new ClassOption(
-			"prequential evaluator", 'e',
+			"prequentialEvaluator", 'e',
             "Prequential classification performance evaluation method.",
             ALEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
@@ -68,32 +69,30 @@ public class ALMultiBudgetTask extends ALMainTask {
 			new Option[0], ',');
 	
 	public ClassOption multiBudgetEvaluatorOption = new ClassOption(
-			"multi-budget evaluator", 'm',
+			"multiBudgetEvaluator", 'm',
             "Multi-budget classification performance evaluation method.",
             ALEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
 	
 	
-	private List<ALPrequentialEvaluationTask> subtasks;
-	private List<ALTaskThread> subtaskThreads;
-	
+	private ArrayList<ALPrequentialEvaluationTask> subtasks = new ArrayList<>();
+	private ArrayList<ALTaskThread> subtaskThreads = new ArrayList<>();
+	private ArrayList<ALTaskThread> flattenedSubtaskThreads = new ArrayList<>();
 	
 	@Override
 	public Class<?> getTaskResultType() {
 		return LearningCurve.class;
 	}
 	
+	
 	@Override
-	protected Object doMainTask(
-			TaskMonitor monitor, ObjectRepository repository) 
-	{
-		// setup learning curve
-		LearningCurve learningCurve = new LearningCurve(
-                "multi-budget evaluation");
+	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
+		// TODO Auto-generated method stub
+		super.prepareForUseImpl(monitor, repository);
 		
 		// setup task for each budget
-		FloatOption[] budgets = (FloatOption[]) this.budgetsOption.getList();
-		for (FloatOption budget : budgets) {
+		Option[] budgets = this.budgetsOption.getList();
+		for (Option budget : budgets) {
 			
 			// create subtask
 			ALPrequentialEvaluationTask budgetTask = 
@@ -105,6 +104,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 				case "learner":
 					opt.setValueViaCLIString(
 							this.learnerOption.getValueAsCLIString());
+					break;
 				case "stream": 
 					opt.setValueViaCLIString(
 							this.streamOption.getValueAsCLIString());
@@ -120,10 +120,35 @@ public class ALMultiBudgetTask extends ALMainTask {
 				}
 			}
 			
+			budgetTask.prepareForUse();
+			
+			List<ALTaskThread> childSubtasks = budgetTask.getSubtaskThreads();
+			
 			// add new subtask to list
 			this.subtasks.add(budgetTask);
 			
+			
+			ALTaskThread subtaskThread = new ALTaskThread(budgetTask);
 			// TODO: run task and perform evaluation
+			this.subtaskThreads.add(subtaskThread);
+
+			this.flattenedSubtaskThreads.add(subtaskThread);
+			this.flattenedSubtaskThreads.addAll(childSubtasks);
+		}
+	}
+	
+	@Override
+	protected Object doMainTask(
+			TaskMonitor monitor, ObjectRepository repository) 
+	{
+		// setup learning curve
+		LearningCurve learningCurve = new LearningCurve(
+                "multi-budget evaluation");
+		
+
+		for(int i = 0; i < this.subtaskThreads.size(); ++i)
+		{
+			subtaskThreads.get(i).run();
 		}
 		
 		return learningCurve;
@@ -131,7 +156,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 	
 	@Override
 	public List<ALTaskThread> getSubtaskThreads() {
-		return this.subtaskThreads;
+		return this.flattenedSubtaskThreads;
 	}
 	
 	@Override

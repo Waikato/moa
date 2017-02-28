@@ -52,7 +52,7 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
             "generators.RandomTreeGenerator");
 	
 	public ClassOption prequentialEvaluatorOption = new ClassOption(
-			"prequential evaluator", 'e',
+			"prequentialEvaluator", 'e',
             "Prequential classification performance evaluation method.",
             ALEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
@@ -86,7 +86,7 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 	@Override
 	public String getDisplayName() {
 		if (this.isSubtask()) {
-			return "|-- ALPrequentialEvaluationTask";
+			return "    |-- ALPrequentialEvaluationTask";
 		}
 		else {
 			return "ALPrequentialEvaluationTask";
