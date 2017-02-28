@@ -21,7 +21,18 @@ package moa.tasks.active;
 
 import java.util.List;
 
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.ListOption;
+import com.github.javacliparser.Option;
+
+import moa.classifiers.active.ALClassifier;
 import moa.core.ObjectRepository;
+import moa.evaluation.ALEvaluator;
+import moa.evaluation.LearningCurve;
+import moa.options.ClassOption;
+import moa.streams.ExampleStream;
+import moa.streams.KFoldStream;
 import moa.tasks.TaskMonitor;
 
 /**
@@ -44,37 +55,148 @@ public class ALCrossValidationTask extends ALMainTask {
         return "Evaluates an active learning classifier on a stream by" +
                 " performing cross validation and on each fold evaluating" +
         		" the classifier for each element of a set of budgets using" +
-                " prequential evaluation (testing, then training with each)" +
+                " prequential evaluation (testing, then training with each" +
         		" example in  sequence).";
     }
 	
+	/* options actually used in ALPrequentialEvaluationTask */
+	public ClassOption learnerOption = new ClassOption("learner", 'l',
+            "Learner to train.", ALClassifier.class, 
+            "moa.classifiers.active.ALZliobaite2011");
+	
+	public ClassOption streamOption = new ClassOption("stream", 's',
+            "Stream to learn from.", ExampleStream.class,
+            "generators.RandomTreeGenerator");
+	
+	public ClassOption prequentialEvaluatorOption = new ClassOption(
+			"prequential evaluator", 'e',
+            "Prequential classification performance evaluation method.",
+            ALEvaluator.class,
+            "ALBasicClassificationPerformanceEvaluator");
+	
+	/* options actually used in ALMultiBudgetTask */
+	public ListOption budgetsOption = new ListOption("budgets", 'b',
+			"List of budgets to train classifiers for.",
+			new FloatOption("budget", 't', "Active learner budget.", 0.9), 
+			new Option[0], ',');
+	
+	public ClassOption multiBudgetEvaluatorOption = new ClassOption(
+			"multi budget evaluator", 'm',
+            "Multi-budget classification performance evaluation method.",
+            ALEvaluator.class,
+            "ALBasicClassificationPerformanceEvaluator");
+	
+	/* options used in in this class */
+	public IntOption numFoldsOption = new IntOption("numFolds", 'k',
+            "Number of cross validation folds.", 10);
+	
+	public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
+            "Seed for random behaviour of the task.", 1);
+	
+	public ClassOption crossValEvaluatorOption = new ClassOption(
+			"corss validation evaluator", 'c',
+            "Cross validation evaluation method.",
+            ALEvaluator.class,
+            "ALBasicClassificationPerformanceEvaluator");
+	
+	/*
+	 * Possible extensions/further options:
+	 * - Ensembles of learners (ensemble size)
+	 * - Instance limit
+	 * - Time limit
+	 * - Sample frequency
+	 * - Memory check frequency
+	 * - Dump file
+	 */
+	
+	
+	private List<ALMultiBudgetTask> subtasks;
+	private List<ALTaskThread> subtaskThreads;
+	
+	
 	@Override
 	public Class<?> getTaskResultType() {
-		// TODO Auto-generated method stub
-		return null;
+		return LearningCurve.class;
 	}
 	
 	@Override
-	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-		// TODO Auto-generated method stub
-		return null;
+	protected Object doMainTask(
+			TaskMonitor monitor, ObjectRepository repository) 
+	{
+		// setup learning curve
+		LearningCurve learningCurve = new LearningCurve(
+                "cross validation evaluation");
+		
+		// setup subtask for each cross validation fold
+		monitor.setCurrentActivity("Performing cross validation...", -1.0);
+		for (int i = 0; i < this.numFoldsOption.getValue(); i++) {
+			
+			// wrap base stream into a KFoldStream to split up data
+			KFoldStream stream = new KFoldStream();
+			
+			for (Option opt : stream.getOptions().getOptionArray()) {
+				switch (opt.getName()) {
+				case "stream": 
+					opt.setValueViaCLIString(
+							this.streamOption.getValueAsCLIString());
+					break;
+				case "foldIndex":
+					opt.setValueViaCLIString(String.valueOf(i));
+					break;
+				case "numFolds":
+					opt.setValueViaCLIString(
+							this.numFoldsOption.getValueAsCLIString());
+					break;
+				}
+			}
+			
+			// create subtask
+			ALMultiBudgetTask foldTask = new ALMultiBudgetTask();
+			foldTask.setIsSubtask(true);
+			
+			for (Option opt : foldTask.getOptions().getOptionArray()) {
+				switch (opt.getName()) {
+				case "learner":
+					opt.setValueViaCLIString(
+							this.learnerOption.getValueAsCLIString());
+				case "stream": 
+					opt.setValueViaCLIString(
+							ClassOption.objectToCLIString(
+									stream, ExampleStream.class));
+					break;
+				case "prequential evaluator":
+					opt.setValueViaCLIString(
+							this.prequentialEvaluatorOption
+							.getValueAsCLIString());
+					break;
+				case "budgets":
+					opt.setValueViaCLIString(
+							this.budgetsOption.getValueAsCLIString());
+					break;
+				case "multi-budget evaluator":
+					opt.setValueViaCLIString(
+							this.multiBudgetEvaluatorOption
+							.getValueAsCLIString());
+					break;
+				}
+			}
+			
+			// add new subtask to list
+			this.subtasks.add(foldTask);
+			
+			// TODO: run task and perform evaluation
+		}
+		
+		return learningCurve;
 	}
 	
 	@Override
 	public List<ALTaskThread> getSubtaskThreads() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.subtaskThreads;
 	}
 	
 	@Override
 	public String getDisplayName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public boolean isSubtask() {
-		// TODO Auto-generated method stub
-		return false;
+		return "AlCrossValidation";
 	}
 }

@@ -21,7 +21,16 @@ package moa.tasks.active;
 
 import java.util.List;
 
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.ListOption;
+import com.github.javacliparser.Option;
+
+import moa.classifiers.active.ALClassifier;
 import moa.core.ObjectRepository;
+import moa.evaluation.ALEvaluator;
+import moa.evaluation.LearningCurve;
+import moa.options.ClassOption;
+import moa.streams.ExampleStream;
 import moa.tasks.TaskMonitor;
 
 /**
@@ -37,33 +46,101 @@ public class ALMultiBudgetTask extends ALMainTask {
 	
 	private static final long serialVersionUID = 1L;
 	
+	/* options actually used in ALPrequentialEvaluationTask */
+	public ClassOption learnerOption = new ClassOption("learner", 'l',
+            "Learner to train.", ALClassifier.class, 
+            "moa.classifiers.active.ALZliobaite2011");
+	
+	public ClassOption streamOption = new ClassOption("stream", 's',
+            "Stream to learn from.", ExampleStream.class,
+            "generators.RandomTreeGenerator");
+	
+	public ClassOption prequentialEvaluatorOption = new ClassOption(
+			"prequential evaluator", 'e',
+            "Prequential classification performance evaluation method.",
+            ALEvaluator.class,
+            "ALBasicClassificationPerformanceEvaluator");
+	
+	/* options used in in this class */
+	public ListOption budgetsOption = new ListOption("budgets", 'b',
+			"List of budgets to train classifiers for.",
+			new FloatOption("budget", 't', "Active learner budget.", 0.9), 
+			new Option[0], ',');
+	
+	public ClassOption multiBudgetEvaluatorOption = new ClassOption(
+			"multi-budget evaluator", 'm',
+            "Multi-budget classification performance evaluation method.",
+            ALEvaluator.class,
+            "ALBasicClassificationPerformanceEvaluator");
+	
+	
+	private List<ALPrequentialEvaluationTask> subtasks;
+	private List<ALTaskThread> subtaskThreads;
+	
+	
 	@Override
 	public Class<?> getTaskResultType() {
-		// TODO Auto-generated method stub
-		return null;
+		return LearningCurve.class;
 	}
 	
 	@Override
-	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-		// TODO Auto-generated method stub
-		return null;
+	protected Object doMainTask(
+			TaskMonitor monitor, ObjectRepository repository) 
+	{
+		// setup learning curve
+		LearningCurve learningCurve = new LearningCurve(
+                "multi-budget evaluation");
+		
+		// setup task for each budget
+		FloatOption[] budgets = (FloatOption[]) this.budgetsOption.getList();
+		for (FloatOption budget : budgets) {
+			
+			// create subtask
+			ALPrequentialEvaluationTask budgetTask = 
+					new ALPrequentialEvaluationTask();
+			budgetTask.setIsSubtask(true);
+			
+			for (Option opt : budgetTask.getOptions().getOptionArray()) {
+				switch (opt.getName()) {
+				case "learner":
+					opt.setValueViaCLIString(
+							this.learnerOption.getValueAsCLIString());
+				case "stream": 
+					opt.setValueViaCLIString(
+							this.streamOption.getValueAsCLIString());
+					break;
+				case "prequential evaluator":
+					opt.setValueViaCLIString(
+							this.prequentialEvaluatorOption
+							.getValueAsCLIString());
+					break;
+				case "budget":
+					opt.setValueViaCLIString(budget.getValueAsCLIString());
+					break;
+				}
+			}
+			
+			// add new subtask to list
+			this.subtasks.add(budgetTask);
+			
+			// TODO: run task and perform evaluation
+		}
+		
+		return learningCurve;
 	}
 	
 	@Override
 	public List<ALTaskThread> getSubtaskThreads() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.subtaskThreads;
 	}
 	
 	@Override
 	public String getDisplayName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public boolean isSubtask() {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.isSubtask()) {
+			return "|-- ALMultiBudgetTask";
+		}
+		else {
+			return "ALMultiBudgetTask";
+		}
 	}
 }

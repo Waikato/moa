@@ -19,9 +19,17 @@
  */
 package moa.tasks.active;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.github.javacliparser.FloatOption;
+
+import moa.classifiers.active.ALClassifier;
 import moa.core.ObjectRepository;
+import moa.evaluation.ALEvaluator;
+import moa.evaluation.LearningCurve;
+import moa.options.ClassOption;
+import moa.streams.ExampleStream;
 import moa.tasks.TaskMonitor;
 
 /**
@@ -34,34 +42,54 @@ import moa.tasks.TaskMonitor;
 public class ALPrequentialEvaluationTask extends ALMainTask {
 	
 	private static final long serialVersionUID = 1L;
-
+	
+	public ClassOption learnerOption = new ClassOption("learner", 'l',
+            "Learner to train.", ALClassifier.class, 
+            "moa.classifiers.active.ALZliobaite2011");
+	
+	public ClassOption streamOption = new ClassOption("stream", 's',
+            "Stream to learn from.", ExampleStream.class,
+            "generators.RandomTreeGenerator");
+	
+	public ClassOption prequentialEvaluatorOption = new ClassOption(
+			"prequential evaluator", 'e',
+            "Prequential classification performance evaluation method.",
+            ALEvaluator.class,
+            "ALBasicClassificationPerformanceEvaluator");
+	
+	public FloatOption budgetOption = new FloatOption("budget", 't', 
+			"Active learner budget.", 0.9);
+	
 	@Override
 	public Class<?> getTaskResultType() {
-		// TODO Auto-generated method stub
-		return null;
+		return LearningCurve.class;
 	}
 	
 	@Override
 	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-		// TODO Auto-generated method stub
+		/*
+		 * TODO Implement prequential evaluation main task
+		 * 
+		 * Process each sample from the given stream:
+		 * 1. Test on sample
+		 * 2. Train on sample
+		 */
+		
 		return null;
 	}
 	
 	@Override
 	public List<ALTaskThread> getSubtaskThreads() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<ALTaskThread>();
 	}
 	
 	@Override
 	public String getDisplayName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public boolean isSubtask() {
-		// TODO Auto-generated method stub
-		return false;
+		if (this.isSubtask()) {
+			return "|-- ALPrequentialEvaluationTask";
+		}
+		else {
+			return "ALPrequentialEvaluationTask";
+		}
 	}
 }

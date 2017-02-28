@@ -35,6 +35,8 @@ public abstract class ALMainTask extends MainTask {
 	
 	private static final long serialVersionUID = 1L;
 	
+	private boolean isSubtask = false;
+	
 	/**
 	 * Get the list of threads for all subtasks and recursively the children's
 	 * subtasks.
@@ -52,9 +54,20 @@ public abstract class ALMainTask extends MainTask {
 	public abstract String getDisplayName();
 	
 	/**
+	 * Tell this task that it is a subtask of another parent.
+	 * 
+	 * @param isSubtask true if the task is a subtask
+	 */
+	protected void setIsSubtask(boolean isSubtask) {
+		this.isSubtask = isSubtask;
+	}
+	
+	/**
 	 * Check if the task is a subtask of another parent.
 	 * 
-	 * @return if the task is a subtask
+	 * @return true if the task is a subtask
 	 */
-	public abstract boolean isSubtask();
+	public boolean isSubtask() {
+		return this.isSubtask;
+	}
 }

@@ -302,9 +302,4 @@ public class EvaluateALPrequentialCV extends ALMainTask {
 	public String getDisplayName() {
 		return "EvaluateALPrequentialCV";
 	}
-
-	@Override
-	public boolean isSubtask() {
-		return false;
-	}
 }
