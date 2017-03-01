@@ -97,7 +97,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 			// create subtask
 			ALPrequentialEvaluationTask budgetTask = 
 					new ALPrequentialEvaluationTask();
-			budgetTask.setIsSubtask(true);
+			budgetTask.setSubtaskLevel(this.subtaskLevel + 1);
 			
 			for (Option opt : budgetTask.getOptions().getOptionArray()) {
 				switch (opt.getName()) {
@@ -157,15 +157,5 @@ public class ALMultiBudgetTask extends ALMainTask {
 	@Override
 	public List<ALTaskThread> getSubtaskThreads() {
 		return this.flattenedSubtaskThreads;
-	}
-	
-	@Override
-	public String getDisplayName() {
-		if (this.isSubtask()) {
-			return "|-- ALMultiBudgetTask";
-		}
-		else {
-			return "ALMultiBudgetTask";
-		}
 	}
 }

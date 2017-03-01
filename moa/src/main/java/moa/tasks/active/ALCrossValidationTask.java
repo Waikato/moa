@@ -144,7 +144,7 @@ public class ALCrossValidationTask extends ALMainTask {
 			
 			// create subtask
 			ALMultiBudgetTask foldTask = new ALMultiBudgetTask();
-			foldTask.setIsSubtask(true);
+			foldTask.setSubtaskLevel(this.subtaskLevel + 1);
 			
 			for (Option opt : foldTask.getOptions().getOptionArray()) {
 				switch (opt.getName()) {
@@ -218,10 +218,5 @@ public class ALCrossValidationTask extends ALMainTask {
 	@Override
 	public List<ALTaskThread> getSubtaskThreads() {
 		return this.flattenedSubtaskThreads;
-	}
-	
-	@Override
-	public String getDisplayName() {
-		return "AlCrossValidation";
 	}
 }

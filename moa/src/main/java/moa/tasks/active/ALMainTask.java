@@ -35,7 +35,7 @@ public abstract class ALMainTask extends MainTask {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private boolean isSubtask = false;
+	protected int subtaskLevel = 0;
 	
 	/**
 	 * Get the list of threads for all subtasks and recursively the children's
@@ -46,20 +46,45 @@ public abstract class ALMainTask extends MainTask {
 	public abstract List<ALTaskThread> getSubtaskThreads();
 	
 	/**
-	 * Get the task's display name consisting of the general task name and 
-	 * potentially extensions for the parent's name, fold or budget indices.
+	 * Get the task's display name consisting of the general task name 
+	 * indentation showing the tree structure depending on the subtask
+	 * level.
 	 * 
 	 * @return display name
 	 */
-	public abstract String getDisplayName();
+	public String getDisplayName() {
+		StringBuilder name = new StringBuilder();
+		
+		for (int i = 1; i < this.subtaskLevel; i++) {
+			name.append("|  ");
+		}
+		if (this.isSubtask()) {
+			name.append("|--");
+		}
+		
+		name.append(this.getClass().getSimpleName());
+		
+		return name.toString();
+	}
 	
 	/**
-	 * Tell this task that it is a subtask of another parent.
+	 * Tell this task on which subtask level it is (how deep in the tree).
+	 * 0 is the root task level.
 	 * 
 	 * @param isSubtask true if the task is a subtask
 	 */
-	protected void setIsSubtask(boolean isSubtask) {
-		this.isSubtask = isSubtask;
+	protected void setSubtaskLevel(int subtaskLevel) {
+		this.subtaskLevel = subtaskLevel;
+	}
+	
+	/**
+	 * Get the tasks subtask level (how deep it is in the tree).
+	 * 0 is the root task level.
+	 * 
+	 * @return
+	 */
+	public int getSubtaskLevel() {
+		return this.subtaskLevel;
 	}
 	
 	/**
@@ -68,6 +93,6 @@ public abstract class ALMainTask extends MainTask {
 	 * @return true if the task is a subtask
 	 */
 	public boolean isSubtask() {
-		return this.isSubtask;
+		return this.subtaskLevel > 0;
 	}
 }
