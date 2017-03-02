@@ -402,17 +402,19 @@ public class ALTaskManagerPanel extends JPanel{
 
         task.prepareForUse();
     	ALTaskThread thread = new ALTaskThread(task);
-        this.taskList.add(0, thread);
         this.taskTableModel.fireTableDataChanged();
-        this.taskTable.setRowSelectionInterval(0, 0);
         thread.start();
         
         // get the threads for all subtasks
         List<ALTaskThread> subThreads = ((ALMainTask) thread.getTask()).getSubtaskThreads();
         // add the subtask threads to the list of available tasks
+
+        this.taskList.add(0, thread);
+        this.taskTable.setRowSelectionInterval(0, 0);
+        
         for(int i = 0; i < subThreads.size(); ++i)
         {
-        	this.taskList.add(subThreads.get(i));
+        	this.taskList.add(i+1,subThreads.get(i));
         }
     }
 

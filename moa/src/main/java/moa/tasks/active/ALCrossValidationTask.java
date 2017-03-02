@@ -119,7 +119,6 @@ public class ALCrossValidationTask extends ALMainTask {
 		// TODO Auto-generated method stub
 		super.prepareForUseImpl(monitor, repository);
 
-		System.out.println(String.valueOf(this.numFoldsOption.getValue()));
 		// setup subtask for each cross validation fold
 		for (int i = 0; i < this.numFoldsOption.getValue(); i++) {
 			
@@ -204,12 +203,13 @@ public class ALCrossValidationTask extends ALMainTask {
 		// setup learning curve
 		LearningCurve learningCurve = new LearningCurve(
                 "cross validation evaluation");
+
+		monitor.setCurrentActivity("Performing cross validation...", 50.0);
 		
 		for(int i = 0; i < this.subtaskThreads.size(); ++i)
 		{
 			subtaskThreads.get(i).run();
 		}
-		//monitor.setCurrentActivity("Performing cross validation...", -1.0);
 		
 		
 		return learningCurve;
