@@ -82,14 +82,4 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 	public List<ALTaskThread> getSubtaskThreads() {
 		return new ArrayList<ALTaskThread>();
 	}
-	
-	@Override
-	public String getDisplayName() {
-		if (this.isSubtask()) {
-			return "    |-- ALPrequentialEvaluationTask";
-		}
-		else {
-			return "ALPrequentialEvaluationTask";
-		}
-	}
 }
