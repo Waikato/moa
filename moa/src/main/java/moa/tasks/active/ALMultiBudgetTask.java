@@ -92,12 +92,13 @@ public class ALMultiBudgetTask extends ALMainTask {
 		
 		// setup task for each budget
 		Option[] budgets = this.budgetsOption.getList();
-		for (Option budget : budgets) {
+		for (int i = 0; i < budgets.length; i++) {
 			
 			// create subtask
 			ALPrequentialEvaluationTask budgetTask = 
 					new ALPrequentialEvaluationTask();
-			budgetTask.setSubtaskLevel(this.subtaskLevel + 1);
+			budgetTask.setIsLastSubtaskOnLevel(
+					this.isLastSubtaskOnLevel, i == budgets.length - 1);
 			
 			for (Option opt : budgetTask.getOptions().getOptionArray()) {
 				switch (opt.getName()) {
@@ -115,7 +116,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 							.getValueAsCLIString());
 					break;
 				case "budget":
-					opt.setValueViaCLIString(budget.getValueAsCLIString());
+					opt.setValueViaCLIString(budgets[i].getValueAsCLIString());
 					break;
 				}
 			}

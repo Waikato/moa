@@ -144,7 +144,9 @@ public class ALCrossValidationTask extends ALMainTask {
 			
 			// create subtask
 			ALMultiBudgetTask foldTask = new ALMultiBudgetTask();
-			foldTask.setSubtaskLevel(this.subtaskLevel + 1);
+			foldTask.setIsLastSubtaskOnLevel(
+					this.isLastSubtaskOnLevel, 
+					i == this.numFoldsOption.getValue() - 1);
 			
 			for (Option opt : foldTask.getOptions().getOptionArray()) {
 				switch (opt.getName()) {
