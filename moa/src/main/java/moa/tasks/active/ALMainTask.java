@@ -35,7 +35,7 @@ public abstract class ALMainTask extends MainTask {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private boolean isSubtask = false;
+	protected boolean[] isLastSubtaskOnLevel = {};
 	
 	/**
 	 * Get the list of threads for all subtasks and recursively the children's
@@ -46,20 +46,66 @@ public abstract class ALMainTask extends MainTask {
 	public abstract List<ALTaskThread> getSubtaskThreads();
 	
 	/**
-	 * Get the task's display name consisting of the general task name and 
-	 * potentially extensions for the parent's name, fold or budget indices.
+	 * Get the task's display name consisting of the general task name 
+	 * indentation showing the tree structure depending on the subtask
+	 * level.
 	 * 
 	 * @return display name
 	 */
-	public abstract String getDisplayName();
+	public String getDisplayName() {
+		StringBuilder name = new StringBuilder();
+		
+		for (int i = 0; i < this.getSubtaskLevel() -1; i++) {
+			if (this.isLastSubtaskOnLevel[i]) {
+				name.append("         ");
+			}
+			else {
+				name.append("│      ");
+			}
+		}
+		if (this.getSubtaskLevel() > 0) {
+			if (this.isLastSubtaskOnLevel[this.getSubtaskLevel() - 1]) 
+			{
+				name.append("└──");
+			}
+			else {
+				name.append("├──");
+			}
+		}
+		
+		name.append(this.getClass().getSimpleName());
+		
+		return name.toString();
+	}
 	
 	/**
-	 * Tell this task that it is a subtask of another parent.
+	 * Set the list of booleans indicating if the current branch in the 
+	 * subtask tree is the last one on its respective level.
 	 * 
-	 * @param isSubtask true if the task is a subtask
+	 * @param parentIsLastSubtaskList the internal list of the parent
+	 * @param isLastSubtask if the current subtask is the parents last one
 	 */
-	protected void setIsSubtask(boolean isSubtask) {
-		this.isSubtask = isSubtask;
+	protected void setIsLastSubtaskOnLevel(
+			boolean[] parentIsLastSubtaskList, boolean isLastSubtask)
+	{
+		this.isLastSubtaskOnLevel = 
+				new boolean[parentIsLastSubtaskList.length + 1];
+		
+		for (int i = 0; i < parentIsLastSubtaskList.length; i++) {
+			this.isLastSubtaskOnLevel[i] = parentIsLastSubtaskList[i];
+		}
+		this.isLastSubtaskOnLevel[parentIsLastSubtaskList.length] = 
+				isLastSubtask;
+	}
+	
+	/**
+	 * Get the tasks subtask level (how deep it is in the tree).
+	 * 0 is the root task level.
+	 * 
+	 * @return
+	 */
+	public int getSubtaskLevel() {
+		return this.isLastSubtaskOnLevel.length;
 	}
 	
 	/**
@@ -68,6 +114,6 @@ public abstract class ALMainTask extends MainTask {
 	 * @return true if the task is a subtask
 	 */
 	public boolean isSubtask() {
-		return this.isSubtask;
+		return this.getSubtaskLevel() > 0;
 	}
 }
