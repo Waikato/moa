@@ -119,7 +119,6 @@ public class ALCrossValidationTask extends ALMainTask {
 		// TODO Auto-generated method stub
 		super.prepareForUseImpl(monitor, repository);
 
-		System.out.println(String.valueOf(this.numFoldsOption.getValue()));
 		// setup subtask for each cross validation fold
 		for (int i = 0; i < this.numFoldsOption.getValue(); i++) {
 			
