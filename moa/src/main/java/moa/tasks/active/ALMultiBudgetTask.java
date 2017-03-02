@@ -23,12 +23,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 import com.github.javacliparser.ListOption;
 import com.github.javacliparser.Option;
 
 import moa.classifiers.active.ALClassifier;
 import moa.core.ObjectRepository;
-import moa.evaluation.ALEvaluator;
+import moa.evaluation.ALClassificationPerformanceEvaluator;
 import moa.evaluation.LearningCurve;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
@@ -59,8 +60,12 @@ public class ALMultiBudgetTask extends ALMainTask {
 	public ClassOption prequentialEvaluatorOption = new ClassOption(
 			"prequentialEvaluator", 'e',
             "Prequential classification performance evaluation method.",
-            ALEvaluator.class,
+            ALClassificationPerformanceEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
+	
+	public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
+            "Maximum number of instances to test/train on  (-1 = no limit).",
+            100000000, -1, Integer.MAX_VALUE);
 	
 	/* options used in in this class */
 	public ListOption budgetsOption = new ListOption("budgets", 'b',
@@ -71,7 +76,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 	public ClassOption multiBudgetEvaluatorOption = new ClassOption(
 			"multiBudgetEvaluator", 'm',
             "Multi-budget classification performance evaluation method.",
-            ALEvaluator.class,
+            ALClassificationPerformanceEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
 	
 	
@@ -87,7 +92,6 @@ public class ALMultiBudgetTask extends ALMainTask {
 	
 	@Override
 	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
-		// TODO Auto-generated method stub
 		super.prepareForUseImpl(monitor, repository);
 		
 		// setup task for each budget
@@ -118,6 +122,10 @@ public class ALMultiBudgetTask extends ALMainTask {
 				case "budget":
 					opt.setValueViaCLIString(budgets[i].getValueAsCLIString());
 					break;
+				case "instanceLimit":
+					opt.setValueViaCLIString(
+							this.instanceLimitOption.getValueAsCLIString());
+					break;
 				}
 			}
 			
@@ -125,12 +133,10 @@ public class ALMultiBudgetTask extends ALMainTask {
 			
 			List<ALTaskThread> childSubtasks = budgetTask.getSubtaskThreads();
 			
-			// add new subtask to list
+			// add new subtask and its thread to lists
 			this.subtasks.add(budgetTask);
 			
-			
 			ALTaskThread subtaskThread = new ALTaskThread(budgetTask);
-			// TODO: run task and perform evaluation
 			this.subtaskThreads.add(subtaskThread);
 
 			this.flattenedSubtaskThreads.add(subtaskThread);
@@ -144,9 +150,10 @@ public class ALMultiBudgetTask extends ALMainTask {
 	{
 		// setup learning curve
 		LearningCurve learningCurve = new LearningCurve(
-                "multi-budget evaluation");
+				"learning evaluation instances");
 		
-
+		// start subtasks
+		monitor.setCurrentActivity("Evaluating learners for budgets...", -1.0);
 		for(int i = 0; i < this.subtaskThreads.size(); ++i)
 		{
 			subtaskThreads.get(i).run();

@@ -23,11 +23,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.Option;
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.active.ALClassifier;
+import moa.core.Example;
+import moa.core.Measurement;
 import moa.core.ObjectRepository;
-import moa.evaluation.ALEvaluator;
+import moa.evaluation.ALClassificationPerformanceEvaluator;
 import moa.evaluation.LearningCurve;
+import moa.evaluation.LearningEvaluation;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.tasks.TaskMonitor;
@@ -54,17 +60,23 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 	public ClassOption prequentialEvaluatorOption = new ClassOption(
 			"prequentialEvaluator", 'e',
             "Prequential classification performance evaluation method.",
-            ALEvaluator.class,
+            ALClassificationPerformanceEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
 	
 	public FloatOption budgetOption = new FloatOption("budget", 't', 
 			"Active learner budget.", 0.9);
+	
+	public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
+            "Maximum number of instances to test/train on  (-1 = no limit).",
+            100000000, -1, Integer.MAX_VALUE);
+	
 	
 	@Override
 	public Class<?> getTaskResultType() {
 		return LearningCurve.class;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
 		/*
@@ -75,7 +87,102 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 		 * 2. Train on sample
 		 */
 		
-		return null;
+		// get stream
+		ExampleStream<Example<Instance>> stream = 
+				(ExampleStream<Example<Instance>>) 
+				getPreparedClassOption(this.streamOption);
+		
+		// initialize learner with given budget
+		ALClassifier learner = 
+				(ALClassifier) getPreparedClassOption(this.learnerOption);
+		learner.setModelContext(stream.getHeader());
+		for (Option opt : learner.getOptions().getOptionArray()) {
+			// TODO: Use arbitrarily definable budget option
+			if (opt.getName().equals("budget")) {
+				opt.setValueViaCLIString(
+						this.budgetOption.getValueAsCLIString());
+			}
+		}
+		
+		// get evaluator
+        ALClassificationPerformanceEvaluator evaluator = (ALClassificationPerformanceEvaluator) 
+        		getPreparedClassOption(this.prequentialEvaluatorOption);
+        
+        // initialize learning curve
+        LearningCurve learningCurve = new LearningCurve(
+        		"learning evaluation instances");
+        
+		// perform training and testing
+        int maxInstances = this.instanceLimitOption.getValue();
+        int instancesProcessed = 0;
+        int sampleFrequency = 100000;
+        
+        monitor.setCurrentActivity("Evaluating learner...", -1.0);
+        while (stream.hasMoreInstances()
+        	   && ((maxInstances < 0) 
+        		   || (instancesProcessed < maxInstances))) 
+        {
+        	Example<Instance> trainInst = stream.nextInstance();
+        	Example<Instance> testInst = trainInst;
+        	
+        	// predict class for instance
+        	double[] prediction = learner.getVotesForInstance(testInst);
+        	evaluator.addResult(testInst, prediction);
+        	
+        	// train on instance
+        	learner.trainOnInstance(trainInst);
+        	
+        	// check if label was acquired
+        	int labelAcquired = learner.getLastLabelAcqReport();
+        	evaluator.doLabelAcqReport(trainInst, labelAcquired);
+        	
+        	instancesProcessed++;
+        	
+        	// update learning curve
+        	if (instancesProcessed % sampleFrequency == 0 ||
+        		!stream.hasMoreInstances())
+        	{
+        		learningCurve.insertEntry(new LearningEvaluation(
+        				new Measurement[]{
+        						new Measurement(
+        								"learning evaluation instances",
+        								instancesProcessed)
+        				},
+        				evaluator, learner));
+        	}
+        	
+        	// update monitor
+        	if (instancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
+        		if (monitor.taskShouldAbort()) {
+                    return null;
+                }
+        		
+        		long estimatedRemainingInstances = 
+        				stream.estimatedRemainingInstances();
+        		
+        		if (maxInstances > 0) {
+        			long maxRemaining = maxInstances - instancesProcessed;
+        			if ((estimatedRemainingInstances < 0)
+        				|| (maxRemaining < estimatedRemainingInstances))
+        			{
+        				estimatedRemainingInstances = maxRemaining;
+        			}
+        		}
+        		
+        		// calculate completion fraction
+        		double fractionComplete = (double) instancesProcessed / 
+        				(instancesProcessed + estimatedRemainingInstances);
+        		monitor.setCurrentActivityFractionComplete(
+        				estimatedRemainingInstances < 0 ? 
+        						-1.0 : fractionComplete);
+        		
+        		if (monitor.resultPreviewRequested()) {
+                    monitor.setLatestResultPreview(learningCurve.copy());
+                }
+        	}
+        }
+		
+		return learningCurve;
 	}
 	
 	@Override

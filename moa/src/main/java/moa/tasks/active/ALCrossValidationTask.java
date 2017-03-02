@@ -29,7 +29,7 @@ import com.github.javacliparser.Option;
 
 import moa.classifiers.active.ALClassifier;
 import moa.core.ObjectRepository;
-import moa.evaluation.ALEvaluator;
+import moa.evaluation.ALClassificationPerformanceEvaluator;
 import moa.evaluation.LearningCurve;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
@@ -71,8 +71,12 @@ public class ALCrossValidationTask extends ALMainTask {
 	public ClassOption prequentialEvaluatorOption = new ClassOption(
 			"prequentialEvaluator", 'e',
             "Prequential classification performance evaluation method.",
-            ALEvaluator.class,
+            ALClassificationPerformanceEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
+	
+	public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
+            "Maximum number of instances to test/train on  (-1 = no limit).",
+            100000000, -1, Integer.MAX_VALUE);
 	
 	/* options actually used in ALMultiBudgetTask */
 	public ListOption budgetsOption = new ListOption("budgets", 'b',
@@ -83,20 +87,17 @@ public class ALCrossValidationTask extends ALMainTask {
 	public ClassOption multiBudgetEvaluatorOption = new ClassOption(
 			"multiBudgetEvaluator", 'm',
             "Multi-budget classification performance evaluation method.",
-            ALEvaluator.class,
+            ALClassificationPerformanceEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
 	
 	/* options used in in this class */
 	public IntOption numFoldsOption = new IntOption("numFolds", 'k',
             "Number of cross validation folds.", 10);
 	
-	public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
-            "Seed for random behaviour of the task.", 1);
-	
 	public ClassOption crossValEvaluatorOption = new ClassOption(
 			"corssValidationEvaluator", 'c',
             "Cross validation evaluation method.",
-            ALEvaluator.class,
+            ALClassificationPerformanceEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
 	
 	/*
@@ -116,9 +117,8 @@ public class ALCrossValidationTask extends ALMainTask {
 	
 	@Override
 	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
-		// TODO Auto-generated method stub
 		super.prepareForUseImpl(monitor, repository);
-
+        
 		// setup subtask for each cross validation fold
 		for (int i = 0; i < this.numFoldsOption.getValue(); i++) {
 			
@@ -172,6 +172,10 @@ public class ALCrossValidationTask extends ALMainTask {
 							this.multiBudgetEvaluatorOption
 							.getValueAsCLIString());
 					break;
+				case "instanceLimit":
+					opt.setValueViaCLIString(
+							this.instanceLimitOption.getValueAsCLIString());
+					break;
 				}
 			}
 			
@@ -179,12 +183,10 @@ public class ALCrossValidationTask extends ALMainTask {
 			
 			List<ALTaskThread> childSubtasks = foldTask.getSubtaskThreads();
 			
-			// add new subtask to list
+			// add new subtask and its thread to lists
 			this.subtasks.add(foldTask);
 			
-			
 			ALTaskThread subtaskThread = new ALTaskThread(foldTask);
-			// TODO: run task and perform evaluation
 			this.subtaskThreads.add(subtaskThread);
 
 			this.flattenedSubtaskThreads.add(subtaskThread);
@@ -204,14 +206,14 @@ public class ALCrossValidationTask extends ALMainTask {
 	{
 		// setup learning curve
 		LearningCurve learningCurve = new LearningCurve(
-                "cross validation evaluation");
+				"learning evaluation instances");
 		
+		// start subtasks
+		monitor.setCurrentActivity("Performing cross validation...", -1.0);
 		for(int i = 0; i < this.subtaskThreads.size(); ++i)
 		{
 			subtaskThreads.get(i).run();
 		}
-		//monitor.setCurrentActivity("Performing cross validation...", -1.0);
-		
 		
 		return learningCurve;
 	}
