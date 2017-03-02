@@ -27,6 +27,8 @@ import java.util.List;
  * This class provides a superclass for Active Learning tasks, which 
  * enables convenient searching for those tasks for example when showing 
  * a list of available Active Learning tasks.
+ * It further contains features for handling tasks in a tree-like 
+ * structure of parents and subtasks.
  * 
  * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  * @version $Revision: 1 $

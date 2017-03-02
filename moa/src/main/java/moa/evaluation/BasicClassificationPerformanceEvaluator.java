@@ -42,7 +42,7 @@ import java.io.Serializable;
  * @version $Revision: 7 $
  */
 public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandler
-        implements LearningPerformanceEvaluator<Example<Instance>> {
+        implements ClassificationPerformanceEvaluator {
 
     private static final long serialVersionUID = 1L;
 
