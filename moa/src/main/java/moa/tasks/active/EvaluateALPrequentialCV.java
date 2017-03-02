@@ -75,7 +75,7 @@ public class EvaluateALPrequentialCV extends ALMainTask {
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
             "Classification performance evaluation method.",
-            ALEvaluator.class,
+            ALClassificationPerformanceEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
 
     public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
@@ -201,7 +201,7 @@ public class EvaluateALPrequentialCV extends ALMainTask {
                     } catch (ClassCastException e){
                     	System.out.println("Not an active learning algorithm");
                     }
-                    ((ALEvaluator) evaluators[i]).doLabelAcqReport(trainInst, labelAcquired);
+                    ((ALClassificationPerformanceEvaluator) evaluators[i]).doLabelAcqReport(trainInst, labelAcquired);
                 }
             }
 

@@ -23,7 +23,7 @@ import java.util.Arrays;
 
 import moa.core.Example;
 import moa.core.Measurement;
-import weka.core.Instance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Active Learning Wrapper for BasicClassificationPerformanceEvaluator.
@@ -31,7 +31,7 @@ import weka.core.Instance;
  * @author Daniel Kottke (daniel.kottke@ovgu.de)
  * @version $Revision: 1 $
  */
-public class ALBasicClassificationPerformanceEvaluator extends BasicClassificationPerformanceEvaluator implements ALEvaluator<Example<Instance>>{
+public class ALBasicClassificationPerformanceEvaluator extends BasicClassificationPerformanceEvaluator implements ALClassificationPerformanceEvaluator{
 
 	/**
 	 * 
