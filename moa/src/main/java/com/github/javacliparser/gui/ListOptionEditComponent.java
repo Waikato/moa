@@ -1,5 +1,5 @@
 /*
- *    StringOptionEditComponent.java
+ *    ListOptionEditComponent.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  *
@@ -33,16 +33,6 @@ public class ListOptionEditComponent extends StringOptionEditComponent {
 
     public ListOptionEditComponent(Option option) {
     	super(option);
-    }
-
-    @Override
-    public void setEditState(String cliString) {
-        setText(cliString);
-    }
-
-    @Override
-    public void applyState() {
-        getEditedOption().setValueViaCLIString(getText().length() > 0 ? getText() : null);
     }
 }
 
