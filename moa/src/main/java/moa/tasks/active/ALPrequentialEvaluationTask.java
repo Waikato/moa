@@ -31,6 +31,7 @@ import moa.classifiers.active.ALClassifier;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
+import moa.core.TimingUtils;
 import moa.evaluation.ALClassificationPerformanceEvaluator;
 import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
@@ -64,12 +65,16 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
             ALClassificationPerformanceEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
 	
-	public FloatOption budgetOption = new FloatOption("budget", 't', 
+	public FloatOption budgetOption = new FloatOption("budget", 'b', 
 			"Active learner budget.", 0.9);
 	
 	public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
             "Maximum number of instances to test/train on  (-1 = no limit).",
             100000000, -1, Integer.MAX_VALUE);
+	
+	public IntOption timeLimitOption = new IntOption("timeLimit", 't',
+            "Maximum number of seconds to test/train for (-1 = no limit).", -1,
+            -1, Integer.MAX_VALUE);
 	
 	
 	@Override
@@ -80,8 +85,6 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-		// TODO: add time measurement
-		
 		// get stream
 		ExampleStream<Example<Instance>> stream = 
 				(ExampleStream<Example<Instance>>) 
@@ -110,12 +113,19 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 		// perform training and testing
         int maxInstances = this.instanceLimitOption.getValue();
         int instancesProcessed = 0;
+        int maxSeconds = this.timeLimitOption.getValue();
+        int secondsElapsed = 0;
+        boolean preciseCPUTiming = TimingUtils.enablePreciseTiming();
+        long evaluateStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
+        long lastEvaluateStartTime = evaluateStartTime;
+        double RAMHours = 0.0;
         int sampleFrequency = 100000;
         
         monitor.setCurrentActivity("Evaluating learner...", -1.0);
         while (stream.hasMoreInstances()
         	   && ((maxInstances < 0) 
-        		   || (instancesProcessed < maxInstances))) 
+        		   || (instancesProcessed < maxInstances))
+        	   && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) 
         {
         	Example<Instance> trainInst = stream.nextInstance();
         	Example<Instance> testInst = trainInst;
@@ -137,11 +147,31 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         	if (instancesProcessed % sampleFrequency == 0 ||
         		!stream.hasMoreInstances())
         	{
+        		long evaluateTime = 
+        				TimingUtils.getNanoCPUTimeOfCurrentThread();
+                double time = TimingUtils.nanoTimeToSeconds(
+                		evaluateTime - evaluateStartTime);
+                double timeIncrement = TimingUtils.nanoTimeToSeconds(
+                		evaluateTime - lastEvaluateStartTime);
+                double RAMHoursIncrement = 
+                		learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); //GBs
+                RAMHoursIncrement *= (timeIncrement / 3600.0); //Hours
+                RAMHours += RAMHoursIncrement;
+                lastEvaluateStartTime = evaluateTime;
+        		
         		learningCurve.insertEntry(new LearningEvaluation(
         				new Measurement[]{
         						new Measurement(
         								"learning evaluation instances",
-        								instancesProcessed)
+        								instancesProcessed),
+        						new Measurement(
+        	                            "evaluation time ("
+        	                            + (preciseCPUTiming ? "cpu "
+        	                            : "") + "seconds)",
+        	                            time),
+	                            new Measurement(
+        	                            "model cost (RAM-Hours)",
+        	                            RAMHours)
         				},
         				evaluator, learner));
         	}
@@ -174,6 +204,11 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         		if (monitor.resultPreviewRequested()) {
                     monitor.setLatestResultPreview(learningCurve.copy());
                 }
+        		
+        		// update time measurement
+        		secondsElapsed = (int) TimingUtils.nanoTimeToSeconds(
+        				TimingUtils.getNanoCPUTimeOfCurrentThread()
+                        - evaluateStartTime);
         	}
         }
 		

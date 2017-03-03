@@ -56,27 +56,37 @@ public class ALCrossValidationTask extends ALMainTask {
 		return "Evaluates an active learning classifier on a stream by"
 				+ " performing cross validation and on each fold evaluating"
 				+ " the classifier for each element of a set of budgets using"
-				+ " prequential evaluation (testing, then training with each" + " example in  sequence).";
+				+ " prequential evaluation (testing, then training with each" 
+				+ " example in  sequence).";
 	}
 
 	/* options actually used in ALPrequentialEvaluationTask */
-	public ClassOption learnerOption = new ClassOption("learner", 'l', "Learner to train.", ALClassifier.class,
+	public ClassOption learnerOption = new ClassOption(
+			"learner", 'l', "Learner to train.", ALClassifier.class,
 			"moa.classifiers.active.ALZliobaite2011");
 
-	public ClassOption streamOption = new ClassOption("stream", 's', "Stream to learn from.", ExampleStream.class,
+	public ClassOption streamOption = new ClassOption(
+			"stream", 's', "Stream to learn from.", ExampleStream.class,
 			"generators.RandomTreeGenerator");
 
-	public ClassOption prequentialEvaluatorOption = new ClassOption("prequentialEvaluator", 'e',
-			"Prequential classification performance evaluation method.", ALClassificationPerformanceEvaluator.class,
+	public ClassOption prequentialEvaluatorOption = new ClassOption(
+			"prequentialEvaluator", 'e',
+			"Prequential classification performance evaluation method.", 
+			ALClassificationPerformanceEvaluator.class,
 			"ALBasicClassificationPerformanceEvaluator");
 
 	public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
-			"Maximum number of instances to test/train on  (-1 = no limit).", 100000000, -1, Integer.MAX_VALUE);
+			"Maximum number of instances to test/train on  (-1 = no limit).", 
+			100000000, -1, Integer.MAX_VALUE);
+	
+	public IntOption timeLimitOption = new IntOption("timeLimit", 't',
+            "Maximum number of seconds to test/train for (-1 = no limit).", -1,
+            -1, Integer.MAX_VALUE);
 
 	/* options actually used in ALMultiBudgetTask */
 	public ListOption budgetsOption = new ListOption("budgets", 'b',
 			"List of budgets to train classifiers for.",
-			new FloatOption("budget", 't', "Active learner budget.", 0.9, 0, 1), 
+			new FloatOption("budget", ' ', "Active learner budget.", 0.9, 0, 1), 
 			new FloatOption[]{
 					new FloatOption("", ' ', "", 0.5, 0, 1),
 					new FloatOption("", ' ', "", 0.9, 0, 1)
@@ -89,10 +99,13 @@ public class ALCrossValidationTask extends ALMainTask {
             "ALBasicClassificationPerformanceEvaluator");
 	
 	/* options used in in this class */
-	public IntOption numFoldsOption = new IntOption("numFolds", 'k', "Number of cross validation folds.", 10);
+	public IntOption numFoldsOption = new IntOption("numFolds", 'k', 
+			"Number of cross validation folds.", 10);
 
-	public ClassOption crossValEvaluatorOption = new ClassOption("corssValidationEvaluator", 'c',
-			"Cross validation evaluation method.", ALClassificationPerformanceEvaluator.class,
+	public ClassOption crossValEvaluatorOption = new ClassOption(
+			"crossValidationEvaluator", 'c',
+			"Cross validation evaluation method.", 
+			ALClassificationPerformanceEvaluator.class,
 			"ALBasicClassificationPerformanceEvaluator");
 
 	/*
@@ -134,7 +147,8 @@ public class ALCrossValidationTask extends ALMainTask {
 
 			// create subtask
 			ALMultiBudgetTask foldTask = new ALMultiBudgetTask();
-			foldTask.setIsLastSubtaskOnLevel(this.isLastSubtaskOnLevel, i == this.numFoldsOption.getValue() - 1);
+			foldTask.setIsLastSubtaskOnLevel(
+					this.isLastSubtaskOnLevel, i == this.numFoldsOption.getValue() - 1);
 
 			for (Option opt : foldTask.getOptions().getOptionArray()) {
 				switch (opt.getName()) {
@@ -142,19 +156,28 @@ public class ALCrossValidationTask extends ALMainTask {
 					opt.setValueViaCLIString(this.learnerOption.getValueAsCLIString());
 					break;
 				case "stream":
-					opt.setValueViaCLIString(ClassOption.objectToCLIString(stream, ExampleStream.class));
+					opt.setValueViaCLIString(
+							ClassOption.objectToCLIString(stream, ExampleStream.class));
 					break;
 				case "prequential evaluator":
-					opt.setValueViaCLIString(this.prequentialEvaluatorOption.getValueAsCLIString());
+					opt.setValueViaCLIString(
+							this.prequentialEvaluatorOption.getValueAsCLIString());
 					break;
 				case "budgets":
-					opt.setValueViaCLIString(this.budgetsOption.getValueAsCLIString());
+					opt.setValueViaCLIString(
+							this.budgetsOption.getValueAsCLIString());
 					break;
 				case "multi-budget evaluator":
-					opt.setValueViaCLIString(this.multiBudgetEvaluatorOption.getValueAsCLIString());
+					opt.setValueViaCLIString(
+							this.multiBudgetEvaluatorOption.getValueAsCLIString());
 					break;
 				case "instanceLimit":
-					opt.setValueViaCLIString(this.instanceLimitOption.getValueAsCLIString());
+					opt.setValueViaCLIString(
+							this.instanceLimitOption.getValueAsCLIString());
+					break;
+				case "timeLimit":
+					opt.setValueViaCLIString(
+							this.timeLimitOption.getValueAsCLIString());
 					break;
 				}
 			}

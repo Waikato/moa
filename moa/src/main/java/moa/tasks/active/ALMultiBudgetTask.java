@@ -67,10 +67,14 @@ public class ALMultiBudgetTask extends ALMainTask {
             "Maximum number of instances to test/train on  (-1 = no limit).",
             100000000, -1, Integer.MAX_VALUE);
 	
+	public IntOption timeLimitOption = new IntOption("timeLimit", 't',
+            "Maximum number of seconds to test/train for (-1 = no limit).", -1,
+            -1, Integer.MAX_VALUE);
+	
 	/* options used in in this class */
 	public ListOption budgetsOption = new ListOption("budgets", 'b',
 			"List of budgets to train classifiers for.",
-			new FloatOption("budget", 't', "Active learner budget.", 0.9, 0, 1), 
+			new FloatOption("budget", ' ', "Active learner budget.", 0.9, 0, 1), 
 			new FloatOption[]{
 					new FloatOption("", ' ', "", 0.5, 0, 1),
 					new FloatOption("", ' ', "", 0.9, 0, 1)
@@ -128,6 +132,10 @@ public class ALMultiBudgetTask extends ALMainTask {
 				case "instanceLimit":
 					opt.setValueViaCLIString(
 							this.instanceLimitOption.getValueAsCLIString());
+					break;
+				case "timeLimit":
+					opt.setValueViaCLIString(
+							this.timeLimitOption.getValueAsCLIString());
 					break;
 				}
 			}
