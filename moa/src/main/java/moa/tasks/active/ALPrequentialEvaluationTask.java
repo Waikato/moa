@@ -40,7 +40,8 @@ import moa.tasks.TaskMonitor;
 
 /**
  * This task performs prequential evaluation for an active learning classifier 
- * (testing, then training with each example in sequence).
+ * (testing, then training with each example in sequence). It is mainly based
+ * on the class EvaluateALPrequentialCV.
  * 
  * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  * @version $Revision: 1 $
@@ -79,13 +80,7 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-		/*
-		 * TODO Implement prequential evaluation main task
-		 * 
-		 * Process each sample from the given stream:
-		 * 1. Test on sample
-		 * 2. Train on sample
-		 */
+		// TODO: add time measurement
 		
 		// get stream
 		ExampleStream<Example<Instance>> stream = 

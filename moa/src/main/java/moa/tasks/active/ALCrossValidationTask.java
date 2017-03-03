@@ -74,13 +74,20 @@ public class ALCrossValidationTask extends ALMainTask {
 			"Maximum number of instances to test/train on  (-1 = no limit).", 100000000, -1, Integer.MAX_VALUE);
 
 	/* options actually used in ALMultiBudgetTask */
-	public ListOption budgetsOption = new ListOption("budgets", 'b', "List of budgets to train classifiers for.",
-			new FloatOption("budget", 't', "Active learner budget.", 0.9), new Option[0], ',');
-
-	public ClassOption multiBudgetEvaluatorOption = new ClassOption("multiBudgetEvaluator", 'm',
-			"Multi-budget classification performance evaluation method.", ALClassificationPerformanceEvaluator.class,
-			"ALBasicClassificationPerformanceEvaluator");
-
+	public ListOption budgetsOption = new ListOption("budgets", 'b',
+			"List of budgets to train classifiers for.",
+			new FloatOption("budget", 't', "Active learner budget.", 0.9, 0, 1), 
+			new FloatOption[]{
+					new FloatOption("", ' ', "", 0.5, 0, 1),
+					new FloatOption("", ' ', "", 0.9, 0, 1)
+			}, ',');
+	
+	public ClassOption multiBudgetEvaluatorOption = new ClassOption(
+			"multiBudgetEvaluator", 'm',
+            "Multi-budget classification performance evaluation method.",
+            ALClassificationPerformanceEvaluator.class,
+            "ALBasicClassificationPerformanceEvaluator");
+	
 	/* options used in in this class */
 	public IntOption numFoldsOption = new IntOption("numFolds", 'k', "Number of cross validation folds.", 10);
 
@@ -89,9 +96,12 @@ public class ALCrossValidationTask extends ALMainTask {
 			"ALBasicClassificationPerformanceEvaluator");
 
 	/*
-	 * Possible extensions/further options: - Ensembles of learners (ensemble
-	 * size) - Instance limit - Time limit - Sample frequency - Memory check
-	 * frequency - Dump file
+	 * Possible extensions/further options:
+	 * - Ensembles of learners (ensemble size)
+	 * - Time limit
+	 * - Sample frequency
+	 * - Memory check frequency
+	 * - Dump file
 	 */
 
 	private ArrayList<ALMultiBudgetTask> subtasks = new ArrayList<>();

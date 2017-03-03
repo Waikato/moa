@@ -70,8 +70,11 @@ public class ALMultiBudgetTask extends ALMainTask {
 	/* options used in in this class */
 	public ListOption budgetsOption = new ListOption("budgets", 'b',
 			"List of budgets to train classifiers for.",
-			new FloatOption("budget", 't', "Active learner budget.", 0.9), 
-			new Option[0], ',');
+			new FloatOption("budget", 't', "Active learner budget.", 0.9, 0, 1), 
+			new FloatOption[]{
+					new FloatOption("", ' ', "", 0.5, 0, 1),
+					new FloatOption("", ' ', "", 0.9, 0, 1)
+			}, ',');
 	
 	public ClassOption multiBudgetEvaluatorOption = new ClassOption(
 			"multiBudgetEvaluator", 'm',
