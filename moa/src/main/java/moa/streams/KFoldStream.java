@@ -60,19 +60,16 @@ public class KFoldStream extends AbstractOptionHandler  implements ExampleStream
     
     @Override
 	public InstancesHeader getHeader() {
-		// TODO Auto-generated method stub
 		return baseStream.getHeader();
 	}
 
 	@Override
 	public long estimatedRemainingInstances() {
-		// TODO Auto-generated method stub
 		return (baseStream.estimatedRemainingInstances() * (long)(numFolds+1))/(long)numFolds;
 	}
 
 	@Override
 	public boolean hasMoreInstances() {
-		// TODO Auto-generated method stub
 		return baseStream.hasMoreInstances();
 	}
 
