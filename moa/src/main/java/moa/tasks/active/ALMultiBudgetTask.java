@@ -156,7 +156,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 		monitor.setCurrentActivity("Evaluating learners for budgets...", -1.0);
 		for(int i = 0; i < this.subtaskThreads.size(); ++i)
 		{
-			subtaskThreads.get(i).run();
+			subtaskThreads.get(i).start();
 		}
 		
 		return learningCurve;

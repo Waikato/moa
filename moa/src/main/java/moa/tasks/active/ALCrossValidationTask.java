@@ -214,7 +214,7 @@ public class ALCrossValidationTask extends ALMainTask {
 		monitor.setCurrentActivity("Performing cross validation...", -1.0);
 		for(int i = 0; i < this.subtaskThreads.size(); ++i)
 		{
-			subtaskThreads.get(i).run();
+			subtaskThreads.get(i).start();
 		}
 		
 		return learningCurve;
