@@ -73,7 +73,7 @@ public class ALTaskThread extends TaskThread {
         // resume all subtask threads
         for(int i = 0; i < threads.size(); ++i)
         {
-        	threads.get(i).pauseTask();
+        	threads.get(i).resumeTask();
         }
     }
 
@@ -91,8 +91,7 @@ public class ALTaskThread extends TaskThread {
         // cancel all subtask threads
         for(int i = 0; i < threads.size(); ++i)
         {
-        	threads.get(i).pauseTask();
+        	threads.get(i).cancelTask();
         }
     }
-
 }

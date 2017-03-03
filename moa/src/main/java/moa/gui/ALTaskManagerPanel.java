@@ -462,9 +462,17 @@ public class ALTaskManagerPanel extends JPanel{
 
     public void deleteSelectedTasks() {
     	ALTaskThread[] selectedTasks = getSelectedTasks();
+    	
         for (ALTaskThread thread : selectedTasks) {
             thread.cancelTask();
             this.taskList.remove(thread);
+            
+            ALMainTask task =  (ALMainTask)thread.getTask();
+            List<ALTaskThread> subtaskThreads = task.getSubtaskThreads();
+            for (ALTaskThread subthread : subtaskThreads) {
+                this.taskList.remove(subthread);
+            }
+            
         }
         this.taskTableModel.fireTableDataChanged();
     }

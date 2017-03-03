@@ -158,6 +158,15 @@ public class ALMultiBudgetTask extends ALMainTask {
 		{
 			subtaskThreads.get(i).start();
 		}
+
+		try {
+			for(int i = 0; i < this.subtaskThreads.size(); ++i)
+			{
+					subtaskThreads.get(i).join();
+			}		
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		
 		return learningCurve;
 	}
