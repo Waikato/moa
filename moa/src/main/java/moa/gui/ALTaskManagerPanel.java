@@ -60,6 +60,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
+import org.netlib.util.booleanW;
+
 import moa.core.StringUtils;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
@@ -428,6 +430,18 @@ public class ALTaskManagerPanel extends JPanel{
         } else {
             this.previewPanel.setTaskThreadToPreview(null);
         }
+        
+        if(selectedTasks.length > 0)
+        {
+        	boolean onlyRootTasks = true;
+        	for(int i = 0; i < selectedTasks.length; ++i)
+        	{
+        		onlyRootTasks &= !((ALMainTask)selectedTasks[i].getTask()).isSubtask();
+        	}
+
+        	cancelTaskButton.setEnabled(onlyRootTasks);
+        	deleteTaskButton.setEnabled(onlyRootTasks);
+        }
     }
 
     public ALTaskThread[] getSelectedTasks() {
@@ -531,21 +545,6 @@ public class ALTaskManagerPanel extends JPanel{
         frame.pack();
         // frame.setSize(400, 400);
         frame.setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            javax.swing.SwingUtilities.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    createAndShowGUI();
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
 }
