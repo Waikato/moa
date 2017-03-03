@@ -52,7 +52,7 @@ public class NumericAttributeBinaryTest extends InstanceConditionalBinaryTest {
         if (inst.isMissing(instAttIndex)) {
             return -1;
         }
-        double v = inst.value(instAttIndex);
+        double v = inst.valueInputAttribute(instAttIndex); // if the attIndex is not calculated above this is the correct method call
         if (v == this.attValue) {
             return this.equalsPassesTest ? 0 : 1;
         }
@@ -64,7 +64,7 @@ public class NumericAttributeBinaryTest extends InstanceConditionalBinaryTest {
         if ((branch == 0) || (branch == 1)) {
             char compareChar = branch == 0 ? '<' : '>';
             int equalsBranch = this.equalsPassesTest ? 0 : 1;
-            return InstancesHeader.getAttributeNameString(context,
+            return InstancesHeader.getInputAttributeNameString(context,
                     this.attIndex)
                     + ' '
                     + compareChar

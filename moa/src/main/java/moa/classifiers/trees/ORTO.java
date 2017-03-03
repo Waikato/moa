@@ -24,10 +24,12 @@ import java.util.Stack;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
 import com.yahoo.labs.samoa.instances.Instance;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
+
 import moa.classifiers.Regressor;
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
@@ -155,8 +157,7 @@ public class ORTO extends FIMTDD implements Regressor {
 			return optionFFSSL[childIndex] / optionFFSeen[childIndex];
 		}
 		
-		@SuppressWarnings("unused")
-		private boolean skipInLevelCount() {
+		protected boolean skipInLevelCount() {
 			return true;
 		}
 	}
@@ -196,22 +197,26 @@ public class ORTO extends FIMTDD implements Regressor {
 					((LeafNode) currentNode).learnFromInstance(inst, growthAllowed);
 					break;
 				} else {
-					currentNode.examplesSeen++;
-					currentNode.sumOfAbsErrors += normalError;
+					currentNode.examplesSeen += inst.weight();
+					currentNode.sumOfAbsErrors += inst.weight() * normalError;
 					InnerNode iNode = (InnerNode) currentNode;
 					if (!inAlternate && iNode.alternateTree != null) {
 						boolean altTree = true;
 						double lossO = Math.pow(inst.classValue() - prediction, 2);
 						double lossA = Math.pow(inst.classValue() - currentNode.alternateTree.getPrediction(inst), 2);
 						
-						iNode.lossFadedSumOriginal = lossO + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumOriginal;
-						iNode.lossFadedSumAlternate = lossA + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumAlternate;
-						iNode.lossExamplesSeen++;
-						
+						// Loop for compatibility with bagging methods
+						for (int i = 0; i < inst.weight(); i++) {
+							iNode.lossFadedSumOriginal = lossO + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumOriginal;
+							iNode.lossFadedSumAlternate = lossA + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumAlternate;
+							iNode.lossExamplesSeen++;
+							
+							double Qi = Math.log((iNode.lossFadedSumOriginal) / (iNode.lossFadedSumAlternate));
+							iNode.lossSumQi += Qi;
+							iNode.lossNumQiTests += 1;
+						}
 						double Qi = Math.log((iNode.lossFadedSumOriginal) / (iNode.lossFadedSumAlternate));
 						double previousQiAverage = iNode.lossSumQi / iNode.lossNumQiTests;
-						iNode.lossSumQi += Qi;
-						iNode.lossNumQiTests += 1;
 						double QiAverage = iNode.lossSumQi / iNode.lossNumQiTests;
 						
 						if (iNode.lossExamplesSeen - iNode.previousWeight >= alternateTreeTMinOption.getValue()) {
@@ -261,7 +266,7 @@ public class ORTO extends FIMTDD implements Regressor {
 					if (currentNode instanceof SplitNode) {
 						currentNode = ((SplitNode) currentNode).descendOneStep(inst);
 					} else if (currentNode instanceof OptionNode) {
-						processInstanceOptionNode(inst, (OptionNode) node, prediction, normalError, growthAllowed, inAlternate);
+						processInstanceOptionNode(inst, (OptionNode) currentNode, prediction, normalError, growthAllowed, inAlternate);
 						break;
 					}
 				}
@@ -283,8 +288,11 @@ public class ORTO extends FIMTDD implements Regressor {
 		for (Node child : node.children) {
 			int index = node.getChildIndex(child);
 			double childPrediction = child.getPrediction(inst);
-			node.optionFFSeen[index] = node.optionFFSeen[index] * optionFadingFactorOption.getValue() + 1;
-			node.optionFFSSL[index] = node.optionFFSSL[index] * optionFadingFactorOption.getValue() + Math.pow(childPrediction - inst.classValue(), 2);
+			// Loop for compatibility with bagging methods
+			for (int i = 0; i < inst.weight(); i++) {
+				node.optionFFSeen[index] = node.optionFFSeen[index] * optionFadingFactorOption.getValue() + 1;
+				node.optionFFSSL[index] = node.optionFFSSL[index] * optionFadingFactorOption.getValue() + Math.pow(childPrediction - inst.classValue(), 2);
+			}
 		}
 
 		for (Node child : node.children) {

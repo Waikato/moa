@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.classifiers.multilabel;
+package moa.classifiers.trees;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -65,7 +65,7 @@ public class HoeffdingTreeClassifLeaves extends HoeffdingTree {
                 this.classifier = cl.copy();
             }
         }
-
+	
         @Override
         public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
             if (getWeightSeen() >= ((HoeffdingTreeClassifLeaves) ht).nbThresholdOption.getValue()) {
@@ -107,6 +107,7 @@ public class HoeffdingTreeClassifLeaves extends HoeffdingTree {
     @Override
     protected void attemptToSplit(ActiveLearningNode node, SplitNode parent,
             int parentIndex) {
+        //ßSystem.out.println("Attempt to Split");
         if (!node.observedClassDistributionIsPure()) {
             SplitCriterion splitCriterion = (SplitCriterion) getPreparedClassOption(this.splitCriterionOption);
             AttributeSplitSuggestion[] bestSplitSuggestions = node.getBestSplitSuggestions(splitCriterion, this);
@@ -119,6 +120,8 @@ public class HoeffdingTreeClassifLeaves extends HoeffdingTree {
                         this.splitConfidenceOption.getValue(), node.getWeightSeen());
                 AttributeSplitSuggestion bestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1];
                 AttributeSplitSuggestion secondBestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 2];
+               // System.out.println(bestSuggestion.merit+" - "+secondBestSuggestion.merit+":"+
+               //         (bestSuggestion.merit - secondBestSuggestion.merit)+" > "+hoeffdingBound+ "<"+this.tieThresholdOption.getValue());
                 if ((bestSuggestion.merit - secondBestSuggestion.merit > hoeffdingBound)
                         || (hoeffdingBound < this.tieThresholdOption.getValue())) {
                     shouldSplit = true;

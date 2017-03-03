@@ -29,6 +29,7 @@ import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
+import moa.core.StringUtils;
 
 /**
  * Majority Labelset classifier. Each labelset combination of relevances, e.g.
@@ -42,86 +43,56 @@ public class MajorityLabelset extends AbstractMultiLabelLearner implements Multi
 
     private static final long serialVersionUID = 1L;
 
-    private int m_L = -1;
-
-    private double maxValue = 0.0;
-
-    private double predictionArray[] = null;
-
-    private HashMap<String, Double> classFreqs = new HashMap<String, Double>();
-
-    // raw instance to bit string (i.e. from binary representation)
-    private static final String toBitString(Instance ins, int c) {
-        StringBuilder sb = new StringBuilder(c);
-        for (int i = 0; i < c; i++) {
-            sb.append((int) Math.round(ins.value(i)));
-        }
-        return sb.toString();
+	@Override
+    public String getPurposeString() {
+        return "Majority labelset classifier: always predicts the labelvector most frequently seen so far.";
     }
 
-    protected void updateCount(Instance x, int L) {
+    private double maxValue = -1.0;
 
-        String y = toBitString(x, L);
+    private MultiLabelPrediction majorityLabelset = null;
 
-        if (classFreqs.containsKey(y)) {
-            double freq = classFreqs.get(y) + x.weight();
-            classFreqs.put(y, freq);
-            if (freq >= maxValue) {
-                maxValue = freq;
-                this.predictionArray = new double[L];
-                for (int j = 0; j < L; j++) {
-                    this.predictionArray[j] = x.value(j);
-                }
-            }
-        } else {
-            classFreqs.put(y, x.weight());
-        }
-    }
-
-    @Override
-    public void setModelContext(InstancesHeader raw_header) {
-        //set the multilabel model context
-        this.modelContext = raw_header;
-        m_L = raw_header.numOutputAttributes(); //raw_header.classIndex() + 1;
-        predictionArray = new double[m_L];
-    }
+    private HashMap<String, Double> vectorCounts = new HashMap<String, Double>();
 
     @Override
     public void resetLearningImpl() {
+		this.majorityLabelset = null;
     }
 
     @Override
     public void trainOnInstanceImpl(MultiLabelInstance x) {
-        updateCount(x, m_L);
+		int L = x.numberOutputTargets();
+
+        MultiLabelPrediction y = new MultiLabelPrediction(L);
+		for(int j=0; j<L;j++)
+    		y.setVotes(j,new double[]{1- x.classValue(j), x.classValue(j)});
+
+        double freq = x.weight();
+		if (this.vectorCounts.containsKey(y.toString())) {
+            freq += this.vectorCounts.get(y.toString());
+        }
+        this.vectorCounts.put(y.toString(), (Double)freq);
+        if (freq > this.maxValue) {
+            this.maxValue = freq;
+            this.majorityLabelset = y;
+        }
+        //System.out.println("---"+this.majorityLabelset);
     }
 
     @Override
-    //public double[] getVotesForInstance(Instance x) {
     public Prediction getPredictionForInstance(MultiLabelInstance x){
-        
-		System.out.println("-------- start MC vote   ---------------");
-        int L = x.numOutputAttributes(); //x.classIndex() + 1;
-        if (m_L != L) {
-            System.err.println("set L = " + L);
-            m_L = L;
-            predictionArray = new double[m_L];
-        }
 
-		System.out.println("y = "+Arrays.toString(predictionArray));
-		System.out.println("-------- end MC vote   -----------------");
-        
-       Prediction prediction = new MultiLabelPrediction(predictionArray.length);
-       for (int j = 0; j < predictionArray.length; j++){
-            prediction.setVote(j, 1, predictionArray[j]);
-        }
-		
-        return prediction;
-        //System.out.println("getVotesForInstance(): "+x.classIndex());
+		if (this.majorityLabelset == null)  {
+			int L = x.numberOutputTargets();
+			return new MultiLabelPrediction(L);
+		}
+
+		return this.majorityLabelset;
     }
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        return new Measurement[]{};
+        return null;
     }
 
     @Override
@@ -131,6 +102,10 @@ public class MajorityLabelset extends AbstractMultiLabelLearner implements Multi
 
     @Override
     public void getModelDescription(StringBuilder out, int indent) {
+        StringUtils.appendIndented(out, indent, "");
+        out.append(this.majorityLabelset.toString());
+        StringUtils.appendNewline(out);
+
     }
 
 }

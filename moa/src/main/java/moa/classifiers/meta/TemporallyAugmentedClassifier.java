@@ -25,15 +25,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.yahoo.labs.samoa.instances.*;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.core.Measurement;
 import moa.core.Utils;
 import moa.options.ClassOption;
-import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
 
 /**
  * Include labels of previous instances into the training data
@@ -131,6 +129,7 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier {
     public Instance extendWithOldLabels(Instance instance) {
         if (this.header == null) {
             initHeader(instance.dataset());
+            this.baseLearner.setModelContext(new InstancesHeader(this.header));
         }
         int numLabels = this.oldLabels.length;
         if (numLabels == 0) {

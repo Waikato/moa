@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.gui.visualization;
@@ -56,47 +56,47 @@ import com.yahoo.labs.samoa.instances.Instances;
 
 public class RunVisualizer implements Runnable, ActionListener, ClusterEventListener{
 
-	
+
     /** the pause interval, being read from the gui at startup */
     public static final int initialPauseInterval = 5000;
-    
+
     /** factor to control the speed */
     private int m_wait_frequency = 1000;
-    
+
     /** after how many instances do we repaint the streampanel?
-     *  the GUI becomes very slow with small values 
+     *  the GUI becomes very slow with small values
      * */
     private int m_redrawInterval = 100;
 
-    
+
     /* flags to control the run behavior */
     private static boolean work;
     private boolean stop = false;
-    
+
     /* total amount of processed instances */
     private static int timestamp;
     private static int lastPauseTimestamp;
-            
+
     /* amount of instances to process in one step*/
     private int m_processFrequency;
-    
+
     /* the stream that delivers the instances */
     private final ClusteringStream m_stream0;
-    
+
     /* amount of relevant instances; older instances will be dropped;
-       creates the 'sliding window' over the stream; 
+       creates the 'sliding window' over the stream;
        is strongly connected to the decay rate and decay threshold*/
     private int m_stream0_decayHorizon;
 
     /* the decay threshold defines the minimum weight of an instance to be relevant */
     private double m_stream0_decay_threshold;
-    
+
     /* the decay rate of the stream, often reffered to as lambda;
-       is being calculated from the horizion and the threshold 
+       is being calculated from the horizion and the threshold
        as these are more intuitive to define */
     private double m_stream0_decay_rate;
-    
-    
+
+
     /* the clusterer */
     private AbstractClusterer m_clusterer0;
     private AbstractClusterer m_clusterer1;
@@ -111,10 +111,10 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
 
     /* panel that shows the evaluation results */
     private ClusteringVisualEvalPanel m_evalPanel;
-    
+
     /* panel to hold the graph */
     private GraphCanvas m_graphcanvas;
-    
+
     /* reference to the visual panel */
     private ClusteringVisualTab m_visualPanel;
 
@@ -129,10 +129,10 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
 
     /* holds all the events that have happend, if the stream supports events */
     private ArrayList<ClusterEvent> clusterEvents;
-    
+
     /* reference to the log panel */
     private final TextViewerPanel m_logPanel;
-    
+
     public RunVisualizer(ClusteringVisualTab visualPanel, ClusteringSetupTab clusteringSetupTab){
         m_visualPanel = visualPanel;
         m_streampanel0 = visualPanel.getLeftStreamPanel();
@@ -160,13 +160,13 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
 
         m_clusterer0 = clusteringSetupTab.getClusterer0();
         m_clusterer0.prepareForUse();
-        
-        
+
+
         m_clusterer1 = clusteringSetupTab.getClusterer1();
         if(m_clusterer1!=null){
             m_clusterer1.prepareForUse();
         }
-        
+
         m_measures0 = clusteringSetupTab.getMeasures();
         m_measures1 = clusteringSetupTab.getMeasures();
 
@@ -241,8 +241,8 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
                 else
                     traininst0.deleteAttributeAt(point0.classIndex());
                 m_clusterer0.trainOnInstanceImpl(traininst0);
-                
-                
+
+
                 if(m_clusterer1!=null){
                     Instance traininst1 = new DenseInstance(point1);
                     if(m_clusterer1.keepClassLabel())
@@ -258,22 +258,22 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
                         p.updateWeight(timestamp, m_stream0_decay_rate);
 
                     pointarray0 = new ArrayList<DataPoint>(pointBuffer0);
-                    		
+
                     if(m_clusterer1!=null){
                         for(DataPoint p:pointBuffer1)
                             p.updateWeight(timestamp, m_stream0_decay_rate);
 
-                		pointarray1 = new ArrayList<DataPoint>(pointBuffer1);	
+                		pointarray1 = new ArrayList<DataPoint>(pointBuffer1);
                     }
-                    
-                    
+
+
                     processClusterings(pointarray0, pointarray1);
 
                     int pauseInterval = m_visualPanel.getPauseInterval();
                     if(pauseInterval!=0 && lastPauseTimestamp+pauseInterval<=timestamp){
                         m_visualPanel.toggleVisualizer(true);
                     }
-                        
+
                 }
             } else {
                 System.out.println("DONE");
@@ -288,7 +288,7 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
                             wait(1);
                     }
                 } catch (InterruptedException ex) {
-                    
+
                 }
                 speedCounter = 0;
             }
@@ -303,7 +303,10 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
 
     private void processClusterings(ArrayList<DataPoint> points0, ArrayList<DataPoint> points1){
         gtClustering0 = new Clustering(points0);
-        gtClustering1 = new Clustering(points1);
+        gtClustering1 = null;
+				if(m_clusterer1!=null){
+						gtClustering1 = new Clustering(points1);
+				}
 
         Clustering evalClustering0 = null;
         Clustering evalClustering1 = null;
@@ -319,12 +322,12 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
         macro0 = m_clusterer0.getClusteringResult();
         evalClustering0 = macro0;
 
-        
+
         //TODO: should we check if micro/macro is being drawn or needed for evaluation and skip otherwise to speed things up?
         if(m_clusterer0.implementsMicroClusterer()){
             micro0 = m_clusterer0.getMicroClusteringResult();
             if(macro0 == null && micro0 != null){
-                //TODO: we need a Macro Clusterer Interface and the option for kmeans to use the non optimal centers   
+                //TODO: we need a Macro Clusterer Interface and the option for kmeans to use the non optimal centers
                 macro0 = moa.clusterers.KMeans.gaussianMeans(gtClustering0, micro0);
             }
             if(m_clusterer0.evaluateMicroClusteringOption.isSet())
@@ -347,9 +350,9 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
                     evalClustering1 = macro1;
             }
         }
-        
+
         evaluateClustering(evalClustering0, gtClustering0, points0, true);
-        evaluateClustering(evalClustering1, gtClustering1, points1, false);
+    		evaluateClustering(evalClustering1, gtClustering1, points1, false);
 
         drawClusterings(points0, points1);
     }
@@ -428,7 +431,7 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
                     wait(1000);
                 }
             } catch (InterruptedException ex) {
-                
+
             }
        }
        run();
@@ -514,7 +517,7 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
                 eventIt = clusterEvents.iterator();
                 event = eventIt.next();
             }
-                 
+
             //raw data
             MeasureCollection measurecol[][] = new MeasureCollection[2][];
             measurecol[0] = m_measures0;
@@ -584,9 +587,9 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
     	catch (Exception e){
     		m_logPanel.addText("Please add weka.jar to the classpath to use the Weka explorer.");
     		return;
-    	}    	
-    	
-    	
+    	}
+
+
         Clustering wekaClustering;
         if(m_clusterer0.implementsMicroClusterer() && m_clusterer0.evaluateMicroClusteringOption.isSet())
             wekaClustering = micro0;
@@ -617,4 +620,3 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
 
 
 }
-

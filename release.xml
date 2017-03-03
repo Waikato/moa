@@ -1,0 +1,145 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>nz.ac.waikato.cms.moa</groupId>
+    <artifactId>moa-pom</artifactId>
+    <version>2016.04</version>  <!-- adjust -->
+  </parent>
+
+  <artifactId>moa-release</artifactId>
+  <packaging>pom</packaging>
+
+  <name>MOA: Massive Online Analysis (release)</name>
+  <description>
+  Massive On-line Analysis is an environment for massive data mining. MOA
+  provides a framework for data stream mining and includes tools for evaluation
+  and a collection of machine learning algorithms. Related to the WEKA project,
+  also written in Java, while scaling to more demanding problems.
+
+  This Maven model file is for generating a release archive.
+
+  First, change the version number of this model file to match the one of the
+  upcoming relase (search for "adjust"), save the file and check it in.
+
+  Second, perform the release of the MOA artifacts:
+    mvn release:clean release:prepare release:perform -Dusername=google-code-user -Dpassword=google-code-pw
+
+  Finally, once the new MOA artifacts are available from Maven Central, you can
+  generate a release archive as follows:
+    mvn -f release.xml package
+  </description>
+  <url>http://moa.cms.waikato.ac.nz/</url>
+  <organization>
+    <name>University of Waikato, Hamilton, NZ</name>
+    <url>http://www.waikato.ac.nz/</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>GNU General Public License 3.0</name>
+      <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>abifet</id>
+      <name>Albert Bifet</name>
+      <email>abifet@waikato.ac.nz</email>
+    </developer>
+    <developer>
+      <id>rkirkby</id>
+      <name>Richard Kirkby</name>
+    </developer>
+  </developers>
+
+  <dependencies>
+    <dependency>
+      <groupId>nz.ac.waikato.cms.moa</groupId>
+      <artifactId>moa</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>nz.ac.waikato.cms.moa</groupId>
+      <artifactId>moa</artifactId>
+      <version>${project.version}</version>
+      <classifier>javadoc</classifier>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- generate 3rd party license file -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+      </plugin>
+
+      <!-- generate documentation -->
+      <plugin>
+        <groupId>com.github.fracpete</groupId>
+        <artifactId>latex-maven-plugin</artifactId>
+      <version>1.4.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>latex</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <forceBuild>true</forceBuild>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <!-- get all source jars -->
+          <execution>
+            <id>sources</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <classifier>sources</classifier>
+              <failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>
+              <outputDirectory>${project.build.directory}/sources</outputDirectory>
+              <includeGroupIds>${project.groupId}</includeGroupIds>
+            </configuration>
+          </execution>
+          <!-- get all test source jars -->
+          <execution>
+            <id>test-sources</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <classifier>test-sources</classifier>
+              <failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>
+              <outputDirectory>${project.build.directory}/sources</outputDirectory>
+              <includeGroupIds>${project.groupId}</includeGroupIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>moa/src/main/assembly/bin.xml</descriptor>
+          </descriptors>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+

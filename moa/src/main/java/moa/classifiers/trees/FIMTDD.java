@@ -1,9 +1,7 @@
 /*
  *    FIMTDD.java
  *    Copyright (C) 2015 Jožef Stefan Institute, Ljubljana, Slovenia
- *    Copyright (C) 2013 University of Porto, Portugal
  *    @author Aljaž Osojnik <aljaz.osojnik@ijs.si>
- *    @author Katie de Lange, E. Almeida, J. Gama
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -18,11 +16,6 @@
  *    limitations under the License.
  *    
  *    
- */
-
-/* Project Knowledge Discovery from Data Streams, FCT LIAAD-INESC TEC, 
- *
- * Contact: jgama@fep.up.pt
  */
 
 package moa.classifiers.trees;
@@ -170,11 +163,6 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			return (int) SizeOf.fullSizeOf(this);
 		}
 
-		public boolean isLeaf() {
-			return true;
-		}
-
-
 		/**
 		 * Set the parent node
 		 */
@@ -238,7 +226,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			return 1;
 		}
 
-		private boolean skipInLevelCount() {
+		protected boolean skipInLevelCount() {
 			return false;
 		}
 	}
@@ -267,6 +255,21 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			sumOfSquares = 0;
 			sumOfAbsErrors = 0;
 		}
+
+		public void setChild(int parentBranch, Node node) {
+		}
+
+		public int getChildIndex(Node child) {
+			return -1;
+		}
+
+		public int getNumSubtrees() {
+			return 1;
+		}
+
+		protected boolean skipInLevelCount() {
+			return false;
+		}
 		
 		/**
 		 * Method to learn from an instance that passes the new instance to the perceptron learner,
@@ -278,16 +281,16 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			
 			// Update the statistics for this node
 			// number of instances passing through the node
-			examplesSeen += 1;
+			examplesSeen += inst.weight();
 
 			// sum of y values
-			sumOfValues += inst.classValue();
+			sumOfValues += inst.weight() * inst.classValue();
 
 			// sum of squared y values
-			sumOfSquares += inst.classValue() * inst.classValue();
+			sumOfSquares += inst.weight() * inst.classValue() * inst.classValue();
 
 			// sum of absolute errors
-			sumOfAbsErrors += Math.abs(tree.normalizeTargetValue(Math.abs(inst.classValue() - getPrediction(inst))));
+			sumOfAbsErrors += inst.weight() * Math.abs(tree.normalizeTargetValue(Math.abs(inst.classValue() - getPrediction(inst))));
 
 			if (tree.buildingModelTree()) learningModel.updatePerceptron(inst);
 
@@ -302,7 +305,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 					}
 				}
 				if (obs != null) {
-					obs.observeAttributeClass(inst.value(instAttIndex),inst.classValue(), inst.weight());
+					obs.observeAttributeClass(inst.value(instAttIndex), inst.classValue(), inst.weight());
 				}
 			}
 
@@ -374,7 +377,6 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 				StringUtils.appendNewline(out);
 			}
 		}
-
 	}
 
 	public abstract static class InnerNode extends Node {
@@ -424,6 +426,16 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			}
 		}
 
+		public void restartChangeDetection() {
+			if (alternateTree == null) {
+				changeDetection = true;
+				PHsum = 0;
+				PHmin = Integer.MAX_VALUE;
+				for (Node child : children)
+					child.restartChangeDetection();
+			}
+		}
+		
 		/**
 		 * Check to see if the tree needs updating
 		 */
@@ -463,11 +475,6 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			// Disable the change detection mechanism bellow this node
 			disableChangeDetection();
 		}
-		
-		public boolean isLeaf() {
-			return false;
-		}
-		
 	}
 	
 	public static class SplitNode extends InnerNode {
@@ -483,16 +490,6 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		public SplitNode(InstanceConditionalTest splitTest, FIMTDD tree) {
 			super(tree);
 			this.splitTest = splitTest;
-		}
-
-		public void restartChangeDetection() {
-			if (alternateTree == null) {
-				changeDetection = true;
-				PHsum = 0;
-				PHmin = Integer.MAX_VALUE;
-				for (Node child : children)
-					child.restartChangeDetection();
-			}
 		}
 
 		public int instanceChildIndex(Instance inst) {
@@ -517,7 +514,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			}
 		}
 
-		public double getPrediction(Instance inst, FIMTDD tree) {
+		public double getPrediction(Instance inst) {
 			return children.get(splitTest.branchForInstance(inst)).getPrediction(inst);
 		}
 	}
@@ -535,7 +532,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		protected double sumOfSquares;
 
 		// The number of instances contributing to this model
-		protected int instancesSeen = 0;
+		protected double instancesSeen = 0;
 
 		// If the model should be reset or not
 		protected boolean reset;
@@ -576,7 +573,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			}
 
 			// Update attribute statistics
-			instancesSeen++;
+			instancesSeen += inst.weight();
 
 			// Update weights
 			double learningRatio = 0.0;
@@ -586,10 +583,13 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 				learningRatio = learningRatioOption.getValue() / (1 + instancesSeen * tree.learningRateDecayFactorOption.getValue());
 			}
 
-			sumOfValues += inst.classValue();
-			sumOfSquares += inst.classValue() * inst.classValue();
+			sumOfValues += inst.weight() * inst.classValue();
+			sumOfSquares += inst.weight() * inst.classValue() * inst.classValue();
 
-			updateWeights(inst, learningRatio);
+			// Loop for compatibility with bagging methods 
+			for (int i = 0; i < (int) inst.weight(); i++) {
+				updateWeights(inst, learningRatio);
+			}
 		}
 
 		public void updateWeights(Instance inst, double learningRatio) {
@@ -738,14 +738,14 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 	public void trainOnInstanceImpl(Instance inst) {
 		checkRoot();
 
-		examplesSeen++;
-		sumOfValues += inst.classValue();
-		sumOfSquares += inst.classValue() * inst.classValue();
+		examplesSeen += inst.weight();
+		sumOfValues += inst.weight() * inst.classValue();
+		sumOfSquares += inst.weight() * inst.classValue() * inst.classValue();
 
 		for (int i = 0; i < inst.numAttributes() - 1; i++) {
 			int aIndex = modelAttIndexToInstanceAttIndex(i, inst);
-			sumOfAttrValues.addToValue(i, inst.value(aIndex));
-			sumOfAttrSquares.addToValue(i, inst.value(aIndex) * inst.value(aIndex));
+			sumOfAttrValues.addToValue(i, inst.weight() * inst.value(aIndex));
+			sumOfAttrSquares.addToValue(i, inst.weight() * inst.value(aIndex) * inst.value(aIndex));
 		}
 
 		double prediction = treeRoot.getPrediction(inst);
@@ -759,24 +759,28 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 				((LeafNode) currentNode).learnFromInstance(inst, growthAllowed);
 				break;
 			} else {
-				currentNode.examplesSeen++;
-				currentNode.sumOfAbsErrors += normalError;
+				currentNode.examplesSeen += inst.weight();
+				currentNode.sumOfAbsErrors += inst.weight() * normalError;
 				SplitNode iNode = (SplitNode) currentNode;
 				if (!inAlternate && iNode.alternateTree != null) {
 					boolean altTree = true;
 					double lossO = Math.pow(inst.classValue() - prediction, 2);
 					double lossA = Math.pow(inst.classValue() - iNode.alternateTree.getPrediction(inst), 2);
-
-					iNode.lossFadedSumOriginal = lossO + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumOriginal;
-					iNode.lossFadedSumAlternate = lossA + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumAlternate;
-					iNode.lossExamplesSeen++;
-
+					
+					// Loop for compatibility with bagging methods
+					for (int i = 0; i < inst.weight(); i++) {
+						iNode.lossFadedSumOriginal = lossO + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumOriginal;
+						iNode.lossFadedSumAlternate = lossA + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumAlternate;
+						iNode.lossExamplesSeen++;
+						
+						double Qi = Math.log((iNode.lossFadedSumOriginal) / (iNode.lossFadedSumAlternate));
+						iNode.lossSumQi += Qi;
+						iNode.lossNumQiTests += 1;
+					}
 					double Qi = Math.log((iNode.lossFadedSumOriginal) / (iNode.lossFadedSumAlternate));
 					double previousQiAverage = iNode.lossSumQi / iNode.lossNumQiTests;
-					iNode.lossSumQi += Qi;
-					iNode.lossNumQiTests += 1;
 					double QiAverage = iNode.lossSumQi / iNode.lossNumQiTests;
-
+					
 					if (iNode.lossExamplesSeen - iNode.previousWeight >= alternateTreeTMinOption.getValue()) {
 						iNode.previousWeight = iNode.lossExamplesSeen;
 						if (Qi > 0) {
@@ -944,7 +948,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		}
 	}
 	
-	public  double computeSD(double squaredVal, double val, double size) {
+	public double computeSD(double squaredVal, double val, double size) {
 		if (size > 1)
 			return Math.sqrt((squaredVal - ((val * val) / size)) / size);
 		else

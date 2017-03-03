@@ -4,7 +4,7 @@
   <parent>
     <groupId>nz.ac.waikato.cms.moa</groupId>
     <artifactId>moa-pom</artifactId>
-    <version>2012.09-SNAPSHOT</version>
+    <version>2016.10-SNAPSHOT</version>
   </parent>
 
   <artifactId>moa</artifactId>
@@ -53,6 +53,11 @@
       <artifactId>sizeofag</artifactId>
     </dependency>
 
+      <dependency>
+          <groupId>net.sf.meka</groupId>
+          <artifactId>meka</artifactId>
+      </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -73,8 +78,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.7</source>
+          <target>1.7</target>
         </configuration>
       </plugin>
 
@@ -125,7 +130,7 @@
     								</goals>
     							</pluginExecutionFilter>
     							<action>
-    								<ignore></ignore>
+    								<ignore />
     							</action>
     						</pluginExecution>
     					</pluginExecutions>

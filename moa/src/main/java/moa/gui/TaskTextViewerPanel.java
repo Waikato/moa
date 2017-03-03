@@ -312,7 +312,7 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
     protected String secondLine = "";
 
     protected double round(double d) {
-        return Math.abs(Math.rint(d * 100) / 100);
+        return (Math.rint(d * 100) / 100);
     }
 
     protected MeasureCollection getNewMeasureCollection() {
@@ -358,12 +358,11 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
                 String[] tokensFirstLine = firstLine.split(",");
                 int i = 0;
                 for (String s : tokensFirstLine) {
-
-                    if (s.equals("classifications correct (percent)")) {
+                    if (s.equals("classifications correct (percent)") ||  s.equals("[avg] classifications correct (percent)")) {
                         accuracyColumn = i;
-                    } else if (s.equals("Kappa Statistic (percent)")) {
+                    } else if (s.equals("Kappa Statistic (percent)") || s.equals("[avg] Kappa Statistic (percent)")) {
                         kappaColumn = i;
-                    } else if (s.equals("Kappa Temporal Statistic (percent)")) {
+                    } else if (s.equals("Kappa Temporal Statistic (percent)") || s.equals("[avg] Kappa Temporal Statistic (percent)")) {
                         kappaTempColumn = i;
                     } else if (s.equals("model cost (RAM-Hours)")) {
                         RamColumn = i;
