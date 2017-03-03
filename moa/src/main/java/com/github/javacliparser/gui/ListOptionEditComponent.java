@@ -21,8 +21,6 @@ package com.github.javacliparser.gui;
 
 import com.github.javacliparser.Option;
 
-import javax.swing.*;
-
 /**
  * An OptionEditComponent that lets the user edit a list option.
  *
@@ -30,8 +28,6 @@ import javax.swing.*;
  * @version $Revision: 7 $
  */
 public class ListOptionEditComponent extends StringOptionEditComponent {
-
-    protected StringOptionEditComponent component;
 
     private static final long serialVersionUID = 1L;
 
