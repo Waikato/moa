@@ -29,25 +29,19 @@ import javax.swing.*;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class ListOptionEditComponent extends JTextField implements
-        OptionEditComponent {
+public class ListOptionEditComponent extends StringOptionEditComponent {
 
     protected StringOptionEditComponent component;
 
     private static final long serialVersionUID = 1L;
 
     public ListOptionEditComponent(Option option) {
-        component = new StringOptionEditComponent(option);
-    }
-
-    @Override
-    public Option getEditedOption() {
-        return component.getEditedOption();
+    	super(option);
     }
 
     @Override
     public void setEditState(String cliString) {
-        component.setText(cliString);
+        setText(cliString);
     }
 
     @Override
