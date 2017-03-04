@@ -43,7 +43,6 @@ import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -53,20 +52,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
-import org.netlib.util.booleanW;
-
 import moa.core.StringUtils;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
-import moa.tasks.active.EvaluateALPrequentialCV;
-import moa.tasks.Task;
 import moa.tasks.active.ALCrossValidationTask;
 import moa.tasks.active.ALMainTask;
 import moa.tasks.active.ALTaskThread;
@@ -529,22 +523,4 @@ public class ALTaskManagerPanel extends JPanel{
             }
         }
     }
-
-    private static void createAndShowGUI() {
-
-        // Create and set up the window.
-        JFrame frame = new JFrame("Test");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // Create and set up the content pane.
-        JPanel panel = new ALTaskManagerPanel();
-        panel.setOpaque(true); // content panes must be opaque
-        frame.setContentPane(panel);
-
-        // Display the window.
-        frame.pack();
-        // frame.setSize(400, 400);
-        frame.setVisible(true);
-    }
-
 }
