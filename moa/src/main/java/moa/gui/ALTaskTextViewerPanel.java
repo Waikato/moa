@@ -20,7 +20,6 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-
 package moa.gui;
 
 import java.awt.BorderLayout;
@@ -48,13 +47,37 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import moa.evaluation.MeasureCollection;
 import moa.gui.PreviewPanel.TypePanel;
 import moa.gui.clustertab.ClusteringVisualEvalPanel;
+import moa.gui.visualization.BudgetGraphCanvas;
 import moa.gui.visualization.GraphCanvas;
+
+/*
+ * TODO it would be nice if the graphs are reset by changing the tab. this
+ * would probably require overriding an actionperformed on the jtabbedpane
+ */
+
+/*
+ * TODO maybe make graphcanvas and budgetgraphcanvas extending an abstract
+ * class graphcanvas so that the zoom button actions are shorter. but this
+ * would also require renaming the graphcanvas class.
+ */
+/*
+ * TODO everywhere 'this.'
+ */
+
+/*
+ * TODO disable budget task if single budget task is evaluated.
+ */
+
+/*
+ * TODO implement scaling on x axis for budgets
+ */
 
 /**
  * This panel displays text. Used to output the results of tasks. In contrast to
@@ -64,14 +87,11 @@ import moa.gui.visualization.GraphCanvas;
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
  */
-
 public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 
-	// TODO check privacy settings
-	// this was public before
-	private static final String exportFileExtension = "txt";
+	private static final String EXPORT_FILE_EXTENSION = "txt";
 
 	private TypePanel typePanel;
 
@@ -105,9 +125,15 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	
 	private JLabel labelEvents;
 	
+	private JTabbedPane graphPanelTabbedPane;
+	
 	private JScrollPane graphScrollPanel;
 	
 	private GraphCanvas graphCanvas;
+	
+	private JScrollPane budgetGraphScrollPanel;
+	
+	private BudgetGraphCanvas budgetGraphCanvas;
 	
 	private JPanel graphPanelControlRight;
 	
@@ -116,6 +142,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	private JButton buttonZoomOutX;
 
 	public ALTaskTextViewerPanel() {
+		// TODO maybe smarter solution than this
 		this.typePanel = TypePanel.ACTIVE;
 
 		setLayout(new GridBagLayout());
@@ -153,12 +180,12 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fileChooser = new JFileChooser();
 				fileChooser.setAcceptAllFileFilterUsed(true);
-				fileChooser.addChoosableFileFilter(new FileExtensionFilter(exportFileExtension));
+				fileChooser.addChoosableFileFilter(new FileExtensionFilter(EXPORT_FILE_EXTENSION));
 				if (fileChooser.showSaveDialog(ALTaskTextViewerPanel.this) == JFileChooser.APPROVE_OPTION) {
 					File chosenFile = fileChooser.getSelectedFile();
 					String fileName = chosenFile.getPath();
-					if (!chosenFile.exists() && !fileName.endsWith(exportFileExtension)) {
-						fileName = fileName + "." + exportFileExtension;
+					if (!chosenFile.exists() && !fileName.endsWith(EXPORT_FILE_EXTENSION)) {
+						fileName = fileName + "." + EXPORT_FILE_EXTENSION;
 					}
 					try {
 						PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
@@ -217,19 +244,33 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		graphPanel.setBorder(BorderFactory.createTitledBorder("Plot"));
 		graphPanel.setPreferredSize(new Dimension(530, 115));
 
-		// graphPanelControlTop contains two buttons allowing to zoom the y-axis in and out
+		// graphPanelControlLeft contains two buttons allowing to zoom the y-axis in and out
 		graphPanelControlLeft = new JPanel();
 		graphPanelControlLeft.setLayout(new GridBagLayout());
 
 		buttonZoomInY = new JButton();
 		buttonZoomInY.setText("Zoom in Y");
 		buttonZoomInY.addActionListener(new ActionListener() {
-
 			public void actionPerformed(ActionEvent evt) {
-				graphCanvas.setSize(new Dimension(graphCanvas.getWidth(), (int) (graphCanvas.getHeight() * 1.2)));
-				graphCanvas
-						.setPreferredSize(new Dimension(graphCanvas.getWidth(), (int) (graphCanvas.getHeight() * 1.2)));
-				graphCanvas.updateCanvas(true);
+				// update the currently open graph
+				int currentTab = graphPanelTabbedPane.getSelectedIndex();
+				if (currentTab == 0) {
+					graphCanvas.setSize(new Dimension(
+							graphCanvas.getWidth(), 
+							(int) (graphCanvas.getHeight() * 1.2)));
+					graphCanvas.setPreferredSize(new Dimension(
+							graphCanvas.getWidth(), 
+							(int) (graphCanvas.getHeight() * 1.2)));
+					graphCanvas.updateCanvas(true);
+				} else {
+					budgetGraphCanvas.setSize(new Dimension(
+							budgetGraphCanvas.getWidth(), 
+							(int) (budgetGraphCanvas.getHeight() * 1.2)));
+					budgetGraphCanvas.setPreferredSize(new Dimension(
+							budgetGraphCanvas.getWidth(), 
+							(int) (budgetGraphCanvas.getHeight() * 1.2)));
+					budgetGraphCanvas.updateCanvas(true);
+				}	
 			}
 		});
 
@@ -240,12 +281,26 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		buttonZoomOutY = new JButton();
 		buttonZoomOutY.setText("Zoom out Y");
 		buttonZoomOutY.addActionListener(new ActionListener() {
-
 			public void actionPerformed(ActionEvent evt) {
-				graphCanvas.setSize(new Dimension(graphCanvas.getWidth(), (int) (graphCanvas.getHeight() * 0.8)));
-				graphCanvas
-						.setPreferredSize(new Dimension(graphCanvas.getWidth(), (int) (graphCanvas.getHeight() * 0.8)));
-				graphCanvas.updateCanvas(true);
+				// update the currently open graph
+				int currentTab = graphPanelTabbedPane.getSelectedIndex();
+				if (currentTab == 0) {
+					graphCanvas.setSize(new Dimension(
+							graphCanvas.getWidth(), 
+							(int) (graphCanvas.getHeight() * 0.8)));
+					graphCanvas.setPreferredSize(new Dimension(
+							graphCanvas.getWidth(), 
+							(int) (graphCanvas.getHeight() * 0.8)));
+					graphCanvas.updateCanvas(true);
+				} else {
+					budgetGraphCanvas.setSize(new Dimension(
+							budgetGraphCanvas.getWidth(), 
+							(int) (budgetGraphCanvas.getHeight() * 0.8)));
+					budgetGraphCanvas.setPreferredSize(new Dimension(
+							budgetGraphCanvas.getWidth(), 
+							(int) (budgetGraphCanvas.getHeight() * 0.8)));
+					budgetGraphCanvas.updateCanvas(true);
+				}	
 			}
 		});
 		// TODO is redefinition of gridBagConstraints necessary?
@@ -270,6 +325,8 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		gridBagConstraints.anchor = GridBagConstraints.WEST;
 		gridBagConstraints.weightx = 1.0;
 		graphPanel.add(graphPanelControlLeft, gridBagConstraints);
+		
+		graphPanelTabbedPane = new JTabbedPane();
 
 		// graphScrollPanel is a scroll wrapper for the live graph
 		graphScrollPanel = new JScrollPane();
@@ -278,7 +335,6 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		graphCanvas = new GraphCanvas();
 		graphCanvas.setPreferredSize(new Dimension(500, 111));
 		graphCanvas.setGraph(acc1[0], acc2[0], 0, 1000);
-		graphCanvas.forceAddEvents();
 
 		GroupLayout graphCanvasLayout = new GroupLayout(graphCanvas);
 		graphCanvas.setLayout(graphCanvasLayout);
@@ -288,7 +344,28 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 128, Short.MAX_VALUE));
 
 		graphScrollPanel.setViewportView(graphCanvas);
+		graphPanelTabbedPane.addTab("Time", graphScrollPanel);
+		
+		// budgetGraphScrollPanel is a scroll wrapper for the live budget graph
+		budgetGraphScrollPanel = new JScrollPane();
 
+		// budgetGraphCanvas displays the live budget graph
+		budgetGraphCanvas = new BudgetGraphCanvas();
+		budgetGraphCanvas.setPreferredSize(new Dimension(500, 111));
+		// TODO check this
+		budgetGraphCanvas.setGraph(acc1[0], acc2[0], 0, 1000);
+
+		// TODO check necessity of this. maybe we can just take the layout above
+		GroupLayout budgetGraphCanvasLayout = new GroupLayout(budgetGraphCanvas);
+		budgetGraphCanvas.setLayout(budgetGraphCanvasLayout);
+		budgetGraphCanvasLayout.setHorizontalGroup(budgetGraphCanvasLayout
+				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 515, Short.MAX_VALUE));
+		budgetGraphCanvasLayout.setVerticalGroup(budgetGraphCanvasLayout
+				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 128, Short.MAX_VALUE));
+
+		budgetGraphScrollPanel.setViewportView(budgetGraphCanvas);
+		graphPanelTabbedPane.addTab("Budget", budgetGraphScrollPanel);
+		
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 1;
@@ -297,7 +374,8 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		gridBagConstraints.weightx = 1.0;
 		gridBagConstraints.weighty = 1.0;
 		gridBagConstraints.insets = new Insets(2, 2, 2, 2);
-		graphPanel.add(graphScrollPanel, gridBagConstraints);
+		graphPanel.add(graphPanelTabbedPane, gridBagConstraints);
+		
 
 		// TODO rename?
 		// graphPanelControlBottom contains two buttons allowing to zoom the x-axis in and out
@@ -306,9 +384,14 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		buttonZoomInX = new JButton();
 		buttonZoomInX.setText("Zoom in X");
 		buttonZoomInX.addActionListener(new ActionListener() {
-
 			public void actionPerformed(ActionEvent evt) {
-				graphCanvas.scaleXResolution(false);
+				// update the currently open graph
+				int currentTab = graphPanelTabbedPane.getSelectedIndex();
+				if (currentTab == 0) {
+					graphCanvas.scaleXResolution(false);
+				} else {
+//					budgetGraphCanvas.scaleXResolution(false);
+				}
 			}
 		});
 		graphPanelControlRight.add(buttonZoomInX);
@@ -316,9 +399,14 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		buttonZoomOutX = new JButton();
 		buttonZoomOutX.setText("Zoom out X");
 		buttonZoomOutX.addActionListener(new ActionListener() {
-
 			public void actionPerformed(ActionEvent evt) {
-				graphCanvas.scaleXResolution(true);
+				// update the currently open graph
+				int currentTab = graphPanelTabbedPane.getSelectedIndex();
+				if (currentTab == 0) {
+					graphCanvas.scaleXResolution(true);
+				} else {
+//					budgetGraphCanvas.scaleXResolution(true);
+				}
 			}
 		});
 		graphPanelControlRight.add(buttonZoomOutX);
@@ -364,7 +452,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * Updates the grpah based on the information given by <code>preview</code>.
+	 * Updates the graph based on the information given by <code>preview</code>.
 	 * @param preview  string containing new information used to update the graph
 	 */
 	public void setGraph(String preview) {
@@ -457,7 +545,6 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 
 		this.graphCanvas.setGraph(acc1[0], acc2[0], this.graphCanvas.getMeasureSelected(), (int) processFrequency);
 		this.graphCanvas.updateCanvas(true);
-		this.graphCanvas.forceAddEvents();
 		this.clusteringVisualEvalPanel1.update();
 
 	}

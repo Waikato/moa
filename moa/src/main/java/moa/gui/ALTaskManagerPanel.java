@@ -215,7 +215,7 @@ public class ALTaskManagerPanel extends JPanel{
 
     protected JButton deleteTaskButton = new JButton("Delete");
     
-	protected PreviewPanel previewPanel;
+	protected ALPreviewPanel previewPanel;
 
     private Preferences prefs;
     
@@ -376,7 +376,7 @@ public class ALTaskManagerPanel extends JPanel{
         setPreferredSize(new Dimension(0, 200));
     }
     
-	public void setPreviewPanel(PreviewPanel previewPanel) {
+	public void setPreviewPanel(ALPreviewPanel previewPanel) {
         this.previewPanel = previewPanel;
     }
 
