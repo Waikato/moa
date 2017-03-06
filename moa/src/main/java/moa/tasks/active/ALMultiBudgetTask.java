@@ -31,7 +31,8 @@ import moa.classifiers.active.ALClassifier;
 import moa.core.ObjectRepository;
 import moa.evaluation.ALClassificationPerformanceEvaluator;
 import moa.evaluation.LearningCurve;
-import moa.evaluation.LearningCurveCollection;
+import moa.evaluation.PreviewCollection;
+import moa.evaluation.PreviewCollectionLearingCurveWrapper;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.tasks.TaskMonitor;
@@ -160,8 +161,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 			TaskMonitor monitor, ObjectRepository repository) 
 	{
 		// setup learning curve
-		LearningCurveCollection learningCurveCollection = new LearningCurveCollection("id", "learnerId");
-		
+		PreviewCollection<PreviewCollectionLearingCurveWrapper> previewCollection = new PreviewCollection<>("multi budged entry id", "learner id");		
 		// start subtasks
 		monitor.setCurrentActivity("Evaluating learners for budgets...", -1.0);
 		for(int i = 0; i < this.subtaskThreads.size(); ++i)
@@ -175,19 +175,21 @@ public class ALMultiBudgetTask extends ALMainTask {
 		// iterate while there are threads active
 		while(!allThreadsCompleted)
 		{
+			allThreadsCompleted = true;
 			// iterate over all threads
 			for(int i = 0; i < this.subtaskThreads.size(); ++i)
 			{
 				ALTaskThread currentTaskThread = subtaskThreads.get(i);
 				// check if the thread is completed
-				allThreadsCompleted &= !currentTaskThread.isComplete();
+				allThreadsCompleted &= currentTaskThread.isComplete();
 				// get the latest preview
 				LearningCurve latestPreview = (LearningCurve)currentTaskThread.getLatestResultPreview();
 				// ignore the preview if it is null
 				if(latestPreview != null)
-				{
+				{	
+					PreviewCollectionLearingCurveWrapper wrappedLatestPreview = new PreviewCollectionLearingCurveWrapper(latestPreview);
 					// update/add the learning curve to the learning curve collection
-					learningCurveCollection.setLearningCurve(i, latestPreview);
+					previewCollection.setPreview(i, wrappedLatestPreview);
 				}
 				else
 				{
@@ -196,22 +198,13 @@ public class ALMultiBudgetTask extends ALMainTask {
 				}
 			}
 			// check if a preview is requested
-    		if (monitor.resultPreviewRequested()) {
+    		//if (monitor.resultPreviewRequested()) {
     			// send the latest preview to the monitor
-                monitor.setLatestResultPreview(learningCurveCollection.copy());
-            }
+                monitor.setLatestResultPreview(previewCollection.copy());
+            //}
 		}
 		
-		try {
-			for(int i = 0; i < this.subtaskThreads.size(); ++i)
-			{
-					subtaskThreads.get(i).join();
-			}		
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
-		return learningCurveCollection;
+		return previewCollection;
 	}
 	
 	@Override

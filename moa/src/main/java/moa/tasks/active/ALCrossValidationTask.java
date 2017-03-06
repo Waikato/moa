@@ -30,7 +30,9 @@ import com.github.javacliparser.Option;
 import moa.classifiers.active.ALClassifier;
 import moa.core.ObjectRepository;
 import moa.evaluation.ALClassificationPerformanceEvaluator;
-import moa.evaluation.LearningCurveCollection;
+import moa.evaluation.LearningCurve;
+import moa.evaluation.PreviewCollection;
+import moa.evaluation.PreviewCollectionLearingCurveWrapper;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.streams.KFoldStream;
@@ -196,7 +198,7 @@ public class ALCrossValidationTask extends ALMainTask {
 
 	@Override
 	public Class<?> getTaskResultType() {
-		return LearningCurveCollection.class;
+		return PreviewCollection.class;
 	}
 
 	@Override
@@ -204,7 +206,7 @@ public class ALCrossValidationTask extends ALMainTask {
 			TaskMonitor monitor, ObjectRepository repository) 
 	{
 		// initialize the learning curve collection
-		LearningCurveCollection learningCurveCollection = new LearningCurveCollection("id", "learnerId");
+		PreviewCollection<PreviewCollection<PreviewCollectionLearingCurveWrapper>> previewCollection = new PreviewCollection<>("cross validation entry id", "fold id");
 		
 
 		monitor.setCurrentActivity("Performing cross validation...", 50.0);
@@ -216,16 +218,41 @@ public class ALCrossValidationTask extends ALMainTask {
 			subtaskThreads.get(i).start();
 		}
 
-		try {
+
+		// check the previews of subtaskthreads
+		boolean allThreadsCompleted = false;
+		// iterate while there are threads active
+		while(!allThreadsCompleted)
+		{
+			allThreadsCompleted = true;
+			// iterate over all threads
 			for(int i = 0; i < this.subtaskThreads.size(); ++i)
 			{
-					subtaskThreads.get(i).join();
-			}		
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+				ALTaskThread currentTaskThread = subtaskThreads.get(i);
+				// check if the thread is completed
+				allThreadsCompleted &= currentTaskThread.isComplete();
+				// get the latest preview
+				PreviewCollection<PreviewCollectionLearingCurveWrapper> latestPreview = (PreviewCollection<PreviewCollectionLearingCurveWrapper>)currentTaskThread.getLatestResultPreview();
+				// ignore the preview if it is null
+				if(latestPreview != null)
+				{	
+					// update/add the learning curve to the learning curve collection
+					previewCollection.setPreview(i, latestPreview);
+				}
+				else
+				{
+					// skip for loop until all threads before were at least added once
+					break;
+				}
+			}
+			// check if a preview is requested
+    		//if (monitor.resultPreviewRequested()) {
+    			// send the latest preview to the monitor
+                monitor.setLatestResultPreview(previewCollection.copy());
+            //}
 		}
 		
-		return learningCurveCollection;
+		return previewCollection;
 	}
 
 	@Override
