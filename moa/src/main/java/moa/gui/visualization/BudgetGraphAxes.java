@@ -124,12 +124,13 @@ public class BudgetGraphAxes extends JPanel {
 //        	}
 //        } else {
         	// show only fraction of budgets
-        	for (double i = 0.0; i <= 1.0; i+= 0.2) {
+        	DecimalFormat d = new DecimalFormat("0.00");
+        	for (double i = 0.0; i <= 1.0; i += 0.2) {
         		int x = (int) (this.width * i) + X_OFFSET_LEFT;
-        		g.drawLine(x, height+Y_OFFSET_TOP, x, height+Y_OFFSET_TOP + 5);
-        		String label = String.format("%.2f", i);
+        		g.drawLine(x, this.height + Y_OFFSET_TOP, x, this.height+Y_OFFSET_TOP + 5);
+        		String label = d.format(i);
         		int str_length = g.getFontMetrics().stringWidth(label);
-                g.drawString(label,x-str_length/2,height+Y_OFFSET_TOP+18);
+                g.drawString(label, x - str_length/2, this.height + Y_OFFSET_TOP + 18);
         	}
 //        }
     }
