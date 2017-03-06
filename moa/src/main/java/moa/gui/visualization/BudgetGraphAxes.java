@@ -83,8 +83,8 @@ public class BudgetGraphAxes extends JPanel {
         // no budget task performed yet
         if(this.budgets.isEmpty()) return;
 
-        height = getHeight() - Y_OFFSET_BOTTOM - Y_OFFSET_TOP;
-        width = getWidth() - X_OFFSET_LEFT - X_OFFSET_LEFT;
+        this.height = getHeight() - Y_OFFSET_BOTTOM - Y_OFFSET_TOP;
+        this.width = getWidth() - X_OFFSET_LEFT - X_OFFSET_RIGHT;
 
         g.setColor(new Color(236,233,216));
         g.fillRect(0, 0, getWidth(), getHeight());
