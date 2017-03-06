@@ -37,6 +37,8 @@ import moa.evaluation.MeasureCollection;
 public class GraphScatter extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+    
+    private static final int DOT_SIZE = 6;
 	
 	private MeasureCollection measure0;
     private MeasureCollection measure1;
@@ -56,10 +58,10 @@ public class GraphScatter extends JPanel {
     	this.measure1 = null;
     	this.measureSelected = 0;
     	
-    	budgets = new ArrayList<Double>();
-    	budgets.add(0.0);
-    	budgets.add(0.5);
-    	budgets.add(1.0);
+    	this.budgets = new ArrayList<Double>();
+    	this.budgets.add(0.0);
+    	this.budgets.add(0.5);
+    	this.budgets.add(1.0);
     	
         setOpaque(false);
 
@@ -102,59 +104,50 @@ public class GraphScatter extends JPanel {
     }
     
     /**
-     * Plots a scatter graph onto the panel. If a measure value is corrupted
-     * (i.e. NaN), do not draw anything. If needed, compress or stretch the
-     * values.
-     * @param g        Graphics instance
-     * @param m        MeasureCollection to be drawn
-     * @param mSelect  currently selected measure
-     * @param color    color the scatter plot is drawn with
+     * TODO javadoc
+     * @param g
+     * @param ms
+     * @param mSelect
+     * @param color
      */
-    private void scatter(Graphics g, MeasureCollection m, int mSelect, Color color){
-    	return;}
-//    	if (this.budgets.size() == 0) {
-//    		// no results are existing yet
+    private void scatter(Graphics g, MeasureCollection ms, int mSelect, Color color){ 	
+    	int n = this.budgets.size();
+    	double[] values = new double[]{0.5,0.0,1.0};
+    	
+    	if (n == 0) {
+    		// no budgets initialised yet
+    		return;
+    	}
+    	
+//    	if (n != ms.length) {
+//    		// number of measure collections does not match number of budgets
+//    		// TODO this case should not occur and can be removed later on
+//    		System.err.println("Budget size does not match measure collection size.");
 //    		return;
 //    	}
-//
-//    	int height = getHeight();
-//    	int n = this.budgets.size();
-//    	
-//    	int[] x = new int[n];
-//        int[] y = new int[n];
-//        
-//        for (int i = 0; i < n; i++) {
-////            if(x_resolution > 1){
-////                // compress values
-////                double sum_y = 0;
-////                int counter = 0;
-////                for (int j = 0; j < x_resolution; j++) {
-////                    if((i * x_resolution) + j < m.getNumberOfValues(mSelect)){
-////                        sum_y += m.getValue(mSelect, i);
-////                        counter++;
-////                    }
-////                    sum_y /= counter;
-////                }
-////                x[i] = i;
-////                y[i] = (int)(height - (sum_y / this.max_value) * height);
-////            }
-////            else{
-//                // spreading one value
-////                x[i] = i * (int)(1 / x_resolution) + (int)(1 / x_resolution / 2);
-//                double value = m.getValue(mSelect,i);
-//                if(Double.isNaN(value)){
-//                	// invalid entry. do not draw anything
-//                    return;
-//                }
-//                y[i] = (int)(height - (value / this.max_value) * height);       
-//            }
-//        }
-//
-//        g.setColor(color);
-//        for (int i = 0; i < n; i++) {
-//        	g.fillOval(x[i], y[i], 1, 1);
-//        }
-//    }
+
+    	int height = getHeight();
+    	int width = getWidth();
+    	
+    	int[] x = new int[n];
+        int[] y = new int[n];
+        
+        for (int i = 0; i < n; i++) {
+    		x[i] = (int) (width * this.budgets.get(i));
+//    		double value = ms[i].getLastValue(mSelect);  
+    		double value = values[i];
+            if(Double.isNaN(value)){
+            	// no result for this budget yet
+                continue;
+            }
+            y[i] = (int)(height - (value / this.max_value) * height);       
+        }
+        
+        g.setColor(color);
+        for (int i = 0; i < n; i++) {
+        	g.fillOval(x[i] - DOT_SIZE/2, y[i] - DOT_SIZE/2, DOT_SIZE, DOT_SIZE);
+        }
+    }
     
     /**
      * Sets the min and max y-value of this instance. 
