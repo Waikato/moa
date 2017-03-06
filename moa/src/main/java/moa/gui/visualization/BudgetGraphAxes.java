@@ -125,7 +125,7 @@ public class BudgetGraphAxes extends JPanel {
 //        } else {
         	// show only fraction of budgets
         	for (double i = 0.0; i <= 1.0; i+= 0.2) {
-        		int x = (int) Math.ceil((this.width - X_OFFSET_RIGHT - X_OFFSET_LEFT) * i) + X_OFFSET_LEFT;
+        		int x = (int) (this.width * i) + X_OFFSET_LEFT;
         		g.drawLine(x, height+Y_OFFSET_TOP, x, height+Y_OFFSET_TOP + 5);
         		String label = String.format("%.2f", i);
         		int str_length = g.getFontMetrics().stringWidth(label);
