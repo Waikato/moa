@@ -353,7 +353,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		budgetGraphCanvas = new BudgetGraphCanvas();
 		budgetGraphCanvas.setPreferredSize(new Dimension(500, 111));
 		// TODO check this
-		budgetGraphCanvas.setGraph(acc1[0], acc2[0], 0, 1000);
+		budgetGraphCanvas.setGraph(acc1, acc2, 0);
 
 		// TODO check necessity of this. maybe we can just take the layout above
 		GroupLayout budgetGraphCanvasLayout = new GroupLayout(budgetGraphCanvas);
@@ -453,6 +453,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 
 	/**
 	 * Updates the graph based on the information given by <code>preview</code>.
+	 * TODO consider budgetgraphcanvas
 	 * @param preview  string containing new information used to update the graph
 	 */
 	public void setGraph(String preview) {

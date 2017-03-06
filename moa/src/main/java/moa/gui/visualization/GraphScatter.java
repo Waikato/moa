@@ -40,8 +40,8 @@ public class GraphScatter extends JPanel {
     
     private static final int DOT_SIZE = 6;
 	
-	private MeasureCollection measure0;
-    private MeasureCollection measure1;
+	private MeasureCollection[] measure0;
+    private MeasureCollection[] measure1;
     
     private int measureSelected;
     
@@ -74,16 +74,16 @@ public class GraphScatter extends JPanel {
     }
     
     /**
-     * Updates the measure values and repaints the graph.
-     * @param measure0  first measure collection
-     * @param measure1  second measure collection
-     * @param selection  currently selected measure
+     * Updates the measure values and repaints the scatter plot.
+     * @param measure0  list of measure collections, one for each budget
+     * @param measure1  list of measure collections, one for each budget
+     * @param selection currently selected measure
      */
-    public void setGraph(MeasureCollection measure0, MeasureCollection measure1, int selection){
+    public void setGraph(MeasureCollection[] measure0, MeasureCollection[] measure1, int selection){
         this.measure0 = measure0;
         this.measure1 = measure1;
         this.measureSelected = selection;
-        repaint();
+        this.repaint();
     }
 
     @Override
@@ -93,12 +93,12 @@ public class GraphScatter extends JPanel {
         g.setColor(Color.BLACK);
 
         if(measure0!=null && measure1!=null){
-                scatter(g, this.measure0, this.measureSelected, Color.red);
-                scatter(g, this.measure1, this.measureSelected, Color.blue);
+                this.scatter(g, this.measure0, this.measureSelected, Color.red);
+                this.scatter(g, this.measure1, this.measureSelected, Color.blue);
         }
         else{
             if(measure0!=null){
-                scatter(g, this.measure0, this.measureSelected, Color.red);
+                this.scatter(g, this.measure0, this.measureSelected, Color.red);
             }
         }
     }
@@ -110,7 +110,7 @@ public class GraphScatter extends JPanel {
      * @param mSelect
      * @param color
      */
-    private void scatter(Graphics g, MeasureCollection ms, int mSelect, Color color){ 	
+    private void scatter(Graphics g, MeasureCollection[] ms, int mSelect, Color color){ 	
     	int n = this.budgets.size();
     	double[] values = new double[]{0.5,0.0,1.0};
     	
