@@ -177,7 +177,7 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         	}
         	
         	// update monitor
-        	if (instancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
+        	if (instancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0 && learningCurve.numEntries() > 0) {
         		if (monitor.taskShouldAbort()) {
                     return null;
                 }
@@ -201,9 +201,12 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         				estimatedRemainingInstances < 0 ? 
         						-1.0 : fractionComplete);
         		
-        		if (monitor.resultPreviewRequested()) {
-                    monitor.setLatestResultPreview(learningCurve.copy());
-                }
+        		
+        		// TODO currently the preview is sent after each instance
+        		// 		should be changed later on
+        		//if (monitor.resultPreviewRequested()) {
+                monitor.setLatestResultPreview(learningCurve.copy());
+                //}
         		
         		// update time measurement
         		secondsElapsed = (int) TimingUtils.nanoTimeToSeconds(

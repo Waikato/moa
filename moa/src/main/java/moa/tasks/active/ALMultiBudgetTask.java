@@ -31,6 +31,7 @@ import moa.classifiers.active.ALClassifier;
 import moa.core.ObjectRepository;
 import moa.evaluation.ALClassificationPerformanceEvaluator;
 import moa.evaluation.LearningCurve;
+import moa.evaluation.LearningCurveCollection;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.tasks.TaskMonitor;
@@ -134,8 +135,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 							this.instanceLimitOption.getValueAsCLIString());
 					break;
 				case "timeLimit":
-					opt.setValueViaCLIString(
-							this.timeLimitOption.getValueAsCLIString());
+					opt.setValueViaCLIString(this.timeLimitOption.getValueAsCLIString());
 					break;
 				}
 			}
@@ -160,8 +160,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 			TaskMonitor monitor, ObjectRepository repository) 
 	{
 		// setup learning curve
-		LearningCurve learningCurve = new LearningCurve(
-				"learning evaluation instances");
+		LearningCurveCollection learningCurveCollection = new LearningCurveCollection("id", "learnerId");
 		
 		// start subtasks
 		monitor.setCurrentActivity("Evaluating learners for budgets...", -1.0);
@@ -170,6 +169,39 @@ public class ALMultiBudgetTask extends ALMainTask {
 			subtaskThreads.get(i).start();
 		}
 
+
+		// check the previews of subtaskthreads
+		boolean allThreadsCompleted = false;
+		// iterate while there are threads active
+		while(!allThreadsCompleted)
+		{
+			// iterate over all threads
+			for(int i = 0; i < this.subtaskThreads.size(); ++i)
+			{
+				ALTaskThread currentTaskThread = subtaskThreads.get(i);
+				// check if the thread is completed
+				allThreadsCompleted &= !currentTaskThread.isComplete();
+				// get the latest preview
+				LearningCurve latestPreview = (LearningCurve)currentTaskThread.getLatestResultPreview();
+				// ignore the preview if it is null
+				if(latestPreview != null)
+				{
+					// update/add the learning curve to the learning curve collection
+					learningCurveCollection.setLearningCurve(i, latestPreview);
+				}
+				else
+				{
+					// skip for loop until all threads before were at least added once
+					break;
+				}
+			}
+			// check if a preview is requested
+    		if (monitor.resultPreviewRequested()) {
+    			// send the latest preview to the monitor
+                monitor.setLatestResultPreview(learningCurveCollection.copy());
+            }
+		}
+		
 		try {
 			for(int i = 0; i < this.subtaskThreads.size(); ++i)
 			{
@@ -179,7 +211,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 			e.printStackTrace();
 		}
 		
-		return learningCurve;
+		return learningCurveCollection;
 	}
 	
 	@Override

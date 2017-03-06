@@ -30,7 +30,7 @@ import com.github.javacliparser.Option;
 import moa.classifiers.active.ALClassifier;
 import moa.core.ObjectRepository;
 import moa.evaluation.ALClassificationPerformanceEvaluator;
-import moa.evaluation.LearningCurve;
+import moa.evaluation.LearningCurveCollection;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.streams.KFoldStream;
@@ -117,7 +117,6 @@ public class ALCrossValidationTask extends ALMainTask {
 	 * - Dump file
 	 */
 
-	private ArrayList<ALMultiBudgetTask> subtasks = new ArrayList<>();
 	private ArrayList<ALTaskThread> subtaskThreads = new ArrayList<>();
 	private ArrayList<ALTaskThread> flattenedSubtaskThreads = new ArrayList<>();
 
@@ -186,9 +185,6 @@ public class ALCrossValidationTask extends ALMainTask {
 
 			List<ALTaskThread> childSubtasks = foldTask.getSubtaskThreads();
 
-			// add new subtask and its thread to lists
-			this.subtasks.add(foldTask);
-
 			ALTaskThread subtaskThread = new ALTaskThread(foldTask);
 			this.subtaskThreads.add(subtaskThread);
 
@@ -200,16 +196,16 @@ public class ALCrossValidationTask extends ALMainTask {
 
 	@Override
 	public Class<?> getTaskResultType() {
-		return LearningCurve.class;
+		return LearningCurveCollection.class;
 	}
 
 	@Override
 	protected Object doMainTask(
 			TaskMonitor monitor, ObjectRepository repository) 
 	{
-		// setup learning curve
-		LearningCurve learningCurve = new LearningCurve(
-				"learning evaluation instances");
+		// initialize the learning curve collection
+		LearningCurveCollection learningCurveCollection = new LearningCurveCollection("id", "learnerId");
+		
 
 		monitor.setCurrentActivity("Performing cross validation...", 50.0);
 		
@@ -229,7 +225,7 @@ public class ALCrossValidationTask extends ALMainTask {
 			e.printStackTrace();
 		}
 		
-		return learningCurve;
+		return learningCurveCollection;
 	}
 
 	@Override

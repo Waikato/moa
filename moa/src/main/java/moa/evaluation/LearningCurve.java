@@ -128,4 +128,8 @@ public class LearningCurve extends AbstractMOAObject {
     public String getMeasurementName(int measurementIndex) {
         return this.measurementNames.get(measurementIndex);
     }
+
+    public int getMeasurementNameCount() {
+        return this.measurementNames.size();
+    }
 }
