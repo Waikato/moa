@@ -28,16 +28,18 @@ import moa.AbstractMOAObject;
  * @author Tuan Pham Minh (tuan.pham@ovgu.de)
  * @version $Revision: 1 $
  */
-public class PreviewCollectionLearningCurveWrapper extends AbstractMOAObject implements PreviewCollectionElement {
+public class PreviewCollectionLearningCurveWrapper extends AbstractMOAObject implements Preview {
 
 	private static final long serialVersionUID = 1L;
 	
 	// the learning curve which should be wrapped
 	LearningCurve learningCurveToBeWrapped;
+	Class<?> taskClass;
 	
-	public PreviewCollectionLearningCurveWrapper(LearningCurve learningCurveToBeWrapped)
+	public PreviewCollectionLearningCurveWrapper(LearningCurve learningCurveToBeWrapped, Class<?> taskClass)
 	{
 		this.learningCurveToBeWrapped = learningCurveToBeWrapped;	
+		this.taskClass = taskClass;
 	}
 	
 	@Override
@@ -69,4 +71,8 @@ public class PreviewCollectionLearningCurveWrapper extends AbstractMOAObject imp
 		return learningCurveToBeWrapped;
 	}
 
+	@Override
+	public Class<?> getTaskClass() {
+		return taskClass;
+	}
 }

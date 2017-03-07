@@ -26,7 +26,7 @@ package moa.evaluation;
  * @author Tuan Pham Minh (tuan.pham@ovgu.de)
  * @version $Revision: 1 $
  */
-public interface PreviewCollectionElement {
+public interface Preview {
 	
 	public int getMeasurementNameCount();
 	
@@ -35,4 +35,6 @@ public interface PreviewCollectionElement {
 	public int numEntries();
 	
 	public String entryToString(int entryIndex);
+	
+	public Class<?> getTaskClass();
 }

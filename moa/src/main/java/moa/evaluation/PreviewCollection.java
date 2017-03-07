@@ -31,7 +31,7 @@ import moa.core.StringUtils;
  * @author Tuan Pham Minh (tuan.pham@ovgu.de)
  * @version $Revision: 1 $
  */
-public class PreviewCollection <CollectionElementType extends PreviewCollectionElement> extends AbstractMOAObject implements PreviewCollectionElement{
+public class PreviewCollection <CollectionElementType extends Preview> extends AbstractMOAObject implements Preview{
 	
 	private static final long serialVersionUID = 1L;
 
@@ -221,6 +221,7 @@ public class PreviewCollection <CollectionElementType extends PreviewCollectionE
 		return measurementNames.get(measurementIndex);
 	}
 
+	@Override
 	public Class<?> getTaskClass() {
 		return taskClass;
 	}

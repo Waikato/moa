@@ -212,7 +212,7 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         		// TODO currently the preview is sent after each instance
         		// 		should be changed later on
         		if (monitor.resultPreviewRequested() || isSubtask()) {
-        			monitor.setLatestResultPreview(new PreviewCollectionLearningCurveWrapper((LearningCurve)learningCurve.copy()));
+        			monitor.setLatestResultPreview(new PreviewCollectionLearningCurveWrapper((LearningCurve)learningCurve.copy(), this.getClass()));
                 }
         		
         		// update time measurement
@@ -222,7 +222,7 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         	}
         }
 		
-		return new PreviewCollectionLearningCurveWrapper(learningCurve);
+		return new PreviewCollectionLearningCurveWrapper(learningCurve, this.getClass());
 	}
 	
 	@Override
