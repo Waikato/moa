@@ -30,9 +30,8 @@ import com.github.javacliparser.Option;
 import moa.classifiers.active.ALClassifier;
 import moa.core.ObjectRepository;
 import moa.evaluation.ALClassificationPerformanceEvaluator;
-import moa.evaluation.LearningCurve;
 import moa.evaluation.PreviewCollection;
-import moa.evaluation.PreviewCollectionLearingCurveWrapper;
+import moa.evaluation.PreviewCollectionLearningCurveWrapper;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.streams.KFoldStream;
@@ -206,7 +205,7 @@ public class ALCrossValidationTask extends ALMainTask {
 			TaskMonitor monitor, ObjectRepository repository) 
 	{
 		// initialize the learning curve collection
-		PreviewCollection<PreviewCollection<PreviewCollectionLearingCurveWrapper>> previewCollection = new PreviewCollection<>("cross validation entry id", "fold id");
+		PreviewCollection<PreviewCollection<PreviewCollectionLearningCurveWrapper>> previewCollection = new PreviewCollection<>("cross validation entry id", "fold id", this.getClass());
 		
 
 		monitor.setCurrentActivity("Performing cross validation...", 50.0);
@@ -232,7 +231,8 @@ public class ALCrossValidationTask extends ALMainTask {
 				// check if the thread is completed
 				allThreadsCompleted &= currentTaskThread.isComplete();
 				// get the latest preview
-				PreviewCollection<PreviewCollectionLearingCurveWrapper> latestPreview = (PreviewCollection<PreviewCollectionLearingCurveWrapper>)currentTaskThread.getLatestResultPreview();
+				@SuppressWarnings("unchecked")
+				PreviewCollection<PreviewCollectionLearningCurveWrapper> latestPreview = (PreviewCollection<PreviewCollectionLearningCurveWrapper>)currentTaskThread.getLatestResultPreview();
 				// ignore the preview if it is null
 				if(latestPreview != null && latestPreview.numEntries() > 0)
 				{	

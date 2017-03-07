@@ -32,7 +32,7 @@ import moa.core.ObjectRepository;
 import moa.evaluation.ALClassificationPerformanceEvaluator;
 import moa.evaluation.LearningCurve;
 import moa.evaluation.PreviewCollection;
-import moa.evaluation.PreviewCollectionLearingCurveWrapper;
+import moa.evaluation.PreviewCollectionLearningCurveWrapper;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.tasks.TaskMonitor;
@@ -161,7 +161,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 			TaskMonitor monitor, ObjectRepository repository) 
 	{
 		// setup learning curve
-		PreviewCollection<PreviewCollectionLearingCurveWrapper> previewCollection = new PreviewCollection<>("multi budget entry id", "learner id");		
+		PreviewCollection<PreviewCollectionLearningCurveWrapper> previewCollection = new PreviewCollection<>("multi budget entry id", "learner id", this.getClass());		
 		// start subtasks
 		monitor.setCurrentActivity("Evaluating learners for budgets...", -1.0);
 		for(int i = 0; i < this.subtaskThreads.size(); ++i)
@@ -187,7 +187,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 				// ignore the preview if it is null
 				if(latestPreview != null && latestPreview.numEntries() > 0)
 				{	
-					PreviewCollectionLearingCurveWrapper wrappedLatestPreview = new PreviewCollectionLearingCurveWrapper(latestPreview);
+					PreviewCollectionLearningCurveWrapper wrappedLatestPreview = new PreviewCollectionLearningCurveWrapper(latestPreview);
 					// update/add the learning curve to the learning curve collection
 					previewCollection.setPreview(i, wrappedLatestPreview);
 				}

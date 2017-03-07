@@ -47,14 +47,17 @@ public class PreviewCollection <CollectionElementType extends PreviewCollectionE
 	List<String> measurementNames;
 	// the minimum of entries of all included previews
 	int minEntryNum;
+	// the type of Task which uses this preview collection
+	Class<?> taskClass;
 	
-	public PreviewCollection(String orderingName, String indexName) {
+	public PreviewCollection(String orderingName, String indexName, Class<?> taskClass) {
 		this.indexName = indexName;
 		requiredMmeasurementNames = new ArrayList<>();
 		measurementNames = new ArrayList<>();
 		measurementNames.add(orderingName);
 		measurementNames.add(indexName);
 		subPreview = new ArrayList<>();
+		this.taskClass = taskClass;
 	}
 	
 	public void setPreview(int previewIndex, CollectionElementType preview) throws IllegalArgumentException
@@ -216,5 +219,9 @@ public class PreviewCollection <CollectionElementType extends PreviewCollectionE
 	@Override
 	public String getMeasurementName(int measurementIndex) {
 		return measurementNames.get(measurementIndex);
+	}
+
+	public Class<?> getTaskClass() {
+		return taskClass;
 	}
 }

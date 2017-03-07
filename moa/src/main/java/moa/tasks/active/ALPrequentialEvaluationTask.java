@@ -121,6 +121,8 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         double RAMHours = 0.0;
         int sampleFrequency = 100000;
         
+        double budgetThreshold = budgetOption.getValue();
+        
         monitor.setCurrentActivity("Evaluating learner...", -1.0);
         while (stream.hasMoreInstances()
         	   && ((maxInstances < 0) 
@@ -171,7 +173,11 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         	                            time),
 	                            new Measurement(
         	                            "model cost (RAM-Hours)",
-        	                            RAMHours)
+        	                            RAMHours),
+        						new Measurement(
+        	                            "budget threshold",
+        	                            budgetThreshold
+        	                            )
         				},
         				evaluator, learner));
         	}

@@ -28,14 +28,14 @@ import moa.AbstractMOAObject;
  * @author Tuan Pham Minh (tuan.pham@ovgu.de)
  * @version $Revision: 1 $
  */
-public class PreviewCollectionLearingCurveWrapper extends AbstractMOAObject implements PreviewCollectionElement {
+public class PreviewCollectionLearningCurveWrapper extends AbstractMOAObject implements PreviewCollectionElement {
 
 	private static final long serialVersionUID = 1L;
 	
 	// the learning curve which should be wrapped
 	LearningCurve learningCurveToBeWrapped;
 	
-	public PreviewCollectionLearingCurveWrapper(LearningCurve learningCurveToBeWrapped)
+	public PreviewCollectionLearningCurveWrapper(LearningCurve learningCurveToBeWrapped)
 	{
 		this.learningCurveToBeWrapped = learningCurveToBeWrapped;	
 	}
