@@ -199,7 +199,7 @@ public class PreviewCollection <CollectionElementType extends PreviewCollectionE
         }
     }
     
-    public List<CollectionElementType> getPreview()
+    public List<CollectionElementType> getPreviews()
     {
     	return subPreview;
     }
