@@ -246,7 +246,10 @@ public class ALCrossValidationTask extends ALMainTask {
 				}
 			}
 			// check if a preview is requested
-    		if (monitor.resultPreviewRequested() || isSubtask()) {
+    		if (monitor.resultPreviewRequested() || isSubtask()) {        		
+    			if (monitor.taskShouldAbort()) {
+    				return null;
+    			}
     			// send the latest preview to the monitor
                 monitor.setLatestResultPreview(previewCollection.copy());
             }
