@@ -42,7 +42,7 @@ public class PreviewCollection <CollectionElementType extends PreviewCollectionE
 	// a list of all previews which should be stored
 	List<CollectionElementType> subPreview;
 	// the measurement names a preview has to contain to be added in this collection
-	List<String> requiredMmeasurementNames;
+	List<String> requiredMeasurementNames;
 	// all measurement names used by this collection
 	List<String> measurementNames;
 	// the minimum of entries of all included previews
@@ -52,7 +52,7 @@ public class PreviewCollection <CollectionElementType extends PreviewCollectionE
 	
 	public PreviewCollection(String orderingName, String indexName, Class<?> taskClass) {
 		this.indexName = indexName;
-		requiredMmeasurementNames = new ArrayList<>();
+		requiredMeasurementNames = new ArrayList<>();
 		measurementNames = new ArrayList<>();
 		measurementNames.add(orderingName);
 		measurementNames.add(indexName);
@@ -72,7 +72,7 @@ public class PreviewCollection <CollectionElementType extends PreviewCollectionE
 				{
 					String name = preview.getMeasurementName(i);
 					measurementNames.add(name);
-					requiredMmeasurementNames.add(name);
+					requiredMeasurementNames.add(name);
 				}
 			}
 			
@@ -89,14 +89,14 @@ public class PreviewCollection <CollectionElementType extends PreviewCollectionE
 				}
 			}
 			// check if the measurement names are the same
-			boolean hasSameMeasurementNamesCount = requiredMmeasurementNames.size() == preview.getMeasurementNameCount();
+			boolean hasSameMeasurementNamesCount = requiredMeasurementNames.size() == preview.getMeasurementNameCount();
 			if(hasSameMeasurementNamesCount)
 			{
 				boolean hasSameMeasurementNames = true;
 	
-				for(int i = 0; i < requiredMmeasurementNames.size(); ++i)
+				for(int i = 0; i < requiredMeasurementNames.size(); ++i)
 				{
-					hasSameMeasurementNames &= requiredMmeasurementNames.get(i).equals(preview.getMeasurementName(i));
+					hasSameMeasurementNames &= requiredMeasurementNames.get(i).equals(preview.getMeasurementName(i));
 				}
 				if(hasSameMeasurementNames)
 				{
