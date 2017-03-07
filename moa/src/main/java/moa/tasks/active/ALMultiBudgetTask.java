@@ -183,13 +183,12 @@ public class ALMultiBudgetTask extends ALMainTask {
 				// check if the thread is completed
 				allThreadsCompleted &= currentTaskThread.isComplete();
 				// get the latest preview
-				LearningCurve latestPreview = (LearningCurve)currentTaskThread.getLatestResultPreview();
+				PreviewCollectionLearningCurveWrapper latestPreview = (PreviewCollectionLearningCurveWrapper)currentTaskThread.getLatestResultPreview();
 				// ignore the preview if it is null
 				if(latestPreview != null && latestPreview.numEntries() > 0)
 				{	
-					PreviewCollectionLearningCurveWrapper wrappedLatestPreview = new PreviewCollectionLearningCurveWrapper(latestPreview);
 					// update/add the learning curve to the learning curve collection
-					previewCollection.setPreview(i, wrappedLatestPreview);
+					previewCollection.setPreview(i, latestPreview);
 				}
 				else
 				{

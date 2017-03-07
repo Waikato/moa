@@ -35,6 +35,7 @@ import moa.core.TimingUtils;
 import moa.evaluation.ALClassificationPerformanceEvaluator;
 import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
+import moa.evaluation.PreviewCollectionLearningCurveWrapper;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.tasks.TaskMonitor;
@@ -211,7 +212,7 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         		// TODO currently the preview is sent after each instance
         		// 		should be changed later on
         		if (monitor.resultPreviewRequested() || isSubtask()) {
-        			monitor.setLatestResultPreview(learningCurve.copy());
+        			monitor.setLatestResultPreview(new PreviewCollectionLearningCurveWrapper((LearningCurve)learningCurve.copy()));
                 }
         		
         		// update time measurement
@@ -221,7 +222,7 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         	}
         }
 		
-		return learningCurve;
+		return new PreviewCollectionLearningCurveWrapper(learningCurve);
 	}
 	
 	@Override
