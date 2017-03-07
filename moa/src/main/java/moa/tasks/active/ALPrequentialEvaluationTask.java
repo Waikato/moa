@@ -204,9 +204,9 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         		
         		// TODO currently the preview is sent after each instance
         		// 		should be changed later on
-        		//if (monitor.resultPreviewRequested()) {
-                monitor.setLatestResultPreview(learningCurve.copy());
-                //}
+        		if (monitor.resultPreviewRequested() || isSubtask()) {
+        			monitor.setLatestResultPreview(learningCurve.copy());
+                }
         		
         		// update time measurement
         		secondsElapsed = (int) TimingUtils.nanoTimeToSeconds(

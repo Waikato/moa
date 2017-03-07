@@ -234,7 +234,7 @@ public class ALCrossValidationTask extends ALMainTask {
 				// get the latest preview
 				PreviewCollection<PreviewCollectionLearingCurveWrapper> latestPreview = (PreviewCollection<PreviewCollectionLearingCurveWrapper>)currentTaskThread.getLatestResultPreview();
 				// ignore the preview if it is null
-				if(latestPreview != null)
+				if(latestPreview != null && latestPreview.numEntries() > 0)
 				{	
 					// update/add the learning curve to the learning curve collection
 					previewCollection.setPreview(i, latestPreview);
@@ -246,10 +246,10 @@ public class ALCrossValidationTask extends ALMainTask {
 				}
 			}
 			// check if a preview is requested
-    		//if (monitor.resultPreviewRequested()) {
+    		if (monitor.resultPreviewRequested() || isSubtask()) {
     			// send the latest preview to the monitor
                 monitor.setLatestResultPreview(previewCollection.copy());
-            //}
+            }
 		}
 		
 		return previewCollection;

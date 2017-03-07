@@ -48,10 +48,7 @@ public class ALTaskThread extends TaskThread {
 		ALMainTask task = (ALMainTask)getTask();
 		List<ALTaskThread> threads = task.getSubtaskThreads();
 		
-        if (this.currentStatus == Status.RUNNING) {
-            this.taskMonitor.requestPause();
-            this.currentStatus = Status.PAUSED;
-        }
+        super.pauseTask();
         
         // pause all subtask threads
         for(int i = 0; i < threads.size(); ++i)
@@ -65,10 +62,7 @@ public class ALTaskThread extends TaskThread {
 		ALMainTask task = (ALMainTask)getTask();
 		List<ALTaskThread> threads = task.getSubtaskThreads();
 		
-        if (this.currentStatus == Status.PAUSED) {
-            this.taskMonitor.requestResume();
-            this.currentStatus = Status.RUNNING;
-        }
+        super.resumeTask();
 
         // resume all subtask threads
         for(int i = 0; i < threads.size(); ++i)
@@ -82,11 +76,7 @@ public class ALTaskThread extends TaskThread {
 		ALMainTask task = (ALMainTask)getTask();
 		List<ALTaskThread> threads = task.getSubtaskThreads();
 		
-        if ((this.currentStatus == Status.RUNNING)
-                || (this.currentStatus == Status.PAUSED)) {
-            this.taskMonitor.requestCancel();
-            this.currentStatus = Status.CANCELLING;
-        }
+        super.cancelTask();
 
         // cancel all subtask threads
         for(int i = 0; i < threads.size(); ++i)

@@ -161,7 +161,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 			TaskMonitor monitor, ObjectRepository repository) 
 	{
 		// setup learning curve
-		PreviewCollection<PreviewCollectionLearingCurveWrapper> previewCollection = new PreviewCollection<>("multi budged entry id", "learner id");		
+		PreviewCollection<PreviewCollectionLearingCurveWrapper> previewCollection = new PreviewCollection<>("multi budget entry id", "learner id");		
 		// start subtasks
 		monitor.setCurrentActivity("Evaluating learners for budgets...", -1.0);
 		for(int i = 0; i < this.subtaskThreads.size(); ++i)
@@ -185,7 +185,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 				// get the latest preview
 				LearningCurve latestPreview = (LearningCurve)currentTaskThread.getLatestResultPreview();
 				// ignore the preview if it is null
-				if(latestPreview != null)
+				if(latestPreview != null && latestPreview.numEntries() > 0)
 				{	
 					PreviewCollectionLearingCurveWrapper wrappedLatestPreview = new PreviewCollectionLearingCurveWrapper(latestPreview);
 					// update/add the learning curve to the learning curve collection
@@ -198,10 +198,14 @@ public class ALMultiBudgetTask extends ALMainTask {
 				}
 			}
 			// check if a preview is requested
-    		//if (monitor.resultPreviewRequested()) {
+    		if (monitor.resultPreviewRequested() || isSubtask()) {
     			// send the latest preview to the monitor
                 monitor.setLatestResultPreview(previewCollection.copy());
-            //}
+
+        		monitor.setCurrentActivityFractionComplete(-1.0);
+            }
+    		
+    		System.out.println("haha");
 		}
 		
 		return previewCollection;

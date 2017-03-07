@@ -65,7 +65,7 @@ public class PreviewCollectionLearingCurveWrapper extends AbstractMOAObject impl
 		return learningCurveToBeWrapped.entryToString(entryIndex);
 	}
 
-	public LearningCurve getLearningCurve() {
+	public LearningCurve getLearningCurve( ) {
 		return learningCurveToBeWrapped;
 	}
 
