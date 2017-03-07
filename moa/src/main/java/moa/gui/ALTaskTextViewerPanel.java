@@ -52,10 +52,14 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import moa.evaluation.MeasureCollection;
+import moa.evaluation.Preview;
 import moa.gui.PreviewPanel.TypePanel;
 import moa.gui.clustertab.ClusteringVisualEvalPanel;
 import moa.gui.visualization.BudgetGraphCanvas;
 import moa.gui.visualization.GraphCanvas;
+import moa.tasks.active.ALCrossValidationTask;
+import moa.tasks.active.ALMultiBudgetTask;
+import moa.tasks.active.ALPrequentialEvaluationTask;
 
 /*
  * TODO it would be nice if the graphs are reset by changing the tab. this
@@ -439,12 +443,11 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	 * graph.
 	 * @param newText  the new information used to update text and graph
 	 */
-	public void setText(String newText) {
+	public void setText(Preview preview) {
 		Point p = this.scrollPane.getViewport().getViewPosition();
-		this.textArea.setText(newText);
+		this.textArea.setText(preview != null ? preview.toString() : null);
 		this.scrollPane.getViewport().setViewPosition(p);
-		this.exportButton.setEnabled(newText != null);
-		setGraph(newText);
+		this.exportButton.setEnabled(preview != null);
 	}
 
 	private double round(double d) {
@@ -456,7 +459,21 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	 * TODO consider budgetgraphcanvas
 	 * @param preview  string containing new information used to update the graph
 	 */
-	public void setGraph(String preview) {
+	public void setGraph(Preview _preview) {
+//		// check which type of task it is
+//		Class<?> c = preview.getTaskClass();
+//		if (c == ALCrossValidationTask.class) {
+//    		//TODO set text and graph
+////    		this.pre
+////    		setGraph(newText);
+//    	} else if (c == ALMultiBudgetTask.class) {
+//    		//TODO set text and graph
+//    	} else if (c == ALPrequentialEvaluationTask.class) {
+//    		//TODO set text and graph
+//    	} else {
+//    		System.err.println(c.getName());
+//    	}
+		String preview = _preview != null ? _preview.toString() : null;
 		// Change the graph when there is change in the text
 		double processFrequency = 1000;
 		if (preview != null && !preview.equals("")) {

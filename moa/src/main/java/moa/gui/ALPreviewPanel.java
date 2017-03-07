@@ -31,8 +31,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import moa.core.StringUtils;
+import moa.evaluation.Preview;
 import moa.tasks.ResultPreviewListener;
-import moa.tasks.TaskThread;
+import moa.tasks.active.ALTaskThread;
 
 /**
  * TODO javadoc
@@ -45,7 +46,7 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
 
     private static final long serialVersionUID = 1L;
 
-    protected TaskThread previewedThread;
+    protected ALTaskThread previewedThread;
 
     protected JLabel previewLabel;
 
@@ -108,7 +109,7 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
     public void refresh() {
         if (this.previewedThread != null) {
             if (this.previewedThread.isComplete()) {
-                setLatestPreview(null);
+                setLatestPreview();
                 disableRefresh();
             } else {
                 this.previewedThread.getPreview(ALPreviewPanel.this);
@@ -120,10 +121,9 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
      * TODO javadoc
      * @param thread
      */
-    public void setTaskThreadToPreview(TaskThread thread) {
+	public void setTaskThreadToPreview(ALTaskThread thread) {
         this.previewedThread = thread;
-        setLatestPreview(thread != null ? thread.getLatestResultPreview()
-                : null);
+        setLatestPreview();
         if (thread == null) {
             disableRefresh();
         } else if (!thread.isComplete()) {
@@ -133,27 +133,33 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
 
     /**
      * TODO javadoc
-     * @param preview
      */
-    public void setLatestPreview(Object preview) {
-    	// TODO incorp budget
-        if ((this.previewedThread != null) && this.previewedThread.isComplete()) {
-            this.previewLabel.setText("Final result");
-            Object finalResult = this.previewedThread.getFinalResult();
-            this.textViewerPanel.setText(finalResult != null ? finalResult.toString() : null);
-            disableRefresh();
-        } else {
-            double grabTime = this.previewedThread != null ? this.previewedThread.getLatestPreviewGrabTimeSeconds()
-                    : 0.0;
-            String grabString = grabTime > 0.0 ? (" ("
-                    + StringUtils.secondsToDHMSString(grabTime) + ")") : "";
-            this.textViewerPanel.setText(preview != null ? preview.toString() : null);
-            if (preview == null) {
-                this.previewLabel.setText("No preview available" + grabString);
-            } else {
-                this.previewLabel.setText("Preview" + grabString);
-            }
-        }
+    public void setLatestPreview() {
+
+		if ((this.previewedThread != null) && this.previewedThread.isComplete()) {
+			Preview finalResult = (Preview) this.previewedThread.getFinalResult();
+			this.textViewerPanel.setText(finalResult);
+			this.textViewerPanel.setGraph(finalResult);
+			this.previewLabel.setText("Final result");
+			disableRefresh();
+		} else if (this.previewedThread != null){
+			Preview preview = (Preview) this.previewedThread.getLatestResultPreview();
+			double grabTime = this.previewedThread.getLatestPreviewGrabTimeSeconds();
+			String grabString = " (" + StringUtils.secondsToDHMSString(grabTime) + ")";
+			this.textViewerPanel.setText(preview);
+			this.textViewerPanel.setGraph(preview);
+			if (preview == null) {
+				this.previewLabel.setText("No preview available" + grabString);
+			} else {
+				this.previewLabel.setText("Preview" + grabString);
+			}
+		} else {
+			// this.previewThread == null
+			this.previewLabel.setText("No preview available");
+			// TODO check if this is necessary
+			this.textViewerPanel.setText(null);
+			this.textViewerPanel.setGraph(null);
+		}
     }
 
     /**
