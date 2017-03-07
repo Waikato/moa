@@ -23,6 +23,7 @@
 package moa.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -48,8 +49,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
+import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import moa.evaluation.MeasureCollection;
 import moa.evaluation.Preview;
@@ -57,9 +61,6 @@ import moa.gui.PreviewPanel.TypePanel;
 import moa.gui.clustertab.ClusteringVisualEvalPanel;
 import moa.gui.visualization.BudgetGraphCanvas;
 import moa.gui.visualization.GraphCanvas;
-import moa.tasks.active.ALCrossValidationTask;
-import moa.tasks.active.ALMultiBudgetTask;
-import moa.tasks.active.ALPrequentialEvaluationTask;
 
 /*
  * TODO it would be nice if the graphs are reset by changing the tab. this
@@ -103,7 +104,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	
 	private JPanel topWrapper;
 	
-	private JTextArea textArea;
+	private PreviewTableModel previewTableModel;
+	
+	private JTable previewTable;
 	
 	private JScrollPane scrollPane;
 	
@@ -162,12 +165,13 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		topWrapper.setLayout(new BorderLayout());
 
 		// textArea displays live results in text form
-		this.textArea = new JTextArea();
-		this.textArea.setEditable(false);
-		this.textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		this.previewTableModel = new PreviewTableModel();
+		this.previewTable = new JTable(previewTableModel);
+		this.previewTable.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		this.previewTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 		// scrollPane enables scroll support for textArea
-		this.scrollPane = new JScrollPane(this.textArea);
+		this.scrollPane = new JScrollPane(this.previewTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		topWrapper.add(this.scrollPane, BorderLayout.CENTER);
 
@@ -193,7 +197,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 					}
 					try {
 						PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
-						out.write(ALTaskTextViewerPanel.this.textArea.getText());
+						out.write(previewTableModel.toString());
 						out.close();
 					} catch (IOException ioe) {
 						GUIUtils.showExceptionDialog(ALTaskTextViewerPanel.this.exportButton,
@@ -445,7 +449,12 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	 */
 	public void setText(Preview preview) {
 		Point p = this.scrollPane.getViewport().getViewPosition();
-		this.textArea.setText(preview != null ? preview.toString() : null);
+		this.previewTableModel.setPreview(preview);
+		if(previewTableModel.structureChanged())
+		{
+			rescaleTableColumns();
+		}
+		this.previewTable.repaint();
 		this.scrollPane.getViewport().setViewPosition(p);
 		this.exportButton.setEnabled(preview != null);
 	}
@@ -566,7 +575,41 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		this.clusteringVisualEvalPanel1.update();
 
 	}
-
+	
+	private void rescaleTableColumns()
+	{
+		// iterate over all columns to resize them individually
+		TableColumnModel columnModel = previewTable.getColumnModel();
+		for(int columnIdx = 0; columnIdx < columnModel.getColumnCount(); ++columnIdx)
+		{
+			// get the current column
+			TableColumn column = columnModel.getColumn(columnIdx);
+			// get the renderer for the column header to calculate the preferred with for the header
+			TableCellRenderer renderer = column.getHeaderRenderer();
+			// check if the renderer is null
+			if(renderer == null)
+			{
+				// if it is null use the default renderer for header
+				renderer = previewTable.getTableHeader().getDefaultRenderer();
+			}
+			// create a cell to calculate its preferred size
+			Component comp = renderer.getTableCellRendererComponent(previewTable, column.getHeaderValue(), false, false, 0, columnIdx);
+			int width = comp.getPreferredSize().width;
+//			// iterate over all rows to get the maximum with needed to show all entries completely
+//			for(int rowIdx = 0; rowIdx < previewTable.getRowCount(); ++rowIdx)
+//			{
+//				// get the renderer used by the cell
+//				renderer = previewTable.getCellRenderer(rowIdx, columnIdx);
+//				// get the component for the cell
+//				comp = previewTable.prepareRenderer(renderer, rowIdx, columnIdx);
+//				// calculate the maximum of the preferred size of the current cell and the previously calculated width 
+//				width = Math.max(width, comp.getPreferredSize().width + 1);
+//			}
+			// set the maximum width which was calculated
+			column.setPreferredWidth(width);
+		}
+	}
+	
 	private double parseDouble(String s) {
 		double ret = 0;
 		if (s.equals("?") == false) {

@@ -22,7 +22,6 @@ package moa.evaluation;
 import java.util.ArrayList;
 import java.util.List;
 
-import moa.AbstractMOAObject;
 import moa.core.StringUtils;
 
 /**
@@ -31,7 +30,7 @@ import moa.core.StringUtils;
  * @author Tuan Pham Minh (tuan.pham@ovgu.de)
  * @version $Revision: 1 $
  */
-public class PreviewCollection <CollectionElementType extends Preview> extends AbstractMOAObject implements Preview{
+public class PreviewCollection <CollectionElementType extends Preview> extends Preview{
 	
 	private static final long serialVersionUID = 1L;
 
@@ -40,7 +39,7 @@ public class PreviewCollection <CollectionElementType extends Preview> extends A
 	// the name representing the index of each preview
 	String indexName;
 	// a list of all previews which should be stored
-	List<CollectionElementType> subPreview;
+	List<CollectionElementType> subPreviews;
 	// the measurement names a preview has to contain to be added in this collection
 	List<String> requiredMeasurementNames;
 	// all measurement names used by this collection
@@ -56,7 +55,7 @@ public class PreviewCollection <CollectionElementType extends Preview> extends A
 		measurementNames = new ArrayList<>();
 		measurementNames.add(orderingName);
 		measurementNames.add(indexName);
-		subPreview = new ArrayList<>();
+		subPreviews = new ArrayList<>();
 		this.taskClass = taskClass;
 	}
 	
@@ -66,7 +65,7 @@ public class PreviewCollection <CollectionElementType extends Preview> extends A
 		if(preview.numEntries() > 0)
 		{
 			// copy the measurement names from the first preview
-			if(subPreview.size() == 0)
+			if(subPreviews.size() == 0)
 			{
 				for(int i = 0; i < preview.getMeasurementNameCount(); ++i)
 				{
@@ -77,15 +76,15 @@ public class PreviewCollection <CollectionElementType extends Preview> extends A
 			}
 			
 			// resize the array if new previews are added to the collection
-			if(subPreview.size() <= previewIndex)
+			if(subPreviews.size() <= previewIndex)
 			{
-				if(subPreview.size() < previewIndex)
+				if(subPreviews.size() < previewIndex)
 				{
 		            throw new IndexOutOfBoundsException("The given index (" + String.valueOf(previewIndex) + ") is invalid.");				
 				}
 				else
 				{
-					subPreview.add(null);
+					subPreviews.add(null);
 				}
 			}
 			// check if the measurement names are the same
@@ -104,11 +103,11 @@ public class PreviewCollection <CollectionElementType extends Preview> extends A
 					int newMinEntryNum = preview.numEntries();
 					int newMaxEntryNum = preview.numEntries();
 					
-					for(int i = 0; i < subPreview.size(); ++i)
+					for(int i = 0; i < subPreviews.size(); ++i)
 					{
 						if(i != previewIndex)
 						{
-							int entryNum = subPreview.get(i).numEntries();
+							int entryNum = subPreviews.get(i).numEntries();
 							newMinEntryNum = Math.min(newMinEntryNum, entryNum);
 							newMaxEntryNum = Math.max(newMaxEntryNum, entryNum);
 						}
@@ -121,7 +120,7 @@ public class PreviewCollection <CollectionElementType extends Preview> extends A
 					if(numEntryDifference >= 0 && numEntryDifference <= 1)
 					{
 						// replace the preview
-						subPreview.set(previewIndex, preview);
+						subPreviews.set(previewIndex, preview);
 					}
 					else
 					{
@@ -144,7 +143,7 @@ public class PreviewCollection <CollectionElementType extends Preview> extends A
 	public int numEntries()
 	{
 		// use the minimal number of entries to guarantee that all previews have enough values
-		return minEntryNum * subPreview.size();
+		return minEntryNum * subPreviews.size();
 	}
 
     public String headerToString() {
@@ -164,9 +163,9 @@ public class PreviewCollection <CollectionElementType extends Preview> extends A
 
 	@Override
 	public String entryToString(int entryIndex) {
-		if(subPreview.size() > 0)
+		if(subPreviews.size() > 0)
 		{
-			return entryToString(entryIndex%subPreview.size(), entryIndex/subPreview.size());
+			return entryToString(entryIndex%subPreviews.size(), entryIndex/subPreviews.size());
 		}
 		else
 		{
@@ -178,7 +177,7 @@ public class PreviewCollection <CollectionElementType extends Preview> extends A
     {
         StringBuilder sb = new StringBuilder();
         // use the row index as ordering value
-        int orderingValue = interlacedEntryIndex * subPreview.size() + subPreviewIndex;
+        int orderingValue = interlacedEntryIndex * subPreviews.size() + subPreviewIndex;
         // append the ordering value
         sb.append(orderingValue);
         sb.append(",");
@@ -186,7 +185,7 @@ public class PreviewCollection <CollectionElementType extends Preview> extends A
         sb.append(subPreviewIndex);
         sb.append(",");
         // append the content of the entry from the wanted preview
-        sb.append(subPreview.get(subPreviewIndex).entryToString(interlacedEntryIndex));
+        sb.append(subPreviews.get(subPreviewIndex).entryToString(interlacedEntryIndex));
     	return sb.toString();
     }
     
@@ -201,7 +200,7 @@ public class PreviewCollection <CollectionElementType extends Preview> extends A
     
     public List<CollectionElementType> getPreviews()
     {
-    	return subPreview;
+    	return subPreviews;
     }
     
     @Override
@@ -224,5 +223,29 @@ public class PreviewCollection <CollectionElementType extends Preview> extends A
 	@Override
 	public Class<?> getTaskClass() {
 		return taskClass;
+	}
+
+	@Override
+	public double[] getEntryData(int entryIndex)
+	{
+		// preallocate the array for the entry data
+		double[] entry = new double[getMeasurementNameCount()];
+		// get the number of previews in this collection to reduce the number of calls for .size()
+		int numSubPreviews = subPreviews.size();
+		// calculate the index of the corresponding preview and the entry index for that one
+		int subPreviewIndex = entryIndex%numSubPreviews;
+		int subPreviewEntryIndex = entryIndex/numSubPreviews;
+		// get the entry of the preview
+		double[] subPreviewEntry = subPreviews.get(subPreviewIndex).getEntryData(subPreviewEntryIndex);
+		// fill the first two elements with the entry index and the index of the preview
+		entry[0] = entryIndex;
+		entry[1] = subPreviewEntryIndex;
+		// fill the rest with the entry data of the preview
+		for(int measurementIdx = 0; measurementIdx < subPreviewEntry.length; ++measurementIdx)
+		{
+			entry[2 + measurementIdx] = subPreviewEntry[measurementIdx];
+		}
+		
+		return entry;
 	}
 }

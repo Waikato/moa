@@ -19,8 +19,6 @@
  */
 package moa.evaluation;
 
-import moa.AbstractMOAObject;
-
 /**
  * Class used to wrap LearningCurve so that it can be used in 
  * conjunction with a PreviewCollection
@@ -28,7 +26,7 @@ import moa.AbstractMOAObject;
  * @author Tuan Pham Minh (tuan.pham@ovgu.de)
  * @version $Revision: 1 $
  */
-public class PreviewCollectionLearningCurveWrapper extends AbstractMOAObject implements Preview {
+public class PreviewCollectionLearningCurveWrapper extends Preview {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -74,5 +72,19 @@ public class PreviewCollectionLearningCurveWrapper extends AbstractMOAObject imp
 	@Override
 	public Class<?> getTaskClass() {
 		return taskClass;
+	}
+
+	@Override
+	public double[] getEntryData(int entryIndex) {
+		// get the number of measurements
+		int numMeasurements = getMeasurementNameCount();
+		// preallocate the array to store all measurements
+		double[] data = new double[numMeasurements];
+		// get measuements from the learning curve
+		for(int measurementIdx = 0; measurementIdx < numMeasurements; ++measurementIdx)
+		{
+			data[measurementIdx] = learningCurveToBeWrapped.getMeasurement(entryIndex, measurementIdx);
+		}
+		return data;
 	}
 }

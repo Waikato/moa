@@ -1,5 +1,5 @@
 /*
- *    PreviewCollectionElement.java
+ *    Preview.java
  *    Copyright (C) 2017 Otto-von-Guericke-University, Magdeburg, Germany
  *    @author Tuan Pham Minh (tuan.pham@ovgu.de)
  *
@@ -19,22 +19,42 @@
  */
 package moa.evaluation;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import moa.AbstractMOAObject;
+
 /**
- * Interface which is used to define the methods needed from a preview 
- * to be added to a PreviewCollection
+ * Abstract class which is used to define the methods needed from a preview
  *
  * @author Tuan Pham Minh (tuan.pham@ovgu.de)
  * @version $Revision: 1 $
  */
-public interface Preview {
-	
-	public int getMeasurementNameCount();
-	
-	public String getMeasurementName(int measurementIndex);
-	
-	public int numEntries();
-	
-	public String entryToString(int entryIndex);
-	
-	public Class<?> getTaskClass();
+public abstract class Preview extends AbstractMOAObject{
+	private static final long serialVersionUID = 1L;
+
+	// TODO add methods to return a 2D double array
+	public abstract int getMeasurementNameCount();
+
+	public abstract String getMeasurementName(int measurementIndex);
+
+	public abstract int numEntries();
+
+	public abstract String entryToString(int entryIndex);
+
+	public abstract Class<?> getTaskClass();
+
+	public abstract double[] getEntryData(int entryIndex);
+
+	public List<double[]> getData()
+	{
+		// create list to store all entries
+		List<double[]> data = new ArrayList<>();
+		// add all entries in the list above
+        for (int entryIdx = 0; entryIdx < numEntries(); entryIdx++) {
+            data.add(getEntryData(entryIdx));
+        }
+		
+		return data;
+	}
 }
