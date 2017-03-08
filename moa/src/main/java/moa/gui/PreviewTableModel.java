@@ -40,6 +40,7 @@ public class PreviewTableModel extends AbstractTableModel {
 	List<double[]> data;
 	Preview latestPreview;
 	boolean structureChangeFlag;
+	Class<?> currentTaskClass;
 	
 	public PreviewTableModel()
 	{
@@ -47,6 +48,7 @@ public class PreviewTableModel extends AbstractTableModel {
 		data = new ArrayList<>();
 		latestPreview = null;
 		structureChangeFlag = false;
+		currentTaskClass = null;
 	}
 	
 	@Override
@@ -79,7 +81,7 @@ public class PreviewTableModel extends AbstractTableModel {
 			fireTableStructureChanged();
 			structureChangeFlag = true;
 		}
-		else if(latestPreview == null && preview != null)
+		else if(latestPreview == null && preview != null || latestPreview != null && preview != null && preview.getTaskClass() != currentTaskClass)
 		{
 			names = new ArrayList<>();
 			for(int measurementNameIdx = 0; measurementNameIdx < preview.getMeasurementNameCount(); ++measurementNameIdx)
@@ -93,6 +95,7 @@ public class PreviewTableModel extends AbstractTableModel {
 		latestPreview = preview;
 		if(preview != null)
 		{
+			currentTaskClass = preview.getTaskClass();
 			data = preview.getData();
 			fireTableDataChanged();
 		}
