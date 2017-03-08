@@ -137,7 +137,6 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
     public void setLatestPreview() {
 
 		if ((this.previewedThread != null) && this.previewedThread.isComplete()) {
-			Object o = this.previewedThread.getFinalResult();
 			Preview finalResult = (Preview) this.previewedThread.getFinalResult();
 			this.textViewerPanel.setText(finalResult);
 			this.textViewerPanel.setGraph(finalResult);
