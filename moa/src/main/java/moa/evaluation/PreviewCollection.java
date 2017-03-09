@@ -239,7 +239,7 @@ public class PreviewCollection <CollectionElementType extends Preview> extends P
 		double[] subPreviewEntry = subPreviews.get(subPreviewIndex).getEntryData(subPreviewEntryIndex);
 		// fill the first two elements with the entry index and the index of the preview
 		entry[0] = entryIndex;
-		entry[1] = subPreviewEntryIndex;
+		entry[1] = subPreviewIndex;
 		// fill the rest with the entry data of the preview
 		for(int measurementIdx = 0; measurementIdx < subPreviewEntry.length; ++measurementIdx)
 		{

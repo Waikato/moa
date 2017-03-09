@@ -51,6 +51,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -449,12 +450,26 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	 */
 	public void setText(Preview preview) {
 		Point p = this.scrollPane.getViewport().getViewPosition();
-		this.previewTableModel.setPreview(preview);
-		if(previewTableModel.structureChanged())
-		{
-			rescaleTableColumns();
-		}
-		this.previewTable.repaint();
+
+		previewTableModel.setPreview(preview);
+		SwingUtilities.invokeLater(
+			new Runnable(){
+				boolean structureChanged = previewTableModel.structureChanged();
+				public void run(){
+					if(structureChanged)
+					{
+						previewTableModel.fireTableStructureChanged();
+						rescaleTableColumns();
+					}
+					else
+					{
+						previewTableModel.fireTableDataChanged();
+					}
+					previewTable.repaint();
+				}
+			}
+		);
+		
 		this.scrollPane.getViewport().setViewPosition(p);
 		this.exportButton.setEnabled(preview != null);
 	}

@@ -40,7 +40,6 @@ public class PreviewTableModel extends AbstractTableModel {
 	List<double[]> data;
 	Preview latestPreview;
 	boolean structureChangeFlag;
-	Class<?> currentTaskClass;
 	
 	public PreviewTableModel()
 	{
@@ -48,7 +47,6 @@ public class PreviewTableModel extends AbstractTableModel {
 		data = new ArrayList<>();
 		latestPreview = null;
 		structureChangeFlag = false;
-		currentTaskClass = null;
 	}
 	
 	@Override
@@ -74,30 +72,32 @@ public class PreviewTableModel extends AbstractTableModel {
 	public void setPreview(Preview preview)
 	{
 		structureChangeFlag = false;
-		if(latestPreview != null && preview == null)
-		{
-			names = new ArrayList<>();
-			data = new ArrayList<>();
-			fireTableStructureChanged();
-			structureChangeFlag = true;
-		}
-		else if(latestPreview == null && preview != null || latestPreview != null && preview != null && preview.getTaskClass() != currentTaskClass)
-		{
-			names = new ArrayList<>();
-			for(int measurementNameIdx = 0; measurementNameIdx < preview.getMeasurementNameCount(); ++measurementNameIdx)
-			{
-				names.add(preview.getMeasurementName(measurementNameIdx));
-			}
-			fireTableStructureChanged();
-			structureChangeFlag = true;
-		}
 		
+		if(preview == null)
+		{
+			if(latestPreview != null)
+			{
+				System.out.println("empty");
+				names = new ArrayList<>();
+				data = new ArrayList<>();
+				structureChangeFlag = true;
+			}
+		}
+		else
+		{
+			structureChangeFlag |= latestPreview == null;
+			structureChangeFlag |= latestPreview != null && latestPreview.numEntries() == 0 && preview.numEntries() > 0;
+			structureChangeFlag |= latestPreview != null && latestPreview.getTaskClass() != preview.getTaskClass();
+		}
 		latestPreview = preview;
 		if(preview != null)
 		{
-			currentTaskClass = preview.getTaskClass();
 			data = preview.getData();
-			fireTableDataChanged();
+			
+			if(structureChangeFlag)
+			{
+				copyMeasurementNames(preview);
+			}
 		}
 	}
 	
@@ -109,5 +109,15 @@ public class PreviewTableModel extends AbstractTableModel {
 	public boolean structureChanged()
 	{
 		return structureChangeFlag;
+	}
+	
+	private void copyMeasurementNames(Preview preview)
+	{
+		names = new ArrayList<>();
+		int newMeasurementNameCount = preview.getMeasurementNameCount();
+		for(int measurementNameIdx = 0; measurementNameIdx < newMeasurementNameCount; ++measurementNameIdx)
+		{
+			names.add(preview.getMeasurementName(measurementNameIdx));
+		}
 	}
 }
