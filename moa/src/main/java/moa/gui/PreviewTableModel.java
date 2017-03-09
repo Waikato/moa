@@ -77,7 +77,6 @@ public class PreviewTableModel extends AbstractTableModel {
 		{
 			if(latestPreview != null)
 			{
-				System.out.println("empty");
 				names = new ArrayList<>();
 				data = new ArrayList<>();
 				structureChangeFlag = true;
