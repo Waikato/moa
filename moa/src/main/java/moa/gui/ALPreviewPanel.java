@@ -135,31 +135,33 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
      * TODO javadoc
      */
     public void setLatestPreview() {
+    	
+    	Preview preview;
 
 		if ((this.previewedThread != null) && this.previewedThread.isComplete()) {
-			Preview finalResult = (Preview) this.previewedThread.getFinalResult();
-			this.textViewerPanel.setText(finalResult);
-			this.textViewerPanel.setGraph(finalResult);
+			// cancelled, completed or failed task
+			// TODO if the task is failed, the finalResult is a FailedTaskReport, which is not a Preview
+			preview = (Preview) this.previewedThread.getFinalResult();
 			this.previewLabel.setText("Final result");
 			disableRefresh();
 		} else if (this.previewedThread != null){
-			Preview preview = (Preview) this.previewedThread.getLatestResultPreview();
+			// running task
+			preview = (Preview) this.previewedThread.getLatestResultPreview();
 			double grabTime = this.previewedThread.getLatestPreviewGrabTimeSeconds();
 			String grabString = " (" + StringUtils.secondsToDHMSString(grabTime) + ")";
-			this.textViewerPanel.setText(preview);
-			this.textViewerPanel.setGraph(preview);
 			if (preview == null) {
 				this.previewLabel.setText("No preview available" + grabString);
 			} else {
 				this.previewLabel.setText("Preview" + grabString);
 			}
 		} else {
-			// this.previewThread == null
+			// no thread
 			this.previewLabel.setText("No preview available");
-			// TODO check if this is necessary
-			this.textViewerPanel.setText(null);
-			this.textViewerPanel.setGraph(null);
+			preview = null;
 		}
+		
+		this.textViewerPanel.setText(preview);
+		this.textViewerPanel.setGraph(preview);
     }
 
     /**
