@@ -176,6 +176,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 		while(!allThreadsCompleted)
 		{
 			allThreadsCompleted = true;
+			int oldNumEntries = previewCollection.numEntries();
 			// iterate over all threads
 			for(int i = 0; i < this.subtaskThreads.size(); ++i)
 			{
@@ -196,16 +197,20 @@ public class ALMultiBudgetTask extends ALMainTask {
 					break;
 				}
 			}
-			// check if a preview is requested
-    		if (monitor.resultPreviewRequested() || isSubtask()) {
-        		if (monitor.taskShouldAbort()) {
-                    return null;
-                }
-    			// send the latest preview to the monitor
-                monitor.setLatestResultPreview(previewCollection.copy());
+			// check if the preview has actually changed
+			if(oldNumEntries < previewCollection.numEntries())
+			{
+				// check if a preview is requested
+	    		if (monitor.resultPreviewRequested() || isSubtask()) {
+	        		if (monitor.taskShouldAbort()) {
+	                    return null;
+	                }
+	    			// send the latest preview to the monitor
+	                monitor.setLatestResultPreview(previewCollection.copy());
 
-        		monitor.setCurrentActivityFractionComplete(-1.0);
-            }
+	        		monitor.setCurrentActivityFractionComplete(-1.0);
+	            }
+			}
 		}
 		
 		return previewCollection;
