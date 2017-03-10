@@ -38,7 +38,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
@@ -58,10 +59,14 @@ import javax.swing.table.TableColumnModel;
 
 import moa.evaluation.MeasureCollection;
 import moa.evaluation.Preview;
+import moa.evaluation.PreviewCollection;
 import moa.gui.PreviewPanel.TypePanel;
 import moa.gui.clustertab.ClusteringVisualEvalPanel;
 import moa.gui.visualization.BudgetGraphCanvas;
-import moa.gui.visualization.GraphCanvas;
+import moa.gui.visualization.GraphCanvasMulti;
+import moa.tasks.active.ALCrossValidationTask;
+import moa.tasks.active.ALMultiBudgetTask;
+import moa.tasks.active.ALPrequentialEvaluationTask;
 
 /*
  * TODO it would be nice if the graphs are reset by changing the tab. this
@@ -115,9 +120,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	
 	private JPanel panelEvalOutput;
 	
-	private MeasureCollection[] acc1 = new MeasureCollection[1];
+	private MeasureCollection[] acc1 = new MeasureCollection[1]; // TODO this is bad
 	
-	private MeasureCollection[] acc2 = new MeasureCollection[1];
+	private MeasureCollection[] acc2 = new MeasureCollection[1]; //TODO I'll use this for now as a dummy MC. change later!
 	
 	private ClusteringVisualEvalPanel clusteringVisualEvalPanel1;
 	
@@ -137,7 +142,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	
 	private JScrollPane graphScrollPanel;
 	
-	private GraphCanvas graphCanvas;
+	private GraphCanvasMulti graphCanvas;
 	
 	private JScrollPane budgetGraphScrollPanel;
 	
@@ -341,9 +346,10 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		graphScrollPanel = new JScrollPane();
 
 		// graphCanvas displays the live graph
-		graphCanvas = new GraphCanvas();
+		graphCanvas = new GraphCanvasMulti();
 		graphCanvas.setPreferredSize(new Dimension(500, 111));
-		graphCanvas.setGraph(acc1[0], acc2[0], 0, 1000);
+		// TODO consider not doing this here
+		graphCanvas.setGraph(null, 0, null, 1000);
 
 		GroupLayout graphCanvasLayout = new GroupLayout(graphCanvas);
 		graphCanvas.setLayout(graphCanvasLayout);
@@ -474,8 +480,172 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		this.exportButton.setEnabled(preview != null);
 	}
 
-	private double round(double d) {
+	private static double round(double d) {
 		return (Math.rint(d * 100) / 100);
+	}
+	
+	private static int min(int[] l) {
+		if (l.length == 0) {
+			return 0;
+		}
+		
+		int min = l[0];
+		for (int i: l) {
+			if (i < min) {
+				min = i;
+			}
+		}
+		return min;
+	}
+	
+	/**
+	 * TODO javadoc
+	 * @param pc
+	 * @param colorOffset
+	 * @return
+	 */
+	public GraphCanvasMultiParams setPreviewCollectionGraph(PreviewCollection<Preview> pc) {	
+		GraphCanvasMultiParams gcmp = new GraphCanvasMultiParams();
+		List<Preview> sps = pc.getPreviews();
+		
+		//TODO maybe check each instance?
+		if (sps.get(0) instanceof PreviewCollection) {
+			// NOTE: this assumes that all elements in sps are of the same class
+			for (Preview sp: sps) {
+				@SuppressWarnings("unchecked")
+				PreviewCollection<Preview> spc = (PreviewCollection<Preview>) sp;
+				//TODO
+				GraphCanvasMultiParams tmp = setPreviewCollectionGraph(spc);
+				gcmp.add(tmp);
+			}
+		} else {
+			int n = sps.size();
+			for (int i = 0; i < n; i++) {
+				GraphCanvasMultiParams tmp = readPreview(sps.get(i));
+				gcmp.add(tmp);
+			}
+		}
+		
+		return gcmp;
+	}
+	
+	/**
+	 * TODO javadoc
+	 * only used to store a measurecollection and a processfrequency
+	 * maybe find a better solution?
+	 * @author tsabsch
+	 *
+	 */
+	private class GraphCanvasMultiParams {
+		private List<Integer> processFrequencies;
+		private List<MeasureCollection> measureCollections;
+		
+		public GraphCanvasMultiParams() {
+			this.processFrequencies = new ArrayList<Integer>();
+			this.measureCollections = new ArrayList<MeasureCollection>();
+		}
+		
+		public void add(GraphCanvasMultiParams g) {
+			this.processFrequencies.addAll(g.getProcessFrequencies());
+			this.measureCollections.addAll(g.getMeasureCollections());
+		}
+		
+		public void addProcessFrequency(int pf) {
+			this.processFrequencies.add(pf);
+		}
+		
+		public void addMeasureCollection(MeasureCollection mc) {
+			this.measureCollections.add(mc);
+		}
+		
+		public List<Integer> getProcessFrequencies() {
+			return this.processFrequencies;
+		}
+
+		public List<MeasureCollection> getMeasureCollections() {
+			return this.measureCollections;
+		}
+		
+		public int[] getProcessFrequenciesArray() {
+			return this.processFrequencies.stream().mapToInt(i->i).toArray(); //NOTE: this is Java 8
+		}
+		public MeasureCollection[] getMeasureCollectionsArray() {
+			return this.measureCollections.toArray(new MeasureCollection[this.measureCollections.size()]);
+		}
+	}
+	
+	/**
+	 * TODO javadoc
+	 * TODO consider making this static
+	 * @param preview
+	 */
+	private GraphCanvasMultiParams readPreview(Preview p) {
+		
+		// find measure columns
+		String[] measureNames = p.getMeasurementNames();
+		int numMeasures = p.getMeasurementNameCount();
+		
+		int processFrequencyColumn = -1;
+		int accuracyColumn = -1;
+		int kappaColumn = -1;
+		int kappaTempColumn = -1;
+		int ramColumn = -1;
+		int timeColumn = -1;
+		int memoryColumn = -1;
+		// TODO check why some measures have different possible descriptions
+		for (int i = 0; i < numMeasures; i++) {
+			switch (measureNames[i]) {
+			case "learning evaluation instances":
+				processFrequencyColumn = i;
+				break;
+			case "classifications correct (percent)":
+			case "[avg] classifications correct (percent)":
+				accuracyColumn = i; 
+				break;
+			case "Kappa Statistic (percent)":
+			case "[avg] Kappa Statistic (percent)":
+				kappaColumn = i;
+				break;
+			case "Kappa Temporal Statistic (percent)":
+			case "[avg] Kappa Temporal Statistic (percent)":
+				kappaTempColumn = i;
+				break;
+			case "model cost (RAM-Hours)":
+				ramColumn = i;
+				break;
+			case "evaluation time (cpu seconds)":
+			case "total train time":
+				timeColumn = i;
+				break;
+			case "model serialized size (bytes)":
+				memoryColumn = i;
+				break;
+			default:
+//				System.err.println(measureNames[i]);
+				break;
+			}
+		}
+		
+		List<double[]> data = p.getData();
+		MeasureCollection acc = this.typePanel.getMeasureCollection();
+		
+		// set entries
+		for (double[] entry: data) {
+			acc.addValue(0, round(entry[accuracyColumn]));
+			acc.addValue(1, round(entry[kappaColumn]));
+			acc.addValue(2, round(entry[kappaTempColumn]));
+			acc.addValue(3, Math.abs(entry[ramColumn]));
+			acc.addValue(4, round(entry[timeColumn]));
+			acc.addValue(5, round(entry[memoryColumn] / (1024 * 1024)));
+		}
+		
+		// determine process frequency
+		int processFrequency = (int) data.get(0)[processFrequencyColumn];
+		
+		GraphCanvasMultiParams gcmp = new GraphCanvasMultiParams();
+		gcmp.addMeasureCollection(acc);
+		gcmp.addProcessFrequency(processFrequency);
+		return gcmp;
 	}
 
 	/**
@@ -483,109 +653,36 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	 * TODO consider budgetgraphcanvas
 	 * @param preview  string containing new information used to update the graph
 	 */
-	public void setGraph(Preview _preview) {
-//		// check which type of task it is
-//		Class<?> c = preview.getTaskClass();
-//		if (c == ALCrossValidationTask.class) {
-//    		//TODO set text and graph
-////    		this.pre
-////    		setGraph(newText);
-//    	} else if (c == ALMultiBudgetTask.class) {
-//    		//TODO set text and graph
-//    	} else if (c == ALPrequentialEvaluationTask.class) {
-//    		//TODO set text and graph
-//    	} else {
-//    		System.err.println(c.getName());
-//    	}
-		String preview = _preview != null ? _preview.toString() : null;
-		// Change the graph when there is change in the text
-		double processFrequency = 1000;
-		if (preview != null && !preview.equals("")) {
-			MeasureCollection oldAccuracy = acc1[0];
-			acc1[0] = this.typePanel.getMeasureCollection();
-			Scanner scanner = new Scanner(preview);
-			String firstLine = scanner.nextLine();
-			boolean isSecondLine = true;
-
-			boolean isPrequential = firstLine.startsWith("learning evaluation instances,evaluation time");
-			boolean isHoldOut = firstLine.startsWith("evaluation instances,to");
-			int accuracyColumn = 6;
-			int kappaColumn = 4;
-			int RamColumn = 2;
-			int timeColumn = 1;
-			int memoryColumn = 9;
-			int kappaTempColumn = 5;
-			
-			if (isPrequential || isHoldOut) {
-				accuracyColumn = 4;
-				kappaColumn = 5;
-				RamColumn = 2;
-				timeColumn = 1;
-				memoryColumn = 7;
-				kappaTempColumn = 5;
-				String[] tokensFirstLine = firstLine.split(",");
-
-				// NOTE either the lines above or below are redundant?
-				// TODO check necessity
-				int i = 0;
-				for (String s : tokensFirstLine) {
-					if (s.equals("classifications correct (percent)")
-							|| s.equals("[avg] classifications correct (percent)")) {
-						accuracyColumn = i;
-					} else if (s.equals("Kappa Statistic (percent)") || s.equals("[avg] Kappa Statistic (percent)")) {
-						kappaColumn = i;
-					} else if (s.equals("Kappa Temporal Statistic (percent)")
-							|| s.equals("[avg] Kappa Temporal Statistic (percent)")) {
-						kappaTempColumn = i;
-					} else if (s.equals("model cost (RAM-Hours)")) {
-						RamColumn = i;
-					} else if (s.equals("evaluation time (cpu seconds)") || s.equals("total train time")) {
-						timeColumn = i;
-					} else if (s.equals("model serialized size (bytes)")) {
-						memoryColumn = i;
-					}
-					i++;
-				}
-			}
-			
-			// update measures
-			if (isPrequential || isHoldOut) {
-				while (scanner.hasNextLine()) {
-					String line = scanner.nextLine();
-					String[] tokens = line.split(",");
-					this.acc1[0].addValue(0, round(parseDouble(tokens[accuracyColumn])));
-					this.acc1[0].addValue(1, round(parseDouble(tokens[kappaColumn])));
-					this.acc1[0].addValue(2, round(parseDouble(tokens[kappaTempColumn])));
-					if (!isHoldOut) {
-						this.acc1[0].addValue(3, Math.abs(parseDouble(tokens[RamColumn])));
-					}
-					this.acc1[0].addValue(4, round(parseDouble(tokens[timeColumn])));
-					this.acc1[0].addValue(5, round(parseDouble(tokens[memoryColumn]) / (1024 * 1024)));
-
-					if (isSecondLine == true) {
-						processFrequency = Math.abs(parseDouble(tokens[0]));
-						isSecondLine = false;
-						if (acc1[0].getValue(0, 0) != oldAccuracy.getValue(0, 0)) {
-
-							// If we are in a new task, compare with the
-							// previous
-							if (processFrequency == this.graphCanvas.getProcessFrequency()) {
-								acc2[0] = oldAccuracy;
-							}
-						}
-					}
-				}
-			} else {
-				this.acc2[0] = this.typePanel.getMeasureCollection();
-			}	
-			scanner.close();
-			
-		} else {
-			this.acc1[0] = this.typePanel.getMeasureCollection();
-			this.acc2[0] = this.typePanel.getMeasureCollection();
+	@SuppressWarnings("unchecked")
+	public void setGraph(Preview preview) {
+		if (preview == null) {
+			// no preview received
+			this.graphCanvas.setGraph(null, 0, null, 1000);
+			return;
 		}
-
-		this.graphCanvas.setGraph(acc1[0], acc2[0], this.graphCanvas.getMeasureSelected(), (int) processFrequency);
+		
+		//TODO implement second measurecollection (new task)
+		
+		GraphCanvasMultiParams gcmp = new GraphCanvasMultiParams();
+		
+		// check which type of task it is
+		// TODO this can probably be also solved otherwise with out explicit task names
+		Class<?> c = preview.getTaskClass();
+		if (c == ALCrossValidationTask.class || c == ALMultiBudgetTask.class) {
+			// PreviewCollections
+    		gcmp = setPreviewCollectionGraph((PreviewCollection<Preview>) preview);
+    	} else if (c == ALPrequentialEvaluationTask.class) {
+    		// simple Previews
+    		gcmp = readPreview(preview);	
+    	} else {
+    		System.err.println(c.getName());
+    	}
+		
+		int[] pfs = gcmp.getProcessFrequenciesArray();
+		this.acc1 = gcmp.getMeasureCollectionsArray();
+		int min_pf = min(pfs);
+		
+		this.graphCanvas.setGraph(this.acc1, this.graphCanvas.getMeasureSelected(), pfs, min_pf);
 		this.graphCanvas.updateCanvas(true);
 		this.clusteringVisualEvalPanel1.update();
 
@@ -624,21 +721,12 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 			column.setPreferredWidth(width);
 		}
 	}
-	
-	private double parseDouble(String s) {
-		double ret = 0;
-		if (s.equals("?") == false) {
-			ret = Double.parseDouble(s);
-		}
-		return ret;
-	}
 
+	//TODO understand this
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// react on graph selection and find out which measure was selected
 		int selected = Integer.parseInt(e.getActionCommand());
 		int counter = selected;
-		int m_select = 0;
 		int m_select_offset = 0;
 		boolean found = false;
 		for (int i = 0; i < acc1.length; i++) {
@@ -646,7 +734,6 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				if (acc1[i].isEnabled(j)) {
 					counter--;
 					if (counter < 0) {
-						m_select = i;
 						m_select_offset = j;
 						found = true;
 						break;
@@ -657,8 +744,8 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				break;
 			}
 		}
-		this.graphCanvas.setGraph(acc1[m_select], acc2[m_select], m_select_offset,
-				this.graphCanvas.getProcessFrequency());
+		this.graphCanvas.setGraph(this.acc1, m_select_offset, this.graphCanvas.getProcessFrequencies(),
+				this.graphCanvas.getMinProcessFrequency());
 		this.graphCanvas.forceAddEvents();
 	}
 }

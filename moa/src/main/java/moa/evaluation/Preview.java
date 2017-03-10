@@ -45,6 +45,15 @@ public abstract class Preview extends AbstractMOAObject{
 	public abstract Class<?> getTaskClass();
 
 	public abstract double[] getEntryData(int entryIndex);
+	
+	public String[] getMeasurementNames() {
+		int numNames = getMeasurementNameCount();
+		String[] names = new String[numNames];
+		for (int i = 0; i < numNames; i++) {
+			names[i] = getMeasurementName(i);
+		}
+		return names;
+	}
 
 	public List<double[]> getData()
 	{
