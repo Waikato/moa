@@ -197,14 +197,17 @@ public class ALMultiBudgetTask extends ALMainTask {
 					break;
 				}
 			}
+			
+			// check if the task should abort or paused
+    		if (monitor.taskShouldAbort()) {
+                return null;
+            }
+			
 			// check if the preview has actually changed
 			if(oldNumEntries < previewCollection.numEntries())
 			{
 				// check if a preview is requested
 	    		if (monitor.resultPreviewRequested() || isSubtask()) {
-	        		if (monitor.taskShouldAbort()) {
-	                    return null;
-	                }
 	    			// send the latest preview to the monitor
 	                monitor.setLatestResultPreview(previewCollection.copy());
 
