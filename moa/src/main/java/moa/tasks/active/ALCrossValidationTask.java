@@ -218,6 +218,8 @@ public class ALCrossValidationTask extends ALMainTask {
 		}
 
 
+		// get the number of subtask threads
+		int numSubtaskThreads = subtaskThreads.size();
 		// check the previews of subtaskthreads
 		boolean allThreadsCompleted = false;
 		// iterate while there are threads active
@@ -225,12 +227,15 @@ public class ALCrossValidationTask extends ALMainTask {
 		{
 			allThreadsCompleted = true;
 			int oldNumEntries = previewCollection.numEntries();
+			double completionSum = 0;
 			// iterate over all threads
-			for(int i = 0; i < this.subtaskThreads.size(); ++i)
+			for(int i = 0; i < numSubtaskThreads; ++i)
 			{
 				ALTaskThread currentTaskThread = subtaskThreads.get(i);
 				// check if the thread is completed
 				allThreadsCompleted &= currentTaskThread.isComplete();
+				// get the completion fraction
+				completionSum += currentTaskThread.getCurrentActivityFracComplete();
 				// get the latest preview
 				@SuppressWarnings("unchecked")
 				PreviewCollection<PreviewCollectionLearningCurveWrapper> latestPreview = (PreviewCollection<PreviewCollectionLearningCurveWrapper>)currentTaskThread.getLatestResultPreview();
@@ -246,6 +251,10 @@ public class ALCrossValidationTask extends ALMainTask {
 					break;
 				}
 			}
+			
+			double completionFraction = completionSum / numSubtaskThreads;
+			
+			monitor.setCurrentActivityFractionComplete(completionFraction);
 			
 			// check if the task should abort or paused
     		if (monitor.taskShouldAbort()) {
