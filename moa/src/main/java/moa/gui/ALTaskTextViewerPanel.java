@@ -657,7 +657,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	public void setGraph(Preview preview) {
 		if (preview == null) {
 			// no preview received
-			this.graphCanvas.setGraph(null, 0, null, 1000);
+			this.graphCanvas.setGraph(null, this.graphCanvas.getMeasureSelected(), null, 1000);
 			return;
 		}
 		
