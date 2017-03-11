@@ -36,11 +36,12 @@ import moa.tasks.ResultPreviewListener;
 import moa.tasks.active.ALTaskThread;
 
 /**
- * TODO javadoc
- * This panel displays the running task preview text and buttons.
+ * ALPreviewPanel provides a graphical interface to display the latest preview
+ * of a task thread.
  *
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
+ * @See PreviewPanel
  */
 public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
 
@@ -61,7 +62,7 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
     protected javax.swing.Timer autoRefreshTimer;
 
     /**
-     * TODO javadoc
+     * Initialises the underlying ALTaskTextViewerPanel and the refresh components.
      */
     public ALPreviewPanel() {
     	this.textViewerPanel = new ALTaskTextViewerPanel(); 
@@ -104,9 +105,9 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
     }
 
     /**
-     * TODO javadoc
+     * Refreshes the preview.
      */
-    public void refresh() {
+    private void refresh() {
         if (this.previewedThread != null) {
             if (this.previewedThread.isComplete()) {
                 setLatestPreview();
@@ -118,8 +119,8 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
     }
 
     /**
-     * TODO javadoc
-     * @param thread
+     * Sets the TaskThread that will be previewed.
+     * @param thread TaskThread to be previewed
      */
 	public void setTaskThreadToPreview(ALTaskThread thread) {
         this.previewedThread = thread;
@@ -132,9 +133,10 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
     }
 
     /**
-     * TODO javadoc
+     * Requests the latest preview and sends it to the TextViewerPanel to
+     * display it.
      */
-    public void setLatestPreview() {
+    private void setLatestPreview() {
     	
     	Preview preview;
 
@@ -165,9 +167,9 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
     }
 
     /**
-     * TODO javadoc
+     * Updates the refresh timer by the setting of the "Auto refresh" box.
      */
-    public void updateAutoRefreshTimer() {
+    private void updateAutoRefreshTimer() {
         int autoDelay = PreviewPanel.autoFreqTimeSecs[this.autoRefreshComboBox.getSelectedIndex()];
         if (autoDelay > 0) {
             if (this.autoRefreshTimer.isRunning()) {
@@ -181,9 +183,9 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
     }
 
     /**
-     * TODO javadoc
+     * Disables refreshing.
      */
-    public void disableRefresh() {
+    private void disableRefresh() {
         this.refreshButton.setEnabled(false);
         this.autoRefreshLabel.setEnabled(false);
         this.autoRefreshComboBox.setEnabled(false);
@@ -191,9 +193,9 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
     }
 
     /**
-     * TODO javadoc
+     * Enables refreshing.
      */
-    public void enableRefresh() {
+    private void enableRefresh() {
         this.refreshButton.setEnabled(true);
         this.autoRefreshLabel.setEnabled(true);
         this.autoRefreshComboBox.setEnabled(true);
