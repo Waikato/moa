@@ -57,21 +57,16 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import moa.evaluation.ALMeasureCollection;
 import moa.evaluation.MeasureCollection;
 import moa.evaluation.Preview;
 import moa.evaluation.PreviewCollection;
-import moa.gui.PreviewPanel.TypePanel;
 import moa.gui.clustertab.ClusteringVisualEvalPanel;
 import moa.gui.visualization.BudgetGraphCanvas;
 import moa.gui.visualization.GraphCanvasMulti;
 import moa.tasks.active.ALCrossValidationTask;
 import moa.tasks.active.ALMultiBudgetTask;
 import moa.tasks.active.ALPrequentialEvaluationTask;
-
-/*
- * TODO it would be nice if the graphs are reset by changing the tab. this
- * would probably require overriding an actionperformed on the jtabbedpane
- */
 
 /*
  * TODO maybe make graphcanvas and budgetgraphcanvas extending an abstract
@@ -92,8 +87,8 @@ import moa.tasks.active.ALPrequentialEvaluationTask;
 
 /**
  * This panel displays text. Used to output the results of tasks. In contrast to
- * TastTextViewerPanel, this class additionally provides a second graph showing
- * the budget-accuracy relationship.
+ * TastTextViewerPanel, this class supports multiple curves and additionally
+ * provides a second graph showing the budget-accuracy relationship.
  *
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
@@ -103,8 +98,6 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 1L;
 
 	private static final String EXPORT_FILE_EXTENSION = "txt";
-
-	private TypePanel typePanel;
 
 	private JSplitPane mainPane;
 	
@@ -120,9 +113,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	
 	private JPanel panelEvalOutput;
 	
-	private MeasureCollection[] acc1 = new MeasureCollection[1]; // TODO this is bad
+	private MeasureCollection[] acc1;
 	
-	private MeasureCollection[] acc2 = new MeasureCollection[1]; //TODO I'll use this for now as a dummy MC. change later!
+	private MeasureCollection[] acc2;
 	
 	private ClusteringVisualEvalPanel clusteringVisualEvalPanel1;
 	
@@ -155,31 +148,32 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	private JButton buttonZoomOutX;
 
 	public ALTaskTextViewerPanel() {
-		// TODO maybe smarter solution than this
-		this.typePanel = TypePanel.ACTIVE;
 
 		setLayout(new GridBagLayout());
 
 		// mainPane contains the two main components of the text viewer panel:
 		// top component: text preview panel
 		// bottom component: interactive graph panel
-		mainPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		mainPane.setDividerLocation(200);
+		this.mainPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		this.mainPane.setDividerLocation(200);
 
 		// topWrapper is the wrapper of the top component of mainPane
-		topWrapper = new JPanel();
-		topWrapper.setLayout(new BorderLayout());
+		this.topWrapper = new JPanel();
+		this.topWrapper.setLayout(new BorderLayout());
 
 		// textArea displays live results in text form
 		this.previewTableModel = new PreviewTableModel();
-		this.previewTable = new JTable(previewTableModel);
+		this.previewTable = new JTable(this.previewTableModel);
 		this.previewTable.setFont(new Font("Monospaced", Font.PLAIN, 12));
 		this.previewTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 		// scrollPane enables scroll support for textArea
-		this.scrollPane = new JScrollPane(this.previewTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		this.scrollPane = new JScrollPane(this.previewTable, 
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+		);
 
-		topWrapper.add(this.scrollPane, BorderLayout.CENTER);
+		this.topWrapper.add(this.scrollPane, BorderLayout.CENTER);
 
 		// exportButtonPanel is a wrapper for the export button
 		JPanel exportButtonWrapper = new JPanel();
@@ -215,32 +209,26 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 
 		exportButtonWrapper.add(this.exportButton);
 
-		topWrapper.add(exportButtonWrapper, BorderLayout.SOUTH);
+		this.topWrapper.add(exportButtonWrapper, BorderLayout.SOUTH);
 
-		mainPane.setTopComponent(topWrapper);
+		this.mainPane.setTopComponent(this.topWrapper);
 
-		// TODO rename. 
 		// panelEvalOutput contains the bottom component of the mainPane. It consists of a left
 		// area showing several performance measures and an area on the right side with a live
 		// performance graph
-		panelEvalOutput = new JPanel();
-		panelEvalOutput.setLayout(new GridBagLayout());
-		panelEvalOutput.setBorder(BorderFactory.createTitledBorder("Evaluation"));
+		this.panelEvalOutput = new JPanel();
+		this.panelEvalOutput.setLayout(new GridBagLayout());
+		this.panelEvalOutput.setBorder(BorderFactory.createTitledBorder("Evaluation"));
 
-		// TODO understand differences and usage of acc1 and acc2
-		acc1[0] = typePanel.getMeasureCollection();
-		acc2[0] = typePanel.getMeasureCollection();
+		// acc1 and acc2 allow the clusteringVisualEvalPanel to display two measure collection
+		// TODO find a better way, as we're dealing anymore with only two measure collections
+		this.acc1 = new ALMeasureCollection[]{new ALMeasureCollection()};
+		this.acc2 = new ALMeasureCollection[]{new ALMeasureCollection()};
 
-		// TODO is this check necessary?
-		// clusteringVisualEvalPanel1 is the left area of panelEvalOutput, showing several
-		// performance measures
-		if (clusteringVisualEvalPanel1 != null) {
-			panelEvalOutput.remove(clusteringVisualEvalPanel1);
-		}
-		clusteringVisualEvalPanel1 = new ClusteringVisualEvalPanel();
-		clusteringVisualEvalPanel1.setMinimumSize(new Dimension(280, 118));
-		clusteringVisualEvalPanel1.setPreferredSize(new Dimension(290, 115));
-		clusteringVisualEvalPanel1.setMeasures(acc1, acc2, this);
+		this.clusteringVisualEvalPanel1 = new ClusteringVisualEvalPanel();
+		this.clusteringVisualEvalPanel1.setMinimumSize(new Dimension(280, 118));
+		this.clusteringVisualEvalPanel1.setPreferredSize(new Dimension(290, 115));
+		this.clusteringVisualEvalPanel1.setMeasures(this.acc1, this.acc2, this);
 
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
@@ -317,7 +305,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				}	
 			}
 		});
-		// TODO is redefinition of gridBagConstraints necessary?
+
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.insets = new Insets(0, 2, 0, 2);
 		graphPanelControlLeft.add(buttonZoomOutY, gridBagConstraints);
@@ -348,7 +336,6 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		// graphCanvas displays the live graph
 		graphCanvas = new GraphCanvasMulti();
 		graphCanvas.setPreferredSize(new Dimension(500, 111));
-		// TODO consider not doing this here
 		graphCanvas.setGraph(null, 0, null, 1000);
 
 		GroupLayout graphCanvasLayout = new GroupLayout(graphCanvas);
@@ -367,10 +354,8 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		// budgetGraphCanvas displays the live budget graph
 		budgetGraphCanvas = new BudgetGraphCanvas();
 		budgetGraphCanvas.setPreferredSize(new Dimension(500, 111));
-		// TODO check this
-		budgetGraphCanvas.setGraph(acc1, acc2, 0);
+		budgetGraphCanvas.setGraph(this.acc1, this.acc2, 0);
 
-		// TODO check necessity of this. maybe we can just take the layout above
 		GroupLayout budgetGraphCanvasLayout = new GroupLayout(budgetGraphCanvas);
 		budgetGraphCanvas.setLayout(budgetGraphCanvasLayout);
 		budgetGraphCanvasLayout.setHorizontalGroup(budgetGraphCanvasLayout
@@ -392,8 +377,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		graphPanel.add(graphPanelTabbedPane, gridBagConstraints);
 		
 
-		// TODO rename?
-		// graphPanelControlBottom contains two buttons allowing to zoom the x-axis in and out
+		// graphPanelControlRight contains two buttons allowing to zoom the x-axis in and out
 		graphPanelControlRight = new JPanel();
 
 		buttonZoomInX = new JButton();
@@ -450,9 +434,8 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	}
 	
 	/**
-	 * Updates the TaskTextViewerPanel by adding the new text to the text area and updating the live
-	 * graph.
-	 * @param newText  the new information used to update text and graph
+	 * Updates the preview table based on the information given by preview.
+	 * @param preview the new information used to update text
 	 */
 	public void setText(Preview preview) {
 		Point p = this.scrollPane.getViewport().getViewPosition();
@@ -479,6 +462,82 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		this.scrollPane.getViewport().setViewPosition(p);
 		this.exportButton.setEnabled(preview != null);
 	}
+	
+	private void rescaleTableColumns()
+	{
+		// iterate over all columns to resize them individually
+		TableColumnModel columnModel = previewTable.getColumnModel();
+		for(int columnIdx = 0; columnIdx < columnModel.getColumnCount(); ++columnIdx)
+		{
+			// get the current column
+			TableColumn column = columnModel.getColumn(columnIdx);
+			// get the renderer for the column header to calculate the preferred with for the header
+			TableCellRenderer renderer = column.getHeaderRenderer();
+			// check if the renderer is null
+			if(renderer == null)
+			{
+				// if it is null use the default renderer for header
+				renderer = previewTable.getTableHeader().getDefaultRenderer();
+			}
+			// create a cell to calculate its preferred size
+			Component comp = renderer.getTableCellRendererComponent(previewTable, column.getHeaderValue(), false, false, 0, columnIdx);
+			int width = comp.getPreferredSize().width;
+//			// iterate over all rows to get the maximum with needed to show all entries completely
+//			for(int rowIdx = 0; rowIdx < previewTable.getRowCount(); ++rowIdx)
+//			{
+//				// get the renderer used by the cell
+//				renderer = previewTable.getCellRenderer(rowIdx, columnIdx);
+//				// get the component for the cell
+//				comp = previewTable.prepareRenderer(renderer, rowIdx, columnIdx);
+//				// calculate the maximum of the preferred size of the current cell and the previously calculated width 
+//				width = Math.max(width, comp.getPreferredSize().width + 1);
+//			}
+			// set the maximum width which was calculated
+			column.setPreferredWidth(width);
+		}
+	}
+	
+	/**
+	 * Updates the graph based on the information given by the preview.
+	 * TODO implement budgetgraphcanvas
+	 * @param preview information used to update the graph
+	 */
+	@SuppressWarnings("unchecked")
+	public void setGraph(Preview preview) {
+		if (preview == null) {
+			// no preview received
+			this.graphCanvas.setGraph(null, this.graphCanvas.getMeasureSelected(), null, 1000);
+			return;
+		}
+		
+		//TODO implement second measureCollection (new task)
+		
+		GraphCanvasMultiParams gcmp = new GraphCanvasMultiParams();
+		
+		// check which type of task it is
+		// TODO this can probably be also solved otherwise without explicit task names
+		Class<?> c = preview.getTaskClass();
+		if (c == ALCrossValidationTask.class || c == ALMultiBudgetTask.class) {
+			// PreviewCollection
+    		gcmp = readPreviewCollection((PreviewCollection<Preview>) preview);
+    	} else if (c == ALPrequentialEvaluationTask.class) {
+    		// Preview
+    		gcmp = readPreview(preview);	
+    	} else {
+    		// sth went wrong
+    		this.graphCanvas.setGraph(null, this.graphCanvas.getMeasureSelected(), null, 1000);
+			return;
+    	}
+		
+		int[] pfs = gcmp.getProcessFrequenciesArray();
+		this.acc1 = gcmp.getMeasureCollectionsArray();
+		int min_pf = min(pfs);
+		
+		this.graphCanvas.setGraph(this.acc1, this.graphCanvas.getMeasureSelected(), pfs, min_pf);
+		this.graphCanvas.updateCanvas(true);
+		this.clusteringVisualEvalPanel1.update();
+
+	}
 
 	private static double round(double d) {
 		return (Math.rint(d * 100) / 100);
@@ -490,38 +549,38 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		}
 		
 		int min = l[0];
-		for (int i: l) {
-			if (i < min) {
-				min = i;
+		for (int i = 0; i < l.length; i++) {
+			if (l[i] < min) {
+				min = l[i];
 			}
 		}
 		return min;
 	}
 	
 	/**
-	 * TODO javadoc
-	 * @param pc
-	 * @param colorOffset
-	 * @return
+	 * Parses a PreviewCollection and return the resulting 
+	 * GraphCanvasMultiParams. If the PreviewCollection contains
+	 * PreviewCollections again, it recursively adds their results. If it
+	 * contains simple Previews, it adds their properties to the result.
+	 * @param pc PreviewCollection
+	 * @return relevant information contained in the PreviewCollection
 	 */
-	public GraphCanvasMultiParams setPreviewCollectionGraph(PreviewCollection<Preview> pc) {	
+	public GraphCanvasMultiParams readPreviewCollection(PreviewCollection<Preview> pc) {	
 		GraphCanvasMultiParams gcmp = new GraphCanvasMultiParams();
 		List<Preview> sps = pc.getPreviews();
-		
-		//TODO maybe check each instance?
+
 		if (sps.get(0) instanceof PreviewCollection) {
-			// NOTE: this assumes that all elements in sps are of the same class
+			// members are PreviewCollections again
+			// NOTE: this assumes that all elements in sps are of the same type
 			for (Preview sp: sps) {
 				@SuppressWarnings("unchecked")
-				PreviewCollection<Preview> spc = (PreviewCollection<Preview>) sp;
-				//TODO
-				GraphCanvasMultiParams tmp = setPreviewCollectionGraph(spc);
+				GraphCanvasMultiParams tmp = readPreviewCollection((PreviewCollection<Preview>) sp);
 				gcmp.add(tmp);
 			}
 		} else {
-			int n = sps.size();
-			for (int i = 0; i < n; i++) {
-				GraphCanvasMultiParams tmp = readPreview(sps.get(i));
+			// members are simple previews
+			for (Preview sp: sps) {
+				GraphCanvasMultiParams tmp = readPreview(sp);
 				gcmp.add(tmp);
 			}
 		}
@@ -530,11 +589,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	}
 	
 	/**
-	 * TODO javadoc
-	 * only used to store a measurecollection and a processfrequency
-	 * maybe find a better solution?
-	 * @author tsabsch
-	 *
+	 * GraphCanvasMultiParams represents the parsing results of a preview,
+	 * namely the process frequencies and the measure collections.
+	 * @author Tim Sabsch (tim.sabsch@ovgu.de)
 	 */
 	private class GraphCanvasMultiParams {
 		private List<Integer> processFrequencies;
@@ -545,9 +602,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 			this.measureCollections = new ArrayList<MeasureCollection>();
 		}
 		
-		public void add(GraphCanvasMultiParams g) {
-			this.processFrequencies.addAll(g.getProcessFrequencies());
-			this.measureCollections.addAll(g.getMeasureCollections());
+		public void add(GraphCanvasMultiParams other) {
+			this.processFrequencies.addAll(other.getProcessFrequencies());
+			this.measureCollections.addAll(other.getMeasureCollections());
 		}
 		
 		public void addProcessFrequency(int pf) {
@@ -575,8 +632,8 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	}
 	
 	/**
-	 * TODO javadoc
-	 * TODO consider making this static
+	 * Parses a preview with respect to the process frequency and several
+	 * measurements.
 	 * @param preview
 	 */
 	private GraphCanvasMultiParams readPreview(Preview p) {
@@ -621,13 +678,12 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				memoryColumn = i;
 				break;
 			default:
-//				System.err.println(measureNames[i]);
 				break;
 			}
 		}
 		
 		List<double[]> data = p.getData();
-		MeasureCollection acc = this.typePanel.getMeasureCollection();
+		MeasureCollection acc = new ALMeasureCollection();
 		
 		// set entries
 		for (double[] entry: data) {
@@ -648,80 +704,6 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		return gcmp;
 	}
 
-	/**
-	 * Updates the graph based on the information given by <code>preview</code>.
-	 * TODO consider budgetgraphcanvas
-	 * @param preview  string containing new information used to update the graph
-	 */
-	@SuppressWarnings("unchecked")
-	public void setGraph(Preview preview) {
-		if (preview == null) {
-			// no preview received
-			this.graphCanvas.setGraph(null, this.graphCanvas.getMeasureSelected(), null, 1000);
-			return;
-		}
-		
-		//TODO implement second measurecollection (new task)
-		
-		GraphCanvasMultiParams gcmp = new GraphCanvasMultiParams();
-		
-		// check which type of task it is
-		// TODO this can probably be also solved otherwise with out explicit task names
-		Class<?> c = preview.getTaskClass();
-		if (c == ALCrossValidationTask.class || c == ALMultiBudgetTask.class) {
-			// PreviewCollections
-    		gcmp = setPreviewCollectionGraph((PreviewCollection<Preview>) preview);
-    	} else if (c == ALPrequentialEvaluationTask.class) {
-    		// simple Previews
-    		gcmp = readPreview(preview);	
-    	} else {
-    		System.err.println(c.getName());
-    	}
-		
-		int[] pfs = gcmp.getProcessFrequenciesArray();
-		this.acc1 = gcmp.getMeasureCollectionsArray();
-		int min_pf = min(pfs);
-		
-		this.graphCanvas.setGraph(this.acc1, this.graphCanvas.getMeasureSelected(), pfs, min_pf);
-		this.graphCanvas.updateCanvas(true);
-		this.clusteringVisualEvalPanel1.update();
-
-	}
-	
-	private void rescaleTableColumns()
-	{
-		// iterate over all columns to resize them individually
-		TableColumnModel columnModel = previewTable.getColumnModel();
-		for(int columnIdx = 0; columnIdx < columnModel.getColumnCount(); ++columnIdx)
-		{
-			// get the current column
-			TableColumn column = columnModel.getColumn(columnIdx);
-			// get the renderer for the column header to calculate the preferred with for the header
-			TableCellRenderer renderer = column.getHeaderRenderer();
-			// check if the renderer is null
-			if(renderer == null)
-			{
-				// if it is null use the default renderer for header
-				renderer = previewTable.getTableHeader().getDefaultRenderer();
-			}
-			// create a cell to calculate its preferred size
-			Component comp = renderer.getTableCellRendererComponent(previewTable, column.getHeaderValue(), false, false, 0, columnIdx);
-			int width = comp.getPreferredSize().width;
-//			// iterate over all rows to get the maximum with needed to show all entries completely
-//			for(int rowIdx = 0; rowIdx < previewTable.getRowCount(); ++rowIdx)
-//			{
-//				// get the renderer used by the cell
-//				renderer = previewTable.getCellRenderer(rowIdx, columnIdx);
-//				// get the component for the cell
-//				comp = previewTable.prepareRenderer(renderer, rowIdx, columnIdx);
-//				// calculate the maximum of the preferred size of the current cell and the previously calculated width 
-//				width = Math.max(width, comp.getPreferredSize().width + 1);
-//			}
-			// set the maximum width which was calculated
-			column.setPreferredWidth(width);
-		}
-	}
-
 	//TODO understand this
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -729,9 +711,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		int counter = selected;
 		int m_select_offset = 0;
 		boolean found = false;
-		for (int i = 0; i < acc1.length; i++) {
-			for (int j = 0; j < acc1[i].getNumMeasures(); j++) {
-				if (acc1[i].isEnabled(j)) {
+		for (int i = 0; i < this.acc1.length; i++) {
+			for (int j = 0; j < this.acc1[i].getNumMeasures(); j++) {
+				if (this.acc1[i].isEnabled(j)) {
 					counter--;
 					if (counter < 0) {
 						m_select_offset = j;
