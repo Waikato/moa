@@ -29,10 +29,11 @@ import moa.streams.clustering.ClusterEvent;
 
 
 /**
- * TODO javadoc
+ * GraphCanvasMulti is very similar to GraphCanvas, but supports drawing
+ * multiple curves on a regular GraphAxes by using a GraphMultiCurve.
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
- * @see GraphCanvas
+ * @see GraphCanvas, GraphAxes, GraphMultiCurve
  */
 public class GraphCanvasMulti extends JPanel {
 
@@ -40,7 +41,7 @@ public class GraphCanvasMulti extends JPanel {
 
 	private MeasureCollection[] measures;
 
-    int measureSelected = 0;
+    private int measureSelected;
 
     private ArrayList<ClusterEvent> clusterEvents;
 
@@ -52,49 +53,79 @@ public class GraphCanvasMulti extends JPanel {
 
     private JPanel eventPanel;
 
-    private int eventCounter = 0;
+    private int eventCounter;
 
-    private final int x_offset_left = 35;
+    private static final int X_OFFSET_LEFT = 35;
 
-    private final int x_offset_right = 5;
+    private static final int X_OFFSET_RIGHT = 5;
 
-    private final int y_offset_bottom = 20;
+    private static final int Y_OFFSET_BOTTOM = 20;
 
-    private final int y_offset_top = 20;
+    private static final int Y_OFFSET_TOP = 20; 
     
     private int[] processFrequencies;
 
     private int min_processFrequency;
 
-    //default values to start with;
-    private double min_y_value = 0;
+    private double min_y_value;
 
-    private double max_y_value = 1;
+    private double max_y_value;
 
-    private double max_x_value = 250;
+    private double max_x_value;
 
-    private double x_resolution = 0.5; //how many pixels per 1px
+    private double x_resolution; //how many pixels per 1px
 
 //    private double y_resolution = 1;   //full min to max scale
 
+    /**
+     * Initialises a GraphCanvasMulti by constructing its GraphAxes,
+     * GraphMultiCurve and EventPanel members as well as setting the initial
+     * sizes.
+     */
     public GraphCanvasMulti() {
-        addComponents();
-        eventLabelList = new ArrayList<JLabel>();
+        this.axesPanel = new GraphAxes();
+        this.curvePanel = new GraphMultiCurve();
+        this.eventPanel = new JPanel();
+
+        this.curvePanel.setLocation(X_OFFSET_LEFT + 1, Y_OFFSET_TOP);
+        this.eventPanel.setLocation(X_OFFSET_LEFT + 1, 0);
+        this.eventPanel.setLayout(null);
+
+        add(this.axesPanel);
+        this.axesPanel.add(this.curvePanel);
+        this.axesPanel.add(this.eventPanel);
+        this.eventLabelList = new ArrayList<JLabel>();
+        
+        this.measureSelected = 0;
+        this.eventCounter = 0;
+        this.min_y_value = 0;
+        this.max_y_value = 1;
+        this.max_x_value = 250;
+        this.x_resolution = 0.5;
         
         updateXResolution();
         updateYValues();
         updateSize();
     }
 
+    /**
+     * Scales the resolution on the x-axis by factor 2.
+     * @param scaleUp will resolution be scaled up
+     */
     public void scaleXResolution(boolean scaleUp) {
         if (scaleUp) {
-            x_resolution *= 2;
+            this.x_resolution *= 2;
         } else {
-            x_resolution /= 2;
+            this.x_resolution /= 2;
         }
         updateCanvas(true);
     }
 
+    /**
+     * Scales the resolution on the y-axis by factor 2.
+     * CURRENTLY NOT IMPLEMENTED
+     * @param scaleUp will resolution be scaled up
+     */
     public void scaleYResolution(boolean scaleUp) {
 //        if (scaleUp) {
 //            y_resolution *= 2;
@@ -104,18 +135,38 @@ public class GraphCanvasMulti extends JPanel {
 //        updateCanvas(true);
     }
 
+    /**
+     * Returns the currently selected measure index.
+     * @return currently selected measure index
+     */
     public int getMeasureSelected() {
         return this.measureSelected;
     }
     
+    /**
+     * Returns the minimum process frequency.
+     * @return minimum process frequency
+     */
 	public int getMinProcessFrequency() {
 		return this.min_processFrequency;
 	}
 	
+	/**
+	 * Returns the list of registered process frequencies.
+	 * @return list of registered process frequencies
+	 */
 	public int[] getProcessFrequencies() {
 		return this.processFrequencies;
 	}
 
+	/**
+	 * Sets the graph containing multiple curves.
+	 * @param measures 			   information about the curves
+	 * @param mSelect 			   currently selected measure
+	 * @param processFrequencies   information about the process frequencies of
+	 * 							   the curves
+	 * @param min_processFrequency minimun process frequency
+	 */
     public void setGraph(MeasureCollection[] measures, int mSelect, int[] processFrequencies, int min_processFrequency) {
         this.measures = measures;
         this.measureSelected = mSelect;
@@ -124,13 +175,15 @@ public class GraphCanvasMulti extends JPanel {
         this.axesPanel.setProcessFrequency(min_processFrequency);
         this.curvePanel.setProcessFrequency(min_processFrequency);
         this.curvePanel.setGraph(measures, mSelect, processFrequencies);
-        this.updateCanvas();
+        this.updateCanvas(false);
     }
 
-    public void updateCanvas() {
-        updateCanvas(false);
-    }
-
+    /**
+     * Updates the canvas. First, it checks if the minimum and maximum have
+     * changed. If this is the case and/or the update is forced, the size is
+     * recomputed and the panels repainted.
+     * @param force enforce repainting
+     */
     public void updateCanvas(boolean force) {
 
         //check for new min max values first so we know if we have to do some resizing
@@ -157,7 +210,11 @@ public class GraphCanvasMulti extends JPanel {
         curvePanel.repaint();
     }
 
-    //returns true when values have changed
+    /**
+     * Computes the maximum values of the registered measure collections and
+     * updates the member values accordingly.
+     * @return true, if the values have changed
+     */
     private boolean updateMinMaxValues() {
     	
     	if (this.measures == null) {
@@ -189,20 +246,30 @@ public class GraphCanvasMulti extends JPanel {
         return false;
     }
 
+    /**
+     * Updates the x resolution.
+     */
     private void updateXResolution() {
         axesPanel.setXResolution(x_resolution);
         curvePanel.setXResolution(x_resolution);
     }
 
+    /**
+     * Updates the y values of the axes and curve panel.
+     */
     private void updateYValues() {
         axesPanel.setYMinMaxValues(min_y_value, max_y_value);
         curvePanel.setYMinMaxValues(min_y_value, max_y_value);
     }
 
+    /**
+     * Updates the size of the axes, curve and event panel. Recomputes the
+     * event locations if necessary.
+     */
     private void updateSize() {
         axesPanel.setSize(getWidth(), getHeight());
-        curvePanel.setSize(getWidth() - x_offset_left - x_offset_right, getHeight() - y_offset_bottom - y_offset_top);
-        eventPanel.setSize(getWidth() - x_offset_left - x_offset_right, y_offset_top);
+        curvePanel.setSize(getWidth() - X_OFFSET_LEFT - X_OFFSET_RIGHT, getHeight() - Y_OFFSET_BOTTOM - Y_OFFSET_TOP);
+        eventPanel.setSize(getWidth() - X_OFFSET_LEFT - X_OFFSET_RIGHT, Y_OFFSET_TOP);
 
         if (clusterEvents != null) {
             //update Label positions
@@ -215,15 +282,17 @@ public class GraphCanvasMulti extends JPanel {
         }
     }
 
-    //check if there are any new events in the event list and add them to the plot
+    /**
+     * Checks if there are any new events in the event list and add them to the plot
+     */
     private void addEvents() {
         if (clusterEvents != null && clusterEvents.size() > eventCounter) {
             ClusterEvent ev = clusterEvents.get(eventCounter);
             eventCounter++;
             JLabel eventMarker = new JLabel(ev.getType().substring(0, 1));
 
-            eventMarker.setPreferredSize(new Dimension(20, y_offset_top));
-            eventMarker.setSize(new Dimension(20, y_offset_top));
+            eventMarker.setPreferredSize(new Dimension(20, Y_OFFSET_TOP));
+            eventMarker.setSize(new Dimension(20, Y_OFFSET_TOP));
             eventMarker.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
             int x = (int) (ev.getTimestamp() / this.min_processFrequency / x_resolution);
 
@@ -235,7 +304,9 @@ public class GraphCanvasMulti extends JPanel {
         }
     }
 
-    //check if there are any new events in the event list and add them to the plot
+    /**
+     * Checks if there are any new events in the event list and add them to the plot
+     */
     public void forceAddEvents() {
         if (clusterEvents != null) {
             eventPanel.removeAll();
@@ -244,8 +315,8 @@ public class GraphCanvasMulti extends JPanel {
                 ClusterEvent ev = clusterEvents.get(i);
                 JLabel eventMarker = new JLabel(ev.getType().substring(0, 1));
 
-                eventMarker.setPreferredSize(new Dimension(20, y_offset_top));
-                eventMarker.setSize(new Dimension(20, y_offset_top));
+                eventMarker.setPreferredSize(new Dimension(20, Y_OFFSET_TOP));
+                eventMarker.setSize(new Dimension(20, Y_OFFSET_TOP));
                 eventMarker.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
                 int x = (int) (ev.getTimestamp() / this.min_processFrequency / x_resolution);
 
@@ -266,33 +337,12 @@ public class GraphCanvasMulti extends JPanel {
         super.paintComponent(g);
     }
 
-    private void addComponents() {
-
-        axesPanel = new GraphAxes();
-        curvePanel = new GraphMultiCurve();
-        eventPanel = new JPanel();
-
-        curvePanel.setLocation(x_offset_left + 1, y_offset_top);
-        eventPanel.setLocation(x_offset_left + 1, 0);
-        eventPanel.setLayout(null);
-
-        add(axesPanel);
-        axesPanel.add(curvePanel);
-        axesPanel.add(eventPanel);
-
-    }
-
     /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * Sets the list of cluster events.
+     * @param clusterEvents list of cluster events
      */
-
     public void setClusterEventsList(ArrayList<ClusterEvent> clusterEvents) {
         this.clusterEvents = clusterEvents;
         curvePanel.setClusterEventsList(clusterEvents);
     }
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // End of variables declaration//GEN-END:variables
 }
