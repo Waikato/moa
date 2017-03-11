@@ -20,22 +20,22 @@
 package moa.gui.visualization;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import moa.evaluation.MeasureCollection;
 import moa.streams.clustering.ClusterEvent;
 
 /**
- * TODO javadoc
- * @author tsabsch
- *
+ * GraphMultiCurve draws several curves on a GraphCanvasMulti.
+ * @author Tim Sabsch (tim.sabsch@ovgu.de)
+ * @version $Revision: 1 $
+ * @see GraphCanvasMulti, GraphCurve
  */
 public class GraphMultiCurve extends javax.swing.JPanel {
 
 	private static final long serialVersionUID = 1L;
 	
-	private double min_value = 0;
+//	private double min_value = 0;
     private double max_value = 1;
     private MeasureCollection[] measures;
     private int measureSelected = 0;
@@ -47,18 +47,45 @@ public class GraphMultiCurve extends javax.swing.JPanel {
 
     private ArrayList<ClusterEvent> clusterEvents;
     
-    public GraphMultiCurve() {
-        initComponents();
+    /**
+     * Initialises a GraphMultiCurve by setting its layout.
+     */
+    protected GraphMultiCurve() {
+    	setOpaque(false);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1000, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
     }
 
-    public void setGraph(MeasureCollection[] measures, int selection, int[] processFrequencies){
+    /**
+     * Updates the measure collection information and repaints the curves.
+     * @param measures 			 information about the curves
+     * @param mSelect 		 	 currently selected measure
+     * @param processFrequencies information about the process frequencies of
+     * 							 the curves
+     */
+    protected void setGraph(MeasureCollection[] measures, int mSelect, int[] processFrequencies){
        this.measures = measures;
-       this.measureSelected = selection;
+       this.measureSelected = mSelect;
        this.processFrequencies = processFrequencies;
        repaint();
     }
     
-    void setProcessFrequency(int min_processFrequency) {
+    /**
+     * Sets the minimum process frequency, which determines the x-axis on the
+     * GraphAxes. Curves with a process frequency have to be painted
+     * compressed/stretched.
+     * @param min_processFrequency minimum process frequency
+     */
+    protected void setProcessFrequency(int min_processFrequency) {
         this.min_processFrequency = min_processFrequency;
     }
 
@@ -73,66 +100,76 @@ public class GraphMultiCurve extends javax.swing.JPanel {
         	return; 
         }
         
+        // paint all curves
         for (int i = 0; i < this.measures.length; i++) {
-        	MeasureCollection m = this.measures[i];
-//        	if (m == null) { continue; } // TODO check if this is necessary
-        	
-        	//TODO take care of colors
-        	paintFullCurve(g, m, this.measureSelected, this.processFrequencies[i], Color.BLACK);
+        	paintFullCurve(g, this.measures[i], this.measureSelected, this.processFrequencies[i], Color.BLACK);
         }
+        
         paintEvents(g);
         
     }
 
 
+    /**
+     * Draws a single curve on the canvas.
+     * @param g 	  graphics object
+     * @param m 	  curve information
+     * @param mSelect currently selected measure
+     * @param pf 	  process frequency of the curve
+     * @param color   colour the curve will be drawn in
+     */
     private void paintFullCurve(Graphics g, MeasureCollection m, int mSelect, int pf, Color color){
-            if (m.getNumberOfValues(mSelect)==0) return;
-
-            boolean corrupted = false;
+            if (m.getNumberOfValues(mSelect)==0) {
+            	// no values of this measure available
+            	return;
+            }
+            
             int height = getHeight();
             
-            double processFrequencyFactor = pf / this.min_processFrequency;
+            // compute the relation of minimum PF and current PF
+//            double processFrequencyFactor = pf / this.min_processFrequency;
 
             int n = m.getNumberOfValues(mSelect);
-            if(x_resolution > 1) 
-                n = (int)(n / (int)x_resolution);
+            if(this.x_resolution > 1) 
+                n = (int)(n / (int)this.x_resolution);
             int[] x = new int[n];
             int[] y = new int[n];
 
             for (int i = 0; i < n; i ++) {
-                if(x_resolution > 1){
+                if(this.x_resolution > 1){
                     //we need to compress the values
                     double sum_y = 0;
                     int counter = 0;
-                    for (int j = 0; j < x_resolution; j++) {
-                        if((i)*x_resolution+j<m.getNumberOfValues(mSelect)){
+                    for (int j = 0; j < this.x_resolution; j++) {
+                        if((i)*this.x_resolution+j<m.getNumberOfValues(mSelect)){
                             sum_y+= m.getValue(mSelect,i);
                             counter++;
                         }
                         sum_y/=counter;
                     }
-                    x[i] = (int) (i * processFrequencyFactor);
-                    y[i] = (int)(height-(sum_y/max_value)*height);
+                    x[i] = (int) i;
+                    y[i] = (int)(height-(sum_y/this.max_value)*height);
                 }
                 else{
                     //spreading one value
-                    x[i] = (int)(i*processFrequencyFactor)*(int)(1/x_resolution)+(int)(1/x_resolution/2);
+                    x[i] = (int)(i)*(int)(1/this.x_resolution)+(int)(1/this.x_resolution/2);
                     double value = m.getValue(mSelect,i);
                     if(Double.isNaN(value)){
-                        corrupted = true;
-                        break;
+                        // invalid value -> do not draw anything
+                    	return;
                     }
-                    y[i] = (int)(height-(value/max_value)*height);
+                    y[i] = (int)(height-(value/this.max_value)*height);
                     
                 }
             }
-            if(!corrupted){
-                g.setColor(color);
-                g.drawPolyline(x, y, n);
-            }
-            
+            g.setColor(color);
+            g.drawPolyline(x, y, n);
     }
 
+    /**
+     * Draw events, visualised as a vertical line.
+     * @param g graphics object
+     */
     private void paintEvents(Graphics g){
        if(clusterEvents!=null){
             g.setColor(Color.DARK_GRAY);
@@ -144,53 +181,29 @@ public class GraphMultiCurve extends javax.swing.JPanel {
         }
     }
 
-    public void setYMinMaxValues(double min, double max){
-        min_value = min;
+    /**
+     * Sets minimum and maximum y value.
+     * @param min minimum y value
+     * @param max maximum y value
+     */
+    protected void setYMinMaxValues(double min, double max){
+//        min_value = min;
         max_value = max;
     }
 
-    void setClusterEventsList(ArrayList<ClusterEvent> clusterEvents) {
+    /**
+     * Sets the list of occured cluster events.
+     * @param clusterEvents cluster events
+     */
+    protected void setClusterEventsList(ArrayList<ClusterEvent> clusterEvents) {
         this.clusterEvents = clusterEvents;
     }
 
-    @Override
-    public Dimension getPreferredSize() {
-        return super.getPreferredSize();
-    }
-
-    void setXResolution(double x_resolution) {
+    /**
+     * Sets the resolution on the x-axis
+     * @param x_resolution resolution on the x-axis
+     */
+    protected void setXResolution(double x_resolution) {
         this.x_resolution = x_resolution;
     }
-    
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        setOpaque(false);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1000, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
-    }// </editor-fold>//GEN-END:initComponents
-
-
-
-
-
-
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // End of variables declaration//GEN-END:variables
-
 }
