@@ -37,7 +37,7 @@ import moa.evaluation.LearningCurve;
 import moa.evaluation.PreviewCollection;
 import moa.evaluation.PreviewCollectionLearningCurveWrapper;
 import moa.options.ClassOption;
-import moa.options.ClassOptionWithListener;
+import moa.options.ClassOptionWithListenerOption;
 import moa.options.EditableMultiChoiceOption;
 import moa.streams.ExampleStream;
 import moa.tasks.TaskMonitor;
@@ -56,19 +56,19 @@ public class ALMultiBudgetTask extends ALMainTask {
 	private static final long serialVersionUID = 1L;
 	
 	/* options actually used in ALPrequentialEvaluationTask */
-	public ClassOptionWithListener learnerOption = 
-			new ClassOptionWithListener(
+	public ClassOptionWithListenerOption learnerOption = 
+			new ClassOptionWithListenerOption(
 				"learner", 'l', "Learner to train.", ALClassifier.class, 
-	            "moa.classifiers.active.ALZliobaite2011", null);
-//	            new ChangeListener(){
-//
-//					@Override
-//					public void stateChanged(ChangeEvent e) {
-//						System.out.println("State Changed");
-//						refreshBudgetParamNameOption();
-//					}
-//					
-//				});
+	            "moa.classifiers.active.ALZliobaite2011", 
+	            new ChangeListener(){
+
+					@Override
+					public void stateChanged(ChangeEvent e) {
+						System.out.println("State Changed");
+						refreshBudgetParamNameOption();
+					}
+					
+				});
 	
 	public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,

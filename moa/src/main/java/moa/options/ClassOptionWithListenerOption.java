@@ -2,23 +2,23 @@ package moa.options;
 
 import javax.swing.event.ChangeListener;
 
-public class ClassOptionWithListener extends ClassOption {
+public class ClassOptionWithListenerOption extends ClassOption {
 	
 	private static final long serialVersionUID = 1L;
 	
 	protected ChangeListener listener;
 	
-	public ClassOptionWithListener(String name, char cliChar, 
+	public ClassOptionWithListenerOption(String name, char cliChar, 
 			String purpose, Class<?> requiredType,
 			String defaultCLIString, ChangeListener listener) 
 	{
 		super(name, cliChar, purpose, requiredType, defaultCLIString);
 		this.listener = listener;
 		
-		System.out.println("ClassOptionWithListener created");
+		System.out.println("ClassOptionWithListenerOption created");
 	}
 	
-	public ClassOptionWithListener(String name, char cliChar, 
+	public ClassOptionWithListenerOption(String name, char cliChar, 
 			String purpose, Class<?> requiredType, 
 			String defaultCLIString, String nullString,
 			ChangeListener listener) {
