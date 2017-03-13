@@ -112,7 +112,6 @@ public class ALCrossValidationTask extends ALMainTask {
 	/*
 	 * Possible extensions/further options:
 	 * - Ensembles of learners (ensemble size)
-	 * - Time limit
 	 * - Sample frequency
 	 * - Memory check frequency
 	 * - Dump file

@@ -22,6 +22,9 @@ package moa.tasks.active;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.ListOption;
@@ -34,6 +37,8 @@ import moa.evaluation.LearningCurve;
 import moa.evaluation.PreviewCollection;
 import moa.evaluation.PreviewCollectionLearningCurveWrapper;
 import moa.options.ClassOption;
+import moa.options.ClassOptionWithListener;
+import moa.options.EditableMultiChoiceOption;
 import moa.streams.ExampleStream;
 import moa.tasks.TaskMonitor;
 
@@ -51,9 +56,19 @@ public class ALMultiBudgetTask extends ALMainTask {
 	private static final long serialVersionUID = 1L;
 	
 	/* options actually used in ALPrequentialEvaluationTask */
-	public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Learner to train.", ALClassifier.class, 
-            "moa.classifiers.active.ALZliobaite2011");
+	public ClassOptionWithListener learnerOption = 
+			new ClassOptionWithListener(
+				"learner", 'l', "Learner to train.", ALClassifier.class, 
+	            "moa.classifiers.active.ALZliobaite2011", null);
+//	            new ChangeListener(){
+//
+//					@Override
+//					public void stateChanged(ChangeEvent e) {
+//						System.out.println("State Changed");
+//						refreshBudgetParamNameOption();
+//					}
+//					
+//				});
 	
 	public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,
@@ -74,6 +89,14 @@ public class ALMultiBudgetTask extends ALMainTask {
             -1, Integer.MAX_VALUE);
 	
 	/* options used in in this class */
+	public EditableMultiChoiceOption budgetParamNameOption = 
+			new EditableMultiChoiceOption(
+					"budgetParamName", 'p', 
+					"Name of the parameter to be used as budget.",
+					new String[]{"budget"}, 
+					new String[]{"default budget parameter name"}, 
+					0);
+	
 	public ListOption budgetsOption = new ListOption("budgets", 'b',
 			"List of budgets to train classifiers for.",
 			new FloatOption("budget", ' ', "Active learner budget.", 0.9, 0, 1), 
@@ -229,5 +252,29 @@ public class ALMultiBudgetTask extends ALMainTask {
 	@Override
 	public List<ALTaskThread> getSubtaskThreads() {
 		return this.flattenedSubtaskThreads;
+	}
+	
+	private void refreshBudgetParamNameOption() {
+		ALClassifier learner = 
+				(ALClassifier) getPreparedClassOption(this.learnerOption);
+		Option[] options = learner.getOptions().getOptionArray();
+		
+		String[] optionNames = new String[options.length];
+		String[] optionDescriptions = new String[options.length];
+		int defaultIndex = -1;
+		
+		for (int i = 0; i < options.length; i++) {
+			optionNames[i] = options[i].getName();
+			optionDescriptions[i] = options[i].getPurpose();
+			
+			if (optionNames[i].equals("budget")
+				|| (optionNames[i].contains("budget") && defaultIndex < 0)) 
+			{
+				defaultIndex = i;
+			}
+		}
+		
+		this.budgetParamNameOption.setOptions(optionNames, optionDescriptions, 
+				defaultIndex >= 0 ? defaultIndex : 0);
 	}
 }
