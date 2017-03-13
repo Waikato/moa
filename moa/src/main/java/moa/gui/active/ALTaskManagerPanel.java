@@ -23,6 +23,7 @@
 package moa.gui.active;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -57,6 +58,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
 
 import moa.core.StringUtils;
 import moa.gui.ClassOptionSelectionPanel;
@@ -133,6 +135,20 @@ public class ALTaskManagerPanel extends JPanel{
         }
     }
     
+    protected class TaskColorCodingCellRenderer implements TableCellRenderer
+    {
+    	
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+			JTextField editor = new JTextField();
+			editor.setBackground((Color) value);
+			editor.setPreferredSize(editor.getMinimumSize());
+			editor.setBorder(null);
+			return editor;
+		}
+    	
+    }
+    
     protected class TaskTableModel extends AbstractTableModel {
 
         private static final long serialVersionUID = 1L;
@@ -140,23 +156,25 @@ public class ALTaskManagerPanel extends JPanel{
         @Override
         public String getColumnName(int col) {
             switch (col) {
-                case 0:
-                    return "command";
-                case 1:
-                    return "status";
-                case 2:
-                    return "time elapsed";
-                case 3:
-                    return "current activity";
-                case 4:
-                    return "% complete";
+	        	case 0:
+	        		return "";
+	            case 1:
+	                return "command";
+	            case 2:
+	                return "status";
+	            case 3:
+	                return "time elapsed";
+	            case 4:
+	                return "current activity";
+	            case 5:
+	                return "% complete";
             }
             return null;
         }
 
         @Override
         public int getColumnCount() {
-            return 5;
+            return 6;
         }
 
         @Override
@@ -168,16 +186,18 @@ public class ALTaskManagerPanel extends JPanel{
         public Object getValueAt(int row, int col) {
         	ALTaskThread thread = ALTaskManagerPanel.this.taskList.get(row);
             switch (col) {
-                case 0:
+            	case 0:
+            		return ((ALMainTask) thread.getTask()).getColorCoding();
+                case 1:
                 	// display the name specified by the task
                     return ((ALMainTask) thread.getTask()).getDisplayName();
-                case 1:
-                    return thread.getCurrentStatusString();
                 case 2:
-                    return StringUtils.secondsToDHMSString(thread.getCPUSecondsElapsed());
+                    return thread.getCurrentStatusString();
                 case 3:
-                    return thread.getCurrentActivityString();
+                    return StringUtils.secondsToDHMSString(thread.getCPUSecondsElapsed());
                 case 4:
+                    return thread.getCurrentActivityString();
+                case 5:
                     return new Double(thread.getCurrentActivityFracComplete());
             }
             return null;
@@ -288,14 +308,24 @@ public class ALTaskManagerPanel extends JPanel{
         configPanel.add(this.runTaskButton, BorderLayout.EAST);
         this.taskTableModel = new TaskTableModel();
         this.taskTable = new JTable(this.taskTableModel);
+        this.taskTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        this.taskTable.getColumnModel().getColumn(1).setCellRenderer(
-                centerRenderer);
+        TaskColorCodingCellRenderer taskColorCodingRenderer = new TaskColorCodingCellRenderer();
+        this.taskTable.getColumnModel().getColumn(0).setCellRenderer(
+        		taskColorCodingRenderer);
         this.taskTable.getColumnModel().getColumn(2).setCellRenderer(
                 centerRenderer);
-        this.taskTable.getColumnModel().getColumn(4).setCellRenderer(
+        this.taskTable.getColumnModel().getColumn(3).setCellRenderer(
+                centerRenderer);
+        this.taskTable.getColumnModel().getColumn(5).setCellRenderer(
                 new ProgressCellRenderer());
+        
+        // set the color column to the smallest size possible
+        TableColumnModel tableColumnModel = taskTable.getColumnModel();
+        tableColumnModel.getColumn(0).setMaxWidth(tableColumnModel.getColumn(0).getMinWidth());
+        tableColumnModel.getColumn(0).setPreferredWidth(0);
+        
         JPanel controlPanel = new JPanel();
         controlPanel.add(this.pauseTaskButton);
         controlPanel.add(this.resumeTaskButton);
@@ -415,6 +445,7 @@ public class ALTaskManagerPanel extends JPanel{
         {
         	this.taskList.add(i+1,subThreads.get(i));
         }
+
     }
 
     public void taskSelectionChanged() {

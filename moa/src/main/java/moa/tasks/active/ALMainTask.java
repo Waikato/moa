@@ -21,6 +21,7 @@ package moa.tasks.active;
 
 import moa.tasks.MainTask;
 
+import java.awt.Color;
 import java.util.List;
 
 /**
@@ -38,6 +39,8 @@ public abstract class ALMainTask extends MainTask {
 	private static final long serialVersionUID = 1L;
 	
 	protected boolean[] isLastSubtaskOnLevel = {};
+	
+	protected Color colorCoding = Color.BLACK;
 	
 	/**
 	 * Get the list of threads for all subtasks and recursively the children's
@@ -117,5 +120,23 @@ public abstract class ALMainTask extends MainTask {
 	 */
 	public boolean isSubtask() {
 		return this.getSubtaskLevel() > 0;
+	}
+	
+	/**
+	 * Set the color coding for this task (the color which is used for multi-curve plots).
+	 * 
+	 * @param newColorCoding the new color coding for this task
+	 */
+	public void setColorCoding(Color newColorCoding) {
+		this.colorCoding = newColorCoding;
+	}
+	
+	/**
+	 * Get the color coding for this task (the color which is used for multi-curve plots).
+	 * 
+	 * @return the color coding for this task
+	 */
+	public Color getColorCoding() {
+		return this.colorCoding;
 	}
 }

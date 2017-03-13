@@ -19,6 +19,7 @@
  */
 package moa.tasks.active;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +78,20 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
             "Maximum number of seconds to test/train for (-1 = no limit).", -1,
             -1, Integer.MAX_VALUE);
 	
+	/**
+	 * Constructor which sets the color coding to black.
+	 */
+	public ALPrequentialEvaluationTask() {
+		this(Color.BLACK);
+	}
+	
+	/**
+	 * Constructor with which a color coding can be set.
+	 * @param colorCoding the color used by the task
+	 */
+	public ALPrequentialEvaluationTask(Color colorCoding) {
+		this.colorCoding = colorCoding;
+	}
 	
 	@Override
 	public Class<?> getTaskResultType() {

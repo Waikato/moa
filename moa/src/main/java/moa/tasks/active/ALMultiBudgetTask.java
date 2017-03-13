@@ -19,6 +19,7 @@
  */
 package moa.tasks.active;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,7 @@ import moa.evaluation.ALClassificationPerformanceEvaluator;
 import moa.evaluation.LearningCurve;
 import moa.evaluation.PreviewCollection;
 import moa.evaluation.PreviewCollectionLearningCurveWrapper;
+import moa.gui.colorGenerator.HSVColorGenerator;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.tasks.TaskMonitor;
@@ -93,6 +95,23 @@ public class ALMultiBudgetTask extends ALMainTask {
 	private ArrayList<ALTaskThread> subtaskThreads = new ArrayList<>();
 	private ArrayList<ALTaskThread> flattenedSubtaskThreads = new ArrayList<>();
 	
+	private Color[] subTaskColorCoding;
+	
+	public ALMultiBudgetTask()
+	{
+
+		subtasks = new ArrayList<>();
+		subtaskThreads = new ArrayList<>();
+		flattenedSubtaskThreads = new ArrayList<>();
+		subTaskColorCoding = null;
+	}
+	
+	ALMultiBudgetTask(Color[] subTaskColorCoding)
+	{
+		this();
+		this.subTaskColorCoding = subTaskColorCoding;
+	}
+	
 	@Override
 	public Class<?> getTaskResultType() {
 		return LearningCurve.class;
@@ -102,14 +121,23 @@ public class ALMultiBudgetTask extends ALMainTask {
 	@Override
 	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 		super.prepareForUseImpl(monitor, repository);
-		
-		// setup task for each budget
+
 		Option[] budgets = this.budgetsOption.getList();
+		int numBudgets = budgets.length;
+		
+		colorCoding = Color.WHITE;
+		
+		if(subTaskColorCoding == null)
+		{
+			subTaskColorCoding = new HSVColorGenerator().generateColors(numBudgets);
+		}
+
+		// setup task for each budget
 		for (int i = 0; i < budgets.length; i++) {
 			
 			// create subtask
 			ALPrequentialEvaluationTask budgetTask = 
-					new ALPrequentialEvaluationTask();
+					new ALPrequentialEvaluationTask(subTaskColorCoding[i]);
 			budgetTask.setIsLastSubtaskOnLevel(
 					this.isLastSubtaskOnLevel, i == budgets.length - 1);
 			

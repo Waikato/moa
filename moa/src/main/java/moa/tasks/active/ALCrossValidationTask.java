@@ -19,6 +19,7 @@
  */
 package moa.tasks.active;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import moa.core.ObjectRepository;
 import moa.evaluation.ALClassificationPerformanceEvaluator;
 import moa.evaluation.PreviewCollection;
 import moa.evaluation.PreviewCollectionLearningCurveWrapper;
+import moa.gui.colorGenerator.HSVColorGenerator;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.streams.KFoldStream;
@@ -124,7 +126,14 @@ public class ALCrossValidationTask extends ALMainTask {
 	@Override
 	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 		super.prepareForUseImpl(monitor, repository);
-
+		
+		colorCoding = Color.WHITE;
+		
+		int numBudgets = budgetsOption.getList().length;
+		
+		// colors used by the tasks which are subtasks in ALMultiBudgetTask
+		Color[] subSubTaskColorCoding = new HSVColorGenerator().generateColors(numBudgets);
+		
 		// setup subtask for each cross validation fold
 		for (int i = 0; i < this.numFoldsOption.getValue(); i++) {
 
@@ -146,7 +155,7 @@ public class ALCrossValidationTask extends ALMainTask {
 			}
 
 			// create subtask
-			ALMultiBudgetTask foldTask = new ALMultiBudgetTask();
+			ALMultiBudgetTask foldTask = new ALMultiBudgetTask(subSubTaskColorCoding);
 			foldTask.setIsLastSubtaskOnLevel(
 					this.isLastSubtaskOnLevel, i == this.numFoldsOption.getValue() - 1);
 
