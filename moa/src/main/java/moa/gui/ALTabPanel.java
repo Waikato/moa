@@ -23,6 +23,9 @@ package moa.gui;
 
 import java.awt.BorderLayout;
 
+import moa.gui.active.ALPreviewPanel;
+import moa.gui.active.ALTaskManagerPanel;
+
 /**
  * This panel allows the user to select and configure a task, and run it.
  *

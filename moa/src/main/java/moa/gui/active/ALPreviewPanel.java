@@ -19,7 +19,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.gui;
+package moa.gui.active;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -32,6 +32,7 @@ import javax.swing.JPanel;
 
 import moa.core.StringUtils;
 import moa.evaluation.Preview;
+import moa.gui.PreviewPanel;
 import moa.tasks.ResultPreviewListener;
 import moa.tasks.active.ALTaskThread;
 
