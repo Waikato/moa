@@ -20,7 +20,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.gui;
+package moa.gui.active;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -61,6 +61,9 @@ import moa.evaluation.ALMeasureCollection;
 import moa.evaluation.MeasureCollection;
 import moa.evaluation.Preview;
 import moa.evaluation.PreviewCollection;
+import moa.gui.FileExtensionFilter;
+import moa.gui.GUIUtils;
+import moa.gui.PreviewTableModel;
 import moa.gui.clustertab.ClusteringVisualEvalPanel;
 import moa.gui.visualization.BudgetGraphCanvas;
 import moa.gui.visualization.GraphCanvasMulti;

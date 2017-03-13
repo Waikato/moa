@@ -20,7 +20,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.gui;
+package moa.gui.active;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -59,6 +59,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import moa.core.StringUtils;
+import moa.gui.ClassOptionSelectionPanel;
+import moa.gui.FileExtensionFilter;
+import moa.gui.GUIUtils;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
 import moa.tasks.active.ALCrossValidationTask;
