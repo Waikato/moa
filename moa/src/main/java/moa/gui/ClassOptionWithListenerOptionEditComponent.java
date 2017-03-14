@@ -1,5 +1,8 @@
 package moa.gui;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import com.github.javacliparser.Option;
 import com.github.javacliparser.gui.ClassOptionEditComponent;
 
@@ -12,9 +15,18 @@ public class ClassOptionWithListenerOptionEditComponent extends ClassOptionEditC
 	public ClassOptionWithListenerOptionEditComponent(Option opt) {
 		super(opt);
 		
-		System.out.println("ClassOptionWithListenerOptionEditComponent created");
-		
-		this.addChangeListener(((ClassOptionWithListenerOption) opt).getListener());
+		this.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				if (!ClassOptionWithListenerOptionEditComponent.this.textField.getText().isEmpty()) {
+					ClassOptionWithListenerOptionEditComponent.this.applyState();
+					
+					((ClassOptionWithListenerOption) opt).getListener().stateChanged(e);
+				}
+			}
+			
+		});
 	}
 
 }

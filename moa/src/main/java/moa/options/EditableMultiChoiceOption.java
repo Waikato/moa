@@ -41,8 +41,6 @@ public class EditableMultiChoiceOption extends MultiChoiceOption {
 	{
 		super(name, cliChar, purpose, optionLabels, optionDescriptions, 
 				defaultOptionIndex);
-		
-		System.out.println("EditableMultiChoiceOption created");
 	}
 	
 	public void registerEditComponent(

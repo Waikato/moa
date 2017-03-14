@@ -29,6 +29,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.ListOption;
 import com.github.javacliparser.Option;
+import com.github.javacliparser.Options;
 
 import moa.classifiers.active.ALClassifier;
 import moa.core.ObjectRepository;
@@ -61,10 +62,11 @@ public class ALMultiBudgetTask extends ALMainTask {
 				"learner", 'l', "Learner to train.", ALClassifier.class, 
 	            "moa.classifiers.active.ALZliobaite2011", 
 	            new ChangeListener(){
-
+					
+					// TODO: Don't use anonymous class because it's not serializable
+					
 					@Override
 					public void stateChanged(ChangeEvent e) {
-						System.out.println("State Changed");
 						refreshBudgetParamNameOption();
 					}
 					
@@ -115,6 +117,14 @@ public class ALMultiBudgetTask extends ALMainTask {
 	private ArrayList<ALPrequentialEvaluationTask> subtasks = new ArrayList<>();
 	private ArrayList<ALTaskThread> subtaskThreads = new ArrayList<>();
 	private ArrayList<ALTaskThread> flattenedSubtaskThreads = new ArrayList<>();
+	
+	
+	@Override
+	public Options getOptions() {
+		Options options = super.getOptions();
+		this.refreshBudgetParamNameOption();
+		return options;
+	}
 	
 	@Override
 	public Class<?> getTaskResultType() {
@@ -256,9 +266,9 @@ public class ALMultiBudgetTask extends ALMainTask {
 	
 	private void refreshBudgetParamNameOption() {
 		ALClassifier learner = 
-				(ALClassifier) getPreparedClassOption(this.learnerOption);
-		Option[] options = learner.getOptions().getOptionArray();
+				(ALClassifier) this.learnerOption.getPreMaterializedObject();
 		
+		Option[] options = learner.getOptions().getOptionArray();
 		String[] optionNames = new String[options.length];
 		String[] optionDescriptions = new String[options.length];
 		int defaultIndex = -1;

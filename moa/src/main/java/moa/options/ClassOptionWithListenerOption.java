@@ -14,8 +14,6 @@ public class ClassOptionWithListenerOption extends ClassOption {
 	{
 		super(name, cliChar, purpose, requiredType, defaultCLIString);
 		this.listener = listener;
-		
-		System.out.println("ClassOptionWithListenerOption created");
 	}
 	
 	public ClassOptionWithListenerOption(String name, char cliChar, 
@@ -29,6 +27,11 @@ public class ClassOptionWithListenerOption extends ClassOption {
 	
 	public ChangeListener getListener() {
 		return this.listener;
+	}
+	
+	@Override
+	public void setValueViaCLIString(String s) {
+		super.setValueViaCLIString(s);
 	}
 
 }

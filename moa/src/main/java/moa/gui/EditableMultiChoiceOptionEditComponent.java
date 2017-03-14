@@ -5,14 +5,15 @@ import javax.swing.DefaultComboBoxModel;
 import com.github.javacliparser.Option;
 import com.github.javacliparser.gui.MultiChoiceOptionEditComponent;
 
+import moa.options.EditableMultiChoiceOption;
+
 public class EditableMultiChoiceOptionEditComponent extends MultiChoiceOptionEditComponent {
 
 	private static final long serialVersionUID = 1L;
 
 	public EditableMultiChoiceOptionEditComponent(Option option) {
 		super(option);
-		
-		System.out.println("EditableMultiChoiceOptionEditComponent created");
+		((EditableMultiChoiceOption) option).registerEditComponent(this);
 	}
 	
 	public void refresh() {
