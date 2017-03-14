@@ -32,6 +32,9 @@ import moa.gui.EditableMultiChoiceOptionEditComponent;
 public class EditableMultiChoiceOption extends MultiChoiceOption {
 
 	private static final long serialVersionUID = 1L;
+	private static final String NO_CHOICES = "--";
+	private static final String NO_CHOICES_DESCRIPTION = 
+			"No choices available.";
 	
 	protected EditableMultiChoiceOptionEditComponent editComponent;
 
@@ -41,6 +44,7 @@ public class EditableMultiChoiceOption extends MultiChoiceOption {
 	{
 		super(name, cliChar, purpose, optionLabels, optionDescriptions, 
 				defaultOptionIndex);
+		this.setOptions(optionLabels, optionDescriptions, defaultOptionIndex);
 	}
 	
 	public void registerEditComponent(
@@ -62,9 +66,18 @@ public class EditableMultiChoiceOption extends MultiChoiceOption {
 		if (labels.length != descriptions.length) {
             throw new IllegalArgumentException("Labels/descriptions mismatch.");
         }
-        this.optionLabels = labels.clone();
-        this.optionDescriptions = descriptions.clone();
-        this.defaultOptionIndex = defaultIndex;
+		
+		if (labels.length > 0) {
+			this.optionLabels = labels.clone();
+			this.optionDescriptions = descriptions.clone();
+			this.defaultOptionIndex = defaultIndex;
+		}
+		else {
+			this.optionLabels = new String[]{NO_CHOICES};
+			this.optionDescriptions = new String[]{NO_CHOICES_DESCRIPTION};
+			this.defaultOptionIndex = 0;
+		}
+		
         resetToDefault();
         
         if (this.editComponent != null) {

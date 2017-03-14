@@ -88,6 +88,14 @@ public class MultiChoiceOption extends AbstractOption {
     public String[] getOptionLabels() {
         return this.optionLabels.clone();
     }
+    
+    public String[] getOptionDescriptions() {
+        return this.optionDescriptions.clone();
+    }
+    
+    public int getDefaultOptionIndex() {
+        return this.defaultOptionIndex;
+    }
 
     public String getChosenLabel() {
         return this.optionLabels[this.chosenOptionIndex];

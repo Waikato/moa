@@ -22,6 +22,7 @@ package moa.tasks.active;
 import java.awt.Color;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.event.ChangeEvent;
@@ -168,16 +169,6 @@ public class ALMultiParamTask extends ALMainTask {
 	{
 		super.prepareForUseImpl(monitor, repository);
 		
-		// create color coding
-		int numParamValues = this.variedParamValuesOption.getList().length;
-		
-		colorCoding = Color.WHITE;
-		
-		if(subTaskColorCoding == null)
-		{
-			subTaskColorCoding = new HSVColorGenerator().generateColors(numParamValues);
-		}
-		
 		// get varied parameter name
 		final String variedParamName = 
 				this.variedParamNameOption.getValueAsCLIString();
@@ -185,22 +176,35 @@ public class ALMultiParamTask extends ALMainTask {
 		// get learner
 		ALClassifier learner = 
 				(ALClassifier) getPreparedClassOption(this.learnerOption);
+		
+		// get the learner's varied parameter option
 		Option learnerVariedParamOption = null;
 		for (Option opt : learner.getOptions().getOptionArray()) {
 			if (opt.getName().equals(variedParamName)) {
-				if (opt instanceof FloatOption || opt instanceof IntOption) {
-					learnerVariedParamOption = opt;
-				}
-				else {
-					throw new IllegalArgumentException(
-							"variedParamName: Only numerical " +
-							"attributes can be varied.");
-				}
+				learnerVariedParamOption = opt;
+				break;
 			}
 		}
 		
+		// get values for the varied parameter
+		Option[] paramValues;
+		if (learnerVariedParamOption != null) {
+			paramValues = this.variedParamValuesOption.getList();
+		}
+		else {
+			paramValues = new Option[]{null};
+		}
+		
+		// create color coding
+		colorCoding = Color.WHITE;
+		
+		if(subTaskColorCoding == null)
+		{
+			subTaskColorCoding = 
+					new HSVColorGenerator().generateColors(paramValues.length);
+		}
+		
 		// setup task for each parameter value
-		Option[] paramValues = this.variedParamValuesOption.getList();
 		for (int i = 0; i < paramValues.length; i++) {
 			
 			// create subtask
@@ -209,9 +213,11 @@ public class ALMultiParamTask extends ALMainTask {
 			paramValueTask.setIsLastSubtaskOnLevel(
 					this.isLastSubtaskOnLevel, i == paramValues.length - 1);
 			
-			// set learner varied parameter option
-			learnerVariedParamOption.setValueViaCLIString(
-					paramValues[i].getValueAsCLIString());
+			// set the learner's varied parameter option
+			if (learnerVariedParamOption != null) {
+				learnerVariedParamOption.setValueViaCLIString(
+						paramValues[i].getValueAsCLIString());
+			}
 			
 			for (Option opt : paramValueTask.getOptions().getOptionArray()) {
 				switch (opt.getName()) {
@@ -254,7 +260,9 @@ public class ALMultiParamTask extends ALMainTask {
 		}
 		
 		// reset learner varied parameter option
-		learnerVariedParamOption.resetToDefault();
+		if (learnerVariedParamOption != null) {
+			learnerVariedParamOption.resetToDefault();
+		}
 	}
 	
 	@Override
@@ -382,11 +390,16 @@ public class ALMultiParamTask extends ALMainTask {
 			lastLearnerOption = currentLearner;
 			
 			Option[] options = learner.getOptions().getOptionArray();
+			
+			// filter for Int and Float Options
+			options = Arrays.stream(options)
+					.filter(x -> x instanceof IntOption || 
+							x instanceof FloatOption)
+					.toArray(Option[]::new);
+			
 			String[] optionNames = new String[options.length];
 			String[] optionDescriptions = new String[options.length];
 			int defaultIndex = -1;
-			
-			// TODO: only show Int and Float Options
 			
 			for (int i = 0; i < options.length; i++) {
 				optionNames[i] = options[i].getName();
