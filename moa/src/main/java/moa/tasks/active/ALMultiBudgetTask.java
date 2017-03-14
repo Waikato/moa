@@ -219,6 +219,9 @@ public class ALMultiBudgetTask extends ALMainTask {
 			this.flattenedSubtaskThreads.add(subtaskThread);
 			this.flattenedSubtaskThreads.addAll(childSubtasks);
 		}
+		
+		// reset learner budget option
+		learnerBudgetOption.resetToDefault();
 	}
 	
 	@Override
