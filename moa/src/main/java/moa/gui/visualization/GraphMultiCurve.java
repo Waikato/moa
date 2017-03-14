@@ -92,13 +92,13 @@ public class GraphMultiCurve extends javax.swing.JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
-        g.setColor(Color.BLACK);
         
         if (this.measures == null) { 
         	// no measures received yet -> nothing to paint
         	return; 
         }
+        
+        g.setColor(Color.BLACK);
         
         // paint all curves
         for (int i = 0; i < this.measures.length; i++) {
