@@ -19,6 +19,7 @@
  */
 package moa.tasks.active;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,17 +61,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 	public ClassOptionWithListenerOption learnerOption = 
 			new ClassOptionWithListenerOption(
 				"learner", 'l', "Learner to train.", ALClassifier.class, 
-	            "moa.classifiers.active.ALZliobaite2011", 
-	            new ChangeListener(){
-					
-					// TODO: Don't use anonymous class because it's not serializable
-					
-					@Override
-					public void stateChanged(ChangeEvent e) {
-						refreshBudgetParamNameOption();
-					}
-					
-				});
+	            "moa.classifiers.active.ALZliobaite2011");
 	
 	public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,
@@ -119,10 +110,23 @@ public class ALMultiBudgetTask extends ALMainTask {
 	private ArrayList<ALTaskThread> flattenedSubtaskThreads = new ArrayList<>();
 	
 	
+	public ALMultiBudgetTask() {
+		super();
+		
+		// Enable refreshing the budgetParamNameOption depending on the
+		// learnerOption
+		this.learnerOption.setListener(new RefreshParamsChangeListener(
+				this.learnerOption, this.budgetParamNameOption));
+	}
+	
 	@Override
 	public Options getOptions() {
 		Options options = super.getOptions();
-		this.refreshBudgetParamNameOption();
+		
+		// Get the initial values for the budgetParamNameOption
+		ALMultiBudgetTask.refreshBudgetParamNameOption(
+				this.learnerOption, this.budgetParamNameOption);
+		
 		return options;
 	}
 	
@@ -264,9 +268,40 @@ public class ALMultiBudgetTask extends ALMainTask {
 		return this.flattenedSubtaskThreads;
 	}
 	
-	private void refreshBudgetParamNameOption() {
+	
+	
+	/* Static classes and methods */
+	
+	private static class RefreshParamsChangeListener 
+		implements ChangeListener, Serializable 
+	{
+		
+		private static final long serialVersionUID = 1L;
+		
+		private ClassOption learnerOption;
+		private EditableMultiChoiceOption budgetParamNameOption;
+		
+		public RefreshParamsChangeListener(
+				ClassOption learnerOption, 
+				EditableMultiChoiceOption budgetParamNameOption) 
+		{
+			this.learnerOption = learnerOption;
+			this.budgetParamNameOption = budgetParamNameOption;
+		}
+		
+		@Override
+		public void stateChanged(ChangeEvent e) {
+			ALMultiBudgetTask.refreshBudgetParamNameOption(
+					this.learnerOption, this.budgetParamNameOption);
+		}
+	}
+	
+	private static void refreshBudgetParamNameOption(
+			ClassOption learnerOption, 
+			EditableMultiChoiceOption budgetParamNameOption)
+	{
 		ALClassifier learner = 
-				(ALClassifier) this.learnerOption.getPreMaterializedObject();
+				(ALClassifier) learnerOption.getPreMaterializedObject();
 		
 		Option[] options = learner.getOptions().getOptionArray();
 		String[] optionNames = new String[options.length];
@@ -284,7 +319,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 			}
 		}
 		
-		this.budgetParamNameOption.setOptions(optionNames, optionDescriptions, 
+		budgetParamNameOption.setOptions(optionNames, optionDescriptions, 
 				defaultIndex >= 0 ? defaultIndex : 0);
 	}
 }

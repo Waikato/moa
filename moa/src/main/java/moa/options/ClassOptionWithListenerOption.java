@@ -10,6 +10,13 @@ public class ClassOptionWithListenerOption extends ClassOption {
 	
 	public ClassOptionWithListenerOption(String name, char cliChar, 
 			String purpose, Class<?> requiredType,
+			String defaultCLIString) 
+	{
+		super(name, cliChar, purpose, requiredType, defaultCLIString);
+	}
+	
+	public ClassOptionWithListenerOption(String name, char cliChar, 
+			String purpose, Class<?> requiredType,
 			String defaultCLIString, ChangeListener listener) 
 	{
 		super(name, cliChar, purpose, requiredType, defaultCLIString);
@@ -18,12 +25,25 @@ public class ClassOptionWithListenerOption extends ClassOption {
 	
 	public ClassOptionWithListenerOption(String name, char cliChar, 
 			String purpose, Class<?> requiredType, 
+			String defaultCLIString, String nullString) 
+	{
+        super(name, cliChar, purpose, requiredType, defaultCLIString, 
+        		nullString);
+    }
+	
+	public ClassOptionWithListenerOption(String name, char cliChar, 
+			String purpose, Class<?> requiredType, 
 			String defaultCLIString, String nullString,
-			ChangeListener listener) {
+			ChangeListener listener) 
+	{
         super(name, cliChar, purpose, requiredType, defaultCLIString, 
         		nullString);
         this.listener = listener;
     }
+	
+	public void setListener(ChangeListener listener) {
+		this.listener = listener;
+	}
 	
 	public ChangeListener getListener() {
 		return this.listener;
