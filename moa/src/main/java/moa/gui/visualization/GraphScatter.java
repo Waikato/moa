@@ -21,7 +21,6 @@ package moa.gui.visualization;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
 import javax.swing.JPanel;
@@ -40,29 +39,19 @@ public class GraphScatter extends JPanel {
     
     private static final int DOT_SIZE = 6;
 	
-	private MeasureCollection[] measure0;
-    private MeasureCollection[] measure1;
+	private MeasureCollection[] measures;
     
     private int measureSelected;
     
     private double max_value;
-    
-    private ArrayList<Double> budgets;
 	
 	/**
 	 * Constructor. Initialises class variables and sets the layout.
 	 */
     public GraphScatter() {
     	this.max_value = 1;
-    	this.measure0 = null;
-    	this.measure1 = null;
     	this.measureSelected = 0;
-    	
-    	this.budgets = new ArrayList<Double>();
-    	this.budgets.add(0.0);
-    	this.budgets.add(0.5);
-    	this.budgets.add(1.0);
-    	
+
         setOpaque(false);
 
         GroupLayout layout = new GroupLayout(this);
@@ -75,78 +64,54 @@ public class GraphScatter extends JPanel {
     
     /**
      * Updates the measure values and repaints the scatter plot.
-     * @param measure0  list of measure collections, one for each budget
-     * @param measure1  list of measure collections, one for each budget
+     * @param measures  list of measure collections, one for each task
      * @param selection currently selected measure
      */
-    public void setGraph(MeasureCollection[] measure0, MeasureCollection[] measure1, int selection){
-        this.measure0 = measure0;
-        this.measure1 = measure1;
-        this.measureSelected = selection;
+    public void setGraph(MeasureCollection[] measures, int mSelect){
+        this.measures = measures;
+        this.measureSelected = mSelect;
         this.repaint();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    	super.paintComponent(g);
+    	
+        if (this.measures == null) { 
+        	// no measures received yet -> nothing to paint
+        	return; 
+        }
 
         g.setColor(Color.BLACK);
-
-        if(measure0!=null && measure1!=null){
-                this.scatter(g, this.measure0, this.measureSelected, Color.red);
-                this.scatter(g, this.measure1, this.measureSelected, Color.blue);
-        }
-        else{
-            if(measure0!=null){
-                this.scatter(g, this.measure0, this.measureSelected, Color.red);
-            }
+        
+        // scatter current budgets
+        for (int i = 0; i < this.measures.length; i++) {
+        	this.scatter(g, this.measures[i]);
         }
     }
     
     /**
-     * TODO javadoc
-     * @param g
-     * @param ms
-     * @param mSelect
-     * @param color
+     * Paint a dot onto the panel.
+     * @param g graphics object
+     * @param m MeasureCollection containing the data
      */
-    private void scatter(Graphics g, MeasureCollection[] ms, int mSelect, Color color){ 	
-    	int n = this.budgets.size();
-    	double[] values = new double[]{0.5,0.0,1.0};
-    	
-    	if (n == 0) {
-    		// no budgets initialised yet
-    		return;
-    	}
-    	
-//    	if (n != ms.length) {
-//    		// number of measure collections does not match number of budgets
-//    		// TODO this case should not occur and can be removed later on
-//    		System.err.println("Budget size does not match measure collection size.");
-//    		return;
-//    	}
+    private void scatter(Graphics g, MeasureCollection m){
+    	System.out.println(m.getLastValue(6));
 
     	int height = getHeight();
     	int width = getWidth();
     	
-    	int[] x = new int[n];
-        int[] y = new int[n];
-        
-        for (int i = 0; i < n; i++) {
-    		x[i] = (int) (width * this.budgets.get(i));
-//    		double value = ms[i].getLastValue(mSelect);  
-    		double value = values[i];
-            if(Double.isNaN(value)){
-            	// no result for this budget yet
-                continue;
-            }
-            y[i] = (int)(height - (value / this.max_value) * height);       
+    	int x = (int) (width * m.getLastValue(6));
+   		double value = m.getLastValue(this.measureSelected);  
+        if(Double.isNaN(value)){
+        	// no result for this budget yet
+            return;
         }
+        int y = (int)(height - (value / this.max_value) * height); 
         
-        g.setColor(color);
-        for (int i = 0; i < n; i++) {
-        	g.fillOval(x[i] - DOT_SIZE/2, y[i] - DOT_SIZE/2, DOT_SIZE, DOT_SIZE);
-        }
+        System.out.println(x + " " + y);
+
+    	g.fillOval(x - DOT_SIZE/2, y - DOT_SIZE/2, DOT_SIZE, DOT_SIZE);
     }
     
     /**
@@ -157,7 +122,7 @@ public class GraphScatter extends JPanel {
      */
     public void setYMinMaxValues(double min, double max){
 //        min_value = min;
-        max_value = max;
+        this.max_value = max;
     }
 }
  

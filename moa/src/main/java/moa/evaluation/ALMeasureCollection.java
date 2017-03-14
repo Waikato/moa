@@ -19,6 +19,11 @@
  */
 package moa.evaluation;
 
+import java.util.ArrayList;
+
+import moa.cluster.Clustering;
+import moa.gui.visualization.DataPoint;
+
 /**
  * Collection of measures used to evaluate AL tasks.
  * 
@@ -26,10 +31,30 @@ package moa.evaluation;
  * @version $Revision: 1 $
  *
  */
-public class ALMeasureCollection extends Accuracy {
+public class ALMeasureCollection extends MeasureCollection implements ClassificationMeasureCollection {
 
 	private static final long serialVersionUID = 1L;
-	
-	// TODO implement
+
+
+	public ALMeasureCollection() {
+        super();
+    }
+
+    @Override
+    public String[] getNames() {
+        String[] names = {"Accuracy", "Kappa", "Kappa Temp", "Ram-Hours", "Time", "Memory", "Rel Lab.Acq"};
+        return names;
+    }
+
+    @Override
+    protected boolean[] getDefaultEnabled() {
+        boolean[] defaults = {true, true, true, true, true, true, true};
+        return defaults;
+    }
+
+    @Override
+    public void evaluateClustering(Clustering clustering, Clustering trueClsutering, ArrayList<DataPoint> points) {
+    	
+    }
 
 }

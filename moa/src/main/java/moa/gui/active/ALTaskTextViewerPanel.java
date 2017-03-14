@@ -357,7 +357,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		// budgetGraphCanvas displays the live budget graph
 		budgetGraphCanvas = new BudgetGraphCanvas();
 		budgetGraphCanvas.setPreferredSize(new Dimension(500, 111));
-		budgetGraphCanvas.setGraph(this.acc1, this.acc2, 0);
+		budgetGraphCanvas.setGraph(this.acc1, 0);
 
 		GroupLayout budgetGraphCanvasLayout = new GroupLayout(budgetGraphCanvas);
 		budgetGraphCanvas.setLayout(budgetGraphCanvasLayout);
@@ -538,6 +538,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		
 		this.graphCanvas.setGraph(this.acc1, this.graphCanvas.getMeasureSelected(), pfs, min_pf);
 		this.graphCanvas.updateCanvas(true);
+		this.budgetGraphCanvas.setGraph(this.acc1, this.budgetGraphCanvas.getMeasureSelected());
 		this.clusteringVisualEvalPanel1.update();
 
 	}
@@ -595,6 +596,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	 * GraphCanvasMultiParams represents the parsing results of a preview,
 	 * namely the process frequencies and the measure collections.
 	 * @author Tim Sabsch (tim.sabsch@ovgu.de)
+	 * @version $Revision: 1 $
 	 */
 	private class GraphCanvasMultiParams {
 		private List<Integer> processFrequencies;
@@ -652,7 +654,8 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		int ramColumn = -1;
 		int timeColumn = -1;
 		int memoryColumn = -1;
-		// TODO check why some measures have different possible descriptions
+		int budgetColumn = -1;
+
 		for (int i = 0; i < numMeasures; i++) {
 			switch (measureNames[i]) {
 			case "learning evaluation instances":
@@ -680,6 +683,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 			case "model serialized size (bytes)":
 				memoryColumn = i;
 				break;
+			case "Rel Number of Label Acquisitions":
+				budgetColumn = i;
+				break;
 			default:
 				break;
 			}
@@ -696,6 +702,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 			acc.addValue(3, Math.abs(entry[ramColumn]));
 			acc.addValue(4, round(entry[timeColumn]));
 			acc.addValue(5, round(entry[memoryColumn] / (1024 * 1024)));
+			acc.addValue(6, round(entry[budgetColumn]));
 		}
 		
 		// determine process frequency
@@ -732,5 +739,6 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		this.graphCanvas.setGraph(this.acc1, m_select_offset, this.graphCanvas.getProcessFrequencies(),
 				this.graphCanvas.getMinProcessFrequency());
 		this.graphCanvas.forceAddEvents();
+		this.budgetGraphCanvas.setGraph(this.acc1, m_select_offset);
 	}
 }
