@@ -23,9 +23,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import com.github.javacliparser.Option;
 import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.active.ALClassifier;
@@ -53,6 +51,13 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 	
 	private static final long serialVersionUID = 1L;
 	
+	@Override
+	public String getPurposeString() {
+		return "Perform prequential evaluation (testing, then training with"
+				+ " each example in sequence) for an active learning"
+				+ " classifier.";
+	}
+	
 	public ClassOption learnerOption = new ClassOption("learner", 'l',
             "Learner to train.", ALClassifier.class, 
             "moa.classifiers.active.ALZliobaite2011");
@@ -66,9 +71,6 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
             "Prequential classification performance evaluation method.",
             ALClassificationPerformanceEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
-	
-	public FloatOption budgetOption = new FloatOption("budget", 'b', 
-			"Active learner budget.", 0.9);
 	
 	public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
             "Maximum number of instances to test/train on  (-1 = no limit).",
@@ -106,17 +108,10 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 				(ExampleStream<Example<Instance>>) 
 				getPreparedClassOption(this.streamOption);
 		
-		// initialize learner with given budget
+		// initialize learner
 		ALClassifier learner = 
 				(ALClassifier) getPreparedClassOption(this.learnerOption);
 		learner.setModelContext(stream.getHeader());
-		for (Option opt : learner.getOptions().getOptionArray()) {
-			// TODO: Use arbitrarily definable budget option
-			if (opt.getName().equals("budget")) {
-				opt.setValueViaCLIString(
-						this.budgetOption.getValueAsCLIString());
-			}
-		}
 		
 		// get evaluator
         ALClassificationPerformanceEvaluator evaluator = (ALClassificationPerformanceEvaluator) 
@@ -136,8 +131,6 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         long lastEvaluateStartTime = evaluateStartTime;
         double RAMHours = 0.0;
         int sampleFrequency = 100000;
-        
-        double budgetThreshold = budgetOption.getValue();
         
         monitor.setCurrentActivity("Evaluating learner...", -1.0);
         while (stream.hasMoreInstances()
@@ -190,10 +183,6 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 	                            new Measurement(
         	                            "model cost (RAM-Hours)",
         	                            RAMHours),
-        						new Measurement(
-        	                            "budget threshold",
-        	                            budgetThreshold
-        	                            )
         				},
         				evaluator, learner));
         	}
