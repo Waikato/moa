@@ -96,7 +96,6 @@ public class GraphScatter extends JPanel {
      * @param m MeasureCollection containing the data
      */
     private void scatter(Graphics g, MeasureCollection m){
-    	System.out.println(m.getLastValue(6));
 
     	int height = getHeight();
     	int width = getWidth();
@@ -108,8 +107,6 @@ public class GraphScatter extends JPanel {
             return;
         }
         int y = (int)(height - (value / this.max_value) * height); 
-        
-        System.out.println(x + " " + y);
 
     	g.fillOval(x - DOT_SIZE/2, y - DOT_SIZE/2, DOT_SIZE, DOT_SIZE);
     }
