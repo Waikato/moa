@@ -26,6 +26,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.ListOption;
 import com.github.javacliparser.Option;
+import com.github.javacliparser.Options;
 
 import moa.classifiers.active.ALClassifier;
 import moa.core.ObjectRepository;
@@ -33,9 +34,12 @@ import moa.evaluation.ALClassificationPerformanceEvaluator;
 import moa.evaluation.PreviewCollection;
 import moa.evaluation.PreviewCollectionLearningCurveWrapper;
 import moa.options.ClassOption;
+import moa.options.ClassOptionWithListenerOption;
+import moa.options.EditableMultiChoiceOption;
 import moa.streams.ExampleStream;
 import moa.streams.KFoldStream;
 import moa.tasks.TaskMonitor;
+import moa.tasks.active.ALMultiBudgetTask.RefreshParamsChangeListener;
 
 /**
  * This task extensively evaluates an active learning classifier on a stream.
@@ -62,9 +66,10 @@ public class ALCrossValidationTask extends ALMainTask {
 	}
 
 	/* options actually used in ALPrequentialEvaluationTask */
-	public ClassOption learnerOption = new ClassOption(
-			"learner", 'l', "Learner to train.", ALClassifier.class,
-			"moa.classifiers.active.ALZliobaite2011");
+	public ClassOptionWithListenerOption learnerOption = 
+			new ClassOptionWithListenerOption(
+				"learner", 'l', "Learner to train.", ALClassifier.class, 
+	            "moa.classifiers.active.ALZliobaite2011");
 
 	public ClassOption streamOption = new ClassOption(
 			"stream", 's', "Stream to learn from.", ExampleStream.class,
@@ -85,12 +90,20 @@ public class ALCrossValidationTask extends ALMainTask {
             -1, Integer.MAX_VALUE);
 
 	/* options actually used in ALMultiBudgetTask */
+	public EditableMultiChoiceOption budgetParamNameOption = 
+			new EditableMultiChoiceOption(
+					"budgetParamName", 'p', 
+					"Name of the parameter to be used as budget.",
+					new String[]{"budget"}, 
+					new String[]{"default budget parameter name"}, 
+					0);
+	
 	public ListOption budgetsOption = new ListOption("budgets", 'b',
 			"List of budgets to train classifiers for.",
-			new FloatOption("budget", ' ', "Active learner budget.", 0.9, 0, 1), 
+			new FloatOption("budget", ' ', "Active learner budget.", 0.9), 
 			new FloatOption[]{
-					new FloatOption("", ' ', "", 0.5, 0, 1),
-					new FloatOption("", ' ', "", 0.9, 0, 1)
+					new FloatOption("", ' ', "", 0.5),
+					new FloatOption("", ' ', "", 0.9)
 			}, ',');
 	
 	public ClassOption multiBudgetEvaluatorOption = new ClassOption(
@@ -119,7 +132,31 @@ public class ALCrossValidationTask extends ALMainTask {
 
 	private ArrayList<ALTaskThread> subtaskThreads = new ArrayList<>();
 	private ArrayList<ALTaskThread> flattenedSubtaskThreads = new ArrayList<>();
-
+	
+	
+	public ALCrossValidationTask() {
+		super();
+		
+		// reset last learner option
+		ALMultiBudgetTask.lastLearnerOption = null;
+		
+		// Enable refreshing the budgetParamNameOption depending on the
+		// learnerOption
+		this.learnerOption.setListener(new RefreshParamsChangeListener(
+				this.learnerOption, this.budgetParamNameOption));
+	}
+	
+	@Override
+	public Options getOptions() {
+		Options options = super.getOptions();
+		
+		// Get the initial values for the budgetParamNameOption
+		ALMultiBudgetTask.refreshBudgetParamNameOption(
+				this.learnerOption, this.budgetParamNameOption);
+		
+		return options;
+	}
+	
 	@Override
 	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 		super.prepareForUseImpl(monitor, repository);
@@ -161,6 +198,10 @@ public class ALCrossValidationTask extends ALMainTask {
 				case "prequential evaluator":
 					opt.setValueViaCLIString(
 							this.prequentialEvaluatorOption.getValueAsCLIString());
+					break;
+				case "budgetParamName":
+					opt.setValueViaCLIString(
+							this.budgetParamNameOption.getValueAsCLIString());
 					break;
 				case "budgets":
 					opt.setValueViaCLIString(

@@ -352,6 +352,8 @@ public class ALMultiBudgetTask extends ALMainTask {
 			String[] optionDescriptions = new String[options.length];
 			int defaultIndex = -1;
 			
+			// TODO: only show Int and Float Options
+			
 			for (int i = 0; i < options.length; i++) {
 				optionNames[i] = options[i].getName();
 				optionDescriptions[i] = options[i].getPurpose();
