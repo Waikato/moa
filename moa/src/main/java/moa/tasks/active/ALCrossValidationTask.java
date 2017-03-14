@@ -27,6 +27,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.ListOption;
 import com.github.javacliparser.Option;
+import com.github.javacliparser.Options;
 
 import moa.classifiers.active.ALClassifier;
 import moa.core.ObjectRepository;
@@ -35,17 +36,20 @@ import moa.evaluation.PreviewCollection;
 import moa.evaluation.PreviewCollectionLearningCurveWrapper;
 import moa.gui.colorGenerator.HSVColorGenerator;
 import moa.options.ClassOption;
+import moa.options.ClassOptionWithListenerOption;
+import moa.options.EditableMultiChoiceOption;
 import moa.streams.ExampleStream;
 import moa.streams.KFoldStream;
 import moa.tasks.TaskMonitor;
+import moa.tasks.active.ALMultiParamTask.RefreshParamsChangeListener;
 
 /**
  * This task extensively evaluates an active learning classifier on a stream.
  * First, the given data set is partitioned into separate folds for performing
- * cross validation. On each fold, the ALMultiBudgetTask is performed which
+ * cross validation. On each fold, the ALMultiParamTask is performed which
  * individually evaluates the active learning classifier for each element of a
- * set of budgets. The individual evaluation is done by prequential evaluation
- * (testing, then training with each example in sequence).
+ * set of parameter values. The individual evaluation is done by prequential 
+ * evaluation (testing, then training with each example in sequence).
  * 
  * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  * @version $Revision: 1 $
@@ -58,15 +62,16 @@ public class ALCrossValidationTask extends ALMainTask {
 	public String getPurposeString() {
 		return "Evaluates an active learning classifier on a stream by"
 				+ " performing cross validation and on each fold evaluating"
-				+ " the classifier for each element of a set of budgets using"
-				+ " prequential evaluation (testing, then training with each" 
-				+ " example in  sequence).";
+				+ " the classifier for each element of a set of parameter"
+				+ " values using prequential evaluation (testing, then"
+				+ " training with each example in sequence).";
 	}
 
 	/* options actually used in ALPrequentialEvaluationTask */
-	public ClassOption learnerOption = new ClassOption(
-			"learner", 'l', "Learner to train.", ALClassifier.class,
-			"moa.classifiers.active.ALZliobaite2011");
+	public ClassOptionWithListenerOption learnerOption = 
+			new ClassOptionWithListenerOption(
+				"learner", 'l', "Learner to train.", ALClassifier.class, 
+	            "moa.classifiers.active.ALZliobaite2011");
 
 	public ClassOption streamOption = new ClassOption(
 			"stream", 's', "Stream to learn from.", ExampleStream.class,
@@ -86,18 +91,27 @@ public class ALCrossValidationTask extends ALMainTask {
             "Maximum number of seconds to test/train for (-1 = no limit).", -1,
             -1, Integer.MAX_VALUE);
 
-	/* options actually used in ALMultiBudgetTask */
-	public ListOption budgetsOption = new ListOption("budgets", 'b',
-			"List of budgets to train classifiers for.",
-			new FloatOption("budget", ' ', "Active learner budget.", 0.9, 0, 1), 
+	/* options actually used in ALMultiParamTask */
+	public EditableMultiChoiceOption variedParamNameOption = 
+			new EditableMultiChoiceOption(
+					"variedParamName", 'p', 
+					"Name of the parameter to be varied.",
+					new String[]{"budget"}, 
+					new String[]{"default varied parameter name"}, 
+					0);
+	
+	public ListOption variedParamValuesOption = new ListOption(
+			"variedParamValues", 'v',
+			"List of parameter values to train classifiers for.",
+			new FloatOption("value", ' ', "Parameter value.", 0.0), 
 			new FloatOption[]{
-					new FloatOption("", ' ', "", 0.5, 0, 1),
-					new FloatOption("", ' ', "", 0.9, 0, 1)
+					new FloatOption("", ' ', "", 0.5),
+					new FloatOption("", ' ', "", 0.9)
 			}, ',');
 	
-	public ClassOption multiBudgetEvaluatorOption = new ClassOption(
-			"multiBudgetEvaluator", 'm',
-            "Multi-budget classification performance evaluation method.",
+	public ClassOption multiParamEvaluatorOption = new ClassOption(
+			"multiParamEvaluator", 'm',
+            "Multi-param classification performance evaluation method.",
             ALClassificationPerformanceEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
 	
@@ -114,7 +128,6 @@ public class ALCrossValidationTask extends ALMainTask {
 	/*
 	 * Possible extensions/further options:
 	 * - Ensembles of learners (ensemble size)
-	 * - Time limit
 	 * - Sample frequency
 	 * - Memory check frequency
 	 * - Dump file
@@ -122,17 +135,41 @@ public class ALCrossValidationTask extends ALMainTask {
 
 	private ArrayList<ALTaskThread> subtaskThreads = new ArrayList<>();
 	private ArrayList<ALTaskThread> flattenedSubtaskThreads = new ArrayList<>();
-
+	
+	
+	public ALCrossValidationTask() {
+		super();
+		
+		// reset last learner option
+		ALMultiParamTask.lastLearnerOption = null;
+		
+		// Enable refreshing the variedParamNameOption depending on the
+		// learnerOption
+		this.learnerOption.setListener(new RefreshParamsChangeListener(
+				this.learnerOption, this.variedParamNameOption));
+	}
+	
+	@Override
+	public Options getOptions() {
+		Options options = super.getOptions();
+		
+		// Get the initial values for the variedParamNameOption
+		ALMultiParamTask.refreshVariedParamNameOption(
+				this.learnerOption, this.variedParamNameOption);
+		
+		return options;
+	}
+	
 	@Override
 	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 		super.prepareForUseImpl(monitor, repository);
 		
 		colorCoding = Color.WHITE;
 		
-		int numBudgets = budgetsOption.getList().length;
+		int numParamValues = variedParamValuesOption.getList().length;
 		
-		// colors used by the tasks which are subtasks in ALMultiBudgetTask
-		Color[] subSubTaskColorCoding = new HSVColorGenerator().generateColors(numBudgets);
+		// colors used by the tasks which are subtasks in ALMultiParamTask
+		Color[] subSubTaskColorCoding = new HSVColorGenerator().generateColors(numParamValues);
 		
 		// setup subtask for each cross validation fold
 		for (int i = 0; i < this.numFoldsOption.getValue(); i++) {
@@ -155,7 +192,7 @@ public class ALCrossValidationTask extends ALMainTask {
 			}
 
 			// create subtask
-			ALMultiBudgetTask foldTask = new ALMultiBudgetTask(subSubTaskColorCoding);
+			ALMultiParamTask foldTask = new ALMultiParamTask(subSubTaskColorCoding);
 			foldTask.setIsLastSubtaskOnLevel(
 					this.isLastSubtaskOnLevel, i == this.numFoldsOption.getValue() - 1);
 
@@ -172,13 +209,17 @@ public class ALCrossValidationTask extends ALMainTask {
 					opt.setValueViaCLIString(
 							this.prequentialEvaluatorOption.getValueAsCLIString());
 					break;
-				case "budgets":
+				case "variedParamName":
 					opt.setValueViaCLIString(
-							this.budgetsOption.getValueAsCLIString());
+							this.variedParamNameOption.getValueAsCLIString());
 					break;
-				case "multi-budget evaluator":
+				case "variedParamValues":
 					opt.setValueViaCLIString(
-							this.multiBudgetEvaluatorOption.getValueAsCLIString());
+							this.variedParamValuesOption.getValueAsCLIString());
+					break;
+				case "multiParamEvaluator":
+					opt.setValueViaCLIString(
+							this.multiParamEvaluatorOption.getValueAsCLIString());
 					break;
 				case "instanceLimit":
 					opt.setValueViaCLIString(
@@ -214,7 +255,9 @@ public class ALCrossValidationTask extends ALMainTask {
 			TaskMonitor monitor, ObjectRepository repository) 
 	{
 		// initialize the learning curve collection
-		PreviewCollection<PreviewCollection<PreviewCollectionLearningCurveWrapper>> previewCollection = new PreviewCollection<>("cross validation entry id", "fold id", this.getClass());
+		PreviewCollection<PreviewCollection<PreviewCollectionLearningCurveWrapper>> 
+			previewCollection = new PreviewCollection<>(
+					"cross validation entry id", "fold id", this.getClass());
 		
 
 		monitor.setCurrentActivity("Performing cross validation...", 50.0);
@@ -247,7 +290,10 @@ public class ALCrossValidationTask extends ALMainTask {
 				completionSum += currentTaskThread.getCurrentActivityFracComplete();
 				// get the latest preview
 				@SuppressWarnings("unchecked")
-				PreviewCollection<PreviewCollectionLearningCurveWrapper> latestPreview = (PreviewCollection<PreviewCollectionLearningCurveWrapper>)currentTaskThread.getLatestResultPreview();
+				PreviewCollection<PreviewCollectionLearningCurveWrapper> 
+					latestPreview = 
+						(PreviewCollection<PreviewCollectionLearningCurveWrapper>)
+						currentTaskThread.getLatestResultPreview();
 				// ignore the preview if it is null
 				if(latestPreview != null && latestPreview.numEntries() > 0)
 				{	
