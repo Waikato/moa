@@ -169,7 +169,8 @@ public class ALCrossValidationTask extends ALMainTask {
 		int numParamValues = variedParamValuesOption.getList().length;
 		
 		// colors used by the tasks which are subtasks in ALMultiParamTask
-		Color[] subSubTaskColorCoding = new HSVColorGenerator().generateColors(numParamValues);
+		Color[] subSubTaskColorCoding = 
+				new HSVColorGenerator().generateColors(numParamValues);
 		
 		// setup subtask for each cross validation fold
 		for (int i = 0; i < this.numFoldsOption.getValue(); i++) {
@@ -210,6 +211,10 @@ public class ALCrossValidationTask extends ALMainTask {
 							this.prequentialEvaluatorOption.getValueAsCLIString());
 					break;
 				case "variedParamName":
+					((EditableMultiChoiceOption) opt).setOptions(
+							this.variedParamNameOption.getOptionLabels(), 
+							this.variedParamNameOption.getOptionDescriptions(), 
+							this.variedParamNameOption.getDefaultOptionIndex());
 					opt.setValueViaCLIString(
 							this.variedParamNameOption.getValueAsCLIString());
 					break;
