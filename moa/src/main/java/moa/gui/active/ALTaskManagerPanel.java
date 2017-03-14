@@ -135,16 +135,14 @@ public class ALTaskManagerPanel extends JPanel{
         }
     }
     
-    protected class TaskColorCodingCellRenderer implements TableCellRenderer
+    protected class TaskColorCodingCellRenderer extends DefaultTableCellRenderer implements TableCellRenderer
     {
-    	
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-			JTextField editor = new JTextField();
-			editor.setBackground((Color) value);
-			editor.setPreferredSize(editor.getMinimumSize());
-			editor.setBorder(null);
-			return editor;
+			setBackground((Color) value);
+			return this;
 		}
     	
     }
