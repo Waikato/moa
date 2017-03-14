@@ -116,9 +116,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	
 	private JPanel panelEvalOutput;
 	
-	private MeasureCollection[] acc1;
-	
-	private MeasureCollection[] acc2;
+	private MeasureCollection[] measures;
 	
 	private ClusteringVisualEvalPanel clusteringVisualEvalPanel1;
 	
@@ -223,15 +221,13 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		this.panelEvalOutput.setLayout(new GridBagLayout());
 		this.panelEvalOutput.setBorder(BorderFactory.createTitledBorder("Evaluation"));
 
-		// acc1 and acc2 allow the clusteringVisualEvalPanel to display two measure collection
-		// TODO find a better way, as we're dealing anymore with only two measure collections
-		this.acc1 = new ALMeasureCollection[]{new ALMeasureCollection()};
-		this.acc2 = new ALMeasureCollection[]{new ALMeasureCollection()};
+		// measures contains the current information about the selected task
+		this.measures = new ALMeasureCollection[]{new ALMeasureCollection()};
 
 		this.clusteringVisualEvalPanel1 = new ClusteringVisualEvalPanel();
 		this.clusteringVisualEvalPanel1.setMinimumSize(new Dimension(280, 118));
 		this.clusteringVisualEvalPanel1.setPreferredSize(new Dimension(290, 115));
-		this.clusteringVisualEvalPanel1.setMeasures(this.acc1, this.acc2, this);
+		this.clusteringVisualEvalPanel1.setMeasures(this.measures, null, this);
 
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
@@ -357,7 +353,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		// budgetGraphCanvas displays the live budget graph
 		budgetGraphCanvas = new BudgetGraphCanvas();
 		budgetGraphCanvas.setPreferredSize(new Dimension(500, 111));
-		budgetGraphCanvas.setGraph(this.acc1, 0);
+		budgetGraphCanvas.setGraph(this.measures, 0);
 
 		GroupLayout budgetGraphCanvasLayout = new GroupLayout(budgetGraphCanvas);
 		budgetGraphCanvas.setLayout(budgetGraphCanvasLayout);
@@ -502,7 +498,6 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	
 	/**
 	 * Updates the graph based on the information given by the preview.
-	 * TODO implement budgetgraphcanvas
 	 * @param preview information used to update the graph
 	 */
 	@SuppressWarnings("unchecked")
@@ -512,9 +507,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 			this.graphCanvas.setGraph(null, this.graphCanvas.getMeasureSelected(), null, 1000);
 			return;
 		}
-		
-		//TODO implement second measureCollection (new task)
-		
+
 		GraphCanvasMultiParams gcmp = new GraphCanvasMultiParams();
 		
 		// check which type of task it is
@@ -533,12 +526,12 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
     	}
 		
 		int[] pfs = gcmp.getProcessFrequenciesArray();
-		this.acc1 = gcmp.getMeasureCollectionsArray();
+		this.measures = gcmp.getMeasureCollectionsArray();
 		int min_pf = min(pfs);
 		
-		this.graphCanvas.setGraph(this.acc1, this.graphCanvas.getMeasureSelected(), pfs, min_pf);
+		this.graphCanvas.setGraph(this.measures, this.graphCanvas.getMeasureSelected(), pfs, min_pf);
 		this.graphCanvas.updateCanvas(true);
-		this.budgetGraphCanvas.setGraph(this.acc1, this.budgetGraphCanvas.getMeasureSelected());
+		this.budgetGraphCanvas.setGraph(this.measures, this.budgetGraphCanvas.getMeasureSelected());
 		this.clusteringVisualEvalPanel1.update();
 
 	}
@@ -692,24 +685,24 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		}
 		
 		List<double[]> data = p.getData();
-		MeasureCollection acc = new ALMeasureCollection();
+		MeasureCollection m = new ALMeasureCollection();
 		
 		// set entries
 		for (double[] entry: data) {
-			acc.addValue(0, round(entry[accuracyColumn]));
-			acc.addValue(1, round(entry[kappaColumn]));
-			acc.addValue(2, round(entry[kappaTempColumn]));
-			acc.addValue(3, Math.abs(entry[ramColumn]));
-			acc.addValue(4, round(entry[timeColumn]));
-			acc.addValue(5, round(entry[memoryColumn] / (1024 * 1024)));
-			acc.addValue(6, round(entry[budgetColumn]));
+			m.addValue(0, round(entry[accuracyColumn]));
+			m.addValue(1, round(entry[kappaColumn]));
+			m.addValue(2, round(entry[kappaTempColumn]));
+			m.addValue(3, Math.abs(entry[ramColumn]));
+			m.addValue(4, round(entry[timeColumn]));
+			m.addValue(5, round(entry[memoryColumn] / (1024 * 1024)));
+			m.addValue(6, round(entry[budgetColumn]));
 		}
 		
 		// determine process frequency
 		int processFrequency = (int) data.get(0)[processFrequencyColumn];
 		
 		GraphCanvasMultiParams gcmp = new GraphCanvasMultiParams();
-		gcmp.addMeasureCollection(acc);
+		gcmp.addMeasureCollection(m);
 		gcmp.addProcessFrequency(processFrequency);
 		return gcmp;
 	}
@@ -721,9 +714,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		int counter = selected;
 		int m_select_offset = 0;
 		boolean found = false;
-		for (int i = 0; i < this.acc1.length; i++) {
-			for (int j = 0; j < this.acc1[i].getNumMeasures(); j++) {
-				if (this.acc1[i].isEnabled(j)) {
+		for (int i = 0; i < this.measures.length; i++) {
+			for (int j = 0; j < this.measures[i].getNumMeasures(); j++) {
+				if (this.measures[i].isEnabled(j)) {
 					counter--;
 					if (counter < 0) {
 						m_select_offset = j;
@@ -736,9 +729,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				break;
 			}
 		}
-		this.graphCanvas.setGraph(this.acc1, m_select_offset, this.graphCanvas.getProcessFrequencies(),
+		this.graphCanvas.setGraph(this.measures, m_select_offset, this.graphCanvas.getProcessFrequencies(),
 				this.graphCanvas.getMinProcessFrequency());
 		this.graphCanvas.forceAddEvents();
-		this.budgetGraphCanvas.setGraph(this.acc1, m_select_offset);
+		this.budgetGraphCanvas.setGraph(this.measures, m_select_offset);
 	}
 }
