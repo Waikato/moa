@@ -65,7 +65,7 @@ import moa.gui.clustertab.ClusteringVisualEvalPanel;
 import moa.gui.visualization.BudgetGraphCanvas;
 import moa.gui.visualization.GraphCanvasMulti;
 import moa.tasks.active.ALCrossValidationTask;
-import moa.tasks.active.ALMultiBudgetTask;
+import moa.tasks.active.ALMultiParamTask;
 import moa.tasks.active.ALPrequentialEvaluationTask;
 
 /*
@@ -517,7 +517,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		// check which type of task it is
 		// TODO this can probably be also solved otherwise without explicit task names
 		Class<?> c = preview.getTaskClass();
-		if (c == ALCrossValidationTask.class || c == ALMultiBudgetTask.class) {
+		if (c == ALCrossValidationTask.class || c == ALMultiParamTask.class) {
 			// PreviewCollection
     		gcmp = readPreviewCollection((PreviewCollection<Preview>) preview);
     	} else if (c == ALPrequentialEvaluationTask.class) {

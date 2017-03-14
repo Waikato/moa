@@ -39,15 +39,15 @@ import moa.options.EditableMultiChoiceOption;
 import moa.streams.ExampleStream;
 import moa.streams.KFoldStream;
 import moa.tasks.TaskMonitor;
-import moa.tasks.active.ALMultiBudgetTask.RefreshParamsChangeListener;
+import moa.tasks.active.ALMultiParamTask.RefreshParamsChangeListener;
 
 /**
  * This task extensively evaluates an active learning classifier on a stream.
  * First, the given data set is partitioned into separate folds for performing
- * cross validation. On each fold, the ALMultiBudgetTask is performed which
+ * cross validation. On each fold, the ALMultiParamTask is performed which
  * individually evaluates the active learning classifier for each element of a
- * set of budgets. The individual evaluation is done by prequential evaluation
- * (testing, then training with each example in sequence).
+ * set of parameter values. The individual evaluation is done by prequential 
+ * evaluation (testing, then training with each example in sequence).
  * 
  * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  * @version $Revision: 1 $
@@ -60,9 +60,9 @@ public class ALCrossValidationTask extends ALMainTask {
 	public String getPurposeString() {
 		return "Evaluates an active learning classifier on a stream by"
 				+ " performing cross validation and on each fold evaluating"
-				+ " the classifier for each element of a set of budgets using"
-				+ " prequential evaluation (testing, then training with each" 
-				+ " example in  sequence).";
+				+ " the classifier for each element of a set of parameter"
+				+ " values using prequential evaluation (testing, then"
+				+ " training with each example in sequence).";
 	}
 
 	/* options actually used in ALPrequentialEvaluationTask */
@@ -89,26 +89,27 @@ public class ALCrossValidationTask extends ALMainTask {
             "Maximum number of seconds to test/train for (-1 = no limit).", -1,
             -1, Integer.MAX_VALUE);
 
-	/* options actually used in ALMultiBudgetTask */
-	public EditableMultiChoiceOption budgetParamNameOption = 
+	/* options actually used in ALMultiParamTask */
+	public EditableMultiChoiceOption variedParamNameOption = 
 			new EditableMultiChoiceOption(
-					"budgetParamName", 'p', 
-					"Name of the parameter to be used as budget.",
+					"variedParamName", 'p', 
+					"Name of the parameter to be varied.",
 					new String[]{"budget"}, 
-					new String[]{"default budget parameter name"}, 
+					new String[]{"default varied parameter name"}, 
 					0);
 	
-	public ListOption budgetsOption = new ListOption("budgets", 'b',
-			"List of budgets to train classifiers for.",
-			new FloatOption("budget", ' ', "Active learner budget.", 0.9), 
+	public ListOption variedParamValuesOption = new ListOption(
+			"variedParamValues", 'v',
+			"List of parameter values to train classifiers for.",
+			new FloatOption("value", ' ', "Parameter value.", 0.0), 
 			new FloatOption[]{
 					new FloatOption("", ' ', "", 0.5),
 					new FloatOption("", ' ', "", 0.9)
 			}, ',');
 	
-	public ClassOption multiBudgetEvaluatorOption = new ClassOption(
-			"multiBudgetEvaluator", 'm',
-            "Multi-budget classification performance evaluation method.",
+	public ClassOption multiParamEvaluatorOption = new ClassOption(
+			"multiParamEvaluator", 'm',
+            "Multi-param classification performance evaluation method.",
             ALClassificationPerformanceEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
 	
@@ -138,21 +139,21 @@ public class ALCrossValidationTask extends ALMainTask {
 		super();
 		
 		// reset last learner option
-		ALMultiBudgetTask.lastLearnerOption = null;
+		ALMultiParamTask.lastLearnerOption = null;
 		
-		// Enable refreshing the budgetParamNameOption depending on the
+		// Enable refreshing the variedParamNameOption depending on the
 		// learnerOption
 		this.learnerOption.setListener(new RefreshParamsChangeListener(
-				this.learnerOption, this.budgetParamNameOption));
+				this.learnerOption, this.variedParamNameOption));
 	}
 	
 	@Override
 	public Options getOptions() {
 		Options options = super.getOptions();
 		
-		// Get the initial values for the budgetParamNameOption
-		ALMultiBudgetTask.refreshBudgetParamNameOption(
-				this.learnerOption, this.budgetParamNameOption);
+		// Get the initial values for the variedParamNameOption
+		ALMultiParamTask.refreshVariedParamNameOption(
+				this.learnerOption, this.variedParamNameOption);
 		
 		return options;
 	}
@@ -182,7 +183,7 @@ public class ALCrossValidationTask extends ALMainTask {
 			}
 
 			// create subtask
-			ALMultiBudgetTask foldTask = new ALMultiBudgetTask();
+			ALMultiParamTask foldTask = new ALMultiParamTask();
 			foldTask.setIsLastSubtaskOnLevel(
 					this.isLastSubtaskOnLevel, i == this.numFoldsOption.getValue() - 1);
 
@@ -199,17 +200,17 @@ public class ALCrossValidationTask extends ALMainTask {
 					opt.setValueViaCLIString(
 							this.prequentialEvaluatorOption.getValueAsCLIString());
 					break;
-				case "budgetParamName":
+				case "variedParamName":
 					opt.setValueViaCLIString(
-							this.budgetParamNameOption.getValueAsCLIString());
+							this.variedParamNameOption.getValueAsCLIString());
 					break;
-				case "budgets":
+				case "variedParamValues":
 					opt.setValueViaCLIString(
-							this.budgetsOption.getValueAsCLIString());
+							this.variedParamValuesOption.getValueAsCLIString());
 					break;
-				case "multi-budget evaluator":
+				case "multiParamEvaluator":
 					opt.setValueViaCLIString(
-							this.multiBudgetEvaluatorOption.getValueAsCLIString());
+							this.multiParamEvaluatorOption.getValueAsCLIString());
 					break;
 				case "instanceLimit":
 					opt.setValueViaCLIString(

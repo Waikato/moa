@@ -1,5 +1,5 @@
 /*
- *    ALMultiBudgetTask.java
+ *    ALMultiParamTask.java
  *    Copyright (C) 2017 Otto-von-Guericke-University, Magdeburg, Germany
  *    @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  *
@@ -46,16 +46,24 @@ import moa.tasks.TaskMonitor;
 
 /**
  * This task individually evaluates an active learning classifier for each 
- * element of a set of budgets. The individual evaluation is done by 
+ * element of a set of parameter values. The individual evaluation is done by 
  * prequential evaluation (testing, then training with each example in 
  * sequence).
  * 
  * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  * @version $Revision: 1 $
  */
-public class ALMultiBudgetTask extends ALMainTask {
+public class ALMultiParamTask extends ALMainTask {
 	
 	private static final long serialVersionUID = 1L;
+	
+	@Override
+	public String getPurposeString() {
+		return "Individually evaluates an active learning classifier for each"
+				+ " element of a set of parameter values using prequential"
+				+ " evaluation (testing, then training with each example in"
+				+ " sequence).";
+	}
 	
 	/* options actually used in ALPrequentialEvaluationTask */
 	public ClassOptionWithListenerOption learnerOption = 
@@ -82,25 +90,26 @@ public class ALMultiBudgetTask extends ALMainTask {
             -1, Integer.MAX_VALUE);
 	
 	/* options used in in this class */
-	public EditableMultiChoiceOption budgetParamNameOption = 
+	public EditableMultiChoiceOption variedParamNameOption = 
 			new EditableMultiChoiceOption(
-					"budgetParamName", 'p', 
-					"Name of the parameter to be used as budget.",
+					"variedParamName", 'p', 
+					"Name of the parameter to be varied.",
 					new String[]{"budget"}, 
-					new String[]{"default budget parameter name"}, 
+					new String[]{"default varied parameter name"}, 
 					0);
 	
-	public ListOption budgetsOption = new ListOption("budgets", 'b',
-			"List of budgets to train classifiers for.",
-			new FloatOption("budget", ' ', "Active learner budget.", 0.9), 
+	public ListOption variedParamValuesOption = new ListOption(
+			"variedParamValues", 'v',
+			"List of parameter values to train classifiers for.",
+			new FloatOption("value", ' ', "Parameter value.", 0.0), 
 			new FloatOption[]{
 					new FloatOption("", ' ', "", 0.5),
 					new FloatOption("", ' ', "", 0.9)
 			}, ',');
 	
-	public ClassOption multiBudgetEvaluatorOption = new ClassOption(
-			"multiBudgetEvaluator", 'm',
-            "Multi-budget classification performance evaluation method.",
+	public ClassOption multiParamEvaluatorOption = new ClassOption(
+			"multiParamEvaluator", 'm',
+            "Multi-param classification performance evaluation method.",
             ALClassificationPerformanceEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
 	
@@ -110,25 +119,25 @@ public class ALMultiBudgetTask extends ALMainTask {
 	private ArrayList<ALTaskThread> flattenedSubtaskThreads = new ArrayList<>();
 	
 	
-	public ALMultiBudgetTask() {
+	public ALMultiParamTask() {
 		super();
 		
 		// reset last learner option
-		ALMultiBudgetTask.lastLearnerOption = null;
+		ALMultiParamTask.lastLearnerOption = null;
 		
-		// Enable refreshing the budgetParamNameOption depending on the
+		// Enable refreshing the variedParamNameOption depending on the
 		// learnerOption
 		this.learnerOption.setListener(new RefreshParamsChangeListener(
-				this.learnerOption, this.budgetParamNameOption));
+				this.learnerOption, this.variedParamNameOption));
 	}
 	
 	@Override
 	public Options getOptions() {
 		Options options = super.getOptions();
 		
-		// Get the initial values for the budgetParamNameOption
-		ALMultiBudgetTask.refreshBudgetParamNameOption(
-				this.learnerOption, this.budgetParamNameOption);
+		// Get the initial values for the variedParamNameOption
+		ALMultiParamTask.refreshVariedParamNameOption(
+				this.learnerOption, this.variedParamNameOption);
 		
 		return options;
 	}
@@ -145,42 +154,42 @@ public class ALMultiBudgetTask extends ALMainTask {
 	{
 		super.prepareForUseImpl(monitor, repository);
 		
-		// get budget parameter name
-		final String budgetParamName = 
-				this.budgetParamNameOption.getValueAsCLIString();
+		// get varied parameter name
+		final String variedParamName = 
+				this.variedParamNameOption.getValueAsCLIString();
 		
 		// get learner
 		ALClassifier learner = 
 				(ALClassifier) getPreparedClassOption(this.learnerOption);
-		Option learnerBudgetOption = null;
+		Option learnerVariedParamOption = null;
 		for (Option opt : learner.getOptions().getOptionArray()) {
-			if (opt.getName().equals(budgetParamName)) {
+			if (opt.getName().equals(variedParamName)) {
 				if (opt instanceof FloatOption || opt instanceof IntOption) {
-					learnerBudgetOption = opt;
+					learnerVariedParamOption = opt;
 				}
 				else {
 					throw new IllegalArgumentException(
-							"budgetParamName: Only numerical " +
+							"variedParamName: Only numerical " +
 							"attributes can be varied.");
 				}
 			}
 		}
 		
-		// setup task for each budget
-		Option[] budgets = this.budgetsOption.getList();
-		for (int i = 0; i < budgets.length; i++) {
+		// setup task for each parameter value
+		Option[] paramValues = this.variedParamValuesOption.getList();
+		for (int i = 0; i < paramValues.length; i++) {
 			
 			// create subtask
-			ALPrequentialEvaluationTask budgetTask = 
+			ALPrequentialEvaluationTask paramValueTask = 
 					new ALPrequentialEvaluationTask();
-			budgetTask.setIsLastSubtaskOnLevel(
-					this.isLastSubtaskOnLevel, i == budgets.length - 1);
+			paramValueTask.setIsLastSubtaskOnLevel(
+					this.isLastSubtaskOnLevel, i == paramValues.length - 1);
 			
-			// set learner budget option
-			learnerBudgetOption.setValueViaCLIString(
-					budgets[i].getValueAsCLIString());
+			// set learner varied parameter option
+			learnerVariedParamOption.setValueViaCLIString(
+					paramValues[i].getValueAsCLIString());
 			
-			for (Option opt : budgetTask.getOptions().getOptionArray()) {
+			for (Option opt : paramValueTask.getOptions().getOptionArray()) {
 				switch (opt.getName()) {
 				case "learner":
 					opt.setValueViaCLIString(ClassOption.objectToCLIString(
@@ -206,22 +215,22 @@ public class ALMultiBudgetTask extends ALMainTask {
 				}
 			}
 			
-			budgetTask.prepareForUse();
+			paramValueTask.prepareForUse();
 			
-			List<ALTaskThread> childSubtasks = budgetTask.getSubtaskThreads();
+			List<ALTaskThread> childSubtasks = paramValueTask.getSubtaskThreads();
 			
 			// add new subtask and its thread to lists
-			this.subtasks.add(budgetTask);
+			this.subtasks.add(paramValueTask);
 			
-			ALTaskThread subtaskThread = new ALTaskThread(budgetTask);
+			ALTaskThread subtaskThread = new ALTaskThread(paramValueTask);
 			this.subtaskThreads.add(subtaskThread);
 
 			this.flattenedSubtaskThreads.add(subtaskThread);
 			this.flattenedSubtaskThreads.addAll(childSubtasks);
 		}
 		
-		// reset learner budget option
-		learnerBudgetOption.resetToDefault();
+		// reset learner varied parameter option
+		learnerVariedParamOption.resetToDefault();
 	}
 	
 	@Override
@@ -231,9 +240,10 @@ public class ALMultiBudgetTask extends ALMainTask {
 		// setup learning curve
 		PreviewCollection<PreviewCollectionLearningCurveWrapper> 
 			previewCollection = new PreviewCollection<>(
-					"multi budget entry id", "learner id", this.getClass());		
+					"multi param entry id", "learner id", this.getClass());		
 		// start subtasks
-		monitor.setCurrentActivity("Evaluating learners for budgets...", -1.0);
+		monitor.setCurrentActivity(
+				"Evaluating learners for parameter values...", -1.0);
 		for(int i = 0; i < this.subtaskThreads.size(); ++i)
 		{
 			subtaskThreads.get(i).start();
@@ -316,26 +326,26 @@ public class ALMultiBudgetTask extends ALMainTask {
 		private static final long serialVersionUID = 1L;
 		
 		private ClassOption learnerOption;
-		private EditableMultiChoiceOption budgetParamNameOption;
+		private EditableMultiChoiceOption variedParamNameOption;
 		
 		public RefreshParamsChangeListener(
 				ClassOption learnerOption, 
-				EditableMultiChoiceOption budgetParamNameOption) 
+				EditableMultiChoiceOption variedParamNameOption) 
 		{
 			this.learnerOption = learnerOption;
-			this.budgetParamNameOption = budgetParamNameOption;
+			this.variedParamNameOption = variedParamNameOption;
 		}
 		
 		@Override
 		public void stateChanged(ChangeEvent e) {
-			ALMultiBudgetTask.refreshBudgetParamNameOption(
-					this.learnerOption, this.budgetParamNameOption);
+			ALMultiParamTask.refreshVariedParamNameOption(
+					this.learnerOption, this.variedParamNameOption);
 		}
 	}
 	
-	protected static void refreshBudgetParamNameOption(
+	protected static void refreshVariedParamNameOption(
 			ClassOption learnerOption, 
-			EditableMultiChoiceOption budgetParamNameOption)
+			EditableMultiChoiceOption variedParamNameOption)
 	{
 		ALClassifier learner = 
 				(ALClassifier) learnerOption.getPreMaterializedObject();
@@ -365,7 +375,7 @@ public class ALMultiBudgetTask extends ALMainTask {
 				}
 			}
 			
-			budgetParamNameOption.setOptions(optionNames, optionDescriptions, 
+			variedParamNameOption.setOptions(optionNames, optionDescriptions, 
 					defaultIndex >= 0 ? defaultIndex : 0);
 		}
 	}

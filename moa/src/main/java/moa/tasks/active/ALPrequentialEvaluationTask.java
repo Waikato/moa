@@ -50,6 +50,13 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 	
 	private static final long serialVersionUID = 1L;
 	
+	@Override
+	public String getPurposeString() {
+		return "Perform prequential evaluation (testing, then training with"
+				+ " each example in sequence) for an active learning"
+				+ " classifier.";
+	}
+	
 	public ClassOption learnerOption = new ClassOption("learner", 'l',
             "Learner to train.", ALClassifier.class, 
             "moa.classifiers.active.ALZliobaite2011");
