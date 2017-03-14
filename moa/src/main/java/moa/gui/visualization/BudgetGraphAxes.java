@@ -23,7 +23,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
 import javax.swing.JPanel;
@@ -43,23 +42,18 @@ public class BudgetGraphAxes extends JPanel {
     
     private int height;
     private int width;
-
-    private ArrayList<Double> budgets;
     
-    private double max_value = 1;
+    private double max_value;
 	
 	/**
 	 * TODO javadoc
 	 */
     public BudgetGraphAxes() {
     	
-    	this.budgets = new ArrayList<Double>();
-    	this.budgets.add(0.0);
-    	this.budgets.add(0.5);
-    	this.budgets.add(1.0);
+    	this.max_value = 1;
     	
     	GroupLayout layout = new GroupLayout(this);
-        setLayout(layout);
+        this.setLayout(layout);
         layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGap(0, 400, Short.MAX_VALUE)
         );
@@ -67,21 +61,10 @@ public class BudgetGraphAxes extends JPanel {
             .addGap(0, 300, Short.MAX_VALUE)
         );
     }
-
-    /**
-     * Adds a budget value to the list of registered budgets
-     * @param budget
-     */
-    public void addBudget(double budget){
-    	this.budgets.add(budget);
-    }
     
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
-        // no budget task performed yet
-        if(this.budgets.isEmpty()) return;
 
         this.height = getHeight() - Y_OFFSET_BOTTOM - Y_OFFSET_TOP;
         this.width = getWidth() - X_OFFSET_LEFT - X_OFFSET_RIGHT;
@@ -96,8 +79,8 @@ public class BudgetGraphAxes extends JPanel {
         g.setFont(new Font("Tahoma", 0, 11));
         
 
-        xAxis(g);
-        yAxis(g);
+        this.xAxis(g);
+        this.yAxis(g);
     }
     
     /**
@@ -107,10 +90,10 @@ public class BudgetGraphAxes extends JPanel {
     private void xAxis(Graphics g){
         g.setColor(Color.BLACK);
         
-        //x-achsis
-        g.drawLine(X_OFFSET_LEFT, calcY(0), width+X_OFFSET_LEFT, calcY(0));
+        //x-axis
+        g.drawLine(X_OFFSET_LEFT, Y_OFFSET_TOP + this.height, this.width+X_OFFSET_LEFT, Y_OFFSET_TOP + this.height);
 
-        //x achsis labels
+        //x axis labels
 //        int numBudgets = this.budgets.size();
 //        if (numBudgets <= 5) {
 //        	// TODO make better- take max/min
@@ -142,26 +125,26 @@ public class BudgetGraphAxes extends JPanel {
     private void yAxis(Graphics g){
         //y-achsis
         g.setColor(Color.BLACK);
-        g.drawLine(X_OFFSET_LEFT, calcY(0), X_OFFSET_LEFT, Y_OFFSET_TOP);
+        g.drawLine(X_OFFSET_LEFT, (int) this.height + Y_OFFSET_TOP, X_OFFSET_LEFT, Y_OFFSET_TOP);
 
         //center horizontal line
         g.setColor(new Color(220,220,220));
-        g.drawLine(X_OFFSET_LEFT, height/2+Y_OFFSET_TOP, getWidth(), height/2+Y_OFFSET_TOP);
+        g.drawLine(X_OFFSET_LEFT, this.height/2+Y_OFFSET_TOP, getWidth(), this.height/2+Y_OFFSET_TOP);
 
         //3 y-achsis markers + labels
         g.setColor(Color.BLACK);
         DecimalFormat d = new DecimalFormat("0.00");
-        int digits_y = (int)(Math.log10(max_value))-1;
-        double upper = Math.ceil(max_value/Math.pow(10,digits_y));
+        int digits_y = (int)(Math.log10(this.max_value))-1;
+        double upper = Math.ceil(this.max_value/Math.pow(10,digits_y));
         if(digits_y < 0) upper*=Math.pow(10,digits_y);
 
         if(Double.isNaN(upper)) upper =1.0;
 
-        g.drawString(d.format(0.0), 3, height+Y_OFFSET_TOP+5);
-        g.drawString(d.format(upper/2), 3, height/2+Y_OFFSET_TOP + 5);
+        g.drawString(d.format(0.0), 3, this.height+Y_OFFSET_TOP+5);
+        g.drawString(d.format(upper/2), 3, this.height/2+Y_OFFSET_TOP + 5);
         g.drawString(d.format(upper), 3, Y_OFFSET_TOP + 5);
-        g.drawLine(X_OFFSET_LEFT-5, height+Y_OFFSET_TOP, X_OFFSET_LEFT,height+Y_OFFSET_TOP);
-        g.drawLine(X_OFFSET_LEFT-5, height/2+Y_OFFSET_TOP, X_OFFSET_LEFT,height/2+Y_OFFSET_TOP);
+        g.drawLine(X_OFFSET_LEFT-5, this.height+Y_OFFSET_TOP, X_OFFSET_LEFT, this.height+Y_OFFSET_TOP);
+        g.drawLine(X_OFFSET_LEFT-5, this.height/2+Y_OFFSET_TOP, X_OFFSET_LEFT, this.height/2+Y_OFFSET_TOP);
         g.drawLine(X_OFFSET_LEFT-5, Y_OFFSET_TOP, X_OFFSET_LEFT,Y_OFFSET_TOP);
 
     }
@@ -174,14 +157,4 @@ public class BudgetGraphAxes extends JPanel {
     public void setYMaxValue(double max){
         this.max_value = max;
     }
-
-    /**
-     * TODO javadoc
-     * @param value
-     * @return
-     */
-    private int calcY(double value){
-        return (int)(this.height - (value / this.max_value) * this.height) + Y_OFFSET_TOP;
-    }
-
 }
