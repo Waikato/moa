@@ -92,10 +92,10 @@ public class ALMultiBudgetTask extends ALMainTask {
 	
 	public ListOption budgetsOption = new ListOption("budgets", 'b',
 			"List of budgets to train classifiers for.",
-			new FloatOption("budget", ' ', "Active learner budget.", 0.9, 0, 1), 
+			new FloatOption("budget", ' ', "Active learner budget.", 0.9), 
 			new FloatOption[]{
-					new FloatOption("", ' ', "", 0.5, 0, 1),
-					new FloatOption("", ' ', "", 0.9, 0, 1)
+					new FloatOption("", ' ', "", 0.5),
+					new FloatOption("", ' ', "", 0.9)
 			}, ',');
 	
 	public ClassOption multiBudgetEvaluatorOption = new ClassOption(
@@ -112,6 +112,9 @@ public class ALMultiBudgetTask extends ALMainTask {
 	
 	public ALMultiBudgetTask() {
 		super();
+		
+		// reset last learner option
+		ALMultiBudgetTask.lastLearnerOption = null;
 		
 		// Enable refreshing the budgetParamNameOption depending on the
 		// learnerOption
@@ -137,8 +140,31 @@ public class ALMultiBudgetTask extends ALMainTask {
 	
 	
 	@Override
-	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
+	protected void prepareForUseImpl(
+			TaskMonitor monitor, ObjectRepository repository) 
+	{
 		super.prepareForUseImpl(monitor, repository);
+		
+		// get budget parameter name
+		final String budgetParamName = 
+				this.budgetParamNameOption.getValueAsCLIString();
+		
+		// get learner
+		ALClassifier learner = 
+				(ALClassifier) getPreparedClassOption(this.learnerOption);
+		Option learnerBudgetOption = null;
+		for (Option opt : learner.getOptions().getOptionArray()) {
+			if (opt.getName().equals(budgetParamName)) {
+				if (opt instanceof FloatOption || opt instanceof IntOption) {
+					learnerBudgetOption = opt;
+				}
+				else {
+					throw new IllegalArgumentException(
+							"budgetParamName: Only numerical " +
+							"attributes can be varied.");
+				}
+			}
+		}
 		
 		// setup task for each budget
 		Option[] budgets = this.budgetsOption.getList();
@@ -150,11 +176,15 @@ public class ALMultiBudgetTask extends ALMainTask {
 			budgetTask.setIsLastSubtaskOnLevel(
 					this.isLastSubtaskOnLevel, i == budgets.length - 1);
 			
+			// set learner budget option
+			learnerBudgetOption.setValueViaCLIString(
+					budgets[i].getValueAsCLIString());
+			
 			for (Option opt : budgetTask.getOptions().getOptionArray()) {
 				switch (opt.getName()) {
 				case "learner":
-					opt.setValueViaCLIString(
-							this.learnerOption.getValueAsCLIString());
+					opt.setValueViaCLIString(ClassOption.objectToCLIString(
+							learner, ALClassifier.class));
 					break;
 				case "stream": 
 					opt.setValueViaCLIString(
@@ -165,15 +195,13 @@ public class ALMultiBudgetTask extends ALMainTask {
 							this.prequentialEvaluatorOption
 							.getValueAsCLIString());
 					break;
-				case "budget":
-					opt.setValueViaCLIString(budgets[i].getValueAsCLIString());
-					break;
 				case "instanceLimit":
 					opt.setValueViaCLIString(
 							this.instanceLimitOption.getValueAsCLIString());
 					break;
 				case "timeLimit":
-					opt.setValueViaCLIString(this.timeLimitOption.getValueAsCLIString());
+					opt.setValueViaCLIString(
+							this.timeLimitOption.getValueAsCLIString());
 					break;
 				}
 			}
@@ -198,7 +226,9 @@ public class ALMultiBudgetTask extends ALMainTask {
 			TaskMonitor monitor, ObjectRepository repository) 
 	{
 		// setup learning curve
-		PreviewCollection<PreviewCollectionLearningCurveWrapper> previewCollection = new PreviewCollection<>("multi budget entry id", "learner id", this.getClass());		
+		PreviewCollection<PreviewCollectionLearningCurveWrapper> 
+			previewCollection = new PreviewCollection<>(
+					"multi budget entry id", "learner id", this.getClass());		
 		// start subtasks
 		monitor.setCurrentActivity("Evaluating learners for budgets...", -1.0);
 		for(int i = 0; i < this.subtaskThreads.size(); ++i)
@@ -225,7 +255,9 @@ public class ALMultiBudgetTask extends ALMainTask {
 				// get the completion fraction
 				completionSum += currentTaskThread.getCurrentActivityFracComplete();
 				// get the latest preview
-				PreviewCollectionLearningCurveWrapper latestPreview = (PreviewCollectionLearningCurveWrapper)currentTaskThread.getLatestResultPreview();
+				PreviewCollectionLearningCurveWrapper latestPreview = 
+						(PreviewCollectionLearningCurveWrapper) 
+						currentTaskThread.getLatestResultPreview();
 				// ignore the preview if it is null
 				if(latestPreview != null && latestPreview.numEntries() > 0)
 				{	
@@ -272,7 +304,9 @@ public class ALMultiBudgetTask extends ALMainTask {
 	
 	/* Static classes and methods */
 	
-	private static class RefreshParamsChangeListener 
+	protected static String lastLearnerOption;
+	
+	protected static class RefreshParamsChangeListener 
 		implements ChangeListener, Serializable 
 	{
 		
@@ -296,30 +330,38 @@ public class ALMultiBudgetTask extends ALMainTask {
 		}
 	}
 	
-	private static void refreshBudgetParamNameOption(
+	protected static void refreshBudgetParamNameOption(
 			ClassOption learnerOption, 
 			EditableMultiChoiceOption budgetParamNameOption)
 	{
 		ALClassifier learner = 
 				(ALClassifier) learnerOption.getPreMaterializedObject();
+		String currentLearner = learner.getClass().getSimpleName();
 		
-		Option[] options = learner.getOptions().getOptionArray();
-		String[] optionNames = new String[options.length];
-		String[] optionDescriptions = new String[options.length];
-		int defaultIndex = -1;
-		
-		for (int i = 0; i < options.length; i++) {
-			optionNames[i] = options[i].getName();
-			optionDescriptions[i] = options[i].getPurpose();
+		// check if an update is actually needed
+		if (lastLearnerOption == null || 
+			!lastLearnerOption.equals(currentLearner)) 
+		{
+			lastLearnerOption = currentLearner;
 			
-			if (optionNames[i].equals("budget")
-				|| (optionNames[i].contains("budget") && defaultIndex < 0)) 
-			{
-				defaultIndex = i;
+			Option[] options = learner.getOptions().getOptionArray();
+			String[] optionNames = new String[options.length];
+			String[] optionDescriptions = new String[options.length];
+			int defaultIndex = -1;
+			
+			for (int i = 0; i < options.length; i++) {
+				optionNames[i] = options[i].getName();
+				optionDescriptions[i] = options[i].getPurpose();
+				
+				if (optionNames[i].equals("budget") || 
+					(optionNames[i].contains("budget") && defaultIndex < 0)) 
+				{
+					defaultIndex = i;
+				}
 			}
+			
+			budgetParamNameOption.setOptions(optionNames, optionDescriptions, 
+					defaultIndex >= 0 ? defaultIndex : 0);
 		}
-		
-		budgetParamNameOption.setOptions(optionNames, optionDescriptions, 
-				defaultIndex >= 0 ? defaultIndex : 0);
 	}
 }

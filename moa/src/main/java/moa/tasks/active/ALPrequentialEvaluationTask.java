@@ -22,9 +22,7 @@ package moa.tasks.active;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import com.github.javacliparser.Option;
 import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.active.ALClassifier;
@@ -66,9 +64,6 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
             ALClassificationPerformanceEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
 	
-	public FloatOption budgetOption = new FloatOption("budget", 'b', 
-			"Active learner budget.", 0.9);
-	
 	public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
             "Maximum number of instances to test/train on  (-1 = no limit).",
             100000000, -1, Integer.MAX_VALUE);
@@ -91,17 +86,10 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 				(ExampleStream<Example<Instance>>) 
 				getPreparedClassOption(this.streamOption);
 		
-		// initialize learner with given budget
+		// initialize learner
 		ALClassifier learner = 
 				(ALClassifier) getPreparedClassOption(this.learnerOption);
 		learner.setModelContext(stream.getHeader());
-		for (Option opt : learner.getOptions().getOptionArray()) {
-			// TODO: Use arbitrarily definable budget option
-			if (opt.getName().equals("budget")) {
-				opt.setValueViaCLIString(
-						this.budgetOption.getValueAsCLIString());
-			}
-		}
 		
 		// get evaluator
         ALClassificationPerformanceEvaluator evaluator = (ALClassificationPerformanceEvaluator) 
@@ -121,8 +109,6 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         long lastEvaluateStartTime = evaluateStartTime;
         double RAMHours = 0.0;
         int sampleFrequency = 100000;
-        
-        double budgetThreshold = budgetOption.getValue();
         
         monitor.setCurrentActivity("Evaluating learner...", -1.0);
         while (stream.hasMoreInstances()
@@ -175,10 +161,6 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 	                            new Measurement(
         	                            "model cost (RAM-Hours)",
         	                            RAMHours),
-        						new Measurement(
-        	                            "budget threshold",
-        	                            budgetThreshold
-        	                            )
         				},
         				evaluator, learner));
         	}

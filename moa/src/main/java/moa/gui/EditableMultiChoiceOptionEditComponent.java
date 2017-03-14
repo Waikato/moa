@@ -17,7 +17,8 @@ public class EditableMultiChoiceOptionEditComponent extends MultiChoiceOptionEdi
 	}
 	
 	public void refresh() {
-		setModel(new DefaultComboBoxModel<String>(this.editedOption.getOptionLabels()));
+		setModel(new DefaultComboBoxModel<String>(
+				this.editedOption.getOptionLabels()));
         setSelectedIndex(this.editedOption.getChosenIndex());
 	}
 	
