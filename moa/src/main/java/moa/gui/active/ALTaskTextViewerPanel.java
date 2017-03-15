@@ -81,10 +81,6 @@ import moa.tasks.active.ALPrequentialEvaluationTask;
  */
 
 /*
- * TODO disable budget task if single budget task is evaluated.
- */
-
-/*
  * TODO implement scaling on x axis for budgets
  */
 
@@ -511,14 +507,28 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		GraphCanvasMultiParams gcmp = new GraphCanvasMultiParams();
 		
 		// check which type of task it is
-		// TODO this can probably be also solved otherwise without explicit task names
 		Class<?> c = preview.getTaskClass();
 		if (c == ALCrossValidationTask.class || c == ALMultiParamTask.class) {
 			// PreviewCollection
     		gcmp = readPreviewCollection((PreviewCollection<Preview>) preview);
+    		
+    		if (!this.graphPanelTabbedPane.isEnabledAt(1)) {
+    			// enable budget view on multi budget task
+    			this.graphPanelTabbedPane.setEnabledAt(1, true);
+    		}
     	} else if (c == ALPrequentialEvaluationTask.class) {
     		// Preview
-    		gcmp = readPreview(preview);	
+    		gcmp = readPreview(preview);
+    		
+    		if (this.graphPanelTabbedPane.getSelectedIndex() == 1) {
+    			// switch to Time tab
+    			this.graphPanelTabbedPane.setSelectedIndex(0);
+    		}
+    		
+    		if (this.graphPanelTabbedPane.isEnabledAt(1)) {
+    			// disable budget view on single budget task
+    			this.graphPanelTabbedPane.setEnabledAt(1, false);
+    		}
     	} else {
     		// sth went wrong
     		this.graphCanvas.setGraph(null, this.graphCanvas.getMeasureSelected(), null, 1000);
