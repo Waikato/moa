@@ -137,13 +137,17 @@ public class ALCrossValidationTask extends ALMainTask {
 	private ArrayList<ALTaskThread> flattenedSubtaskThreads = new ArrayList<>();
 	
 	
+	/**
+	 * Default constructor which sets up the refresh mechanism between the 
+	 * learner and the variedParamName option.
+	 */
 	public ALCrossValidationTask() {
 		super();
 		
 		// reset last learner option
 		ALMultiParamTask.lastLearnerOption = null;
 		
-		// Enable refreshing the variedParamNameOption depending on the
+		// enable refreshing the variedParamNameOption depending on the
 		// learnerOption
 		this.learnerOption.setListener(new RefreshParamsChangeListener(
 				this.learnerOption, this.variedParamNameOption));
@@ -153,7 +157,7 @@ public class ALCrossValidationTask extends ALMainTask {
 	public Options getOptions() {
 		Options options = super.getOptions();
 		
-		// Get the initial values for the variedParamNameOption
+		// get the initial values for the variedParamNameOption
 		ALMultiParamTask.refreshVariedParamNameOption(
 				this.learnerOption, this.variedParamNameOption);
 		
@@ -211,10 +215,12 @@ public class ALCrossValidationTask extends ALMainTask {
 							this.prequentialEvaluatorOption.getValueAsCLIString());
 					break;
 				case "variedParamName":
+					// set possible choices
 					((EditableMultiChoiceOption) opt).setOptions(
 							this.variedParamNameOption.getOptionLabels(), 
 							this.variedParamNameOption.getOptionDescriptions(), 
 							this.variedParamNameOption.getDefaultOptionIndex());
+					// set chosen value
 					opt.setValueViaCLIString(
 							this.variedParamNameOption.getValueAsCLIString());
 					break;

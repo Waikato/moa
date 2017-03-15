@@ -1,5 +1,5 @@
 /*
- *    ALPrequentialEvaluationTask.java
+ *    EditableMultiChoiceOption.java
  *    Copyright (C) 2017 Otto-von-Guericke-University, Magdeburg, Germany
  *    @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  *
@@ -24,7 +24,7 @@ import com.github.javacliparser.MultiChoiceOption;
 import moa.gui.EditableMultiChoiceOptionEditComponent;
 
 /**
- * Multi choice option that can have changing options.
+ * MultiChoiceOption that can have changing options.
  * 
  * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  * @version $Revision: 1 $
@@ -36,6 +36,9 @@ public class EditableMultiChoiceOption extends MultiChoiceOption {
 	private static final String NO_CHOICES_DESCRIPTION = 
 			"No choices available.";
 	
+	/**
+	 * The corresponding UI component
+	 */
 	protected EditableMultiChoiceOptionEditComponent editComponent;
 
 	public EditableMultiChoiceOption(String name, char cliChar, 
@@ -44,9 +47,17 @@ public class EditableMultiChoiceOption extends MultiChoiceOption {
 	{
 		super(name, cliChar, purpose, optionLabels, optionDescriptions, 
 				defaultOptionIndex);
+		
+		// set initial options and refresh edit component
 		this.setOptions(optionLabels, optionDescriptions, defaultOptionIndex);
 	}
 	
+	/**
+	 * Register the corresponding UI component, so that it can be refreshed
+	 * when options have changed.
+	 * 
+	 * @param editComponent
+	 */
 	public void registerEditComponent(
 			EditableMultiChoiceOptionEditComponent editComponent) 
 	{
@@ -54,7 +65,8 @@ public class EditableMultiChoiceOption extends MultiChoiceOption {
 	}
 	
 	/**
-	 * Set new options for this MultiChoiceOption.
+	 * Set new options for this MultiChoiceOption and refresh the edit 
+	 * component.
 	 * 
 	 * @param labels
 	 * @param descriptions
@@ -73,13 +85,16 @@ public class EditableMultiChoiceOption extends MultiChoiceOption {
 			this.defaultOptionIndex = defaultIndex;
 		}
 		else {
+			// use placeholders for empty list of choices
 			this.optionLabels = new String[]{NO_CHOICES};
 			this.optionDescriptions = new String[]{NO_CHOICES_DESCRIPTION};
 			this.defaultOptionIndex = 0;
 		}
 		
+		// reset to default value
         resetToDefault();
         
+        // refresh the edit component
         if (this.editComponent != null) {
         	this.editComponent.refresh();
         }

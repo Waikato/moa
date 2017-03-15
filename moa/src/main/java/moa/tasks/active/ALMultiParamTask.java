@@ -123,10 +123,15 @@ public class ALMultiParamTask extends ALMainTask {
 	
 	private Color[] subTaskColorCoding;
 	
+	/**
+	 * Default constructor which sets up the refresh mechanism between the 
+	 * learner and the variedParamName option.
+	 */
 	public ALMultiParamTask() {
 		super();
 		
 		// initialize subtasks
+		// TODO: values are already initialized
 		subtasks = new ArrayList<>();
 		subtaskThreads = new ArrayList<>();
 		flattenedSubtaskThreads = new ArrayList<>();
@@ -135,12 +140,18 @@ public class ALMultiParamTask extends ALMainTask {
 		// reset last learner option
 		ALMultiParamTask.lastLearnerOption = null;
 		
-		// Enable refreshing the variedParamNameOption depending on the
+		// enable refreshing the variedParamNameOption depending on the
 		// learnerOption
 		this.learnerOption.setListener(new RefreshParamsChangeListener(
 				this.learnerOption, this.variedParamNameOption));
 	}
 	
+	/**
+	 * Constructor that sets the color coding for the subtasks additionally
+	 * to the default constructor.
+	 * 
+	 * @param subTaskColorCoding
+	 */
 	public ALMultiParamTask(Color[] subTaskColorCoding) {
 		this();
 		this.subTaskColorCoding = subTaskColorCoding;
@@ -150,7 +161,7 @@ public class ALMultiParamTask extends ALMainTask {
 	public Options getOptions() {
 		Options options = super.getOptions();
 		
-		// Get the initial values for the variedParamNameOption
+		// get the initial values for the variedParamNameOption
 		ALMultiParamTask.refreshVariedParamNameOption(
 				this.learnerOption, this.variedParamNameOption);
 		
@@ -349,12 +360,26 @@ public class ALMultiParamTask extends ALMainTask {
 	
 	/* Static classes and methods */
 	
+	/**
+	 * Name of the last selected learner option, which is used to detect
+	 * changes.
+	 */
 	protected static String lastLearnerOption;
 	
+	/**
+	 * This ChangeListener refreshes the provided choices of an
+	 * EditableMultiChoiceOption every time a ClassOption (the learner) is
+	 * changed.
+	 * 
+	 * @see ALMultiParamTask#refreshVariedParamNameOption(
+	 * 			ClassOption, EditableMultiChoiceOption)
+	 * 
+	 * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
+	 * @version $Revision: 1 $
+	 */
 	protected static class RefreshParamsChangeListener 
 		implements ChangeListener, Serializable 
 	{
-		
 		private static final long serialVersionUID = 1L;
 		
 		private ClassOption learnerOption;
@@ -375,6 +400,21 @@ public class ALMultiParamTask extends ALMainTask {
 		}
 	}
 	
+	/**
+	 * Refresh the provided choices of an EditableMultiChoiceOption every time
+	 * a ClassOption (the learner) is changed. This method checks if the
+	 * chosen learner actually changed, before updating the MultiChoiceOption.
+	 * <br>
+	 * Only Int and Float options of the selected learner are shown in the
+	 * MultiChoiceOption, because only continuous parameters should be 
+	 * variable.
+	 * <br>
+	 * If one of the learner's options is named "budget" or its name contains
+	 * the word "budget", it is selected as the default option.
+	 * 
+	 * @param learnerOption
+	 * @param variedParamNameOption
+	 */
 	protected static void refreshVariedParamNameOption(
 			ClassOption learnerOption, 
 			EditableMultiChoiceOption variedParamNameOption)
@@ -401,6 +441,7 @@ public class ALMultiParamTask extends ALMainTask {
 			String[] optionDescriptions = new String[options.length];
 			int defaultIndex = -1;
 			
+			// get option names and descriptions and look for default option
 			for (int i = 0; i < options.length; i++) {
 				optionNames[i] = options[i].getName();
 				optionDescriptions[i] = options[i].getPurpose();
@@ -412,6 +453,7 @@ public class ALMultiParamTask extends ALMainTask {
 				}
 			}
 			
+			// pass new options to the EditableMultiChoiceOption
 			variedParamNameOption.setOptions(optionNames, optionDescriptions, 
 					defaultIndex >= 0 ? defaultIndex : 0);
 		}
