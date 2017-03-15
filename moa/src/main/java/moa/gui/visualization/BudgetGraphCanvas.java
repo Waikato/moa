@@ -227,10 +227,8 @@ public class BudgetGraphCanvas extends JPanel {
     }
     
     @Override
-    protected void paintComponent(Graphics g) {
-        //needed in case parent component gets resized
-        //TODO doesn't fully work yet when reducing height
+    protected void paintChildren(Graphics g) {
         updateSize();
-        super.paintComponent(g);
+        super.paintChildren(g);
     }
 }

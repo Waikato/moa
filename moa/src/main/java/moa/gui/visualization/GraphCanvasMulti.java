@@ -328,13 +328,11 @@ public class GraphCanvasMulti extends JPanel {
             }
         }
     }
-
+    
     @Override
-    protected void paintComponent(Graphics g) {
-        //needed in case parent component gets resized
-        //TODO doesn't fully work yet when reducing height
-        updateSize();
-        super.paintComponent(g);
+    protected void paintChildren(Graphics g) {
+    	updateSize();
+    	super.paintChildren(g);
     }
 
     /**
