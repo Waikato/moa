@@ -130,13 +130,6 @@ public class ALMultiParamTask extends ALMainTask {
 	public ALMultiParamTask() {
 		super();
 		
-		// initialize subtasks
-		// TODO: values are already initialized
-		subtasks = new ArrayList<>();
-		subtaskThreads = new ArrayList<>();
-		flattenedSubtaskThreads = new ArrayList<>();
-		subTaskColorCoding = null;
-		
 		// reset last learner option
 		ALMultiParamTask.lastLearnerOption = null;
 		
