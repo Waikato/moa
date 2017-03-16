@@ -143,6 +143,10 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	private JButton buttonZoomInX;
 	
 	private JButton buttonZoomOutX;
+	
+	private String variedParamName;
+	
+	private double[] variedParamValues;
 
 	public ALTaskTextViewerPanel() {
 
@@ -349,7 +353,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		// budgetGraphCanvas displays the live budget graph
 		budgetGraphCanvas = new BudgetGraphCanvas();
 		budgetGraphCanvas.setPreferredSize(new Dimension(500, 111));
-		budgetGraphCanvas.setGraph(this.measures, 0);
+		budgetGraphCanvas.setGraph(this.measures, 0, this.variedParamName, this.variedParamValues);
 
 		GroupLayout budgetGraphCanvasLayout = new GroupLayout(budgetGraphCanvas);
 		budgetGraphCanvas.setLayout(budgetGraphCanvasLayout);
@@ -510,7 +514,12 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		Class<?> c = preview.getTaskClass();
 		if (c == ALCrossValidationTask.class || c == ALMultiParamTask.class) {
 			// PreviewCollection
-    		gcmp = readPreviewCollection((PreviewCollection<Preview>) preview);
+			PreviewCollection<Preview> pc = (PreviewCollection<Preview>) preview;
+    		gcmp = readPreviewCollection(pc);
+    		
+    		// get varied parameter name and values
+    		this.variedParamName = pc.getVariedParamName();
+    		this.variedParamValues = pc.getVariedParamValues();
     		
     		if (!this.graphPanelTabbedPane.isEnabledAt(1)) {
     			// enable budget view on multi budget task
@@ -541,7 +550,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		
 		this.graphCanvas.setGraph(this.measures, this.graphCanvas.getMeasureSelected(), pfs, min_pf);
 		this.graphCanvas.updateCanvas(true);
-		this.budgetGraphCanvas.setGraph(this.measures, this.budgetGraphCanvas.getMeasureSelected());
+		this.budgetGraphCanvas.setGraph(
+				this.measures, this.budgetGraphCanvas.getMeasureSelected(),
+				this.variedParamName, this.variedParamValues);
 		this.clusteringVisualEvalPanel1.update();
 
 	}
@@ -742,6 +753,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		this.graphCanvas.setGraph(this.measures, m_select_offset, this.graphCanvas.getProcessFrequencies(),
 				this.graphCanvas.getMinProcessFrequency());
 		this.graphCanvas.forceAddEvents();
-		this.budgetGraphCanvas.setGraph(this.measures, m_select_offset);
+		this.budgetGraphCanvas.setGraph(this.measures, m_select_offset, 
+				this.variedParamName, this.variedParamValues);
 	}
 }

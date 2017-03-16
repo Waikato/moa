@@ -44,6 +44,10 @@ public class GraphScatter extends JPanel {
     private int measureSelected;
     
     private double max_value;
+    
+    private String variedParamName;
+    
+    private double[] variedParamValues;
 	
 	/**
 	 * Constructor. Initialises class variables and sets the layout.
@@ -67,9 +71,13 @@ public class GraphScatter extends JPanel {
      * @param measures  list of measure collections, one for each task
      * @param selection currently selected measure
      */
-    public void setGraph(MeasureCollection[] measures, int mSelect){
+    public void setGraph(MeasureCollection[] measures, int mSelect, 
+    		String variedParamName, double[] variedParamValues)
+    {
         this.measures = measures;
         this.measureSelected = mSelect;
+        this.variedParamName = variedParamName;
+        this.variedParamValues = variedParamValues;
         this.repaint();
     }
 
@@ -77,7 +85,7 @@ public class GraphScatter extends JPanel {
     protected void paintComponent(Graphics g) {
     	super.paintComponent(g);
     	
-        if (this.measures == null) { 
+        if (this.measures == null || this.variedParamValues == null) { 
         	// no measures received yet -> nothing to paint
         	return; 
         }
@@ -86,7 +94,7 @@ public class GraphScatter extends JPanel {
         
         // scatter current budgets
         for (int i = 0; i < this.measures.length; i++) {
-        	this.scatter(g, this.measures[i]);
+        	this.scatter(g, this.measures[i], this.variedParamValues[i]);
         }
     }
     
@@ -95,12 +103,12 @@ public class GraphScatter extends JPanel {
      * @param g graphics object
      * @param m MeasureCollection containing the data
      */
-    private void scatter(Graphics g, MeasureCollection m){
+    private void scatter(Graphics g, MeasureCollection m, double variedParamValue) {
 
     	int height = getHeight();
     	int width = getWidth();
     	
-    	int x = (int) (width * m.getLastValue(6));
+    	int x = (int) (width * variedParamValue);
    		double value = m.getLastValue(this.measureSelected);  
         if(Double.isNaN(value)){
         	// no result for this budget yet

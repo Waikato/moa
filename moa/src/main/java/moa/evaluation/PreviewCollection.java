@@ -49,8 +49,14 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 	int minEntryNum;
 	// the type of Task which uses this preview collection
 	Class<?> taskClass;
-
-	public PreviewCollection(String orderingName, String indexName, Class<?> taskClass) {
+	// name of the varied parameter (can be null)
+	String variedParamName;
+	// values for the varied parameter (can be null)
+	double[] variedParamValues;
+	
+	public PreviewCollection(String orderingName, String indexName, Class<?> taskClass, 
+			String variedParamName, double[] variedParamValues) 
+	{
 		this.indexName = indexName;
 		requiredMeasurementNames = new ArrayList<>();
 		measurementNames = new ArrayList<>();
@@ -58,6 +64,12 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 		measurementNames.add(indexName);
 		subPreviews = new ArrayList<>();
 		this.taskClass = taskClass;
+		this.variedParamName = variedParamName;
+		this.variedParamValues = variedParamValues;
+	}
+	
+	public PreviewCollection(String orderingName, String indexName, Class<?> taskClass) {
+		this(orderingName, indexName, taskClass, null, null);
 	}
 
 	public void setPreview(int previewIndex, CollectionElementType preview) throws IllegalArgumentException {
@@ -92,7 +104,10 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 
 				if (hasSameMeasurementNames) {
 					// check if the new preview has more entries than the last one
-					if (subPreviews.get(previewIndex) == null ||subPreviews.get(previewIndex) != null && preview.numEntries() > subPreviews.get(previewIndex).numEntries()) {
+					if (subPreviews.get(previewIndex) == null ||
+						(subPreviews.get(previewIndex) != null && 
+						 preview.numEntries() > subPreviews.get(previewIndex).numEntries())) 
+					{
 						// set the smallest number of entries
 						minEntryNum = preview.numEntries();
 						for (int i = 0; i < subPreviews.size(); ++i) {
@@ -218,5 +233,13 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 		}
 
 		return entry;
+	}
+	
+	public String getVariedParamName() {
+		return this.variedParamName;
+	}
+	
+	public double[] getVariedParamValues() {
+		return this.variedParamValues;
 	}
 }

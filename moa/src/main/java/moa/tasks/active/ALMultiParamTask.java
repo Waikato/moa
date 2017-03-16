@@ -280,10 +280,21 @@ public class ALMultiParamTask extends ALMainTask {
 	protected Object doMainTask(
 			TaskMonitor monitor, ObjectRepository repository) 
 	{
-		// setup learning curve
+		// get varied parameter values
+		Option[] variedParamValueOptions = this.variedParamValuesOption.getList();
+		double[] variedParamValues = new double[variedParamValueOptions.length];
+		for (int i = 0; i < variedParamValueOptions.length; i++) {
+			variedParamValues[i] = 
+					Double.valueOf(variedParamValueOptions[i].getValueAsCLIString());
+		}
+		
+		// initialize the learning curve collection
 		PreviewCollection<PreviewCollectionLearningCurveWrapper> 
 			previewCollection = new PreviewCollection<>(
-					"multi param entry id", "learner id", this.getClass());		
+					"multi param entry id", "learner id", this.getClass(),
+					this.variedParamNameOption.getValueAsCLIString(),
+					variedParamValues);
+		
 		// start subtasks
 		monitor.setCurrentActivity(
 				"Evaluating learners for parameter values...", -1.0);

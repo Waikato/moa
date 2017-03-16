@@ -265,10 +265,30 @@ public class ALCrossValidationTask extends ALMainTask {
 	protected Object doMainTask(
 			TaskMonitor monitor, ObjectRepository repository) 
 	{
+		// get varied parameter values
+		Option[] variedParamValueOptions = this.variedParamValuesOption.getList();
+		int numVariedParams = variedParamValueOptions.length;
+		double[] variedParamValues = new double[numVariedParams];
+		for (int i = 0; i < numVariedParams; i++) {
+			variedParamValues[i] = 
+					Double.valueOf(variedParamValueOptions[i].getValueAsCLIString());
+		}
+		
+		// extend varied parameters to number of folds
+		int k = this.numFoldsOption.getValue();
+		double[] kVariedParamValues = new double[numVariedParams * k];
+		for (int i = 0; i < k; i++) {
+			for (int j = 0; j < numVariedParams; j++) {
+				kVariedParamValues[i*numVariedParams + j] = variedParamValues[j];
+			}
+		}
+		
 		// initialize the learning curve collection
 		PreviewCollection<PreviewCollection<PreviewCollectionLearningCurveWrapper>> 
 			previewCollection = new PreviewCollection<>(
-					"cross validation entry id", "fold id", this.getClass());
+					"cross validation entry id", "fold id", this.getClass(),
+					this.variedParamNameOption.getValueAsCLIString(),
+					kVariedParamValues);
 		
 
 		monitor.setCurrentActivity("Performing cross validation...", 50.0);

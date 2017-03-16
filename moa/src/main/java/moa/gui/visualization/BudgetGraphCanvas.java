@@ -21,7 +21,6 @@
  */
 package moa.gui.visualization;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
 
 import javax.swing.JPanel;
@@ -127,11 +126,13 @@ public class BudgetGraphCanvas extends JPanel {
      * @param measure1  list of measure collections, one for each budget
      * @param mSelect   currently selected measure
      */
-    public void setGraph(MeasureCollection[] measures, int mSelect) {
+    public void setGraph(MeasureCollection[] measures, int mSelect, 
+    		String variedParamName, double[] variedParamValues) 
+    {
         this.measures = measures;
         this.measureSelected = mSelect;
 
-        this.scatterPanel.setGraph(measures, mSelect);
+        this.scatterPanel.setGraph(measures, mSelect, variedParamName, variedParamValues);
         updateCanvas(false);
     }
 
