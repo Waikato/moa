@@ -515,13 +515,19 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		// check which type of task it is
 		Class<?> c = preview.getTaskClass();
 		if (c == ALCrossValidationTask.class || c == ALMultiParamTask.class) {
-			// PreviewCollection
+			//PreviewCollection
 			PreviewCollection<Preview> pc = (PreviewCollection<Preview>) preview;
-    		gcmp = readPreviewCollection(pc);
-    		
-    		// get varied parameter name and values
-    		this.variedParamName = pc.getVariedParamName();
-    		this.variedParamValues = pc.getVariedParamValues();
+			
+			// get varied parameter name and values
+			this.variedParamName = pc.getVariedParamName();
+			this.variedParamValues = pc.getVariedParamValues();
+			
+			if (c == ALCrossValidationTask.class) {
+				// calculate mean preview collection for each parameter value
+				pc = this.calculateMeanPreview(
+						(PreviewCollection<PreviewCollection<Preview>>) preview);
+			}
+			gcmp = readPreviewCollection(pc);
     		
     		if (!this.graphPanelTabbedPane.isEnabledAt(1)) {
     			// enable budget view on multi budget task
@@ -589,7 +595,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		GraphCanvasMultiParams gcmp = new GraphCanvasMultiParams();
 		List<Preview> sps = pc.getPreviews();
 
-		if (sps.get(0) instanceof PreviewCollection) {
+		if (sps.size() > 0 && sps.get(0) instanceof PreviewCollection) {
 			// members are PreviewCollections again
 			// NOTE: this assumes that all elements in sps are of the same type
 			for (Preview sp: sps) {
@@ -736,43 +742,72 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		// create new preview collection for mean previews
 		PreviewCollection<Preview> meanPreviews = 
 				new PreviewCollection<Preview>(
-						rawPreviews.getOrderingName(),
-						rawPreviews.getIndexName(),
-						rawPreviews.getTaskClass(),
-						rawPreviews.getVariedParamName(),
-						rawPreviews.getVariedParamValues());
+						"mean preview entry id",
+						"parameter value id",
+						ALCrossValidationTask.class,
+						this.variedParamName,
+						this.variedParamValues);
 		List<PreviewCollection<Preview>> foldPreviews = rawPreviews.getPreviews(); 
 		
-		for (int paramValue = 0; paramValue < this.variedParamValues.length; 
-			 paramValue++)
+		// calculate maximal number of entries that each Preview can provide
+		int numFolds = foldPreviews.size();
+		int numParamValues = this.variedParamValues.length;
+		int numEntriesPerPreview = rawPreviews.numEntries() / numFolds / numParamValues;
+				
+		for (int paramValue = 0; paramValue < numParamValues; paramValue++)
 		{
 			// initialize list for summing up all measurements
-			List<double[]> measurementsSum = null;
+			List<double[]> paramMeasurementsSum = 
+					new ArrayList<double[]>(numEntriesPerPreview);
+			
+			int numCompleteFolds = 0;
 			
 			for (PreviewCollection<Preview> subPreview : foldPreviews) {
-				Preview paramPreview = subPreview.getPreviews().get(paramValue);
-				
-				List<double[]> paramMeasurements = paramPreview.getData();
-				
-				if (measurementsSum == null) {
-					measurementsSum = paramMeasurements;
-				}
-				else {
-					// sum values for all entries and for all measurements in
-					// order to get:
-					// measurementsSum = measurementsSum + paramMeasurements;
+				// check if there is a preview for each parameter value
+				// TODO: handle partial cases
+				if (subPreview.getPreviews().size() == numParamValues) {
+					numCompleteFolds++;
+					
+					Preview foldParamPreview = subPreview.getPreviews().get(paramValue);
+					
+					List<double[]> foldParamMeasurements = foldParamPreview.getData();
+					
+					if (paramMeasurementsSum.isEmpty()) {
+						paramMeasurementsSum.addAll(foldParamMeasurements);
+					}
+					else {
+						// add values for each measurement in each entry
+						for (int entry = 0; entry < numEntriesPerPreview; entry++) {
+							double[] entrySum = paramMeasurementsSum.get(entry);
+							double[] foldParamEntry = foldParamMeasurements.get(entry);
+							
+							for (int measure = 0; measure < entrySum.length; measure++) {
+								entrySum[measure] += foldParamEntry[measure];
+							}
+						}
+					}
 				}
 			}
 			
 			// divide measurementsSum by number of folds:
-			// measurementsSum = measurementsSum / foldPreviews.size();
+			for (double[] entry : paramMeasurementsSum) {
+				for (int m = 0; m < entry.length; m++) {
+					entry[m] /= numCompleteFolds;
+				}
+			}
 			
-			// wrap measurementsSum in Measurement[] and LearningEvaluation
+			// get actual measurement names (first four are only additional IDs)
+			String[] cvMeasurementNames = rawPreviews.getMeasurementNames();
+			List<String> measurementNames = 
+					new ArrayList<String>(cvMeasurementNames.length - 4);
+			for (int m = 4; m < cvMeasurementNames.length; m++) {
+				measurementNames.add(cvMeasurementNames[m]);
+			}
 			
 			// wrap into LearningCurve
 			LearningCurve meanLearningCurve = 
-					new LearningCurve(rawPreviews.getOrderingName());
-			meanLearningCurve.insertEntry(null);
+					new LearningCurve("learning evaluation instances");
+			meanLearningCurve.setData(measurementNames, paramMeasurementsSum);
 			
 			// wrap into PreviewCollectionLearningCurveWrapper
 			Preview meanParamValuePreview = 
