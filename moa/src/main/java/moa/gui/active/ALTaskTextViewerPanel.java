@@ -252,13 +252,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				// update the currently open graph
 				int currentTab = graphPanelTabbedPane.getSelectedIndex();
 				if (currentTab == 0) {
-					graphCanvas.setSize(new Dimension(
-							graphCanvas.getWidth(), 
-							(int) (graphCanvas.getHeight() * 1.2)));
-					graphCanvas.setPreferredSize(new Dimension(
-							graphCanvas.getWidth(), 
-							(int) (graphCanvas.getHeight() * 1.2)));
-					graphCanvas.updateCanvas(true);
+					graphCanvas.scaleYResolution(1);
 				} else {
 					budgetGraphCanvas.setSize(new Dimension(
 							budgetGraphCanvas.getWidth(), 
@@ -282,21 +276,15 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				// update the currently open graph
 				int currentTab = graphPanelTabbedPane.getSelectedIndex();
 				if (currentTab == 0) {
-					graphCanvas.setSize(new Dimension(
-							graphCanvas.getWidth(), 
-							(int) (graphCanvas.getHeight() * 0.8)));
-					graphCanvas.setPreferredSize(new Dimension(
-							graphCanvas.getWidth(), 
-							(int) (graphCanvas.getHeight() * 0.8)));
-					graphCanvas.updateCanvas(true);
+					graphCanvas.scaleYResolution(-1);
 				} else {
-					budgetGraphCanvas.setSize(new Dimension(
-							budgetGraphCanvas.getWidth(), 
-							(int) (budgetGraphCanvas.getHeight() * 0.8)));
-					budgetGraphCanvas.setPreferredSize(new Dimension(
-							budgetGraphCanvas.getWidth(), 
-							(int) (budgetGraphCanvas.getHeight() * 0.8)));
-					budgetGraphCanvas.updateCanvas(true);
+//					budgetGraphCanvas.setSize(new Dimension(
+//							budgetGraphCanvas.getWidth(), 
+//							(int) (budgetGraphCanvas.getHeight() * 0.8)));
+//					budgetGraphCanvas.setPreferredSize(new Dimension(
+//							budgetGraphCanvas.getWidth(), 
+//							(int) (budgetGraphCanvas.getHeight() * 0.8)));
+//					budgetGraphCanvas.updateCanvas(true);
 				}	
 			}
 		});
@@ -382,7 +370,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				// update the currently open graph
 				int currentTab = graphPanelTabbedPane.getSelectedIndex();
 				if (currentTab == 0) {
-					graphCanvas.scaleXResolution(false);
+					graphCanvas.scaleXResolution(0.5);
 				} else {
 //					budgetGraphCanvas.scaleXResolution(false);
 				}
@@ -397,7 +385,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				// update the currently open graph
 				int currentTab = graphPanelTabbedPane.getSelectedIndex();
 				if (currentTab == 0) {
-					graphCanvas.scaleXResolution(true);
+					graphCanvas.scaleXResolution(2);
 				} else {
 //					budgetGraphCanvas.scaleXResolution(true);
 				}
@@ -540,7 +528,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		int min_pf = min(pfs);
 		
 		this.graphCanvas.setGraph(this.measures, this.graphCanvas.getMeasureSelected(), pfs, min_pf);
-		this.graphCanvas.updateCanvas(true);
+		this.graphCanvas.updateCanvas(true); // TODO this shouldnt be necessary
 		this.budgetGraphCanvas.setGraph(this.measures, this.budgetGraphCanvas.getMeasureSelected());
 		this.clusteringVisualEvalPanel1.update();
 
@@ -741,7 +729,6 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		}
 		this.graphCanvas.setGraph(this.measures, m_select_offset, this.graphCanvas.getProcessFrequencies(),
 				this.graphCanvas.getMinProcessFrequency());
-		this.graphCanvas.forceAddEvents();
 		this.budgetGraphCanvas.setGraph(this.measures, m_select_offset);
 	}
 }
