@@ -58,9 +58,11 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import moa.evaluation.ALMeasureCollection;
+import moa.evaluation.LearningCurve;
 import moa.evaluation.MeasureCollection;
 import moa.evaluation.Preview;
 import moa.evaluation.PreviewCollection;
+import moa.evaluation.PreviewCollectionLearningCurveWrapper;
 import moa.gui.FileExtensionFilter;
 import moa.gui.GUIUtils;
 import moa.gui.PreviewTableModel;
@@ -726,6 +728,62 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		gcmp.addMeasureCollection(m);
 		gcmp.addProcessFrequency(processFrequency);
 		return gcmp;
+	}
+	
+	private PreviewCollection<Preview> calculateMeanPreview(
+			PreviewCollection<PreviewCollection<Preview>> rawPreviews) 
+	{
+		// create new preview collection for mean previews
+		PreviewCollection<Preview> meanPreviews = 
+				new PreviewCollection<Preview>(
+						rawPreviews.getOrderingName(),
+						rawPreviews.getIndexName(),
+						rawPreviews.getTaskClass(),
+						rawPreviews.getVariedParamName(),
+						rawPreviews.getVariedParamValues());
+		List<PreviewCollection<Preview>> foldPreviews = rawPreviews.getPreviews(); 
+		
+		for (int paramValue = 0; paramValue < this.variedParamValues.length; 
+			 paramValue++)
+		{
+			// initialize list for summing up all measurements
+			List<double[]> measurementsSum = null;
+			
+			for (PreviewCollection<Preview> subPreview : foldPreviews) {
+				Preview paramPreview = subPreview.getPreviews().get(paramValue);
+				
+				List<double[]> paramMeasurements = paramPreview.getData();
+				
+				if (measurementsSum == null) {
+					measurementsSum = paramMeasurements;
+				}
+				else {
+					// sum values for all entries and for all measurements in
+					// order to get:
+					// measurementsSum = measurementsSum + paramMeasurements;
+				}
+			}
+			
+			// divide measurementsSum by number of folds:
+			// measurementsSum = measurementsSum / foldPreviews.size();
+			
+			// wrap measurementsSum in Measurement[] and LearningEvaluation
+			
+			// wrap into LearningCurve
+			LearningCurve meanLearningCurve = 
+					new LearningCurve(rawPreviews.getOrderingName());
+			meanLearningCurve.insertEntry(null);
+			
+			// wrap into PreviewCollectionLearningCurveWrapper
+			Preview meanParamValuePreview = 
+					new PreviewCollectionLearningCurveWrapper(
+							meanLearningCurve,
+							rawPreviews.getTaskClass());
+			
+			meanPreviews.setPreview(paramValue, meanParamValuePreview);
+		}
+		
+		return meanPreviews;
 	}
 
 	//TODO understand this
