@@ -235,6 +235,14 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 		return entry;
 	}
 	
+	public String getOrderingName() {
+		return this.orderingName;
+	}
+	
+	public String getIndexName() {
+		return this.indexName;
+	}
+	
 	public String getVariedParamName() {
 		return this.variedParamName;
 	}
