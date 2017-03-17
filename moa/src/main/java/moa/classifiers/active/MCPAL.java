@@ -511,14 +511,9 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	@Override
 	public void setModelContext(InstancesHeader ih) {
 		super.setModelContext(ih);
-		setNumClasses(ih.numClasses(), mMax);
-		System.out.println("init");
-	}
-
-	private void setNumClasses(int numClasses, int mMax) {
 		
-		this.numClasses = numClasses;
-		this.mMax = mMax;
+		this.numClasses = ih.numClasses();
+
 		for(int m = 0; m <= mMax; ++m)
 		{
 			distributions.add(getAllDistributionPossibilities(m, numClasses));
@@ -529,12 +524,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		{
 			kernelEstimators[cIdx] = new MCPALEstimatorMultivariate(bandwidth);
 		}
+		
+		System.out.println("init");
 	}
-	public static void main(String[] args) {
-		MCPAL mcPal = new MCPAL();
-		mcPal.setNumClasses(2, 3);
-		double expPerf = mcPal.getPerfGain(new double[]{0.4, 0.6}); 
-		System.out.println(expPerf);
-	}
-	
 }
