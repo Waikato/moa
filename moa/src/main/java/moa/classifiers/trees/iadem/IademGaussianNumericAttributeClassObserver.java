@@ -17,7 +17,7 @@
  *    
  *    
  */
-package moa.classifiers.trees.iademutils;
+package moa.classifiers.trees.iadem;
 
 import java.util.Arrays;
 

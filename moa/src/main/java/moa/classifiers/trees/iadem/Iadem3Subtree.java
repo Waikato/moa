@@ -17,68 +17,59 @@
  *    
  *    
  */
-package moa.classifiers.trees.iadem3;
+package moa.classifiers.trees.iadem;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.classifiers.core.driftdetection.AbstractChangeDetector;
-import moa.classifiers.trees.iadem2.Node;
-import moa.classifiers.trees.iademutils.IademException;
-import moa.classifiers.trees.iademutils.IademSplitMeasure;
-import moa.classifiers.trees.iademutils.IademNumericAttributeObserver;
 
 
 /**
  *
  * @author Isvani Frías Blanco (ifriasb at hotmail dot com)
  */
-public class Subtree extends IADEM3Tree {
+public class Iadem3Subtree extends Iadem3 {
 
     protected static final long serialVersionUID = 1L;
     protected AbstractChangeDetector errorEstimator;
     protected Node nodo;
 
-    protected IADEM3Tree mainTree;
+    protected Iadem3 mainTree;
 
-    public Subtree(InstancesHeader problemDescription,
-            double attDif,
-            IademSplitMeasure measure,
-            int predictionType,
-            int limitNaiveBayes,
-            double percentInCommon,
-            IademNumericAttributeObserver numericAttClassObserver,
-            int maxBins,
-            AbstractChangeDetector estimator,
-            boolean restartVariablesAtDrift,
-            Node node,
-            boolean onlyMultiwayTest,
-            boolean onlyBinaryTest,
-            int gracePeriod,
+    public Iadem3Subtree(Node node,
             int treeLevel,
-            int maxTreeLevel,
-            int maxAltSubtreesPerNode,
-            IADEM3Tree mainTree) {
-        super(problemDescription,
-                attDif,
-                measure,
-                predictionType,
-                limitNaiveBayes,
-                percentInCommon,
-                numericAttClassObserver,
-                maxBins,
-                estimator,
-                restartVariablesAtDrift,
-                onlyMultiwayTest,
-                onlyBinaryTest,
-                gracePeriod,
-                treeLevel,
-                maxTreeLevel,
-                maxAltSubtreesPerNode);
-        this.errorEstimator = (AbstractChangeDetector) estimator.copy();
+            Iadem3 mainTree,
+            Instance instance) {
+        // subtree configuration from main tree
+        this.numericEstimatorOption.setValueViaCLIString(mainTree.numericEstimatorOption.getValueAsCLIString());
+        this.gracePeriodOption.setValue(mainTree.gracePeriodOption.getValue());
+        this.splitCriterionOption.setChosenIndex(mainTree.splitCriterionOption.getChosenIndex());
+        this.splitConfidenceOption.setValue(mainTree.splitConfidenceOption.getValue());
+        this.splitTestsOption.setChosenIndex(mainTree.splitTestsOption.getChosenIndex());
+        this.leafPredictionOption.setChosenIndex(mainTree.leafPredictionOption.getChosenIndex());
+        this.driftDetectionMethodOption.setValueViaCLIString(mainTree.driftDetectionMethodOption.getValueAsCLIString());
+        this.attributeDiferentiation.setValue(mainTree.attributeDiferentiation.getValue());
+        this.maxNestingLevelOption.setValue(mainTree.maxNestingLevelOption.getValue());
+        this.maxSubtreesPerNodeOption.setValue(mainTree.maxSubtreesPerNodeOption.getValue());
+        
+        // subtree inicializations
+        this.estimator = mainTree.getEstimatorCopy();
+        this.errorEstimator = mainTree.getEstimatorCopy();
         this.nodo = node;
         this.mainTree = mainTree;
         this.mainTree.updateNumberOfLeaves(1);
         this.mainTree.updateNumberOfNodes(1);
+        createRoot(instance);
+    }
+    
+    @Override
+    public AbstractChangeDetector getEstimatorCopy() {
+        return this.mainTree.getEstimatorCopy();
+    }
+    
+    @Override
+    protected IademNumericAttributeObserver newNumericClassObserver() {
+        return this.mainTree.newNumericClassObserver();
     }
 
     @Override
@@ -117,21 +108,21 @@ public class Subtree extends IADEM3Tree {
 
     @Override
     public void setNewTree() {
-        ((IADEM3Tree) this.nodo.getTree()).setNewTree();
+        ((Iadem3) this.nodo.getTree()).setNewTree();
     }
 
     @Override
     public void newDeletedTree() {
-        ((IADEM3Tree) this.nodo.getTree()).newDeletedTree();
+        ((Iadem3) this.nodo.getTree()).newDeletedTree();
     }
 
     @Override
     public void newTreeChange() {
-        ((IADEM3Tree) this.nodo.getTree()).newTreeChange();
+        ((Iadem3) this.nodo.getTree()).newTreeChange();
     }
 
     @Override
-    protected IADEM3Tree getMainTree() {
+    protected Iadem3 getMainTree() {
         return this.mainTree;
     }
 
@@ -156,17 +147,17 @@ public class Subtree extends IADEM3Tree {
     
     @Override
     public void updateNumberOfNodesSplitByTieBreaking(int amount) {
-        this.splitByBreakingTies += amount;
+        this.numSplitsByBreakingTies += amount;
         this.mainTree.updateNumberOfNodesSplitByTieBreaking(amount);
     }
 
     @Override
-    public void addSubtree(Subtree subtree) {
+    public void addSubtree(Iadem3Subtree subtree) {
         this.mainTree.addSubtree(subtree);
     }
 
     @Override
-    public void removeSubtree(Subtree subtree) {
+    public void removeSubtree(Iadem3Subtree subtree) {
         this.mainTree.removeSubtree(subtree);
     }
 }

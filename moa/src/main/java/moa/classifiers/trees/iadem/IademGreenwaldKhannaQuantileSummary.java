@@ -18,7 +18,7 @@
  *    
  */
 
-package moa.classifiers.trees.iademutils;
+package moa.classifiers.trees.iadem;
 
 import moa.core.GreenwaldKhannaQuantileSummary;
 

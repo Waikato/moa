@@ -18,12 +18,12 @@
  *    
  */
 
-package moa.classifiers.trees.iademutils;
+package moa.classifiers.trees.iadem;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public final class IademSplitMeasure implements Serializable {
+public final class IademSplitCriterion implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private final static int ENTROPY = 0;
@@ -50,11 +50,11 @@ public final class IademSplitMeasure implements Serializable {
     private final static String ERROR_GAIN_TEXT = "error_gain";
     private int splitMeasure;
 
-    public IademSplitMeasure() {
-        this.splitMeasure = IademSplitMeasure.ENTROPY;
+    public IademSplitCriterion() {
+        this.splitMeasure = IademSplitCriterion.ENTROPY;
     }
 
-    public IademSplitMeasure(String splitMeasure) throws IademException {
+    public IademSplitCriterion(String splitMeasure) throws IademException {
         try {
             setSplitMeasure(splitMeasure);
         } catch (IademException e) {
@@ -67,66 +67,66 @@ public final class IademSplitMeasure implements Serializable {
     public String getSplitMeasureText() {
         String splitMeasureText = "";
         switch (this.splitMeasure) {
-            case IademSplitMeasure.ENTROPY:
-                splitMeasureText = IademSplitMeasure.ENTROPY_TEXT;
+            case IademSplitCriterion.ENTROPY:
+                splitMeasureText = IademSplitCriterion.ENTROPY_TEXT;
                 break;
-            case IademSplitMeasure.ENTROPY_LOG_VAR:
-                splitMeasureText = IademSplitMeasure.ENTROPY_LOG_VAR_TEXT;
+            case IademSplitCriterion.ENTROPY_LOG_VAR:
+                splitMeasureText = IademSplitCriterion.ENTROPY_LOG_VAR_TEXT;
                 break;
-            case IademSplitMeasure.WEIGHTED_ENTROPY_LOG_VAR:
-                splitMeasureText = IademSplitMeasure.WEIGHTED_ENTROPY_LOG_VAR_TEXT;
+            case IademSplitCriterion.WEIGHTED_ENTROPY_LOG_VAR:
+                splitMeasureText = IademSplitCriterion.WEIGHTED_ENTROPY_LOG_VAR_TEXT;
                 break;
-            case IademSplitMeasure.WEIGHTED_ENTROPY:
-                splitMeasureText = IademSplitMeasure.WEIGHTED_ENTROPY_TEXT;
+            case IademSplitCriterion.WEIGHTED_ENTROPY:
+                splitMeasureText = IademSplitCriterion.WEIGHTED_ENTROPY_TEXT;
                 break;
-            case IademSplitMeasure.BETA_1:
-                splitMeasureText = IademSplitMeasure.BETA_1_TEXT;
+            case IademSplitCriterion.BETA_1:
+                splitMeasureText = IademSplitCriterion.BETA_1_TEXT;
                 break;
-            case IademSplitMeasure.GAMMA_1:
-                splitMeasureText = IademSplitMeasure.GAMMA_1_TEXT;
+            case IademSplitCriterion.GAMMA_1:
+                splitMeasureText = IademSplitCriterion.GAMMA_1_TEXT;
                 break;
-            case IademSplitMeasure.BETA_2:
-                splitMeasureText = IademSplitMeasure.BETA_2_TEXT;
+            case IademSplitCriterion.BETA_2:
+                splitMeasureText = IademSplitCriterion.BETA_2_TEXT;
                 break;
-            case IademSplitMeasure.GAMMA_2:
-                splitMeasureText = IademSplitMeasure.GAMMA_2_TEXT;
+            case IademSplitCriterion.GAMMA_2:
+                splitMeasureText = IademSplitCriterion.GAMMA_2_TEXT;
                 break;
-            case IademSplitMeasure.BETA_4:
-                splitMeasureText = IademSplitMeasure.BETA_4_TEXT;
+            case IademSplitCriterion.BETA_4:
+                splitMeasureText = IademSplitCriterion.BETA_4_TEXT;
                 break;
-            case IademSplitMeasure.GAMMA_4:
-                splitMeasureText = IademSplitMeasure.GAMMA_4_TEXT;
+            case IademSplitCriterion.GAMMA_4:
+                splitMeasureText = IademSplitCriterion.GAMMA_4_TEXT;
                 break;
-            case IademSplitMeasure.ERROR_GAIN:
-                splitMeasureText = IademSplitMeasure.ERROR_GAIN_TEXT;
+            case IademSplitCriterion.ERROR_GAIN:
+                splitMeasureText = IademSplitCriterion.ERROR_GAIN_TEXT;
                 break;
         }
         return splitMeasureText;
     }
 
     public void setSplitMeasure(String splitMeasureType) throws IademException {
-        if (splitMeasureType.equals(IademSplitMeasure.ENTROPY_TEXT)) {
-            this.splitMeasure = IademSplitMeasure.ENTROPY;
-        } else if (splitMeasureType.equals(IademSplitMeasure.ENTROPY_LOG_VAR_TEXT)) {
-            splitMeasure = IademSplitMeasure.ENTROPY_LOG_VAR;
+        if (splitMeasureType.equals(IademSplitCriterion.ENTROPY_TEXT)) {
+            this.splitMeasure = IademSplitCriterion.ENTROPY;
+        } else if (splitMeasureType.equals(IademSplitCriterion.ENTROPY_LOG_VAR_TEXT)) {
+            splitMeasure = IademSplitCriterion.ENTROPY_LOG_VAR;
         } else if (splitMeasureType.equals(WEIGHTED_ENTROPY_LOG_VAR_TEXT)) {
-            splitMeasure = IademSplitMeasure.WEIGHTED_ENTROPY_LOG_VAR;
-        } else if (splitMeasureType.equals(IademSplitMeasure.WEIGHTED_ENTROPY_TEXT)) {
-            splitMeasure = IademSplitMeasure.WEIGHTED_ENTROPY;
-        } else if (splitMeasureType.equals(IademSplitMeasure.BETA_1_TEXT)) {
-            splitMeasure = IademSplitMeasure.BETA_1;
-        } else if (splitMeasureType.equals(IademSplitMeasure.GAMMA_1_TEXT)) {
-            splitMeasure = IademSplitMeasure.GAMMA_1;
-        } else if (splitMeasureType.equals(IademSplitMeasure.BETA_2_TEXT)) {
-            splitMeasure = IademSplitMeasure.BETA_2;
-        } else if (splitMeasureType.equals(IademSplitMeasure.GAMMA_2_TEXT)) {
-            splitMeasure = IademSplitMeasure.GAMMA_2;
-        } else if (splitMeasureType.equals(IademSplitMeasure.BETA_4_TEXT)) {
-            splitMeasure = IademSplitMeasure.BETA_4;
-        } else if (splitMeasureType.equals(IademSplitMeasure.GAMMA_4_TEXT)) {
-            splitMeasure = IademSplitMeasure.GAMMA_4;
-        } else if (splitMeasureType.equals(IademSplitMeasure.ERROR_GAIN_TEXT)) {
-            splitMeasure = IademSplitMeasure.ERROR_GAIN;
+            splitMeasure = IademSplitCriterion.WEIGHTED_ENTROPY_LOG_VAR;
+        } else if (splitMeasureType.equals(IademSplitCriterion.WEIGHTED_ENTROPY_TEXT)) {
+            splitMeasure = IademSplitCriterion.WEIGHTED_ENTROPY;
+        } else if (splitMeasureType.equals(IademSplitCriterion.BETA_1_TEXT)) {
+            splitMeasure = IademSplitCriterion.BETA_1;
+        } else if (splitMeasureType.equals(IademSplitCriterion.GAMMA_1_TEXT)) {
+            splitMeasure = IademSplitCriterion.GAMMA_1;
+        } else if (splitMeasureType.equals(IademSplitCriterion.BETA_2_TEXT)) {
+            splitMeasure = IademSplitCriterion.BETA_2;
+        } else if (splitMeasureType.equals(IademSplitCriterion.GAMMA_2_TEXT)) {
+            splitMeasure = IademSplitCriterion.GAMMA_2;
+        } else if (splitMeasureType.equals(IademSplitCriterion.BETA_4_TEXT)) {
+            splitMeasure = IademSplitCriterion.BETA_4;
+        } else if (splitMeasureType.equals(IademSplitCriterion.GAMMA_4_TEXT)) {
+            splitMeasure = IademSplitCriterion.GAMMA_4;
+        } else if (splitMeasureType.equals(IademSplitCriterion.ERROR_GAIN_TEXT)) {
+            splitMeasure = IademSplitCriterion.ERROR_GAIN;
         } else {
             throw new IademException("MySplitMeasure", "setSplitMeasure", "Measure does not exist");
         }
@@ -134,47 +134,31 @@ public final class IademSplitMeasure implements Serializable {
 
     public static ArrayList<String> getSplitMeasureOptions() {
         ArrayList<String> splitMeasureList = new ArrayList<String>();
-        splitMeasureList.add(IademSplitMeasure.ENTROPY_TEXT);
-        splitMeasureList.add(IademSplitMeasure.ENTROPY_LOG_VAR_TEXT);
-        splitMeasureList.add(IademSplitMeasure.WEIGHTED_ENTROPY_LOG_VAR_TEXT);
-        splitMeasureList.add(IademSplitMeasure.WEIGHTED_ENTROPY_TEXT);
-        splitMeasureList.add(IademSplitMeasure.BETA_1_TEXT);
-        splitMeasureList.add(IademSplitMeasure.GAMMA_1_TEXT);
-        splitMeasureList.add(IademSplitMeasure.BETA_2_TEXT);
-        splitMeasureList.add(IademSplitMeasure.GAMMA_2_TEXT);
-        splitMeasureList.add(IademSplitMeasure.BETA_4_TEXT);
-        splitMeasureList.add(IademSplitMeasure.GAMMA_4_TEXT);
+        splitMeasureList.add(IademSplitCriterion.ENTROPY_TEXT);
+        splitMeasureList.add(IademSplitCriterion.ENTROPY_LOG_VAR_TEXT);
+        splitMeasureList.add(IademSplitCriterion.WEIGHTED_ENTROPY_LOG_VAR_TEXT);
+        splitMeasureList.add(IademSplitCriterion.WEIGHTED_ENTROPY_TEXT);
+        splitMeasureList.add(IademSplitCriterion.BETA_1_TEXT);
+        splitMeasureList.add(IademSplitCriterion.GAMMA_1_TEXT);
+        splitMeasureList.add(IademSplitCriterion.BETA_2_TEXT);
+        splitMeasureList.add(IademSplitCriterion.GAMMA_2_TEXT);
+        splitMeasureList.add(IademSplitCriterion.BETA_4_TEXT);
+        splitMeasureList.add(IademSplitCriterion.GAMMA_4_TEXT);
 
         return splitMeasureList;
     }
 
     public static String getDefaultSplitMeasure() {
-        return IademSplitMeasure.ENTROPY_TEXT;
+        return IademSplitCriterion.ENTROPY_TEXT;
     }
 
-    public double doMeasure(ArrayList<Double> vector, ArrayList<Double> xClassWeight,
-            Long vectorWithInfo) throws IademException {
+    public double doMeasure(ArrayList<Double> vector) throws IademException {
         double logBase; // logarithm base for entropy
-        ArrayList<Double> classWeight;
-
-        if (vectorWithInfo == null) {
-            logBase = (double) vector.size();
-        } else {
-            logBase = vectorWithInfo.doubleValue();
-        }
-
-        if (xClassWeight == null) {
-            classWeight = new ArrayList<Double>();
-            for (Double elem : vector) {
-                classWeight.add(1.0);
-            }
-        } else {
-            classWeight = xClassWeight;
-        }
+        logBase = (double) vector.size();
 
         double measure = 0.0;
         switch (this.splitMeasure) {
-            case IademSplitMeasure.ENTROPY: {
+            case IademSplitCriterion.ENTROPY: {
                 logBase = vector.size();
                 if (logBase > 1.0) {
                     double n = 0.0;
@@ -243,20 +227,10 @@ public final class IademSplitMeasure implements Serializable {
             break;
 
             case WEIGHTED_ENTROPY: {
-                if (classWeight.size() != vector.size()) {
-                    throw new IademException("MySplitMeasure", "doMeasure",
-                            "Weight vector is not appropriate");
-                }
-                ArrayList<Double> weights = new ArrayList<Double>();
-                double a_iWeighted;
-                for (int i = 0; i < vector.size(); i++) {
-                    a_iWeighted = vector.get(i) * classWeight.get(i);
-                    weights.add(a_iWeighted);
-                }
                 if (logBase > 1.0) {
                     double n = 0.0;
                     for (int i = 0; i < vector.size(); i++) {
-                        double tmpValue = weights.get(i);
+                        double tmpValue = vector.get(i);
                         if (tmpValue > 0.0) {
                             n += tmpValue;
                         } else if (tmpValue < 0.0) {
@@ -271,8 +245,8 @@ public final class IademSplitMeasure implements Serializable {
                         double a_i = 0.0;
                         double sum = 0.0;
 
-                        for (int i = 0; i < weights.size(); i++) {
-                            a_i = weights.get(i);
+                        for (int i = 0; i < vector.size(); i++) {
+                            a_i = vector.get(i);
                             if (a_i > 0.0) {
                                 sum += (a_i * IademCommonProcedures.log(logBase, a_i));
                             }
@@ -286,23 +260,11 @@ public final class IademSplitMeasure implements Serializable {
             break;
 
             case WEIGHTED_ENTROPY_LOG_VAR: {
-                if (classWeight.size() != vector.size()) {
-                    throw new IademException("MySplitMeasure", "doMeasure",
-                            "Weight vector is not appropriate");
-                }
-
-                ArrayList<Double> weights = new ArrayList<Double>();
-                double a_iWeighted;
-                for (int i = 0; i < vector.size(); i++) {
-                    a_iWeighted = vector.get(i) * classWeight.get(i);
-                    weights.add(a_iWeighted);
-                }
-
                 logBase = vector.size();
                 if (logBase > 1.0) {
                     double n = 0.0;
                     for (int i = 0; i < vector.size(); i++) {
-                        double tmpValue = weights.get(i);
+                        double tmpValue = vector.get(i);
                         if (tmpValue > 0.0) {
                             n += tmpValue;
                         } else if (tmpValue < 0.0) {
@@ -317,7 +279,7 @@ public final class IademSplitMeasure implements Serializable {
                         double a_i = 0.0;
                         double sum = 0.0;
 
-                        for (Double elem : weights) {
+                        for (Double elem : vector) {
                             a_i = elem;
                             if (a_i > 0.0) {
                                 sum += (a_i * IademCommonProcedures.log(logBase, a_i));

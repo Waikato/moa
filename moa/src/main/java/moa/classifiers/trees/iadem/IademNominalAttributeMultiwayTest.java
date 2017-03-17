@@ -1,5 +1,5 @@
 /*
- *    IademNominalAttributeBinaryTest.java
+ *    IademNominalAttributeMultiwayTest.java
  *
  *    @author Isvani Frias-Blanco
  * 
@@ -18,19 +18,20 @@
  *    
  */
 
-package moa.classifiers.trees.iademutils;
+package moa.classifiers.trees.iadem;
 
-import moa.classifiers.core.conditionaltests.NominalAttributeBinaryTest;
+import moa.classifiers.core.conditionaltests.NominalAttributeMultiwayTest;
 
-public class IademNominalAttributeBinaryTest extends NominalAttributeBinaryTest {
-    private static final long serialVersionUID = 1L;
-    
+public class IademNominalAttributeMultiwayTest extends NominalAttributeMultiwayTest {
+    int maxBranches;
 
-    public IademNominalAttributeBinaryTest(int attIndex, int attValue) {
-        super(attIndex, attValue);
+    public IademNominalAttributeMultiwayTest(int attIndex, int maxBranches) {
+        super(attIndex);
+        this.maxBranches = maxBranches;
     }
     
-    public int getAttValue() {
-        return this.attValue;
+    @Override
+    public int maxBranches() {
+        return maxBranches;
     }
 }
