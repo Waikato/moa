@@ -19,8 +19,6 @@
  */
 package moa.classifiers.active.budget;
 
-import com.github.javacliparser.FloatOption;
-
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
@@ -33,15 +31,18 @@ public class ThresholdBM extends AbstractOptionHandler implements BudgetManager 
 	private static final long serialVersionUID = 1L;
 
 	int acquisitionReport = 0;
-
-    public FloatOption fixedThresholdOption = new FloatOption("fixedThreshold",
-            'u', "Fixed threshold.",
-            0.9, 0.00, 1.00);
     
+	double threshold;
+	
+	@Override
+	public void setBudget(double budget) {
+		this.threshold = 1 - budget;
+	}
+	
 	@Override
 	public boolean isAbove(double value) {
 		boolean acquire = false;
-		if (value >= this.fixedThresholdOption.getValue())
+		if (value >= this.threshold)
 			acquire = true;
 		if (acquire)
 			this.acquisitionReport++;
@@ -58,6 +59,7 @@ public class ThresholdBM extends AbstractOptionHandler implements BudgetManager 
 	@Override
 	public void resetLearning() {
 		this.acquisitionReport = 0;
+		this.threshold = 0;
 	}
 
 	@Override

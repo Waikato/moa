@@ -43,6 +43,7 @@ import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 
 
+
 /**
  * This classifier is based on Multi-Class Probabilistic Active Learning (MCPAL)
  * proposed in [1] and uses the budget manager shown in [2].
@@ -69,7 +70,6 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	private static final long serialVersionUID = 1L;
 
 	private MCPALEstimatorMultivariate[] kernelEstimators; // used only for labeled data
-	private MCPALEstimatorMultivariate kernelEstimatorAllClasses;
 
 	private int numClasses;
 	
@@ -88,13 +88,17 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	
     public ClassOption budgetManagerOption = new ClassOption("budgetManager",
             'b', "BudgetManager that should be used.",
-            BudgetManager.class, "ThresholdBM");
+            BudgetManager.class, "IncrementalQuantileFilter");
     
-    public FloatOption mMaxOption = new FloatOption("M",
-            'm', "The maximum number of hypothetic label.", 0, 0, Integer.MAX_VALUE);
+    public FloatOption budgetOption = new FloatOption("budget",
+    		'u', "The budget that should be used by the BudgetManager.",
+    		0.1, 0.00, 1.00);
+    
+    public IntOption mMaxOption = new IntOption("M",
+            'm', "The maximum number of hypothetic label.", 3, 0, Integer.MAX_VALUE);
     
     public FloatOption bandwidthOption = new FloatOption("bandWidth",
-            'w', "The bandwidth to use for density estimation.", 1);
+            'w', "The bandwidth to use for density estimation.", 10, Double.MIN_VALUE, Double.MAX_VALUE);
     
 	public MCPAL() {
 		resetLearningImpl();
@@ -106,6 +110,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 
 		classifier = (Classifier) getPreparedClassOption(classifierOption);
 		budgetManager = (BudgetManager) getPreparedClassOption(budgetManagerOption);
+		budgetManager.setBudget(budgetOption.getValue());
 		mMax = (int)mMaxOption.getValue();
 		bandwidth = bandwidthOption.getValue();
 	}
@@ -132,7 +137,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 
 	// ___________________________________MCPAL______________________________________
 
-	
+
 
 	/**
 	 * calculate the frequency estimates (k) for a given instance
@@ -147,6 +152,30 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 			k[cIdx] = kernelEstimators[cIdx].getFrequencyEstimate(inst);
 		}
 		return k;
+	}
+
+	/**
+	 * calculate the density for a given instance
+	 * 
+	 * @param k vector of frequency estimates
+	 * @return density for the given frequency estimate
+	 */
+	private double getDensity(double[] k, boolean includeInstance) {
+		double sumFrequencies = 0;
+		int numInstances = 0;
+		for(int cIdx = 0; cIdx < numClasses; ++cIdx)
+		{
+			sumFrequencies += k[cIdx];
+			numInstances += kernelEstimators[cIdx].getNumPoints();
+		}
+		
+		if(includeInstance)
+		{
+			sumFrequencies += 1;
+			++numInstances;
+		}
+		
+		return sumFrequencies/numInstances;
 	}
 	
 	/**
@@ -194,7 +223,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 				// instances or the classes on the right side of it
 				// (if there are no instances all classes are valid)
 				// this is done to avoid duplications
-				for(int newLastIndex = lastIdx; lastIdx < numClasses; ++lastIdx)
+				for(int newLastIndex = lastIdx; newLastIndex < numClasses; ++newLastIndex)
 				{
 					// copy the distribution to not override it accidently
 					int[] newDistribution = distribution.clone();
@@ -220,30 +249,17 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	 */
 	private double getExpPerf(double[] k, int m)
 	{
-		// calculate d and n from the given k
-		int[] d = new int[numClasses];
-		int maxKIdx = 0;
+		// calculate n from the given k
 		double n = 0;
 		// iterate over all classes
 		for(int i = 0; i < numClasses; ++i)
 		{
-			// initialize all ds with zero
-			d[i] = 0;
-			// check if the k for class i is higher than the current
-			// assumed maximum of k
-			if(k[maxKIdx] < k[i])
-			{
-				// replace the assumed maximum if it is
-				maxKIdx = i;
-			}
 			// sum all k up to obtain n
 			n+= k[i];
 		}
-		// set the di to 1 where ki = max(k)
-		d[maxKIdx] = 1;
 		
 		// call overloaded method with the calculated d and n 
-		return getExpPerf(k, n, m, d, 1);
+		return getExpPerf(k, n, m, 1);
 	}
 
 	/**
@@ -253,11 +269,10 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	 * @param k vector of frequency estimates
 	 * @param n number of observed labels (sum of all ks)
 	 * @param m number of hypothetically considered labels
-	 * @param d decision vector (a vector where di = 1 if ki = max(k) otherwise 0)
 	 * @param sumD the sum of all ds (usually 1)
 	 * @return the expected performance
 	 */
-	private double getExpPerf(double[] k, double n, int m, int[] d, int sumD)
+	private double getExpPerf(double[] k, double n, int m, int sumD)
 	{
 		// initialize the expected performance with 0
 		double expPerf = 0;
@@ -269,6 +284,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		{
 			// calculate the three terms in equation 34 in [1]
 			int[] l = distributionsForM.get(distributionIdx);
+			int[] d = getD(k, l);
 			double firstTerm = calculateFistTermClosedForm(n, l, m, d, sumD);
 			double secondTerm = calculateSecondTermClosedForm(k, l, d);
 			double thirdTerm = calculateThirdTermClosedForm(l, m);
@@ -278,6 +294,35 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		}
 		
 		return expPerf;
+	}
+	
+	/**
+	 * get the decision vector from the frequency estimations 
+	 * and hypothetic label distribution
+	 * 
+	 * @param k vector of frequency estimates
+	 * @param l	the distribution of hypothetic labels
+	 * @return	the decision vector
+	 */
+	private int[] getD(double[] k, int[] l)
+	{
+		int maxIdx = 0;
+		double maxVal = k[0] + l[0];
+		int[] d = new int[numClasses];
+		for(int i = 1; i < numClasses; ++i)
+		{
+			double val = k[i] + l[i];
+			if(val > maxVal)
+			{
+				maxVal = val;
+				maxIdx = i;
+			}
+			d[i] = 0;
+		}
+		
+		d[maxIdx] = 1;
+		
+		return d;
 	}
 	
 	/**
@@ -295,7 +340,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		double result = 1;
 		for(int j_ = 0; j_ < (sumL + sumD); ++j_)
 		{
-			result /= n+j_;
+			result /= n + numClasses + j_;
 		}
 		
 		return result;
@@ -317,7 +362,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		{
 			for(int j_ = 0; j_ < l[i] + d[i]; ++j_)
 			{
-				result *= j_ + k[i];
+				result *= j_ + k[i] + 1;
 			}
 		}
 		
@@ -343,6 +388,11 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		return result;
 	}
 
+	/**
+	 * calculate the performance gain by calculating the expected performances for all m <= M
+	 * @param k vector of frequency estimates
+	 * @return the performance gain
+	 */
 	private double getPerfGain(double[] k)
 	{
 		
@@ -352,22 +402,33 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		
 		for(int m = 1; m <= mMax; ++m)
 		{
-			double gain = (getExpPerf(k, m) - expCurPerf)/m;
+			double currentPerfForM = getExpPerf(k, m); 
+			double gain = (currentPerfForM - expCurPerf)/m;
 			maxGain = Math.max(maxGain, gain);
 		}
 		
 		return maxGain;
 	}
 	
+	/**
+	 * calculate the score by weighting the performance gain with the density
+	 * @param point the point the score should be calculated for
+	 * @return the score
+	 */
 	private double getAlScore(double[] point)
 	{
-		double density = kernelEstimatorAllClasses.getDensity(point, true);
 		double[] k = getK(point);
+		double density = getDensity(k, true);
 		double perfGain = getPerfGain(k);
 		return density * perfGain;	
 	}
 	
-
+	/**
+	 * normalize the output of classifiers such that the sum is 1 and
+	 * all classes have at least one prediction
+	 * @param votes the prediction for each class
+	 * @return the normalized prediction
+	 */
 	private double[] normalizeVotes(double[] votes) {
 		double[] normVotes = new double[numClasses];
 		double sum = 0;
@@ -405,13 +466,13 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		budgetManager = null;
 		distributions = new ArrayList<>();
 		mMax = 0;
-		kernelEstimatorAllClasses = null;
 		kernelEstimators = null;
 	}
-
+	
+	int numRuns = 0;
+	
 	@Override
 	public void trainOnInstanceImpl(Instance inst) {
-		// TODO ADD AL & BUDGET
 		double[] point = new double[inst.numAttributes() - 1];
 		for(int i = 0; i < point.length; ++i)
 		{
@@ -428,7 +489,6 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 			
 			int c = (int)inst.classValue();
 			kernelEstimators[c].addValue(point);
-			kernelEstimatorAllClasses.addValue(point);
 		}
 	}
 
@@ -447,23 +507,34 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 			((AbstractClassifier) classifier).getModelDescription(out, indent);
 		}
 	}
-
+	
 	@Override
 	public void setModelContext(InstancesHeader ih) {
 		super.setModelContext(ih);
+		setNumClasses(ih.numClasses(), mMax);
+		System.out.println("init");
+	}
+
+	private void setNumClasses(int numClasses, int mMax) {
 		
-		numClasses = ih.getInstanceInformation().numClasses();
+		this.numClasses = numClasses;
+		this.mMax = mMax;
 		for(int m = 0; m <= mMax; ++m)
 		{
 			distributions.add(getAllDistributionPossibilities(m, numClasses));
 		}
 		
-		kernelEstimatorAllClasses = new MCPALEstimatorMultivariate(bandwidth);
 		kernelEstimators = new MCPALEstimatorMultivariate[numClasses];
 		for(int cIdx = 0; cIdx < numClasses; ++cIdx)
 		{
 			kernelEstimators[cIdx] = new MCPALEstimatorMultivariate(bandwidth);
 		}
+	}
+	public static void main(String[] args) {
+		MCPAL mcPal = new MCPAL();
+		mcPal.setNumClasses(2, 3);
+		double expPerf = mcPal.getPerfGain(new double[]{0.4, 0.6}); 
+		System.out.println(expPerf);
 	}
 	
 }

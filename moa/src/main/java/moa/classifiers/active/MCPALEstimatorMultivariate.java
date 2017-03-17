@@ -38,7 +38,7 @@ import Jama.*;
  */
 public class MCPALEstimatorMultivariate{
 	
-	private Matrix covariance;
+	private Matrix invCovariance;
 	private double bandwidth;
 	private ArrayList<Matrix> points;
 	private boolean dimSet=false;
@@ -48,17 +48,15 @@ public class MCPALEstimatorMultivariate{
 		this.points = new ArrayList<Matrix>();
 	}
 	
-	public void addValue(double x){
-		double[] val={x};
-		addValue(val);
-	}
-	
 	public void addValue(double[] x){
-		double[][] vec=new double[x.length][1];
-		for(int i=0;i<x.length;i++)
-			vec[i][0]=x[i];
-		Matrix point=new Matrix(vec);
+		Matrix point=doubleArrayToMatrix(x);
 		points.add(point);
+		
+		if(points.size() > 100)
+		{
+			points.remove(0);
+		}
+		
 		if(dimSet==false)
 			initCovariance(x.length);
 	}
@@ -71,56 +69,32 @@ public class MCPALEstimatorMultivariate{
 	public double getFrequencyEstimate(double[] x){
 		if(points.size()==0)
 			return 0;
-		
-		double[][] vec=new double[x.length][1];
-		for(int i=0;i<x.length;i++)
-			vec[i][0]=x[i];
-		Matrix point=new Matrix(vec);
+
+		Matrix point=doubleArrayToMatrix(x);
 		double prob=0;
 		for(int i=0;i<points.size();i++){
 			prob+=getNormal(point, points.get(i));
 		}
 		return prob;
 	}
-
-	/**
-	 * Returns the density of the point. If includePoint is set to true the 
-	 * point will be included to the set of points over which the density is 
-	 * calculated
-	 * @param point
-	 * @param includePoint
-	 * @return
-	 */
-	public double getDensity(double[] point, boolean includePoint)
-	{
-		// get the frequency estimation for the point
-		double frequencyEstimate = getFrequencyEstimate(point);
-		int numPoints = points.size();
-		
-		// check if the point should be included
-		if(includePoint)
-		{
-			// if yes increase the frequency estimate by 1
-			// because K(x,x) = 1
-			frequencyEstimate += 1;
-			// increase the number of points by 1
-			numPoints += 1;
-		}
-		
-		// normalize the result
-		return frequencyEstimate / numPoints;
-	}
 	
 	public double getNormal(Matrix x, Matrix mu){
 		double prob=0;
-		Matrix exponent=x.minus(mu).transpose().times(covariance.inverse()).times(x.minus(mu)); 
-		double pow=exponent.get(0,0);
-		pow*=-0.5;
-		//double normalizer=1.0/Math.sqrt((Math.pow(2*Math.PI, dim)*covariance.determinant()));
-		//prob=normalizer*Math.exp(pow);
+		Matrix diff = x.minus(mu);
+		Matrix exponent=diff.transpose().times(invCovariance).times(diff); 
+		double pow=-0.5 * exponent.get(0,0);
+
 		prob=Math.exp(pow);
-		//System.out.println("powMulti = "+pow+" \t normMulti = "+normalizer);
+
 		return prob;
+	}
+	
+	private Matrix doubleArrayToMatrix(double[] x)
+	{
+		double[][] vec=new double[x.length][1];
+		for(int i=0;i<x.length;i++)
+			vec[i][0]=x[i];
+		return new Matrix(vec);
 	}
 	
 	public void initCovariance(int dim){
@@ -132,7 +106,15 @@ public class MCPALEstimatorMultivariate{
 					cov[i][j]=bandwidth;
 				else
 					cov[i][j]=0;
-		this.covariance=new Matrix(cov);
+		this.invCovariance=(new Matrix(cov)).inverse();
+	}
+	
+	/**
+	 * get the number of instances used to estimate the frequency
+	 * @return number of points
+	 */
+	public int getNumPoints(){
+		return points.size();
 	}
 	
 }
