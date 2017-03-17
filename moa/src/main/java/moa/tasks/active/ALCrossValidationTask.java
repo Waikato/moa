@@ -157,7 +157,7 @@ public class ALCrossValidationTask extends ALMainTask {
 	public Options getOptions() {
 		Options options = super.getOptions();
 		
-		// get the initial values for the variedParamNameOption
+		// make sure that the variedParamNameOption is up to date
 		ALMultiParamTask.refreshVariedParamNameOption(
 				this.learnerOption, this.variedParamNameOption);
 		

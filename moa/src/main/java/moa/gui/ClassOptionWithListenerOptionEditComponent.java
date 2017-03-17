@@ -50,10 +50,8 @@ public class ClassOptionWithListenerOptionEditComponent extends ClassOptionEditC
 						.getText().isEmpty()) 
 				{
 					// apply state to set the selected value in the ClassOption
+					// so that it can be picked up by dependent options
 					ClassOptionWithListenerOptionEditComponent.this.applyState();
-					
-					// pass state change to the ClassOption's listener
-					((ClassOptionWithListenerOption) opt).getListener().stateChanged(e);
 				}
 			}
 			

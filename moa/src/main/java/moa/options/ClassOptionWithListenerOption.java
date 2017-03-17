@@ -79,6 +79,11 @@ public class ClassOptionWithListenerOption extends ClassOption {
 	@Override
 	public void setValueViaCLIString(String s) {
 		super.setValueViaCLIString(s);
+		
+		// inform dependent options about change
+		if (this.listener != null) {
+			this.listener.stateChanged(null);
+		}
 	}
 
 }
