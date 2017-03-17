@@ -219,8 +219,15 @@ public class ALMultiParamTask extends ALMainTask {
 			
 			// set the learner's varied parameter option
 			if (learnerVariedParamOption != null) {
-				learnerVariedParamOption.setValueViaCLIString(
-						paramValues[i].getValueAsCLIString());
+				String paramValue = paramValues[i].getValueAsCLIString().trim();
+				
+				// parse to integer if necessary
+				if (learnerVariedParamOption instanceof IntOption) {
+					int intParamValue = (int) Double.parseDouble(paramValue);
+					paramValue = Integer.toString(intParamValue);
+				}
+				
+				learnerVariedParamOption.setValueViaCLIString(paramValue);
 			}
 			
 			for (Option opt : paramValueTask.getOptions().getOptionArray()) {
@@ -438,7 +445,7 @@ public class ALMultiParamTask extends ALMainTask {
 			// filter for Int and Float Options
 			options = Arrays.stream(options)
 					.filter(x -> x instanceof IntOption || 
-							x instanceof FloatOption)
+								 x instanceof FloatOption)
 					.toArray(Option[]::new);
 			
 			String[] optionNames = new String[options.length];
