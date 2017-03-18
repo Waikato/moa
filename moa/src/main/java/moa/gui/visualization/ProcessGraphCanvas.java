@@ -1,5 +1,5 @@
 /*
- *    BasicGraphCanvas.java
+ *    ProcessGraphCanvas.java
  *    Copyright (C) 2017 Otto-von-Guericke-University, Magdeburg, Germany
  *    @author Tim Sabsch (tim.sabsch@ovgu.de)
  *
@@ -22,10 +22,12 @@ package moa.gui.visualization;
 import moa.evaluation.MeasureCollection;
 
 /**
- * ProcessGraphCanvas is the basic implementation of AbstractGraphCanvas
+ * ProcessGraphCanvas is an implementation of AbstractGraphCanvas, showing one
+ * or multiple curves over a process.
+ * 
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
- * @see AbstractGraphCanvas, GraphCanvas
+ * @see AbstractGraphCanvas
  */
 public class ProcessGraphCanvas extends AbstractGraphCanvas {
 
@@ -36,12 +38,14 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 	private int min_processFrequency;
 
 	/**
-	 * Initialises a GraphCanvasMulti by constructing its GraphAxes,
-	 * GraphMultiCurve and EventPanel members as well as setting the initial
-	 * sizes.
+	 * Initialises a ProcessGraphCanvas by calling the super constructor with a
+	 * ScalableGraphAxes as instance of AbstractGraphAxes and GraphMultiCurve as
+	 * instance of AbstractGraphPlot. Also sets the min_processfrequency to
+	 * initial value.
 	 */
 	public ProcessGraphCanvas() {
 		super(new ScalableGraphAxes(), new GraphMultiCurve());
+		this.min_processFrequency = 10000;
 	}
 
 	/**
@@ -81,8 +85,8 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 		this.processFrequencies = processFrequencies;
 		this.min_processFrequency = min_processFrequency;
 		((ScalableGraphAxes) this.axesPanel).setProcessFrequency(min_processFrequency);
-		((GraphMultiCurve) this.curvePanel).setProcessFrequency(min_processFrequency);
-		((GraphMultiCurve) this.curvePanel).setGraph(measures, mSelect, processFrequencies);
+		((GraphMultiCurve) this.plotPanel).setProcessFrequency(min_processFrequency);
+		((GraphMultiCurve) this.plotPanel).setGraph(measures, mSelect, processFrequencies);
 		updateCanvas(false);
 	}
 

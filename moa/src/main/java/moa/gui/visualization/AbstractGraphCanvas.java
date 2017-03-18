@@ -28,18 +28,20 @@ import moa.evaluation.MeasureCollection;
 
 /**
  * AbstractGraphCanvas is an abstract class offering scaling functionality and
- * the structure of the underlying Axes and Drawing classes.
+ * the structure of the underlying Axes and Plot classes.
  * 
- * The functionality of the scaling is as following: the size of the canvas is 
- * determined by two sizes: the size itself and the preferredSize, which is
- * used by the parental viewport to set its size. If the window is rescaled
- * (e.g. by dragging the window) the preferred size does not change, which
- * results in setting the size to the viewport size. If the y axis is zoomed,
- * the baseHeight determines the new size and preferred size.
+ * The functionality of the scaling is as following: the size of the canvas is
+ * determined by two sizes: the size itself and the preferredSize, which is used
+ * by the parental viewport to set its size. If the window is rescaled (e.g. by
+ * dragging the window) the preferred size does not change, which results in
+ * setting the size to the viewport size. If the y axis is zoomed, the
+ * baseHeight determines the new size and preferred size.
+ * 
+ * This is class is partially based on GraphCanvas.
  * 
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
- * @see GraphCanvas, AbstractGraphAxes, AbstractGraphResult
+ * @see GraphCanvas, AbstractGraphAxes, AbstractGraphPlot
  */
 public abstract class AbstractGraphCanvas extends JPanel {
 
@@ -51,7 +53,7 @@ public abstract class AbstractGraphCanvas extends JPanel {
 
 	protected AbstractGraphAxes axesPanel;
 
-	protected AbstractGraphPlot curvePanel;
+	protected AbstractGraphPlot plotPanel;
 
 	private static final int X_OFFSET_LEFT = 35;
 
@@ -70,19 +72,19 @@ public abstract class AbstractGraphCanvas extends JPanel {
 	private double y_resolution;
 
 	private double baseHeight;
-	
+
 	/**
-	 * Initialises an AbstractGraphCanvas by constructing its
-	 * AbstractGraphAxes, GraphMultiCurve as well as setting the initial sizes.
+	 * Initialises an AbstractGraphCanvas by constructing its AbstractGraphAxes,
+	 * AbstractGraphPlot as well as setting initial sizes.
 	 */
 	public AbstractGraphCanvas(AbstractGraphAxes ax, AbstractGraphPlot g) {
 		this.axesPanel = ax;
-		this.curvePanel = g;
+		this.plotPanel = g;
 
-		this.curvePanel.setLocation(X_OFFSET_LEFT + 1, Y_OFFSET_TOP);
+		this.plotPanel.setLocation(X_OFFSET_LEFT + 1, Y_OFFSET_TOP);
 
 		add(this.axesPanel);
-		this.axesPanel.add(this.curvePanel);
+		this.axesPanel.add(this.plotPanel);
 
 		this.measureSelected = 0;
 		this.max_y_value = 1;
@@ -94,9 +96,14 @@ public abstract class AbstractGraphCanvas extends JPanel {
 		updateYResolution();
 
 		this.baseHeight = getHeight();
-
 	}
 
+	/**
+	 * Updates the base height, which is used to determine the canvas size. It
+	 * is defined as the current height divided by the y_resolution. To prevent
+	 * unnecessary scrolling after reduzing the y_resolution, the baseHeight is
+	 * reset to its initial value of 111 on y_resolution = 1.
+	 */
 	private void updateBaseHeight() {
 		if (y_resolution > 1) {
 			this.baseHeight = getHeight() / y_resolution;
@@ -142,7 +149,11 @@ public abstract class AbstractGraphCanvas extends JPanel {
 
 	/**
 	 * Updates the canvas: if values have changed or it is forced, the canvas
-	 * and preferred sizes are updated and the canvas is repainted.
+	 * and preferred sizes are updated and the canvas is repainted. The size is
+	 * defined as the current width * (baseHeight*y_resolution). The preferred
+	 * size, which controls the parental viewport, is set as the maximum of the
+	 * current preferred width and the latest point of the Plot, and the current
+	 * height.
 	 * 
 	 * @param force
 	 *            enforce repainting
@@ -157,6 +168,12 @@ public abstract class AbstractGraphCanvas extends JPanel {
 		}
 	}
 
+	/**
+	 * Computes the maximum value of the underlying measures at the currently
+	 * selected measure.
+	 * 
+	 * @return max value of measures at measureSelected
+	 */
 	private double maxValue() {
 		double max = Double.MIN_VALUE;
 
@@ -168,6 +185,12 @@ public abstract class AbstractGraphCanvas extends JPanel {
 		return max;
 	}
 
+	/**
+	 * Computes the maximum number of values of the underlying measures at the
+	 * currently selected measure.
+	 * 
+	 * @return max number of values at measureSelected
+	 */
 	private int maxNumValues() {
 		int max = 0;
 
@@ -200,37 +223,36 @@ public abstract class AbstractGraphCanvas extends JPanel {
 		}
 
 		// resizing needed?
-		if (max_x_value_new != this.max_x_value || 
-			max_y_value_new != this.max_y_value) {
+		if (max_x_value_new != this.max_x_value || max_y_value_new != this.max_y_value) {
 			this.max_x_value = max_x_value_new;
 			this.max_y_value = max_y_value_new;
-			updateYValue();
+			updateMaxYValue();
 			return true;
 		}
 		return false;
 	}
 
 	/**
-	 * Updates the x resolution.
+	 * Updates the x resolution of the axes and plot panel.
 	 */
 	private void updateXResolution() {
 		axesPanel.setXResolution(x_resolution);
-		curvePanel.setXResolution(x_resolution);
+		plotPanel.setXResolution(x_resolution);
 	}
 
 	/**
-	 * Updates the y resolution.
+	 * Updates the y resolution of the axes and plot panel.
 	 */
 	private void updateYResolution() {
 		axesPanel.setYResolution(y_resolution);
 	}
 
 	/**
-	 * Updates the y values of the axes and curve panel.
+	 * Updates the max y value of the axes and plot panel.
 	 */
-	private void updateYValue() {
+	private void updateMaxYValue() {
 		axesPanel.setYMaxValue(max_y_value);
-		curvePanel.setYMaxValue(max_y_value);
+		plotPanel.setYMaxValue(max_y_value);
 	}
 
 	/**
@@ -239,7 +261,10 @@ public abstract class AbstractGraphCanvas extends JPanel {
 	 */
 	private void updateChildren() {
 		axesPanel.setSize(getWidth(), getHeight());
-		curvePanel.setSize(getWidth() - X_OFFSET_LEFT - X_OFFSET_RIGHT, getHeight() - Y_OFFSET_BOTTOM - Y_OFFSET_TOP);
+		plotPanel.setSize(
+				getWidth() - X_OFFSET_LEFT - X_OFFSET_RIGHT, 
+				getHeight() - Y_OFFSET_BOTTOM - Y_OFFSET_TOP
+		);
 	}
 
 	@Override

@@ -65,7 +65,7 @@ import moa.gui.FileExtensionFilter;
 import moa.gui.GUIUtils;
 import moa.gui.PreviewTableModel;
 import moa.gui.clustertab.ClusteringVisualEvalPanel;
-import moa.gui.visualization.BudgetGraphCanvas;
+import moa.gui.visualization.ParamGraphCanvas;
 import moa.gui.visualization.ProcessGraphCanvas;
 import moa.tasks.active.ALCrossValidationTask;
 import moa.tasks.active.ALMultiParamTask;
@@ -123,7 +123,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	
 	private JScrollPane budgetGraphScrollPanel;
 	
-	private BudgetGraphCanvas budgetGraphCanvas;
+	private ParamGraphCanvas budgetGraphCanvas;
 	
 	private JPanel graphPanelControlRight;
 	
@@ -310,7 +310,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		budgetGraphScrollPanel = new JScrollPane();
 
 		// budgetGraphCanvas displays the live budget graph
-		budgetGraphCanvas = new BudgetGraphCanvas();
+		budgetGraphCanvas = new ParamGraphCanvas();
 		budgetGraphCanvas.setPreferredSize(new Dimension(500, 111));
 		budgetGraphCanvas.setGraph(this.measures, 0);
 
