@@ -52,17 +52,16 @@ public class Ranking<T extends Comparable<T>> {
 	}
 	
 	/**
-	 * return the index in a sorted state
-	 * @param data the data which should be sorted
-	 * @param index the index from which the index in the sorted state should be returned
-	 * @return the index in the sorted state of the given instance
+	 * return the indices of the sorted data list
+	 * @param data to be sorted data
+	 * @return the index list on the sorted state
 	 */
-	public int rank(List<T> data, int index)
+	public List<Integer> rank(List<T> data, int index)
 	{
 		Comparator<Integer> comparator = new IndexComparator(data);
 		List<Integer> indexList = generateIndexList(data.size());
 		indexList.sort(comparator);
-		return indexList.indexOf(index);
+		return indexList;
 	}
 	
 	/**

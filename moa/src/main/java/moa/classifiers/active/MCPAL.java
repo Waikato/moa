@@ -524,7 +524,5 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		{
 			kernelEstimators[cIdx] = new MCPALEstimatorMultivariate(bandwidth);
 		}
-		
-		System.out.println("init");
 	}
 }

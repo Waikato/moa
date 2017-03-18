@@ -44,11 +44,11 @@ public class IncrementalQuantileFilter extends AbstractOptionHandler implements 
 
 	private static final long serialVersionUID = 1L;
 	
-	double budget;
-	int acquiredLabels;
-	RingBuffer<Double> scoreBuffer;
+	protected double budget;
+	protected int acquiredLabels;
+	protected RingBuffer<Double> scoreBuffer;
 
-	public IntOption windowSizeOption = new IntOption("WindowSize", 'w', 
+	public IntOption windowSizeOption = new IntOption("windowSize", 'w', 
 			"The number of previously observed al scores which should be considered.",
 			100, 1,Integer.MAX_VALUE);
 
@@ -69,10 +69,12 @@ public class IncrementalQuantileFilter extends AbstractOptionHandler implements 
 		int windowSize = window.size();
 		
 		Ranking<Double> r = new Ranking<>();
-		int rank = r.rank(window, windowSize - 1);
+		List<Integer> rankedIndices = r.rank(window, windowSize - 1);
 		int thresholdIdx = (int)(windowSize * (1-budget));
+		double threshold = window.get(rankedIndices.get(thresholdIdx));
 		
-		boolean decision = rank >= thresholdIdx;
+		
+		boolean decision = alScore >= threshold;
 		
 		if (decision) {
 			++acquiredLabels;
