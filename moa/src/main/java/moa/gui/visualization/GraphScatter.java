@@ -22,63 +22,39 @@ package moa.gui.visualization;
 import java.awt.Color;
 import java.awt.Graphics;
 
-import javax.swing.GroupLayout;
-import javax.swing.JPanel;
-
 import moa.evaluation.MeasureCollection;
 
 /**
- * GraphScatter plots a scatter graph on a BudgetGraphCanvas.
+ * GraphScatter is an implementation of AbstractGraphPlot that draws a scatter
+ * plot.
+ * 
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
- * @see GraphCurve
+ * @see AbstractGraphPlot
  */
-public class GraphScatter extends JPanel {
+public class GraphScatter extends AbstractGraphPlot {
 
 	private static final long serialVersionUID = 1L;
     
     private static final int DOT_SIZE = 6;
-	
-	private MeasureCollection[] measures;
     
-    private int measureSelected;
-    
-    private double max_value;
-    
-    private String variedParamName;
+//    private String variedParamName;
     
     private double[] variedParamValues;
 	
-	/**
-	 * Constructor. Initialises class variables and sets the layout.
-	 */
-    public GraphScatter() {
-    	this.max_value = 1;
-    	this.measureSelected = 0;
-
-        setOpaque(false);
-
-        GroupLayout layout = new GroupLayout(this);
-        setLayout(layout);
-        layout.setHorizontalGroup(
-        	layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 1000, Short.MAX_VALUE));
-        layout.setVerticalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 300, Short.MAX_VALUE));
-    }
-    
     /**
-     * Updates the measure values and repaints the scatter plot.
+     * Draws a scatter graph based on the varied parameter and the measures.
      * @param measures  list of measure collections, one for each task
-     * @param selection currently selected measure
+     * @param mSelect currently selected measure
+     * @param variedParamName name of the varied parameter
+     * @param variedParamValues values of the varied parameter
      */
     public void setGraph(MeasureCollection[] measures, int mSelect, 
     		String variedParamName, double[] variedParamValues)
     {
-        this.measures = measures;
-        this.measureSelected = mSelect;
-        this.variedParamName = variedParamName;
+//        this.variedParamName = variedParamName;
         this.variedParamValues = variedParamValues;
-        this.repaint();
+        super.setGraph(measures, mSelect);
     }
 
     @Override
@@ -118,16 +94,6 @@ public class GraphScatter extends JPanel {
 
     	g.fillOval(x - DOT_SIZE/2, y - DOT_SIZE/2, DOT_SIZE, DOT_SIZE);
     }
-    
-    /**
-     * Sets the min and max y-value of this instance. 
-     * TODO check about min value. its currently not used, so either drop it or use it
-     * @param min  minimum y-value
-     * @param max  maximum y-value
-     */
-    public void setYMinMaxValues(double min, double max){
-//        min_value = min;
-        this.max_value = max;
-    }
+
 }
  

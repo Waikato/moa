@@ -67,24 +67,11 @@ import moa.gui.FileExtensionFilter;
 import moa.gui.GUIUtils;
 import moa.gui.PreviewTableModel;
 import moa.gui.clustertab.ClusteringVisualEvalPanel;
-import moa.gui.visualization.BudgetGraphCanvas;
-import moa.gui.visualization.GraphCanvasMulti;
+import moa.gui.visualization.ParamGraphCanvas;
+import moa.gui.visualization.ProcessGraphCanvas;
 import moa.tasks.active.ALCrossValidationTask;
 import moa.tasks.active.ALMultiParamTask;
 import moa.tasks.active.ALPrequentialEvaluationTask;
-
-/*
- * TODO maybe make graphcanvas and budgetgraphcanvas extending an abstract
- * class graphcanvas so that the zoom button actions are shorter. but this
- * would also require renaming the graphcanvas class.
- */
-/*
- * TODO everywhere 'this.'
- */
-
-/*
- * TODO implement scaling on x axis for budgets
- */
 
 /**
  * This panel displays text. Used to output the results of tasks. In contrast to
@@ -134,11 +121,11 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	
 	private JScrollPane graphScrollPanel;
 	
-	private GraphCanvasMulti graphCanvas;
+	private ProcessGraphCanvas graphCanvas;
 	
-	private JScrollPane budgetGraphScrollPanel;
+	private JScrollPane paramGraphScrollPanel;
 	
-	private BudgetGraphCanvas budgetGraphCanvas;
+	private ParamGraphCanvas paramGraphCanvas;
 	
 	private JPanel graphPanelControlRight;
 	
@@ -258,21 +245,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				// update the currently open graph
 				int currentTab = graphPanelTabbedPane.getSelectedIndex();
 				if (currentTab == 0) {
-					graphCanvas.setSize(new Dimension(
-							graphCanvas.getWidth(), 
-							(int) (graphCanvas.getHeight() * 1.2)));
-					graphCanvas.setPreferredSize(new Dimension(
-							graphCanvas.getWidth(), 
-							(int) (graphCanvas.getHeight() * 1.2)));
-					graphCanvas.updateCanvas(true);
+					graphCanvas.scaleYResolution(1);
 				} else {
-					budgetGraphCanvas.setSize(new Dimension(
-							budgetGraphCanvas.getWidth(), 
-							(int) (budgetGraphCanvas.getHeight() * 1.2)));
-					budgetGraphCanvas.setPreferredSize(new Dimension(
-							budgetGraphCanvas.getWidth(), 
-							(int) (budgetGraphCanvas.getHeight() * 1.2)));
-					budgetGraphCanvas.updateCanvas(true);
+					paramGraphCanvas.scaleYResolution(1);
 				}	
 			}
 		});
@@ -288,21 +263,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				// update the currently open graph
 				int currentTab = graphPanelTabbedPane.getSelectedIndex();
 				if (currentTab == 0) {
-					graphCanvas.setSize(new Dimension(
-							graphCanvas.getWidth(), 
-							(int) (graphCanvas.getHeight() * 0.8)));
-					graphCanvas.setPreferredSize(new Dimension(
-							graphCanvas.getWidth(), 
-							(int) (graphCanvas.getHeight() * 0.8)));
-					graphCanvas.updateCanvas(true);
+					graphCanvas.scaleYResolution(-1);
 				} else {
-					budgetGraphCanvas.setSize(new Dimension(
-							budgetGraphCanvas.getWidth(), 
-							(int) (budgetGraphCanvas.getHeight() * 0.8)));
-					budgetGraphCanvas.setPreferredSize(new Dimension(
-							budgetGraphCanvas.getWidth(), 
-							(int) (budgetGraphCanvas.getHeight() * 0.8)));
-					budgetGraphCanvas.updateCanvas(true);
+					paramGraphCanvas.scaleYResolution(-1);
 				}	
 			}
 		});
@@ -335,7 +298,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		graphScrollPanel = new JScrollPane();
 
 		// graphCanvas displays the live graph
-		graphCanvas = new GraphCanvasMulti();
+		graphCanvas = new ProcessGraphCanvas();
 		graphCanvas.setPreferredSize(new Dimension(500, 111));
 		graphCanvas.setGraph(null, 0, null, 1000);
 
@@ -350,22 +313,22 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		graphPanelTabbedPane.addTab("Time", graphScrollPanel);
 		
 		// budgetGraphScrollPanel is a scroll wrapper for the live budget graph
-		budgetGraphScrollPanel = new JScrollPane();
+		paramGraphScrollPanel = new JScrollPane();
 
 		// budgetGraphCanvas displays the live budget graph
-		budgetGraphCanvas = new BudgetGraphCanvas();
-		budgetGraphCanvas.setPreferredSize(new Dimension(500, 111));
-		budgetGraphCanvas.setGraph(this.measures, 0, this.variedParamName, this.variedParamValues);
+		paramGraphCanvas = new ParamGraphCanvas();
+		paramGraphCanvas.setPreferredSize(new Dimension(500, 111));
+		paramGraphCanvas.setGraph(this.measures, 0, this.variedParamName, this.variedParamValues);
 
-		GroupLayout budgetGraphCanvasLayout = new GroupLayout(budgetGraphCanvas);
-		budgetGraphCanvas.setLayout(budgetGraphCanvasLayout);
+		GroupLayout budgetGraphCanvasLayout = new GroupLayout(paramGraphCanvas);
+		paramGraphCanvas.setLayout(budgetGraphCanvasLayout);
 		budgetGraphCanvasLayout.setHorizontalGroup(budgetGraphCanvasLayout
 				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 515, Short.MAX_VALUE));
 		budgetGraphCanvasLayout.setVerticalGroup(budgetGraphCanvasLayout
 				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 128, Short.MAX_VALUE));
 
-		budgetGraphScrollPanel.setViewportView(budgetGraphCanvas);
-		graphPanelTabbedPane.addTab("Budget", budgetGraphScrollPanel);
+		paramGraphScrollPanel.setViewportView(paramGraphCanvas);
+		graphPanelTabbedPane.addTab("Param", paramGraphScrollPanel);
 		
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
@@ -388,9 +351,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				// update the currently open graph
 				int currentTab = graphPanelTabbedPane.getSelectedIndex();
 				if (currentTab == 0) {
-					graphCanvas.scaleXResolution(false);
+					graphCanvas.scaleXResolution(0.5);
 				} else {
-//					budgetGraphCanvas.scaleXResolution(false);
+					paramGraphCanvas.scaleXResolution(0.5);
 				}
 			}
 		});
@@ -403,9 +366,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				// update the currently open graph
 				int currentTab = graphPanelTabbedPane.getSelectedIndex();
 				if (currentTab == 0) {
-					graphCanvas.scaleXResolution(true);
+					graphCanvas.scaleXResolution(2);
 				} else {
-//					budgetGraphCanvas.scaleXResolution(true);
+					paramGraphCanvas.scaleXResolution(2);
 				}
 			}
 		});
@@ -556,10 +519,10 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		this.measures = gcmp.getMeasureCollectionsArray();
 		int min_pf = min(pfs);
 		
-		this.graphCanvas.setGraph(this.measures, this.graphCanvas.getMeasureSelected(), pfs, min_pf);
-		this.graphCanvas.updateCanvas(true);
-		this.budgetGraphCanvas.setGraph(
-				this.measures, this.budgetGraphCanvas.getMeasureSelected(),
+		this.graphCanvas.setGraph(this.measures, 
+				this.graphCanvas.getMeasureSelected(), pfs, min_pf);
+		this.paramGraphCanvas.setGraph(this.measures, 
+				this.paramGraphCanvas.getMeasureSelected(), 
 				this.variedParamName, this.variedParamValues);
 		this.clusteringVisualEvalPanel1.update();
 
@@ -845,8 +808,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		}
 		this.graphCanvas.setGraph(this.measures, m_select_offset, this.graphCanvas.getProcessFrequencies(),
 				this.graphCanvas.getMinProcessFrequency());
-		this.graphCanvas.forceAddEvents();
-		this.budgetGraphCanvas.setGraph(this.measures, m_select_offset, 
+		this.paramGraphCanvas.setGraph(this.measures, m_select_offset, 
 				this.variedParamName, this.variedParamValues);
 	}
 }
