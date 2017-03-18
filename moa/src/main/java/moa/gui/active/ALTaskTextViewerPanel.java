@@ -66,23 +66,10 @@ import moa.gui.GUIUtils;
 import moa.gui.PreviewTableModel;
 import moa.gui.clustertab.ClusteringVisualEvalPanel;
 import moa.gui.visualization.BudgetGraphCanvas;
-import moa.gui.visualization.GraphCanvasMulti;
+import moa.gui.visualization.ProcessGraphCanvas;
 import moa.tasks.active.ALCrossValidationTask;
 import moa.tasks.active.ALMultiParamTask;
 import moa.tasks.active.ALPrequentialEvaluationTask;
-
-/*
- * TODO maybe make graphcanvas and budgetgraphcanvas extending an abstract
- * class graphcanvas so that the zoom button actions are shorter. but this
- * would also require renaming the graphcanvas class.
- */
-/*
- * TODO everywhere 'this.'
- */
-
-/*
- * TODO implement scaling on x axis for budgets
- */
 
 /**
  * This panel displays text. Used to output the results of tasks. In contrast to
@@ -132,7 +119,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	
 	private JScrollPane graphScrollPanel;
 	
-	private GraphCanvasMulti graphCanvas;
+	private ProcessGraphCanvas graphCanvas;
 	
 	private JScrollPane budgetGraphScrollPanel;
 	
@@ -254,13 +241,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				if (currentTab == 0) {
 					graphCanvas.scaleYResolution(1);
 				} else {
-					budgetGraphCanvas.setSize(new Dimension(
-							budgetGraphCanvas.getWidth(), 
-							(int) (budgetGraphCanvas.getHeight() * 1.2)));
-					budgetGraphCanvas.setPreferredSize(new Dimension(
-							budgetGraphCanvas.getWidth(), 
-							(int) (budgetGraphCanvas.getHeight() * 1.2)));
-					budgetGraphCanvas.updateCanvas(true);
+					budgetGraphCanvas.scaleYResolution(1);
 				}	
 			}
 		});
@@ -278,13 +259,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				if (currentTab == 0) {
 					graphCanvas.scaleYResolution(-1);
 				} else {
-//					budgetGraphCanvas.setSize(new Dimension(
-//							budgetGraphCanvas.getWidth(), 
-//							(int) (budgetGraphCanvas.getHeight() * 0.8)));
-//					budgetGraphCanvas.setPreferredSize(new Dimension(
-//							budgetGraphCanvas.getWidth(), 
-//							(int) (budgetGraphCanvas.getHeight() * 0.8)));
-//					budgetGraphCanvas.updateCanvas(true);
+					budgetGraphCanvas.scaleYResolution(-1);
 				}	
 			}
 		});
@@ -317,7 +292,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		graphScrollPanel = new JScrollPane();
 
 		// graphCanvas displays the live graph
-		graphCanvas = new GraphCanvasMulti();
+		graphCanvas = new ProcessGraphCanvas();
 		graphCanvas.setPreferredSize(new Dimension(500, 111));
 		graphCanvas.setGraph(null, 0, null, 1000);
 
@@ -372,7 +347,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				if (currentTab == 0) {
 					graphCanvas.scaleXResolution(0.5);
 				} else {
-//					budgetGraphCanvas.scaleXResolution(false);
+					budgetGraphCanvas.scaleXResolution(0.5);
 				}
 			}
 		});
@@ -387,7 +362,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				if (currentTab == 0) {
 					graphCanvas.scaleXResolution(2);
 				} else {
-//					budgetGraphCanvas.scaleXResolution(true);
+					budgetGraphCanvas.scaleXResolution(2);
 				}
 			}
 		});

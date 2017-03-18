@@ -29,40 +29,12 @@ import moa.evaluation.MeasureCollection;
  * @version $Revision: 1 $
  * @see GraphCanvasMulti, GraphCurve
  */
-public class GraphMultiCurve extends javax.swing.JPanel {
+public class GraphMultiCurve extends AbstractGraphPlot {
 
 	private static final long serialVersionUID = 1L;
-	
-    private double max_value = 1;
-    private MeasureCollection[] measures;
-    private int measureSelected = 0;
-
-    private double x_resolution;
     
     private int[] processFrequencies;
 //    private int min_processFrequency;
-    
-    /**
-     * Initialises a GraphMultiCurve by setting its layout.
-     */
-    protected GraphMultiCurve() {
-    	
-    	this.max_value = 1;
-    	this.measureSelected = 0;
-    	
-    	setOpaque(false);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1000, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
-    }
 
     /**
      * Updates the measure collection information and repaints the curves.
@@ -137,23 +109,6 @@ public class GraphMultiCurve extends javax.swing.JPanel {
             }
             g.setColor(color);
             g.drawPolyline(x, y, n);
-    }
-
-    /**
-     * Sets minimum and maximum y value.
-     * @param min minimum y value
-     * @param max maximum y value
-     */
-    protected void setYMaxValue(double max){
-        this.max_value = max;
-    }
-
-    /**
-     * Sets the resolution on the x-axis
-     * @param x_resolution resolution on the x-axis
-     */
-    protected void setXResolution(double x_resolution) {
-        this.x_resolution = x_resolution;
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- *    GraphCanvasMulti.java
+ *    AbstractGraphCanvas.java
  *    Copyright (C) 2017 Otto-von-Guericke-University, Magdeburg, Germany
  *    @author Tim Sabsch (tim.sabsch@ovgu.de)
  *
@@ -27,8 +27,8 @@ import javax.swing.JPanel;
 import moa.evaluation.MeasureCollection;
 
 /**
- * GraphCanvasMulti is very similar to GraphCanvas, but supports drawing
- * multiple curves on a regular GraphAxes by using a GraphMultiCurve.
+ * AbstractGraphCanvas is an abstract class offering scaling functionality and
+ * the structure of the underlying Axes and Drawing classes.
  * 
  * The functionality of the scaling is as following: the size of the canvas is 
  * determined by two sizes: the size itself and the preferredSize, which is
@@ -39,19 +39,19 @@ import moa.evaluation.MeasureCollection;
  * 
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
- * @see GraphCanvas, GraphAxes, GraphMultiCurve
+ * @see GraphCanvas, AbstractGraphAxes, AbstractGraphResult
  */
-public class GraphCanvasMulti extends JPanel {
+public abstract class AbstractGraphCanvas extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private MeasureCollection[] measures;
+	protected MeasureCollection[] measures;
 
-	private int measureSelected;
+	protected int measureSelected;
 
-	private ScalableGraphAxes axesPanel;
+	protected AbstractGraphAxes axesPanel;
 
-	private GraphMultiCurve curvePanel;
+	protected AbstractGraphPlot curvePanel;
 
 	private static final int X_OFFSET_LEFT = 35;
 
@@ -60,10 +60,6 @@ public class GraphCanvasMulti extends JPanel {
 	private static final int Y_OFFSET_BOTTOM = 20;
 
 	private static final int Y_OFFSET_TOP = 20;
-
-	private int[] processFrequencies;
-
-	private int min_processFrequency;
 
 	private double max_y_value;
 
@@ -74,15 +70,14 @@ public class GraphCanvasMulti extends JPanel {
 	private double y_resolution;
 
 	private double baseHeight;
-
+	
 	/**
-	 * Initialises a GraphCanvasMulti by constructing its GraphAxes,
-	 * GraphMultiCurve and EventPanel members as well as setting the initial
-	 * sizes.
+	 * Initialises an AbstractGraphCanvas by constructing its
+	 * AbstractGraphAxes, GraphMultiCurve as well as setting the initial sizes.
 	 */
-	public GraphCanvasMulti() {
-		this.axesPanel = new ScalableGraphAxes();
-		this.curvePanel = new GraphMultiCurve();
+	public AbstractGraphCanvas(AbstractGraphAxes ax, AbstractGraphPlot g) {
+		this.axesPanel = ax;
+		this.curvePanel = g;
 
 		this.curvePanel.setLocation(X_OFFSET_LEFT + 1, Y_OFFSET_TOP);
 
@@ -143,48 +138,6 @@ public class GraphCanvasMulti extends JPanel {
 	 */
 	public int getMeasureSelected() {
 		return this.measureSelected;
-	}
-
-	/**
-	 * Returns the minimum process frequency.
-	 * 
-	 * @return minimum process frequency
-	 */
-	public int getMinProcessFrequency() {
-		return this.min_processFrequency;
-	}
-
-	/**
-	 * Returns the list of registered process frequencies.
-	 * 
-	 * @return list of registered process frequencies
-	 */
-	public int[] getProcessFrequencies() {
-		return this.processFrequencies;
-	}
-
-	/**
-	 * Sets the graph containing multiple curves.
-	 * 
-	 * @param measures
-	 *            information about the curves
-	 * @param mSelect
-	 *            currently selected measure
-	 * @param processFrequencies
-	 *            information about the process frequencies of the curves
-	 * @param min_processFrequency
-	 *            minimun process frequency
-	 */
-	public void setGraph(MeasureCollection[] measures, int mSelect, int[] processFrequencies,
-			int min_processFrequency) {
-		this.measures = measures;
-		this.measureSelected = mSelect;
-		this.processFrequencies = processFrequencies;
-		this.min_processFrequency = min_processFrequency;
-		this.axesPanel.setProcessFrequency(min_processFrequency);
-		this.curvePanel.setProcessFrequency(min_processFrequency);
-		this.curvePanel.setGraph(measures, mSelect, processFrequencies);
-		this.updateCanvas(false);
 	}
 
 	/**
