@@ -322,7 +322,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 128, Short.MAX_VALUE));
 
 		budgetGraphScrollPanel.setViewportView(budgetGraphCanvas);
-		graphPanelTabbedPane.addTab("Budget", budgetGraphScrollPanel);
+		graphPanelTabbedPane.addTab("Param", budgetGraphScrollPanel);
 		
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
