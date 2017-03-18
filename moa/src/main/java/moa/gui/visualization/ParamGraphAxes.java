@@ -1,5 +1,5 @@
 /*
- *    BudgetGraphAxes.java
+ *    ParamGraphAxes.java
  *    Copyright (C) Copyright (C) 2017 Otto-von-Guericke-University, Magdeburg, Germany
  *    @author Tim Sabsch (tim.sabsch@ovgu.de)
  *
@@ -22,6 +22,14 @@ package moa.gui.visualization;
 import java.awt.Graphics;
 import java.text.DecimalFormat;
 
+/**
+ * ParamGraphAxes is an implementation of AbstractGraphAxes, drawing x labels
+ * based on a parameter.
+ * 
+ * @author Tim Sabsch (tim.sabsch@ovgu.de)
+ * @version $Revision: 1 $
+ * @see AbstractGraphAxes
+ */
 public class ParamGraphAxes extends AbstractGraphAxes {
 
 	private static final long serialVersionUID = 1L;

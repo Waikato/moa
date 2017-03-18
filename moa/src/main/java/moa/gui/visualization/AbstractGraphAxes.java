@@ -1,3 +1,22 @@
+/*
+ *    AbstractGraphAxes.java
+ *    Copyright (C) 2017 Otto-von-Guericke-University, Magdeburg, Germany
+ *    @author Tim Sabsch (tim.sabsch@ovgu.de)
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *    
+ *    
+ */
 package moa.gui.visualization;
 
 import java.awt.Color;
@@ -5,7 +24,18 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.text.DecimalFormat;
 
-public abstract class AbstractGraphAxes extends javax.swing.JPanel{
+import javax.swing.JPanel;
+
+/**
+ * AbstractGraphAxes is an abstract class offering functionality to draw axes.
+ * 
+ * It is partially based on GraphAxes.
+ * 
+ * @author Tim Sabsch (tim.sabsch@ovgu.de)
+ * @version $Revision: 1 $
+ * @see GraphAxes
+ */
+public abstract class AbstractGraphAxes extends JPanel{
 	
 	private static final long serialVersionUID = 1L;
 	protected static final int X_OFFSET_LEFT = 35;
@@ -21,6 +51,10 @@ public abstract class AbstractGraphAxes extends javax.swing.JPanel{
     
     protected double max_value;
 
+    /**
+     * Initialises a AbstractGraphAxes by setting the initial values and the
+     * layout.
+     */
 	public AbstractGraphAxes() {
 		this.max_value = 1;
     	
@@ -36,10 +70,18 @@ public abstract class AbstractGraphAxes extends javax.swing.JPanel{
         );
 	}
 	
+	/**
+	 * Sets the x resolution.
+	 * @param resolution new x resolution
+	 */
 	public void setXResolution(double resolution){
         x_resolution = resolution;
     }
     
+	/**
+	 * Sets the y resolution
+	 * @param resolution new y resolution
+	 */
     public void setYResolution(double resolution) {
     	y_resolution = resolution;
     }
@@ -48,8 +90,9 @@ public abstract class AbstractGraphAxes extends javax.swing.JPanel{
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        height = getHeight()-Y_OFFSET_BOTTOM-Y_OFFSET_TOP;
-        width = getWidth()-X_OFFSET_LEFT-X_OFFSET_RIGHT;
+        // compute "true" width/height without offsets
+        height = getHeight() - Y_OFFSET_BOTTOM - Y_OFFSET_TOP;
+        width = getWidth() - X_OFFSET_LEFT - X_OFFSET_RIGHT;
 
         g.setColor(new Color(236,233,216));
         g.fillRect(0, 0, getWidth(), getHeight());
@@ -60,24 +103,36 @@ public abstract class AbstractGraphAxes extends javax.swing.JPanel{
 
         g.setFont(new Font("Tahoma", 0, 11));
         
-
         xAxis(g);
         yAxis(g);
     }
 
+    /**
+     * Draws the x axis, containing of the axis line and the labels.
+     * @param g the Graphics context in which to paint
+     */
     protected void xAxis(Graphics g) {
     	g.setColor(Color.BLACK);
         
-        //x-achsis
+        //x-axis line
         g.drawLine(X_OFFSET_LEFT, calcY(0), width+X_OFFSET_LEFT, calcY(0));
         
         drawXLabels(g);
     }
     
+    /**
+     * Draws the x labels onto the x axis. Must be overridden by subclasses.
+     * @param g the Graphics context in which to paint
+     */
     protected abstract void drawXLabels(Graphics g);
 
+    /**
+     * Draws the y axis, containing og the axis line, the horizontal helping
+     * line and the labels.
+     * @param g the Graphics context in which to paint
+     */
     private void yAxis(Graphics g){
-        //y-achsis
+        //y-axis
         g.setColor(Color.BLACK);
         g.drawLine(X_OFFSET_LEFT, calcY(0), X_OFFSET_LEFT, Y_OFFSET_TOP);
 
@@ -96,9 +151,12 @@ public abstract class AbstractGraphAxes extends javax.swing.JPanel{
         if(Double.isNaN(upper)) {
         	upper = 1.0;
         }
-        double numLabels = Math.min(Math.pow(2,  y_resolution), 32); // technically, this
-        // is numLabels-1, but as we're iterating 0<=i<=numLabels, we need the
-        // extra label. Also don't draw more that 32 labels
+        double numLabels = Math.min(Math.pow(2,  y_resolution), 32);
+        /*
+         * technically, this is numLabels-1, but as we're iterating 
+         * 0 <= i <= numLabels, we need the extra label. Also don't draw more
+         * than 32 labels.
+         */
         
         for (int i = 0; i <= numLabels; i++) {
         	double fraction = i/numLabels;
@@ -110,10 +168,19 @@ public abstract class AbstractGraphAxes extends javax.swing.JPanel{
 
     }
 
+    /**
+     * Sets the maximum y value
+     * @param max maximum y value
+     */
     public void setYMaxValue(double max){
         max_value = max;
     }
 
+    /**
+     * Calculates the position on the y axis for a given value.
+     * @param value value the y position has to be computed for
+     * @return position on the y axis
+     */
     private int calcY(double value){
         return (int)(height-(value/max_value)*height)+Y_OFFSET_TOP;
     }

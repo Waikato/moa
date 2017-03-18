@@ -1,8 +1,6 @@
 /*
- *    ScalableGraphAxes.java
- *    Original Work: Copyright (C) 2010 RWTH Aachen University, Germany
- *    @author Jansen (moa@cs.rwth-aachen.de)
- *    Modified Work: Copyright (C) 2017 Otto-von-Guericke-University, Germany
+ *    ProcessGraphAxes.java
+ *    Copyright (C) 2017 Otto-von-Guericke-University, Germany
  *    @author Tim Sabsch (tim.sabsch@ovgu.de) 
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,25 +23,30 @@ package moa.gui.visualization;
 import java.awt.Graphics;
 
 /**
- * ScalableGraphAxes is a clone of GraphAxes, but enables support for properly
- * scaling the y axis.
+ * ProcessGraphAxes is an implementation of AbstractGraphAxes, drawing x labels
+ * based on the process frequency.
+ * 
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
- * @see GraphAxes
+ * @see AbstractGraphAxes
  */
-public class ScalableGraphAxes extends AbstractGraphAxes {
+public class ProcessGraphAxes extends AbstractGraphAxes {
 
 	private static final long serialVersionUID = 1L;
 
     private int processFrequency;
 
+    /**
+     * Sets the process frequency
+     * @param frequency new process frequency
+     */
     public void setProcessFrequency(int frequency){
         processFrequency = frequency;
     }
 
 	@Override
 	protected void drawXLabels(Graphics g) {
-        //x achsis labels
+        //x axis labels
         int w = 100;
         // TODO check overflow
         for (int i = 0; w*i < width-X_OFFSET_RIGHT; i++) {

@@ -44,7 +44,7 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 	 * initial value.
 	 */
 	public ProcessGraphCanvas() {
-		super(new ScalableGraphAxes(), new GraphMultiCurve());
+		super(new ProcessGraphAxes(), new GraphMultiCurve());
 		this.min_processFrequency = 10000;
 	}
 
@@ -84,7 +84,7 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 		this.measureSelected = mSelect;
 		this.processFrequencies = processFrequencies;
 		this.min_processFrequency = min_processFrequency;
-		((ScalableGraphAxes) this.axesPanel).setProcessFrequency(min_processFrequency);
+		((ProcessGraphAxes) this.axesPanel).setProcessFrequency(min_processFrequency);
 		((GraphMultiCurve) this.plotPanel).setProcessFrequency(min_processFrequency);
 		((GraphMultiCurve) this.plotPanel).setGraph(measures, mSelect, processFrequencies);
 		updateCanvas(false);
