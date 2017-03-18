@@ -25,27 +25,18 @@ import java.awt.Graphics;
 import moa.evaluation.MeasureCollection;
 
 /**
- * GraphScatter plots a scatter graph on a BudgetGraphCanvas.
+ * GraphScatter is an implementation of AbstractGraphPlot that draws a scatter
+ * plot.
+ * 
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
- * @see GraphCurve
+ * @see AbstractGraphPlot
  */
 public class GraphScatter extends AbstractGraphPlot {
 
 	private static final long serialVersionUID = 1L;
     
     private static final int DOT_SIZE = 6;
-  
-    /**
-     * Updates the measure values and repaints the scatter plot.
-     * @param measures  list of measure collections, one for each task
-     * @param selection currently selected measure
-     */
-    public void setGraph(MeasureCollection[] measures, int mSelect){
-        this.measures = measures;
-        this.measureSelected = mSelect;
-        this.repaint();
-    }
 
     @Override
     protected void paintComponent(Graphics g) {

@@ -29,7 +29,7 @@ import javax.swing.JPanel;
 /**
  * AbstractGraphAxes is an abstract class offering functionality to draw axes.
  * 
- * It is partially based on GraphAxes.
+ * This class is partially based on GraphAxes.
  * 
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $

@@ -24,10 +24,12 @@ import java.awt.Graphics;
 import moa.evaluation.MeasureCollection;
 
 /**
- * GraphMultiCurve draws several curves on a GraphCanvasMulti.
+ * GraphMultiCurve is an an implementation of AbstractGraphPlot that draws
+ * several curves on a Canvas.
+ * 
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
- * @see GraphCanvasMulti, GraphCurve
+ * @see AbstractGraphPlot
  */
 public class GraphMultiCurve extends AbstractGraphPlot {
 
@@ -44,16 +46,13 @@ public class GraphMultiCurve extends AbstractGraphPlot {
      * 							 the curves
      */
     protected void setGraph(MeasureCollection[] measures, int mSelect, int[] processFrequencies){
-       this.measures = measures;
-       this.measureSelected = mSelect;
-       this.processFrequencies = processFrequencies;
-       repaint();
+    	this.processFrequencies = processFrequencies;   
+    	super.setGraph(measures, mSelect);
     }
     
     /**
-     * Sets the minimum process frequency, which determines the x-axis on the
-     * GraphAxes. Curves with a process frequency have to be painted
-     * compressed/stretched.
+     * Sets the minimum process frequency, which may be used to stretch or
+     * compress curves.
      * NOTE this is currently not implemented
      * @param min_processFrequency minimum process frequency
      */
@@ -81,7 +80,7 @@ public class GraphMultiCurve extends AbstractGraphPlot {
 
     /**
      * Draws a single curve on the canvas.
-     * @param g 	  graphics object
+     * @param g 	  the Graphics context in which to paint
      * @param m 	  curve information
      * @param mSelect currently selected measure
      * @param pf 	  process frequency of the curve

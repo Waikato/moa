@@ -37,7 +37,7 @@ import moa.evaluation.MeasureCollection;
  * setting the size to the viewport size. If the y axis is zoomed, the
  * baseHeight determines the new size and preferred size.
  * 
- * This is class is partially based on GraphCanvas.
+ * This class is partially based on GraphCanvas.
  * 
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
