@@ -24,9 +24,7 @@
  */
 package moa.classifiers.active;
 
-import java.util.ArrayList;
-
-import Jama.*;
+import moa.classifiers.active.budget.RingBuffer;
 
 /**
  * This class implements a multivariate Gaussian kernel density estimation and is based
@@ -38,27 +36,16 @@ import Jama.*;
  */
 public class MCPALEstimatorMultivariate{
 	
-	private Matrix invCovariance;
 	private double bandwidth;
-	private ArrayList<Matrix> points;
-	private boolean dimSet=false;
+	private RingBuffer<double[]> points;
 	
-	public MCPALEstimatorMultivariate(double bandwidth){
+	public MCPALEstimatorMultivariate(double bandwidth, int bufferSize){
 		this.bandwidth=bandwidth;
-		this.points = new ArrayList<Matrix>();
+		this.points = new RingBuffer<>(bufferSize);
 	}
 	
 	public void addValue(double[] x){
-		Matrix point=doubleArrayToMatrix(x);
-		points.add(point);
-		
-		if(points.size() > 100)
-		{
-			points.remove(0);
-		}
-		
-		if(dimSet==false)
-			initCovariance(x.length);
+		points.add(x);
 	}
 	
 	/**
@@ -70,43 +57,23 @@ public class MCPALEstimatorMultivariate{
 		if(points.size()==0)
 			return 0;
 
-		Matrix point=doubleArrayToMatrix(x);
 		double prob=0;
 		for(int i=0;i<points.size();i++){
-			prob+=getNormal(point, points.get(i));
+			prob +=getNormal(x, points.get(i));
 		}
 		return prob;
 	}
-	
-	public double getNormal(Matrix x, Matrix mu){
-		double prob=0;
-		Matrix diff = x.minus(mu);
-		Matrix exponent=diff.transpose().times(invCovariance).times(diff); 
-		double pow=-0.5 * exponent.get(0,0);
+	public double getNormal(double[] x, double[] mu){
+		int numFeatures = x.length;
 
-		prob=Math.exp(pow);
-
-		return prob;
-	}
-	
-	private Matrix doubleArrayToMatrix(double[] x)
-	{
-		double[][] vec=new double[x.length][1];
-		for(int i=0;i<x.length;i++)
-			vec[i][0]=x[i];
-		return new Matrix(vec);
-	}
-	
-	public void initCovariance(int dim){
-		dimSet=true;
-		double[][] cov=new double[dim][dim];
-		for(int i=0;i<dim;i++)
-			for(int j=0;j<dim;j++)
-				if(i==j)
-					cov[i][j]=bandwidth;
-				else
-					cov[i][j]=0;
-		this.invCovariance=(new Matrix(cov)).inverse();
+		double v = 0;
+		for(int i = 0; i < numFeatures; ++i)
+		{
+			double d = (x[i] - mu[i]);
+			v += d*d/bandwidth;
+		}
+		
+		return Math.exp(-0.5 * v);
 	}
 	
 	/**

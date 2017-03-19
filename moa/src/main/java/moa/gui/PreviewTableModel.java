@@ -66,6 +66,10 @@ public class PreviewTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int row, int column) {
+		if(row >= data.size() || column >= data.get(row).length)
+		{
+			return 0.0;
+		}
 		return data.get(row)[column];
 	}
 	

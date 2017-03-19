@@ -88,7 +88,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	
     public ClassOption budgetManagerOption = new ClassOption("budgetManager",
             'b', "BudgetManager that should be used.",
-            BudgetManager.class, "IncrementalQuantileFilter");
+            BudgetManager.class, "BalancedIncrementalQuantileFilter");
     
     public FloatOption budgetOption = new FloatOption("budget",
     		'u', "The budget that should be used by the BudgetManager.",
@@ -473,6 +473,8 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	
 	@Override
 	public void trainOnInstanceImpl(Instance inst) {
+		
+		
 		double[] point = new double[inst.numAttributes() - 1];
 		for(int i = 0; i < point.length; ++i)
 		{
@@ -522,7 +524,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		kernelEstimators = new MCPALEstimatorMultivariate[numClasses];
 		for(int cIdx = 0; cIdx < numClasses; ++cIdx)
 		{
-			kernelEstimators[cIdx] = new MCPALEstimatorMultivariate(bandwidth);
+			kernelEstimators[cIdx] = new MCPALEstimatorMultivariate(bandwidth, 100);
 		}
 	}
 }
