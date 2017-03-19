@@ -19,6 +19,8 @@
  */
 package moa.gui.visualization;
 
+import java.awt.Color;
+
 import moa.evaluation.MeasureCollection;
 
 /**
@@ -79,14 +81,14 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 	 *            minimun process frequency
 	 */
 	public void setGraph(MeasureCollection[] measures, int mSelect, int[] processFrequencies,
-			int min_processFrequency) {
+			int min_processFrequency, Color[] colors) {
 		this.measures = measures;
 		this.measureSelected = mSelect;
 		this.processFrequencies = processFrequencies;
 		this.min_processFrequency = min_processFrequency;
 		((ProcessGraphAxes) this.axesPanel).setProcessFrequency(min_processFrequency);
 		((GraphMultiCurve) this.plotPanel).setProcessFrequency(min_processFrequency);
-		((GraphMultiCurve) this.plotPanel).setGraph(measures, mSelect, processFrequencies);
+		((GraphMultiCurve) this.plotPanel).setGraph(measures, mSelect, processFrequencies, colors);
 		updateCanvas(false);
 	}
 

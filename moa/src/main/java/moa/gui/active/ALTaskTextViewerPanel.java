@@ -23,6 +23,7 @@
 package moa.gui.active;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -136,6 +137,8 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	private String variedParamName;
 	
 	private double[] variedParamValues;
+	
+	private Color[] colors;
 
 	public ALTaskTextViewerPanel() {
 
@@ -300,7 +303,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		// graphCanvas displays the live graph
 		graphCanvas = new ProcessGraphCanvas();
 		graphCanvas.setPreferredSize(new Dimension(500, 111));
-		graphCanvas.setGraph(null, 0, null, 1000);
+		graphCanvas.setGraph(null, 0, null, 1000, null);
 
 		GroupLayout graphCanvasLayout = new GroupLayout(graphCanvas);
 		graphCanvas.setLayout(graphCanvasLayout);
@@ -318,7 +321,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		// budgetGraphCanvas displays the live budget graph
 		paramGraphCanvas = new ParamGraphCanvas();
 		paramGraphCanvas.setPreferredSize(new Dimension(500, 111));
-		paramGraphCanvas.setGraph(this.measures, 0, this.variedParamName, this.variedParamValues);
+		paramGraphCanvas.setGraph(null, 0, "", null, null);
 
 		GroupLayout budgetGraphCanvasLayout = new GroupLayout(paramGraphCanvas);
 		paramGraphCanvas.setLayout(budgetGraphCanvasLayout);
@@ -466,10 +469,10 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	 * @param preview information used to update the graph
 	 */
 	@SuppressWarnings("unchecked")
-	public void setGraph(Preview preview) {
+	public void setGraph(Preview preview, Color[] colors) {
 		if (preview == null) {
 			// no preview received
-			this.graphCanvas.setGraph(null, this.graphCanvas.getMeasureSelected(), null, 1000);
+			this.graphCanvas.setGraph(null, this.graphCanvas.getMeasureSelected(), null, 1000, null);
 			return;
 		}
 
@@ -511,7 +514,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
     		}
     	} else {
     		// sth went wrong
-    		this.graphCanvas.setGraph(null, this.graphCanvas.getMeasureSelected(), null, 1000);
+    		this.graphCanvas.setGraph(null, this.graphCanvas.getMeasureSelected(), null, 1000, null);
 			return;
     	}
 		
@@ -519,11 +522,13 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		this.measures = gcmp.getMeasureCollectionsArray();
 		int min_pf = min(pfs);
 		
+		this.colors = colors;
+		
 		this.graphCanvas.setGraph(this.measures, 
-				this.graphCanvas.getMeasureSelected(), pfs, min_pf);
+				this.graphCanvas.getMeasureSelected(), pfs, min_pf, colors);
 		this.paramGraphCanvas.setGraph(this.measures, 
 				this.paramGraphCanvas.getMeasureSelected(), 
-				this.variedParamName, this.variedParamValues);
+				this.variedParamName, this.variedParamValues, colors);
 		this.clusteringVisualEvalPanel1.update();
 
 	}
@@ -807,8 +812,8 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 			}
 		}
 		this.graphCanvas.setGraph(this.measures, m_select_offset, this.graphCanvas.getProcessFrequencies(),
-				this.graphCanvas.getMinProcessFrequency());
+				this.graphCanvas.getMinProcessFrequency(), this.colors);
 		this.paramGraphCanvas.setGraph(this.measures, m_select_offset, 
-				this.variedParamName, this.variedParamValues);
+				this.variedParamName, this.variedParamValues, this.colors);
 	}
 }
