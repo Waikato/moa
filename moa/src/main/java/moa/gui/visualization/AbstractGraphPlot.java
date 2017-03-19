@@ -37,7 +37,8 @@ public abstract class AbstractGraphPlot extends JPanel{
 	
 	private static final long serialVersionUID = 1L;
 	
-    protected double max_value = 1;
+    protected double max_value;
+    protected double upper_value;
     protected MeasureCollection[] measures;
     protected int measureSelected = 0;
 
@@ -45,6 +46,7 @@ public abstract class AbstractGraphPlot extends JPanel{
 
 	public AbstractGraphPlot() {
 		this.max_value = 1;
+		this.upper_value = 1;
     	this.measureSelected = 0;
     	
     	setOpaque(false);
@@ -81,6 +83,10 @@ public abstract class AbstractGraphPlot extends JPanel{
      */
     protected void setYMaxValue(double max){
         this.max_value = max;
+    }
+    
+    protected void setYUpperValue(double value) {
+    	this.upper_value = value;
     }
 
     /**

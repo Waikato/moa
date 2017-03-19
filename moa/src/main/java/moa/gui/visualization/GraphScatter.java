@@ -90,7 +90,7 @@ public class GraphScatter extends AbstractGraphPlot {
         	// no result for this budget yet
             return;
         }
-        int y = (int)(height - (value / this.max_value) * height); 
+        int y = (int)(height - (value / this.upper_value) * height); 
 
     	g.fillOval(x - DOT_SIZE/2, y - DOT_SIZE/2, DOT_SIZE, DOT_SIZE);
     }

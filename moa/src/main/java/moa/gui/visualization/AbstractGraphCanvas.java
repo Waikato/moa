@@ -227,6 +227,7 @@ public abstract class AbstractGraphCanvas extends JPanel {
 			this.max_x_value = max_x_value_new;
 			this.max_y_value = max_y_value_new;
 			updateMaxYValue();
+			updateYUpperValue();
 			return true;
 		}
 		return false;
@@ -253,6 +254,19 @@ public abstract class AbstractGraphCanvas extends JPanel {
 	private void updateMaxYValue() {
 		axesPanel.setYMaxValue(max_y_value);
 		plotPanel.setYMaxValue(max_y_value);
+	}
+	
+	private void updateYUpperValue() {
+		int digits_y = (int)(Math.log10(max_y_value))-1;
+        double upper = Math.ceil(max_y_value/Math.pow(10,digits_y));
+        if(digits_y < 0) upper*=Math.pow(10,digits_y);
+
+        if(Double.isNaN(upper)) {
+        	upper = 1.0;
+        }
+        
+        this.axesPanel.setYUpperValue(upper);
+        this.plotPanel.setYUpperValue(upper);
 	}
 
 	/**

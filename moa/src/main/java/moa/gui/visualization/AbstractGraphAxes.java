@@ -50,6 +50,7 @@ public abstract class AbstractGraphAxes extends JPanel{
     protected double y_resolution;
     
     protected double max_value;
+    protected double upper_value;
 
     /**
      * Initialises a AbstractGraphAxes by setting the initial values and the
@@ -57,6 +58,7 @@ public abstract class AbstractGraphAxes extends JPanel{
      */
 	public AbstractGraphAxes() {
 		this.max_value = 1;
+		this.upper_value = 1;
     	
     	javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -144,13 +146,7 @@ public abstract class AbstractGraphAxes extends JPanel{
 
         //y-achsis markers + labels
         DecimalFormat d = new DecimalFormat("0.00");
-        int digits_y = (int)(Math.log10(max_value))-1;
-        double upper = Math.ceil(max_value/Math.pow(10,digits_y));
-        if(digits_y < 0) upper*=Math.pow(10,digits_y);
 
-        if(Double.isNaN(upper)) {
-        	upper = 1.0;
-        }
         double numLabels = Math.min(Math.pow(2,  y_resolution), 32);
         /*
          * technically, this is numLabels-1, but as we're iterating 
@@ -160,7 +156,7 @@ public abstract class AbstractGraphAxes extends JPanel{
         
         for (int i = 0; i <= numLabels; i++) {
         	double fraction = i/numLabels;
-        	double value = fraction*upper;
+        	double value = fraction*upper_value;
         	g.drawString(d.format(value), 1, (int) ((1-fraction)*height) + Y_OFFSET_TOP+5);
         	g.drawLine(X_OFFSET_LEFT - 5, (int) ((1-fraction)*height) + Y_OFFSET_TOP, 
         			   X_OFFSET_LEFT, (int) ((1-fraction)*height) + Y_OFFSET_TOP);
@@ -173,7 +169,11 @@ public abstract class AbstractGraphAxes extends JPanel{
      * @param max maximum y value
      */
     public void setYMaxValue(double max){
-        max_value = max;
+        this.max_value = max;
+    }
+    
+    public void setYUpperValue(double value) {
+    	this.upper_value = value;
     }
 
     /**
