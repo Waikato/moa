@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.classifiers.active.budget;
+package moa.classifiers.active;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,15 +76,18 @@ public class RingBuffer<E> {
 	 * ring buffer is full
 	 * @param element the element to add
 	 */
-	public void add(E element) {
+	public E add(E element) {
+		E objectToReturn = null;
 		if (size() < capacity) {
 			buffer.add(element);
 		} else {
 			int index = size();
 			int normalizedIndex = normalizeIndex(index);
+			objectToReturn = buffer.get(start);
 			start = normalizeIndex(index + 1);
 			buffer.set(normalizedIndex, element);
 		}
+		return objectToReturn;
 	}
 	
 	/**

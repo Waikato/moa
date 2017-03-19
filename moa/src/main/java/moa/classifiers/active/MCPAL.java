@@ -70,6 +70,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	private static final long serialVersionUID = 1L;
 
 	private MCPALEstimatorMultivariate[] kernelEstimators; // used only for labeled data
+	private StandardDeviationEstimator standartDeviationEstimator;
 
 	private int numClasses;
 	
@@ -98,7 +99,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
             'm', "The maximum number of hypothetic label.", 3, 0, Integer.MAX_VALUE);
     
     public FloatOption bandwidthOption = new FloatOption("bandWidth",
-            'w', "The bandwidth to use for density estimation.", 10, Double.MIN_VALUE, Double.MAX_VALUE);
+            'w', "The bandwidth to use for density estimation.", 0.1, Double.MIN_VALUE, Double.MAX_VALUE);
     
 	public MCPAL() {
 		resetLearningImpl();
@@ -149,7 +150,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		double[] k = new double[numClasses];
 		for(int cIdx = 0; cIdx < numClasses; ++cIdx)
 		{
-			k[cIdx] = kernelEstimators[cIdx].getFrequencyEstimate(inst);
+			k[cIdx] = kernelEstimators[cIdx].getFrequencyEstimate(inst, standartDeviationEstimator.getStd());
 		}
 		return k;
 	}
@@ -473,8 +474,6 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	
 	@Override
 	public void trainOnInstanceImpl(Instance inst) {
-		
-		
 		double[] point = new double[inst.numAttributes() - 1];
 		for(int i = 0; i < point.length; ++i)
 		{
@@ -482,15 +481,16 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		}
 		
 		double alScore = getAlScore(point);
-		
+
 		boolean acquireLabel = budgetManager.isAbove(alScore);
-		
+
 		if(acquireLabel)
 		{
 			classifier.trainOnInstance(inst);
 			
 			int c = (int)inst.classValue();
-			kernelEstimators[c].addValue(point);
+			double[] removedInstance = kernelEstimators[c].addValue(point);
+			standartDeviationEstimator.addPoint(removedInstance, point);
 		}
 	}
 
@@ -526,5 +526,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		{
 			kernelEstimators[cIdx] = new MCPALEstimatorMultivariate(bandwidth, 100);
 		}
+
+		standartDeviationEstimator = new StandardDeviationEstimator(ih.numAttributes() - 1);
 	}
 }

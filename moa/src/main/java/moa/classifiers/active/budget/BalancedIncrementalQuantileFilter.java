@@ -23,6 +23,7 @@ import java.util.List;
 
 import com.github.javacliparser.IntOption;
 
+import moa.classifiers.active.RingBuffer;
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
 

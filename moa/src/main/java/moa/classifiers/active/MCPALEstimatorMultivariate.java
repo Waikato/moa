@@ -24,8 +24,6 @@
  */
 package moa.classifiers.active;
 
-import moa.classifiers.active.budget.RingBuffer;
-
 /**
  * This class implements a multivariate Gaussian kernel density estimation and is based
  * on Christian's implementation of OpalEstimatorMultivariate and was modified to fit the
@@ -41,11 +39,11 @@ public class MCPALEstimatorMultivariate{
 	
 	public MCPALEstimatorMultivariate(double bandwidth, int bufferSize){
 		this.bandwidth=bandwidth;
-		this.points = new RingBuffer<>(bufferSize);
+		points = new RingBuffer<>(bufferSize);
 	}
 	
-	public void addValue(double[] x){
-		points.add(x);
+	public double[] addValue(double[] x){
+		return points.add(x);
 	}
 	
 	/**
@@ -53,23 +51,29 @@ public class MCPALEstimatorMultivariate{
 	 * @param x
 	 * @return
 	 */
-	public double getFrequencyEstimate(double[] x){
+	public double getFrequencyEstimate(double[] x, double[] std){
 		if(points.size()==0)
 			return 0;
 
 		double prob=0;
 		for(int i=0;i<points.size();i++){
-			prob +=getNormal(x, points.get(i));
+			prob +=getNormal(x, points.get(i), std);
 		}
 		return prob;
 	}
-	public double getNormal(double[] x, double[] mu){
+	public double getNormal(double[] x, double[] mu, double[] std){
 		int numFeatures = x.length;
-
 		double v = 0;
 		for(int i = 0; i < numFeatures; ++i)
 		{
-			double d = (x[i] - mu[i]);
+			// normalize the difference with the standard deviation
+			double d = (x[i] - mu[i])/std[i];
+			// check if std is zero
+			// if yes replace the normalized difference with zero
+			if(Double.isInfinite(d) || Double.isNaN(d))
+			{
+				d = 0;
+			}
 			v += d*d/bandwidth;
 		}
 		
