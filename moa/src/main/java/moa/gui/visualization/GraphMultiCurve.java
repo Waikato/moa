@@ -45,9 +45,9 @@ public class GraphMultiCurve extends AbstractGraphPlot {
      * @param processFrequencies information about the process frequencies of
      * 							 the curves
      */
-    protected void setGraph(MeasureCollection[] measures, int mSelect, int[] processFrequencies){
+    protected void setGraph(MeasureCollection[] measures, int mSelect, int[] processFrequencies, Color[] colors){
     	this.processFrequencies = processFrequencies;   
-    	super.setGraph(measures, mSelect);
+    	super.setGraph(measures, mSelect, colors);
     }
     
     /**
@@ -69,11 +69,9 @@ public class GraphMultiCurve extends AbstractGraphPlot {
         	return; 
         }
         
-        g.setColor(Color.BLACK);
-        
         // paint all curves
         for (int i = 0; i < this.measures.length; i++) {
-        	paintFullCurve(g, this.measures[i], this.measureSelected, this.processFrequencies[i], Color.BLACK);
+        	paintFullCurve(g, this.measures[i], this.measureSelected, this.processFrequencies[i], this.colors[i]);
         }
         
     }

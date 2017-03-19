@@ -22,8 +22,10 @@
 package moa.gui.active;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -34,6 +36,7 @@ import moa.core.StringUtils;
 import moa.evaluation.Preview;
 import moa.gui.PreviewPanel;
 import moa.tasks.ResultPreviewListener;
+import moa.tasks.active.ALMainTask;
 import moa.tasks.active.ALTaskThread;
 
 /**
@@ -164,7 +167,35 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
 		}
 		
 		this.textViewerPanel.setText(preview);
-		this.textViewerPanel.setGraph(preview);
+		this.textViewerPanel.setGraph(preview, getColorCodings());
+    }
+    
+    /**
+     * Reads the color codings of the subtasks.
+     * @return array of color codings, one for each subtask
+     */
+    private Color[] getColorCodings() {
+    	if (this.previewedThread == null) {
+    		return null;
+    	}
+    	
+    	ALMainTask task = (ALMainTask) this.previewedThread.getTask();
+    	
+    	List<ALTaskThread> subtaskThreads = task.getSubtaskThreads();
+    	
+    	if (subtaskThreads.size() == 0) {
+    		// no hierarchical thread, e.g. ALPrequentialEvaluationTask
+    		return new Color[]{task.getColorCoding()};
+    	}
+    	
+    	//TODO handle ALCrossval properly
+    	
+    	Color[] colors = new Color[subtaskThreads.size()];
+    	for (int i = 0; i < subtaskThreads.size(); i++) {
+    		ALMainTask subtask = (ALMainTask) subtaskThreads.get(i).getTask();
+    		colors[i] = subtask.getColorCoding();
+    	}
+    	return colors;
     }
 
     /**

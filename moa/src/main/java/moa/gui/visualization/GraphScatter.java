@@ -50,11 +50,11 @@ public class GraphScatter extends AbstractGraphPlot {
      * @param variedParamValues values of the varied parameter
      */
     public void setGraph(MeasureCollection[] measures, int mSelect, 
-    		String variedParamName, double[] variedParamValues)
+    		String variedParamName, double[] variedParamValues, Color[] colors)
     {
 //        this.variedParamName = variedParamName;
         this.variedParamValues = variedParamValues;
-        super.setGraph(measures, mSelect);
+        super.setGraph(measures, mSelect, colors);
     }
 
     @Override
@@ -65,12 +65,10 @@ public class GraphScatter extends AbstractGraphPlot {
         	// no measures received yet -> nothing to paint
         	return; 
         }
-
-        g.setColor(Color.BLACK);
         
         // scatter current budgets
         for (int i = 0; i < this.measures.length; i++) {
-        	this.scatter(g, this.measures[i], this.variedParamValues[i]);
+        	this.scatter(g, this.measures[i], this.variedParamValues[i], this.colors[i]);
         }
     }
     
@@ -79,7 +77,7 @@ public class GraphScatter extends AbstractGraphPlot {
      * @param g graphics object
      * @param m MeasureCollection containing the data
      */
-    private void scatter(Graphics g, MeasureCollection m, double variedParamValue) {
+    private void scatter(Graphics g, MeasureCollection m, double variedParamValue, Color color) {
 
     	int height = getHeight();
     	int width = getWidth();
@@ -90,8 +88,10 @@ public class GraphScatter extends AbstractGraphPlot {
         	// no result for this budget yet
             return;
         }
-        int y = (int)(height - (value / this.upper_value) * height); 
 
+        int y = (int)(height - (value / this.upper_value) * height); 
+        
+        g.setColor(color);
     	g.fillOval(x - DOT_SIZE/2, y - DOT_SIZE/2, DOT_SIZE, DOT_SIZE);
     }
 

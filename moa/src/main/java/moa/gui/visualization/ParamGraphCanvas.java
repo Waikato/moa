@@ -19,6 +19,8 @@
  */
 package moa.gui.visualization;
 
+import java.awt.Color;
+
 import moa.evaluation.MeasureCollection;
 
 /**
@@ -51,11 +53,11 @@ public class ParamGraphCanvas extends AbstractGraphCanvas {
 	 *            currently selected measure
 	 */
 	public void setGraph(MeasureCollection[] measures, int mSelect, 
-			String variedParamName, double[] variedParamValues) {
+			String variedParamName, double[] variedParamValues, Color[] colors) {
 		this.measures = measures;
 		this.measureSelected = mSelect;
 		((GraphScatter) this.plotPanel).setGraph(measures, mSelect, 
-				variedParamName, variedParamValues);
+				variedParamName, variedParamValues, colors);
 		updateCanvas(false);
 	}
 

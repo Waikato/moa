@@ -19,6 +19,8 @@
  */
 package moa.gui.visualization;
 
+import java.awt.Color;
+
 import javax.swing.JPanel;
 
 import moa.evaluation.MeasureCollection;
@@ -43,6 +45,8 @@ public abstract class AbstractGraphPlot extends JPanel{
     protected int measureSelected = 0;
 
     protected double x_resolution;
+    
+    protected Color[] colors;
 
 	public AbstractGraphPlot() {
 		this.max_value = 1;
@@ -70,9 +74,10 @@ public abstract class AbstractGraphPlot extends JPanel{
 	 * @param measures measure information
 	 * @param mSelect index of the currently selected measure
 	 */
-	protected void setGraph(MeasureCollection[] measures, int mSelect) {
+	protected void setGraph(MeasureCollection[] measures, int mSelect, Color[] colors) {
 		this.measures = measures;
 	    this.measureSelected = mSelect;
+	    this.colors = colors;
 	    repaint();
 	}
 	
