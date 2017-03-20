@@ -36,6 +36,7 @@ import moa.core.StringUtils;
 import moa.evaluation.Preview;
 import moa.gui.PreviewPanel;
 import moa.tasks.ResultPreviewListener;
+import moa.tasks.active.ALCrossValidationTask;
 import moa.tasks.active.ALMainTask;
 import moa.tasks.active.ALTaskThread;
 
@@ -167,19 +168,19 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
 		}
 		
 		this.textViewerPanel.setText(preview);
-		this.textViewerPanel.setGraph(preview, getColorCodings());
+		this.textViewerPanel.setGraph(preview, getColorCodings(this.previewedThread));
     }
     
     /**
      * Reads the color codings of the subtasks.
      * @return array of color codings, one for each subtask
      */
-    private Color[] getColorCodings() {
-    	if (this.previewedThread == null) {
+    private Color[] getColorCodings(ALTaskThread thread) {
+    	if (thread == null) {
     		return null;
     	}
     	
-    	ALMainTask task = (ALMainTask) this.previewedThread.getTask();
+    	ALMainTask task = (ALMainTask) thread.getTask();
     	
     	List<ALTaskThread> subtaskThreads = task.getSubtaskThreads();
     	
@@ -188,7 +189,13 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
     		return new Color[]{task.getColorCoding()};
     	}
     	
-    	//TODO handle ALCrossval properly
+    	
+    	if (task.getClass() == ALCrossValidationTask.class) {
+    		// if the task is a cross validation task, it displays the mean
+    		// over the underlying params. The color coding therefore 
+    		// corresponds to the color coding of each of its subtasks.
+    		return getColorCodings(subtaskThreads.get(0));
+    	}
     	
     	Color[] colors = new Color[subtaskThreads.size()];
     	for (int i = 0; i < subtaskThreads.size(); i++) {
