@@ -71,7 +71,7 @@ public class RingBuffer<E> {
 	}
 	
 	/**
-	 * add an element to the end of the rinfbuffer
+	 * add an element to the end of the ring buffer
 	 * overwrites the current start element if the
 	 * ring buffer is full
 	 * @param element the element to add

@@ -64,15 +64,14 @@ public class IncrementalQuantileFilter extends AbstractOptionHandler implements 
 
 	@Override
 	public boolean isAbove(double alScore) {
-		scoreBuffer.add(alScore);
+		Double removedElement = scoreBuffer.add(alScore);
 		
-		List<Double> window = scoreBuffer.toList();
-		int windowSize = window.size();
+		int windowSize = scoreBuffer.size();
 		
 		Ranking<Double> r = new Ranking<>();
-		List<Integer> rankedIndices = r.rank(window, windowSize - 1);
+		List<Integer> rankedIndices = r.rank(scoreBuffer, windowSize - 1, removedElement);
 		int thresholdIdx = (int)(windowSize * (1-budget));
-		double threshold = window.get(rankedIndices.get(thresholdIdx));
+		double threshold = scoreBuffer.get(rankedIndices.get(thresholdIdx));
 		
 		
 		boolean decision = alScore >= threshold;

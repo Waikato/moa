@@ -43,9 +43,9 @@ import moa.tasks.TaskMonitor;
 public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter{
 
 	private static final long serialVersionUID = 1L;
-
-
+	
 	RingBuffer<Integer> numAcquisitionsBuffer;
+	Ranking<Double> r;
 
 	
 	public IntOption toleranceWindowSizeOption = new IntOption("tolreanceWindowSize", 't', 
@@ -60,28 +60,27 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 		super.prepareForUseImpl(monitor, repository);
 		numAcquisitionsBuffer = new RingBuffer<>(toleranceWindowSizeOption.getValue());
+		r = new Ranking<>();
 	}
-	
+
 	@Override
 	public boolean isAbove(double alScore) {
 		try
 		{
-			scoreBuffer.add(alScore);
-			
-			List<Double> window = scoreBuffer.toList();
-			int windowSize = window.size();
+			Double removedElement = scoreBuffer.add(alScore);
+			int windowSize = scoreBuffer.size();
 			
 			List<Integer> toleranceWindow = numAcquisitionsBuffer.toList();
 			int toleranceWindowSize = toleranceWindow.size();
 			
-			Ranking<Double> r = new Ranking<>();
-			List<Integer> rankedIndices = r.rank(window, windowSize - 1);
+			List<Integer> rankedIndices = r.rank(scoreBuffer, windowSize - 1, removedElement);
+			
 			int thresholdIdx = (int)(windowSize * (1-budget));
-			double threshold = window.get(rankedIndices.get(thresholdIdx));
+			double threshold = scoreBuffer.get(rankedIndices.get(thresholdIdx));
 			
 			
 			double acquisitionsLeft = getAcquisitionsLeft(toleranceWindow, budget);
-			double balancedThreshold = threshold - getRange(window, rankedIndices) * acquisitionsLeft/toleranceWindowSize;
+			double balancedThreshold = threshold - getRange(scoreBuffer, rankedIndices) * acquisitionsLeft/toleranceWindowSize;
 			
 			boolean decision = alScore >= balancedThreshold;
 			
@@ -124,7 +123,7 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 	 * @param rankedIndices the order of indices such that window is ordered
 	 * @return the range of the window
 	 */
-	private double getRange(List<Double> window, List<Integer> rankedIndices)
+	private double getRange(RingBuffer<Double> window, List<Integer> rankedIndices)
 	{
 		if(window.size() > 1)
 		{
