@@ -135,7 +135,7 @@ public class ALMultiParamTask extends ALMainTask {
 		
 		// enable refreshing the variedParamNameOption depending on the
 		// learnerOption
-		this.learnerOption.setListener(new RefreshParamsChangeListener(
+		this.learnerOption.setChangeListener(new RefreshParamsChangeListener(
 				this.learnerOption, this.variedParamNameOption));
 	}
 	
