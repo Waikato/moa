@@ -20,13 +20,8 @@
 package moa.tasks.active;
 
 import java.awt.Color;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
@@ -43,6 +38,7 @@ import moa.evaluation.PreviewCollectionLearningCurveWrapper;
 import moa.gui.colorGenerator.HSVColorGenerator;
 import moa.options.ClassOption;
 import moa.options.ClassOptionWithListenerOption;
+import moa.options.DependentOptionsUpdater;
 import moa.options.EditableMultiChoiceOption;
 import moa.streams.ExampleStream;
 import moa.tasks.TaskMonitor;
@@ -130,13 +126,10 @@ public class ALMultiParamTask extends ALMainTask {
 	public ALMultiParamTask() {
 		super();
 		
-		// reset last learner option
-		ALMultiParamTask.lastLearnerOption = null;
-		
 		// enable refreshing the variedParamNameOption depending on the
 		// learnerOption
-		this.learnerOption.setChangeListener(new RefreshParamsChangeListener(
-				this.learnerOption, this.variedParamNameOption));
+		new DependentOptionsUpdater(
+				this.learnerOption, this.variedParamNameOption);
 	}
 	
 	/**
@@ -154,9 +147,8 @@ public class ALMultiParamTask extends ALMainTask {
 	public Options getOptions() {
 		Options options = super.getOptions();
 		
-		// make sure that the variedParamNameOption is up to date
-		ALMultiParamTask.refreshVariedParamNameOption(
-				this.learnerOption, this.variedParamNameOption);
+		// make sure that all dependent options are up to date
+		this.learnerOption.getChangeListener().stateChanged(null);
 		
 		return options;
 	}
@@ -365,108 +357,5 @@ public class ALMultiParamTask extends ALMainTask {
 	@Override
 	public List<ALTaskThread> getSubtaskThreads() {
 		return this.flattenedSubtaskThreads;
-	}
-	
-	
-	
-	/* Static classes and methods */
-	
-	/**
-	 * Name of the last selected learner option, which is used to detect
-	 * changes.
-	 */
-	protected static String lastLearnerOption;
-	
-	/**
-	 * This ChangeListener refreshes the provided choices of an
-	 * EditableMultiChoiceOption every time a ClassOption (the learner) is
-	 * changed.
-	 * 
-	 * @see ALMultiParamTask#refreshVariedParamNameOption(
-	 * 			ClassOption, EditableMultiChoiceOption)
-	 * 
-	 * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
-	 * @version $Revision: 1 $
-	 */
-	protected static class RefreshParamsChangeListener 
-		implements ChangeListener, Serializable 
-	{
-		private static final long serialVersionUID = 1L;
-		
-		private ClassOption learnerOption;
-		private EditableMultiChoiceOption variedParamNameOption;
-		
-		public RefreshParamsChangeListener(
-				ClassOption learnerOption, 
-				EditableMultiChoiceOption variedParamNameOption) 
-		{
-			this.learnerOption = learnerOption;
-			this.variedParamNameOption = variedParamNameOption;
-		}
-		
-		@Override
-		public void stateChanged(ChangeEvent e) {
-			ALMultiParamTask.refreshVariedParamNameOption(
-					this.learnerOption, this.variedParamNameOption);
-		}
-	}
-	
-	/**
-	 * Refresh the provided choices of an EditableMultiChoiceOption every time
-	 * a ClassOption (the learner) is changed. This method checks if the
-	 * chosen learner actually changed, before updating the MultiChoiceOption.
-	 * <br>
-	 * Only Int and Float options of the selected learner are shown in the
-	 * MultiChoiceOption, because only continuous parameters should be 
-	 * variable.
-	 * <br>
-	 * If one of the learner's options is named "budget" or its name contains
-	 * the word "budget", it is selected as the default option.
-	 * 
-	 * @param learnerOption
-	 * @param variedParamNameOption
-	 */
-	protected static void refreshVariedParamNameOption(
-			ClassOption learnerOption, 
-			EditableMultiChoiceOption variedParamNameOption)
-	{
-		ALClassifier learner = 
-				(ALClassifier) learnerOption.getPreMaterializedObject();
-		String currentLearner = learner.getClass().getSimpleName();
-		
-		// check if an update is actually needed
-		if (lastLearnerOption == null || 
-			!lastLearnerOption.equals(currentLearner)) 
-		{
-			lastLearnerOption = currentLearner;
-			
-			Option[] options = learner.getOptions().getOptionArray();
-			
-			// filter for Int and Float Options
-			options = Arrays.stream(options)
-					.filter(x -> x instanceof IntOption || 
-								 x instanceof FloatOption)
-					.toArray(Option[]::new);
-			
-			String[] optionNames = new String[options.length];
-			String[] optionDescriptions = new String[options.length];
-			int defaultIndex = -1;
-			
-			// get option names and descriptions and look for default option
-			for (int i = 0; i < options.length; i++) {
-				optionNames[i] = options[i].getName();
-				optionDescriptions[i] = options[i].getPurpose();
-				
-				if (optionNames[i].equals("budget") || 
-					(optionNames[i].contains("budget") && defaultIndex < 0)) 
-				{
-					defaultIndex = i;
-				}
-			}
-			
-			// pass new options to the EditableMultiChoiceOption
-			variedParamNameOption.setOptions(optionNames, optionDescriptions, 
-					defaultIndex >= 0 ? defaultIndex : 0);
-		}
 	}
 }
