@@ -98,8 +98,8 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
     public IntOption mMaxOption = new IntOption("M",
             'm', "The maximum number of hypothetic label.", 3, 0, Integer.MAX_VALUE);
     
-    public IntOption kernelDensityEstimatorWindowOption = new IntOption("KernelDensityEstimatorWindow",
-            'k', "The size of the window used for the kernel density estimation.", 10, 0, Integer.MAX_VALUE);
+    public IntOption kernelDensityEstimatorWindowOption = new IntOption("KernelFrequencyEstimatorWindow",
+            'k', "The size of the window used for the kernel frequency estimation pre class.", 10, 0, Integer.MAX_VALUE);
     
     public FloatOption bandwidthOption = new FloatOption("bandWidth",
             'w', "The bandwidth to use for density estimation.", 0.1, Double.MIN_VALUE, Double.MAX_VALUE);
