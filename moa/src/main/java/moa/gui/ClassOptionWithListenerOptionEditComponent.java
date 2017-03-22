@@ -28,9 +28,9 @@ import com.github.javacliparser.gui.ClassOptionEditComponent;
 import moa.options.ClassOptionWithListenerOption;
 
 /**
- * EditComponent for the {@link ClassOptionWithListenerOption}. State changes
- * are passed to the ClassOption's listener and possibly further to the
- * overlying task.
+ * EditComponent for the {@link ClassOptionWithListenerOption}. When its state
+ * is changed, the changes are directly applied to the corresponding Option so
+ * that potential listeners can be notified and updates can be processed.
  * 
  * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  * @version $Revision: 1 $

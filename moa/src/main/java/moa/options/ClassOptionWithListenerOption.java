@@ -22,9 +22,8 @@ package moa.options;
 import javax.swing.event.ChangeListener;
 
 /**
- * ClassOption that can be given a ChangeListener. The listener is used in the
- * corresponding {@link ClassOptionWithListenerOptionEditComponent} to pass 
- * changes of the selected ClassOption back to the overlying task.
+ * ClassOption that can be given a ChangeListener. The listener is notified
+ * whenever a new value is set for this option.
  * 
  * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  * @version $Revision: 1 $
@@ -68,11 +67,11 @@ public class ClassOptionWithListenerOption extends ClassOption {
         this.listener = listener;
     }
 	
-	public void setListener(ChangeListener listener) {
+	public void setChangeListener(ChangeListener listener) {
 		this.listener = listener;
 	}
 	
-	public ChangeListener getListener() {
+	public ChangeListener getChangeListener() {
 		return this.listener;
 	}
 	

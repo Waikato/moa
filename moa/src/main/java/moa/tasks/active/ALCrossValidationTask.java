@@ -37,11 +37,11 @@ import moa.evaluation.PreviewCollectionLearningCurveWrapper;
 import moa.gui.colorGenerator.HSVColorGenerator;
 import moa.options.ClassOption;
 import moa.options.ClassOptionWithListenerOption;
+import moa.options.DependentOptionsUpdater;
 import moa.options.EditableMultiChoiceOption;
 import moa.streams.ExampleStream;
 import moa.streams.KFoldStream;
 import moa.tasks.TaskMonitor;
-import moa.tasks.active.ALMultiParamTask.RefreshParamsChangeListener;
 
 /**
  * This task extensively evaluates an active learning classifier on a stream.
@@ -132,22 +132,18 @@ public class ALCrossValidationTask extends ALMainTask {
 	public ALCrossValidationTask() {
 		super();
 		
-		// reset last learner option
-		ALMultiParamTask.lastLearnerOption = null;
-		
 		// enable refreshing the variedParamNameOption depending on the
 		// learnerOption
-		this.learnerOption.setListener(new RefreshParamsChangeListener(
-				this.learnerOption, this.variedParamNameOption));
+		new DependentOptionsUpdater(
+				this.learnerOption, this.variedParamNameOption);
 	}
 	
 	@Override
 	public Options getOptions() {
 		Options options = super.getOptions();
 		
-		// make sure that the variedParamNameOption is up to date
-		ALMultiParamTask.refreshVariedParamNameOption(
-				this.learnerOption, this.variedParamNameOption);
+		// make sure that all dependent options are up to date
+		this.learnerOption.getChangeListener().stateChanged(null);
 		
 		return options;
 	}
