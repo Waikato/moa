@@ -77,9 +77,9 @@ public class ALCrossValidationTask extends ALMainTask {
 			"stream", 's', "Stream to learn from.", ExampleStream.class,
 			"generators.RandomTreeGenerator");
 
-	public ClassOption prequentialEvaluatorOption = new ClassOption(
-			"prequentialEvaluator", 'e',
-			"Prequential classification performance evaluation method.", 
+	public ClassOption evaluatorOption = new ClassOption(
+			"evaluator", 'e',
+			"Active Learning classification performance evaluation method.", 
 			ALClassificationPerformanceEvaluator.class,
 			"ALBasicClassificationPerformanceEvaluator");
 
@@ -109,21 +109,9 @@ public class ALCrossValidationTask extends ALMainTask {
 					new FloatOption("", ' ', "", 0.9)
 			}, ',');
 	
-	public ClassOption multiParamEvaluatorOption = new ClassOption(
-			"multiParamEvaluator", 'm',
-            "Multi-param classification performance evaluation method.",
-            ALClassificationPerformanceEvaluator.class,
-            "ALBasicClassificationPerformanceEvaluator");
-	
 	/* options used in in this class */
 	public IntOption numFoldsOption = new IntOption("numFolds", 'k', 
 			"Number of cross validation folds.", 10);
-
-	public ClassOption crossValEvaluatorOption = new ClassOption(
-			"crossValidationEvaluator", 'c',
-			"Cross validation evaluation method.", 
-			ALClassificationPerformanceEvaluator.class,
-			"ALBasicClassificationPerformanceEvaluator");
 
 	/*
 	 * Possible extensions/further options:
@@ -210,9 +198,9 @@ public class ALCrossValidationTask extends ALMainTask {
 					opt.setValueViaCLIString(
 							ClassOption.objectToCLIString(stream, ExampleStream.class));
 					break;
-				case "prequential evaluator":
+				case "evaluator":
 					opt.setValueViaCLIString(
-							this.prequentialEvaluatorOption.getValueAsCLIString());
+							this.evaluatorOption.getValueAsCLIString());
 					break;
 				case "variedParamName":
 					// set possible choices
@@ -227,10 +215,6 @@ public class ALCrossValidationTask extends ALMainTask {
 				case "variedParamValues":
 					opt.setValueViaCLIString(
 							this.variedParamValuesOption.getValueAsCLIString());
-					break;
-				case "multiParamEvaluator":
-					opt.setValueViaCLIString(
-							this.multiParamEvaluatorOption.getValueAsCLIString());
 					break;
 				case "instanceLimit":
 					opt.setValueViaCLIString(

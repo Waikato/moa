@@ -78,9 +78,9 @@ public class ALMultiParamTask extends ALMainTask {
             "Stream to learn from.", ExampleStream.class,
             "generators.RandomTreeGenerator");
 	
-	public ClassOption prequentialEvaluatorOption = new ClassOption(
-			"prequentialEvaluator", 'e',
-            "Prequential classification performance evaluation method.",
+	public ClassOption evaluatorOption = new ClassOption(
+			"evaluator", 'e',
+            "Active Learning classification performance evaluation method.",
             ALClassificationPerformanceEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
 	
@@ -109,12 +109,6 @@ public class ALMultiParamTask extends ALMainTask {
 					new FloatOption("", ' ', "", 0.5),
 					new FloatOption("", ' ', "", 0.9)
 			}, ',');
-	
-	public ClassOption multiParamEvaluatorOption = new ClassOption(
-			"multiParamEvaluator", 'm',
-            "Multi-param classification performance evaluation method.",
-            ALClassificationPerformanceEvaluator.class,
-            "ALBasicClassificationPerformanceEvaluator");
 	
 	
 	private ArrayList<ALPrequentialEvaluationTask> subtasks = new ArrayList<>();
@@ -240,10 +234,9 @@ public class ALMultiParamTask extends ALMainTask {
 					opt.setValueViaCLIString(
 							this.streamOption.getValueAsCLIString());
 					break;
-				case "prequential evaluator":
+				case "evaluator":
 					opt.setValueViaCLIString(
-							this.prequentialEvaluatorOption
-							.getValueAsCLIString());
+							this.evaluatorOption.getValueAsCLIString());
 					break;
 				case "instanceLimit":
 					opt.setValueViaCLIString(

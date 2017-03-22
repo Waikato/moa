@@ -66,9 +66,9 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
             "Stream to learn from.", ExampleStream.class,
             "generators.RandomTreeGenerator");
 	
-	public ClassOption prequentialEvaluatorOption = new ClassOption(
-			"prequentialEvaluator", 'e',
-            "Prequential classification performance evaluation method.",
+	public ClassOption evaluatorOption = new ClassOption(
+			"evaluator", 'e',
+            "Active Learning classification performance evaluation method.",
             ALClassificationPerformanceEvaluator.class,
             "ALBasicClassificationPerformanceEvaluator");
 	
@@ -115,7 +115,7 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 		
 		// get evaluator
         ALClassificationPerformanceEvaluator evaluator = (ALClassificationPerformanceEvaluator) 
-        		getPreparedClassOption(this.prequentialEvaluatorOption);
+        		getPreparedClassOption(this.evaluatorOption);
         
         // initialize learning curve
         LearningCurve learningCurve = new LearningCurve(
