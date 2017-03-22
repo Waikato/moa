@@ -48,6 +48,7 @@ public class IncrementalQuantileFilter extends AbstractOptionHandler implements 
 	protected double budget;
 	protected int acquiredLabels;
 	protected RingBuffer<Double> scoreBuffer;
+	Ranking<Double> r;
 
 	public IntOption windowSizeOption = new IntOption("windowSize", 'w', 
 			"The number of previously observed al scores which should be considered.",
@@ -64,22 +65,27 @@ public class IncrementalQuantileFilter extends AbstractOptionHandler implements 
 
 	@Override
 	public boolean isAbove(double alScore) {
-		Double removedElement = scoreBuffer.add(alScore);
-		
-		int windowSize = scoreBuffer.size();
-		
-		Ranking<Double> r = new Ranking<>();
-		List<Integer> rankedIndices = r.rank(scoreBuffer, windowSize - 1, removedElement);
-		int thresholdIdx = (int)(windowSize * (1-budget));
-		double threshold = scoreBuffer.get(rankedIndices.get(thresholdIdx));
-		
-		
-		boolean decision = alScore >= threshold;
-		
-		if (decision) {
-			++acquiredLabels;
+		try {
+
+			Double removedElement = scoreBuffer.add(alScore);
+			
+			int windowSize = scoreBuffer.size();
+			
+			List<Integer> rankedIndices = r.rank(scoreBuffer, windowSize - 1, removedElement);
+			int thresholdIdx = (int)(windowSize * (1-budget));
+			double threshold = scoreBuffer.get(rankedIndices.get(thresholdIdx));
+			
+			
+			boolean decision = alScore >= threshold;
+			
+			if (decision) {
+				++acquiredLabels;
+			}
+			return decision;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		return decision;
+		return false;
 	}
 
 	@Override
@@ -99,6 +105,7 @@ public class IncrementalQuantileFilter extends AbstractOptionHandler implements 
 		acquiredLabels = 0;
 		budget = 0;
 		scoreBuffer = null;
+		r = new Ranking<>();
 	}
 
 	@Override

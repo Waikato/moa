@@ -34,6 +34,8 @@ public class RingBuffer<E> {
 
 	// the list to store data 
 	List<E> buffer;
+	// the list to store data 
+	List<E> sortedBuffer;
 	// the index which points to the start of the ring buffer
 	int start;
 	// the maximum size of the ring buffer
@@ -46,7 +48,10 @@ public class RingBuffer<E> {
 	public RingBuffer(int capacity) {
 		ArrayList<E> l = new ArrayList<>();
 		l.ensureCapacity(capacity);
+		ArrayList<E> l2 = new ArrayList<>();
+		l2.ensureCapacity(capacity);
 		buffer = l;
+		sortedBuffer = l2;
 		start = 0;
 		this.capacity = capacity;
 	}
@@ -103,12 +108,22 @@ public class RingBuffer<E> {
 	 * @return a list with the elements in the right order
 	 */
 	public List<E> toList() {
-		ArrayList<E> l = new ArrayList<>();
-		for(int i = 0; i < size(); ++i)
+		if(sortedBuffer.size() < buffer.size())
 		{
-			l.add(get(i));
+			sortedBuffer.clear();
+			for(int i = 0; i < size(); ++i)
+			{
+				sortedBuffer.add(get(i));
+			}
 		}
-		return l;
+		else
+		{
+			for(int i = 0; i < size(); ++i)
+			{
+				sortedBuffer.set(i, get(i));
+			}
+		}
+		return sortedBuffer;
 	}
 
 	@Override

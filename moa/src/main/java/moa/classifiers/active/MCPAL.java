@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
+import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
@@ -80,6 +81,8 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	
 	private int mMax;
 	
+	private boolean useDensityWeight;
+	
 	private double bandwidth;
 	
 	private BudgetManager budgetManager;
@@ -99,10 +102,13 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
             'm', "The maximum number of hypothetic label.", 3, 0, Integer.MAX_VALUE);
     
     public IntOption kernelDensityEstimatorWindowOption = new IntOption("KernelFrequencyEstimatorWindow",
-            'k', "The size of the window used for the kernel frequency estimation pre class.", 10, 0, Integer.MAX_VALUE);
-    
+            'k', "The size of the window used for the kernel frequency estimation pre class.", 10, 1, Integer.MAX_VALUE);
+
     public FloatOption bandwidthOption = new FloatOption("bandWidth",
             'w', "The bandwidth to use for density estimation.", 0.1, Double.MIN_VALUE, Double.MAX_VALUE);
+    
+    public FlagOption useDensityWeightOption = new FlagOption("useDensityWeighting",
+            'd', "If set to true the gain will be weighted by the density for that instance.");
     
 	public MCPAL() {
 		resetLearningImpl();
@@ -116,6 +122,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		budgetManager = (BudgetManager) getPreparedClassOption(budgetManagerOption);
 		budgetManager.setBudget(budgetOption.getValue());
 		mMax = (int)mMaxOption.getValue();
+		useDensityWeight = useDensityWeightOption.isSet();
 		bandwidth = bandwidthOption.getValue();
 	}
 	
@@ -180,8 +187,9 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 			sumFrequencies += 1;
 			++numInstances;
 		}
+
 		
-		return sumFrequencies/numInstances;
+		return numInstances == 0 ? 0 : sumFrequencies / numInstances;
 	}
 	
 	/**
@@ -424,7 +432,8 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	private double getAlScore(double[] point)
 	{
 		double[] k = getK(point);
-		double density = getDensity(k, true);
+		double density = useDensityWeight? getDensity(k, false) : 1.0;
+		
 		double perfGain = getPerfGain(k);
 		return density * perfGain;	
 	}

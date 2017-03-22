@@ -60,42 +60,34 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 		super.prepareForUseImpl(monitor, repository);
 		numAcquisitionsBuffer = new RingBuffer<>(toleranceWindowSizeOption.getValue());
-		r = new Ranking<>();
 	}
 
 	@Override
 	public boolean isAbove(double alScore) {
-		try
-		{
-			Double removedElement = scoreBuffer.add(alScore);
-			int windowSize = scoreBuffer.size();
-			
-			List<Integer> toleranceWindow = numAcquisitionsBuffer.toList();
-			int toleranceWindowSize = toleranceWindow.size();
-			
-			List<Integer> rankedIndices = r.rank(scoreBuffer, windowSize - 1, removedElement);
-			
-			int thresholdIdx = (int)(windowSize * (1-budget));
-			double threshold = scoreBuffer.get(rankedIndices.get(thresholdIdx));
-			
-			
-			double acquisitionsLeft = getAcquisitionsLeft(toleranceWindow, budget);
-			double balancedThreshold = threshold - getRange(scoreBuffer, rankedIndices) * acquisitionsLeft/toleranceWindowSize;
-			
-			boolean decision = alScore >= balancedThreshold;
-			
-			numAcquisitionsBuffer.add(decision? 1 : 0);
-			
-			if (decision) {
-				++acquiredLabels;
-			}
-			return decision;
+		Double removedElement = scoreBuffer.add(alScore);
+		int windowSize = scoreBuffer.size();
+		
+		int toleranceWindowSize = numAcquisitionsBuffer.size();
+		
+		List<Integer> rankedIndices = r.rank(scoreBuffer, windowSize - 1, removedElement);
+		
+		int thresholdIdx = (int)(windowSize * (1-budget));
+		double threshold = scoreBuffer.get(rankedIndices.get(thresholdIdx));
+		
+		
+		double acquisitionsLeft = getAcquisitionsLeft(numAcquisitionsBuffer, budget);
+		
+		double range = getRange(scoreBuffer, rankedIndices);
+		double balancedThreshold = threshold - range * acquisitionsLeft/toleranceWindowSize;
+		
+		boolean decision = alScore >= balancedThreshold;
+		
+		numAcquisitionsBuffer.add(decision? 1 : 0);
+		
+		if (decision) {
+			++acquiredLabels;
 		}
-		catch(Exception e)
-		{
-			e.printStackTrace(System.err);
-		}
-		return false;
+		return decision;
 	}
 	
 	/**
@@ -105,7 +97,7 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 	 * @param budget the wandted budget
 	 * @return the number of acquisitions which is needed to get to the wanted budget
 	 */
-	private double getAcquisitionsLeft(List<Integer> toleranceWindow, double budget)
+	private double getAcquisitionsLeft(RingBuffer<Integer> toleranceWindow, double budget)
 	{
 		double numProcessedInstances = toleranceWindow.size();
 		double numAcquiredLabels = 0;
@@ -139,5 +131,6 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 	public void resetLearning() {
 		super.resetLearning();
 		numAcquisitionsBuffer = null;
+		r = new Ranking<>();
 	}
 }
