@@ -62,16 +62,14 @@ public abstract class AbstractGraphCanvas extends JPanel {
 
 	protected static final int Y_OFFSET_TOP = 20;
 
+	protected double max_x_value;
 	protected double max_y_value;
 
-	protected double max_x_value;
-
 	protected double x_resolution;
-
 	protected double y_resolution;
 
-	protected double baseHeight;
 	protected double baseWidth;
+	protected double baseHeight;
 
 	/**
 	 * Initialises an AbstractGraphCanvas by constructing its AbstractGraphAxes,
@@ -87,15 +85,30 @@ public abstract class AbstractGraphCanvas extends JPanel {
 		this.axesPanel.add(this.plotPanel);
 
 		this.measureSelected = 0;
-		this.max_y_value = 1;
 		this.max_x_value = 1;
+		this.max_y_value = 1;
 		this.x_resolution = 1;
 		this.y_resolution = 1;
 
 		updateXResolution();
 		updateYResolution();
 
+		this.baseWidth = getWidth();
 		this.baseHeight = getHeight();
+	}
+	
+	/**
+	 * Updates the base width, which is used to determine the canvas size. It
+	 * is defined as the current width divided by the x_resolution. To prevent
+	 * unnecessary scrolling after reducing the x_resolution, the baseWidth is
+	 * reset to its initial value of 500 on x_resolution = 1.
+	 */
+	private void updateBaseWidth() {
+		if (x_resolution > 1) {
+			this.baseWidth = getWidth() / x_resolution;
+		} else {
+			this.baseWidth = 500;
+		}
 	}
 
 	/**
@@ -109,14 +122,6 @@ public abstract class AbstractGraphCanvas extends JPanel {
 			this.baseHeight = getHeight() / y_resolution;
 		} else {
 			this.baseHeight = 111;
-		}
-	}
-	
-	private void updateBaseWidth() {
-		if (x_resolution > 1) {
-			this.baseWidth = getWidth() / x_resolution;
-		} else {
-			this.baseWidth = 500;
 		}
 	}
 
@@ -170,10 +175,6 @@ public abstract class AbstractGraphCanvas extends JPanel {
 		if (updateMaxValues() || force) {
 			setSize();
 			setPreferredSize();
-//			setSize(getWidth(), (int) (this.baseHeight * y_resolution));
-//			setPreferredSize(new Dimension(
-//					(int) Math.max(getPreferredSize().getWidth(), (int) (max_x_value / x_resolution) + X_OFFSET_LEFT),
-//					getHeight()));
 			this.repaint();
 		}
 	}
@@ -247,14 +248,6 @@ public abstract class AbstractGraphCanvas extends JPanel {
 	private void updateYResolution() {
 		axesPanel.setYResolution(y_resolution);
 	}
-
-	/**
-	 * Updates the max y value of the axes and plot panel.
-	 */
-	private void updateMaxYValue() {
-		axesPanel.setYMaxValue(max_y_value);
-		plotPanel.setYMaxValue(max_y_value);
-	}
 	
 	/**
 	 * Updates the max x value of the axes and plot panel.
@@ -263,18 +256,13 @@ public abstract class AbstractGraphCanvas extends JPanel {
 		axesPanel.setXMaxValue(max_x_value);
 		plotPanel.setXMaxValue(max_x_value);
 	}
-	
-	private void updateYUpperValue() {
-		int digits_y = (int)(Math.log10(max_y_value))-1;
-        double upper = Math.ceil(max_y_value/Math.pow(10,digits_y));
-        if(digits_y < 0) upper*=Math.pow(10,digits_y);
 
-        if(Double.isNaN(upper)) {
-        	upper = 1.0;
-        }
-        
-        this.axesPanel.setYUpperValue(upper);
-        this.plotPanel.setYUpperValue(upper);
+	/**
+	 * Updates the max y value of the axes and plot panel.
+	 */
+	private void updateMaxYValue() {
+		axesPanel.setYMaxValue(max_y_value);
+		plotPanel.setYMaxValue(max_y_value);
 	}
 	
 	private void updateXUpperValue() {
@@ -288,6 +276,19 @@ public abstract class AbstractGraphCanvas extends JPanel {
         
         this.axesPanel.setXUpperValue(upper);
         this.plotPanel.setXUpperValue(upper);
+	}
+	
+	private void updateYUpperValue() {
+		int digits_y = (int)(Math.log10(max_y_value))-1;
+        double upper = Math.ceil(max_y_value/Math.pow(10,digits_y));
+        if(digits_y < 0) upper*=Math.pow(10,digits_y);
+
+        if(Double.isNaN(upper)) {
+        	upper = 1.0;
+        }
+        
+        this.axesPanel.setYUpperValue(upper);
+        this.plotPanel.setYUpperValue(upper);
 	}
 
 	/**
