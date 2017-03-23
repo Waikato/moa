@@ -121,11 +121,11 @@ public abstract class AbstractGraphCanvas extends JPanel {
 	}
 
 	/**
-	 * Scales the resolution on the x-axis by the given value and updates the
+	 * Scales the resolution on the x-axis by the given factor and updates the
 	 * canvas.
 	 * 
 	 * @param factor
-	 *            value the x resolution will be scaled by
+	 *            factor the x_resolution will be scaled by
 	 */
 	public void scaleXResolution(double factor) {
 		this.x_resolution *= factor;
@@ -134,14 +134,14 @@ public abstract class AbstractGraphCanvas extends JPanel {
 	}
 
 	/**
-	 * Increases the resolution on the y-axis by the given value, with a minimum
-	 * value of 1.0, and updates the canvas.
+	 * Scales the resolution on the y-axis by the given factor and updates the
+	 * canvas.
 	 * 
-	 * @param value
-	 *            value the y resolution will be scaled by
+	 * @param factor
+	 *            factor the y_resolution will be scaled by
 	 */
-	public void scaleYResolution(double value) {
-		this.y_resolution = Math.max(1.0, this.y_resolution + value);
+	public void scaleYResolution(double factor) {
+		this.y_resolution *= factor;
 		updateYResolution();
 		updateCanvas(true);
 	}
