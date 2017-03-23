@@ -53,7 +53,7 @@ public class ProcessGraphAxes extends AbstractGraphAxes {
             g.drawLine(w*i+X_OFFSET_LEFT, height+Y_OFFSET_TOP, 
             		   w*i+X_OFFSET_LEFT, height+Y_OFFSET_TOP+5);
 
-            String label = Integer.toString((int)(w*i*processFrequency*x_resolution));
+            String label = Integer.toString((int)(w*i*processFrequency/x_resolution));
 
             int str_length = g.getFontMetrics().stringWidth(label);
             g.drawString(label,w*i+X_OFFSET_LEFT-str_length/2,height+Y_OFFSET_TOP+18);

@@ -354,9 +354,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				// update the currently open graph
 				int currentTab = graphPanelTabbedPane.getSelectedIndex();
 				if (currentTab == 0) {
-					graphCanvas.scaleXResolution(0.5);
+					graphCanvas.scaleXResolution(2);
 				} else {
-					paramGraphCanvas.scaleXResolution(0.5);
+					paramGraphCanvas.scaleXResolution(2);
 				}
 			}
 		});
@@ -369,9 +369,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				// update the currently open graph
 				int currentTab = graphPanelTabbedPane.getSelectedIndex();
 				if (currentTab == 0) {
-					graphCanvas.scaleXResolution(2);
+					graphCanvas.scaleXResolution(0.5);
 				} else {
-					paramGraphCanvas.scaleXResolution(2);
+					paramGraphCanvas.scaleXResolution(0.5);
 				}
 			}
 		});

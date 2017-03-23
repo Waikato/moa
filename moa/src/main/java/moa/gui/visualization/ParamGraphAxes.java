@@ -42,7 +42,7 @@ public class ParamGraphAxes extends AbstractGraphAxes {
         //x-axis markers + labels
         DecimalFormat d = new DecimalFormat("0.00");
 
-        double numLabels = Math.min(Math.pow(2,  (int) (1/x_resolution)), 32);
+        double numLabels = Math.min(Math.pow(2,  (int) x_resolution), 32);
         /*
          * technically, this is numLabels-1, but as we're iterating 
          * 0 <= i <= numLabels, we need the extra label. Also don't draw more

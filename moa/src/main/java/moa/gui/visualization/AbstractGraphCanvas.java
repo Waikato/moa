@@ -113,8 +113,8 @@ public abstract class AbstractGraphCanvas extends JPanel {
 	}
 	
 	private void updateBaseWidth() {
-		if ((1/x_resolution) > 1) {
-			this.baseWidth = getWidth() / (1/x_resolution);
+		if (x_resolution > 1) {
+			this.baseWidth = getWidth() / x_resolution;
 		} else {
 			this.baseWidth = 500;
 		}

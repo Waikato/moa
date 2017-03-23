@@ -113,7 +113,7 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 	@Override
 	public void setPreferredSize() {
 		setPreferredSize(new Dimension(
-				(int) Math.max(getPreferredSize().getWidth(), (int) (max_x_value / x_resolution) + X_OFFSET_LEFT),
+				(int) Math.max(getPreferredSize().getWidth(), (int) (max_x_value * x_resolution) + X_OFFSET_LEFT),
 				getHeight()));
 	}
 

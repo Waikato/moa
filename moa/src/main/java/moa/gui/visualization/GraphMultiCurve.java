@@ -101,7 +101,7 @@ public class GraphMultiCurve extends AbstractGraphPlot {
             int[] y = new int[n];
 
             for (int i = 0; i < n; i ++) {
-            	x[i] = (int) (i / x_resolution);
+            	x[i] = (int) (i * x_resolution);
             	y[i] = (int)(height-(m.getValue(mSelect, i)/this.upper_y_value)*height);
             }
             g.setColor(color);

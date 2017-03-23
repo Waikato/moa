@@ -79,7 +79,7 @@ public class ParamGraphCanvas extends AbstractGraphCanvas {
 
 	@Override
 	public void setSize() {
-		setSize((int) (baseWidth  * (1/x_resolution)),
+		setSize((int) (baseWidth  * x_resolution),
 				(int) (baseHeight * y_resolution));
 	}
 
