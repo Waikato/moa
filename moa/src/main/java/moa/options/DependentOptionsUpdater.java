@@ -66,12 +66,14 @@ public class DependentOptionsUpdater implements ChangeListener, Serializable {
 	 * a ClassOption (the learner) is changed. This method checks if the
 	 * chosen learner actually changed, before updating the MultiChoiceOption.
 	 * <br>
-	 * Only Int and Float options of the selected learner are shown in the
-	 * MultiChoiceOption, because only continuous parameters should be 
-	 * variable.
+	 * The method looks for available options in the selected learner and 
+	 * recursively in all of its ClassOptions.
 	 * <br>
-	 * If one of the learner's options is named "budget" or its name contains
-	 * the word "budget", it is selected as the default option.
+	 * Only Int and Float options are shown in the MultiChoiceOption, because 
+	 * only numeric parameters should be variable.
+	 * <br>
+	 * If one of the options is named "budget" or its name contains the word 
+	 * "budget", it is selected as the default option.
 	 * 
 	 * @param learnerOption
 	 * @param variedParamNameOption
@@ -150,5 +152,45 @@ public class DependentOptionsUpdater implements ChangeListener, Serializable {
 			this.addRecursiveNumberOptions(classOption, 
 					optionNames, optionDescriptions, newNamePrefix);
 		}
+	}
+	
+	/**
+	 * Resolve the name of the varied parameter and return the corresponding option.
+	 * The varied parameter name has the format "learner/suboptions.../numberOption".
+	 * If no matching parameter can be found, <code>null</code> is returned.
+	 * 
+	 * @param learner the learner object that has the varied option
+	 * @param variedParamName name of the (nested) varied parameter
+	 * @return varied option
+	 */
+	public static Option getVariedOption(OptionHandler learner, String variedParamName) {
+		// split nested option string
+		String[] singleOptions = variedParamName.split("/");
+		
+		// check if first level is "learner", which has already been resolved
+		int startIndex = 0;
+		if (singleOptions.length > 0 && singleOptions[0].equals("learner/")) {
+			startIndex = 1;
+		}
+		
+		// iteratively create objects and get next options for each level
+		Option learnerVariedParamOption = null;
+		OptionHandler currentOptionHandler = learner;
+		for (int i = startIndex; i < singleOptions.length; i++) {
+			for (Option opt : currentOptionHandler.getOptions().getOptionArray()) {
+				if (opt.getName().equals(singleOptions[i])) {
+					if (opt instanceof ClassOption) {
+						currentOptionHandler = (OptionHandler) 
+								((ClassOption) opt).getPreMaterializedObject();
+					}
+					else {
+						learnerVariedParamOption = opt;
+					}
+					break;
+				}
+			}
+		}
+		
+		return learnerVariedParamOption;
 	}
 }
