@@ -20,7 +20,9 @@
 package moa.options;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -40,7 +42,7 @@ public class DependentOptionsUpdater implements ChangeListener, Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	protected String lastLearnerClassName;
+	protected String lastLearnerCLIString;
 	protected ClassOptionWithListenerOption learnerOption;
 	protected EditableMultiChoiceOption variedParamNameOption;
 	
@@ -76,43 +78,77 @@ public class DependentOptionsUpdater implements ChangeListener, Serializable {
 	 */
 	public void refreshVariedParamNameOption()
 	{
-		OptionHandler learner = 
-				(OptionHandler) learnerOption.getPreMaterializedObject();
-		String currentLearner = learner.getClass().getSimpleName();
+		String currentLearnerCLIString = 
+				this.learnerOption.getValueAsCLIString();
 		
 		// check if an update is actually needed
-		if (lastLearnerClassName == null || 
-			!lastLearnerClassName.equals(currentLearner)) 
+		if (this.lastLearnerCLIString == null || 
+			!this.lastLearnerCLIString.equals(currentLearnerCLIString)) 
 		{
-			lastLearnerClassName = currentLearner;
+			this.lastLearnerCLIString = currentLearnerCLIString;
 			
-			Option[] options = learner.getOptions().getOptionArray();
+			// create result lists
+			List<String> optionNames = new ArrayList<String>();
+			List<String> optionDescriptions = new ArrayList<String>();
 			
-			// filter for Int and Float Options
-			options = Arrays.stream(options)
-					.filter(x -> x instanceof IntOption || 
-								 x instanceof FloatOption)
-					.toArray(Option[]::new);
-			
-			String[] optionNames = new String[options.length];
-			String[] optionDescriptions = new String[options.length];
-			int defaultIndex = -1;
+			// recursively add options
+			this.addRecursiveNumberOptions(
+					this.learnerOption, optionNames, optionDescriptions, "");
 			
 			// get option names and descriptions and look for default option
-			for (int i = 0; i < options.length; i++) {
-				optionNames[i] = options[i].getName();
-				optionDescriptions[i] = options[i].getPurpose();
-				
-				if (optionNames[i].equals("budget") || 
-					(optionNames[i].contains("budget") && defaultIndex < 0)) 
+			int defaultIndex = -1;
+			for (int i = 0; i < optionNames.size(); i++) {
+				if (optionNames.get(i).endsWith("/budget") || 
+					(optionNames.get(i).contains("budget") && defaultIndex < 0)) 
 				{
 					defaultIndex = i;
 				}
 			}
 			
 			// pass new options to the EditableMultiChoiceOption
-			variedParamNameOption.setOptions(optionNames, optionDescriptions, 
+			this.variedParamNameOption.setOptions(
+					optionNames.toArray(new String[0]), 
+					optionDescriptions.toArray(new String[0]), 
 					defaultIndex >= 0 ? defaultIndex : 0);
+		}
+	}
+	
+	private void addRecursiveNumberOptions(ClassOption option, 
+			List<String> optionNames, List<String> optionDescriptions,
+			String namePrefix) 
+	{
+		OptionHandler optionHandler = 
+				(OptionHandler) option.getPreMaterializedObject();
+		Option[] options = optionHandler.getOptions().getOptionArray();
+		
+		// filter for Int and Float Options
+		Option[] numberOptions = Arrays.stream(options)
+				.filter(x -> x instanceof IntOption || 
+							 x instanceof FloatOption)
+				.toArray(Option[]::new);
+		
+		// get names and descriptions
+		String newNamePrefix = namePrefix + option.getName() + "/";
+		String[] names = Arrays.stream(numberOptions)
+				.map(x -> newNamePrefix + x.getName())
+				.toArray(String[]::new);
+		String[] descriptions = Arrays.stream(numberOptions)
+				.map(x -> x.getPurpose())
+				.toArray(String[]::new);
+		
+		// add to overall lists
+		optionNames.addAll(Arrays.asList(names));
+		optionDescriptions.addAll(Arrays.asList(descriptions));
+		
+		// filter for ClassOptions
+		ClassOption[] classOptions = Arrays.stream(options)
+				.filter(x -> x instanceof ClassOption)
+				.toArray(ClassOption[]::new);
+		
+		// add number options of this class option to the overall list
+		for (ClassOption classOption : classOptions) {
+			this.addRecursiveNumberOptions(classOption, 
+					optionNames, optionDescriptions, newNamePrefix);
 		}
 	}
 }
