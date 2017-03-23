@@ -21,6 +21,7 @@ package moa.classifiers.active.budget;
 
 import java.util.List;
 
+import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 
 import moa.classifiers.active.RingBuffer;
@@ -54,6 +55,10 @@ public class IncrementalQuantileFilter extends AbstractOptionHandler implements 
 			"The number of previously observed al scores which should be considered.",
 			100, 1,Integer.MAX_VALUE);
 
+    public FloatOption budgetOption = new FloatOption("budget",
+    		'b', "The budget that should be used by the BudgetManager.",
+    		0.1, 0.00, 1.00);
+	
 	public IncrementalQuantileFilter() {
 		resetLearning();
 	}
@@ -61,6 +66,7 @@ public class IncrementalQuantileFilter extends AbstractOptionHandler implements 
 	@Override
 	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 		scoreBuffer = new RingBuffer<>(windowSizeOption.getValue());
+		budget = budgetOption.getValue();
 	}
 
 	@Override
@@ -86,11 +92,6 @@ public class IncrementalQuantileFilter extends AbstractOptionHandler implements 
 			e.printStackTrace();
 		}
 		return false;
-	}
-
-	@Override
-	public void setBudget(double budget) {
-		this.budget = budget;
 	}
 
 	@Override

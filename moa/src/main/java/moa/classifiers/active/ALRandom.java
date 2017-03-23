@@ -79,7 +79,6 @@ public class ALRandom extends AbstractClassifier implements ALClassifier {
         this.budgetManager = ((BudgetManager) getPreparedClassOption(this.budgetManagerOption));
         this.budgetManager.resetLearning();
         double budget = this.budgetOption.getValue();
-        budgetManager.setBudget(budget);
 	}
 
 	@Override

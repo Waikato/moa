@@ -91,12 +91,8 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
             "Classifier to train.", Classifier.class, "drift.SingleClassifierDrift");
 	
     public ClassOption budgetManagerOption = new ClassOption("budgetManager",
-            'b', "BudgetManager that should be used.",
+            'u', "BudgetManager that should be used.",
             BudgetManager.class, "BalancedIncrementalQuantileFilter");
-    
-    public FloatOption budgetOption = new FloatOption("budget",
-    		'u', "The budget that should be used by the BudgetManager.",
-    		0.1, 0.00, 1.00);
     
     public IntOption mMaxOption = new IntOption("M",
             'm', "The maximum number of hypothetic label.", 3, 0, Integer.MAX_VALUE);
@@ -120,7 +116,6 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 
 		classifier = (Classifier) getPreparedClassOption(classifierOption);
 		budgetManager = (BudgetManager) getPreparedClassOption(budgetManagerOption);
-		budgetManager.setBudget(budgetOption.getValue());
 		mMax = (int)mMaxOption.getValue();
 		useDensityWeight = useDensityWeightOption.isSet();
 		bandwidth = bandwidthOption.getValue();

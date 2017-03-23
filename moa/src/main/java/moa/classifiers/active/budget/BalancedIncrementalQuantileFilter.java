@@ -21,6 +21,7 @@ package moa.classifiers.active.budget;
 
 import java.util.List;
 
+import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 
 import moa.classifiers.active.RingBuffer;
@@ -48,7 +49,7 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 	Ranking<Double> r;
 
 	
-	public IntOption toleranceWindowSizeOption = new IntOption("tolreanceWindowSize", 't', 
+	public IntOption toleranceWindowSizeOption = new IntOption("toleranceWindowSize", 't', 
 			"The number of instances which are used to balance the number of label acquisitions.",
 			100, 1,Integer.MAX_VALUE);
 	
@@ -60,6 +61,7 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 		super.prepareForUseImpl(monitor, repository);
 		numAcquisitionsBuffer = new RingBuffer<>(toleranceWindowSizeOption.getValue());
+		this.budget = budgetOption.getValue();
 	}
 
 	@Override
