@@ -35,7 +35,7 @@ import javax.swing.JPanel;
  * @version $Revision: 1 $
  * @see GraphAxes
  */
-public abstract class AbstractGraphAxes extends JPanel{
+public abstract class AbstractGraphAxes extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
 	protected static final int X_OFFSET_LEFT = 35;
@@ -49,16 +49,20 @@ public abstract class AbstractGraphAxes extends JPanel{
     protected double x_resolution;
     protected double y_resolution;
     
-    protected double max_value;
-    protected double upper_value;
+    protected double max_x_value;
+    protected double max_y_value;
+    protected double upper_x_value;
+    protected double upper_y_value;
 
     /**
      * Initialises a AbstractGraphAxes by setting the initial values and the
      * layout.
      */
 	public AbstractGraphAxes() {
-		this.max_value = 1;
-		this.upper_value = 1;
+		this.max_x_value = 1;
+		this.max_y_value = 1;
+		this.upper_x_value = 1;
+		this.upper_y_value = 1;
     	
     	javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -156,7 +160,7 @@ public abstract class AbstractGraphAxes extends JPanel{
         
         for (int i = 0; i <= numLabels; i++) {
         	double fraction = i/numLabels;
-        	double value = fraction*upper_value;
+        	double value = fraction*upper_y_value;
         	g.drawString(d.format(value), 1, (int) ((1-fraction)*height) + Y_OFFSET_TOP+5);
         	g.drawLine(X_OFFSET_LEFT - 5, (int) ((1-fraction)*height) + Y_OFFSET_TOP, 
         			   X_OFFSET_LEFT, (int) ((1-fraction)*height) + Y_OFFSET_TOP);
@@ -169,11 +173,23 @@ public abstract class AbstractGraphAxes extends JPanel{
      * @param max maximum y value
      */
     public void setYMaxValue(double max){
-        this.max_value = max;
+        this.max_y_value = max;
+    }
+    
+    /**
+     * Sets the maximum x value
+     * @param max maximum x value
+     */
+    public void setXMaxValue(double max){
+        this.max_x_value = max;
     }
     
     public void setYUpperValue(double value) {
-    	this.upper_value = value;
+    	this.upper_y_value = value;
+    }
+    
+    public void setXUpperValue(double value) {
+    	this.upper_x_value = value;
     }
 
     /**
@@ -182,7 +198,7 @@ public abstract class AbstractGraphAxes extends JPanel{
      * @return position on the y axis
      */
     private int calcY(double value){
-        return (int)(height-(value/max_value)*height)+Y_OFFSET_TOP;
+        return (int)(height-(value/max_y_value)*height)+Y_OFFSET_TOP;
     }
 
 }

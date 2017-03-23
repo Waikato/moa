@@ -19,6 +19,7 @@
  */
 package moa.gui.visualization;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.text.DecimalFormat;
 
@@ -33,18 +34,31 @@ import java.text.DecimalFormat;
 public class ParamGraphAxes extends AbstractGraphAxes {
 
 	private static final long serialVersionUID = 1L;
-
+	
 	@Override
 	protected void drawXLabels(Graphics g) {
-		// TODO implement
-    	DecimalFormat d = new DecimalFormat("0.00");
-    	for (double i = 0.0; i <= 1.0; i += 0.2) {
-    		int x = (int) (this.width * i) + X_OFFSET_LEFT;
-    		g.drawLine(x, this.height + Y_OFFSET_TOP, x, this.height+Y_OFFSET_TOP + 5);
-    		String label = d.format(i);
-    		int str_length = g.getFontMetrics().stringWidth(label);
-            g.drawString(label, x - str_length/2, this.height + Y_OFFSET_TOP + 18);
-    	}
+        g.setColor(Color.BLACK);
+
+        //x-axis markers + labels
+        DecimalFormat d = new DecimalFormat("0.00");
+
+        double numLabels = Math.min(Math.pow(2,  (int) (1/x_resolution)), 32);
+        /*
+         * technically, this is numLabels-1, but as we're iterating 
+         * 0 <= i <= numLabels, we need the extra label. Also don't draw more
+         * than 32 labels.
+         */
+        
+        for (int i = 0; i <= numLabels; i++) {
+        	double fraction = i/numLabels;
+        	double value = fraction*upper_x_value;
+        	String label = d.format(value);
+        	int str_length = g.getFontMetrics().stringWidth(label);
+        	
+        	g.drawString(label, (int) (fraction*width) + X_OFFSET_LEFT - str_length/2, height+Y_OFFSET_TOP+18);
+        	g.drawLine((int) (fraction*width) + X_OFFSET_LEFT, height+Y_OFFSET_TOP, 
+        			   (int) (fraction*width) + X_OFFSET_LEFT, height+Y_OFFSET_TOP+5);
+        }
 	}
 
 }

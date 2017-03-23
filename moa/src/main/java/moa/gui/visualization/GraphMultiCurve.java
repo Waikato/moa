@@ -102,7 +102,7 @@ public class GraphMultiCurve extends AbstractGraphPlot {
 
             for (int i = 0; i < n; i ++) {
             	x[i] = (int) (i / x_resolution);
-            	y[i] = (int)(height-(m.getValue(mSelect, i)/this.upper_value)*height);
+            	y[i] = (int)(height-(m.getValue(mSelect, i)/this.upper_y_value)*height);
             }
             g.setColor(color);
             g.drawPolyline(x, y, n);

@@ -20,6 +20,7 @@
 package moa.gui.visualization;
 
 import java.awt.Color;
+import java.awt.Dimension;
 
 import moa.evaluation.MeasureCollection;
 
@@ -90,6 +91,30 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 		((GraphMultiCurve) this.plotPanel).setProcessFrequency(min_processFrequency);
 		((GraphMultiCurve) this.plotPanel).setGraph(measures, mSelect, processFrequencies, colors);
 		updateCanvas(false);
+	}
+	
+	@Override
+	public double getMaxXValue() {
+		int max = 0;
+
+		for (int i = 0; i < this.measures.length; i++) {
+			if (this.measures[i].getNumberOfValues(this.measureSelected) > max) {
+				max = this.measures[i].getNumberOfValues(this.measureSelected);
+			}
+		}
+		return max;
+	}
+
+	@Override
+	public void setSize() {
+		setSize(getWidth(), (int) (baseHeight * y_resolution));	
+	}
+
+	@Override
+	public void setPreferredSize() {
+		setPreferredSize(new Dimension(
+				(int) Math.max(getPreferredSize().getWidth(), (int) (max_x_value / x_resolution) + X_OFFSET_LEFT),
+				getHeight()));
 	}
 
 }

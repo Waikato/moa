@@ -82,14 +82,14 @@ public class GraphScatter extends AbstractGraphPlot {
     	int height = getHeight();
     	int width = getWidth();
     	
-    	int x = (int) (width * variedParamValue);
+    	int x = (int)((variedParamValue / this.upper_x_value) * width); 
    		double value = m.getLastValue(this.measureSelected);  
         if(Double.isNaN(value)){
         	// no result for this budget yet
             return;
         }
 
-        int y = (int)(height - (value / this.upper_value) * height); 
+        int y = (int)(height - (value / this.upper_y_value) * height); 
         
         g.setColor(color);
     	g.fillOval(x - DOT_SIZE/2, y - DOT_SIZE/2, DOT_SIZE, DOT_SIZE);

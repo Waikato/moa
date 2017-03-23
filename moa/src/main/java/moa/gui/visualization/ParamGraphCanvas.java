@@ -20,6 +20,7 @@
 package moa.gui.visualization;
 
 import java.awt.Color;
+import java.awt.Dimension;
 
 import moa.evaluation.MeasureCollection;
 
@@ -34,6 +35,8 @@ import moa.evaluation.MeasureCollection;
 public class ParamGraphCanvas extends AbstractGraphCanvas {
 
 	private static final long serialVersionUID = 1L;
+	
+	private double[] variedParamValues;
 
 	/**
 	 * Initialises a ProcessGraphCanvas by calling the super constructor with a
@@ -56,9 +59,33 @@ public class ParamGraphCanvas extends AbstractGraphCanvas {
 			String variedParamName, double[] variedParamValues, Color[] colors) {
 		this.measures = measures;
 		this.measureSelected = mSelect;
+		this.variedParamValues = variedParamValues;
 		((GraphScatter) this.plotPanel).setGraph(measures, mSelect, 
 				variedParamName, variedParamValues, colors);
 		updateCanvas(false);
+	}
+	
+	@Override
+	public double getMaxXValue() {
+		double max = Double.MIN_VALUE;
+
+		for (int i = 0; i < this.variedParamValues.length; i++) {
+			if (this.variedParamValues[i] > max) {
+				max = this.variedParamValues[i];
+			}
+		}
+		return max;
+	}
+
+	@Override
+	public void setSize() {
+		setSize((int) (baseWidth  * (1/x_resolution)),
+				(int) (baseHeight * y_resolution));
+	}
+
+	@Override
+	public void setPreferredSize() {
+		setPreferredSize(new Dimension(getWidth(), getHeight()));		
 	}
 
 }
