@@ -160,7 +160,7 @@ public class ALMultiParamTask extends ALMainTask {
 		super.prepareForUseImpl(monitor, repository);
 		
 		// get varied parameter name
-		final String variedParamName = 
+		String variedParamName = 
 				this.variedParamNameOption.getValueAsCLIString();
 		
 		// get learner
@@ -168,13 +168,8 @@ public class ALMultiParamTask extends ALMainTask {
 				(ALClassifier) getPreparedClassOption(this.learnerOption);
 		
 		// get the learner's varied parameter option
-		Option learnerVariedParamOption = null;
-		for (Option opt : learner.getOptions().getOptionArray()) {
-			if (opt.getName().equals(variedParamName)) {
-				learnerVariedParamOption = opt;
-				break;
-			}
-		}
+		Option learnerVariedParamOption = 
+				DependentOptionsUpdater.getVariedOption(learner, variedParamName);
 		
 		// get values for the varied parameter
 		Option[] paramValues;

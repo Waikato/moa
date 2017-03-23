@@ -20,7 +20,9 @@
 package moa.options;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -40,7 +42,7 @@ public class DependentOptionsUpdater implements ChangeListener, Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	protected String lastLearnerClassName;
+	protected String lastLearnerCLIString;
 	protected ClassOptionWithListenerOption learnerOption;
 	protected EditableMultiChoiceOption variedParamNameOption;
 	
@@ -64,55 +66,131 @@ public class DependentOptionsUpdater implements ChangeListener, Serializable {
 	 * a ClassOption (the learner) is changed. This method checks if the
 	 * chosen learner actually changed, before updating the MultiChoiceOption.
 	 * <br>
-	 * Only Int and Float options of the selected learner are shown in the
-	 * MultiChoiceOption, because only continuous parameters should be 
-	 * variable.
+	 * The method looks for available options in the selected learner and 
+	 * recursively in all of its ClassOptions.
 	 * <br>
-	 * If one of the learner's options is named "budget" or its name contains
-	 * the word "budget", it is selected as the default option.
+	 * Only Int and Float options are shown in the MultiChoiceOption, because 
+	 * only numeric parameters should be variable.
+	 * <br>
+	 * If one of the options is named "budget" or its name contains the word 
+	 * "budget", it is selected as the default option.
 	 * 
 	 * @param learnerOption
 	 * @param variedParamNameOption
 	 */
 	public void refreshVariedParamNameOption()
 	{
-		OptionHandler learner = 
-				(OptionHandler) learnerOption.getPreMaterializedObject();
-		String currentLearner = learner.getClass().getSimpleName();
+		String currentLearnerCLIString = 
+				this.learnerOption.getValueAsCLIString();
 		
 		// check if an update is actually needed
-		if (lastLearnerClassName == null || 
-			!lastLearnerClassName.equals(currentLearner)) 
+		if (this.lastLearnerCLIString == null || 
+			!this.lastLearnerCLIString.equals(currentLearnerCLIString)) 
 		{
-			lastLearnerClassName = currentLearner;
+			this.lastLearnerCLIString = currentLearnerCLIString;
 			
-			Option[] options = learner.getOptions().getOptionArray();
+			// create result lists
+			List<String> optionNames = new ArrayList<String>();
+			List<String> optionDescriptions = new ArrayList<String>();
 			
-			// filter for Int and Float Options
-			options = Arrays.stream(options)
-					.filter(x -> x instanceof IntOption || 
-								 x instanceof FloatOption)
-					.toArray(Option[]::new);
-			
-			String[] optionNames = new String[options.length];
-			String[] optionDescriptions = new String[options.length];
-			int defaultIndex = -1;
+			// recursively add options
+			this.addRecursiveNumberOptions(
+					this.learnerOption, optionNames, optionDescriptions, "");
 			
 			// get option names and descriptions and look for default option
-			for (int i = 0; i < options.length; i++) {
-				optionNames[i] = options[i].getName();
-				optionDescriptions[i] = options[i].getPurpose();
-				
-				if (optionNames[i].equals("budget") || 
-					(optionNames[i].contains("budget") && defaultIndex < 0)) 
+			int defaultIndex = -1;
+			for (int i = 0; i < optionNames.size(); i++) {
+				if (optionNames.get(i).endsWith("/budget") || 
+					(optionNames.get(i).contains("budget") && defaultIndex < 0)) 
 				{
 					defaultIndex = i;
 				}
 			}
 			
 			// pass new options to the EditableMultiChoiceOption
-			variedParamNameOption.setOptions(optionNames, optionDescriptions, 
+			this.variedParamNameOption.setOptions(
+					optionNames.toArray(new String[0]), 
+					optionDescriptions.toArray(new String[0]), 
 					defaultIndex >= 0 ? defaultIndex : 0);
 		}
+	}
+	
+	private void addRecursiveNumberOptions(ClassOption option, 
+			List<String> optionNames, List<String> optionDescriptions,
+			String namePrefix) 
+	{
+		OptionHandler optionHandler = 
+				(OptionHandler) option.getPreMaterializedObject();
+		Option[] options = optionHandler.getOptions().getOptionArray();
+		
+		// filter for Int and Float Options
+		Option[] numberOptions = Arrays.stream(options)
+				.filter(x -> x instanceof IntOption || 
+							 x instanceof FloatOption)
+				.toArray(Option[]::new);
+		
+		// get names and descriptions
+		String newNamePrefix = namePrefix + option.getName() + "/";
+		String[] names = Arrays.stream(numberOptions)
+				.map(x -> newNamePrefix + x.getName())
+				.toArray(String[]::new);
+		String[] descriptions = Arrays.stream(numberOptions)
+				.map(x -> x.getPurpose())
+				.toArray(String[]::new);
+		
+		// add to overall lists
+		optionNames.addAll(Arrays.asList(names));
+		optionDescriptions.addAll(Arrays.asList(descriptions));
+		
+		// filter for ClassOptions
+		ClassOption[] classOptions = Arrays.stream(options)
+				.filter(x -> x instanceof ClassOption)
+				.toArray(ClassOption[]::new);
+		
+		// add number options of this class option to the overall list
+		for (ClassOption classOption : classOptions) {
+			this.addRecursiveNumberOptions(classOption, 
+					optionNames, optionDescriptions, newNamePrefix);
+		}
+	}
+	
+	/**
+	 * Resolve the name of the varied parameter and return the corresponding option.
+	 * The varied parameter name has the format "learner/suboptions.../numberOption".
+	 * If no matching parameter can be found, <code>null</code> is returned.
+	 * 
+	 * @param learner the learner object that has the varied option
+	 * @param variedParamName name of the (nested) varied parameter
+	 * @return varied option
+	 */
+	public static Option getVariedOption(OptionHandler learner, String variedParamName) {
+		// split nested option string
+		String[] singleOptions = variedParamName.split("/");
+		
+		// check if first level is "learner", which has already been resolved
+		int startIndex = 0;
+		if (singleOptions.length > 0 && singleOptions[0].equals("learner/")) {
+			startIndex = 1;
+		}
+		
+		// iteratively create objects and get next options for each level
+		Option learnerVariedParamOption = null;
+		OptionHandler currentOptionHandler = learner;
+		for (int i = startIndex; i < singleOptions.length; i++) {
+			for (Option opt : currentOptionHandler.getOptions().getOptionArray()) {
+				if (opt.getName().equals(singleOptions[i])) {
+					if (opt instanceof ClassOption) {
+						currentOptionHandler = (OptionHandler) 
+								((ClassOption) opt).getPreMaterializedObject();
+					}
+					else {
+						learnerVariedParamOption = opt;
+					}
+					break;
+				}
+			}
+		}
+		
+		return learnerVariedParamOption;
 	}
 }
