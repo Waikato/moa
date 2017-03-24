@@ -134,8 +134,6 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	
 	private JButton buttonZoomOutX;
 	
-	private String variedParamName;
-	
 	private double[] variedParamValues;
 	
 	private Color[] colors;
@@ -484,8 +482,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 			//PreviewCollection
 			PreviewCollection<Preview> pc = (PreviewCollection<Preview>) preview;
 			
-			// get varied parameter name and values
-			this.variedParamName = pc.getVariedParamName();
+			// set param tab name as the actual name
+			this.graphPanelTabbedPane.setTitleAt(1, pc.getVariedParamName());
+			// get varied parameter values
 			this.variedParamValues = pc.getVariedParamValues();
 			
 			if (c == ALCrossValidationTask.class) {
@@ -502,6 +501,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
     	} else if (c == ALPrequentialEvaluationTask.class) {
     		// Preview
     		gcmp = readPreview(preview);
+    		
+    		// reset param tab name to default
+    		this.graphPanelTabbedPane.setTitleAt(1, "Param");
     		
     		if (this.graphPanelTabbedPane.getSelectedIndex() == 1) {
     			// switch to Time tab
@@ -713,7 +715,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 						"mean preview entry id",
 						"parameter value id",
 						ALCrossValidationTask.class,
-						this.variedParamName,
+						null,
 						this.variedParamValues);
 		List<PreviewCollection<Preview>> foldPreviews = rawPreviews.getPreviews(); 
 		
