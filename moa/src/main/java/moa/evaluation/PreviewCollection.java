@@ -20,6 +20,7 @@
 package moa.evaluation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import moa.core.StringUtils;
@@ -253,10 +254,13 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 	}
 	
 	/**
-	 * Calulate the averaged Preview Collection. The mean is calculated for each
+	 * Calculate the averaged Preview Collection. The mean is calculated for each
 	 * parameter value over all available folds. This function only has an 
 	 * effect for PreviewCollections of PreviewCollections (for folds and 
 	 * parameter values), simple PreviewCollections just return themselves.
+	 * <br>
+	 * Additionally, the standard deviations are calculated and appended to the
+	 * list of measurements for each entry in each Preview.
 	 * 
 	 * @return PreviewCollection of mean Previews (one for each parameter value)
 	 */
@@ -296,6 +300,14 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 		return meanPreviews;
 	}
 	
+	/**
+	 * Calculate the mean Preview for one specific parameter value.
+	 * 
+	 * @param numEntriesPerPreview
+	 * @param numParamValues
+	 * @param paramValue
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	private Preview calculateMeanPreviewForParam(
 			int numEntriesPerPreview, int numParamValues, int paramValue) 
@@ -318,7 +330,7 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 						foldPreview.getPreviews().get(paramValue);
 				
 				// add this Preview's measurements to the overall sum
-				this.addMeasurementEntries(
+				this.addUpMeasurementEntries(
 						paramMeasurementsSum, 
 						foldParamPreview, 
 						numEntriesPerPreview);
@@ -333,23 +345,25 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 		}
 		
 		// add measurements for standard deviation
-		this.addStandardDeviationMeasurements(
+		this.addStandardDeviationMeasurementsForParam(
 				paramMeasurementsSum, numCompleteFolds,
-				numParamValues, paramValue);
+				numParamValues, paramValue, numEntriesPerPreview);
 		
 		// get actual measurement names (first four are only additional IDs)
-		// TODO: add names for standard deviations
 		String[] cvMeasurementNames = this.getMeasurementNames();
-		List<String> measurementNames = 
-				new ArrayList<String>(cvMeasurementNames.length - 4);
-		for (int m = 4; m < cvMeasurementNames.length; m++) {
-			measurementNames.add(cvMeasurementNames[m]);
+		int numBaseMeasurementNames = cvMeasurementNames.length - 4;
+		String[] measurementNames = new String[numBaseMeasurementNames * 2];
+		for (int m = 0; m < numBaseMeasurementNames; m++) {
+			measurementNames[m] = cvMeasurementNames[m + 4];
+			measurementNames[m + numBaseMeasurementNames] =
+					cvMeasurementNames[m + 4] + " std";
 		}
 		
 		// wrap into LearningCurve
 		LearningCurve meanLearningCurve = 
 				new LearningCurve("learning evaluation instances");
-		meanLearningCurve.setData(measurementNames, paramMeasurementsSum);
+		meanLearningCurve.setData(
+				Arrays.asList(measurementNames), paramMeasurementsSum);
 		
 		// wrap into PreviewCollectionLearningCurveWrapper
 		Preview meanParamValuePreview = 
@@ -359,7 +373,14 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 		return meanParamValuePreview;
 	}
 	
-	private void addMeasurementEntries(
+	/**
+	 * Add up the measurements of all different fold Previews for each entry.
+	 * 
+	 * @param measurementsSum
+	 * @param preview
+	 * @param maxEntries
+	 */
+	private void addUpMeasurementEntries(
 			List<double[]> measurementsSum, Preview preview, int maxEntries) 
 	{
 		List<double[]> measurements = preview.getData();
@@ -380,10 +401,84 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 		}
 	}
 	
-	private void addStandardDeviationMeasurements(
+	/**
+	 * Add standard deviation values to the measurement collections for one
+	 * specific parameter value.
+	 * 
+	 * @param meanMeasurements
+	 * @param numCompleteFolds
+	 * @param numParamValues
+	 * @param paramValue
+	 * @param numEntriesPerPreview
+	 */
+	@SuppressWarnings("unchecked")
+	private void addStandardDeviationMeasurementsForParam(
 			List<double[]> meanMeasurements, int numCompleteFolds,
-			int numParamValues, int paramValue) 
+			int numParamValues, int paramValue, int numEntriesPerPreview) 
 	{
-		// TODO: calculate standard deviation and add as additional measures
+		int numInitialMeasurements = meanMeasurements.isEmpty() ? 0 : 
+			meanMeasurements.get(0).length;
+		
+		for (CollectionElementType fold : this.subPreviews) {
+			PreviewCollection<Preview> foldPreview = 
+					(PreviewCollection<Preview>) fold;
+			
+			// check if there is a preview for each parameter value
+			if (foldPreview.getPreviews().size() == numParamValues) {
+				Preview foldParamPreview = 
+						foldPreview.getPreviews().get(paramValue);
+				
+				// add this Preview's standardDeviations to the overall sum
+				this.addUpMeasurementEntryStandardDeviations(
+						meanMeasurements, 
+						foldParamPreview, 
+						numEntriesPerPreview,
+						numInitialMeasurements);
+			}
+		}
+		
+		// divide measurementsSum by number of folds to actually calculate mean
+		for (double[] entry : meanMeasurements) {
+			for (int m = numInitialMeasurements; m < entry.length; m++) {
+				entry[m] = Math.sqrt(entry[m]/numCompleteFolds);
+			}
+		}
+	}
+	
+	/**
+	 * Add up the squared deviations from the mean value over all folds for
+	 * each entry.
+	 * 
+	 * @param meanMeasurements
+	 * @param preview
+	 * @param maxEntries
+	 * @param numInitialMeasurements
+	 */
+	private void addUpMeasurementEntryStandardDeviations(
+			List<double[]> meanMeasurements, Preview preview, int maxEntries,
+			int numInitialMeasurements)
+	{
+		List<double[]> measurements = preview.getData();
+		
+		// add standard deviation for each measurement in each entry
+		for (int entry = 0; entry < maxEntries; entry++) {
+			double[] entryMeasurements = meanMeasurements.get(entry);
+			double[] previewEntry = measurements.get(entry);
+			
+			if (entryMeasurements.length == numInitialMeasurements) {
+				// add spaces for standard deviation measures
+				entryMeasurements = 
+						Arrays.copyOf(entryMeasurements, 
+									  entryMeasurements.length*2);
+			}
+			
+			for (int m = 0; m < numInitialMeasurements; m++) {
+				double diff = (entryMeasurements[m] - previewEntry[m]);
+				double var = diff * diff;
+				entryMeasurements[m + numInitialMeasurements] += var;
+			}
+			
+			meanMeasurements.set(entry, entryMeasurements);
+		}
 	}
 }
