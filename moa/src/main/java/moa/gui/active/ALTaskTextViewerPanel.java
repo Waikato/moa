@@ -60,11 +60,9 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import moa.evaluation.ALMeasureCollection;
-import moa.evaluation.LearningCurve;
 import moa.evaluation.MeasureCollection;
 import moa.evaluation.Preview;
 import moa.evaluation.PreviewCollection;
-import moa.evaluation.PreviewCollectionLearningCurveWrapper;
 import moa.gui.FileExtensionFilter;
 import moa.gui.GUIUtils;
 import moa.gui.PreviewTableModel;
@@ -533,8 +531,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 			
 			if (c == ALCrossValidationTask.class) {
 				// calculate mean preview collection for each parameter value
-				pc = this.calculateMeanPreview(
-						(PreviewCollection<PreviewCollection<Preview>>) preview);
+				pc = ((PreviewCollection<?>) preview).calculateMeanPreview();
 			}
 			gcmp = readPreviewCollection(pc);
     		
@@ -748,91 +745,6 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		gcmp.addMeasureCollection(m);
 		gcmp.addProcessFrequency(processFrequency);
 		return gcmp;
-	}
-	
-	private PreviewCollection<Preview> calculateMeanPreview(
-			PreviewCollection<PreviewCollection<Preview>> rawPreviews) 
-	{
-		// create new preview collection for mean previews
-		PreviewCollection<Preview> meanPreviews = 
-				new PreviewCollection<Preview>(
-						"mean preview entry id",
-						"parameter value id",
-						ALCrossValidationTask.class,
-						null,
-						this.variedParamValues);
-		List<PreviewCollection<Preview>> foldPreviews = rawPreviews.getPreviews(); 
-		
-		// calculate maximal number of entries that each Preview can provide
-		int numFolds = foldPreviews.size();
-		int numParamValues = this.variedParamValues.length;
-		int numEntriesPerPreview = rawPreviews.numEntries() / numFolds / numParamValues;
-				
-		for (int paramValue = 0; paramValue < numParamValues; paramValue++)
-		{
-			// initialize list for summing up all measurements
-			List<double[]> paramMeasurementsSum = 
-					new ArrayList<double[]>(numEntriesPerPreview);
-			
-			int numCompleteFolds = 0;
-			
-			for (PreviewCollection<Preview> subPreview : foldPreviews) {
-				// check if there is a preview for each parameter value
-				// TODO: handle partial cases
-				if (subPreview.getPreviews().size() == numParamValues) {
-					numCompleteFolds++;
-					
-					Preview foldParamPreview = subPreview.getPreviews().get(paramValue);
-					
-					List<double[]> foldParamMeasurements = foldParamPreview.getData();
-					
-					if (paramMeasurementsSum.isEmpty()) {
-						paramMeasurementsSum.addAll(foldParamMeasurements);
-					}
-					else {
-						// add values for each measurement in each entry
-						for (int entry = 0; entry < numEntriesPerPreview; entry++) {
-							double[] entrySum = paramMeasurementsSum.get(entry);
-							double[] foldParamEntry = foldParamMeasurements.get(entry);
-							
-							for (int measure = 0; measure < entrySum.length; measure++) {
-								entrySum[measure] += foldParamEntry[measure];
-							}
-						}
-					}
-				}
-			}
-			
-			// divide measurementsSum by number of folds:
-			for (double[] entry : paramMeasurementsSum) {
-				for (int m = 0; m < entry.length; m++) {
-					entry[m] /= numCompleteFolds;
-				}
-			}
-			
-			// get actual measurement names (first four are only additional IDs)
-			String[] cvMeasurementNames = rawPreviews.getMeasurementNames();
-			List<String> measurementNames = 
-					new ArrayList<String>(cvMeasurementNames.length - 4);
-			for (int m = 4; m < cvMeasurementNames.length; m++) {
-				measurementNames.add(cvMeasurementNames[m]);
-			}
-			
-			// wrap into LearningCurve
-			LearningCurve meanLearningCurve = 
-					new LearningCurve("learning evaluation instances");
-			meanLearningCurve.setData(measurementNames, paramMeasurementsSum);
-			
-			// wrap into PreviewCollectionLearningCurveWrapper
-			Preview meanParamValuePreview = 
-					new PreviewCollectionLearningCurveWrapper(
-							meanLearningCurve,
-							rawPreviews.getTaskClass());
-			
-			meanPreviews.setPreview(paramValue, meanParamValuePreview);
-		}
-		
-		return meanPreviews;
 	}
 
 	//TODO understand this

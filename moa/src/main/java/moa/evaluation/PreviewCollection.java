@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import moa.core.StringUtils;
+import moa.tasks.active.ALCrossValidationTask;
 
 /**
  * Class that stores and keeps the history of multiple previews
@@ -249,5 +250,107 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 	
 	public double[] getVariedParamValues() {
 		return this.variedParamValues;
+	}
+	
+	/**
+	 * Calulate the averaged Preview Collection. The mean is calculated for each
+	 * parameter value over all available folds. This function only has an 
+	 * effect for PreviewCollections of PreviewCollections (for folds and 
+	 * parameter values), simple PreviewCollections just return themselves.
+	 * 
+	 * @return PreviewCollection of mean Previews (one for each parameter value)
+	 */
+	@SuppressWarnings("unchecked")
+	public PreviewCollection<Preview> calculateMeanPreview() 
+	{
+		if (this.subPreviews.isEmpty() || 
+			!(this.subPreviews.get(0) instanceof PreviewCollection)) 
+		{
+			// There is only one set of previews with exactly one entry per
+			// parameter value, so there is no other mean that could be 
+			// calculated. Simply return this set.
+			return (PreviewCollection<Preview>) this;
+		}
+		
+		// create new preview collection for mean previews
+		PreviewCollection<Preview> meanPreviews = 
+				new PreviewCollection<Preview>(
+						"mean preview entry id",
+						"parameter value id",
+						ALCrossValidationTask.class,
+						this.variedParamName,
+						this.variedParamValues);
+		
+		// calculate maximal number of entries that each Preview can provide
+		int numFolds = this.subPreviews.size();
+		int numParamValues = this.variedParamValues.length;
+		int numEntriesPerPreview = this.numEntries() / numFolds / numParamValues;
+				
+		for (int paramValue = 0; paramValue < numParamValues; paramValue++)
+		{
+			// initialize list for summing up all measurements
+			List<double[]> paramMeasurementsSum = 
+					new ArrayList<double[]>(numEntriesPerPreview);
+			
+			int numCompleteFolds = 0;
+			
+			for (CollectionElementType sP : this.subPreviews) {
+				PreviewCollection<Preview> subPreview = (PreviewCollection<Preview>) sP;
+				
+				// check if there is a preview for each parameter value
+				// TODO: handle partial cases
+				if (subPreview.getPreviews().size() == numParamValues) {
+					numCompleteFolds++;
+					
+					Preview foldParamPreview = subPreview.getPreviews().get(paramValue);
+					
+					List<double[]> foldParamMeasurements = foldParamPreview.getData();
+					
+					if (paramMeasurementsSum.isEmpty()) {
+						paramMeasurementsSum.addAll(foldParamMeasurements);
+					}
+					else {
+						// add values for each measurement in each entry
+						for (int entry = 0; entry < numEntriesPerPreview; entry++) {
+							double[] entrySum = paramMeasurementsSum.get(entry);
+							double[] foldParamEntry = foldParamMeasurements.get(entry);
+							
+							for (int measure = 0; measure < entrySum.length; measure++) {
+								entrySum[measure] += foldParamEntry[measure];
+							}
+						}
+					}
+				}
+			}
+			
+			// divide measurementsSum by number of folds:
+			for (double[] entry : paramMeasurementsSum) {
+				for (int m = 0; m < entry.length; m++) {
+					entry[m] /= numCompleteFolds;
+				}
+			}
+			
+			// get actual measurement names (first four are only additional IDs)
+			String[] cvMeasurementNames = this.getMeasurementNames();
+			List<String> measurementNames = 
+					new ArrayList<String>(cvMeasurementNames.length - 4);
+			for (int m = 4; m < cvMeasurementNames.length; m++) {
+				measurementNames.add(cvMeasurementNames[m]);
+			}
+			
+			// wrap into LearningCurve
+			LearningCurve meanLearningCurve = 
+					new LearningCurve("learning evaluation instances");
+			meanLearningCurve.setData(measurementNames, paramMeasurementsSum);
+			
+			// wrap into PreviewCollectionLearningCurveWrapper
+			Preview meanParamValuePreview = 
+					new PreviewCollectionLearningCurveWrapper(
+							meanLearningCurve, this.taskClass);
+			
+			meanPreviews.setPreview(paramValue, meanParamValuePreview);
+		}
+		
+		return meanPreviews;
 	}
 }
