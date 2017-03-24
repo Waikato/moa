@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 import moa.core.StringUtils;
 import moa.evaluation.Preview;
 import moa.gui.PreviewPanel;
+import moa.tasks.FailedTaskReport;
 import moa.tasks.ResultPreviewListener;
 import moa.tasks.active.ALCrossValidationTask;
 import moa.tasks.active.ALMainTask;
@@ -142,33 +143,42 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
      * display it.
      */
     private void setLatestPreview() {
-    	
-    	Preview preview;
 
-		if ((this.previewedThread != null) && this.previewedThread.isComplete()) {
-			// cancelled, completed or failed task
-			// TODO if the task is failed, the finalResult is a FailedTaskReport, which is not a Preview
-			preview = (Preview) this.previewedThread.getFinalResult();
-			this.previewLabel.setText("Final result");
-			disableRefresh();
-		} else if (this.previewedThread != null){
-			// running task
-			preview = (Preview) this.previewedThread.getLatestResultPreview();
-			double grabTime = this.previewedThread.getLatestPreviewGrabTimeSeconds();
-			String grabString = " (" + StringUtils.secondsToDHMSString(grabTime) + ")";
-			if (preview == null) {
-				this.previewLabel.setText("No preview available" + grabString);
-			} else {
-				this.previewLabel.setText("Preview" + grabString);
-			}
-		} else {
-			// no thread
-			this.previewLabel.setText("No preview available");
-			preview = null;
-		}
-		
-		this.textViewerPanel.setText(preview);
-		this.textViewerPanel.setGraph(preview, getColorCodings(this.previewedThread));
+    	
+    	if(this.previewedThread != null && this.previewedThread.failed())
+    	{
+    		FailedTaskReport failedTaskReport = (FailedTaskReport) this.previewedThread.getFinalResult();
+    		this.textViewerPanel.setErrorText(failedTaskReport);
+    		this.textViewerPanel.setGraph(null, null);
+    	}
+    	else
+    	{
+        	Preview preview = null;
+    		if ((this.previewedThread != null) && this.previewedThread.isComplete()) {
+    			// cancelled, completed or failed task
+    			// TODO if the task is failed, the finalResult is a FailedTaskReport, which is not a Preview
+    			preview = (Preview) this.previewedThread.getFinalResult();
+    			this.previewLabel.setText("Final result");
+    			disableRefresh();
+    		} else if (this.previewedThread != null){
+    			// running task
+    			preview = (Preview) this.previewedThread.getLatestResultPreview();
+    			double grabTime = this.previewedThread.getLatestPreviewGrabTimeSeconds();
+    			String grabString = " (" + StringUtils.secondsToDHMSString(grabTime) + ")";
+    			if (preview == null) {
+    				this.previewLabel.setText("No preview available" + grabString);
+    			} else {
+    				this.previewLabel.setText("Preview" + grabString);
+    			}
+    		} else {
+    			// no thread
+    			this.previewLabel.setText("No preview available");
+    			preview = null;
+    		}
+        	
+    		this.textViewerPanel.setText(preview);
+    		this.textViewerPanel.setGraph(preview, getColorCodings(this.previewedThread));
+    	}
     }
     
     /**

@@ -22,7 +22,6 @@ package moa.classifiers.active;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.AbstractClassifier;
@@ -48,9 +47,6 @@ public class ALRandom extends AbstractClassifier implements ALClassifier {
     public ClassOption budgetManagerOption = new ClassOption("budgetManager",
             'b', "BudgetManager that should be used.",
             BudgetManager.class, "ThresholdBM");
-    public FloatOption budgetOption = new FloatOption("budget",
-    		'u', "The budget that should be used by the BudgetManager.",
-    		0.9, 0.00, 1.00);
 
     
     public Classifier classifier;
@@ -78,7 +74,6 @@ public class ALRandom extends AbstractClassifier implements ALClassifier {
         this.classifier.resetLearning();
         this.budgetManager = ((BudgetManager) getPreparedClassOption(this.budgetManagerOption));
         this.budgetManager.resetLearning();
-        double budget = this.budgetOption.getValue();
 	}
 
 	@Override

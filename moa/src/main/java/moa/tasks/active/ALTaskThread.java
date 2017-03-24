@@ -84,4 +84,9 @@ public class ALTaskThread extends TaskThread {
         	threads.get(i).cancelTask();
         }
     }
+	
+	public boolean failed()
+	{
+		return currentStatus == Status.FAILED;
+	}
 }

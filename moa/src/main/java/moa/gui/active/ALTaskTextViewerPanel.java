@@ -52,6 +52,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableCellRenderer;
@@ -70,6 +71,7 @@ import moa.gui.PreviewTableModel;
 import moa.gui.clustertab.ClusteringVisualEvalPanel;
 import moa.gui.visualization.ParamGraphCanvas;
 import moa.gui.visualization.ProcessGraphCanvas;
+import moa.tasks.FailedTaskReport;
 import moa.tasks.active.ALCrossValidationTask;
 import moa.tasks.active.ALMultiParamTask;
 import moa.tasks.active.ALPrequentialEvaluationTask;
@@ -96,7 +98,11 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	
 	private JTable previewTable;
 	
-	private JScrollPane scrollPane;
+	private JTextArea errorTextField;
+	
+	private JScrollPane scrollPaneTable;
+	
+	private JScrollPane scrollPaneText;
 	
 	private JButton exportButton;
 	
@@ -158,13 +164,22 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		this.previewTable.setFont(new Font("Monospaced", Font.PLAIN, 12));
 		this.previewTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
+        this.errorTextField = new JTextArea();
+        this.errorTextField.setEditable(false);
+        this.errorTextField.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		
 		// scrollPane enables scroll support for textArea
-		this.scrollPane = new JScrollPane(this.previewTable, 
+		this.scrollPaneTable = new JScrollPane(this.previewTable, 
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
 		);
+		this.scrollPaneText = new JScrollPane(this.errorTextField, 
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+		);
+        this.scrollPaneText.setVisible(false);
 
-		this.topWrapper.add(this.scrollPane, BorderLayout.CENTER);
+		this.topWrapper.add(this.scrollPaneTable, BorderLayout.CENTER);
 
 		// exportButtonPanel is a wrapper for the export button
 		JPanel exportButtonWrapper = new JPanel();
@@ -403,13 +418,22 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	 * @param preview the new information used to update text
 	 */
 	public void setText(Preview preview) {
-		Point p = this.scrollPane.getViewport().getViewPosition();
+		Point p = this.scrollPaneTable.getViewport().getViewPosition();
 
 		previewTableModel.setPreview(preview);
 		SwingUtilities.invokeLater(
 			new Runnable(){
 				boolean structureChanged = previewTableModel.structureChanged();
 				public void run(){
+					if(!scrollPaneTable.isVisible())
+					{
+						topWrapper.remove(scrollPaneText);
+						scrollPaneText.setVisible(false);
+						topWrapper.add(scrollPaneTable, BorderLayout.CENTER);
+						scrollPaneTable.setVisible(true);
+						topWrapper.validate();
+					}
+					
 					if(structureChanged)
 					{
 						previewTableModel.fireTableStructureChanged();
@@ -424,8 +448,38 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 			}
 		);
 		
-		this.scrollPane.getViewport().setViewPosition(p);
+		this.scrollPaneTable.getViewport().setViewPosition(p);
 		this.exportButton.setEnabled(preview != null);
+	}
+	
+	/**
+	 * Updates the preview table based on the information given by preview.
+	 * @param preview the new information used to update text
+	 */
+	public void setErrorText(FailedTaskReport failedTaskReport) {
+		Point p = this.scrollPaneText.getViewport().getViewPosition();
+
+
+		SwingUtilities.invokeLater(
+			new Runnable(){
+				public void run(){
+					if(!scrollPaneText.isVisible())
+					{
+						topWrapper.remove(scrollPaneTable);
+						scrollPaneTable.setVisible(false);
+						topWrapper.add(scrollPaneText, BorderLayout.CENTER);
+						scrollPaneText.setVisible(true);
+						topWrapper.validate();
+					}
+					errorTextField.setText(failedTaskReport.toString());
+					errorTextField.repaint();
+				}
+			}
+		);
+		
+		
+		this.scrollPaneText.getViewport().setViewPosition(p);
+		this.exportButton.setEnabled(failedTaskReport != null);
 	}
 	
 	private void rescaleTableColumns()
@@ -447,16 +501,6 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 			// create a cell to calculate its preferred size
 			Component comp = renderer.getTableCellRendererComponent(previewTable, column.getHeaderValue(), false, false, 0, columnIdx);
 			int width = comp.getPreferredSize().width;
-//			// iterate over all rows to get the maximum with needed to show all entries completely
-//			for(int rowIdx = 0; rowIdx < previewTable.getRowCount(); ++rowIdx)
-//			{
-//				// get the renderer used by the cell
-//				renderer = previewTable.getCellRenderer(rowIdx, columnIdx);
-//				// get the component for the cell
-//				comp = previewTable.prepareRenderer(renderer, rowIdx, columnIdx);
-//				// calculate the maximum of the preferred size of the current cell and the previously calculated width 
-//				width = Math.max(width, comp.getPreferredSize().width + 1);
-//			}
 			// set the maximum width which was calculated
 			column.setPreferredWidth(width);
 		}

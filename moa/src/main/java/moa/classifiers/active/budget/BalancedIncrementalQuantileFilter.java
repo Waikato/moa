@@ -21,7 +21,6 @@ package moa.classifiers.active.budget;
 
 import java.util.List;
 
-import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 
 import moa.classifiers.active.RingBuffer;
