@@ -288,69 +288,102 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 				
 		for (int paramValue = 0; paramValue < numParamValues; paramValue++)
 		{
-			// initialize list for summing up all measurements
-			List<double[]> paramMeasurementsSum = 
-					new ArrayList<double[]>(numEntriesPerPreview);
-			
-			int numCompleteFolds = 0;
-			
-			for (CollectionElementType sP : this.subPreviews) {
-				PreviewCollection<Preview> subPreview = (PreviewCollection<Preview>) sP;
-				
-				// check if there is a preview for each parameter value
-				// TODO: handle partial cases
-				if (subPreview.getPreviews().size() == numParamValues) {
-					numCompleteFolds++;
-					
-					Preview foldParamPreview = subPreview.getPreviews().get(paramValue);
-					
-					List<double[]> foldParamMeasurements = foldParamPreview.getData();
-					
-					if (paramMeasurementsSum.isEmpty()) {
-						paramMeasurementsSum.addAll(foldParamMeasurements);
-					}
-					else {
-						// add values for each measurement in each entry
-						for (int entry = 0; entry < numEntriesPerPreview; entry++) {
-							double[] entrySum = paramMeasurementsSum.get(entry);
-							double[] foldParamEntry = foldParamMeasurements.get(entry);
-							
-							for (int measure = 0; measure < entrySum.length; measure++) {
-								entrySum[measure] += foldParamEntry[measure];
-							}
-						}
-					}
-				}
-			}
-			
-			// divide measurementsSum by number of folds:
-			for (double[] entry : paramMeasurementsSum) {
-				for (int m = 0; m < entry.length; m++) {
-					entry[m] /= numCompleteFolds;
-				}
-			}
-			
-			// get actual measurement names (first four are only additional IDs)
-			String[] cvMeasurementNames = this.getMeasurementNames();
-			List<String> measurementNames = 
-					new ArrayList<String>(cvMeasurementNames.length - 4);
-			for (int m = 4; m < cvMeasurementNames.length; m++) {
-				measurementNames.add(cvMeasurementNames[m]);
-			}
-			
-			// wrap into LearningCurve
-			LearningCurve meanLearningCurve = 
-					new LearningCurve("learning evaluation instances");
-			meanLearningCurve.setData(measurementNames, paramMeasurementsSum);
-			
-			// wrap into PreviewCollectionLearningCurveWrapper
-			Preview meanParamValuePreview = 
-					new PreviewCollectionLearningCurveWrapper(
-							meanLearningCurve, this.taskClass);
-			
+			Preview meanParamValuePreview = this.calculateMeanPreviewForParam(
+							numEntriesPerPreview, numParamValues, paramValue);
 			meanPreviews.setPreview(paramValue, meanParamValuePreview);
 		}
 		
 		return meanPreviews;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private Preview calculateMeanPreviewForParam(
+			int numEntriesPerPreview, int numParamValues, int paramValue) 
+	{
+		// initialize list for summing up all measurements
+		List<double[]> paramMeasurementsSum = 
+				new ArrayList<double[]>(numEntriesPerPreview);
+		
+		int numCompleteFolds = 0;
+		
+		for (CollectionElementType fold : this.subPreviews) {
+			PreviewCollection<Preview> foldPreview = 
+					(PreviewCollection<Preview>) fold;
+			
+			// check if there is a preview for each parameter value
+			if (foldPreview.getPreviews().size() == numParamValues) {
+				numCompleteFolds++;
+				
+				Preview foldParamPreview = 
+						foldPreview.getPreviews().get(paramValue);
+				
+				// add this Preview's measurements to the overall sum
+				this.addMeasurementEntries(
+						paramMeasurementsSum, 
+						foldParamPreview, 
+						numEntriesPerPreview);
+			}
+		}
+		
+		// divide measurementsSum by number of folds to actually calculate mean
+		for (double[] entry : paramMeasurementsSum) {
+			for (int m = 0; m < entry.length; m++) {
+				entry[m] /= numCompleteFolds;
+			}
+		}
+		
+		// add measurements for standard deviation
+		this.addStandardDeviationMeasurements(
+				paramMeasurementsSum, numCompleteFolds,
+				numParamValues, paramValue);
+		
+		// get actual measurement names (first four are only additional IDs)
+		// TODO: add names for standard deviations
+		String[] cvMeasurementNames = this.getMeasurementNames();
+		List<String> measurementNames = 
+				new ArrayList<String>(cvMeasurementNames.length - 4);
+		for (int m = 4; m < cvMeasurementNames.length; m++) {
+			measurementNames.add(cvMeasurementNames[m]);
+		}
+		
+		// wrap into LearningCurve
+		LearningCurve meanLearningCurve = 
+				new LearningCurve("learning evaluation instances");
+		meanLearningCurve.setData(measurementNames, paramMeasurementsSum);
+		
+		// wrap into PreviewCollectionLearningCurveWrapper
+		Preview meanParamValuePreview = 
+				new PreviewCollectionLearningCurveWrapper(
+						meanLearningCurve, this.taskClass);
+		
+		return meanParamValuePreview;
+	}
+	
+	private void addMeasurementEntries(
+			List<double[]> measurementsSum, Preview preview, int maxEntries) 
+	{
+		List<double[]> measurements = preview.getData();
+		
+		if (measurementsSum.isEmpty()) {
+			measurementsSum.addAll(measurements);
+		}
+		else {
+			// add values for each measurement in each entry
+			for (int entry = 0; entry < maxEntries; entry++) {
+				double[] entrySum = measurementsSum.get(entry);
+				double[] previewEntry = measurements.get(entry);
+				
+				for (int measure = 0; measure < entrySum.length; measure++) {
+					entrySum[measure] += previewEntry[measure];
+				}
+			}
+		}
+	}
+	
+	private void addStandardDeviationMeasurements(
+			List<double[]> meanMeasurements, int numCompleteFolds,
+			int numParamValues, int paramValue) 
+	{
+		// TODO: calculate standard deviation and add as additional measures
 	}
 }
