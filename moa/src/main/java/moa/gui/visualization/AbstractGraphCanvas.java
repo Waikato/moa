@@ -44,271 +44,286 @@ import moa.evaluation.MeasureCollection;
  */
 public abstract class AbstractGraphCanvas extends JPanel {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected MeasureCollection[] measures;
+    protected MeasureCollection[] measures;
 
-	protected int measureSelected;
+    protected int measureSelected;
 
-	protected AbstractGraphAxes axesPanel;
+    protected AbstractGraphAxes axesPanel;
 
-	protected AbstractGraphPlot plotPanel;
+    protected AbstractGraphPlot plotPanel;
 
-	protected static final int X_OFFSET_LEFT = 35;
+    protected static final int X_OFFSET_LEFT = 35;
 
-	protected static final int X_OFFSET_RIGHT = 5;
+    protected static final int X_OFFSET_RIGHT = 5;
 
-	protected static final int Y_OFFSET_BOTTOM = 20;
+    protected static final int Y_OFFSET_BOTTOM = 20;
 
-	protected static final int Y_OFFSET_TOP = 20;
+    protected static final int Y_OFFSET_TOP = 20;
 
-	protected double max_x_value;
-	protected double max_y_value;
+    protected double max_x_value;
+    protected double max_y_value;
 
-	protected double x_resolution;
-	protected double y_resolution;
+    protected double x_resolution;
+    protected double y_resolution;
 
-	protected double baseWidth;
-	protected double baseHeight;
+    protected double baseWidth;
+    protected double baseHeight;
 
-	/**
-	 * Initialises an AbstractGraphCanvas by constructing its AbstractGraphAxes,
-	 * AbstractGraphPlot as well as setting initial sizes.
-	 */
-	public AbstractGraphCanvas(AbstractGraphAxes ax, AbstractGraphPlot g) {
-		this.axesPanel = ax;
-		this.plotPanel = g;
+    /**
+     * Initialises an AbstractGraphCanvas by constructing its AbstractGraphAxes,
+     * AbstractGraphPlot as well as setting initial sizes.
+     */
+    public AbstractGraphCanvas(AbstractGraphAxes ax, AbstractGraphPlot g) {
+        this.axesPanel = ax;
+        this.plotPanel = g;
 
-		this.plotPanel.setLocation(X_OFFSET_LEFT + 1, Y_OFFSET_TOP);
+        this.plotPanel.setLocation(X_OFFSET_LEFT + 1, Y_OFFSET_TOP);
 
-		add(this.axesPanel);
-		this.axesPanel.add(this.plotPanel);
+        add(this.axesPanel);
+        this.axesPanel.add(this.plotPanel);
 
-		this.measureSelected = 0;
-		this.max_x_value = 1;
-		this.max_y_value = 1;
-		this.x_resolution = 1;
-		this.y_resolution = 1;
+        this.measureSelected = 0;
+        this.max_x_value = 1;
+        this.max_y_value = 1;
+        this.x_resolution = 1;
+        this.y_resolution = 1;
 
-		updateXResolution();
-		updateYResolution();
+        updateXResolution();
+        updateYResolution();
 
-		this.baseWidth = getWidth();
-		this.baseHeight = getHeight();
-	}
-	
-	/**
-	 * Updates the base width, which is used to determine the canvas size. It
-	 * is defined as the current width divided by the x_resolution. To prevent
-	 * unnecessary scrolling after reducing the x_resolution, the baseWidth is
-	 * reset to its initial value of 500 on x_resolution = 1.
-	 */
-	private void updateBaseWidth() {
-		if (x_resolution > 1) {
-			this.baseWidth = getWidth() / x_resolution;
-		} else {
-			this.baseWidth = 500;
-		}
-	}
+        this.baseWidth = getWidth();
+        this.baseHeight = getHeight();
+    }
 
-	/**
-	 * Updates the base height, which is used to determine the canvas size. It
-	 * is defined as the current height divided by the y_resolution. To prevent
-	 * unnecessary scrolling after reducing the y_resolution, the baseHeight is
-	 * reset to its initial value of 111 on y_resolution = 1.
-	 */
-	private void updateBaseHeight() {
-		if (y_resolution > 1) {
-			this.baseHeight = getHeight() / y_resolution;
-		} else {
-			this.baseHeight = 111;
-		}
-	}
-
-	/**
-	 * Scales the resolution on the x-axis by the given factor and updates the
-	 * canvas.
-	 * 
-	 * @param factor
-	 *            factor the x_resolution will be scaled by
-	 */
-	public void scaleXResolution(double factor) {
-		this.x_resolution *= factor;
-		updateXResolution();
-		updateCanvas(true);
-	}
-
-	/**
-	 * Scales the resolution on the y-axis by the given factor and updates the
-	 * canvas.
-	 * 
-	 * @param factor
-	 *            factor the y_resolution will be scaled by
-	 */
-	public void scaleYResolution(double factor) {
-		this.y_resolution *= factor;
-		updateYResolution();
-		updateCanvas(true);
-	}
-
-	/**
-	 * Returns the currently selected measure index.
-	 * 
-	 * @return currently selected measure index
-	 */
-	public int getMeasureSelected() {
-		return this.measureSelected;
-	}
-
-	/**
-	 * Updates the canvas: if values have changed or it is forced, the canvas
-	 * and preferred sizes are updated and the canvas is repainted. The size is
-	 * defined as the current width * (baseHeight*y_resolution). The preferred
-	 * size, which controls the parental viewport, is set as the maximum of the
-	 * current preferred width and the latest point of the Plot, and the current
-	 * height.
-	 * 
-	 * @param force
-	 *            enforce repainting
-	 */
-	public void updateCanvas(boolean force) {
-		if (updateMaxValues() || force) {
-			setSize();
-			setPreferredSize();
-			this.repaint();
-		}
-	}
-	
-	public abstract void setSize();
-	public abstract void setPreferredSize();
-
-	/**
-	 * Computes the maximum value of the underlying measures at the currently
-	 * selected measure.
-	 * 
-	 * @return max value of measures at measureSelected
-	 */
-	private double maxValue() {
-		double max = Double.MIN_VALUE;
-
-		for (int i = 0; i < this.measures.length; i++) {
-			if (this.measures[i].getMaxValue(this.measureSelected) > max) {
-				max = this.measures[i].getMaxValue(this.measureSelected);
-			}
-		}
-		return max;
-	}
-	
-	public abstract double getMaxXValue();
-
-	/**
-	 * Computes the maximum values of the registered measure collections and
-	 * updates the member values accordingly.
-	 * 
-	 * @return true, if the values have changed
-	 */
-	private boolean updateMaxValues() {
-
-		double max_x_value_new;
-		double max_y_value_new;
-
-		if (this.measures == null) {
-			// no values received yet -> reset axes
-			max_x_value_new = 1;
-			max_y_value_new = 1;
-		} else {
-			max_x_value_new = getMaxXValue();
-			max_y_value_new = maxValue();
-		}
-
-		// resizing needed?
-		if (max_x_value_new != this.max_x_value || max_y_value_new != this.max_y_value) {
-			this.max_x_value = max_x_value_new;
-			this.max_y_value = max_y_value_new;
-			updateMaxYValue();
-			updateMaxXValue();
-			updateYUpperValue();
-			updateXUpperValue();
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Updates the x resolution of the axes and plot panel.
-	 */
-	private void updateXResolution() {
-		axesPanel.setXResolution(x_resolution);
-		plotPanel.setXResolution(x_resolution);
-	}
-
-	/**
-	 * Updates the y resolution of the axes and plot panel.
-	 */
-	private void updateYResolution() {
-		axesPanel.setYResolution(y_resolution);
-	}
-	
-	/**
-	 * Updates the max x value of the axes and plot panel.
-	 */
-	private void updateMaxXValue() {
-		axesPanel.setXMaxValue(max_x_value);
-		plotPanel.setXMaxValue(max_x_value);
-	}
-
-	/**
-	 * Updates the max y value of the axes and plot panel.
-	 */
-	private void updateMaxYValue() {
-		axesPanel.setYMaxValue(max_y_value);
-		plotPanel.setYMaxValue(max_y_value);
-	}
-	
-	private void updateXUpperValue() {
-		int digits_x = (int)(Math.log10(max_x_value))-1;
-        double upper = Math.ceil(max_x_value/Math.pow(10,digits_x));
-        if(digits_x < 0) upper*=Math.pow(10,digits_x);
-
-        if(Double.isNaN(upper)) {
-        	upper = 1.0;
+    /**
+     * Updates the base width, which is used to determine the canvas size. It is
+     * defined as the current width divided by the x_resolution. To prevent
+     * unnecessary scrolling after reducing the x_resolution, the baseWidth is
+     * reset to its initial value of 500 on x_resolution = 1.
+     */
+    private void updateBaseWidth() {
+        if (x_resolution > 1) {
+            this.baseWidth = getWidth() / x_resolution;
+        } else {
+            this.baseWidth = 500;
         }
-        
-        this.axesPanel.setXUpperValue(upper);
+    }
+
+    /**
+     * Updates the base height, which is used to determine the canvas size. It
+     * is defined as the current height divided by the y_resolution. To prevent
+     * unnecessary scrolling after reducing the y_resolution, the baseHeight is
+     * reset to its initial value of 111 on y_resolution = 1.
+     */
+    private void updateBaseHeight() {
+        if (y_resolution > 1) {
+            this.baseHeight = getHeight() / y_resolution;
+        } else {
+            this.baseHeight = 111;
+        }
+    }
+
+    /**
+     * Scales the resolution on the x-axis by the given factor and updates the
+     * canvas.
+     * 
+     * @param factor
+     *            factor the x_resolution will be scaled by
+     */
+    public void scaleXResolution(double factor) {
+        this.x_resolution *= factor;
+        updateXResolution();
+        updateCanvas(true);
+    }
+
+    /**
+     * Scales the resolution on the y-axis by the given factor and updates the
+     * canvas.
+     * 
+     * @param factor
+     *            factor the y_resolution will be scaled by
+     */
+    public void scaleYResolution(double factor) {
+        this.y_resolution *= factor;
+        updateYResolution();
+        updateCanvas(true);
+    }
+
+    /**
+     * Returns the currently selected measure index.
+     * 
+     * @return currently selected measure index
+     */
+    public int getMeasureSelected() {
+        return this.measureSelected;
+    }
+
+    /**
+     * Updates the canvas: if values have changed or it is forced, the canvas
+     * and preferred sizes are updated and the canvas is repainted. Size and
+     * preferred size are determined by the subclass extending
+     * AbstractGraphCanvas.
+     * 
+     * @param force
+     *            enforce repainting
+     */
+    public void updateCanvas(boolean force) {
+        if (updateMaxValues() || force) {
+            setSize();
+            setPreferredSize();
+            this.repaint();
+        }
+    }
+
+    /**
+     * Sets the canvas size.
+     */
+    public abstract void setSize();
+
+    /**
+     * Sets the preferred canvas size.
+     */
+    public abstract void setPreferredSize();
+
+    /**
+     * Computes the maximum value of the underlying measures at the currently
+     * selected measure.
+     * 
+     * @return max value of measures at measureSelected
+     */
+    private double getMaxSelectedValue() {
+        double max = Double.MIN_VALUE;
+
+        for (int i = 0; i < this.measures.length; i++) {
+            if (this.measures[i].getMaxValue(this.measureSelected) > max) {
+                max = this.measures[i].getMaxValue(this.measureSelected);
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Returns the maximum value for the x-axis.
+     */
+    public abstract double getMaxXValue();
+
+    /**
+     * Computes the maximum values for the x and y-axis and updates the
+     * children, if necessary.
+     * 
+     * @return true, if the values have changed
+     */
+    private boolean updateMaxValues() {
+
+        double max_x_value_new;
+        double max_y_value_new;
+
+        if (this.measures == null) {
+            // no values received yet -> reset axes
+            max_x_value_new = 1;
+            max_y_value_new = 1;
+        } else {
+            max_x_value_new = getMaxXValue();
+            max_y_value_new = getMaxSelectedValue();
+        }
+
+        // resizing needed?
+        if (max_x_value_new != this.max_x_value
+                || max_y_value_new != this.max_y_value) {
+            this.max_x_value = max_x_value_new;
+            this.max_y_value = max_y_value_new;
+            updateMaxXValue();
+            updateMaxYValue();
+            updateUpperXValue();
+            updateUpperYValue();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Updates the x resolution of the axes and plot panel.
+     */
+    private void updateXResolution() {
+        axesPanel.setXResolution(x_resolution);
+        plotPanel.setXResolution(x_resolution);
+    }
+
+    /**
+     * Updates the y resolution of the axes and plot panel.
+     */
+    private void updateYResolution() {
+        axesPanel.setYResolution(y_resolution);
+    }
+
+    /**
+     * Updates the max x value of the axes and plot panel.
+     */
+    private void updateMaxXValue() {
+        axesPanel.setMaxXValue(max_x_value);
+        plotPanel.setMaxXValue(max_x_value);
+    }
+
+    /**
+     * Updates the max y value of the axes and plot panel.
+     */
+    private void updateMaxYValue() {
+        axesPanel.setMaxYValue(max_y_value);
+        plotPanel.setMaxYValue(max_y_value);
+    }
+
+    /**
+     * Updates the upper value on the x-axis.
+     */
+    private void updateUpperXValue() {
+        int digits_x = (int) (Math.log10(max_x_value)) - 1;
+        double upper = Math.ceil(max_x_value / Math.pow(10, digits_x));
+        if (digits_x < 0)
+            upper *= Math.pow(10, digits_x);
+
+        if (Double.isNaN(upper)) {
+            upper = 1.0;
+        }
+
+        this.axesPanel.setUpperXValue(upper);
         this.plotPanel.setXUpperValue(upper);
-	}
-	
-	private void updateYUpperValue() {
-		int digits_y = (int)(Math.log10(max_y_value))-1;
-        double upper = Math.ceil(max_y_value/Math.pow(10,digits_y));
-        if(digits_y < 0) upper*=Math.pow(10,digits_y);
+    }
 
-        if(Double.isNaN(upper)) {
-        	upper = 1.0;
+    /**
+     * Updates the upper value on the y-axis.
+     */
+    private void updateUpperYValue() {
+        int digits_y = (int) (Math.log10(max_y_value)) - 1;
+        double upper = Math.ceil(max_y_value / Math.pow(10, digits_y));
+        if (digits_y < 0)
+            upper *= Math.pow(10, digits_y);
+
+        if (Double.isNaN(upper)) {
+            upper = 1.0;
         }
-        
-        this.axesPanel.setYUpperValue(upper);
+
+        this.axesPanel.setUpperYValue(upper);
         this.plotPanel.setYUpperValue(upper);
-	}
+    }
 
-	/**
-	 * Updates the size of the axes, curve and event panel. Recomputes the event
-	 * locations if necessary.
-	 */
-	private void updateChildren() {
-		axesPanel.setSize(getWidth(), getHeight());
-		plotPanel.setSize(
-				getWidth() - X_OFFSET_LEFT - X_OFFSET_RIGHT, 
-				getHeight() - Y_OFFSET_BOTTOM - Y_OFFSET_TOP
-		);
-	}
+    /**
+     * Updates the size of the axes, curve and event panel. Recomputes the event
+     * locations if necessary.
+     */
+    private void updateChildren() {
+        axesPanel.setSize(getWidth(), getHeight());
+        plotPanel.setSize(getWidth() - X_OFFSET_LEFT - X_OFFSET_RIGHT,
+                getHeight() - Y_OFFSET_BOTTOM - Y_OFFSET_TOP);
+    }
 
-	@Override
-	protected void paintChildren(Graphics g) {
-		updateBaseHeight();
-		updateBaseWidth();
-		updateChildren();
-		super.paintChildren(g);
-	}
+    @Override
+    protected void paintChildren(Graphics g) {
+        updateBaseHeight();
+        updateBaseWidth();
+        updateChildren();
+        super.paintChildren(g);
+    }
 
 }

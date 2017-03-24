@@ -38,8 +38,6 @@ public class GraphScatter extends AbstractGraphPlot {
     
     private static final int DOT_SIZE = 6;
     
-//    private String variedParamName;
-    
     private double[] variedParamValues;
 	
     /**
@@ -50,9 +48,7 @@ public class GraphScatter extends AbstractGraphPlot {
      * @param variedParamValues values of the varied parameter
      */
     public void setGraph(MeasureCollection[] measures, int mSelect, 
-    		String variedParamName, double[] variedParamValues, Color[] colors)
-    {
-//        this.variedParamName = variedParamName;
+    		double[] variedParamValues, Color[] colors) {
         this.variedParamValues = variedParamValues;
         super.setGraph(measures, mSelect, colors);
     }

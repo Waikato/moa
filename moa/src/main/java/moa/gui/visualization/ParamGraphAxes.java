@@ -33,32 +33,36 @@ import java.text.DecimalFormat;
  */
 public class ParamGraphAxes extends AbstractGraphAxes {
 
-	private static final long serialVersionUID = 1L;
-	
-	@Override
-	protected void drawXLabels(Graphics g) {
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    protected void drawXLabels(Graphics g) {
         g.setColor(Color.BLACK);
 
-        //x-axis markers + labels
+        // x-axis markers + labels
         DecimalFormat d = new DecimalFormat("0.00");
 
-        double numLabels = Math.min(Math.pow(2,  (int) x_resolution), 32);
+        double numLabels = Math.min(Math.pow(2, (int) x_resolution), 32);
         /*
-         * technically, this is numLabels-1, but as we're iterating 
-         * 0 <= i <= numLabels, we need the extra label. Also don't draw more
-         * than 32 labels.
+         * technically, this is numLabels-1, but as we're iterating 0 <= i <=
+         * numLabels, we need the extra label. Also don't draw more than 32
+         * labels.
          */
-        
+
         for (int i = 0; i <= numLabels; i++) {
-        	double fraction = i/numLabels;
-        	double value = fraction*upper_x_value;
-        	String label = d.format(value);
-        	int str_length = g.getFontMetrics().stringWidth(label);
-        	
-        	g.drawString(label, (int) (fraction*width) + X_OFFSET_LEFT - str_length/2, height+Y_OFFSET_TOP+18);
-        	g.drawLine((int) (fraction*width) + X_OFFSET_LEFT, height+Y_OFFSET_TOP, 
-        			   (int) (fraction*width) + X_OFFSET_LEFT, height+Y_OFFSET_TOP+5);
+            double fraction = i / numLabels;
+            double value = fraction * upper_x_value;
+            String label = d.format(value);
+            int str_length = g.getFontMetrics().stringWidth(label);
+
+            g.drawString(label,
+                    (int) (fraction * width) + X_OFFSET_LEFT - str_length / 2,
+                    height + Y_OFFSET_TOP + 18);
+            g.drawLine((int) (fraction * width) + X_OFFSET_LEFT,
+                    height + Y_OFFSET_TOP,
+                    (int) (fraction * width) + X_OFFSET_LEFT,
+                    height + Y_OFFSET_TOP + 5);
         }
-	}
+    }
 
 }

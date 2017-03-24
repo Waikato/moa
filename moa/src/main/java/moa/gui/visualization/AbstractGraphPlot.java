@@ -39,23 +39,25 @@ public abstract class AbstractGraphPlot extends JPanel{
 	
 	private static final long serialVersionUID = 1L;
 	
+	protected MeasureCollection[] measures;
+    protected int measureSelected = 0;
+	
     protected double max_x_value;
     protected double max_y_value;
+    
     protected double upper_x_value;
     protected double upper_y_value;
-    protected MeasureCollection[] measures;
-    protected int measureSelected = 0;
 
     protected double x_resolution;
     
     protected Color[] colors;
 
 	public AbstractGraphPlot() {
+	    this.measureSelected = 0;
 		this.max_x_value = 1;
 		this.max_y_value = 1;
 		this.upper_x_value = 1;
 		this.upper_y_value = 1;
-    	this.measureSelected = 0;
     	
     	setOpaque(false);
 
@@ -77,6 +79,7 @@ public abstract class AbstractGraphPlot extends JPanel{
 	 * to save space.
 	 * @param measures measure information
 	 * @param mSelect index of the currently selected measure
+	 * @param colors color encoding for the plots
 	 */
 	protected void setGraph(MeasureCollection[] measures, int mSelect, Color[] colors) {
 		this.measures = measures;
@@ -86,25 +89,37 @@ public abstract class AbstractGraphPlot extends JPanel{
 	}
 	
     /**
+     * Sets maximum x value.
+     * @param max maximum x value
+     */
+    protected void setMaxXValue(double max){
+        this.max_x_value = max;
+    }
+	
+    /**
      * Sets maximum y value.
      * @param max maximum y value
      */
-    protected void setYMaxValue(double max){
+    protected void setMaxYValue(double max){
         this.max_y_value = max;
     }
     
     /**
-     * Sets maximum x value.
-     * @param max maximum x value
+     * Sets the upper value for the x-axis.
+     * 
+     * @param value
+     *            upper x value
      */
-    protected void setXMaxValue(double max){
-        this.max_x_value = max;
-    }
-    
     protected void setXUpperValue(double value) {
     	this.upper_x_value = value;
-    }  
+    }
     
+    /**
+     * Sets the upper value for the y-axis.
+     * 
+     * @param value
+     *            upper y value
+     */
     protected void setYUpperValue(double value) {
     	this.upper_y_value = value;
     }

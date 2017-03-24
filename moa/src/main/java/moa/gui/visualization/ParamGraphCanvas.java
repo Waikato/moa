@@ -34,58 +34,62 @@ import moa.evaluation.MeasureCollection;
  */
 public class ParamGraphCanvas extends AbstractGraphCanvas {
 
-	private static final long serialVersionUID = 1L;
-	
-	private double[] variedParamValues;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Initialises a ProcessGraphCanvas by calling the super constructor with a
-	 * ParamGraphAxes as instance of AbstractGraphAxes and GraphScatter as
-	 * instance of AbstractGraphPlot.
-	 */
-	public ParamGraphCanvas() {
-		super(new ParamGraphAxes(), new GraphScatter());
-	}
+    private double[] variedParamValues;
 
-	/**
-	 * Sets the scatter graph.
-	 * 
-	 * @param measures
-	 *            information about the curves
-	 * @param mSelect
-	 *            currently selected measure
-	 */
-	public void setGraph(MeasureCollection[] measures, int mSelect, 
-			String variedParamName, double[] variedParamValues, Color[] colors) {
-		this.measures = measures;
-		this.measureSelected = mSelect;
-		this.variedParamValues = variedParamValues;
-		((GraphScatter) this.plotPanel).setGraph(measures, mSelect, 
-				variedParamName, variedParamValues, colors);
-		updateCanvas(false);
-	}
-	
-	@Override
-	public double getMaxXValue() {
-		double max = Double.MIN_VALUE;
+    /**
+     * Initialises a ProcessGraphCanvas by calling the super constructor with a
+     * ParamGraphAxes as instance of AbstractGraphAxes and GraphScatter as
+     * instance of AbstractGraphPlot.
+     */
+    public ParamGraphCanvas() {
+        super(new ParamGraphAxes(), new GraphScatter());
+    }
 
-		for (int i = 0; i < this.variedParamValues.length; i++) {
-			if (this.variedParamValues[i] > max) {
-				max = this.variedParamValues[i];
-			}
-		}
-		return max;
-	}
+    /**
+     * Sets the scatter graph.
+     * 
+     * @param measures
+     *            information about the curves
+     * @param mSelect
+     *            currently selected measure
+     * @param variedParamValues
+     *            values of the varied parameter
+     * @param colors
+     *            color encoding for the param array
+     */
+    public void setGraph(MeasureCollection[] measures, int mSelect,
+            double[] variedParamValues, Color[] colors) {
+        this.measures = measures;
+        this.measureSelected = mSelect;
+        this.variedParamValues = variedParamValues;
+        ((GraphScatter) this.plotPanel).setGraph(measures, mSelect,
+                variedParamValues, colors);
+        updateCanvas(false);
+    }
 
-	@Override
-	public void setSize() {
-		setSize((int) (baseWidth  * x_resolution),
-				(int) (baseHeight * y_resolution));
-	}
+    @Override
+    public double getMaxXValue() {
+        double max = Double.MIN_VALUE;
 
-	@Override
-	public void setPreferredSize() {
-		setPreferredSize(new Dimension(getWidth(), getHeight()));		
-	}
+        for (int i = 0; i < this.variedParamValues.length; i++) {
+            if (this.variedParamValues[i] > max) {
+                max = this.variedParamValues[i];
+            }
+        }
+        return max;
+    }
+
+    @Override
+    public void setSize() {
+        setSize((int) (baseWidth * x_resolution),
+                (int) (baseHeight * y_resolution));
+    }
+
+    @Override
+    public void setPreferredSize() {
+        setPreferredSize(new Dimension(getWidth(), getHeight()));
+    }
 
 }

@@ -48,7 +48,7 @@ public class ProcessGraphAxes extends AbstractGraphAxes {
 	protected void drawXLabels(Graphics g) {
         //x axis labels
         int w = 100;
-        // TODO check overflow
+
         for (int i = 0; w*i < width-X_OFFSET_RIGHT; i++) {
             g.drawLine(w*i+X_OFFSET_LEFT, height+Y_OFFSET_TOP, 
             		   w*i+X_OFFSET_LEFT, height+Y_OFFSET_TOP+5);

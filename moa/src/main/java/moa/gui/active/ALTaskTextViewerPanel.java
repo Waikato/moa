@@ -321,7 +321,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		// budgetGraphCanvas displays the live budget graph
 		paramGraphCanvas = new ParamGraphCanvas();
 		paramGraphCanvas.setPreferredSize(new Dimension(500, 111));
-		paramGraphCanvas.setGraph(null, 0, "", null, null);
+		paramGraphCanvas.setGraph(null, 0, null, null);
 
 		GroupLayout budgetGraphCanvasLayout = new GroupLayout(paramGraphCanvas);
 		paramGraphCanvas.setLayout(budgetGraphCanvasLayout);
@@ -528,7 +528,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 				this.graphCanvas.getMeasureSelected(), pfs, min_pf, colors);
 		this.paramGraphCanvas.setGraph(this.measures, 
 				this.paramGraphCanvas.getMeasureSelected(), 
-				this.variedParamName, this.variedParamValues, colors);
+				this.variedParamValues, colors);
 		this.clusteringVisualEvalPanel1.update();
 
 	}
@@ -814,6 +814,6 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		this.graphCanvas.setGraph(this.measures, m_select_offset, this.graphCanvas.getProcessFrequencies(),
 				this.graphCanvas.getMinProcessFrequency(), this.colors);
 		this.paramGraphCanvas.setGraph(this.measures, m_select_offset, 
-				this.variedParamName, this.variedParamValues, this.colors);
+				this.variedParamValues, this.colors);
 	}
 }
