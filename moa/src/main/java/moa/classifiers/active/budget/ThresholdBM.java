@@ -19,12 +19,19 @@
  */
 package moa.classifiers.active.budget;
 
+import com.github.javacliparser.FloatOption;
+
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
 public class ThresholdBM extends AbstractOptionHandler implements BudgetManager {
-	
+
+    
+    public FloatOption thresholdOption = new FloatOption("budget",
+    		't', "The threshold which has to be exceeded to acquire the label.",
+    		0.1, 0.00, 1.00);
+    
 	/**
 	 * 
 	 */
@@ -35,8 +42,10 @@ public class ThresholdBM extends AbstractOptionHandler implements BudgetManager 
 	double threshold;
 	
 	@Override
-	public void setBudget(double budget) {
-		this.threshold = 1 - budget;
+	public void prepareForUse(TaskMonitor monitor, ObjectRepository repository) {
+		super.prepareForUse(monitor, repository);
+		
+		this.threshold = thresholdOption.getValue();
 	}
 	
 	@Override

@@ -41,11 +41,6 @@ public interface BudgetManager {
 	public boolean isAbove(double value);
 
 	/**
-	 * set the internal threshold
-	 */
-	public void setBudget(double budget);
-
-	/**
 	 * Returns the number of labels that have been chosen for acquisition since
 	 * the last report.
 	 */
