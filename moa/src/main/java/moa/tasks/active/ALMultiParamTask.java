@@ -31,7 +31,6 @@ import com.github.javacliparser.Options;
 
 import moa.classifiers.active.ALClassifier;
 import moa.core.ObjectRepository;
-import moa.evaluation.ALClassificationPerformanceEvaluator;
 import moa.evaluation.LearningCurve;
 import moa.evaluation.PreviewCollection;
 import moa.evaluation.PreviewCollectionLearningCurveWrapper;
@@ -40,7 +39,6 @@ import moa.options.ClassOption;
 import moa.options.ClassOptionWithListenerOption;
 import moa.options.DependentOptionsUpdater;
 import moa.options.EditableMultiChoiceOption;
-import moa.streams.ExampleStream;
 import moa.tasks.TaskMonitor;
 
 /**
@@ -64,31 +62,13 @@ public class ALMultiParamTask extends ALMainTask {
 				+ " sequence).";
 	}
 	
-	/* options actually used in ALPrequentialEvaluationTask */
-	public ClassOptionWithListenerOption learnerOption = 
+	public ClassOptionWithListenerOption prequentialEvaluationTaskOption = 
 			new ClassOptionWithListenerOption(
-				"learner", 'l', "Learner to train.", ALClassifier.class, 
-	            "moa.classifiers.active.MCPAL");
+				"prequentialEvaluationTask", 'e', 
+				"Prequential evaluation task to be performed for each " + 
+				"parameter value.", ALPrequentialEvaluationTask.class, 
+				"moa.tasks.active.ALPrequentialEvaluationTask");
 	
-	public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", ExampleStream.class,
-            "generators.RandomTreeGenerator");
-	
-	public ClassOption evaluatorOption = new ClassOption(
-			"evaluator", 'e',
-            "Active Learning classification performance evaluation method.",
-            ALClassificationPerformanceEvaluator.class,
-            "ALBasicClassificationPerformanceEvaluator");
-	
-	public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
-            "Maximum number of instances to test/train on  (-1 = no limit).",
-            100000000, -1, Integer.MAX_VALUE);
-	
-	public IntOption timeLimitOption = new IntOption("timeLimit", 't',
-            "Maximum number of seconds to test/train for (-1 = no limit).", -1,
-            -1, Integer.MAX_VALUE);
-	
-	/* options used in in this class */
 	public EditableMultiChoiceOption variedParamNameOption = 
 			new EditableMultiChoiceOption(
 					"variedParamName", 'p', 
@@ -112,6 +92,7 @@ public class ALMultiParamTask extends ALMainTask {
 	private ArrayList<ALTaskThread> flattenedSubtaskThreads = new ArrayList<>();
 	
 	private Color[] subTaskColorCoding;
+	private int foldIdx = -1;
 	
 	/**
 	 * Default constructor which sets up the refresh mechanism between the 
@@ -123,7 +104,8 @@ public class ALMultiParamTask extends ALMainTask {
 		// enable refreshing the variedParamNameOption depending on the
 		// learnerOption
 		new DependentOptionsUpdater(
-				this.learnerOption, this.variedParamNameOption);
+				this.prequentialEvaluationTaskOption, 
+				this.variedParamNameOption);
 	}
 	
 	/**
@@ -137,12 +119,17 @@ public class ALMultiParamTask extends ALMainTask {
 		this.subTaskColorCoding = subTaskColorCoding;
 	}
 	
+	public void setFoldIdx(int foldIdx) {
+		this.foldIdx = foldIdx;
+	}
+	
 	@Override
 	public Options getOptions() {
 		Options options = super.getOptions();
 		
 		// make sure that all dependent options are up to date
-		this.learnerOption.getChangeListener().stateChanged(null);
+		this.prequentialEvaluationTaskOption.getChangeListener()
+			.stateChanged(null);
 		
 		return options;
 	}
@@ -163,9 +150,13 @@ public class ALMultiParamTask extends ALMainTask {
 		String variedParamName = 
 				this.variedParamNameOption.getValueAsCLIString();
 		
+		// get prequential evaluation task
+		ALPrequentialEvaluationTask evalTask = (ALPrequentialEvaluationTask)
+				this.prequentialEvaluationTaskOption.getPreMaterializedObject();
+		
 		// get learner
-		ALClassifier learner = 
-				(ALClassifier) getPreparedClassOption(this.learnerOption);
+		ALClassifier learner = (ALClassifier) 
+				evalTask.learnerOption.getPreMaterializedObject();
 		
 		// get the learner's varied parameter option
 		Option learnerVariedParamOption = 
@@ -179,6 +170,10 @@ public class ALMultiParamTask extends ALMainTask {
 		else {
 			paramValues = new Option[]{null};
 		}
+		
+		// get base dump file name
+		String baseDumpFileName = 
+				evalTask.dumpFileOption.getFile().getAbsolutePath();
 		
 		// create color coding
 		colorCoding = Color.WHITE;
@@ -194,7 +189,8 @@ public class ALMultiParamTask extends ALMainTask {
 			
 			// create subtask
 			ALPrequentialEvaluationTask paramValueTask = 
-					new ALPrequentialEvaluationTask(subTaskColorCoding[i]);
+					(ALPrequentialEvaluationTask) evalTask.copy();
+			paramValueTask.setColorCoding(subTaskColorCoding[i]);
 			paramValueTask.setIsLastSubtaskOnLevel(
 					this.isLastSubtaskOnLevel, i == paramValues.length - 1);
 			
@@ -209,33 +205,33 @@ public class ALMultiParamTask extends ALMainTask {
 				}
 				
 				learnerVariedParamOption.setValueViaCLIString(paramValue);
-			}
-			
-			for (Option opt : paramValueTask.getOptions().getOptionArray()) {
-				switch (opt.getName()) {
-				case "learner":
-					opt.setValueViaCLIString(ClassOption.objectToCLIString(
-							learner, ALClassifier.class));
-					break;
-				case "stream": 
-					opt.setValueViaCLIString(
-							this.streamOption.getValueAsCLIString());
-					break;
-				case "evaluator":
-					opt.setValueViaCLIString(
-							this.evaluatorOption.getValueAsCLIString());
-					break;
-				case "instanceLimit":
-					opt.setValueViaCLIString(
-							this.instanceLimitOption.getValueAsCLIString());
-					break;
-				case "timeLimit":
-					opt.setValueViaCLIString(
-							this.timeLimitOption.getValueAsCLIString());
-					break;
+				
+				// set specific dump file for each subtask
+				int fileExtIndex = baseDumpFileName.lastIndexOf('.');
+				
+				// remove file extension
+				String foldParamDumpFileName = 
+						baseDumpFileName.substring(0, fileExtIndex);
+				
+				if (this.foldIdx >= 0) {
+					// append fold index
+					foldParamDumpFileName += "_f" + this.foldIdx;
 				}
+				
+				if (paramValues.length > 1) {
+					// append varied parameter value
+					foldParamDumpFileName += "_p" + paramValue;
+							
+				}
+				
+				// append file extension
+				foldParamDumpFileName += baseDumpFileName.substring(fileExtIndex); 
+						
+				paramValueTask.dumpFileOption.setValue(foldParamDumpFileName);
 			}
 			
+			paramValueTask.learnerOption.setValueViaCLIString(
+					ClassOption.objectToCLIString(learner, ALClassifier.class));
 			paramValueTask.prepareForUse();
 			
 			List<ALTaskThread> childSubtasks = paramValueTask.getSubtaskThreads();

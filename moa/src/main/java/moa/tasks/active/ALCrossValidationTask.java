@@ -23,23 +23,13 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import com.github.javacliparser.ListOption;
 import com.github.javacliparser.Option;
-import com.github.javacliparser.Options;
 
-import moa.classifiers.active.ALClassifier;
 import moa.core.ObjectRepository;
-import moa.evaluation.ALClassificationPerformanceEvaluator;
 import moa.evaluation.PreviewCollection;
 import moa.evaluation.PreviewCollectionLearningCurveWrapper;
-import moa.gui.colorGenerator.HSVColorGenerator;
 import moa.options.ClassOption;
-import moa.options.ClassOptionWithListenerOption;
-import moa.options.DependentOptionsUpdater;
-import moa.options.EditableMultiChoiceOption;
-import moa.streams.ExampleStream;
 import moa.streams.KFoldStream;
 import moa.tasks.TaskMonitor;
 
@@ -66,50 +56,12 @@ public class ALCrossValidationTask extends ALMainTask {
 				+ " values using prequential evaluation (testing, then"
 				+ " training with each example in sequence).";
 	}
-
-	/* options actually used in ALPrequentialEvaluationTask */
-	public ClassOptionWithListenerOption learnerOption = 
-			new ClassOptionWithListenerOption(
-				"learner", 'l', "Learner to train.", ALClassifier.class, 
-	            "moa.classifiers.active.MCPAL");
-
-	public ClassOption streamOption = new ClassOption(
-			"stream", 's', "Stream to learn from.", ExampleStream.class,
-			"generators.RandomTreeGenerator");
-
-	public ClassOption evaluatorOption = new ClassOption(
-			"evaluator", 'e',
-			"Active Learning classification performance evaluation method.", 
-			ALClassificationPerformanceEvaluator.class,
-			"ALBasicClassificationPerformanceEvaluator");
-
-	public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
-			"Maximum number of instances to test/train on  (-1 = no limit).", 
-			100000000, -1, Integer.MAX_VALUE);
 	
-	public IntOption timeLimitOption = new IntOption("timeLimit", 't',
-            "Maximum number of seconds to test/train for (-1 = no limit).", -1,
-            -1, Integer.MAX_VALUE);
-
-	/* options actually used in ALMultiParamTask */
-	public EditableMultiChoiceOption variedParamNameOption = 
-			new EditableMultiChoiceOption(
-					"variedParamName", 'p', 
-					"Name of the parameter to be varied.",
-					new String[]{"budget"}, 
-					new String[]{"default varied parameter name"}, 
-					0);
+	public ClassOption multiParamTaskOption = new ClassOption(
+			"multiParamTask", 't', 
+			"Multi param task to be performed for each fold", 
+			ALMultiParamTask.class, "moa.tasks.active.ALMultiParamTask");
 	
-	public ListOption variedParamValuesOption = new ListOption(
-			"variedParamValues", 'v',
-			"List of parameter values to train classifiers for.",
-			new FloatOption("value", ' ', "Parameter value.", 0.0), 
-			new FloatOption[]{
-					new FloatOption("", ' ', "", 0.5),
-					new FloatOption("", ' ', "", 0.9)
-			}, ',');
-	
-	/* options used in in this class */
 	public IntOption numFoldsOption = new IntOption("numFolds", 'k', 
 			"Number of cross validation folds.", 10);
 	
@@ -118,104 +70,38 @@ public class ALCrossValidationTask extends ALMainTask {
 	private ArrayList<ALTaskThread> flattenedSubtaskThreads = new ArrayList<>();
 	
 	
-	/**
-	 * Default constructor which sets up the refresh mechanism between the 
-	 * learner and the variedParamName option.
-	 */
-	public ALCrossValidationTask() {
-		super();
-		
-		// enable refreshing the variedParamNameOption depending on the
-		// learnerOption
-		new DependentOptionsUpdater(
-				this.learnerOption, this.variedParamNameOption);
-	}
-	
-	@Override
-	public Options getOptions() {
-		Options options = super.getOptions();
-		
-		// make sure that all dependent options are up to date
-		this.learnerOption.getChangeListener().stateChanged(null);
-		
-		return options;
-	}
-	
 	@Override
 	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 		super.prepareForUseImpl(monitor, repository);
 		
 		colorCoding = Color.WHITE;
 		
-		int numParamValues = variedParamValuesOption.getList().length;
-		
-		// colors used by the tasks which are subtasks in ALMultiParamTask
-		Color[] subSubTaskColorCoding = 
-				new HSVColorGenerator().generateColors(numParamValues);
+		// get subtask objects
+		ALMultiParamTask multiParamTask = (ALMultiParamTask) 
+				this.multiParamTaskOption.getPreMaterializedObject();
+		ALPrequentialEvaluationTask evalTask = (ALPrequentialEvaluationTask)
+				multiParamTask.prequentialEvaluationTaskOption
+				.getPreMaterializedObject();
+		String baseStream = evalTask.streamOption.getValueAsCLIString();
 		
 		// setup subtask for each cross validation fold
 		for (int i = 0; i < this.numFoldsOption.getValue(); i++) {
-
 			// wrap base stream into a KFoldStream to split up data
 			KFoldStream stream = new KFoldStream();
-
-			for (Option opt : stream.getOptions().getOptionArray()) {
-				switch (opt.getName()) {
-				case "stream":
-					opt.setValueViaCLIString(this.streamOption.getValueAsCLIString());
-					break;
-				case "foldIndex":
-					opt.setValueViaCLIString(String.valueOf(i));
-					break;
-				case "numFolds":
-					opt.setValueViaCLIString(this.numFoldsOption.getValueAsCLIString());
-					break;
-				}
-			}
-
+			stream.streamOption.setValueViaCLIString(baseStream);
+			stream.foldIndexOption.setValue(i);
+			stream.numFoldsOption.setValue(this.numFoldsOption.getValue());
+			
 			// create subtask
-			ALMultiParamTask foldTask = new ALMultiParamTask(subSubTaskColorCoding);
+			ALMultiParamTask foldTask = (ALMultiParamTask) multiParamTask.copy();
 			foldTask.setIsLastSubtaskOnLevel(
 					this.isLastSubtaskOnLevel, i == this.numFoldsOption.getValue() - 1);
-
-			for (Option opt : foldTask.getOptions().getOptionArray()) {
-				switch (opt.getName()) {
-				case "learner":
-					opt.setValueViaCLIString(this.learnerOption.getValueAsCLIString());
-					break;
-				case "stream":
-					opt.setValueViaCLIString(
-							ClassOption.objectToCLIString(stream, ExampleStream.class));
-					break;
-				case "evaluator":
-					opt.setValueViaCLIString(
-							this.evaluatorOption.getValueAsCLIString());
-					break;
-				case "variedParamName":
-					// set possible choices
-					((EditableMultiChoiceOption) opt).setOptions(
-							this.variedParamNameOption.getOptionLabels(), 
-							this.variedParamNameOption.getOptionDescriptions(), 
-							this.variedParamNameOption.getDefaultOptionIndex());
-					// set chosen value
-					opt.setValueViaCLIString(
-							this.variedParamNameOption.getValueAsCLIString());
-					break;
-				case "variedParamValues":
-					opt.setValueViaCLIString(
-							this.variedParamValuesOption.getValueAsCLIString());
-					break;
-				case "instanceLimit":
-					opt.setValueViaCLIString(
-							this.instanceLimitOption.getValueAsCLIString());
-					break;
-				case "timeLimit":
-					opt.setValueViaCLIString(
-							this.timeLimitOption.getValueAsCLIString());
-					break;
-				}
-			}
-
+			foldTask.setFoldIdx(i);
+			
+			ALPrequentialEvaluationTask foldEvalTask = (ALPrequentialEvaluationTask) 
+					foldTask.prequentialEvaluationTaskOption.getPreMaterializedObject();
+			foldEvalTask.streamOption.setCurrentObject(stream);
+			
 			foldTask.prepareForUse();
 
 			List<ALTaskThread> childSubtasks = foldTask.getSubtaskThreads();
@@ -239,7 +125,10 @@ public class ALCrossValidationTask extends ALMainTask {
 			TaskMonitor monitor, ObjectRepository repository) 
 	{
 		// get varied parameter values
-		Option[] variedParamValueOptions = this.variedParamValuesOption.getList();
+		ALMultiParamTask multiParamTask = (ALMultiParamTask) 
+				this.multiParamTaskOption.getPreMaterializedObject();
+		Option[] variedParamValueOptions = 
+				multiParamTask.variedParamValuesOption.getList();
 		int numVariedParams = variedParamValueOptions.length;
 		double[] variedParamValues = new double[numVariedParams];
 		for (int i = 0; i < numVariedParams; i++) {
@@ -251,7 +140,7 @@ public class ALCrossValidationTask extends ALMainTask {
 		PreviewCollection<PreviewCollection<PreviewCollectionLearningCurveWrapper>> 
 			previewCollection = new PreviewCollection<>(
 					"cross validation entry id", "fold id", this.getClass(),
-					this.variedParamNameOption.getValueAsCLIString(),
+					multiParamTask.variedParamNameOption.getValueAsCLIString(),
 					variedParamValues);
 		
 

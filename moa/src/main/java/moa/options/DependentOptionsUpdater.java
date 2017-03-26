@@ -31,6 +31,8 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.Option;
 
+import moa.tasks.active.ALPrequentialEvaluationTask;
+
 /**
  * This class handles the dependency between two options by updating the 
  * dependent option whenever the option it is depending on changes.
@@ -42,18 +44,18 @@ public class DependentOptionsUpdater implements ChangeListener, Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	protected String lastLearnerCLIString;
-	protected ClassOptionWithListenerOption learnerOption;
+	protected String lastEvalTaskCLIString;
+	protected ClassOptionWithListenerOption evalTaskOption;
 	protected EditableMultiChoiceOption variedParamNameOption;
 	
 	public DependentOptionsUpdater(
 			ClassOptionWithListenerOption learnerOption,
 			EditableMultiChoiceOption variedParamNameOption) 
 	{
-		this.learnerOption = learnerOption;
+		this.evalTaskOption = learnerOption;
 		this.variedParamNameOption = variedParamNameOption;
 		
-		this.learnerOption.setChangeListener(this);
+		this.evalTaskOption.setChangeListener(this);
 	}
 	
 	@Override
@@ -63,11 +65,12 @@ public class DependentOptionsUpdater implements ChangeListener, Serializable {
 	
 	/**
 	 * Refresh the provided choices of an EditableMultiChoiceOption every time
-	 * a ClassOption (the learner) is changed. This method checks if the
-	 * chosen learner actually changed, before updating the MultiChoiceOption.
+	 * a ClassOption (the prequential evaluation task) is changed. This method 
+	 * checks if the chosen task actually changed, before updating the 
+	 * MultiChoiceOption.
 	 * <br>
-	 * The method looks for available options in the selected learner and 
-	 * recursively in all of its ClassOptions.
+	 * The method looks for available options in the learner option of the
+	 * prequential evaluation task and recursively in all of its ClassOptions.
 	 * <br>
 	 * Only Int and Float options are shown in the MultiChoiceOption, because 
 	 * only numeric parameters should be variable.
@@ -75,27 +78,30 @@ public class DependentOptionsUpdater implements ChangeListener, Serializable {
 	 * If one of the options is named "budget" or its name contains the word 
 	 * "budget", it is selected as the default option.
 	 * 
-	 * @param learnerOption
+	 * @param evalTaskOption
 	 * @param variedParamNameOption
 	 */
 	public void refreshVariedParamNameOption()
 	{
-		String currentLearnerCLIString = 
-				this.learnerOption.getValueAsCLIString();
+		String currentEvalTaskCLIString = 
+				this.evalTaskOption.getValueAsCLIString();
 		
 		// check if an update is actually needed
-		if (this.lastLearnerCLIString == null || 
-			!this.lastLearnerCLIString.equals(currentLearnerCLIString)) 
+		if (this.lastEvalTaskCLIString == null || 
+			!this.lastEvalTaskCLIString.equals(currentEvalTaskCLIString)) 
 		{
-			this.lastLearnerCLIString = currentLearnerCLIString;
+			this.lastEvalTaskCLIString = currentEvalTaskCLIString;
 			
 			// create result lists
 			List<String> optionNames = new ArrayList<String>();
 			List<String> optionDescriptions = new ArrayList<String>();
 			
 			// recursively add options
+			ALPrequentialEvaluationTask evalTask = 
+					(ALPrequentialEvaluationTask) 
+					this.evalTaskOption.getPreMaterializedObject();
 			this.addRecursiveNumberOptions(
-					this.learnerOption, optionNames, optionDescriptions, "");
+					evalTask.learnerOption, optionNames, optionDescriptions, "");
 			
 			// get option names and descriptions and look for default option
 			int defaultIndex = -1;
