@@ -112,15 +112,8 @@ public class ALCrossValidationTask extends ALMainTask {
 	/* options used in in this class */
 	public IntOption numFoldsOption = new IntOption("numFolds", 'k', 
 			"Number of cross validation folds.", 10);
-
-	/*
-	 * Possible extensions/further options:
-	 * - Ensembles of learners (ensemble size)
-	 * - Sample frequency
-	 * - Memory check frequency
-	 * - Dump file
-	 */
-
+	
+	
 	private ArrayList<ALTaskThread> subtaskThreads = new ArrayList<>();
 	private ArrayList<ALTaskThread> flattenedSubtaskThreads = new ArrayList<>();
 	

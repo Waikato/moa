@@ -20,9 +20,13 @@
 package moa.tasks.active;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
@@ -80,6 +84,15 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
             "Maximum number of seconds to test/train for (-1 = no limit).", -1,
             -1, Integer.MAX_VALUE);
 	
+	public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
+            'f',
+            "How many instances between samples of the learning performance.",
+            100000, 0, Integer.MAX_VALUE);
+	
+	public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
+            "File to append intermediate csv results to.", null, "csv", true);
+	
+	
 	/**
 	 * Constructor which sets the color coding to black.
 	 */
@@ -126,11 +139,28 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         int instancesProcessed = 0;
         int maxSeconds = this.timeLimitOption.getValue();
         int secondsElapsed = 0;
+        boolean firstDump = true;
         boolean preciseCPUTiming = TimingUtils.enablePreciseTiming();
         long evaluateStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
         long lastEvaluateStartTime = evaluateStartTime;
         double RAMHours = 0.0;
-        int sampleFrequency = 100000;
+        
+        File dumpFile = this.dumpFileOption.getFile();
+        PrintStream immediateResultStream = null;
+        if (dumpFile != null) {
+        	try {
+        		if (dumpFile.exists()) {
+        			immediateResultStream = new PrintStream(
+                            new FileOutputStream(dumpFile, true), true);
+                } else {
+                    immediateResultStream = new PrintStream(
+                            new FileOutputStream(dumpFile), true);
+                }
+        	} catch (Exception ex) {
+                throw new RuntimeException(
+                		"Unable to open immediate result file: " + dumpFile, ex);
+            }
+        }
         
         monitor.setCurrentActivity("Evaluating learner...", -1.0);
         while (stream.hasMoreInstances()
@@ -155,8 +185,8 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         	instancesProcessed++;
         	
         	// update learning curve
-        	if (instancesProcessed % sampleFrequency == 0 ||
-        		!stream.hasMoreInstances())
+        	if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0
+        		|| !stream.hasMoreInstances())
         	{
         		long evaluateTime = 
         				TimingUtils.getNanoCPUTimeOfCurrentThread();
@@ -185,6 +215,15 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         	                            RAMHours),
         				},
         				evaluator, learner));
+        		
+        		if (immediateResultStream != null) {
+                    if (firstDump) {
+                        immediateResultStream.println(learningCurve.headerToString());
+                        firstDump = false;
+                    }
+                    immediateResultStream.println(learningCurve.entryToString(learningCurve.numEntries() - 1));
+                    immediateResultStream.flush();
+                }
         	}
         	
         	// update monitor
@@ -224,6 +263,10 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         				TimingUtils.getNanoCPUTimeOfCurrentThread()
                         - evaluateStartTime);
         	}
+        }
+        
+        if (immediateResultStream != null) {
+            immediateResultStream.close();
         }
 		
 		return new PreviewCollectionLearningCurveWrapper(learningCurve, this.getClass());
