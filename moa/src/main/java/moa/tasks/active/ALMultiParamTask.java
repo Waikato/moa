@@ -68,7 +68,7 @@ public class ALMultiParamTask extends ALMainTask {
 	public ClassOptionWithListenerOption learnerOption = 
 			new ClassOptionWithListenerOption(
 				"learner", 'l', "Learner to train.", ALClassifier.class, 
-	            "moa.classifiers.active.ALZliobaite2011");
+	            "moa.classifiers.active.MCPAL");
 	
 	public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,
