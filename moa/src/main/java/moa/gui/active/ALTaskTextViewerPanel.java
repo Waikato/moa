@@ -66,7 +66,6 @@ import moa.evaluation.PreviewCollection;
 import moa.gui.FileExtensionFilter;
 import moa.gui.GUIUtils;
 import moa.gui.PreviewTableModel;
-import moa.gui.clustertab.ClusteringVisualEvalPanel;
 import moa.gui.visualization.ParamGraphCanvas;
 import moa.gui.visualization.ProcessGraphCanvas;
 import moa.tasks.FailedTaskReport;
@@ -82,7 +81,7 @@ import moa.tasks.active.ALPrequentialEvaluationTask;
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
  */
-public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
+public class ALTaskTextViewerPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -108,7 +107,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	
 	private MeasureCollection[] measures;
 	
-	private ClusteringVisualEvalPanel clusteringVisualEvalPanel1;
+	private MeasureOverview measureOverview;
 	
 	private GridBagConstraints gridBagConstraints;
 	
@@ -137,6 +136,8 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	private JButton buttonZoomInX;
 	
 	private JButton buttonZoomOutX;
+	
+	private String variedParamName;
 	
 	private double[] variedParamValues;
 	
@@ -223,14 +224,22 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		this.panelEvalOutput = new JPanel();
 		this.panelEvalOutput.setLayout(new GridBagLayout());
 		this.panelEvalOutput.setBorder(BorderFactory.createTitledBorder("Evaluation"));
+		
+		// init the measure overview. the dummy MeasureCollection[] is needed to properly init the measure names
+		this.measureOverview = new MeasureOverview(new ALMeasureCollection[]{new ALMeasureCollection()}, "", null);
+        this.measureOverview.setMinimumSize(new Dimension(280, 118));
+        this.measureOverview.setPreferredSize(new Dimension(290, 115));
+        this.measureOverview.setActionListener(new ActionListener() {
 
-		// measures contains the current information about the selected task
-		this.measures = new ALMeasureCollection[]{new ALMeasureCollection()};
-
-		this.clusteringVisualEvalPanel1 = new ClusteringVisualEvalPanel();
-		this.clusteringVisualEvalPanel1.setMinimumSize(new Dimension(280, 118));
-		this.clusteringVisualEvalPanel1.setPreferredSize(new Dimension(290, 115));
-		this.clusteringVisualEvalPanel1.setMeasures(this.measures, null, this);
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selected = Integer.parseInt(e.getActionCommand());
+                graphCanvas.setGraph(measures, selected, graphCanvas.getProcessFrequencies(),
+                        graphCanvas.getMinProcessFrequency(), colors);
+                paramGraphCanvas.setGraph(measures, selected, 
+                        variedParamValues, colors);
+            }
+        });
 
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
@@ -239,7 +248,7 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		gridBagConstraints.anchor = GridBagConstraints.WEST;
 		gridBagConstraints.weighty = 1.0;
 
-		panelEvalOutput.add(clusteringVisualEvalPanel1, gridBagConstraints);
+		panelEvalOutput.add(measureOverview, gridBagConstraints);
 
 		// graphPanel is the right area of panelEvalOutput, showing a live preview of the
 		// performance
@@ -512,7 +521,9 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 	public void setGraph(Preview preview, Color[] colors) {
 		if (preview == null) {
 			// no preview received
-			this.graphCanvas.setGraph(null, this.graphCanvas.getMeasureSelected(), null, 1000, null);
+		    this.measures = null;
+		    this.measureOverview.update(null, "", null);
+			this.graphCanvas.setGraph(null, 0, null, 1000, null);
 			return;
 		}
 
@@ -521,13 +532,15 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		// check which type of task it is
 		Class<?> c = preview.getTaskClass();
 		if (c == ALCrossValidationTask.class || c == ALMultiParamTask.class) {
-			//PreviewCollection
+			// PreviewCollection
 			PreviewCollection<Preview> pc = (PreviewCollection<Preview>) preview;
 			
+	         // get varied parameter name and values
+			this.variedParamName = pc.getVariedParamName();
+            this.variedParamValues = pc.getVariedParamValues();
+            
 			// set param tab name as the actual name
-			this.graphPanelTabbedPane.setTitleAt(1, pc.getVariedParamName());
-			// get varied parameter values
-			this.variedParamValues = pc.getVariedParamValues();
+			this.graphPanelTabbedPane.setTitleAt(1, this.variedParamName);
 			
 			if (c == ALCrossValidationTask.class) {
 				// calculate mean preview collection for each parameter value
@@ -536,13 +549,17 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 			gcmp = readPreviewCollection(pc);
     		
     		if (!this.graphPanelTabbedPane.isEnabledAt(1)) {
-    			// enable budget view on multi budget task
+    			// enable budget view on multi param task
     			this.graphPanelTabbedPane.setEnabledAt(1, true);
     		}
+    		
     	} else if (c == ALPrequentialEvaluationTask.class) {
     		// Preview
     		gcmp = readPreview(preview);
     		
+    		// reset varied param name and values
+    		this.variedParamName = "";
+    		this.variedParamValues = null;
     		// reset param tab name to default
     		this.graphPanelTabbedPane.setTitleAt(1, "Param");
     		
@@ -552,11 +569,14 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
     		}
     		
     		if (this.graphPanelTabbedPane.isEnabledAt(1)) {
-    			// disable budget view on single budget task
+    			// disable budget view on single param task
     			this.graphPanelTabbedPane.setEnabledAt(1, false);
     		}
+    		
     	} else {
     		// sth went wrong
+    	    this.measures = null;
+    	    this.measureOverview.update(null, "", null);
     		this.graphCanvas.setGraph(null, this.graphCanvas.getMeasureSelected(), null, 1000, null);
 			return;
     	}
@@ -567,12 +587,12 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		
 		this.colors = colors;
 		
+		this.measureOverview.update(this.measures, this.variedParamName, this.variedParamValues);
 		this.graphCanvas.setGraph(this.measures, 
 				this.graphCanvas.getMeasureSelected(), pfs, min_pf, colors);
 		this.paramGraphCanvas.setGraph(this.measures, 
 				this.paramGraphCanvas.getMeasureSelected(), 
 				this.variedParamValues, colors);
-		this.clusteringVisualEvalPanel1.update();
 
 	}
 
@@ -745,33 +765,5 @@ public class ALTaskTextViewerPanel extends JPanel implements ActionListener {
 		gcmp.addMeasureCollection(m);
 		gcmp.addProcessFrequency(processFrequency);
 		return gcmp;
-	}
-
-	//TODO understand this
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		int selected = Integer.parseInt(e.getActionCommand());
-		int counter = selected;
-		int m_select_offset = 0;
-		boolean found = false;
-		for (int i = 0; i < this.measures.length; i++) {
-			for (int j = 0; j < this.measures[i].getNumMeasures(); j++) {
-				if (this.measures[i].isEnabled(j)) {
-					counter--;
-					if (counter < 0) {
-						m_select_offset = j;
-						found = true;
-						break;
-					}
-				}
-			}
-			if (found) {
-				break;
-			}
-		}
-		this.graphCanvas.setGraph(this.measures, m_select_offset, this.graphCanvas.getProcessFrequencies(),
-				this.graphCanvas.getMinProcessFrequency(), this.colors);
-		this.paramGraphCanvas.setGraph(this.measures, m_select_offset, 
-				this.variedParamValues, this.colors);
 	}
 }
