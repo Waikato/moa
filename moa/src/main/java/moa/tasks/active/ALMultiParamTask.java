@@ -20,6 +20,7 @@
 package moa.tasks.active;
 
 import java.awt.Color;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -172,8 +173,9 @@ public class ALMultiParamTask extends ALMainTask {
 		}
 		
 		// get base dump file name
-		String baseDumpFileName = 
-				evalTask.dumpFileOption.getFile().getAbsolutePath();
+		File baseDumpFile = evalTask.dumpFileOption.getFile();
+		String baseDumpFileName = baseDumpFile != null ? 
+				baseDumpFile.getAbsolutePath() : null;
 		
 		// create color coding
 		colorCoding = Color.WHITE;
@@ -206,28 +208,30 @@ public class ALMultiParamTask extends ALMainTask {
 				
 				learnerVariedParamOption.setValueViaCLIString(paramValue);
 				
-				// set specific dump file for each subtask
-				int fileExtIndex = baseDumpFileName.lastIndexOf('.');
-				
-				// remove file extension
-				String foldParamDumpFileName = 
-						baseDumpFileName.substring(0, fileExtIndex);
-				
-				if (this.foldIdx >= 0) {
-					// append fold index
-					foldParamDumpFileName += "_f" + this.foldIdx;
-				}
-				
-				if (paramValues.length > 1) {
-					// append varied parameter value
-					foldParamDumpFileName += "_p" + paramValue;
-							
-				}
-				
-				// append file extension
-				foldParamDumpFileName += baseDumpFileName.substring(fileExtIndex); 
+				if (baseDumpFileName != null) {
+					// set specific dump file for each subtask
+					int fileExtIndex = baseDumpFileName.lastIndexOf('.');
+					
+					// remove file extension
+					String foldParamDumpFileName = 
+							baseDumpFileName.substring(0, fileExtIndex);
+					
+					if (this.foldIdx >= 0) {
+						// append fold index
+						foldParamDumpFileName += "_f" + this.foldIdx;
+					}
+					
+					if (paramValues.length > 1) {
+						// append varied parameter value
+						foldParamDumpFileName += "_p" + paramValue;
 						
-				paramValueTask.dumpFileOption.setValue(foldParamDumpFileName);
+					}
+					
+					// append file extension
+					foldParamDumpFileName += baseDumpFileName.substring(fileExtIndex); 
+					
+					paramValueTask.dumpFileOption.setValue(foldParamDumpFileName);
+				}
 			}
 			
 			paramValueTask.learnerOption.setValueViaCLIString(
