@@ -202,7 +202,19 @@ public class ALTaskTextViewerPanel extends JPanel {
 					}
 					try {
 						PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
-						out.write(previewTableModel.toString());
+						
+						String text = "";
+						
+						if(scrollPaneTable.isVisible())
+						{
+							text = previewTableModel.toString();
+						}
+						else
+						{
+							text = errorTextField.getText();
+						}
+						
+						out.write(text);
 						out.close();
 					} catch (IOException ioe) {
 						GUIUtils.showExceptionDialog(ALTaskTextViewerPanel.this.exportButton,

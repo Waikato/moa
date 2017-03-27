@@ -159,6 +159,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		{
 			k[cIdx] = kernelEstimators[cIdx].getFrequencyEstimate(inst, std);
 		}
+		
 		return k;
 	}
 
