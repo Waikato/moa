@@ -110,6 +110,10 @@ public class MeasureOverview extends JPanel {
                 @SuppressWarnings("unchecked")
                 JComboBox<String> cb = (JComboBox<String>) e.getSource();
                 measureCollectionSelected = cb.getSelectedIndex();
+                // if the cb got disabled, set idx to 0
+                if (measureCollectionSelected == -1) {
+                    measureCollectionSelected = 0;
+                }
                 update();
             }
         });
