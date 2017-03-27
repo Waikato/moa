@@ -41,7 +41,7 @@ public class ALMeasureCollection extends MeasureCollection implements Classifica
     }
 
     @Override
-    public String[] getNames() {
+    protected String[] getNames() {
         String[] names = {"Accuracy", "Kappa", "Kappa Temp", "Ram-Hours", "Time", "Memory", "Rel Lab.Acq"};
         return names;
     }
