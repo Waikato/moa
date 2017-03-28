@@ -115,7 +115,7 @@ public abstract class AbstractGraphPlot extends JPanel{
      * @param value
      *            upper x value
      */
-    protected void setXUpperValue(double value) {
+    protected void setUpperXValue(double value) {
     	this.upper_x_value = value;
     }
     
@@ -125,7 +125,7 @@ public abstract class AbstractGraphPlot extends JPanel{
      * @param value
      *            upper y value
      */
-    protected void setYUpperValue(double value) {
+    protected void setUpperYValue(double value) {
     	this.upper_y_value = value;
     }
 

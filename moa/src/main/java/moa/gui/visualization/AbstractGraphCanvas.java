@@ -296,7 +296,7 @@ public abstract class AbstractGraphCanvas extends JPanel {
         }
 
         this.axesPanel.setUpperXValue(upper);
-        this.plotPanel.setXUpperValue(upper);
+        this.plotPanel.setUpperXValue(upper);
     }
 
     /**
@@ -313,7 +313,7 @@ public abstract class AbstractGraphCanvas extends JPanel {
         }
 
         this.axesPanel.setUpperYValue(upper);
-        this.plotPanel.setYUpperValue(upper);
+        this.plotPanel.setUpperYValue(upper);
     }
 
     /**
