@@ -352,11 +352,21 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 		// get actual measurement names (first four are only additional IDs)
 		String[] cvMeasurementNames = this.getMeasurementNames();
 		int numBaseMeasurementNames = cvMeasurementNames.length - 4;
-		String[] measurementNames = new String[numBaseMeasurementNames * 2];
+		
+		// check if standard deviations were calculated
+		int numExtendedMeasurements = paramMeasurementsSum.isEmpty() ? 
+				numBaseMeasurementNames : paramMeasurementsSum.get(0).length;
+		String[] measurementNames = new String[numExtendedMeasurements];
+		
 		for (int m = 0; m < numBaseMeasurementNames; m++) {
+			// copy old measurement names
 			measurementNames[m] = cvMeasurementNames[m + 4];
-			measurementNames[m + numBaseMeasurementNames] =
-					cvMeasurementNames[m + 4] + " std";
+			
+			// append standard deviation measurement names
+			if (numExtendedMeasurements > numBaseMeasurementNames) {
+				measurementNames[m + numBaseMeasurementNames] =
+						"[std] " + cvMeasurementNames[m + 4];
+			}
 		}
 		
 		// wrap into LearningCurve
