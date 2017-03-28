@@ -286,15 +286,11 @@ public abstract class AbstractGraphCanvas extends JPanel {
      * Updates the upper value on the x-axis.
      */
     private void updateUpperXValue() {
-        int digits_x = (int) (Math.log10(max_x_value)) - 1;
-        double upper = Math.ceil(max_x_value / Math.pow(10, digits_x));
-        if (digits_x < 0)
-            upper *= Math.pow(10, digits_x);
-
-        if (Double.isNaN(upper)) {
-            upper = 1.0;
+        double upper = 1.0;
+        if (this.measures != null) {
+            upper = Math.ceil(max_x_value * 1.1);
         }
-
+        
         this.axesPanel.setUpperXValue(upper);
         this.plotPanel.setUpperXValue(upper);
     }
@@ -303,15 +299,11 @@ public abstract class AbstractGraphCanvas extends JPanel {
      * Updates the upper value on the y-axis.
      */
     private void updateUpperYValue() {
-        int digits_y = (int) (Math.log10(max_y_value)) - 1;
-        double upper = Math.ceil(max_y_value / Math.pow(10, digits_y));
-        if (digits_y < 0)
-            upper *= Math.pow(10, digits_y);
-
-        if (Double.isNaN(upper)) {
-            upper = 1.0;
+        double upper = 1.0;
+        if (this.measures != null) {
+            upper = Math.ceil(max_y_value * 1.1);
         }
-
+        
         this.axesPanel.setUpperYValue(upper);
         this.plotPanel.setUpperYValue(upper);
     }
