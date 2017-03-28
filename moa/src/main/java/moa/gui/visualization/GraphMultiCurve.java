@@ -90,6 +90,8 @@ public class GraphMultiCurve extends AbstractGraphPlot {
             	return;
             }
             
+            g.setColor(color);
+            
             int height = getHeight();
             
 //          // compute the relation of minimum PF and current PF
@@ -103,8 +105,15 @@ public class GraphMultiCurve extends AbstractGraphPlot {
             for (int i = 0; i < n; i ++) {
             	x[i] = (int) (i * x_resolution);
             	y[i] = (int)(height-(m.getValue(mSelect, i)/this.upper_y_value)*height);
+            	
+            	if (this.isStandardDeviationPainted) {
+            	    // access the corresponding std value
+            	    double std = m.getValue(mSelect + 7, i);
+            	    int len = (int) ((std/this.upper_y_value)*height);
+            	    paintStandardDeviation(g, len, x[i], y[i]);
+            	}
             }
-            g.setColor(color);
+
             g.drawPolyline(x, y, n);
     }
 

@@ -557,8 +557,14 @@ public class ALTaskTextViewerPanel extends JPanel {
 			if (c == ALCrossValidationTask.class) {
 				// calculate mean preview collection for each parameter value
 				pc = ((PreviewCollection<?>) preview).calculateMeanPreview();
+				gcmp = readPreviewCollection(pc, true);
+				this.graphCanvas.setStandardDeviationPainted(true);
+				this.paramGraphCanvas.setStandardDeviationPainted(true);
+			} else {
+			    gcmp = readPreviewCollection(pc, false);
+			    this.graphCanvas.setStandardDeviationPainted(false);
+			    this.paramGraphCanvas.setStandardDeviationPainted(false);
 			}
-			gcmp = readPreviewCollection(pc);
     		
     		if (!this.graphPanelTabbedPane.isEnabledAt(1)) {
     			// enable budget view on multi param task
@@ -567,7 +573,7 @@ public class ALTaskTextViewerPanel extends JPanel {
     		
     	} else if (c == ALPrequentialEvaluationTask.class) {
     		// Preview
-    		gcmp = readPreview(preview);
+    		gcmp = readPreview(preview, false);
     		
     		// reset varied param name and values
     		this.variedParamName = "";
@@ -584,6 +590,9 @@ public class ALTaskTextViewerPanel extends JPanel {
     			// disable budget view on single param task
     			this.graphPanelTabbedPane.setEnabledAt(1, false);
     		}
+    		
+    		this.graphCanvas.setStandardDeviationPainted(false);
+            this.paramGraphCanvas.setStandardDeviationPainted(false);
     		
     	} else {
     		// sth went wrong
@@ -634,7 +643,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 	 * @param pc PreviewCollection
 	 * @return relevant information contained in the PreviewCollection
 	 */
-	public GraphCanvasMultiParams readPreviewCollection(PreviewCollection<Preview> pc) {	
+	public GraphCanvasMultiParams readPreviewCollection(PreviewCollection<Preview> pc, boolean withStd) {	
 		GraphCanvasMultiParams gcmp = new GraphCanvasMultiParams();
 		List<Preview> sps = pc.getPreviews();
 
@@ -643,13 +652,13 @@ public class ALTaskTextViewerPanel extends JPanel {
 			// NOTE: this assumes that all elements in sps are of the same type
 			for (Preview sp: sps) {
 				@SuppressWarnings("unchecked")
-				GraphCanvasMultiParams tmp = readPreviewCollection((PreviewCollection<Preview>) sp);
+				GraphCanvasMultiParams tmp = readPreviewCollection((PreviewCollection<Preview>) sp, withStd);
 				gcmp.add(tmp);
 			}
 		} else {
 			// members are simple previews
 			for (Preview sp: sps) {
-				GraphCanvasMultiParams tmp = readPreview(sp);
+				GraphCanvasMultiParams tmp = readPreview(sp, withStd);
 				gcmp.add(tmp);
 			}
 		}
@@ -706,7 +715,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 	 * measurements.
 	 * @param preview
 	 */
-	private GraphCanvasMultiParams readPreview(Preview p) {
+	private GraphCanvasMultiParams readPreview(Preview p, boolean withStd) {
 		
 		// find measure columns
 		String[] measureNames = p.getMeasurementNames();
@@ -720,6 +729,14 @@ public class ALTaskTextViewerPanel extends JPanel {
 		int timeColumn = -1;
 		int memoryColumn = -1;
 		int budgetColumn = -1;
+		
+        int accuracyColumnStd = -1;
+        int kappaColumnStd = -1;
+        int kappaTempColumnStd = -1;
+        int ramColumnStd = -1;
+        int timeColumnStd = -1;
+        int memoryColumnStd = -1;
+        int budgetColumnStd = -1;
 
 		for (int i = 0; i < numMeasures; i++) {
 			switch (measureNames[i]) {
@@ -751,14 +768,41 @@ public class ALTaskTextViewerPanel extends JPanel {
 			case "Rel Number of Label Acquisitions":
 				budgetColumn = i;
 				break;
+
+            case "[std] classifications correct (percent)":
+            case "[std] [avg] classifications correct (percent)":
+                accuracyColumnStd = i; 
+                break;
+            case "[std] Kappa Statistic (percent)":
+            case "[std] [avg] Kappa Statistic (percent)":
+                kappaColumnStd = i;
+                break;
+            case "[std] Kappa Temporal Statistic (percent)":
+            case "[std] [avg] Kappa Temporal Statistic (percent)":
+                kappaTempColumnStd = i;
+                break;
+            case "[std] model cost (RAM-Hours)":
+                ramColumnStd = i;
+                break;
+            case "[std] evaluation time (cpu seconds)":
+            case "[std] total train time":
+                timeColumnStd = i;
+                break;
+            case "[std] model serialized size (bytes)":
+                memoryColumnStd = i;
+                break;
+            case "[std] Rel Number of Label Acquisitions":
+                budgetColumnStd = i;
+                break;
 			default:
 				break;
 			}
 		}
 		
 		List<double[]> data = p.getData();
-		MeasureCollection m = new ALMeasureCollection();
 		
+		MeasureCollection m = new ALMeasureCollection();
+    		
 		// set entries
 		for (double[] entry: data) {
 			m.addValue(0, round(entry[accuracyColumn]));
@@ -768,7 +812,17 @@ public class ALTaskTextViewerPanel extends JPanel {
 			m.addValue(4, round(entry[timeColumn]));
 			m.addValue(5, round(entry[memoryColumn] / (1024 * 1024)));
 			m.addValue(6, round(entry[budgetColumn]));
-		}
+			
+			if (withStd) {
+                m.addValue(7, round(entry[accuracyColumnStd]));
+                m.addValue(8, round(entry[kappaColumnStd]));
+                m.addValue(9, round(entry[kappaTempColumnStd]));
+                m.addValue(10, Math.abs(entry[ramColumnStd]));
+                m.addValue(11, round(entry[timeColumnStd]));
+                m.addValue(12, round(entry[memoryColumnStd] / (1024 * 1024)));
+                m.addValue(13, round(entry[budgetColumnStd]));
+			}
+    	}
 		
 		// determine process frequency
 		int processFrequency = (int) data.get(0)[processFrequencyColumn];

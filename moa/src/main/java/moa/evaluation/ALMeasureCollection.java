@@ -35,21 +35,12 @@ public class ALMeasureCollection extends MeasureCollection implements Classifica
 
 	private static final long serialVersionUID = 1L;
 
-
-	public ALMeasureCollection() {
-        super();
-    }
-
     @Override
     protected String[] getNames() {
-        String[] names = {"Accuracy", "Kappa", "Kappa Temp", "Ram-Hours", "Time", "Memory", "Rel Lab.Acq"};
-        return names;
-    }
-
-    @Override
-    protected boolean[] getDefaultEnabled() {
-        boolean[] defaults = {true, true, true, true, true, true, true};
-        return defaults;
+        return new String[]{"Accuracy", "Kappa", "Kappa Temp", "Ram-Hours", 
+                    "Time", "Memory", "Rel Lab.Acq", "Accuracy [std]", 
+                    "Kappa [std]", "Kappa Temp [std]", "Ram-Hours [std]",
+                    "Time [std]", "Memory [std]", "Rel Lab.Acq [std]"};
     }
 
     @Override

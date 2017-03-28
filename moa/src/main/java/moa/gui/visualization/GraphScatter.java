@@ -85,10 +85,19 @@ public class GraphScatter extends AbstractGraphPlot {
             return;
         }
 
-        int y = (int)(height - (value / this.upper_y_value) * height); 
+        int y = (int)(height - (value / this.upper_y_value) * height);
         
         g.setColor(color);
+        
+        if (this.isStandardDeviationPainted) {
+            // access the corresponding std value
+            double std = m.getLastValue(this.measureSelected + 7);
+            int len = (int) ((std/this.upper_y_value)*height);
+            paintStandardDeviation(g, len, x, y);
+        }
+        
     	g.fillOval(x - DOT_SIZE/2, y - DOT_SIZE/2, DOT_SIZE, DOT_SIZE);
+    	
     }
 
 }

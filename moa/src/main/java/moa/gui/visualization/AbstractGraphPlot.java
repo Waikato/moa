@@ -20,6 +20,7 @@
 package moa.gui.visualization;
 
 import java.awt.Color;
+import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
@@ -51,6 +52,8 @@ public abstract class AbstractGraphPlot extends JPanel{
     protected double x_resolution;
     
     protected Color[] colors;
+    
+    protected boolean isStandardDeviationPainted;
 
 	public AbstractGraphPlot() {
 	    this.measureSelected = 0;
@@ -58,6 +61,8 @@ public abstract class AbstractGraphPlot extends JPanel{
 		this.max_y_value = 1;
 		this.upper_x_value = 1;
 		this.upper_y_value = 1;
+		
+		this.isStandardDeviationPainted = false;
     	
     	setOpaque(false);
 
@@ -131,5 +136,21 @@ public abstract class AbstractGraphPlot extends JPanel{
     protected void setXResolution(double x_resolution) {
         this.x_resolution = x_resolution;
     }
+    
+    /**
+     * Sets the value for isStandardDeviationPainted.
+     * @param b new setting for isStandardDeviationPainted
+     */
+    protected void setStandardDeviationPainted(boolean b) {
+        this.isStandardDeviationPainted = b;
+    }
 
+    
+    protected void paintStandardDeviation(Graphics g, int len, int x, int y) {
+        // draw vertical line
+        g.drawLine(x, y-len, x, y+len);
+        // draw horizontal lines
+        g.drawLine(x-5, y-len, x+5, y-len);
+        g.drawLine(x-5, y+len, x+5, y+len);
+    }
 }

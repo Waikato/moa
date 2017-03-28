@@ -75,7 +75,7 @@ public abstract class AbstractGraphCanvas extends JPanel {
      * Initialises an AbstractGraphCanvas by constructing its AbstractGraphAxes,
      * AbstractGraphPlot as well as setting initial sizes.
      */
-    public AbstractGraphCanvas(AbstractGraphAxes ax, AbstractGraphPlot g) {
+    public AbstractGraphCanvas(AbstractGraphAxes ax, AbstractGraphPlot g) {        
         this.axesPanel = ax;
         this.plotPanel = g;
 
@@ -95,6 +95,14 @@ public abstract class AbstractGraphCanvas extends JPanel {
 
         this.baseWidth = getWidth();
         this.baseHeight = getHeight();
+    }
+    
+    /**
+     * Sets the value of the plotPlanel for isStandardDeviationPainted.
+     * @param b new setting for isStandardDeviationPainted in the plotPanel
+     */
+    public void setStandardDeviationPainted(boolean b) {
+        this.plotPanel.setStandardDeviationPainted(b);
     }
 
     /**

@@ -227,7 +227,7 @@ public class MeasureOverview extends JPanel {
         
         DecimalFormat d = new DecimalFormat("0.00");
         MeasureCollection mc = this.measures[this.measureCollectionSelected];
-        for (int i = 0; i < mc.getNumMeasures(); i++) {
+        for (int i = 0; i < this.values.length; i++) {
             if(Double.isNaN(mc.getLastValue(i))) {
                 this.values[i].setText("-");
             } else {
