@@ -106,7 +106,7 @@ public class GraphMultiCurve extends AbstractGraphPlot {
             	x[i] = (int) (i * x_resolution);
             	y[i] = (int)(height-(m.getValue(mSelect, i)/this.upper_y_value)*height);
             	
-            	if (this.isStandardDeviationPainted) {
+            	if (this.isStandardDeviationPainted && mSelect <= 6) {
             	    // access the corresponding std value
             	    double std = m.getValue(mSelect + 7, i);
             	    int len = (int) ((std/this.upper_y_value)*height);
