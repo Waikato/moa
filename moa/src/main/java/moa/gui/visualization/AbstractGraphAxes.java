@@ -49,9 +49,11 @@ public abstract class AbstractGraphAxes extends JPanel {
     protected double x_resolution;
     protected double y_resolution;
 
+    protected double min_x_value;
     protected double max_x_value;
     protected double max_y_value;
 
+    protected double lower_x_value;
     protected double upper_x_value;
     protected double upper_y_value;
 
@@ -60,8 +62,10 @@ public abstract class AbstractGraphAxes extends JPanel {
      * layout.
      */
     public AbstractGraphAxes() {
+        this.min_x_value = 0;
         this.max_x_value = 1;
         this.max_y_value = 1;
+        this.lower_x_value = 0;
         this.upper_x_value = 1;
         this.upper_y_value = 1;
 
@@ -180,15 +184,15 @@ public abstract class AbstractGraphAxes extends JPanel {
         }
 
     }
-
+    
     /**
-     * Sets the maximum y value
+     * Sets the minimum x value
      * 
-     * @param max
-     *            maximum y value
+     * @param min
+     *            minimum x value
      */
-    public void setMaxYValue(double max) {
-        this.max_y_value = max;
+    public void setMinXValue(double min) {
+        this.min_x_value = min;
     }
 
     /**
@@ -199,6 +203,26 @@ public abstract class AbstractGraphAxes extends JPanel {
      */
     public void setMaxXValue(double max) {
         this.max_x_value = max;
+    }
+    
+    /**
+     * Sets the maximum y value
+     * 
+     * @param max
+     *            maximum y value
+     */
+    public void setMaxYValue(double max) {
+        this.max_y_value = max;
+    }
+    
+    /**
+     * Sets the lower value for the x-axis.
+     * 
+     * @param value
+     *            lower x value
+     */
+    public void setLowerXValue(double value) {
+        this.lower_x_value = value;
     }
 
     /**

@@ -41,11 +41,13 @@ public abstract class AbstractGraphPlot extends JPanel{
 	private static final long serialVersionUID = 1L;
 	
 	protected MeasureCollection[] measures;
-    protected int measureSelected = 0;
+    protected int measureSelected;
 	
+    protected double min_x_value;
     protected double max_x_value;
     protected double max_y_value;
     
+    protected double lower_x_value;
     protected double upper_x_value;
     protected double upper_y_value;
 
@@ -57,8 +59,10 @@ public abstract class AbstractGraphPlot extends JPanel{
 
 	public AbstractGraphPlot() {
 	    this.measureSelected = 0;
+	    this.min_x_value = 0;
 		this.max_x_value = 1;
 		this.max_y_value = 1;
+		this.lower_x_value = 0;
 		this.upper_x_value = 1;
 		this.upper_y_value = 1;
 		
@@ -92,6 +96,14 @@ public abstract class AbstractGraphPlot extends JPanel{
 	    this.colors = colors;
 	    repaint();
 	}
+
+    /**
+     * Sets minimum x value.
+     * @param min minimum x value
+     */
+    protected void setMinXValue(double min){
+        this.min_x_value = min;
+    }
 	
     /**
      * Sets maximum x value.
@@ -107,6 +119,16 @@ public abstract class AbstractGraphPlot extends JPanel{
      */
     protected void setMaxYValue(double max){
         this.max_y_value = max;
+    }
+
+    /**
+     * Sets the lower value for the x-axis.
+     * 
+     * @param value
+     *            lower x value
+     */
+    protected void setLowerXValue(double value) {
+        this.lower_x_value = value;
     }
     
     /**

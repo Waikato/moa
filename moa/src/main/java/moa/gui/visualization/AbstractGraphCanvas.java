@@ -61,6 +61,8 @@ public abstract class AbstractGraphCanvas extends JPanel {
     protected static final int Y_OFFSET_BOTTOM = 20;
 
     protected static final int Y_OFFSET_TOP = 20;
+    
+    protected double min_x_value;
 
     protected double max_x_value;
     protected double max_y_value;
@@ -85,6 +87,8 @@ public abstract class AbstractGraphCanvas extends JPanel {
         this.axesPanel.add(this.plotPanel);
 
         this.measureSelected = 0;
+        
+        this.min_x_value = 0;
         this.max_x_value = 1;
         this.max_y_value = 1;
         this.x_resolution = 1;
@@ -178,7 +182,7 @@ public abstract class AbstractGraphCanvas extends JPanel {
      *            enforce repainting
      */
     public void updateCanvas(boolean force) {
-        if (updateMaxValues() || force) {
+        if (updateMinMaxValues() || force) {
             setSize();
             setPreferredSize();
             this.repaint();
@@ -211,6 +215,11 @@ public abstract class AbstractGraphCanvas extends JPanel {
         }
         return max;
     }
+    
+    /**
+     * Returns the minimum value for the x-axis.
+     */
+    public abstract double getMinXValue();
 
     /**
      * Returns the maximum value for the x-axis.
@@ -218,32 +227,39 @@ public abstract class AbstractGraphCanvas extends JPanel {
     public abstract double getMaxXValue();
 
     /**
-     * Computes the maximum values for the x and y-axis and updates the
-     * children, if necessary.
+     * Computes the minimum and maximum values for the x and y-axis and updates
+     * the children, if necessary.
      * 
      * @return true, if the values have changed
      */
-    private boolean updateMaxValues() {
+    private boolean updateMinMaxValues() {
 
+        double min_x_value_new;
         double max_x_value_new;
         double max_y_value_new;
 
         if (this.measures == null) {
             // no values received yet -> reset axes
+            min_x_value_new = 0;
             max_x_value_new = 1;
             max_y_value_new = 1;
         } else {
+            min_x_value_new = getMinXValue();
             max_x_value_new = getMaxXValue();
             max_y_value_new = getMaxSelectedValue();
         }
 
         // resizing needed?
-        if (max_x_value_new != this.max_x_value
+        if (min_x_value_new != this.min_x_value
+                || max_x_value_new != this.max_x_value
                 || max_y_value_new != this.max_y_value) {
+            this.min_x_value = min_x_value_new;
             this.max_x_value = max_x_value_new;
             this.max_y_value = max_y_value_new;
+            updateMinXValue();
             updateMaxXValue();
             updateMaxYValue();
+            updateLowerXValue();
             updateUpperXValue();
             updateUpperYValue();
             return true;
@@ -267,6 +283,14 @@ public abstract class AbstractGraphCanvas extends JPanel {
     }
 
     /**
+     * Updates the min x value of the axes and plot panel.
+     */
+    private void updateMinXValue() {
+        axesPanel.setMinXValue(min_x_value);
+        plotPanel.setMinXValue(min_x_value);
+    }
+    
+    /**
      * Updates the max x value of the axes and plot panel.
      */
     private void updateMaxXValue() {
@@ -282,6 +306,23 @@ public abstract class AbstractGraphCanvas extends JPanel {
         plotPanel.setMaxYValue(max_y_value);
     }
 
+    /**
+     * Updates the lower value on the x-axis.
+     */
+    private void updateLowerXValue() {
+        double lower = 0.0;
+        if (this.measures != null) {
+            if (this.min_x_value < 0) {
+                lower = Math.floor(this.min_x_value * 0.9);
+            } else {
+                lower = Math.floor(this.min_x_value * 1.1);
+            }
+        }
+        System.out.println(lower);
+        this.axesPanel.setLowerXValue(lower);
+        this.plotPanel.setLowerXValue(lower);
+    }
+    
     /**
      * Updates the upper value on the x-axis.
      */

@@ -68,6 +68,22 @@ public class ParamGraphCanvas extends AbstractGraphCanvas {
                 variedParamValues, colors);
         updateCanvas(false);
     }
+    
+    @Override
+    public double getMinXValue() {
+        if (this.variedParamValues == null) {
+            // no task with a varied param
+            return 0;
+        }
+        double min = Double.MAX_VALUE;
+
+        for (int i = 0; i < this.variedParamValues.length; i++) {
+            if (this.variedParamValues[i] < min) {
+                min = this.variedParamValues[i];
+            }
+        }
+        return min;
+    }    
 
     @Override
     public double getMaxXValue() {

@@ -94,6 +94,11 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 		((GraphMultiCurve) this.plotPanel).setGraph(measures, mSelect, processFrequencies, colors);
 		updateCanvas(false);
 	}
+	
+	@Override
+	public double getMinXValue() {
+	    return 0;
+	}
 
 	@Override
 	public double getMaxXValue() {
