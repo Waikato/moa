@@ -318,7 +318,7 @@ public abstract class AbstractGraphCanvas extends JPanel {
                 lower = Math.floor(this.min_x_value * 1.1);
             }
         }
-        System.out.println(lower);
+
         this.axesPanel.setLowerXValue(lower);
         this.plotPanel.setLowerXValue(lower);
     }
