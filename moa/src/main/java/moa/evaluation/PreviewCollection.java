@@ -353,20 +353,15 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 		String[] cvMeasurementNames = this.getMeasurementNames();
 		int numBaseMeasurementNames = cvMeasurementNames.length - 4;
 		
-		// check if standard deviations were calculated
-		int numExtendedMeasurements = paramMeasurementsSum.isEmpty() ? 
-				numBaseMeasurementNames : paramMeasurementsSum.get(0).length;
-		String[] measurementNames = new String[numExtendedMeasurements];
-		
+		// copy old measurement names and append names for standard deviations
+		String[] measurementNames = new String[numBaseMeasurementNames * 2];
 		for (int m = 0; m < numBaseMeasurementNames; m++) {
 			// copy old measurement names
 			measurementNames[m] = cvMeasurementNames[m + 4];
 			
 			// append standard deviation measurement names
-			if (numExtendedMeasurements > numBaseMeasurementNames) {
-				measurementNames[m + numBaseMeasurementNames] =
-						"[std] " + cvMeasurementNames[m + 4];
-			}
+			measurementNames[m + numBaseMeasurementNames] =
+					"[std] " + cvMeasurementNames[m + 4];
 		}
 		
 		// wrap into LearningCurve
@@ -396,7 +391,10 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 		List<double[]> measurements = preview.getData();
 		
 		if (measurementsSum.isEmpty()) {
-			measurementsSum.addAll(measurements);
+			// initialize measurement sums with values of first preview
+			for (int entry = 0; entry < maxEntries; entry++) {
+				measurementsSum.add(measurements.get(entry));
+			}
 		}
 		else {
 			// add values for each measurement in each entry
