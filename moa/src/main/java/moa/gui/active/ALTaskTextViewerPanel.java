@@ -536,6 +536,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 		    this.measures = null;
 		    this.measureOverview.update(null, "", null);
 			this.graphCanvas.setGraph(null, 0, null, 1000, null);
+			this.paramGraphCanvas.setGraph(null, 0, null, null);
 			return;
 		}
 
@@ -598,7 +599,8 @@ public class ALTaskTextViewerPanel extends JPanel {
     		// sth went wrong
     	    this.measures = null;
     	    this.measureOverview.update(null, "", null);
-    		this.graphCanvas.setGraph(null, this.graphCanvas.getMeasureSelected(), null, 1000, null);
+    		this.graphCanvas.setGraph(null, 0, null, 1000, null);
+    		this.paramGraphCanvas.setGraph(null, 0, null, null);
 			return;
     	}
 		
