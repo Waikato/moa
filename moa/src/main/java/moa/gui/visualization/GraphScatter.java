@@ -90,7 +90,7 @@ public class GraphScatter extends AbstractGraphPlot {
         
         g.setColor(color);
         
-        if (this.isStandardDeviationPainted) {
+        if (this.isStandardDeviationPainted && this.measureSelected <= 6) {
             // access the corresponding std value
             double std = m.getLastValue(this.measureSelected + 7);
             int len = (int) ((std/this.upper_y_value)*height);
