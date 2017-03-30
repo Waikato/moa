@@ -66,6 +66,7 @@ import moa.evaluation.PreviewCollection;
 import moa.gui.FileExtensionFilter;
 import moa.gui.GUIUtils;
 import moa.gui.PreviewTableModel;
+import moa.gui.visualization.BudgetGraphCanvas;
 import moa.gui.visualization.ParamGraphCanvas;
 import moa.gui.visualization.ProcessGraphCanvas;
 import moa.tasks.FailedTaskReport;
@@ -105,7 +106,9 @@ public class ALTaskTextViewerPanel extends JPanel {
 	
 	private JPanel panelEvalOutput;
 	
-	private MeasureCollection[] measures;
+	private MeasureCollection[] measuresAll;
+	
+	private MeasureCollection[] measuresSpecial;
 	
 	private MeasureOverview measureOverview;
 	
@@ -130,6 +133,8 @@ public class ALTaskTextViewerPanel extends JPanel {
 	private JScrollPane paramGraphScrollPanel;
 	
 	private ParamGraphCanvas paramGraphCanvas;
+	
+	private BudgetGraphCanvas budgetGraphCanvas;
 	
 	private JPanel graphPanelControlRight;
 	
@@ -246,10 +251,11 @@ public class ALTaskTextViewerPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selected = Integer.parseInt(e.getActionCommand());
-                graphCanvas.setGraph(measures, selected, graphCanvas.getProcessFrequencies(),
+                graphCanvas.setGraph(measuresSpecial, selected, graphCanvas.getProcessFrequencies(),
                         graphCanvas.getMinProcessFrequency(), colors);
-                paramGraphCanvas.setGraph(measures, selected, 
+                paramGraphCanvas.setGraph(measuresSpecial, selected, 
                         variedParamValues, colors);
+                budgetGraphCanvas.setGraph(measuresAll, selected, colors);
             }
         });
 
@@ -350,7 +356,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 		// budgetGraphScrollPanel is a scroll wrapper for the live budget graph
 		paramGraphScrollPanel = new JScrollPane();
 
-		// budgetGraphCanvas displays the live budget graph
+		// paramGraphCanvas displays the live varied parameter graph
 		paramGraphCanvas = new ParamGraphCanvas();
 		paramGraphCanvas.setPreferredSize(new Dimension(500, 111));
 		paramGraphCanvas.setGraph(null, 0, null, null);
@@ -364,6 +370,9 @@ public class ALTaskTextViewerPanel extends JPanel {
 
 		paramGraphScrollPanel.setViewportView(paramGraphCanvas);
 		graphPanelTabbedPane.addTab("Param", paramGraphScrollPanel);
+		
+		// budgetGraphCanvas displays the live actually used budget graph
+		budgetGraphCanvas = new BudgetGraphCanvas(null, null);
 		
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
@@ -533,14 +542,17 @@ public class ALTaskTextViewerPanel extends JPanel {
 	public void setGraph(Preview preview, Color[] colors) {
 		if (preview == null) {
 			// no preview received
-		    this.measures = null;
+			this.measuresAll = null;
+		    this.measuresSpecial = null;
 		    this.measureOverview.update(null, "", null);
 			this.graphCanvas.setGraph(null, 0, null, 1000, null);
 			this.paramGraphCanvas.setGraph(null, 0, null, null);
+			this.budgetGraphCanvas.setGraph(null, 0, null);
 			return;
 		}
 
-		GraphCanvasMultiParams gcmp = new GraphCanvasMultiParams();
+		GraphCanvasMultiParams gcmpAll = new GraphCanvasMultiParams();
+		GraphCanvasMultiParams gcmpSpecial = new GraphCanvasMultiParams();
 		
 		// check which type of task it is
 		Class<?> c = preview.getTaskClass();
@@ -555,14 +567,17 @@ public class ALTaskTextViewerPanel extends JPanel {
 			// set param tab name as the actual name
 			this.graphPanelTabbedPane.setTitleAt(1, this.variedParamName);
 			
+			// read all previews
+			gcmpAll = readPreviewCollection(pc, false);
+			
 			if (c == ALCrossValidationTask.class) {
 				// calculate mean preview collection for each parameter value
 				pc = ((PreviewCollection<?>) preview).calculateMeanPreview();
-				gcmp = readPreviewCollection(pc, true);
+				gcmpSpecial = readPreviewCollection(pc, true);
 				this.graphCanvas.setStandardDeviationPainted(true);
 				this.paramGraphCanvas.setStandardDeviationPainted(true);
 			} else {
-			    gcmp = readPreviewCollection(pc, false);
+			    gcmpSpecial = readPreviewCollection(pc, false);
 			    this.graphCanvas.setStandardDeviationPainted(false);
 			    this.paramGraphCanvas.setStandardDeviationPainted(false);
 			}
@@ -573,8 +588,9 @@ public class ALTaskTextViewerPanel extends JPanel {
     		}
     		
     	} else if (c == ALPrequentialEvaluationTask.class) {
-    		// Preview
-    		gcmp = readPreview(preview, false);
+    		// read Preview (in this case, no special preview is required)
+    		gcmpAll = readPreview(preview, false);
+    		gcmpSpecial = gcmpAll;
     		
     		// reset varied param name and values
     		this.variedParamName = "";
@@ -597,26 +613,33 @@ public class ALTaskTextViewerPanel extends JPanel {
     		
     	} else {
     		// sth went wrong
-    	    this.measures = null;
+    		this.measuresAll = null;
+    	    this.measuresSpecial = null;
     	    this.measureOverview.update(null, "", null);
     		this.graphCanvas.setGraph(null, 0, null, 1000, null);
     		this.paramGraphCanvas.setGraph(null, 0, null, null);
+    		this.budgetGraphCanvas.setGraph(null, 0, null);
 			return;
     	}
 		
-		int[] pfs = gcmp.getProcessFrequenciesArray();
-		this.measures = gcmp.getMeasureCollectionsArray();
-		int min_pf = min(pfs);
+		this.measuresAll = gcmpAll.getMeasureCollectionsArray();
+		
+		int[] pfsSpecial = gcmpSpecial.getProcessFrequenciesArray();
+		this.measuresSpecial = gcmpSpecial.getMeasureCollectionsArray();
+		int min_pf = min(pfsSpecial);
 		
 		this.colors = colors;
 		
-		this.measureOverview.update(this.measures, this.variedParamName, this.variedParamValues);
-		this.graphCanvas.setGraph(this.measures, 
-				this.graphCanvas.getMeasureSelected(), pfs, min_pf, colors);
-		this.paramGraphCanvas.setGraph(this.measures, 
+		this.measureOverview.update(this.measuresSpecial, this.variedParamName, this.variedParamValues);
+		this.graphCanvas.setGraph(this.measuresSpecial, 
+				this.graphCanvas.getMeasureSelected(), pfsSpecial, min_pf, colors);
+		this.paramGraphCanvas.setGraph(this.measuresSpecial, 
 				this.paramGraphCanvas.getMeasureSelected(), 
 				this.variedParamValues, colors);
-
+		this.budgetGraphCanvas.setGraph(
+				this.measuresAll, 
+				this.budgetGraphCanvas.getMeasureSelected(), 
+				colors);
 	}
 
 	private static double round(double d) {
