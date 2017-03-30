@@ -124,6 +124,7 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 		// initialize learner
 		ALClassifier learner = 
 				(ALClassifier) getPreparedClassOption(this.learnerOption);
+		learner.resetLearning();
 		learner.setModelContext(stream.getHeader());
 		
 		// get evaluator

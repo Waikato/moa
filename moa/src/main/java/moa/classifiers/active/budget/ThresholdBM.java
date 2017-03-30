@@ -42,13 +42,6 @@ public class ThresholdBM extends AbstractOptionHandler implements BudgetManager 
 	double threshold;
 	
 	@Override
-	public void prepareForUse(TaskMonitor monitor, ObjectRepository repository) {
-		super.prepareForUse(monitor, repository);
-		
-		this.threshold = thresholdOption.getValue();
-	}
-	
-	@Override
 	public boolean isAbove(double value) {
 		boolean acquire = false;
 		if (value >= this.threshold)
@@ -68,7 +61,7 @@ public class ThresholdBM extends AbstractOptionHandler implements BudgetManager 
 	@Override
 	public void resetLearning() {
 		this.acquisitionReport = 0;
-		this.threshold = 0;
+		this.threshold = thresholdOption.getValue();
 	}
 
 	@Override

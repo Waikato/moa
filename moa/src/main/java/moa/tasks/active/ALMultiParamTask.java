@@ -290,6 +290,7 @@ public class ALMultiParamTask extends ALMainTask {
 		// iterate while there are threads active
 		while(!allThreadsCompleted)
 		{
+			
 			allThreadsCompleted = true;
 			int oldNumEntries = previewCollection.numEntries();
 			double completionSum = 0;
@@ -299,6 +300,13 @@ public class ALMultiParamTask extends ALMainTask {
 				ALTaskThread currentTaskThread = subtaskThreads.get(i);
 				// check if the thread is completed
 				allThreadsCompleted &= currentTaskThread.isComplete();
+				
+				// request cancel if subtask failed or was cancelled
+				if(currentTaskThread.failed() || currentTaskThread.cancelled())
+				{
+					monitor.requestCancel();
+				}
+				
 				// get the completion fraction
 				completionSum += currentTaskThread.getCurrentActivityFracComplete();
 				// get the latest preview

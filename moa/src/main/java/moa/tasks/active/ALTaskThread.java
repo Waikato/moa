@@ -24,6 +24,8 @@ package moa.tasks.active;
 import java.util.List;
 
 import moa.core.ObjectRepository;
+import moa.core.TimingUtils;
+import moa.tasks.FailedTaskReport;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
 
@@ -77,11 +79,17 @@ public class ALTaskThread extends TaskThread {
 		List<ALTaskThread> threads = task.getSubtaskThreads();
 		
         super.cancelTask();
+        
+        this.finalResult = getLatestResultPreview();
+        
 
         // cancel all subtask threads
         for(int i = 0; i < threads.size(); ++i)
         {
-        	threads.get(i).cancelTask();
+        	if(!threads.get(i).isComplete())
+        	{
+            	threads.get(i).cancelTask();
+        	}
         }
     }
 	
@@ -89,4 +97,36 @@ public class ALTaskThread extends TaskThread {
 	{
 		return currentStatus == Status.FAILED;
 	}
+	
+	public boolean cancelled()
+	{
+		return currentStatus == Status.CANCELLED;
+	}
+	
+
+
+    @Override
+    public void run() {
+        TimingUtils.enablePreciseTiming();
+        this.taskStartTime = TimingUtils.getNanoCPUTimeOfThread(getId());
+        try {
+            this.currentStatus = Status.RUNNING;
+            this.finalResult = this.runningTask.doTask(this.taskMonitor,
+                    this.repository);
+            this.currentStatus = this.taskMonitor.isCancelled() ? Status.CANCELLED
+                    : Status.COMPLETED;
+        } catch (Throwable ex) {
+            this.currentStatus = Status.FAILED;
+            this.finalResult = new FailedTaskReport(ex);
+        }
+        
+        if(currentStatus == Status.FAILED || currentStatus == Status.CANCELLED)
+        {
+            cancelTask();
+        }
+        
+        this.taskEndTime = TimingUtils.getNanoCPUTimeOfThread(getId());
+        fireTaskCompleted();
+        this.taskMonitor.setLatestResultPreview(null); // free preview memory
+    }
 }

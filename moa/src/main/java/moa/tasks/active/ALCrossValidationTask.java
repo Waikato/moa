@@ -170,6 +170,12 @@ public class ALCrossValidationTask extends ALMainTask {
 				ALTaskThread currentTaskThread = subtaskThreads.get(i);
 				// check if the thread is completed
 				allThreadsCompleted &= currentTaskThread.isComplete();
+
+				// request cancel if subtask failed or was cancelled
+				if(currentTaskThread.failed() || currentTaskThread.cancelled())
+				{
+					monitor.requestCancel();
+				}
 				// get the completion fraction
 				completionSum += currentTaskThread.getCurrentActivityFracComplete();
 				// get the latest preview

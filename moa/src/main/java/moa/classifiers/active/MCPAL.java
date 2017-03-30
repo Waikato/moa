@@ -39,9 +39,7 @@ import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.active.budget.BudgetManager;
 import moa.core.Measurement;
-import moa.core.ObjectRepository;
 import moa.options.ClassOption;
-import moa.tasks.TaskMonitor;
 
 
 
@@ -74,6 +72,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	private StandardDeviationEstimator standartDeviationEstimator;
 
 	private int numClasses;
+	private int numAttributes;
 	
 	private List<List<int[]>> distributions;
 	
@@ -105,21 +104,6 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
     
     public FlagOption useDensityWeightOption = new FlagOption("useDensityWeighting",
             'd', "If set to true the gain will be weighted by the density for that instance.");
-    
-	public MCPAL() {
-		resetLearningImpl();
-	}
-	
-	@Override
-	public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
-		super.prepareForUseImpl(monitor, repository);
-
-		classifier = (Classifier) getPreparedClassOption(classifierOption);
-		budgetManager = (BudgetManager) getPreparedClassOption(budgetManagerOption);
-		mMax = (int)mMaxOption.getValue();
-		useDensityWeight = useDensityWeightOption.isSet();
-		bandwidth = bandwidthOption.getValue();
-	}
 	
 	
 	//____________________________MODIFIED_CODE_FROM_OPAL__________________________________________________
@@ -143,21 +127,30 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 
 	// ___________________________________MCPAL______________________________________
 
-
+	@Override
+	public void prepareForUse() {
+		super.prepareForUse();
+	}
 
 	/**
 	 * calculate the frequency estimates (k) for a given instance
 	 * 
 	 * @param inst the instance for which the frequency estimates should be calculated for
+	 * @param posterior the posterior for the given instance
 	 * @return frequency estimates for each class
 	 */
-	private double[] getK(double[] inst) {
+	private double[] getK(double[] inst, double[] posterior) {
 		double[] std = standartDeviationEstimator.getStd();
+		double n = 0.0;
 		double[] k = new double[numClasses];
-		
+
 		for(int cIdx = 0; cIdx < numClasses; ++cIdx)
 		{
-			k[cIdx] = kernelEstimators[cIdx].getFrequencyEstimate(inst, std);
+			n += kernelEstimators[cIdx].getFrequencyEstimate(inst, std);
+		}
+		for(int cIdx = 0; cIdx < numClasses; ++cIdx)
+		{
+			k[cIdx] = posterior[cIdx] * n;
 		}
 		
 		return k;
@@ -425,9 +418,16 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	 * @param point the point the score should be calculated for
 	 * @return the score
 	 */
-	private double getAlScore(double[] point)
+	private double getAlScore(Instance inst)
 	{
-		double[] k = getK(point);
+
+		double[] point = new double[inst.numAttributes() - 1];
+		for(int i = 0; i < point.length; ++i)
+		{
+			point[i] = inst.value(i);
+		}
+		
+		double[] k = getK(point, normalizeVotes(classifier.getVotesForInstance(inst)));
 		double density = useDensityWeight? getDensity(k, false) : 1.0;
 		
 		double perfGain = getPerfGain(k);
@@ -435,23 +435,15 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	}
 	
 	/**
-	 * normalize the output of classifiers such that the sum is 1 and
+	 * normalize the output of classifiers such that
 	 * all classes have at least one prediction
 	 * @param votes the prediction for each class
 	 * @return the normalized prediction
 	 */
 	private double[] normalizeVotes(double[] votes) {
 		double[] normVotes = new double[numClasses];
-		double sum = 0;
 		for (int i = 0; i < votes.length; i++)
-			sum += votes[i];
-		if (sum != 0)
-			for (int i = 0; i < votes.length; i++)
-				normVotes[i] = votes[i] / sum;
-		else {
-			for (int i = 0; i < numClasses; i++)
-				normVotes[i] = 1.0 / numClasses;
-		}
+			normVotes[i] = votes[i];
 		return normVotes;
 	}
 	
@@ -472,15 +464,26 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 
 	@Override
 	public void resetLearningImpl() {
-		numClasses = 0;
-		classifier = null;
-		budgetManager = null;
 		distributions = new ArrayList<>();
-		mMax = 0;
-		kernelEstimators = null;
+		for(int m = 0; m <= mMax; ++m)
+		{
+			distributions.add(getAllDistributionPossibilities(m, numClasses));
+		}
+		
+		kernelEstimators = new MCPALEstimatorMultivariate[numClasses];
+		for(int cIdx = 0; cIdx < numClasses; ++cIdx)
+		{
+			kernelEstimators[cIdx] = new MCPALEstimatorMultivariate(bandwidth, kernelDensityEstimatorWindowOption.getValue());
+		}
+
+		standartDeviationEstimator = new StandardDeviationEstimator(numAttributes);
+
+		classifier = (Classifier) getPreparedClassOption(classifierOption);
+		budgetManager = (BudgetManager) getPreparedClassOption(budgetManagerOption);
+		mMax = (int)mMaxOption.getValue();
+		useDensityWeight = useDensityWeightOption.isSet();
+		bandwidth = bandwidthOption.getValue();
 	}
-	
-	int numRuns = 0;
 	
 	@Override
 	public void trainOnInstanceImpl(Instance inst) {
@@ -489,8 +492,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		{
 			point[i] = inst.value(i);
 		}
-		
-		double alScore = getAlScore(point);
+		double alScore = getAlScore(inst);
 
 		boolean acquireLabel = budgetManager.isAbove(alScore);
 
@@ -525,18 +527,8 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		super.setModelContext(ih);
 		
 		this.numClasses = ih.numClasses();
-
-		for(int m = 0; m <= mMax; ++m)
-		{
-			distributions.add(getAllDistributionPossibilities(m, numClasses));
-		}
+		this.numAttributes = ih.numAttributes() - 1;
 		
-		kernelEstimators = new MCPALEstimatorMultivariate[numClasses];
-		for(int cIdx = 0; cIdx < numClasses; ++cIdx)
-		{
-			kernelEstimators[cIdx] = new MCPALEstimatorMultivariate(bandwidth, kernelDensityEstimatorWindowOption.getValue());
-		}
-
-		standartDeviationEstimator = new StandardDeviationEstimator(ih.numAttributes() - 1);
+		resetLearning();
 	}
 }

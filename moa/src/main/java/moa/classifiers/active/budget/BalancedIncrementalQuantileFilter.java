@@ -24,8 +24,6 @@ import java.util.List;
 import com.github.javacliparser.IntOption;
 
 import moa.classifiers.active.RingBuffer;
-import moa.core.ObjectRepository;
-import moa.tasks.TaskMonitor;
 
 /**
  * This budget manager is an implementation of the balanced incremental 
@@ -51,17 +49,6 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 	public IntOption toleranceWindowSizeOption = new IntOption("toleranceWindowSize", 't', 
 			"The number of instances which are used to balance the number of label acquisitions.",
 			100, 1,Integer.MAX_VALUE);
-	
-	public BalancedIncrementalQuantileFilter() {
-		resetLearning();
-	}
-	
-	@Override
-	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
-		super.prepareForUseImpl(monitor, repository);
-		numAcquisitionsBuffer = new RingBuffer<>(toleranceWindowSizeOption.getValue());
-		this.budget = budgetOption.getValue();
-	}
 
 	@Override
 	public boolean isAbove(double alScore) {
@@ -79,7 +66,7 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 		double acquisitionsLeft = getAcquisitionsLeft(numAcquisitionsBuffer, budget);
 		
 		double range = getRange(scoreBuffer, rankedIndices);
-		double balancedThreshold = threshold - range * acquisitionsLeft/toleranceWindowSize;
+		double balancedThreshold = threshold - range * (toleranceWindowSize==0? 0 : acquisitionsLeft/toleranceWindowSize);
 		
 		boolean decision = alScore >= balancedThreshold;
 		
@@ -106,7 +93,8 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 		{
 			numAcquiredLabels += toleranceWindow.get(i);
 		}
-		return numProcessedInstances * budget - numAcquiredLabels;
+		double acquisitionsLeft = numProcessedInstances * budget - numAcquiredLabels;
+		return acquisitionsLeft;
 	}
 	
 	/**
@@ -131,7 +119,14 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 	@Override
 	public void resetLearning() {
 		super.resetLearning();
-		numAcquisitionsBuffer = null;
+		numAcquisitionsBuffer = new RingBuffer<>(toleranceWindowSizeOption.getValue());
+		this.budget = budgetOption.getValue();
 		r = new Ranking<>();
+	}
+	
+	@Override
+	public void prepareForUse() {
+		super.prepareForUse();
+		resetLearning();
 	}
 }

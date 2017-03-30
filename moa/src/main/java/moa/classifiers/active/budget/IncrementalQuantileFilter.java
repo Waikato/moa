@@ -58,16 +58,6 @@ public class IncrementalQuantileFilter extends AbstractOptionHandler implements 
     public FloatOption budgetOption = new FloatOption("budget",
     		'b', "The budget that should be used by the BudgetManager.",
     		0.1, 0.00, 1.00);
-	
-	public IncrementalQuantileFilter() {
-		resetLearning();
-	}
-
-	@Override
-	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
-		scoreBuffer = new RingBuffer<>(windowSizeOption.getValue());
-		budget = budgetOption.getValue();
-	}
 
 	@Override
 	public boolean isAbove(double alScore) {
@@ -105,14 +95,20 @@ public class IncrementalQuantileFilter extends AbstractOptionHandler implements 
 	public void resetLearning() {
 		acquiredLabels = 0;
 		budget = 0;
-		scoreBuffer = null;
 		r = new Ranking<>();
+		scoreBuffer = new RingBuffer<>(windowSizeOption.getValue());
+		budget = budgetOption.getValue();
 	}
 
 	@Override
 	public void getDescription(StringBuilder sb, int indent) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
+		resetLearning();
 	}
 
 }
