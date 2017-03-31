@@ -66,7 +66,6 @@ import moa.evaluation.PreviewCollection;
 import moa.gui.FileExtensionFilter;
 import moa.gui.GUIUtils;
 import moa.gui.PreviewTableModel;
-import moa.gui.visualization.BudgetGraphCanvas;
 import moa.gui.visualization.ParamGraphCanvas;
 import moa.gui.visualization.ProcessGraphCanvas;
 import moa.tasks.FailedTaskReport;
@@ -134,7 +133,9 @@ public class ALTaskTextViewerPanel extends JPanel {
 	
 	private ParamGraphCanvas paramGraphCanvas;
 	
-	private BudgetGraphCanvas budgetGraphCanvas;
+	private JScrollPane budgetGraphScrollPanel;
+	
+	private ParamGraphCanvas budgetGraphCanvas;
 	
 	private JPanel graphPanelControlRight;
 	
@@ -255,7 +256,7 @@ public class ALTaskTextViewerPanel extends JPanel {
                         graphCanvas.getMinProcessFrequency(), colors);
                 paramGraphCanvas.setGraph(measuresSpecial, selected, 
                         variedParamValues, colors);
-                budgetGraphCanvas.setGraph(measuresAll, selected, colors);
+                budgetGraphCanvas.setGraph(measuresAll, selected, variedParamValues, colors);
             }
         });
 
@@ -284,12 +285,15 @@ public class ALTaskTextViewerPanel extends JPanel {
 		buttonZoomInY.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				// update the currently open graph
-				int currentTab = graphPanelTabbedPane.getSelectedIndex();
-				if (currentTab == 0) {
-					graphCanvas.scaleYResolution(2);
-				} else {
-					paramGraphCanvas.scaleYResolution(2);
-				}	
+                int currentTab = graphPanelTabbedPane.getSelectedIndex();
+                switch (currentTab){
+                    case 0: graphCanvas.scaleYResolution(2); 
+                            break;
+                    case 1: paramGraphCanvas.scaleYResolution(2); 
+                            break;
+                    case 2: budgetGraphCanvas.scaleYResolution(2);
+                            break;
+                }
 			}
 		});
 
@@ -303,11 +307,14 @@ public class ALTaskTextViewerPanel extends JPanel {
 			public void actionPerformed(ActionEvent evt) {
 				// update the currently open graph
 				int currentTab = graphPanelTabbedPane.getSelectedIndex();
-				if (currentTab == 0) {
-					graphCanvas.scaleYResolution(0.5);
-				} else {
-					paramGraphCanvas.scaleYResolution(0.5);
-				}	
+                switch (currentTab){
+                    case 0: graphCanvas.scaleYResolution(0.5); 
+                            break;
+                    case 1: paramGraphCanvas.scaleYResolution(0.5); 
+                            break;
+                    case 2: budgetGraphCanvas.scaleYResolution(0.5);
+                            break;
+                }
 			}
 		});
 
@@ -353,26 +360,41 @@ public class ALTaskTextViewerPanel extends JPanel {
 		graphScrollPanel.setViewportView(graphCanvas);
 		graphPanelTabbedPane.addTab("Time", graphScrollPanel);
 		
-		// budgetGraphScrollPanel is a scroll wrapper for the live budget graph
+		// paramGraphScrollPanel is a scroll wrapper for the live budget graph
 		paramGraphScrollPanel = new JScrollPane();
 
 		// paramGraphCanvas displays the live varied parameter graph
-		paramGraphCanvas = new ParamGraphCanvas();
+		paramGraphCanvas = new ParamGraphCanvas(false);
 		paramGraphCanvas.setPreferredSize(new Dimension(500, 111));
 		paramGraphCanvas.setGraph(null, 0, null, null);
 
-		GroupLayout budgetGraphCanvasLayout = new GroupLayout(paramGraphCanvas);
-		paramGraphCanvas.setLayout(budgetGraphCanvasLayout);
-		budgetGraphCanvasLayout.setHorizontalGroup(budgetGraphCanvasLayout
+		GroupLayout paramGraphCanvasLayout = new GroupLayout(paramGraphCanvas);
+		paramGraphCanvas.setLayout(paramGraphCanvasLayout);
+		paramGraphCanvasLayout.setHorizontalGroup(paramGraphCanvasLayout
 				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 515, Short.MAX_VALUE));
-		budgetGraphCanvasLayout.setVerticalGroup(budgetGraphCanvasLayout
+		paramGraphCanvasLayout.setVerticalGroup(paramGraphCanvasLayout
 				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 128, Short.MAX_VALUE));
 
 		paramGraphScrollPanel.setViewportView(paramGraphCanvas);
 		graphPanelTabbedPane.addTab("Param", paramGraphScrollPanel);
 		
+		// budgetGraphScrollPanel is a scroll wrapper for the live budget graph
+        budgetGraphScrollPanel = new JScrollPane();
+		
 		// budgetGraphCanvas displays the live actually used budget graph
-		budgetGraphCanvas = new BudgetGraphCanvas(null, null);
+		budgetGraphCanvas = new ParamGraphCanvas(true);
+		budgetGraphCanvas.setPreferredSize(new Dimension(500, 111));
+        budgetGraphCanvas.setGraph(null, 0, null, null);
+        
+        GroupLayout budgetGraphCanvasLayout = new GroupLayout(budgetGraphCanvas);
+        budgetGraphCanvas.setLayout(budgetGraphCanvasLayout);
+        budgetGraphCanvasLayout.setHorizontalGroup(budgetGraphCanvasLayout
+                .createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 515, Short.MAX_VALUE));
+        budgetGraphCanvasLayout.setVerticalGroup(budgetGraphCanvasLayout
+                .createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 128, Short.MAX_VALUE));
+        
+        budgetGraphScrollPanel.setViewportView(budgetGraphCanvas);
+        graphPanelTabbedPane.addTab("BudgetPerformance", budgetGraphScrollPanel);
 		
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
@@ -394,11 +416,14 @@ public class ALTaskTextViewerPanel extends JPanel {
 			public void actionPerformed(ActionEvent evt) {
 				// update the currently open graph
 				int currentTab = graphPanelTabbedPane.getSelectedIndex();
-				if (currentTab == 0) {
-					graphCanvas.scaleXResolution(2);
-				} else {
-					paramGraphCanvas.scaleXResolution(2);
-				}
+                switch (currentTab){
+                    case 0: graphCanvas.scaleXResolution(2); 
+                            break;
+                    case 1: paramGraphCanvas.scaleXResolution(2); 
+                            break;
+                    case 2: budgetGraphCanvas.scaleXResolution(2);
+                            break;
+                }
 			}
 		});
 		graphPanelControlRight.add(buttonZoomInX);
@@ -409,11 +434,14 @@ public class ALTaskTextViewerPanel extends JPanel {
 			public void actionPerformed(ActionEvent evt) {
 				// update the currently open graph
 				int currentTab = graphPanelTabbedPane.getSelectedIndex();
-				if (currentTab == 0) {
-					graphCanvas.scaleXResolution(0.5);
-				} else {
-					paramGraphCanvas.scaleXResolution(0.5);
-				}
+                switch (currentTab){
+                    case 0: graphCanvas.scaleXResolution(0.5); 
+                            break;
+                    case 1: paramGraphCanvas.scaleXResolution(0.5); 
+                            break;
+                    case 2: budgetGraphCanvas.scaleXResolution(0.5);
+                            break;
+                }
 			}
 		});
 		graphPanelControlRight.add(buttonZoomOutX);
@@ -547,7 +575,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 		    this.measureOverview.update(null, "", null);
 			this.graphCanvas.setGraph(null, 0, null, 1000, null);
 			this.paramGraphCanvas.setGraph(null, 0, null, null);
-			this.budgetGraphCanvas.setGraph(null, 0, null);
+			this.budgetGraphCanvas.setGraph(null, 0, null, null);
 			return;
 		}
 
@@ -586,6 +614,10 @@ public class ALTaskTextViewerPanel extends JPanel {
     			// enable budget view on multi param task
     			this.graphPanelTabbedPane.setEnabledAt(1, true);
     		}
+            if (!this.graphPanelTabbedPane.isEnabledAt(2)) {
+                // enable budget view on multi param task
+                this.graphPanelTabbedPane.setEnabledAt(2, true);
+            }
     		
     	} else if (c == ALPrequentialEvaluationTask.class) {
     		// read Preview (in this case, no special preview is required)
@@ -598,7 +630,7 @@ public class ALTaskTextViewerPanel extends JPanel {
     		// reset param tab name to default
     		this.graphPanelTabbedPane.setTitleAt(1, "Param");
     		
-    		if (this.graphPanelTabbedPane.getSelectedIndex() == 1) {
+    		if (this.graphPanelTabbedPane.getSelectedIndex() != 0) {
     			// switch to Time tab
     			this.graphPanelTabbedPane.setSelectedIndex(0);
     		}
@@ -607,6 +639,10 @@ public class ALTaskTextViewerPanel extends JPanel {
     			// disable budget view on single param task
     			this.graphPanelTabbedPane.setEnabledAt(1, false);
     		}
+            if (this.graphPanelTabbedPane.isEnabledAt(2)) {
+                // disable budget view on single param task
+                this.graphPanelTabbedPane.setEnabledAt(2, false);
+            }
     		
     		this.graphCanvas.setStandardDeviationPainted(false);
             this.paramGraphCanvas.setStandardDeviationPainted(false);
@@ -618,7 +654,7 @@ public class ALTaskTextViewerPanel extends JPanel {
     	    this.measureOverview.update(null, "", null);
     		this.graphCanvas.setGraph(null, 0, null, 1000, null);
     		this.paramGraphCanvas.setGraph(null, 0, null, null);
-    		this.budgetGraphCanvas.setGraph(null, 0, null);
+    		this.budgetGraphCanvas.setGraph(null, 0, null, null);
 			return;
     	}
 		
@@ -639,7 +675,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 		this.budgetGraphCanvas.setGraph(
 				this.measuresAll, 
 				this.budgetGraphCanvas.getMeasureSelected(), 
-				colors);
+				this.variedParamValues, colors);
 	}
 
 	private static double round(double d) {

@@ -43,8 +43,8 @@ public class ParamGraphCanvas extends AbstractGraphCanvas {
      * ParamGraphAxes as instance of AbstractGraphAxes and GraphScatter as
      * instance of AbstractGraphPlot.
      */
-    public ParamGraphCanvas() {
-        super(new ParamGraphAxes(), new GraphScatter());
+    public ParamGraphCanvas(boolean paintCurrentParam) {
+        super(new ParamGraphAxes(), new GraphScatter(paintCurrentParam));
     }
 
     /**

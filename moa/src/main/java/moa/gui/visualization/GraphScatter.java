@@ -39,6 +39,12 @@ public class GraphScatter extends AbstractGraphPlot {
     private static final int DOT_SIZE = 6;
     
     private double[] variedParamValues;
+    
+    private boolean paintCurrentParam;
+    
+    public GraphScatter(boolean b) {
+        this.paintCurrentParam = b;
+    }
 	
     /**
      * Draws a scatter graph based on the varied parameter and the measures.
@@ -64,7 +70,11 @@ public class GraphScatter extends AbstractGraphPlot {
         
         // scatter current budgets
         for (int i = 0; i < this.measures.length; i++) {
-        	this.scatter(g, this.measures[i], this.variedParamValues[i], this.colors[i]);
+            if (this.paintCurrentParam) {
+                this.scatterCurrentParam(g, this.measures[i], this.colors[i%this.colors.length]);
+            } else {
+                this.scatter(g, this.measures[i], this.variedParamValues[i], this.colors[i]);
+            }
         }
     }
     
@@ -99,6 +109,26 @@ public class GraphScatter extends AbstractGraphPlot {
         
     	g.fillOval(x - DOT_SIZE/2, y - DOT_SIZE/2, DOT_SIZE, DOT_SIZE);
     	
+    }
+    
+    private void scatterCurrentParam(Graphics g, MeasureCollection m, Color color) {
+        
+        int height = getHeight();
+        int width = getWidth();
+        
+        int x = (int)((m.getLastValue(6) + Math.abs(this.lower_x_value)) / (Math.abs(this.upper_x_value) + Math.abs(this.lower_x_value)) * width); 
+        double value = m.getLastValue(this.measureSelected);  
+
+        if(Double.isNaN(value)){
+            // no result for this budget yet
+            return;
+        }
+        
+        int y = (int)(height - (value / this.upper_y_value) * height);
+        
+        g.setColor(color);
+        g.fillOval(x - DOT_SIZE/2, y - DOT_SIZE/2, DOT_SIZE, DOT_SIZE);
+        
     }
 
 }
