@@ -677,10 +677,6 @@ public class ALTaskTextViewerPanel extends JPanel {
 				this.budgetGraphCanvas.getMeasureSelected(), 
 				this.variedParamValues, colors);
 	}
-
-	private static double round(double d) {
-		return (Math.rint(d * 100) / 100);
-	}
 	
 	private static int min(int[] l) {
 		if (l.length == 0) {
@@ -866,22 +862,22 @@ public class ALTaskTextViewerPanel extends JPanel {
     		
 		// set entries
 		for (double[] entry: data) {
-			m.addValue(0, round(entry[accuracyColumn]));
-			m.addValue(1, round(entry[kappaColumn]));
-			m.addValue(2, round(entry[kappaTempColumn]));
+			m.addValue(0, entry[accuracyColumn]);
+			m.addValue(1, entry[kappaColumn]);
+			m.addValue(2, entry[kappaTempColumn]);
 			m.addValue(3, Math.abs(entry[ramColumn]));
-			m.addValue(4, round(entry[timeColumn]));
-			m.addValue(5, round(entry[memoryColumn] / (1024 * 1024)));
-			m.addValue(6, round(entry[budgetColumn]));
+			m.addValue(4, entry[timeColumn]);
+			m.addValue(5, entry[memoryColumn] / (1024 * 1024));
+			m.addValue(6, entry[budgetColumn]);
 			
 			if (withStd) {
-                m.addValue(7, round(entry[accuracyColumnStd]));
-                m.addValue(8, round(entry[kappaColumnStd]));
-                m.addValue(9, round(entry[kappaTempColumnStd]));
+                m.addValue(7, entry[accuracyColumnStd]);
+                m.addValue(8, entry[kappaColumnStd]);
+                m.addValue(9, entry[kappaTempColumnStd]);
                 m.addValue(10, Math.abs(entry[ramColumnStd]));
-                m.addValue(11, round(entry[timeColumnStd]));
-                m.addValue(12, round(entry[memoryColumnStd] / (1024 * 1024)));
-                m.addValue(13, round(entry[budgetColumnStd]));
+                m.addValue(11, entry[timeColumnStd]);
+                m.addValue(12, entry[memoryColumnStd] / (1024 * 1024));
+                m.addValue(13, entry[budgetColumnStd]);
 			}
     	}
 		
