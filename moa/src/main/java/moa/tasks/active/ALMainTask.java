@@ -40,6 +40,8 @@ public abstract class ALMainTask extends MainTask {
 	
 	protected boolean[] isLastSubtaskOnLevel = {};
 	
+	protected String nameSuffix = "";
+	
 	protected Color colorCoding = Color.BLACK;
 	
 	/**
@@ -51,15 +53,16 @@ public abstract class ALMainTask extends MainTask {
 	public abstract List<ALTaskThread> getSubtaskThreads();
 	
 	/**
-	 * Get the task's display name consisting of the general task name 
-	 * indentation showing the tree structure depending on the subtask
-	 * level.
+	 * Get the task's display name consisting of the general task name, 
+	 * indentation showing the tree structure depending on the subtask level
+	 * and optionally a name suffix given from a supertask.
 	 * 
 	 * @return display name
 	 */
 	public String getDisplayName() {
 		StringBuilder name = new StringBuilder();
 		
+		// add indentation representing tree structure of tasks
 		for (int i = 0; i < this.getSubtaskLevel() -1; i++) {
 			if (this.isLastSubtaskOnLevel[i]) {
 				name.append("         ");
@@ -78,9 +81,22 @@ public abstract class ALMainTask extends MainTask {
 			}
 		}
 		
+		// append class name
 		name.append(this.getClass().getSimpleName());
 		
+		// append optional suffix
+		name.append(" ").append(this.nameSuffix);
+		
 		return name.toString();
+	}
+	
+	/**
+	 * Set a suffix for the tasks display name.
+	 * 
+	 * @param suffix
+	 */
+	protected void setNameSuffix(String suffix) {
+		this.nameSuffix = suffix;
 	}
 	
 	/**

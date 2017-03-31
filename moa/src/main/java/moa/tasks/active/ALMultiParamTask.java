@@ -122,6 +122,7 @@ public class ALMultiParamTask extends ALMainTask {
 	
 	public void setFoldIdx(int foldIdx) {
 		this.foldIdx = foldIdx;
+		this.setNameSuffix("fold " + foldIdx);
 	}
 	
 	@Override
@@ -199,6 +200,7 @@ public class ALMultiParamTask extends ALMainTask {
 			// set the learner's varied parameter option
 			if (learnerVariedParamOption != null) {
 				String paramValue = paramValues[i].getValueAsCLIString().trim();
+				paramValueTask.setNameSuffix(paramValue);
 				
 				// parse to integer if necessary
 				if (learnerVariedParamOption instanceof IntOption) {
