@@ -448,7 +448,12 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 		// divide measurementsSum by number of folds to actually calculate mean
 		for (double[] entry : meanMeasurements) {
 			for (int m = numInitialMeasurements; m < entry.length; m++) {
-				entry[m] = Math.sqrt(entry[m]/numCompleteFolds);
+				if (numCompleteFolds > 1) {
+					entry[m] = Math.sqrt(entry[m]/(numCompleteFolds-1));
+				}
+				else {
+					entry[m] = Math.sqrt(entry[m]);
+				}
 			}
 		}
 	}
