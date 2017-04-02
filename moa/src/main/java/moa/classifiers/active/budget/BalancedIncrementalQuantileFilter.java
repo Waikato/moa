@@ -42,9 +42,9 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 
 	private static final long serialVersionUID = 1L;
 	
-	RingBuffer<Integer> numAcquisitionsBuffer;
 	Ranking<Double> r;
-
+	int numProcessedInstances;
+	int numAcquiredLabels;
 	
 	public IntOption toleranceWindowSizeOption = new IntOption("toleranceWindowSize", 't', 
 			"The number of instances which are used to balance the number of label acquisitions.",
@@ -55,7 +55,7 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 		Double removedElement = scoreBuffer.add(alScore);
 		int windowSize = scoreBuffer.size();
 		
-		int toleranceWindowSize = numAcquisitionsBuffer.size();
+		int toleranceWindowSize = Math.min(numProcessedInstances, toleranceWindowSizeOption.getValue());
 		
 		List<Integer> rankedIndices = r.rank(scoreBuffer, windowSize - 1, removedElement);
 		
@@ -63,17 +63,17 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 		double threshold = scoreBuffer.get(rankedIndices.get(thresholdIdx));
 		
 		
-		double acquisitionsLeft = getAcquisitionsLeft(numAcquisitionsBuffer, budget);
+		double acquisitionsLeft = getAcquisitionsLeft(budget);
 		
 		double range = getRange(scoreBuffer, rankedIndices);
 		double balancedThreshold = threshold - range * (toleranceWindowSize==0? 0 : acquisitionsLeft/toleranceWindowSize);
 		
 		boolean decision = alScore >= balancedThreshold;
 		
-		numAcquisitionsBuffer.add(decision? 1 : 0);
-		
+		++numProcessedInstances;
 		if (decision) {
 			++acquiredLabels;
+			++numAcquiredLabels;
 		}
 		return decision;
 	}
@@ -81,18 +81,11 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 	/**
 	 * Get the number of acquisitions which has to be done to get from the
 	 * current budget to the wanted budget.
-	 * @param toleranceWindow a list where for each time step the number of acquisitions is listed
 	 * @param budget the wandted budget
 	 * @return the number of acquisitions which is needed to get to the wanted budget
 	 */
-	private double getAcquisitionsLeft(RingBuffer<Integer> toleranceWindow, double budget)
+	private double getAcquisitionsLeft(double budget)
 	{
-		double numProcessedInstances = toleranceWindow.size();
-		double numAcquiredLabels = 0;
-		for(int i = 0; i < toleranceWindow.size(); ++i)
-		{
-			numAcquiredLabels += toleranceWindow.get(i);
-		}
 		double acquisitionsLeft = numProcessedInstances * budget - numAcquiredLabels;
 		return acquisitionsLeft;
 	}
@@ -119,7 +112,8 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 	@Override
 	public void resetLearning() {
 		super.resetLearning();
-		numAcquisitionsBuffer = new RingBuffer<>(toleranceWindowSizeOption.getValue());
+		numProcessedInstances = 0;
+		numAcquiredLabels = 0;
 		this.budget = budgetOption.getValue();
 		r = new Ranking<>();
 	}

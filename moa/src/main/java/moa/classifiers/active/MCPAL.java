@@ -68,8 +68,10 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 
 	private static final long serialVersionUID = 1L;
 
-	private MCPALEstimatorMultivariate[] kernelEstimators; // used only for labeled data
-	private StandardDeviationEstimator standartDeviationEstimator;
+	private MCPALEstimatorMultivariate labeledDataKernelEstimator; // used only for labeled data
+	private MCPALEstimatorMultivariate allDataKernelEstimator; // used for labeled and unlabeled data
+	private StandardDeviationEstimator labeledDataStandartDeviationEstimator;
+	private StandardDeviationEstimator allDataStandartDeviationEstimator;
 
 	private int numClasses;
 	private int numAttributes;
@@ -96,8 +98,11 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
     public IntOption mMaxOption = new IntOption("M",
             'm', "The maximum number of hypothetic label.", 3, 0, Integer.MAX_VALUE);
     
-    public IntOption kernelDensityEstimatorWindowOption = new IntOption("KernelFrequencyEstimatorWindow",
-            'k', "The size of the window used for the kernel frequency estimation pre class.", 10, 1, Integer.MAX_VALUE);
+    public IntOption labeledDataKernelDensityEstimatorWindowOption = new IntOption("labeledDataKernelFrequencyEstimatorWindow",
+            'l', "The size of the window used for the kernel frequency estimation for the labeled data.", 100, 1, Integer.MAX_VALUE);
+    
+    public IntOption allDataKernelDensityEstimatorWindowOption = new IntOption("allDataKernelFrequencyEstimatorWindow",
+            'a', "The size of the window used for the kernel frequency estimation for unlabeled and labeled data.", 100, 1, Integer.MAX_VALUE);
 
     public FloatOption bandwidthOption = new FloatOption("bandWidth",
             'w', "The bandwidth to use for density estimation.", 0.1, Double.MIN_VALUE, Double.MAX_VALUE);
@@ -140,14 +145,10 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	 * @return frequency estimates for each class
 	 */
 	private double[] getK(double[] inst, double[] posterior) {
-		double[] std = standartDeviationEstimator.getStd();
-		double n = 0.0;
+		double[] std = labeledDataStandartDeviationEstimator.getStd();
+		double n = labeledDataKernelEstimator.getFrequencyEstimate(inst, std);
+		
 		double[] k = new double[numClasses];
-
-		for(int cIdx = 0; cIdx < numClasses; ++cIdx)
-		{
-			n += kernelEstimators[cIdx].getFrequencyEstimate(inst, std);
-		}
 		for(int cIdx = 0; cIdx < numClasses; ++cIdx)
 		{
 			k[cIdx] = posterior[cIdx] * n;
@@ -158,25 +159,14 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 
 	/**
 	 * calculate the density for a given instance
-	 * 
-	 * @param k vector of frequency estimates
+	 *
+	 * @param inst the instance the density should be calculated for
 	 * @return density for the given frequency estimate
 	 */
-	private double getDensity(double[] k, boolean includeInstance) {
-		double sumFrequencies = 0;
-		int numInstances = 0;
-		for(int cIdx = 0; cIdx < numClasses; ++cIdx)
-		{
-			sumFrequencies += k[cIdx];
-			numInstances += kernelEstimators[cIdx].getNumPoints();
-		}
-		
-		if(includeInstance)
-		{
-			sumFrequencies += 1;
-			++numInstances;
-		}
-
+	private double getDensity(double[] inst) {
+		double[] std = allDataStandartDeviationEstimator.getStd();
+		double sumFrequencies = allDataKernelEstimator.getFrequencyEstimate(inst, std);
+		int numInstances = allDataKernelEstimator.getNumPoints();
 		
 		return numInstances == 0 ? 0 : sumFrequencies / numInstances;
 	}
@@ -428,7 +418,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		}
 		
 		double[] k = getK(point, normalizeVotes(classifier.getVotesForInstance(inst)));
-		double density = useDensityWeight? getDensity(k, false) : 1.0;
+		double density = useDensityWeight? getDensity(k) : 1.0;
 		
 		double perfGain = getPerfGain(k);
 		return density * perfGain;	
@@ -469,14 +459,12 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		{
 			distributions.add(getAllDistributionPossibilities(m, numClasses));
 		}
-		
-		kernelEstimators = new MCPALEstimatorMultivariate[numClasses];
-		for(int cIdx = 0; cIdx < numClasses; ++cIdx)
-		{
-			kernelEstimators[cIdx] = new MCPALEstimatorMultivariate(bandwidth, kernelDensityEstimatorWindowOption.getValue());
-		}
 
-		standartDeviationEstimator = new StandardDeviationEstimator(numAttributes);
+		labeledDataKernelEstimator = new MCPALEstimatorMultivariate(bandwidth, labeledDataKernelDensityEstimatorWindowOption.getValue());
+		allDataKernelEstimator = new MCPALEstimatorMultivariate(bandwidth, allDataKernelDensityEstimatorWindowOption.getValue());
+
+		labeledDataStandartDeviationEstimator = new StandardDeviationEstimator(numAttributes);
+		allDataStandartDeviationEstimator = new StandardDeviationEstimator(numAttributes);
 
 		classifier = (Classifier) getPreparedClassOption(classifierOption);
 		budgetManager = (BudgetManager) getPreparedClassOption(budgetManagerOption);
@@ -500,10 +488,13 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		{
 			classifier.trainOnInstance(inst);
 			
-			int c = (int)inst.classValue();
-			double[] removedInstance = kernelEstimators[c].addValue(point);
-			standartDeviationEstimator.addPoint(removedInstance, point);
+			double[] removedInstance = labeledDataKernelEstimator.addValue(point);
+			labeledDataStandartDeviationEstimator.addPoint(removedInstance, point);
 		}
+
+		double[] removedInstance = allDataKernelEstimator.addValue(point);
+		allDataStandartDeviationEstimator.addPoint(removedInstance, point);
+		
 	}
 
 	@Override
