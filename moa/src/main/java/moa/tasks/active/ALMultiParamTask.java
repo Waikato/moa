@@ -83,8 +83,9 @@ public class ALMultiParamTask extends ALMainTask {
 			"List of parameter values to train classifiers for.",
 			new FloatOption("value", ' ', "Parameter value.", 0.0), 
 			new FloatOption[]{
-					new FloatOption("", ' ', "", 0.5),
-					new FloatOption("", ' ', "", 0.9)
+					new FloatOption("", ' ', "", 0.1),
+					new FloatOption("", ' ', "", 0.2),
+					new FloatOption("", ' ', "", 0.5)
 			}, ',');
 	
 	
