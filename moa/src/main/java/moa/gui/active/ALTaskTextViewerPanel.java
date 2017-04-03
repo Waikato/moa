@@ -358,7 +358,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 128, Short.MAX_VALUE));
 
 		graphScrollPanel.setViewportView(graphCanvas);
-		graphPanelTabbedPane.addTab("Time", graphScrollPanel);
+		graphPanelTabbedPane.addTab("Processed Instances", graphScrollPanel);
 		
 		// paramGraphScrollPanel is a scroll wrapper for the live budget graph
 		paramGraphScrollPanel = new JScrollPane();
