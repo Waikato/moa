@@ -39,7 +39,7 @@ public abstract class AbstractGraphAxes extends JPanel {
 
     private static final long serialVersionUID = 1L;
     protected static final int X_OFFSET_LEFT = 35;
-    protected static final int X_OFFSET_RIGHT = 5;
+    protected static final int X_OFFSET_RIGHT = 15;
     protected static final int Y_OFFSET_BOTTOM = 20;
     protected static final int Y_OFFSET_TOP = 20;
 

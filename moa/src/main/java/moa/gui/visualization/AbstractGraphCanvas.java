@@ -56,7 +56,7 @@ public abstract class AbstractGraphCanvas extends JPanel {
 
     protected static final int X_OFFSET_LEFT = 35;
 
-    protected static final int X_OFFSET_RIGHT = 5;
+    protected static final int X_OFFSET_RIGHT = 15;
 
     protected static final int Y_OFFSET_BOTTOM = 20;
 
