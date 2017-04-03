@@ -147,6 +147,8 @@ public abstract class AbstractGraphCanvas extends JPanel {
     public void scaleXResolution(double factor) {
         this.x_resolution *= factor;
         updateXResolution();
+        updateLowerXValue();
+        updateUpperXValue();
         updateCanvas(true);
     }
 
@@ -160,6 +162,7 @@ public abstract class AbstractGraphCanvas extends JPanel {
     public void scaleYResolution(double factor) {
         this.y_resolution *= factor;
         updateYResolution();
+        updateUpperYValue();
         updateCanvas(true);
     }
 
@@ -312,11 +315,7 @@ public abstract class AbstractGraphCanvas extends JPanel {
     private void updateLowerXValue() {
         double lower = 0.0;
         if (this.measures != null) {
-            if (this.min_x_value < 0) {
-                lower = Math.floor(this.min_x_value * 0.9);
-            } else {
-                lower = Math.floor(this.min_x_value * 1.1);
-            }
+            lower = this.min_x_value * (1 - (0.1 / x_resolution));
         }
 
         this.axesPanel.setLowerXValue(lower);
@@ -329,7 +328,7 @@ public abstract class AbstractGraphCanvas extends JPanel {
     private void updateUpperXValue() {
         double upper = 1.0;
         if (this.measures != null) {
-            upper = Math.ceil(max_x_value * 1.1);
+            upper = max_x_value * (1 + (0.1 / x_resolution));
         }
         
         this.axesPanel.setUpperXValue(upper);
@@ -342,7 +341,7 @@ public abstract class AbstractGraphCanvas extends JPanel {
     private void updateUpperYValue() {
         double upper = 1.0;
         if (this.measures != null) {
-            upper = Math.ceil(max_y_value * 1.1);
+            upper = max_y_value * (1 + (0.1 / y_resolution));
         }
         
         this.axesPanel.setUpperYValue(upper);

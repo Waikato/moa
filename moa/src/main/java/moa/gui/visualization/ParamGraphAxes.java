@@ -51,7 +51,7 @@ public class ParamGraphAxes extends AbstractGraphAxes {
 
         for (int i = 0; i <= numLabels; i++) {
             double fraction = i / numLabels;
-            double value = lower_x_value + fraction * Math.abs(upper_x_value + Math.abs(lower_x_value));
+            double value = lower_x_value + fraction * (upper_x_value - lower_x_value);
             String label = d.format(value);
             int str_length = g.getFontMetrics().stringWidth(label);
 
