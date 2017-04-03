@@ -174,10 +174,27 @@ public class ALMultiParamTask extends ALMainTask {
 			paramValues = new Option[]{null};
 		}
 		
-		// get base dump file name
+		// append fold index to task result file if necessary
+		if (this.foldIdx >= 0) {
+			File ownTaskResultFile = this.outputFileOption.getFile();
+			
+			if (ownTaskResultFile != null) {
+				this.outputFileOption.setValue(
+						this.insertFileNameExtension(
+								ownTaskResultFile.getAbsolutePath(), 
+								"_f" + this.foldIdx));
+			}
+		}
+		
+		// get base dump file name of subtasks
 		File baseDumpFile = evalTask.dumpFileOption.getFile();
 		String baseDumpFileName = baseDumpFile != null ? 
 				baseDumpFile.getAbsolutePath() : null;
+		
+		// get task result name of subtask
+		File baseTaskResultFile = evalTask.outputFileOption.getFile();
+		String baseTaskResultName = baseTaskResultFile != null ?
+				baseTaskResultFile.getAbsolutePath() : null;
 		
 		// create color coding
 		colorCoding = Color.WHITE;
@@ -211,29 +228,29 @@ public class ALMultiParamTask extends ALMainTask {
 				
 				learnerVariedParamOption.setValueViaCLIString(paramValue);
 				
+				String outputFileExtension = "";
+				if (this.foldIdx >= 0) {
+					// append fold index
+					outputFileExtension += "_f" + this.foldIdx;
+				}
+				
+				if (paramValues.length > 1) {
+					// append varied parameter value
+					outputFileExtension += "_p" + paramValue;
+				}
+				
+				// adapt the dump file name
 				if (baseDumpFileName != null) {
-					// set specific dump file for each subtask
-					int fileExtIndex = baseDumpFileName.lastIndexOf('.');
-					
-					// remove file extension
-					String foldParamDumpFileName = 
-							baseDumpFileName.substring(0, fileExtIndex);
-					
-					if (this.foldIdx >= 0) {
-						// append fold index
-						foldParamDumpFileName += "_f" + this.foldIdx;
-					}
-					
-					if (paramValues.length > 1) {
-						// append varied parameter value
-						foldParamDumpFileName += "_p" + paramValue;
-						
-					}
-					
-					// append file extension
-					foldParamDumpFileName += baseDumpFileName.substring(fileExtIndex); 
-					
-					paramValueTask.dumpFileOption.setValue(foldParamDumpFileName);
+					paramValueTask.dumpFileOption.setValue(
+							this.insertFileNameExtension(
+									baseDumpFileName, outputFileExtension));
+				}
+				
+				// adapt the task result file name
+				if (baseTaskResultName != null) {
+					paramValueTask.outputFileOption.setValue(
+							this.insertFileNameExtension(
+									baseTaskResultName, outputFileExtension));
 				}
 			}
 			
@@ -356,5 +373,22 @@ public class ALMultiParamTask extends ALMainTask {
 	@Override
 	public List<ALTaskThread> getSubtaskThreads() {
 		return this.flattenedSubtaskThreads;
+	}
+	
+	private String insertFileNameExtension(
+			String baseName, String fileNameExtension) 
+	{
+		int fileExtIndex = baseName.lastIndexOf('.');
+		
+		// remove file extension
+		String extendedName = baseName.substring(0, fileExtIndex);
+		
+		// append fold and parameter extension
+		extendedName += fileNameExtension;
+		
+		// append file extension
+		extendedName += baseName.substring(fileExtIndex); 
+		
+		return extendedName;
 	}
 }
