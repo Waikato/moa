@@ -376,7 +376,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 128, Short.MAX_VALUE));
 
 		paramGraphScrollPanel.setViewportView(paramGraphCanvas);
-		graphPanelTabbedPane.addTab("Param", paramGraphScrollPanel);
+		graphPanelTabbedPane.addTab("VariedParameter", paramGraphScrollPanel);
 		
 		// budgetGraphScrollPanel is a scroll wrapper for the live budget graph
         budgetGraphScrollPanel = new JScrollPane();
@@ -591,10 +591,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 	         // get varied parameter name and values
 			this.variedParamName = pc.getVariedParamName();
             this.variedParamValues = pc.getVariedParamValues();
-            
-			// set param tab name as the actual name
-			this.graphPanelTabbedPane.setTitleAt(1, this.variedParamName);
-			
+
 			// read all previews
 			gcmpAll = readPreviewCollection(pc, false);
 			
@@ -627,8 +624,6 @@ public class ALTaskTextViewerPanel extends JPanel {
     		// reset varied param name and values
     		this.variedParamName = "";
     		this.variedParamValues = null;
-    		// reset param tab name to default
-    		this.graphPanelTabbedPane.setTitleAt(1, "Param");
     		
     		if (this.graphPanelTabbedPane.getSelectedIndex() != 0) {
     			// switch to Time tab
