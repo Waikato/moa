@@ -88,8 +88,8 @@ public class GraphScatter extends AbstractGraphPlot {
     	int height = getHeight();
     	int width = getWidth();
     	
-    	int x = (int)((variedParamValue + Math.abs(this.lower_x_value)) / (Math.abs(this.upper_x_value) + Math.abs(this.lower_x_value)) * width); 
-   		double value = m.getLastValue(this.measureSelected);  
+    	int x = (int)(((m.getLastValue(6) - this.lower_x_value) / (this.upper_x_value - this.lower_x_value)) * width); 
+    	double value = m.getLastValue(this.measureSelected);  
 
         if(Double.isNaN(value)){
         	// no result for this budget yet
@@ -116,7 +116,7 @@ public class GraphScatter extends AbstractGraphPlot {
         int height = getHeight();
         int width = getWidth();
         
-        int x = (int)((m.getLastValue(6) + Math.abs(this.lower_x_value)) / (Math.abs(this.upper_x_value) + Math.abs(this.lower_x_value)) * width); 
+        int x = (int)(((m.getLastValue(6) - this.lower_x_value) / (this.upper_x_value - this.lower_x_value)) * width); 
         double value = m.getLastValue(this.measureSelected);  
 
         if(Double.isNaN(value)){

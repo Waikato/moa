@@ -1,6 +1,6 @@
 /*
  *    MeasureOverview.java
- *    Original Work: Copyright (C) 2017 Otto-von-Guericke-University, Magdeburg, Germany
+ *    Copyright (C) 2017 Otto-von-Guericke-University, Magdeburg, Germany
  *    @author Tim Sabsch (tim.sabsch@ovgu.de)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -40,9 +40,6 @@ import javax.swing.SwingConstants;
 
 import moa.evaluation.MeasureCollection;
 
-/*
- * TODO add tooltip with information about mean for ALCV
- */
 /**
  * MeasureOverview provides a graphical overview of the current measure values
  * during the runtime of a task.
