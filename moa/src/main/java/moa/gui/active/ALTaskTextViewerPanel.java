@@ -358,7 +358,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 128, Short.MAX_VALUE));
 
 		graphScrollPanel.setViewportView(graphCanvas);
-		graphPanelTabbedPane.addTab("Time", graphScrollPanel);
+		graphPanelTabbedPane.addTab("Processed Instances", graphScrollPanel);
 		
 		// paramGraphScrollPanel is a scroll wrapper for the live budget graph
 		paramGraphScrollPanel = new JScrollPane();
@@ -376,7 +376,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 128, Short.MAX_VALUE));
 
 		paramGraphScrollPanel.setViewportView(paramGraphCanvas);
-		graphPanelTabbedPane.addTab("VariedParameter", paramGraphScrollPanel);
+		graphPanelTabbedPane.addTab("Varied Parameter", paramGraphScrollPanel);
 		
 		// budgetGraphScrollPanel is a scroll wrapper for the live budget graph
         budgetGraphScrollPanel = new JScrollPane();
@@ -394,7 +394,7 @@ public class ALTaskTextViewerPanel extends JPanel {
                 .createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 128, Short.MAX_VALUE));
         
         budgetGraphScrollPanel.setViewportView(budgetGraphCanvas);
-        graphPanelTabbedPane.addTab("BudgetPerformance", budgetGraphScrollPanel);
+        graphPanelTabbedPane.addTab("Label Acq. Rate", budgetGraphScrollPanel);
 		
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;

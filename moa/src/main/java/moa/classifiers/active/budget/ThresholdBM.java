@@ -38,13 +38,11 @@ public class ThresholdBM extends AbstractOptionHandler implements BudgetManager 
 	private static final long serialVersionUID = 1L;
 
 	int acquisitionReport = 0;
-    
-	double threshold;
 	
 	@Override
 	public boolean isAbove(double value) {
 		boolean acquire = false;
-		if (value >= this.threshold)
+		if (value >= thresholdOption.getValue())
 			acquire = true;
 		if (acquire)
 			this.acquisitionReport++;
@@ -61,7 +59,6 @@ public class ThresholdBM extends AbstractOptionHandler implements BudgetManager 
 	@Override
 	public void resetLearning() {
 		this.acquisitionReport = 0;
-		this.threshold = thresholdOption.getValue();
 	}
 
 	@Override
