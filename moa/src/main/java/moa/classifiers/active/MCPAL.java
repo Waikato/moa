@@ -132,11 +132,6 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 
 	// ___________________________________MCPAL______________________________________
 
-	@Override
-	public void prepareForUse() {
-		super.prepareForUse();
-	}
-
 	/**
 	 * calculate the frequency estimates (k) for a given instance
 	 * 
@@ -147,7 +142,8 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	private double[] getK(double[] inst, double[] posterior) {
 		double[] std = labeledDataStandartDeviationEstimator.getStd();
 		double n = labeledDataKernelEstimator.getFrequencyEstimate(inst, std);
-		
+		System.out.println(posterior);
+
 		double[] k = new double[numClasses];
 		for(int cIdx = 0; cIdx < numClasses; ++cIdx)
 		{
@@ -167,7 +163,6 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		double[] std = allDataStandartDeviationEstimator.getStd();
 		double sumFrequencies = allDataKernelEstimator.getFrequencyEstimate(inst, std);
 		int numInstances = allDataKernelEstimator.getNumPoints();
-		
 		return numInstances == 0 ? 0 : sumFrequencies / numInstances;
 	}
 	
@@ -243,7 +238,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	private double getExpPerf(double[] k, int m)
 	{
 		// calculate n from the given k
-		double n = 0;
+		double n = 0;	
 		// iterate over all classes
 		for(int i = 0; i < numClasses; ++i)
 		{
@@ -416,11 +411,12 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		{
 			point[i] = inst.value(i);
 		}
-		
-		double[] k = getK(point, normalizeVotes(classifier.getVotesForInstance(inst)));
+		double[] cp = normalizeVotes(classifier.getVotesForInstance(inst));
+		double[] k = getK(point, cp);
 		double density = useDensityWeight? getDensity(k) : 1.0;
 		
 		double perfGain = getPerfGain(k);
+		
 		return density * perfGain;	
 	}
 	
@@ -432,8 +428,21 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	 */
 	private double[] normalizeVotes(double[] votes) {
 		double[] normVotes = new double[numClasses];
+		double sum = 0.0;
+
 		for (int i = 0; i < votes.length; i++)
-			normVotes[i] = votes[i];
+			sum += votes[i];
+		
+		
+		for (int i = 0; i < votes.length; i++)
+		{
+			normVotes[i] = votes[i]/sum;	
+			if(sum <= 0)
+			{
+				normVotes[i] = 0;
+			}
+		}
+			
 		return normVotes;
 	}
 	
@@ -468,6 +477,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 
 		classifier = (Classifier) getPreparedClassOption(classifierOption);
 		budgetManager = (BudgetManager) getPreparedClassOption(budgetManagerOption);
+		budgetManager.resetLearning();
 		mMax = (int)mMaxOption.getValue();
 		useDensityWeight = useDensityWeightOption.isSet();
 		bandwidth = bandwidthOption.getValue();
