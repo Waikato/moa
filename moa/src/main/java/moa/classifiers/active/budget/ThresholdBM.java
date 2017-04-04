@@ -28,7 +28,7 @@ import moa.tasks.TaskMonitor;
 public class ThresholdBM extends AbstractOptionHandler implements BudgetManager {
 
     
-    public FloatOption thresholdOption = new FloatOption("budget",
+    public FloatOption thresholdOption = new FloatOption("threshold",
     		't', "The threshold which has to be exceeded to acquire the label.",
     		0.1, 0.00, 1.00);
     

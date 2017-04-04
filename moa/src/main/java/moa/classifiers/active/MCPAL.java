@@ -99,13 +99,13 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
             'm', "The maximum number of hypothetic label.", 3, 0, Integer.MAX_VALUE);
     
     public IntOption labeledDataKernelDensityEstimatorWindowOption = new IntOption("labeledDataKernelFrequencyEstimatorWindow",
-            'l', "The size of the window used for the kernel frequency estimation for the labeled data.", 100, 1, Integer.MAX_VALUE);
+            'l', "The size of the window used for the kernel frequency estimation for the labeled data.", 200, 1, Integer.MAX_VALUE);
     
     public IntOption allDataKernelDensityEstimatorWindowOption = new IntOption("allDataKernelFrequencyEstimatorWindow",
-            'a', "The size of the window used for the kernel frequency estimation for unlabeled and labeled data.", 100, 1, Integer.MAX_VALUE);
+            'a', "The size of the window used for the kernel frequency estimation for unlabeled and labeled data.", 200, 1, Integer.MAX_VALUE);
 
     public FloatOption bandwidthOption = new FloatOption("bandWidth",
-            'w', "The bandwidth to use for density estimation.", 0.1, Double.MIN_VALUE, Double.MAX_VALUE);
+            'w', "The bandwidth to use for density estimation.", 0.2, Double.MIN_VALUE, Double.MAX_VALUE);
     
     public FlagOption useDensityWeightOption = new FlagOption("useDensityWeighting",
             'd', "If set to true the gain will be weighted by the density for that instance.");
@@ -142,7 +142,6 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	private double[] getK(double[] inst, double[] posterior) {
 		double[] std = labeledDataStandartDeviationEstimator.getStd();
 		double n = labeledDataKernelEstimator.getFrequencyEstimate(inst, std);
-		System.out.println(posterior);
 
 		double[] k = new double[numClasses];
 		for(int cIdx = 0; cIdx < numClasses; ++cIdx)
