@@ -148,7 +148,7 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 		{
 			k[cIdx] = posterior[cIdx] * n;
 		}
-		
+
 		return k;
 	}
 

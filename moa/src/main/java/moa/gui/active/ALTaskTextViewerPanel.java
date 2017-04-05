@@ -527,7 +527,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 						scrollPaneText.setVisible(true);
 						topWrapper.validate();
 					}
-					errorTextField.setText(failedTaskReport.toString());
+					errorTextField.setText(failedTaskReport == null ? "Failed Task Report is null" : failedTaskReport.toString());
 					errorTextField.repaint();
 				}
 			}

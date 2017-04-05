@@ -31,16 +31,16 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Daniel Kottke (daniel.kottke@ovgu.de)
  * @version $Revision: 1 $
  */
-public class ALBasicClassificationPerformanceEvaluator extends BasicClassificationPerformanceEvaluator implements ALClassificationPerformanceEvaluator{
+public class ALBasicClassificationPerformanceEvaluator extends WindowClassificationPerformanceEvaluator implements ALClassificationPerformanceEvaluator{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-    private int seenInstances = 0;
+    private Estimator acquisitionRateEstimator;
 
-    private int acquiredInstances = 0;
+    private int acquiredInstances;
 
    /**
      * Receives the information if a label has been acquired and increases counters.
@@ -51,7 +51,7 @@ public class ALBasicClassificationPerformanceEvaluator extends BasicClassificati
      */
 	@Override
 	public void doLabelAcqReport(Example<Instance> trainInst, int labelAcquired) {
-		this.seenInstances++;
+		this.acquisitionRateEstimator.add(labelAcquired);
 		this.acquiredInstances += labelAcquired;
 	}
 
@@ -65,8 +65,8 @@ public class ALBasicClassificationPerformanceEvaluator extends BasicClassificati
    /**
      * Returns relative number of acquired labels so far.
      */
-	public float getRelNumOfAcqInst(){
-		return ((float) acquiredInstances) / (float) seenInstances;
+	public double getRelNumOfAcqInst(){
+		return acquisitionRateEstimator.estimation();//((float) acquiredInstances) / (float) seenInstances;
 	}
 
 	
@@ -78,6 +78,13 @@ public class ALBasicClassificationPerformanceEvaluator extends BasicClassificati
 		measurements[measurements.length - 1] = new Measurement("Rel Number of Label Acquisitions", getRelNumOfAcqInst());
 		return measurements;
     }
-
+	
+	@Override
+	public void reset(int numClasses) {
+		super.reset(numClasses);
+		acquisitionRateEstimator = new WindowEstimator(widthOption.getValue());
+		acquiredInstances = 0;
+		
+	}
 
 }

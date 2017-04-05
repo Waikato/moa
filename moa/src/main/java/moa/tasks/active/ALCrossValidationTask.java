@@ -22,6 +22,7 @@ package moa.tasks.active;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.Option;
@@ -30,7 +31,7 @@ import moa.core.ObjectRepository;
 import moa.evaluation.PreviewCollection;
 import moa.evaluation.PreviewCollectionLearningCurveWrapper;
 import moa.options.ClassOption;
-import moa.streams.KFoldStream;
+import moa.streams.PartitioningStream;
 import moa.tasks.TaskMonitor;
 
 /**
@@ -49,21 +50,23 @@ public class ALCrossValidationTask extends ALMainTask {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public String getPurposeString() {
-		return "Evaluates an active learning classifier on a stream by"
-				+ " performing cross validation and on each fold evaluating"
-				+ " the classifier for each element of a set of parameter"
-				+ " values using prequential evaluation (testing, then"
-				+ " training with each example in sequence).";
-	}
-	
+	 public String getPurposeString() {
+	  return "Evaluates an active learning classifier on a stream by"
+	    + " partitioning the data stream and evaluating"
+	    + " the classifier on each subset for each element of a"
+	    + " set of parameter values using prequential evaluation"
+	    + " (testing, then training with each example in sequence).";
+	 }
 	public ClassOption multiParamTaskOption = new ClassOption(
 			"multiParamTask", 't', 
 			"Multi param task to be performed for each fold", 
 			ALMultiParamTask.class, "moa.tasks.active.ALMultiParamTask");
-	
+
 	public IntOption numFoldsOption = new IntOption("numFolds", 'k', 
 			"Number of cross validation folds.", 10);
+
+	public IntOption randomSeedOption = new IntOption("randomSeed", 'r', 
+			"random seed which is used for partitioning of the stream.", 0);
 	
 	
 	private ArrayList<ALTaskThread> subtaskThreads = new ArrayList<>();
@@ -84,14 +87,16 @@ public class ALCrossValidationTask extends ALMainTask {
 				.getPreMaterializedObject();
 		String baseStream = evalTask.streamOption.getValueAsCLIString();
 		
+		Random random = new Random(randomSeedOption.getValue());
+		
 		// setup subtask for each cross validation fold
 		for (int i = 0; i < this.numFoldsOption.getValue(); i++) {
 			// wrap base stream into a KFoldStream to split up data
-			KFoldStream stream = new KFoldStream();
+			PartitioningStream stream = new PartitioningStream();
 			stream.streamOption.setValueViaCLIString(baseStream);
-			stream.foldIndexOption.setValue(i);
-			stream.numFoldsOption.setValue(this.numFoldsOption.getValue());
-			
+			stream.partitionIndexOption.setValue(i);
+			stream.numPartitionsOption.setValue(this.numFoldsOption.getValue());
+			stream.randomSeedOption.setValue(random.nextInt());
 			// create subtask
 			ALMultiParamTask foldTask = (ALMultiParamTask) multiParamTask.copy();
 			foldTask.setIsLastSubtaskOnLevel(

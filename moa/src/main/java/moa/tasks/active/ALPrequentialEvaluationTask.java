@@ -238,12 +238,13 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         		
         		if (maxInstances > 0) {
         			long maxRemaining = maxInstances - instancesProcessed;
-        			if ((estimatedRemainingInstances < 0)
+        			if ((estimatedRemainingInstances < 0 || estimatedRemainingInstances == 0)
         				|| (maxRemaining < estimatedRemainingInstances))
         			{
         				estimatedRemainingInstances = maxRemaining;
         			}
         		}
+        		
         		
         		// calculate completion fraction
         		double fractionComplete = (double) instancesProcessed / 
