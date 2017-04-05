@@ -37,7 +37,7 @@ import moa.evaluation.Preview;
 import moa.gui.PreviewPanel;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.ResultPreviewListener;
-import moa.tasks.active.ALCrossValidationTask;
+import moa.tasks.active.ALPartitionEvaluationTask;
 import moa.tasks.active.ALMainTask;
 import moa.tasks.active.ALTaskThread;
 
@@ -200,7 +200,7 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
     	}
     	
     	
-    	if (task.getClass() == ALCrossValidationTask.class) {
+    	if (task.getClass() == ALPartitionEvaluationTask.class) {
     		// if the task is a cross validation task, it displays the mean
     		// over the underlying params. The color coding therefore 
     		// corresponds to the color coding of each of its subtasks.

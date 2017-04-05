@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import moa.core.StringUtils;
-import moa.tasks.active.ALCrossValidationTask;
+import moa.tasks.active.ALPartitionEvaluationTask;
 
 /**
  * Class that stores and keeps the history of multiple previews
@@ -281,7 +281,7 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 				new PreviewCollection<Preview>(
 						"mean preview entry id",
 						"parameter value id",
-						ALCrossValidationTask.class,
+						ALPartitionEvaluationTask.class,
 						this.variedParamName,
 						this.variedParamValues);
 		

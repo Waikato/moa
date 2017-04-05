@@ -94,7 +94,7 @@ public class ALMultiParamTask extends ALMainTask {
 	private ArrayList<ALTaskThread> flattenedSubtaskThreads = new ArrayList<>();
 	
 	private Color[] subTaskColorCoding;
-	private int foldIdx = -1;
+	private int partitionIdx = -1;
 	
 	/**
 	 * Default constructor which sets up the refresh mechanism between the 
@@ -121,9 +121,9 @@ public class ALMultiParamTask extends ALMainTask {
 		this.subTaskColorCoding = subTaskColorCoding;
 	}
 	
-	public void setFoldIdx(int foldIdx) {
-		this.foldIdx = foldIdx;
-		this.setNameSuffix("fold " + foldIdx);
+	public void setPartitionIdx(int partitionIdx) {
+		this.partitionIdx = partitionIdx;
+		this.setNameSuffix("partition " + partitionIdx);
 	}
 	
 	@Override
@@ -174,15 +174,15 @@ public class ALMultiParamTask extends ALMainTask {
 			paramValues = new Option[]{null};
 		}
 		
-		// append fold index to task result file if necessary
-		if (this.foldIdx >= 0) {
+		// append partition index to task result file if necessary
+		if (this.partitionIdx >= 0) {
 			File ownTaskResultFile = this.outputFileOption.getFile();
 			
 			if (ownTaskResultFile != null) {
 				this.outputFileOption.setValue(
 						this.insertFileNameExtension(
 								ownTaskResultFile.getAbsolutePath(), 
-								"_f" + this.foldIdx));
+								"_p" + this.partitionIdx));
 			}
 		}
 		
@@ -229,14 +229,14 @@ public class ALMultiParamTask extends ALMainTask {
 				learnerVariedParamOption.setValueViaCLIString(paramValue);
 				
 				String outputFileExtension = "";
-				if (this.foldIdx >= 0) {
-					// append fold index
-					outputFileExtension += "_f" + this.foldIdx;
+				if (this.partitionIdx >= 0) {
+					// append partition index
+					outputFileExtension += "_p" + this.partitionIdx;
 				}
 				
 				if (paramValues.length > 1) {
 					// append varied parameter value
-					outputFileExtension += "_p" + paramValue;
+					outputFileExtension += "_v" + paramValue;
 				}
 				
 				// adapt the dump file name
@@ -383,7 +383,7 @@ public class ALMultiParamTask extends ALMainTask {
 		// remove file extension
 		String extendedName = baseName.substring(0, fileExtIndex);
 		
-		// append fold and parameter extension
+		// append partition and parameter extension
 		extendedName += fileNameExtension;
 		
 		// append file extension

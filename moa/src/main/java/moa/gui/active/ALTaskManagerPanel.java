@@ -66,7 +66,7 @@ import moa.gui.FileExtensionFilter;
 import moa.gui.GUIUtils;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
-import moa.tasks.active.ALCrossValidationTask;
+import moa.tasks.active.ALPartitionEvaluationTask;
 import moa.tasks.active.ALMainTask;
 import moa.tasks.active.ALTaskThread;
 
@@ -208,7 +208,7 @@ public class ALTaskManagerPanel extends JPanel{
     }
     
     
-    protected ALMainTask currentTask = new ALCrossValidationTask();
+    protected ALMainTask currentTask = new ALPartitionEvaluationTask();
     
     protected List<ALTaskThread> taskList = new ArrayList<ALTaskThread>();
 	

@@ -1,5 +1,5 @@
 /*
- *    ALCrossValidationTask.java
+ *    ALPartitionEvaluationTask.java
  *    Copyright (C) 2017 Otto-von-Guericke-University, Magdeburg, Germany
  *    @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  *
@@ -36,16 +36,17 @@ import moa.tasks.TaskMonitor;
 
 /**
  * This task extensively evaluates an active learning classifier on a stream.
- * First, the given data set is partitioned into separate folds for performing
- * cross validation. On each fold, the ALMultiParamTask is performed which
- * individually evaluates the active learning classifier for each element of a
- * set of parameter values. The individual evaluation is done by prequential 
- * evaluation (testing, then training with each example in sequence).
+ * First, the given data set is partitioned into subsets, each leaving out a
+ * different part of the overall data. On each subset, the ALMultiParamTask is 
+ * performed which individually evaluates the active learning classifier for 
+ * each element of a set of parameter values. The individual evaluation is 
+ * done by prequential evaluation (testing, then training with each example in
+ * sequence).
  * 
  * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  * @version $Revision: 1 $
  */
-public class ALCrossValidationTask extends ALMainTask {
+public class ALPartitionEvaluationTask extends ALMainTask {
 
 	private static final long serialVersionUID = 1L;
 
@@ -59,11 +60,11 @@ public class ALCrossValidationTask extends ALMainTask {
 	 }
 	public ClassOption multiParamTaskOption = new ClassOption(
 			"multiParamTask", 't', 
-			"Multi param task to be performed for each fold", 
+			"Multi param task to be performed for each partition", 
 			ALMultiParamTask.class, "moa.tasks.active.ALMultiParamTask");
 
-	public IntOption numFoldsOption = new IntOption("numFolds", 'k', 
-			"Number of cross validation folds.", 10);
+	public IntOption numPartitionsOption = new IntOption("numPartitions", 'k', 
+			"Number of data set partitions.", 10);
 
 	public IntOption randomSeedOption = new IntOption("randomSeed", 'r', 
 			"random seed which is used for partitioning of the stream.", 0);
@@ -89,29 +90,29 @@ public class ALCrossValidationTask extends ALMainTask {
 		
 		Random random = new Random(randomSeedOption.getValue());
 		
-		// setup subtask for each cross validation fold
-		for (int i = 0; i < this.numFoldsOption.getValue(); i++) {
-			// wrap base stream into a KFoldStream to split up data
+		// setup subtask for each partition
+		for (int i = 0; i < this.numPartitionsOption.getValue(); i++) {
+			// wrap base stream into a PartitioningStream to split up data
 			PartitioningStream stream = new PartitioningStream();
 			stream.streamOption.setValueViaCLIString(baseStream);
 			stream.partitionIndexOption.setValue(i);
-			stream.numPartitionsOption.setValue(this.numFoldsOption.getValue());
+			stream.numPartitionsOption.setValue(this.numPartitionsOption.getValue());
 			stream.randomSeedOption.setValue(random.nextInt());
 			// create subtask
-			ALMultiParamTask foldTask = (ALMultiParamTask) multiParamTask.copy();
-			foldTask.setIsLastSubtaskOnLevel(
-					this.isLastSubtaskOnLevel, i == this.numFoldsOption.getValue() - 1);
-			foldTask.setFoldIdx(i);
+			ALMultiParamTask partitionTask = (ALMultiParamTask) multiParamTask.copy();
+			partitionTask.setIsLastSubtaskOnLevel(
+					this.isLastSubtaskOnLevel, i == this.numPartitionsOption.getValue() - 1);
+			partitionTask.setPartitionIdx(i);
 			
-			ALPrequentialEvaluationTask foldEvalTask = (ALPrequentialEvaluationTask) 
-					foldTask.prequentialEvaluationTaskOption.getPreMaterializedObject();
-			foldEvalTask.streamOption.setCurrentObject(stream);
+			ALPrequentialEvaluationTask partitionEvalTask = (ALPrequentialEvaluationTask) 
+					partitionTask.prequentialEvaluationTaskOption.getPreMaterializedObject();
+			partitionEvalTask.streamOption.setCurrentObject(stream);
 			
-			foldTask.prepareForUse();
+			partitionTask.prepareForUse();
 
-			List<ALTaskThread> childSubtasks = foldTask.getSubtaskThreads();
+			List<ALTaskThread> childSubtasks = partitionTask.getSubtaskThreads();
 
-			ALTaskThread subtaskThread = new ALTaskThread(foldTask);
+			ALTaskThread subtaskThread = new ALTaskThread(partitionTask);
 			this.subtaskThreads.add(subtaskThread);
 
 			this.flattenedSubtaskThreads.add(subtaskThread);
@@ -144,15 +145,15 @@ public class ALCrossValidationTask extends ALMainTask {
 		// initialize the learning curve collection
 		PreviewCollection<PreviewCollection<PreviewCollectionLearningCurveWrapper>> 
 			previewCollection = new PreviewCollection<>(
-					"cross validation entry id", "fold id", this.getClass(),
+					"partition evaluation entry id", "partition id", this.getClass(),
 					multiParamTask.variedParamNameOption.getValueAsCLIString(),
 					variedParamValues);
 		
 
-		monitor.setCurrentActivity("Performing cross validation...", 50.0);
+		monitor.setCurrentActivity("Performing evaluation...", 50.0);
 		
 		// start subtasks
-		monitor.setCurrentActivity("Performing cross validation...", -1.0);
+		monitor.setCurrentActivity("Performing evaluation...", -1.0);
 		for(int i = 0; i < this.subtaskThreads.size(); ++i)
 		{
 			subtaskThreads.get(i).start();

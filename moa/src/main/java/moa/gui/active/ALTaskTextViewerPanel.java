@@ -69,7 +69,7 @@ import moa.gui.PreviewTableModel;
 import moa.gui.visualization.ParamGraphCanvas;
 import moa.gui.visualization.ProcessGraphCanvas;
 import moa.tasks.FailedTaskReport;
-import moa.tasks.active.ALCrossValidationTask;
+import moa.tasks.active.ALPartitionEvaluationTask;
 import moa.tasks.active.ALMultiParamTask;
 import moa.tasks.active.ALPrequentialEvaluationTask;
 
@@ -584,7 +584,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 		
 		// check which type of task it is
 		Class<?> c = preview.getTaskClass();
-		if (c == ALCrossValidationTask.class || c == ALMultiParamTask.class) {
+		if (c == ALPartitionEvaluationTask.class || c == ALMultiParamTask.class) {
 			// PreviewCollection
 			PreviewCollection<Preview> pc = (PreviewCollection<Preview>) preview;
 			
@@ -595,7 +595,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 			// read all previews
 			gcmpAll = readPreviewCollection(pc, false);
 			
-			if (c == ALCrossValidationTask.class) {
+			if (c == ALPartitionEvaluationTask.class) {
 				// calculate mean preview collection for each parameter value
 				pc = ((PreviewCollection<?>) preview).calculateMeanPreview();
 				gcmpSpecial = readPreviewCollection(pc, true);
