@@ -41,8 +41,8 @@ import javax.swing.SwingConstants;
 import moa.evaluation.MeasureCollection;
 
 /**
- * MeasureOverview provides a graphical overview of the current measure values
- * during the runtime of a task.
+ * MeasureOverview provides a graphical overview of the current and mean
+ * measure values during the runtime of a task.
  * 
  * This class is partially based on moa.gui.clustertab.ClusteringVisualEvalPanel.
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
@@ -64,10 +64,12 @@ public class MeasureOverview extends JPanel {
     
     private ButtonGroup radioGroup;
     private JRadioButton[] radioButtons;
-    private JLabel[] values;
+    private JLabel[] currentValues;
+    private JLabel[] meanValues;
     
     private JLabel labelMeasure;
     private JLabel labelCurrent;
+    private JLabel labelMean;
     
     private JComboBox<String> paramBox;
 
@@ -121,6 +123,7 @@ public class MeasureOverview extends JPanel {
         // add labels
         labelMeasure = new JLabel("Measure");
         labelCurrent = new JLabel("Current");
+        labelMean    = new JLabel("Mean");
 
         GridBagConstraints gb = new GridBagConstraints();
         gb.gridx = 0;
@@ -129,6 +132,9 @@ public class MeasureOverview extends JPanel {
 
         gb.gridx = 1;
         contentPanel.add(labelCurrent, gb);
+        
+        gb.gridx = 2;
+        contentPanel.add(labelMean, gb);
         
         this.measures = measures;
         this.measureCollectionSelected = 0;
@@ -160,22 +166,30 @@ public class MeasureOverview extends JPanel {
         this.radioButtons[0].setSelected(true);
         
         // init values
-        this.values = new JLabel[numMeasures];
+        this.currentValues = new JLabel[numMeasures];
+        this.meanValues = new JLabel[numMeasures];
         
         gb = new GridBagConstraints();
-        gb.gridx = 1;
         gb.weightx = 1.0;
         
         for (int i = 0; i < numMeasures; i++) {
-            this.values[i] = new JLabel("-");
-            this.values[i].setHorizontalAlignment(SwingConstants.CENTER);
             gb.gridy = 1 + i;
-            this.contentPanel.add(this.values[i], gb);
+            // current values
+            this.currentValues[i] = new JLabel("-");
+            this.currentValues[i].setHorizontalAlignment(SwingConstants.CENTER);
+            gb.gridx = 1;
+            this.contentPanel.add(this.currentValues[i], gb);
+            
+            // mean values
+            this.meanValues[i] = new JLabel("-");
+            this.meanValues[i].setHorizontalAlignment(SwingConstants.CENTER);
+            gb.gridx = 2;
+            this.contentPanel.add(this.meanValues[i], gb);
         }
 
         // I have no idea where these numbers come from. its taken from 
         // ClusteringVisualEvalPanel
-        contentPanel.setPreferredSize(new Dimension(250, this.values.length*(14+8)+20));
+        contentPanel.setPreferredSize(new Dimension(250, this.currentValues.length*(14+8)+20));
         
         // update parameter box
         updateParamBox();
@@ -195,7 +209,8 @@ public class MeasureOverview extends JPanel {
     /**
      * Updates the measure overview by assigning new measure collections and
      * varied parameter properties. If no measures are currently to display,
-     * reset the display to hyphens. Otherwise display the last measured values.
+     * reset the display to hyphens. Otherwise display the last measured and
+     * mean values.
      * Updates the parameter combo box if needed.
      * @param measures new MeasureCollection[]
      * @param variedParamName new varied parameter name
@@ -211,24 +226,34 @@ public class MeasureOverview extends JPanel {
     
     /**
      * Updates the measure overview. If no measures are currently to display,
-     * reset the display to hyphens. Otherwise display the last measured values.
+     * reset the display to hyphens. Otherwise display the last measured and
+     * mean values.
      */
     public void update() {
         if (this.measures == null || this.measures.length == 0) {
             // no measures to show -> empty entries
-            for (int i = 0; i < this.values.length; i++) {
-                this.values[i].setText("-");
+            for (int i = 0; i < this.currentValues.length; i++) {
+                this.currentValues[i].setText("-");
+                this.meanValues[i].setText("-");
             }
             return;
         }
         
         DecimalFormat d = new DecimalFormat("0.00");
         MeasureCollection mc = this.measures[this.measureCollectionSelected];
-        for (int i = 0; i < this.values.length; i++) {
+        for (int i = 0; i < this.currentValues.length; i++) {
+            // set current value
             if(Double.isNaN(mc.getLastValue(i))) {
-                this.values[i].setText("-");
+                this.currentValues[i].setText("-");
             } else {
-                this.values[i].setText(d.format(mc.getLastValue(i)));
+                this.currentValues[i].setText(d.format(mc.getLastValue(i)));
+            }
+            
+            // set mean value
+            if(Double.isNaN(mc.getMean(i))) {
+                this.meanValues[i].setText("-");
+            } else {
+                this.meanValues[i].setText(d.format(mc.getMean(i)));
             }
         } 
     }
