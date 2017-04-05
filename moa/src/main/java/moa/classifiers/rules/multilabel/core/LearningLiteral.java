@@ -41,7 +41,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 
 	protected int [] inputsToLearn;
 
-	public MultiLabelLearner learner;
+	protected MultiLabelLearner learner;
 
 	protected MultiLabelErrorMeasurer errorMeasurer;
 
