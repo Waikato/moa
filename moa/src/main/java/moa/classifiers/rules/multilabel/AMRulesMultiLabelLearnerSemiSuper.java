@@ -24,7 +24,7 @@ import java.util.ListIterator;
 
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiLabelLearner;
-import moa.classifiers.MultiLabelLearnerSemiSupervised;
+import moa.classifiers.MultiTargetLearnerSemiSupervised;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
 import moa.classifiers.rules.core.anomalydetection.OddsRatioScore;
@@ -64,7 +64,7 @@ import moa.learners.LearnerSemiSupervised;
 
 
 
-public abstract class AMRulesMultiLabelLearnerSemiSuper extends AbstractMultiLabelLearner implements MultiLabelLearnerSemiSupervised { 
+public abstract class AMRulesMultiLabelLearnerSemiSuper extends AbstractMultiLabelLearner implements MultiTargetLearnerSemiSupervised { 
 
     private static final long serialVersionUID = 1L;
     protected MultiLabelRuleSet ruleSet;

@@ -39,6 +39,10 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
 	/** running sum of accuracy */
 	double sumAccuracy = 0.0;
 	double sumHamming = 0.0;
+    double sumPrecision=0.0;
+    double sumRecall=0.0;
+    double sumFmeasure=0.0;
+    int sumExactMatch=0;
 
 	/** running number of examples */
 	int sumExamples = 0;
@@ -51,6 +55,10 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
 		sumAccuracy = 0.0;
 		sumHamming = 0.0;
 		sumExamples = 0;
+	    sumPrecision=0.0;
+	    sumRecall=0.0;
+	    sumFmeasure=0.0;
+	    sumExactMatch=0;
 	}
 
 	@Override
@@ -68,6 +76,11 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
 	@Override
 	public void addResult(Example<Instance> example, double[] p_y) {
 
+        int sumReunion= 0;
+        int sumInterse= 0;
+        int sumOnesTrue=0;
+        int sumOnesPred=0;
+		
 		//int L = example.numOutputAttributes();      // <-- doesn't work!
 		int L = p_y.length;
 
@@ -85,8 +98,10 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
 		int y[] = new int[L];
 		for(int j = 0; j < L; j++) {
 			y[j] = (p_y[j] > t) ? 1 : 0;
+			//y[j] =(int)p_y[j]*10;
 		}
 		//System.out.println("y =    "+Arrays.toString(y));
+
 
 		sumExamples++;
 		int correct = 0;
@@ -97,14 +112,68 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
 			//int y_pred = (p_y[j] > t) ? 1 : 0;
 			if (y_true == y[j])
 				correct++;
+			
+            if(y_true==1 || y[j]==1)
+                sumReunion++;
+                
+            if(y_true==1 &&  y[j]==1)
+                sumInterse++;
+            
+            if(y_true==1)
+                sumOnesTrue++;
+             
+             if(y[j]==1)
+                sumOnesPred++;
+            
+            //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            //System.out.print("MultilabelWindowClassificationPerformanceEvaluator.addResult: " + 
+             //                 y_true + " " + y[j] + "\n" );
+            //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+			
 		}
 
 		// Hamming Score
 		sumHamming+=(correct/(double)L);
+		
+        double tmp=0;
+        
+        //Accuracy by instance(Jaccard Index)
+        if(sumReunion>0){
+            tmp=(double)sumInterse/sumReunion;
+            sumAccuracy += (double)sumInterse/sumReunion;
+        }
+        else{
+            tmp=1;
+            sumAccuracy+=0.0;
+        }
 
+        //Precision by instance
+        if(sumOnesTrue>0){
+            sumPrecision+= (double) sumInterse/sumOnesTrue;
+        }
+
+        //Recall by instance                       
+        if(sumOnesPred>0){
+            sumRecall+= (double)(sumInterse/sumOnesPred);
+        }
+        
+        //F-Measure by instance 
+        if((sumOnesPred+sumOnesTrue)>0){
+            sumFmeasure+= (double) 2*sumInterse/(sumOnesPred+sumOnesTrue);
+        }
+        else{
+            sumFmeasure+=0.0;
+        }
+		
+        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        //System.out.print("MultilabelWindowClassificationPerformanceEvaluator.getPerformanceMeasurements: " + sumFmeasure + " " + " " +  "\n");
+        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+        
+       
 		// Exact Match
 		if (correct == L)
-			sumAccuracy++;
+			sumExactMatch++;
+		
 	}
 
 
@@ -127,7 +196,7 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
 					System.exit(1);
 				}
 				for (int i = 0; i< prediction.size();i++){
-					result[i] = prediction.getVote(i,1); 
+					result[i] = prediction.getVote(i,0);
 				}
 			}
 			addResult(example, result);
@@ -140,8 +209,12 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
 
 		// gather measurements
 		Measurement m[] = new Measurement[]{
-				new Measurement("Exact Match", sumAccuracy/sumExamples),
+				new Measurement("Exact Match", ((double)sumExactMatch)/sumExamples),
 				new Measurement("Hamming Score", sumHamming/sumExamples),
+                new Measurement("Accuracy", (double) sumAccuracy/sumExamples),
+                new Measurement("Precision",((double) sumPrecision)/sumExamples),
+                new Measurement("Recall",(double) sumRecall/sumExamples),
+                new Measurement("F-Measure", (double) sumFmeasure/sumExamples),
 		};
 
 		// reset

@@ -14,6 +14,7 @@ package moa.classifiers.rules.multilabel;
     
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import moa.classifiers.MultiLabelLearner;
+import moa.classifiers.MultiTargetLearnerSemiSupervised;
 import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.rules.multilabel.core.MultiLabelRule;
@@ -27,7 +28,7 @@ import moa.classifiers.rules.multilabel.errormeasurers.RelativeMeanAbsoluteDevia
 import moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor;
 import moa.options.ClassOption;
 
-public class AMRulesMultiTargetRegressorSemiSuper extends AMRulesMultiLabelLearnerSemiSuper implements MultiTargetRegressor{
+public class AMRulesMultiTargetRegressorSemiSuper extends AMRulesMultiLabelLearnerSemiSuper implements MultiTargetLearnerSemiSupervised {  //MultiTargetRegressor,
 
 	private static final long serialVersionUID = 1L;
 	

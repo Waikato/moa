@@ -11,7 +11,7 @@ import com.yahoo.labs.samoa.instances.Prediction;
 /**
  * @author RSousa
  */
-public interface MultiLabelLearnerSemiSupervised extends MultiLabelLearner {
+public interface MultiTargetLearnerSemiSupervised extends MultiLabelLearner {
     
     public Prediction getTrainingPrediction();
     

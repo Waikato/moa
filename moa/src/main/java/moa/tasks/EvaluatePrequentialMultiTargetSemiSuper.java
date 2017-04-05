@@ -31,8 +31,7 @@ import moa.evaluation.MultiTargetPerformanceEvaluator;
 import moa.evaluation.WindowClassificationPerformanceEvaluator;
 import moa.learners.Learner;
 import moa.learners.LearnerSemiSupervised;
-import moa.classifiers.MultiLabelLearnerSemiSupervised;
-
+import moa.classifiers.MultiTargetLearnerSemiSupervised;
 import moa.classifiers.MultiLabelLearner;
 
 import moa.options.ClassOption;
@@ -75,14 +74,8 @@ import java.io.*;
  *    
  */
 
-/**
- * Task for evaluating a classifier on a stream by testing then training with each example in sequence.
- *
- * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
- * @version $Revision: 7 $
- */
-public class EvaluateMultiTargetSemiUnsupervised extends MultiTargetMainTask {
+
+public class EvaluatePrequentialMultiTargetSemiSuper extends MultiTargetMainTask {
 
     @Override
     public String getPurposeString() {
@@ -92,7 +85,7 @@ public class EvaluateMultiTargetSemiUnsupervised extends MultiTargetMainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption learnerOption = new ClassOption("learner", 
-                'l',"Learner to train.", MultiTargetRegressor.class, "moa.classifiers.multitarget.functions.MultiTargetNoChange");
+                'l',"Learner to train.", MultiTargetLearnerSemiSupervised.class, "moa.classifiers.rules.multilabel.AMRulesMultiTargetRegressorSemiSuper");
     public ClassOption streamOption = new ClassOption("stream", 
                 's',"Stream to learn from.", MultiTargetInstanceStream.class,"MultiTargetArffFileStream");
     public ClassOption evaluatorOption = new ClassOption("evaluator", 
@@ -114,8 +107,8 @@ public class EvaluateMultiTargetSemiUnsupervised extends MultiTargetMainTask {
     public FloatOption alphaOption = new FloatOption("alpha",
                 'a', "Fading factor or exponential smoothing factor", .01);
     public FloatOption unlabeledPercentage = new FloatOption("WithoutTarget",
-                'z', "Without target percentage(%)", .0);
-    public FloatOption dbInitialModelPercentage = new FloatOption("DBPercent",'D', "Initial dataset (%)", .0);
+                'z', "Without target percentage(%)", 50);
+    public FloatOption dbInitialModelPercentage = new FloatOption("DBPercent",'D', "Initial dataset (%)", 30);
     public IntOption runSeed = new IntOption("Seed",
                 'r', "Number of predictions",1);
     public IntOption slidingWindowSize = new IntOption("slidingWindowSize",
@@ -131,9 +124,7 @@ public class EvaluateMultiTargetSemiUnsupervised extends MultiTargetMainTask {
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         
-        //LearnerSemiSupervised learner = (LearnerSemiSupervised) getPreparedClassOption(this.learnerOption);
-        MultiLabelLearnerSemiSupervised learner = (MultiLabelLearnerSemiSupervised) getPreparedClassOption(this.learnerOption);
-
+        MultiTargetLearnerSemiSupervised learner = (MultiTargetLearnerSemiSupervised) getPreparedClassOption(this.learnerOption);
         ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
         LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         LearningCurve learningCurve = new LearningCurve("learning evaluation instances");
@@ -163,7 +154,6 @@ public class EvaluateMultiTargetSemiUnsupervised extends MultiTargetMainTask {
         }
         
         //End New for prequential methods
-
         learner.setModelContext(stream.getHeader());
         int maxInstances = this.instanceLimitOption.getValue();
         long instancesProcessed = 0;
@@ -207,18 +197,21 @@ public class EvaluateMultiTargetSemiUnsupervised extends MultiTargetMainTask {
         long lastEvaluateStartTime = evaluateStartTime;
         double RAMHours = 0.0;
         
+        
+        
         //======================================================================
         Random randomGenerator1 = new Random(runSeed.getValue());   //Examples scrambler
         Random randomGenerator2 = new Random(1);                    //Labeled/Unlabeled selector
         List<Double> slidingWindow = new LinkedList<Double>();
-
+        
+        //Compute stream size
         int StrmDtSz=0;
         while (stream.hasMoreInstances()==true){
             stream.nextInstance();
             StrmDtSz++;
         }
-        
-        System.out.print("EvaluateMultiTargetSemiUnsupervised: StrmDtSz " + StrmDtSz +"\n");
+
+        //System.out.print("EvaluateMultiTargetSemiUnsupervised: StrmDtSz " + StrmDtSz +"\n");
         
         Example [] streamData = new Example[StrmDtSz];
         int[] randIndex= new int[StrmDtSz];
@@ -236,7 +229,7 @@ public class EvaluateMultiTargetSemiUnsupervised extends MultiTargetMainTask {
         int randomIndex; // the randomly selected index each time through the loop
         int randomValue; // the value at nums[randomIndex] each time through the loop
         
-        // randomize order of examples
+        //Randomize order of examples
         if( runSeed.getValue()> 0 ){
             for( int ri = 0; ri < randIndex.length; ++ri){
                 randomIndex = randomGenerator1.nextInt(randIndex.length);
@@ -246,30 +239,27 @@ public class EvaluateMultiTargetSemiUnsupervised extends MultiTargetMainTask {
             } 
         }
         
-        //TRAIN
+        
+        //TRAIN  initial Model 
         //================================================================= 
         double errorAllSum=0;
-
         int examplesCounter=0;
         Example trainInst=streamData[randIndex[0]]; 
         Example testInst= (Example) trainInst;
         Instance inst= (Instance) testInst.getData();
         
-        System.out.format("Test Start at %d \n",(int)(dbInitialModelPercentage.getValue()/100*StrmDtSz));
-        
-        
+        //System.out.format("Test Start at %d \n",(int)(dbInitialModelPercentage.getValue()/100*StrmDtSz));
+
         while( examplesCounter < dbInitialModelPercentage.getValue()/100*StrmDtSz ){
+        	
             trainInst =streamData[randIndex[examplesCounter]]; 
             testInst = (Example) trainInst;
             inst= (Instance) testInst.getData();
-            
             examplesCounter++;
             learner.trainOnInstance(trainInst);
             
             if(examplesCounter>1){
-                
                 Prediction trainPrediction =learner.getTrainingPrediction();
-                
                 double sumDenominator=0;double sumNumerator=0;
                 for( int m=0 ; m<inst.numOutputAttributes() ; m++){
                     //sumNumerator+=Math.pow( inst.valueOutputAttribute(m) - learner.prediction.getVote(m,0) , 2 );
@@ -283,26 +273,20 @@ public class EvaluateMultiTargetSemiUnsupervised extends MultiTargetMainTask {
                     slidingWindow.remove(0);
             }
             
-            
             if( examplesCounter % slidingWindowStep.getValue() == 0 ){
-                System.out.format(" %.4f" + " ",(double)errorAllSum/(double)examplesCounter);
+                //System.out.format(" %.4f" + " ",(double)errorAllSum/(double)examplesCounter);
                 double windowMean=0;
                 for(int j=0; j<slidingWindow.size() ; j++)
                     windowMean+=slidingWindow.get(j);
-           
-                System.out.format(" %.4f" + "\n",windowMean/slidingWindow.size());
+                //System.out.format(" %.4f" + "\n",windowMean/slidingWindow.size());
             }
-            
         }
 
-        /*learner.numberLabel=0;
-        learner.numberUnlabelOnTrain=0;
-        learner.numberUnlabelRejected=0;
-        learner.numberTotalExamples=1;
-        learner.errorSum=0;*/
-        
         double [] exampleOutputs= new double[inst.numOutputAttributes()];
 
+        
+        
+        
         //TEST 
         //======================================================================
         while (examplesCounter<StrmDtSz-1) {
@@ -311,10 +295,15 @@ public class EvaluateMultiTargetSemiUnsupervised extends MultiTargetMainTask {
             testInst = (Example) trainInst;
             inst= (Instance) testInst.getData();
 
-            for(int m=0; m < inst.numOutputAttributes() ; m++){
+            Prediction prediction = learner.getPredictionForInstance(testInst);
+            evaluator.addResult(testInst,prediction);
+            
+            
+            /*for(int m=0; m < inst.numOutputAttributes() ; m++){
                 exampleOutputs[m]=inst.valueOutputAttribute(m);
-            }
-
+            }*/
+            
+            //Labeled or unlabeled imposition
             if( randomGenerator2.nextDouble() <= unlabeledPercentage.getValue()/100 ){ 
                 for(int m=0; m < inst.numOutputAttributes() ; m++){
                     inst.setClassValue(m,Double.NEGATIVE_INFINITY); //Double.NaN
@@ -324,32 +313,101 @@ public class EvaluateMultiTargetSemiUnsupervised extends MultiTargetMainTask {
             examplesCounter++;
             learner.trainOnInstance(trainInst);
 
-            double sumDenominator=0;double sumNumerator=0;
-            Prediction trainPrediction = learner.getTrainingPrediction();
-            
+            //MONITORING 
+            //======================================================================
+            instancesProcessed++;
+            if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0
+                    ) {   //|| stream.hasMoreInstances() == false
+                long evaluateTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
+                double time = TimingUtils.nanoTimeToSeconds(evaluateTime - evaluateStartTime);
+                double timeIncrement = TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);
+                double RAMHoursIncrement = learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); //GBs
+                RAMHoursIncrement *= (timeIncrement / 3600.0); //Hours
+                RAMHours += RAMHoursIncrement;
+                lastEvaluateStartTime = evaluateTime;
+                learningCurve.insertEntry(new LearningEvaluation(
+                        new Measurement[]{
+                            new Measurement(
+                            "learning evaluation instances",
+                            instancesProcessed),
+                            new Measurement(
+                            "evaluation time ("
+                            + (preciseCPUTiming ? "cpu "
+                            : "") + "seconds)",
+                            time),
+                            new Measurement(
+                            "model cost (RAM-Hours)",
+                            RAMHours)
+                        },
+                        evaluator, learner));
 
-            for( int m=0 ; m<inst.numOutputAttributes() ; m++){
-                sumNumerator+=Math.pow( exampleOutputs[m] - trainPrediction.getVote(m,0) , 2 );
-                //sumNumerator+=Math.pow( inst.valueOutputAttribute(m) - learner.prediction.getVote(m,0) , 2 );
-                sumDenominator+=Math.pow( exampleOutputs[m] , 2 );
-            }  
-            errorAllSum+=Math.sqrt(sumNumerator/sumDenominator);
-
-            slidingWindow.add(Math.sqrt(sumNumerator/sumDenominator));
-            if(slidingWindow.size()==slidingWindowSize.getValue()+1)
-                slidingWindow.remove(0);
-
-            if( examplesCounter % slidingWindowStep.getValue() == 0 ){
-                System.out.format(" %.4f",(double)errorAllSum/(double)examplesCounter);
-                double windowMean=0;
-           
-                for(int j=0; j<slidingWindow.size() ; j++)
-                    windowMean+=slidingWindow.get(j);
-           
-                System.out.format(" %.4f" + "\n",windowMean/slidingWindow.size());
+                if (immediateResultStream != null) {
+                    if (firstDump) {
+                        immediateResultStream.println(learningCurve.headerToString());
+                        firstDump = false;
+                    }
+                    immediateResultStream.println(learningCurve.entryToString(learningCurve.numEntries() - 1));
+                    immediateResultStream.flush();
+                }
             }
+            if (instancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
+                if (monitor.taskShouldAbort()) {
+                    return null;
+                }
+                long estimatedRemainingInstances = stream.estimatedRemainingInstances();
+                if (maxInstances > 0) {
+                    long maxRemaining = maxInstances - instancesProcessed;
+                    if ((estimatedRemainingInstances < 0)
+                            || (maxRemaining < estimatedRemainingInstances)) {
+                        estimatedRemainingInstances = maxRemaining;
+                    }
+                }
+                monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
+                        : (double) instancesProcessed
+                        / (double) (instancesProcessed + estimatedRemainingInstances));
+                if (monitor.resultPreviewRequested()) {
+                    monitor.setLatestResultPreview(learningCurve.copy());
+                }
+                secondsElapsed = (int) TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread()
+                        - evaluateStartTime);
+            }
+            
+            
         }
-          
+
+        //|| stream.hasMoreInstances() == false
+        long evaluateTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
+        double time = TimingUtils.nanoTimeToSeconds(evaluateTime - evaluateStartTime);
+        double timeIncrement = TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);
+        double RAMHoursIncrement = learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); //GBs
+        RAMHoursIncrement *= (timeIncrement / 3600.0); //Hours
+        RAMHours += RAMHoursIncrement;
+        lastEvaluateStartTime = evaluateTime;
+        learningCurve.insertEntry(new LearningEvaluation(
+                new Measurement[]{
+                    new Measurement(
+                    "learning evaluation instances",
+                    instancesProcessed),
+                    new Measurement(
+                    "evaluation time ("
+                    + (preciseCPUTiming ? "cpu "
+                    : "") + "seconds)",
+                    time),
+                    new Measurement(
+                    "model cost (RAM-Hours)",
+                    RAMHours)
+                },
+                evaluator, learner));
+
+        if (immediateResultStream != null) {
+            if (firstDump) {
+                immediateResultStream.println(learningCurve.headerToString());
+                firstDump = false;
+            }
+            immediateResultStream.println(learningCurve.entryToString(learningCurve.numEntries() - 1));
+            immediateResultStream.flush();
+        }
+
         StringBuilder sb= new StringBuilder();
         learner.getDescription(sb, 0);
         System.out.println(sb.toString());
@@ -359,7 +417,7 @@ public class EvaluateMultiTargetSemiUnsupervised extends MultiTargetMainTask {
         if (outputPredictionResultStream != null) {
             outputPredictionResultStream.close();
         }
-         
+
         return learningCurve;
     }
 }
