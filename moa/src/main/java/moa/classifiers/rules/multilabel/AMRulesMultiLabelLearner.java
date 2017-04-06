@@ -96,7 +96,10 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	public FlagOption dropOldRuleAfterExpansionOption = new FlagOption("dropOldRuleAfterExpansion", 'D',
 			"Drop old rule if it expanded (by default the rule is kept for the set of outputs not selected for expansion.)");
 
-	public ClassOption changeDetector;
+	public ClassOption changeDetector = new ClassOption("changeDetector",
+			'H', "Change Detector.", 
+			ChangeDetector.class,
+			"PageHinkleyDM -d 0.05 -l 35.0");
 
 	public ClassOption anomalyDetector = new ClassOption("anomalyDetector",
 			'A', "Anomaly Detector.", 
