@@ -26,8 +26,9 @@ import moa.core.StringUtils;
 import moa.core.TimingUtils;
 import moa.core.WekaUtils;
 import moa.options.ClassOption;
+import moa.tasks.AbstractTask;
 import moa.tasks.FailedTaskReport;
-import moa.tasks.Task;
+import moa.tasks.MainTask;
 import moa.tasks.TaskThread;
 import moa.tasks.active.ALMainTask;
 
@@ -131,13 +132,17 @@ public class DoTask {
                     cliString.append(" ").append(args[i]);
                 }
                 // parse options
-                Task task;
+                AbstractTask task;
                 try {
-                	task = (Task) ClassOption.cliStringToObject(cliString.toString(), Task.class, extraOptions);
+                	task = (AbstractTask) ClassOption.cliStringToObject(
+                			cliString.toString(), MainTask.class, extraOptions);
                 } catch(Exception e) {
                 	// regular task could not be found, maybe it is an active learning task
-            		task = (Task) ClassOption.cliStringToObject(cliString.toString(), ALMainTask.class, extraOptions);
+            		task = (AbstractTask) ClassOption.cliStringToObject(
+            				cliString.toString(), ALMainTask.class, extraOptions);
                 }
+                task.prepareForUse();
+                
                 Object result = null;
                 if (suppressStatusOutputOption.isSet()) {
                     result = task.doTask();
