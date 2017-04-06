@@ -29,6 +29,7 @@ import moa.options.ClassOption;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
+import moa.tasks.active.ALMainTask;
 
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
@@ -130,7 +131,13 @@ public class DoTask {
                     cliString.append(" ").append(args[i]);
                 }
                 // parse options
-                Task task = (Task) ClassOption.cliStringToObject(cliString.toString(), Task.class, extraOptions);
+                Task task;
+                try {
+                	task = (Task) ClassOption.cliStringToObject(cliString.toString(), Task.class, extraOptions);
+                } catch(Exception e) {
+                	// regular task could not be found, maybe it is an active learning task
+            		task = (Task) ClassOption.cliStringToObject(cliString.toString(), ALMainTask.class, extraOptions);
+                }
                 Object result = null;
                 if (suppressStatusOutputOption.isSet()) {
                     result = task.doTask();
