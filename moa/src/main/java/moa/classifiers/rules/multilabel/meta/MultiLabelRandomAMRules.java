@@ -83,7 +83,6 @@ implements MultiTargetRegressor {
 	protected boolean isRegression;
 	protected FeatureRanking featureRanking;
 	
-        double [] Var;
 	
 	@Override
 	public void resetLearningImpl() {

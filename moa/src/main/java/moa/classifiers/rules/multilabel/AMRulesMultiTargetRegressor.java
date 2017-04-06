@@ -46,6 +46,11 @@ public class AMRulesMultiTargetRegressor extends AMRulesMultiLabelLearner implem
 					"PageHinkleyDM -d 0.05 -l 35.0");
 	}
 	
+	@Override
+	public ErrorWeightedVoteMultiLabel newErrorWeightedVote(){
+		return (ErrorWeightedVoteMultiLabel)((ErrorWeightedVoteMultiLabel) getPreparedClassOption(weightedVoteOption)).copy();
+		
+	}
 
 	@Override
 	protected MultiLabelRule newDefaultRule() {

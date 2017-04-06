@@ -35,7 +35,7 @@ public class MultiLabelRule extends ObservableMOAObject {
 
 	protected List<Literal> literalList = new LinkedList<Literal>();
 
-	public  LearningLiteral learningLiteral;
+	protected LearningLiteral learningLiteral;
 
 	protected int ruleNumberID;
 

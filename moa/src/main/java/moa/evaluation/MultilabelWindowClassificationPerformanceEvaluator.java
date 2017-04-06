@@ -28,12 +28,6 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
-/**
- * Multilabel Window Classification Performance Evaluator.
- * 
- * @author Jesse Read (jesse@tsc.uc3m.es)
- * @version $Revision: 1 $
- */
 public class MultilabelWindowClassificationPerformanceEvaluator extends WindowClassificationPerformanceEvaluator implements MultiLabelPerformanceEvaluator {
 
 	/** running sum of accuracy */
@@ -80,8 +74,7 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
         int sumInterse= 0;
         int sumOnesTrue=0;
         int sumOnesPred=0;
-		
-		//int L = example.numOutputAttributes();      // <-- doesn't work!
+	
 		int L = p_y.length;
 
 		Instance x = example.getData();
@@ -90,26 +83,18 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
 			System.exit(1);
 		}
 
-		//System.out.println("------- new result -------------");
-		//System.out.println("x = "+x);
-		//System.out.println("p(y) = "+Arrays.toString(p_y));
 
 		// Threshold to binary output (optional)
 		int y[] = new int[L];
 		for(int j = 0; j < L; j++) {
 			y[j] = (p_y[j] > t) ? 1 : 0;
-			//y[j] =(int)p_y[j]*10;
 		}
-		//System.out.println("y =    "+Arrays.toString(y));
 
 
 		sumExamples++;
 		int correct = 0;
-		for(int j = 0; j < y.length; j++) {
-			//int y_true = //]example.valueOutputAttribute(j);  // <-- doesn't work!
-			//int y_true = (int)x.value(j); 
+		for(int j = 0; j < y.length; j++) { 
 			int y_true = (int)x.valueOutputAttribute(j);
-			//int y_pred = (p_y[j] > t) ? 1 : 0;
 			if (y_true == y[j])
 				correct++;
 			
@@ -124,16 +109,10 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
              
              if(y[j]==1)
                 sumOnesPred++;
-            
-            //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-            //System.out.print("MultilabelWindowClassificationPerformanceEvaluator.addResult: " + 
-             //                 y_true + " " + y[j] + "\n" );
-            //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-			
 		}
 
-		// Hamming Score
-		sumHamming+=(correct/(double)L);
+	    	// Hamming Score
+		    sumHamming+=(correct/(double)L);
 		
         double tmp=0;
         
@@ -164,15 +143,10 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
         else{
             sumFmeasure+=0.0;
         }
-		
-        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        //System.out.print("MultilabelWindowClassificationPerformanceEvaluator.getPerformanceMeasurements: " + sumFmeasure + " " + " " +  "\n");
-        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
-        
-       
-		// Exact Match
-		if (correct == L)
-			sumExactMatch++;
+	    	
+        // Exact Match
+		    if (correct == L)
+			    sumExactMatch++;
 		
 	}
 
