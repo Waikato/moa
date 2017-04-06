@@ -52,7 +52,7 @@ public class PartitioningStream extends AbstractOptionHandler  implements Exampl
             "The index of the partition, which should be used as output.", 0);
 
     public IntOption numPartitionsOption = new IntOption(
-            "numFolds", 'n',
+            "numPartitions", 'n',
             "The number of total streams the base stream is split into.", 1);
     
     public IntOption randomSeedOption = new IntOption(
