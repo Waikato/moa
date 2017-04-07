@@ -80,7 +80,8 @@ public class ALTaskThread extends TaskThread {
 		
         super.cancelTask();
         
-        this.finalResult = getLatestResultPreview();
+        if(!failed())
+        	this.finalResult = getLatestResultPreview();
         
 
         // cancel all subtask threads
