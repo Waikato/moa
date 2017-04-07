@@ -77,7 +77,13 @@ public class PartitioningStream extends AbstractOptionHandler  implements Exampl
 		{
 			return baseEstimatedRemainingInstances;
 		}
-		return (baseEstimatedRemainingInstances * (numPartitions - 1)) / (numPartitions);
+		
+		long numRemaining = (baseEstimatedRemainingInstances * (numPartitions - 1)) / (numPartitions);
+		if(numPartitions == 1)
+		{
+			numRemaining = baseEstimatedRemainingInstances;
+		}
+		return numRemaining;
 	}
 
 	@Override
@@ -148,7 +154,7 @@ public class PartitioningStream extends AbstractOptionHandler  implements Exampl
 	 */
 	protected void discardNexInstancesNotFromPartition()
 	{
-		while(!isNextInstanceFromPartition() && baseStream.hasMoreInstances())
+		while(!isNextInstanceFromPartition() && baseStream.hasMoreInstances() && numPartitions > 1)
 		{
 			baseStream.nextInstance();
 		}

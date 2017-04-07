@@ -27,6 +27,7 @@ package moa.classifiers.active;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 
 import com.github.javacliparser.FlagOption;
@@ -100,10 +101,10 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
     public IntOption mMaxOption = new IntOption("M",
             'm', "The maximum number of hypothetic label.", 3, 0, Integer.MAX_VALUE);
     
-    public IntOption labeledDataKernelDensityEstimatorWindowOption = new IntOption("labeledDataKernelFrequencyEstimatorWindow",
+    public IntOption labeledDataKernelDensityEstimatorWindowOption = new IntOption("labeledDataKFEWindow",
             'l', "The size of the window used for the kernel frequency estimation for the labeled data.", 200, 1, Integer.MAX_VALUE);
     
-    public IntOption allDataKernelDensityEstimatorWindowOption = new IntOption("allDataKernelFrequencyEstimatorWindow",
+    public IntOption allDataKernelDensityEstimatorWindowOption = new IntOption("allDataKFEWindow",
             'a', "The size of the window used for the kernel frequency estimation for unlabeled and labeled data.", 200, 1, Integer.MAX_VALUE);
 
     public FloatOption bandwidthOption = new FloatOption("bandWidth",
