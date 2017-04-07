@@ -20,6 +20,7 @@
 package moa.classifiers.active.budget;
 
 import java.util.List;
+import java.util.Random;
 
 import com.github.javacliparser.IntOption;
 
@@ -45,6 +46,7 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 	Ranking<Double> r;
 	int numProcessedInstances;
 	int numAcquiredLabels;
+	Random rand;
 	
 	public IntOption toleranceWindowSizeOption = new IntOption("toleranceWindowSize", 't', 
 			"The number of instances which are used to balance the number of label acquisitions.",
@@ -64,8 +66,7 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 		
 		
 		double acquisitionsLeft = getAcquisitionsLeft(budget);
-		
-		double range = getRange(scoreBuffer, rankedIndices);
+		double range = getRange(scoreBuffer, rankedIndices) + rand.nextFloat() * 0.00000000001;
 		double balancedThreshold = threshold - range * (toleranceWindowSize==0? 0 : acquisitionsLeft/toleranceWindowSize);
 		
 		boolean decision = alScore >= balancedThreshold;
@@ -116,6 +117,7 @@ public class BalancedIncrementalQuantileFilter extends IncrementalQuantileFilter
 		numAcquiredLabels = 0;
 		this.budget = budgetOption.getValue();
 		r = new Ranking<>();
+		rand = new Random();
 	}
 	
 	@Override

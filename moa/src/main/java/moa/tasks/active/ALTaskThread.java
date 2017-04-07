@@ -116,8 +116,8 @@ public class ALTaskThread extends TaskThread {
             this.currentStatus = this.taskMonitor.isCancelled() ? Status.CANCELLED
                     : Status.COMPLETED;
         } catch (Throwable ex) {
-            this.currentStatus = Status.FAILED;
             this.finalResult = new FailedTaskReport(ex);
+            this.currentStatus = Status.FAILED;
         }
         
         if(currentStatus == Status.FAILED || currentStatus == Status.CANCELLED)

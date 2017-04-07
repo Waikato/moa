@@ -78,12 +78,21 @@ public class PreviewCollectionLearningCurveWrapper extends Preview {
 	public double[] getEntryData(int entryIndex) {
 		// get the number of measurements
 		int numMeasurements = getMeasurementNameCount();
+
+		int numEntryMeasurements = learningCurveToBeWrapped.getEntryMeasurementCount(entryIndex);
 		// preallocate the array to store all measurements
 		double[] data = new double[numMeasurements];
 		// get measuements from the learning curve
 		for(int measurementIdx = 0; measurementIdx < numMeasurements; ++measurementIdx)
 		{
-			data[measurementIdx] = learningCurveToBeWrapped.getMeasurement(entryIndex, measurementIdx);
+			if(measurementIdx < numEntryMeasurements)
+			{
+				data[measurementIdx] = learningCurveToBeWrapped.getMeasurement(entryIndex, measurementIdx);	
+			}
+			else
+			{
+				data[measurementIdx] = Double.NaN;
+			}
 		}
 		return data;
 	}

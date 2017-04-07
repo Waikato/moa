@@ -27,7 +27,6 @@ package moa.classifiers.active;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.Stack;
 
 import com.github.javacliparser.FlagOption;
@@ -491,7 +490,7 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 			point[i] = inst.value(i);
 		}
 		double alScore = getAlScore(inst);
-
+		
 		boolean acquireLabel = budgetManager.isAbove(alScore);
 
 		if(acquireLabel)
@@ -529,6 +528,8 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 		
 		this.numClasses = ih.numClasses();
 		this.numAttributes = ih.numAttributes() - 1;
+		
+		classifier.setModelContext(ih);
 		
 		resetLearning();
 	}
