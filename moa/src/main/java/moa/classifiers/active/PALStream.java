@@ -102,7 +102,7 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
             'm', "The maximum number of hypothetic label.", 3, 0, Integer.MAX_VALUE);
     
     public IntOption labeledDataKernelDensityEstimatorWindowOption = new IntOption("labeledDataKFEWindow",
-            'l', "The size of the window used for the kernel frequency estimation for the labeled data.", 200, 1, Integer.MAX_VALUE);
+            's', "The size of the window used for the kernel frequency estimation for the labeled data.", 200, 1, Integer.MAX_VALUE);
     
     public IntOption allDataKernelDensityEstimatorWindowOption = new IntOption("allDataKFEWindow",
             'a', "The size of the window used for the kernel frequency estimation for unlabeled and labeled data.", 200, 1, Integer.MAX_VALUE);
