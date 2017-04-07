@@ -1,5 +1,5 @@
 /*
- *    MCPAL.java
+ *    PALStream.java
  *    
  *    OPAL Code:
  *    Copyright (C) 2016 Otto-von-Guericke-University, Magdeburg, Germany
@@ -44,11 +44,12 @@ import moa.options.ClassOption;
 
 
 /**
- * This classifier is based on Multi-Class Probabilistic Active Learning (MCPAL)
- * proposed in [1] and uses the budget manager shown in [2].
+ * PALStream is an active learner based on Multi-Class Probabilistic 
+ * Active Learning (MCPAL) proposed in [1] and uses the budget manager 
+ * shown in [2].
  * 
- * This implementation is based on Christian's implementation of OPAL
- * and is modified to implement MCPAL
+ * This implementation is based on Christian Beyer's implementation of 
+ * OPAL and is modified to implement PALStream
  *
  *
  * [1]	Kottke, D., Krempl, G., Lang, D., Teschner, J. & Spiliopoulou, M. (2016). 
@@ -64,13 +65,14 @@ import moa.options.ClassOption;
  * @author Tuan Pham Minh (tuan.pham@ovgu.de)
  * @version $Revision: 1 $
  */
-public class MCPAL extends AbstractClassifier implements ALClassifier {
+public class PALStream extends AbstractClassifier implements ALClassifier {
 
 	private static final long serialVersionUID = 1L;
 
-	private MCPALEstimatorMultivariate labeledDataKernelEstimator; // used only for labeled data
-	private MCPALEstimatorMultivariate allDataKernelEstimator; // used for labeled and unlabeled data
+	private PALStreamEstimatorMultivariate labeledDataKernelEstimator; // used only for labeled data
 	private StandardDeviationEstimator labeledDataStandartDeviationEstimator;
+	
+	private PALStreamEstimatorMultivariate allDataKernelEstimator; // used for labeled and unlabeled data
 	private StandardDeviationEstimator allDataStandartDeviationEstimator;
 
 	private int numClasses;
@@ -129,8 +131,6 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 	}
 
 	// End Gamma
-
-	// ___________________________________MCPAL______________________________________
 
 	/**
 	 * calculate the frequency estimates (k) for a given instance
@@ -468,8 +468,8 @@ public class MCPAL extends AbstractClassifier implements ALClassifier {
 			distributions.add(getAllDistributionPossibilities(m, numClasses));
 		}
 
-		labeledDataKernelEstimator = new MCPALEstimatorMultivariate(bandwidth, labeledDataKernelDensityEstimatorWindowOption.getValue());
-		allDataKernelEstimator = new MCPALEstimatorMultivariate(bandwidth, allDataKernelDensityEstimatorWindowOption.getValue());
+		labeledDataKernelEstimator = new PALStreamEstimatorMultivariate(bandwidth, labeledDataKernelDensityEstimatorWindowOption.getValue());
+		allDataKernelEstimator = new PALStreamEstimatorMultivariate(bandwidth, allDataKernelDensityEstimatorWindowOption.getValue());
 
 		labeledDataStandartDeviationEstimator = new StandardDeviationEstimator(numAttributes);
 		allDataStandartDeviationEstimator = new StandardDeviationEstimator(numAttributes);

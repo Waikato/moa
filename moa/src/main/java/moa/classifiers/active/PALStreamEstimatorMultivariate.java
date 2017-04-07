@@ -1,5 +1,5 @@
 /*
- *    MCPALEstimatorMultivariate.java
+ *    PALStreamEstimatorMultivariate.java
  *    
  *    OpalEstimatorMultivariate Code:
  *    Copyright (C) 2016 Otto-von-Guericke-University, Magdeburg, Germany
@@ -26,18 +26,18 @@ package moa.classifiers.active;
 
 /**
  * This class implements a multivariate Gaussian kernel density estimation and is based
- * on Christian's implementation of OpalEstimatorMultivariate and was modified to fit the
- * the needs for MCPAL
+ * on Christian Beyer's implementation of OpalEstimatorMultivariate and was modified to fit the
+ * the needs for PALStream
  * 
  * @author Tuan Pham Minh (tuan.pham@ovgu.de)
  * @version $Revision: 1 $
  */
-public class MCPALEstimatorMultivariate{
+public class PALStreamEstimatorMultivariate{
 	
 	private double bandwidth;
 	private RingBuffer<double[]> points;
 	
-	public MCPALEstimatorMultivariate(double bandwidth, int bufferSize){
+	public PALStreamEstimatorMultivariate(double bandwidth, int bufferSize){
 		this.bandwidth=bandwidth;
 		points = new RingBuffer<>(bufferSize);
 	}
