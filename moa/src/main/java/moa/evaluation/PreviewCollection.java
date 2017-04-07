@@ -59,6 +59,7 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 	public PreviewCollection(String orderingName, String indexName, Class<?> taskClass, 
 			String variedParamName, double[] variedParamValues) 
 	{
+		this.orderingName = orderingName;
 		this.indexName = indexName;
 		requiredMeasurementNames = new ArrayList<>();
 		measurementNames = new ArrayList<>();
@@ -78,12 +79,16 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 		// ignore the preview if it has no entries
 		if (preview.numEntries() > 0) {
 			// copy the measurement names from the first preview
-			if (subPreviews.size() == 0) {
-				for (int i = 0; i < preview.getMeasurementNameCount(); ++i) {
-					String name = preview.getMeasurementName(i);
-					measurementNames.add(name);
-					requiredMeasurementNames.add(name);
-				}
+
+			requiredMeasurementNames = new ArrayList<>();
+			measurementNames = new ArrayList<>();
+			measurementNames.add(orderingName);
+			measurementNames.add(indexName);
+			
+			for (int i = 0; i < preview.getMeasurementNameCount(); ++i) {
+				String name = preview.getMeasurementName(i);
+				measurementNames.add(name);
+				requiredMeasurementNames.add(name);
 			}
 
 			// resize the array if new previews are added to the collection
@@ -96,39 +101,22 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 				}
 			}
 
-			// check if the measurement names are the same
-			boolean hasSameMeasurementNamesCount = requiredMeasurementNames.size() == preview.getMeasurementNameCount();
-			if (hasSameMeasurementNamesCount) {
-				boolean hasSameMeasurementNames = true;
-				for (int i = 0; i < requiredMeasurementNames.size(); ++i) {
-					hasSameMeasurementNames &= requiredMeasurementNames.get(i).equals(preview.getMeasurementName(i));
-				}
-
-				if (hasSameMeasurementNames) {
-					// check if the new preview has more entries than the last one
-					if (subPreviews.get(previewIndex) == null ||
-						(subPreviews.get(previewIndex) != null && 
-						 preview.numEntries() > subPreviews.get(previewIndex).numEntries())) 
-					{
-						// set the smallest number of entries
-						minEntryNum = preview.numEntries();
-						for (int i = 0; i < subPreviews.size(); ++i) {
-							if (i != previewIndex) {
-								int entryNum = subPreviews.get(i).numEntries();
-								minEntryNum = Math.min(minEntryNum, entryNum);
-							}
-						}
-						// set the preview
-						subPreviews.set(previewIndex, preview);
+			// check if the new preview has more entries than the last one
+			if (subPreviews.get(previewIndex) == null ||
+				(subPreviews.get(previewIndex) != null && 
+				 preview.numEntries() > subPreviews.get(previewIndex).numEntries())) 
+			{
+				// set the smallest number of entries
+				minEntryNum = preview.numEntries();
+				for (int i = 0; i < subPreviews.size(); ++i) {
+					if (i != previewIndex) {
+						int entryNum = subPreviews.get(i).numEntries();
+						minEntryNum = Math.min(minEntryNum, entryNum);
 					}
-					
-				} else {
-					throw new IllegalArgumentException("The measurement names of all previews have to be equal");
 				}
-			} else {
-				throw new IllegalArgumentException("The number measurement names of all previews have to be equal");
+				// set the preview
+				subPreviews.set(previewIndex, preview);
 			}
-
 		}
 	}
 

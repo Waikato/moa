@@ -8,6 +8,7 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
@@ -265,5 +266,11 @@ public class ALSufficientWeight extends AbstractClassifier implements ALClassifi
 			return thresholdLearningRateOption.getValue();
 		}
 	}
+
 	
+	@Override
+	public void setModelContext(InstancesHeader ih) {
+		super.setModelContext(ih);
+		classifier.setModelContext(ih);
+	}
 }
