@@ -91,7 +91,7 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 	
 	private BudgetManager budgetManager;
 	
-    public ClassOption classifierOption = new ClassOption("classifier", 'c',
+    public ClassOption classifierOption = new ClassOption("baseLearner", 'l',
             "Classifier to train.", Classifier.class, "drift.SingleClassifierDrift");
 	
     public ClassOption budgetManagerOption = new ClassOption("budgetManager",
