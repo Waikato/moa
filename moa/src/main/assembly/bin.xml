@@ -11,12 +11,12 @@
 
   <fileSets>
     <fileSet>
-      <directory>${project.build.scriptSourceDirectory}</directory>
+      <directory>${project.basedir}/moa/src/main/scripts/</directory>
       <outputDirectory>/bin</outputDirectory>
     </fileSet>
     
     <fileSet>
-      <directory>${project.basedir}/src/main/resources/</directory>
+      <directory>${project.basedir}/moa/src/main/resources/</directory>
       <outputDirectory>/license</outputDirectory>
       <includes>
         <include>LICENSE.txt</include>
@@ -24,7 +24,7 @@
     </fileSet>
 
     <fileSet>
-      <directory>${project.build.directory}/generated-sources/license</directory>
+      <directory>${project.basedir}/moa/target/generated-sources/license</directory>
       <outputDirectory>/license</outputDirectory>
       <includes>
         <include>*.txt</include>
@@ -32,7 +32,7 @@
     </fileSet>
 
     <fileSet>
-      <directory>${project.build.directory}</directory>
+      <directory>${project.basedir}/moa/target</directory>
       <outputDirectory>doc/pdf</outputDirectory>
       <includes>
         <include>*.pdf</include>
@@ -40,7 +40,7 @@
     </fileSet>
 
     <fileSet>
-      <directory>${project.basedir}/src/examples/java</directory>
+      <directory>${project.basedir}/moa/src/examples/java</directory>
       <outputDirectory>examples</outputDirectory>
       <includes>
         <include>**/*</include>
