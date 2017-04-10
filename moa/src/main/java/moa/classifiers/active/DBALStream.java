@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import weka.core.Utils;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
-import moa.classifiers.active.budget.BudgetManager;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.options.ClassOption;
@@ -24,13 +23,12 @@ public class DBALStream extends AbstractClassifier implements ALClassifier {
 			'l', "Classifier to train.", Classifier.class, 
 			"drift.SingleClassifierDrift");
 	
-	public ClassOption budgetManagerOption = new ClassOption("budgetManager",
-            'b', "BudgetManager that should be used.", BudgetManager.class, 
-            "ThresholdBM");
-	
 	// TODO: What should the default window size be?
 	public IntOption windowSizeOption = new IntOption("windowSize", 'w', 
 			"Window size.", 100, 0, Integer.MAX_VALUE);
+	
+	public FloatOption budgetOption = new FloatOption("budget", 'b', 
+			"Budget.", 0.1, 0, 1);
 	
 	public FloatOption thresholdOption = new FloatOption("threshold", 't',
 			"Initial threshold value.", 0.9, 0, 1);
@@ -39,7 +37,6 @@ public class DBALStream extends AbstractClassifier implements ALClassifier {
 			"Step option.", 0.01, 0, 1);
 	
 	private Classifier classifier;
-	private BudgetManager budgetManager;
 	private int windowSize;
 	private double threshold;
 	private ArrayList<Instance> windowInstances;
@@ -47,6 +44,7 @@ public class DBALStream extends AbstractClassifier implements ALClassifier {
 	private int costLabeling;
 	private int nInstances;
 	private int nClasses;
+	private int lastLabelAcq;
 	
 
 	/* EUCLIDEAN DISTANCE */
@@ -135,7 +133,9 @@ public class DBALStream extends AbstractClassifier implements ALClassifier {
 
 	@Override
 	public int getLastLabelAcqReport() {
-		return this.budgetManager.getLastLabelAcqReport();
+		int help = this.lastLabelAcq;
+		this.lastLabelAcq = 0;
+		return help;
 	}
 
 	@Override
@@ -147,6 +147,7 @@ public class DBALStream extends AbstractClassifier implements ALClassifier {
 	public void resetLearningImpl() {
 		this.nInstances = 0;
 		this.costLabeling = 0;
+		this.lastLabelAcq = 0;
 		
 		this.windowSize = this.windowSizeOption.getValue();
 		this.threshold = this.thresholdOption.getValue();
@@ -156,8 +157,6 @@ public class DBALStream extends AbstractClassifier implements ALClassifier {
 		
 		this.classifier = (Classifier) 
 				getPreparedClassOption(this.baseLearnerOption);
-		this.budgetManager = (BudgetManager) 
-				getPreparedClassOption(this.budgetManagerOption);
 	}
 	
 	@Override
@@ -186,17 +185,15 @@ public class DBALStream extends AbstractClassifier implements ALClassifier {
         double margin = map - beforeMap;
         this.nInstances++;
 		double costNow = ((double) this.costLabeling) / this.nInstances;
-       
+        
 		/*active learning step*/
-		// TODO: use budget manager
-		double budget = 0.5;
-		if (costNow < budget && nCount1NN != 0){
+		if (costNow < this.budgetOption.getValue() && nCount1NN != 0){
 			margin = margin / (r.nextGaussian() + 1.0);
 			
 			if (margin < this.threshold) {
 				this.classifier.trainOnInstance(inst);
 				this.costLabeling++;
-				this.budgetManager.isAbove(1);
+				this.lastLabelAcq += 1;
 				this.threshold *= (1 - this.stepOption.getValue());
 			} else {
 				this.threshold *= (1 + this.stepOption.getValue());
