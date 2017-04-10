@@ -1,3 +1,25 @@
+/*
+ *    DBALStream.java
+ *    Copyright (C) 2016 Otto-von-Guericke-University, Magdeburg, Germany
+ *    @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
+ *    
+ *    Based on algorithm and implementation by
+ *    @author Dino Ienco (dino.ienco@irstea.fr)
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *    
+ */
 package moa.classifiers.active;
 
 import com.github.javacliparser.FloatOption;
@@ -15,6 +37,25 @@ import moa.core.Measurement;
 import moa.options.ClassOption;
 
 
+/**
+ * <p>This class contains an active learning method for evolving data streams 
+ * based on a combination of density and prediction uncertainty (DBALStream),
+ * which was first presented in [IZP]. The approach decides to label an 
+ * instance or not, considering whether it lies in an high density partition of
+ * the data space. This allows focusing labeling efforts in the instance space 
+ * where more data is concentrated; hence, the benefits of learning a more 
+ * accurate classifier are expected to be higher. Instance density is 
+ * approximated in an online manner by a sliding window mechanism, a standard 
+ * technique for data streams.</p>
+ * 
+ * <p>[IZP] Dino Ienco, Indre Zliobaite, Bernhard Pfahringer: High 
+ * density-focused uncertainty sampling for active learning over evolving
+ * stream data. PMLR (36) 2014:133-148.</p>
+ * 
+ * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
+ * @author Dino Ienco (dino.ienco@irstea.fr)
+ * @version $Revision: 1 $
+ */
 public class DBALStream extends AbstractClassifier implements ALClassifier {
 	
 	private static final long serialVersionUID = 1L;
@@ -23,18 +64,17 @@ public class DBALStream extends AbstractClassifier implements ALClassifier {
 			'l', "Classifier to train.", Classifier.class, 
 			"drift.SingleClassifierDrift");
 	
-	// TODO: What should the default window size be?
 	public IntOption windowSizeOption = new IntOption("windowSize", 'w', 
 			"Window size.", 100, 0, Integer.MAX_VALUE);
 	
 	public FloatOption budgetOption = new FloatOption("budget", 'b', 
-			"Budget.", 0.1, 0, 1);
+			"Budget to use.", 0.1, 0, 1);
 	
 	public FloatOption thresholdOption = new FloatOption("threshold", 't',
 			"Initial threshold value.", 0.9, 0, 1);
 	
 	public FloatOption stepOption = new FloatOption("step", 's', 
-			"Step option.", 0.01, 0, 1);
+			"Floating budget step.", 0.01, 0, 1);
 	
 	private Classifier classifier;
 	private int windowSize;
