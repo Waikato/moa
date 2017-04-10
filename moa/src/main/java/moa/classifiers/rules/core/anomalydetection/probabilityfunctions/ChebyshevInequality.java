@@ -2,10 +2,7 @@ package moa.classifiers.rules.core.anomalydetection.probabilityfunctions;
 
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import moa.options.OptionHandler;
 import moa.tasks.TaskMonitor;
-
-import com.github.javacliparser.Options;
 
 public class ChebyshevInequality extends AbstractOptionHandler implements ProbabilityFunction {
 
