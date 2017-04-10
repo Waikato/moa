@@ -38,6 +38,7 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.active.budget.BudgetManager;
+import moa.classifiers.drift.DriftDetectionMethodClassifier;
 import moa.core.Measurement;
 import moa.options.ClassOption;
 
@@ -90,6 +91,8 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 	
 	private BudgetManager budgetManager;
 	
+	private boolean resetKFEOnChange;
+	
     public ClassOption classifierOption = new ClassOption("baseLearner", 'l',
             "Classifier to train.", Classifier.class, "drift.SingleClassifierDrift");
 	
@@ -111,7 +114,9 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
     
     public FlagOption useDensityWeightOption = new FlagOption("useDensityWeighting",
             'd', "If set to true the gain will be weighted by the density for that instance.");
-	
+    
+    public FlagOption resetKFEOnChangeOption = new FlagOption("resetKFEOnChange", 
+    		'r', "If set to true the KFE will be reset when the classificator detects a change. (Currently only working with SingleDriftClassificator)");
 	
 	//____________________________MODIFIED_CODE_FROM_OPAL__________________________________________________
 
@@ -445,6 +450,26 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 		return normVotes;
 	}
 	
+	protected boolean changeDetected()
+	{
+		if (classifier instanceof DriftDetectionMethodClassifier){
+			return ((DriftDetectionMethodClassifier)classifier).isChangeDetected();
+		}
+		return false;
+	}
+	
+	protected void onChangeDetected()
+	{
+		if(resetKFEOnChange)
+		{
+			labeledDataKernelEstimator = new PALStreamEstimatorMultivariate(bandwidth, labeledDataKernelDensityEstimatorWindowOption.getValue());
+			allDataKernelEstimator = new PALStreamEstimatorMultivariate(bandwidth, allDataKernelDensityEstimatorWindowOption.getValue());
+
+			labeledDataStandartDeviationEstimator = new StandardDeviationEstimator(numAttributes);
+			allDataStandartDeviationEstimator = new StandardDeviationEstimator(numAttributes);
+		}
+	}
+	
 	@Override
 	public boolean isRandomizable() {
 		return false;
@@ -479,6 +504,7 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 		budgetManager.resetLearning();
 		mMax = (int)mMaxOption.getValue();
 		useDensityWeight = useDensityWeightOption.isSet();
+		resetKFEOnChange = resetKFEOnChangeOption.isSet();
 		bandwidth = bandwidthOption.getValue();
 	}
 	
@@ -497,13 +523,17 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 		{
 			classifier.trainOnInstance(inst);
 			
+			if(changeDetected())
+			{
+				onChangeDetected();
+			}
+			
 			double[] removedInstance = labeledDataKernelEstimator.addValue(point);
 			labeledDataStandartDeviationEstimator.addPoint(removedInstance, point);
 		}
 
 		double[] removedInstance = allDataKernelEstimator.addValue(point);
 		allDataStandartDeviationEstimator.addPoint(removedInstance, point);
-		
 	}
 
 	@Override

@@ -207,7 +207,7 @@ public class ALZliobaite2011 extends AbstractClassifier implements ALClassifier 
             costNow = 0;
             //Use all instances at the beginning
             this.classifier.trainOnInstance(inst);
-	    this.costLabeling++;
+            this.costLabeling++;
             return;
         } else {
             costNow = (this.costLabeling - this.numInstancesInitOption.getValue()) / ((double) this.iterationControl - this.numInstancesInitOption.getValue());
