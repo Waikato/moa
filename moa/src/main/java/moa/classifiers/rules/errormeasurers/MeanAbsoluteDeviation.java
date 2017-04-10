@@ -1,6 +1,5 @@
 package moa.classifiers.rules.errormeasurers;
 
-import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
 /*

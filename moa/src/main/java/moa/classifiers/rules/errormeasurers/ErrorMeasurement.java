@@ -1,9 +1,9 @@
 package moa.classifiers.rules.errormeasurers;
 
+import moa.AbstractMOAObject;
+
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
-
-import moa.AbstractMOAObject;
 
 abstract public class ErrorMeasurement extends AbstractMOAObject {
 	

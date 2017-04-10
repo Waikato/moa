@@ -52,7 +52,7 @@ public class MultiLabelNominalAttributeObserver extends AbstractOptionHandler
 			MultiLabelSplitCriterion criterion, DoubleVector[] preSplitStatistics,
 			int inputAttributeIndex) {
 		
-		double bestSuggestionMerit=Double.MIN_VALUE;
+		double bestSuggestionMerit=-Double.MAX_VALUE;
 		AttributeExpansionSuggestion bestSuggestiong=null;
 		
 		Iterator<Entry<Integer, DoubleVector[]>> it = statisticsByNominalValue.entrySet().iterator();

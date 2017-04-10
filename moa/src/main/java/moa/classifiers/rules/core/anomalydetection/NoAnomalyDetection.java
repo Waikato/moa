@@ -2,6 +2,7 @@ package moa.classifiers.rules.core.anomalydetection;
 
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
+
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 
 public class NoAnomalyDetection extends AbstractAnomalyDetector{
@@ -27,6 +28,12 @@ public class NoAnomalyDetection extends AbstractAnomalyDetector{
 		
 	}
 	
+        public double anomalyScore;
+
+        @Override 
+        public double getAnomalyScore(){
+            return anomalyScore;
+        }
     @Override
     public String getPurposeString() {
         return "Use this class to NOT detect anomalies.";

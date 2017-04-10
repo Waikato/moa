@@ -1,10 +1,11 @@
 package moa.classifiers.rules.core;
 
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-
 import moa.AbstractMOAObject;
 import moa.core.StringUtils;
+
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceInformation;
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 
 public class NumericRulePredicate extends AbstractMOAObject implements Predicate {
 
@@ -42,9 +43,9 @@ public class NumericRulePredicate extends AbstractMOAObject implements Predicate
 	@Override
 	public void negateCondition() {
 		isEqualOrLower=!isEqualOrLower;
-		
+
 	}
-	
+
 	@Override
 	public void getDescription(StringBuilder sb, int indent) {
 		if(isEqualOrLower)
@@ -52,13 +53,28 @@ public class NumericRulePredicate extends AbstractMOAObject implements Predicate
 		else
 			StringUtils.appendIndented(sb, indent+1, "In" + inputAttributeIndex + " > " + attributeValue);
 	}
+
+	@Override
+	public void getDescription(StringBuilder sb, int indent,
+			InstanceInformation instInformation) {
+		if (instInformation!=null){
+			if(isEqualOrLower)
+				StringUtils.appendIndented(sb, indent+1, instInformation.inputAttribute(inputAttributeIndex).name()  + " <= " + attributeValue);
+			else
+				StringUtils.appendIndented(sb, indent+1, instInformation.inputAttribute(inputAttributeIndex).name()  + " > " + attributeValue);
+		}
+		else 
+			getDescription(sb,indent);
+	}
+
+
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		getDescription(sb,0);
 		return sb.toString();
 	}
-	
+
 	@Override
 	public int getAttributeIndex() {
 		return inputAttributeIndex;
