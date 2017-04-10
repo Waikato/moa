@@ -1036,6 +1036,24 @@ public final class Utils {
   }
 
   /**
+   * Returns the kth-smallest value in the array.
+   *
+   * @param array the array of integers
+   * @param k the value of k
+   * @return the kth-smallest value index in the array
+   */
+  public static int kthSmallestValueIndex(double[] array, int k) {
+
+    int[] index = new int[array.length];
+
+    for (int i = 0; i < index.length; i++) {
+      index[i] = i;
+    }
+
+    return index[select(array, index, 0, array.length - 1, k)];
+  }
+
+  /**
    * Returns the kth-smallest value in the array
    *
    * @param array the array of double
