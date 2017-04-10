@@ -76,6 +76,11 @@ public class DBALStream extends AbstractClassifier implements ALClassifier {
 	public FloatOption stepOption = new FloatOption("step", 's', 
 			"Floating budget step.", 0.01, 0, 1);
 	
+	public FloatOption numInstancesInitOption = new FloatOption(
+			"numInstancesInit", 'n', 
+			"Number of instances at beginning without active learning.",
+            0.0, 0.0, Integer.MAX_VALUE);
+	
 	private Classifier classifier;
 	private int windowSize;
 	private double threshold;
@@ -201,6 +206,15 @@ public class DBALStream extends AbstractClassifier implements ALClassifier {
 	
 	@Override
 	public void trainOnInstanceImpl(Instance inst) {
+		this.nInstances++;
+		
+		if (this.nInstances <= this.numInstancesInitOption.getValue()) {
+			// train on all initial instances without active learning
+            this.classifier.trainOnInstance(inst);
+            this.costLabeling++;
+            return;
+        }
+		
 		double[] real_class = new double[this.nClasses];
 		double[] predicted_class = new double[this.nClasses];
 		
@@ -217,14 +231,18 @@ public class DBALStream extends AbstractClassifier implements ALClassifier {
 		
         //I did this step because some times I get very low values E-300 
 		//from the getMaxPosterior and getSecondMaxPosterior function
-        map = (Double.isNaN(map)||map < 10E-5|| Double.isInfinite(map)) ? 0 : map;
+        map = (Double.isNaN(map)||map < 10E-5|| Double.isInfinite(map)) 
+        		? 0 : map;
 		beforeMap = (Double.isNaN(beforeMap) || beforeMap < 10E-5 || 
 				     Double.isInfinite(beforeMap))
 				? 0 : beforeMap;	
 		
         double margin = map - beforeMap;
-        this.nInstances++;
-		double costNow = ((double) this.costLabeling) / this.nInstances;
+		double costNow = 
+				((double) this.costLabeling - 
+				 this.numInstancesInitOption.getValue()) /
+				(this.nInstances - 
+				 this.numInstancesInitOption.getValue());
         
 		/*active learning step*/
 		if (costNow < this.budgetOption.getValue() && nCount1NN != 0){
