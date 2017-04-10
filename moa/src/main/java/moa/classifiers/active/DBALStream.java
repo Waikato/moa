@@ -71,7 +71,7 @@ public class DBALStream extends AbstractClassifier implements ALClassifier {
 			"Budget to use.", 0.1, 0, 1);
 	
 	public FloatOption thresholdOption = new FloatOption("threshold", 't',
-			"Initial threshold value.", 0.9, 0, 1);
+			"Initial threshold value.", 1.0, 0, Double.MAX_VALUE);
 	
 	public FloatOption stepOption = new FloatOption("step", 's', 
 			"Floating budget step.", 0.01, 0, 1);
