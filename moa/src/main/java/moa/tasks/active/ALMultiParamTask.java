@@ -339,7 +339,7 @@ public class ALMultiParamTask extends ALMainTask {
 					// update/add the learning curve to the learning curve collection
 					previewCollection.setPreview(i, latestPreview);
 				}
-				else
+				else if(!currentTaskThread.isComplete())
 				{
 					// skip for loop until all threads before were at least added once
 					break;
