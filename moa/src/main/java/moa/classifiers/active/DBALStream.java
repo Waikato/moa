@@ -29,7 +29,7 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import java.util.ArrayList;
 
-import weka.core.Utils;
+import moa.core.Utils;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.core.DoubleVector;
