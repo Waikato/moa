@@ -70,10 +70,10 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 
 	private static final long serialVersionUID = 1L;
 
-	private PALStreamEstimatorMultivariate labeledDataKernelEstimator; // used only for labeled data
+	private PALStreamEstimatorNaive labeledDataKernelEstimator; // used only for labeled data
 	private StandardDeviationEstimator labeledDataStandartDeviationEstimator;
 	
-	private PALStreamEstimatorMultivariate allDataKernelEstimator; // used for labeled and unlabeled data
+	private PALStreamEstimatorNaive allDataKernelEstimator; // used for labeled and unlabeled data
 	private StandardDeviationEstimator allDataStandartDeviationEstimator;
 
 	private int numClasses;
@@ -145,9 +145,11 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 	 * @return frequency estimates for each class
 	 */
 	private double[] getK(double[] inst, double[] posterior) {
-		double[] std = labeledDataStandartDeviationEstimator.getStd();
+		double[] std = allDataStandartDeviationEstimator.getStd();
 		double n = labeledDataKernelEstimator.getFrequencyEstimate(inst, std);
-
+		
+		System.out.format("STD=[%.3f,%.3f]",std[0],std[1]);
+		
 		double[] k = new double[numClasses];
 		for(int cIdx = 0; cIdx < numClasses; ++cIdx)
 		{
@@ -421,6 +423,8 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 		
 		double perfGain = getPerfGain(k);
 		
+		System.out.format("p=[%.3f,%.3f], n=%.2f, d=%.2f, ",cp[0],cp[1],k[0]+k[1],density);
+		
 		return density * perfGain;	
 	}
 	
@@ -462,8 +466,8 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 	{
 		if(resetKFEOnChange)
 		{
-			labeledDataKernelEstimator = new PALStreamEstimatorMultivariate(bandwidth, labeledDataKernelDensityEstimatorWindowOption.getValue());
-			allDataKernelEstimator = new PALStreamEstimatorMultivariate(bandwidth, allDataKernelDensityEstimatorWindowOption.getValue());
+			labeledDataKernelEstimator = new PALStreamEstimatorNaive(bandwidth, labeledDataKernelDensityEstimatorWindowOption.getValue());
+			allDataKernelEstimator = new PALStreamEstimatorNaive(bandwidth, allDataKernelDensityEstimatorWindowOption.getValue());
 
 			labeledDataStandartDeviationEstimator = new StandardDeviationEstimator(numAttributes);
 			allDataStandartDeviationEstimator = new StandardDeviationEstimator(numAttributes);
@@ -493,8 +497,8 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 			distributions.add(getAllDistributionPossibilities(m, numClasses));
 		}
 
-		labeledDataKernelEstimator = new PALStreamEstimatorMultivariate(bandwidth, labeledDataKernelDensityEstimatorWindowOption.getValue());
-		allDataKernelEstimator = new PALStreamEstimatorMultivariate(bandwidth, allDataKernelDensityEstimatorWindowOption.getValue());
+		labeledDataKernelEstimator = new PALStreamEstimatorNaive(bandwidth, labeledDataKernelDensityEstimatorWindowOption.getValue());
+		allDataKernelEstimator = new PALStreamEstimatorNaive(bandwidth, allDataKernelDensityEstimatorWindowOption.getValue());
 
 		labeledDataStandartDeviationEstimator = new StandardDeviationEstimator(numAttributes);
 		allDataStandartDeviationEstimator = new StandardDeviationEstimator(numAttributes);
@@ -515,6 +519,12 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 		{
 			point[i] = inst.value(i);
 		}
+
+		System.out.format("%2.3f,%2.3f || ",point[0],point[1]);
+		
+		double[] removedInstance = allDataKernelEstimator.addValue(point);
+		allDataStandartDeviationEstimator.addPoint(removedInstance, point);
+		
 		double alScore = getAlScore(inst);
 		
 		boolean acquireLabel = budgetManager.isAbove(alScore);
@@ -528,12 +538,12 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 				onChangeDetected();
 			}
 			
-			double[] removedInstance = labeledDataKernelEstimator.addValue(point);
-			labeledDataStandartDeviationEstimator.addPoint(removedInstance, point);
+			double[] removedInstance2 = labeledDataKernelEstimator.addValue(point);
+			labeledDataStandartDeviationEstimator.addPoint(removedInstance2, point);
 		}
-
-		double[] removedInstance = allDataKernelEstimator.addValue(point);
-		allDataStandartDeviationEstimator.addPoint(removedInstance, point);
+		
+		System.out.format("gain=%.3f, %b \n",alScore,acquireLabel);
+		
 	}
 
 	@Override

@@ -24,13 +24,14 @@ package moa.classifiers.active;
  * for each feature separately.
  *
  * @author Tuan Pham Minh (tuan.pham@ovgu.de)
- * @version $Revision: 1 $
+ * @author Daniel Kottke (daniel.kottke@uni-kassel.de)
+ * @version $Revision: 2 $
  */
 public class StandardDeviationEstimator {
 	// mean, standard deviation and variance for all features
-	double[] mean;
+	double[] sum;
+	double[] sumsq;
 	double[] std;
-	double[] var;
 	// number of features
 	int numFeatures;
 	// number of observed instances
@@ -42,10 +43,13 @@ public class StandardDeviationEstimator {
 	 */
 	public StandardDeviationEstimator(int numFeatures) {
 		this.numFeatures = numFeatures;
-		mean = new double[numFeatures];
+		sum = new double[numFeatures];
+		sumsq = new double[numFeatures];
 		std = new double[numFeatures];
-		var = new double[numFeatures];
 		numInstances = 0;
+		for (int i = 0; i < numFeatures; ++i) {
+			std[i] = 1;
+		}
 	}
 
 	/**
@@ -54,40 +58,34 @@ public class StandardDeviationEstimator {
 	 * @param newElement the instance which will be added to the observation
 	 */
 	public void addPoint(double[] removedElement, double[] newElement) {
+		// increase the number of instances 
+		if (newElement != null) {
+			++numInstances;			
+		}
+		if (removedElement != null) {
+			--numInstances;			
+		}
+		
+		
 		// iterate over all features to calculate the values for each feature separately
 		for (int i = 0; i < numFeatures; ++i) {
-			// old mean and variance
-			double oldMean = mean[i];
-			double oldVar = var[i];
-			// the value of the i-th feature of the new instance
-			double xn = newElement[i];
+
+			sum[i] += newElement[i];
+			sumsq[i] += newElement[i]*newElement[i];
+			
 			// check if an instance is removed or not
-			if (removedElement == null) {
-				// increase the number of instances if none is removed
-				++numInstances;
-				// calculate the difference between xn and the old mean
-				double t = xn-oldMean;
-				// incremetal calculation of variance and mean for the case
-				// that no element is removed
-				var[i] = ((numInstances-2.0)/(numInstances-1.0))*oldVar+t*(t/numInstances);
-				mean[i] += t/numInstances;
-			} else {
-				// the value of the i-th feature of the instance which will be removed
-				double x0 = removedElement[i];
-				// incremetal calculation of variance and mean for the case
-				// that one element is removed
-				mean[i] += (-x0 + xn)/numInstances;
-				var[i] += ((xn - x0) * ((xn+x0) - (oldMean + mean[i])))/(numInstances-1);
+			if (removedElement != null) {
+				// increase the number of instances 
+				sum[i] -= removedElement[i];
+				sumsq[i] -= removedElement[i]*removedElement[i];
 			}
 			
-			// calculate the standard derivation from the variance
-			std[i] = Math.sqrt(var[i]);
-			
 			// set the variance and standard derivation to zero if the number of instances is zero
-			if(numInstances == 1)
-			{
-				var[i] = 0;
-				std[i] = 0;
+			if(numInstances < 2){
+				std[i] = 1;
+			}
+			else{
+				std[i] = Math.sqrt((sumsq[i] - (sum[i]*sum[i]/numInstances))/numInstances);
 			}
 		}
 	}
