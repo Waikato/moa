@@ -2,6 +2,7 @@ package moa.classifiers.rules.core.anomalydetection;
 
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
+
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 
 public class NoAnomalyDetection extends AbstractAnomalyDetector{

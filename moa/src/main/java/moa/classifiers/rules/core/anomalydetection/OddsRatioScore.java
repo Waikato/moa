@@ -105,11 +105,12 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 						}
 					}
 				}
-		}			else
-			{
-				//System.out.println("Anomaly = " + anomaly + "#instances: " + weightSeen);
-				//printAnomaly(instance, anomaly);
-			}
+		}			
+		/*else
+		{
+			//System.out.println("Anomaly = " + anomaly + "#instances: " + weightSeen);
+			printAnomaly(instance, anomaly);
+		}*/
 		return isAnomaly;
 	}
 

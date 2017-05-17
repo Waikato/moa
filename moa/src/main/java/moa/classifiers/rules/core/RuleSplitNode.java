@@ -19,10 +19,10 @@
  */
 package moa.classifiers.rules.core;
 
-import com.yahoo.labs.samoa.instances.Instance;
-
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.classifiers.trees.HoeffdingTree.SplitNode;
+
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * A modified SplitNode method implementing the extra information
