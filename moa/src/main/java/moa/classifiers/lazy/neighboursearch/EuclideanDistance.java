@@ -222,7 +222,83 @@ public class EuclideanDistance
       				     double value) {  //This stays
     return instance.value(dim) <= value;
   }
-  
 
+
+  public double attributeSqDistance(Instance first, Instance second, int attributeIndex)
+  {
+    validate();
+    double d = -1;
+	
+    if(Double.isNaN(first.valueSparse(attributeIndex)) && Double.isNaN(second.valueSparse(attributeIndex))) {
+      return 1; // assume attributes are different if both are missing
+    }else
+    if(Double.isNaN(first.valueSparse(attributeIndex))) {
+      d = difference(attributeIndex, 0, second.valueSparse(attributeIndex));
+      //System.out.println("d 1 missing " + d);
+    } else
+    if(Double.isNaN(second.valueSparse(attributeIndex))) {
+      d = difference(attributeIndex, first.valueSparse(attributeIndex), 0);
+      //System.out.println("d 2 missing " + d);
+    }
+	
+    d = difference(attributeIndex,first.valueSparse(attributeIndex),second.valueSparse(attributeIndex));
+
+    // if for some reason the difference returned was a NaN then return 1
+    if (Double.isNaN(d))
+      return 1;
+    return d*d;
+  }
+
+  /**
+   * calculates the normalised squared euclidean distance between two instances for a given attribute
+   *
+   * @param v1 value of attribute for first instance
+   * @param v2 value of attribute for second instance
+   * @param attributeIndex index of attribute
+     * @return
+     */
+  public double attributeSqDistance(double v1, double v2, int attributeIndex)
+  {
+    validate();
+    double d = -1;
+    if(Double.isNaN(v1) && Double.isNaN(v2)) {
+      return 1; // assume attributes are different if both are missing
+    }else
+    if(Double.isNaN(v1)) {
+      d = difference(attributeIndex, 0, v2);
+      //System.out.println("d 1 missing " + d);
+    } else
+    if(Double.isNaN(v2)) {
+      d = difference(attributeIndex, v1, 0);
+      //System.out.println("d 2 missing " + d);
+    }
+    d = difference(attributeIndex,v1,v2);
+
+    // if for some reason the difference returned was a NaN then return 1
+    if (Double.isNaN(d))
+      return 1;
+    return d*d;
+  }
+
+  /**
+   * sets all attributes other than the indices in the array as inactive
+   * @param activeAttributes indices of active attributes
+   */
+  public void setAttributeIndices(int[] activeAttributes)
+  {
+    m_ActiveIndices = new boolean[m_Data.numAttributes()];
+    for (int i = 0; i < m_ActiveIndices.length; i++)
+      m_ActiveIndices[i] = false;
+    for (int i = 0; i < activeAttributes.length; i++)
+    {
+      m_ActiveIndices[activeAttributes[i]] = true; //m_AttributeIndices.isInRange(i);
+    }
+  }
+
+  public double normalise(double v, int i)
+  {
+    validate();
+    return norm(v,i);
+  }
     
 }
