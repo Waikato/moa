@@ -24,6 +24,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
+import moa.classifiers.Regressor;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
@@ -79,7 +80,7 @@ import moa.options.ClassOption;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class OzaBagAdwin extends AbstractClassifier {
+public class OzaBagAdwin extends AbstractClassifier implements Classifier, Regressor {
 
     private static final long serialVersionUID = 1L;
 

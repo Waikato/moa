@@ -45,7 +45,7 @@ public class LearnModelRegression extends RegressionMainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Learner to train.", Regressor.class, "moa.classifiers.trees.FIMTDD");
+            "Learner to train.", Regressor.class, "moa.classifiers.trees.HoeffdingTree");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,

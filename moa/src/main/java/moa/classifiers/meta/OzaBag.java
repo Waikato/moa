@@ -24,6 +24,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
+import moa.classifiers.Regressor;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
@@ -49,7 +50,7 @@ import moa.options.ClassOption;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class OzaBag extends AbstractClassifier {
+public class OzaBag extends AbstractClassifier implements Regressor, Classifier {
 
     @Override
     public String getPurposeString() {

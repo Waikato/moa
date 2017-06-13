@@ -44,7 +44,7 @@ import moa.core.StringUtils;
  * Implementation of ORTO, option trees for data streams.
  */
 
-public class ORTO extends FIMTDD implements Regressor {
+public class ORTO2 extends FIMTDD2 implements Regressor {
 
 	private static final long serialVersionUID = 1L;
 
@@ -97,7 +97,7 @@ public class ORTO extends FIMTDD implements Regressor {
 		protected double[] optionFFSSL;
 		protected double[] optionFFSeen;
 
-		public OptionNode(FIMTDD tree) {
+		public OptionNode(FIMTDD2 tree) {
 			super(tree);
 		}
 		
@@ -141,13 +141,13 @@ public class ORTO extends FIMTDD implements Regressor {
 		}
 
 		private double aggregate(double[] predictions) {
-			if (((ORTO) tree).optionNodeAggregationOption.getChosenIndex() == 0) { // Average
+			if (((ORTO2) tree).optionNodeAggregationOption.getChosenIndex() == 0) { // Average
 				double sum = 0.0;
 				for (int i = 0; i < predictions.length; i++) {
 					sum += predictions[i];
 				}
 				return sum / predictions.length;
-			} else if (((ORTO) tree).optionNodeAggregationOption.getChosenIndex() == 1) {
+			} else if (((ORTO2) tree).optionNodeAggregationOption.getChosenIndex() == 1) {
 				int d = directionForBestTree();
 				return predictions[d];
 			} else {

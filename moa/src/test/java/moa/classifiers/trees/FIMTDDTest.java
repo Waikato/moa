@@ -50,7 +50,7 @@ public class FIMTDDTest extends AbstractMultipleRegressorTestCase {
   @Override
   protected Classifier[] getRegressionClassifierSetups() {
     return new Classifier[]{
-	new FIMTDD(),
+	new FIMTDD2(),
     };
   }
   
