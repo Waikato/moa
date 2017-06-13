@@ -48,14 +48,14 @@ import moa.options.ClassOption;
  * Implementation of FIMTDD, regression and model trees for data streams.
  */
 
-public class FIMTDD extends AbstractClassifier implements Regressor {
+public class FIMTDD2 extends AbstractClassifier implements Regressor {
 
 	private static final long serialVersionUID = 1L;
 
 	public Node treeRoot;
 
-	protected int leafNodeCount = 0;
-	protected int splitNodeCount = 0;
+	public int leafNodeCount = 0;
+	public int splitNodeCount = 0;
 
 	protected double examplesSeen = 0.0;
 	protected double sumOfValues = 0.0;
@@ -117,6 +117,10 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 	public FlagOption learningRatioConstOption = new FlagOption(
 			"learningRatioConst", 'p', "Keep learning rate constant instead of decaying.");
+	
+	public IntOption maxDepthOption = new IntOption(
+			"maxDepthFactor", 'b', "The maximum depth of the tree.",
+			Integer.MAX_VALUE, 0, Integer.MAX_VALUE);
 
 	//endregion ================ OPTIONS ================
 
@@ -128,7 +132,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 		public int ID;
 
-		protected FIMTDD tree;
+		protected FIMTDD2 tree;
 		
 		protected boolean changeDetection = true;
 		
@@ -147,7 +151,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		// Sum of absolute errors
 		protected double sumOfAbsErrors; // Needed for PH tracking of mean error
 
-		public Node(FIMTDD tree) {
+		public Node(FIMTDD2 tree) {
 			this.tree = tree;
 			ID = tree.maxID; 
 		}
@@ -226,6 +230,10 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			return 1;
 		}
 
+		public int numLeaves() {
+			return 1;
+		}
+		
 		protected boolean skipInLevelCount() {
 			return false;
 		}
@@ -248,7 +256,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		/**
 		 * Create a new LeafNode
 		 */
-		public LeafNode(FIMTDD tree) {
+		public LeafNode(FIMTDD2 tree) {
 			super(tree);
 			if (tree.buildingModelTree()) {
 				learningModel = tree.newLeafModel();
@@ -381,7 +389,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		
 		public void checkForSplit(Instance inst, double prediction) {
 			// If it has seen Nmin examples since it was last tested for splitting, attempt a split of this node
-			if (examplesSeen - examplesSeenAtLastSplitEvaluation >= tree.gracePeriodOption.getValue()) {
+			if (this.getLevel() < tree.maxDepthOption.getValue() && examplesSeen - examplesSeenAtLastSplitEvaluation >= tree.gracePeriodOption.getValue()) {
 				int index = (parent != null) ? parent.getChildIndex(this) : 0;
 				tree.attemptToSplit(this, parent, index, inst, prediction);
 
@@ -421,7 +429,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		protected double lossSumQi;
 		protected double previousWeight = 0;
 		
-		public InnerNode(FIMTDD tree) {
+		public InnerNode(FIMTDD2 tree) {
 			super(tree);
 		}
 		
@@ -436,6 +444,12 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			return children.size();
 		}
 
+		public int numLeaves() {
+			int leaves = 0;
+			for (Node child : children) leaves += child.numLeaves();
+			return leaves;
+		}
+		
 		public Node getChild(int index) {
 			return children.get(index);
 		}
@@ -516,7 +530,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		 * Create a new SplitNode
 		 * @param tree 
 		 */
-		public SplitNode(InstanceConditionalTest splitTest, FIMTDD tree) {
+		public SplitNode(InstanceConditionalTest splitTest, FIMTDD2 tree) {
 			super(tree);
 			this.splitTest = splitTest;
 		}
@@ -558,7 +572,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 		private static final long serialVersionUID = 1L;
 		
-		protected FIMTDD tree;
+		protected FIMTDD2 tree;
 		
 		// The Perception weights 
 		protected double[] weightAttribute; 
@@ -576,7 +590,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			instancesSeen = original.instancesSeen / 2;
 		}
 
-		public FIMTDDPerceptron(FIMTDD tree) {
+		public FIMTDDPerceptron(FIMTDD2 tree) {
 			this.tree = tree;
 			initializeWeights();
 
@@ -837,6 +851,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 							// Switch the subtrees
 							Node parent = iNode.getParent();
 
+							System.out.println("Switching trees!");
 							if (parent != null) {
 								Node replacementTree = iNode.alternateTree;
 								parent.setChild(parent.getChildIndex(iNode), replacementTree);
@@ -845,6 +860,8 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 								treeRoot = iNode.alternateTree;
 								treeRoot.restartChangeDetection();
 							}
+							leafNodeCount += iNode.alternateTree.numLeaves() - iNode.numLeaves();
+
 
 							currentNode = iNode.alternateTree;
 							currentNode.originalNode = null;
@@ -865,6 +882,7 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 				if (iNode.changeDetection && !inAlternate) {
 					if (iNode.PageHinckleyTest(normalError - iNode.sumOfAbsErrors / iNode.examplesSeen - PageHinckleyAlphaOption.getValue(), PageHinckleyThresholdOption.getValue())) {
+						System.out.println("CD triggered!");
 						iNode.initializeAlternateTree();
 						growthAllowed = false;
 					}

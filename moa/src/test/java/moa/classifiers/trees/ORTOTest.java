@@ -51,7 +51,7 @@ public class ORTOTest
   @Override
   protected Classifier[] getRegressionClassifierSetups() {
     return new Classifier[]{
-	new ORTO(),
+	new ORTO2(),
     };
   }
   
