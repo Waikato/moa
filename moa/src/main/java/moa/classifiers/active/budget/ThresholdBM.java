@@ -26,22 +26,23 @@ import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
 public class ThresholdBM extends AbstractOptionHandler implements BudgetManager {
-	
+
+    
+    public FloatOption thresholdOption = new FloatOption("threshold",
+    		't', "The threshold which has to be exceeded to acquire the label.",
+    		0.1, 0.00, 1.00);
+    
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	int acquisitionReport = 0;
-
-    public FloatOption fixedThresholdOption = new FloatOption("fixedThreshold",
-            'u', "Fixed threshold.",
-            0.9, 0.00, 1.00);
-    
+	
 	@Override
 	public boolean isAbove(double value) {
 		boolean acquire = false;
-		if (value >= this.fixedThresholdOption.getValue())
+		if (value >= thresholdOption.getValue())
 			acquire = true;
 		if (acquire)
 			this.acquisitionReport++;

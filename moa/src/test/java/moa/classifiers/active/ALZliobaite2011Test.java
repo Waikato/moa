@@ -14,7 +14,7 @@
  */
 
 /**
- * ActiveClassifierTest.java
+ * ALZliobaite2011Test.java
  * Copyright (C) 2013 University of Waikato, Hamilton, New Zealand
  */
 package moa.classifiers.active;
@@ -26,12 +26,12 @@ import moa.classifiers.Classifier;
 import static moa.test.MoaTestCase.runTest;
 
 /**
- * Tests the ActiveClassifier classifier.
+ * Tests the ALZliobaite2011 classifier.
  * 
  * @author  fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class ActiveClassifierTest
+public class ALZliobaite2011Test
   extends AbstractMultipleClassifierTestCase {
 
   /**
@@ -39,7 +39,7 @@ public class ActiveClassifierTest
    *
    * @param name 	the name of the test
    */
-  public ActiveClassifierTest(String name) {
+  public ALZliobaite2011Test(String name) {
     super(name);
     this.setNumberTests(1);
   }
@@ -62,7 +62,7 @@ public class ActiveClassifierTest
    * @return		the test suite
    */
   public static Test suite() {
-    return new TestSuite(ActiveClassifierTest.class);
+    return new TestSuite(ALZliobaite2011Test.class);
   }
 
   /**

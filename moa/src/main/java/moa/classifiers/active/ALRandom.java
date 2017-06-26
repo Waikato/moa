@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
@@ -96,5 +97,10 @@ public class ALRandom extends AbstractClassifier implements ALClassifier {
         ((AbstractClassifier) this.classifier).getModelDescription(out, indent);
 		
 	}
-
+	
+	@Override
+	public void setModelContext(InstancesHeader ih) {
+		super.setModelContext(ih);
+		classifier.setModelContext(ih);
+	}
 }

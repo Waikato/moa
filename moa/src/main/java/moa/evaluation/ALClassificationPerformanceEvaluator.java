@@ -19,6 +19,8 @@
  */
 package moa.evaluation;
 
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.core.Example;
 
 /**
@@ -27,7 +29,7 @@ import moa.core.Example;
  * @author Daniel Kottke (daniel.kottke@ovgu.de)
  * @version $Revision: 1 $
  */
-public interface ALEvaluator<E extends Example<?>>  {
+public interface ALClassificationPerformanceEvaluator extends ClassificationPerformanceEvaluator {
 	
 	   /**
 	     * Reports if a label of an instance was acquired.
@@ -36,6 +38,6 @@ public interface ALEvaluator<E extends Example<?>>  {
 	     * @param labelAcquired bool type which indicates if trainInst 
 	     *        was acquired by the active learner
 	     */
-		public void doLabelAcqReport(E trainInst, int labelAcquired);
+		public void doLabelAcqReport(Example<Instance> trainInst, int labelAcquired);
 
 }

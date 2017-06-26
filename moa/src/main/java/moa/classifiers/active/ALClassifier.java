@@ -27,7 +27,7 @@ import moa.classifiers.Classifier;
  * @author Daniel Kottke (daniel dot kottke at ovgu dot de)
  * @version $Revision: 1 $
  */
-public interface ALClassifier{
+public interface ALClassifier extends Classifier {
 
    /**
      * Returns true if the previously chosen instance was added to the training set 
