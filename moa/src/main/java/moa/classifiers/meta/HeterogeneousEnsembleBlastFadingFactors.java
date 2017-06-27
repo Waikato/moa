@@ -22,6 +22,35 @@ package moa.classifiers.meta;
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
+/**
+ * BLAST (Best Last) for Heterogeneous Ensembles implemented with Fading Factors
+ *
+ * <p>
+ * Given a set of (heterogeneous) classifiers, BLAST builds an ensemble, and
+ * determines the weights of all ensemble members based on their performance on
+ * recent observed instances. This implementation uses fading factors, to
+ * emphasize the importance of recent predictions and fade away old predictions.
+ * </p>
+ *
+ * <p>
+ * J. N. van Rijn, G. Holmes, B. Pfahringer, J. Vanschoren. Having a Blast:
+ * Meta-Learning and Heterogeneous Ensembles for Data Streams. In 2015 IEEE
+ * International Conference on Data Mining, pages 1003-1008. IEEE, 2015.
+ * </p>
+ *
+ * <p>
+ * Parameters:
+ * </p>
+ * <ul>
+ * <li>-f : Fading factor</li>
+ * <li>-b : Comma-separated string of classifiers</li>
+ * <li>-g : Grace period (1 = optimal)</li>
+ * <li>-k : Number of active classifiers</li>
+ * </ul>
+ *
+ * @author Jan N. van Rijn (j.n.van.rijn@liacs.leidenuniv.nl)
+ * @version $Revision: 1 $
+ */
 public class HeterogeneousEnsembleBlastFadingFactors
 		extends HeterogeneousEnsembleAbstract {
 

@@ -37,6 +37,34 @@ import moa.core.ObjectRepository;
 import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 
+/**
+ * BLAST (Best Last) for Heterogeneous Ensembles Abstract Base Class
+ *
+ * <p>
+ * Given a set of (heterogeneous) classifiers, BLAST builds an ensemble, and
+ * determines the weights of all ensemble members based on their performance on
+ * recent observed instances. Used as Abstact Base Class for 
+ * HeterogeneousEnsembleBlast and HeterogeneousEnsembleBlastFadingFactors. 
+ * </p>
+ *
+ * <p>
+ * J. N. van Rijn, G. Holmes, B. Pfahringer, J. Vanschoren. Having a Blast:
+ * Meta-Learning and Heterogeneous Ensembles for Data Streams. In 2015 IEEE
+ * International Conference on Data Mining, pages 1003-1008. IEEE, 2015.
+ * </p>
+ *
+ * <p>
+ * Parameters:
+ * </p>
+ * <ul>
+ * <li>-b : Comma-separated string of classifiers</li>
+ * <li>-g : Grace period (1 = optimal)</li>
+ * <li>-k : Number of active classifiers</li>
+ * </ul>
+ *
+ * @author Jan N. van Rijn (j.n.van.rijn@liacs.leidenuniv.nl)
+ * @version $Revision: 1 $
+ */
 public abstract class HeterogeneousEnsembleAbstract extends AbstractClassifier {
 
 	private static final long serialVersionUID = 1L;
