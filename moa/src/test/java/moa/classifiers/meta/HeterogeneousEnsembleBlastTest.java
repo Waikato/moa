@@ -49,7 +49,7 @@ public class HeterogeneousEnsembleBlastTest
 	}
 
 	@org.junit.Test
-	protected void testSetup() { // TODO: test case doesn't run
+	public void testSetup() { // TODO: test case doesn't run
 		// checks whether differently initialized ensembles are what they claim to
 		// be.
 
