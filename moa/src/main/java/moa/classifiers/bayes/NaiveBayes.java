@@ -1,22 +1,4 @@
-/*
- *    NaiveBayes.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
- *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
- */
+
 package moa.classifiers.bayes;
 
 import moa.classifiers.AbstractClassifier;
@@ -81,9 +63,7 @@ public class NaiveBayes extends AbstractClassifier {
     @Override
     public double[] getVotesForInstance(Instance inst) {
         double [] v = doNaiveBayesPrediction(inst, this.observedClassDistribution, this.attributeObservers); 
-        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        //System.out.print("NaiveBayes.getVotesForInstance: v[]= " + v[0] + " " + v[1] + "\n");
-        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx    
+  
         double [] vote=new double[1];
         vote[0]=v[0]<v[1]?1:0;
         
@@ -136,19 +116,8 @@ public class NaiveBayes extends AbstractClassifier {
 
     public static double[] doNaiveBayesPrediction(Instance inst,DoubleVector observedClassDistribution,AutoExpandVector<AttributeClassObserver> attributeObservers) {
         
-        
+       
         //RS
-        // o numValues é 1 quando devia ser dois
-        // A predição está a usar outros outputAttributes
-     
-        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        //System.out.print("NaiveBayes.doNaiveBayesPrediction: numAttributes = " + inst.numAttributes() + "\n");
-        //System.out.print("NaiveBayes.doNaiveBayesPrediction: numOutputAttributes = " + inst.numOutputAttributes() + "\n");
-        //System.out.print("NaiveBayes.doNaiveBayesPrediction: numInputAttributes = " + inst.numInputAttributes() + "\n");
-        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        
-        //RS
-        //==============================
         //double[] votes = new double[observedClassDistribution.numValues()];
         double[] votes = new double[inst.numClasses()];
         double observedClassSum = observedClassDistribution.sumOfValues();

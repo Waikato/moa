@@ -85,7 +85,6 @@ public class AMRulesRegressorOld extends AbstractAMRules implements Regressor{
 	 */
 	private static final long serialVersionUID = 5988040868275521928L;
 
-	//============================= SET OPTIONS ==============================//
 	
 	public FlagOption constantLearningRatioDecayOption = new FlagOption(
 			"learningRatio_Decay_set_constant", 'd',
@@ -110,10 +109,6 @@ public class AMRulesRegressorOld extends AbstractAMRules implements Regressor{
 			AMRulesSplitCriterion.class,
 			"VRSplitCriterion");
 
-	//============================= END SET OPTIONS ==============================//
-
-	
-	//============================== Classes ====================================//
 
 	protected Rule newRule(int ID, RuleActiveLearningNode node, double[] statistics) {
 		Rule r=newRule(ID);

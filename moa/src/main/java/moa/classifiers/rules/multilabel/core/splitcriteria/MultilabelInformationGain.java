@@ -1,7 +1,21 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *    MultilabelInformationGain.java
+ *    Copyright (C) 2017 University of Porto, Portugal
+ *    @author R. Sousa, J. Gama
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *    
+ *    
  */
 package moa.classifiers.rules.multilabel.core.splitcriteria;
 
@@ -12,12 +26,20 @@ import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
 /**
- *
+ * Multi-label Information Gain. 
+ * Online Multi-label Classification heuristic for AMRules.
+ * 
  * @author RSousa
  */
 public class MultilabelInformationGain  extends AbstractOptionHandler implements MultiLabelSplitCriterion{
    
 
+    @Override
+    public String getPurposeString() {
+        return "Online Multi-label Classification heuristic for AMRules.";
+    }
+	
+	
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -29,21 +51,14 @@ public class MultilabelInformationGain  extends AbstractOptionHandler implements
 		for (int i=0; i<numOutputs; i++)
 			error+=getMeritOfSplitForOutput(preSplitDist,postSplitDists,i);
 		
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                //System.out.print("MultilabelInformationGain.getMeritOfSplit: merit " +  error + "  " + numOutputs +  "\n\n");
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                
-                
                 return error/numOutputs;
 	}
 	
 	public double[] getBranchSplitEntropyOutput(DoubleVector[] postSplitDists) {
 		double[] entropies = new double[postSplitDists.length];
 		for(int i = 0; i < postSplitDists.length; i++){
-                        //====================================================
 			entropies[i]=Utils.computeEntropy(postSplitDists[i]);
-                        //====================================================
-                }
+        }
 		return entropies;
 	}
 	
@@ -51,25 +66,12 @@ public class MultilabelInformationGain  extends AbstractOptionHandler implements
 	@Override
 	public double [] getBranchesSplitMerits(DoubleVector[][] postSplitDists){
 		
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                //System.out.print("MultilabelInformationGain.getBranchesSplitMerits: " +  postSplitDists.length +  "\n\n");
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-            
-                int numOutputs=postSplitDists.length;
-		int numBranches=postSplitDists[0].length;
-                
-                
+        int numOutputs=postSplitDists.length;
+		int numBranches=postSplitDists[0].length; 
 		double [] merits=new double[numBranches];
 			for(int j=0; j<numOutputs;j++)
 			{
 				double [] branchMeritsOutput=getBranchSplitEntropyOutput(postSplitDists[j]);
-				/* double weightTotal=0;
-				for (int i=0; i<numBranches;i++){
-					weightTotal+=postSplitDists[j][i].getValue(0)/weightTotal*postSplitDists[j][i].getValue(0);
-				}
-				for (int i=0; i<numBranches;i++){
-					merits[i]+=postSplitDists[j][i].getValue(0)/weightTotal*branchMeritsOutput[i];
-				}*/
 				
 				for (int i=0; i<numBranches;i++){
 					if (postSplitDists[j][i].getValue(0)>0)
@@ -87,12 +89,7 @@ public class MultilabelInformationGain  extends AbstractOptionHandler implements
 
 	protected double getMeritOfSplitForOutput(DoubleVector preSplitDist, DoubleVector[] postSplitDists) {
 		double merit=0;
-                
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                //System.out.print("MultilabelInformation.getMeritOfSplitForOutput: " + "\n\n");
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                
-                
+    
 		//count number of branches with weightSeen higher than threshold
 		int count = 0; 
 		for(int i = 0; i < postSplitDists.length; i++)
@@ -102,34 +99,18 @@ public class MultilabelInformationGain  extends AbstractOptionHandler implements
 		//Consider split if all branches have required weight seen
 		if(count == postSplitDists.length){
 			
-                        //===================================================
-                        double EntPreSplit=Utils.computeEntropy(preSplitDist);
+            double EntPreSplit=Utils.computeEntropy(preSplitDist);
 			double sumEntPostSplit=0;
 			double weightTotal=0;
 			for (int i=0; i<postSplitDists.length;i++){
 				weightTotal+=postSplitDists[i].getValue(0);
 			}
 			double [] Entropies=getBranchSplitEntropyOutput(postSplitDists);
-                        
-                        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                        //for(int ii=0; ii<Entropies.length ; ii++)
-                            //System.out.print("MultilabelInformation.getMeritOfSplitForOutput: Entropies[i]" + Entropies[ii] +  "\n\n");
-                       //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                        
-                        
+       
 			for(int i = 0; i < Entropies.length; i++)
 				if(postSplitDists[i].getValue(0)>0)
 					sumEntPostSplit+=(postSplitDists[i].getValue(0)/weightTotal*Entropies[i]);  //weight variance
-			
-                        
-                        merit=(EntPreSplit-sumEntPostSplit);
-                        
-                        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                        //System.out.print("MultilabelInformation.getMeritOfSplitForOutput: EntPreSplit,sumEntPostSplit " + EntPreSplit + "  " + sumEntPostSplit +  "\n\n");
-                       //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                
-                        
-                        //===================================================
+                    merit=(EntPreSplit-sumEntPostSplit);
 		}
 		/*if(merit<0 || merit>1)
 			System.out.println("out of range");*/
