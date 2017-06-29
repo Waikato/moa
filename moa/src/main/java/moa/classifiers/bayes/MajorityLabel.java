@@ -1,7 +1,21 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *    AMRulesMultiLabel.java
+ *    Copyright (C) 2017 University of Porto, Portugal
+ *    @author R. Sousa, J. Gama
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *    
+ *    
  */
 package moa.classifiers.bayes;
 
@@ -39,12 +53,7 @@ public class MajorityLabel extends AbstractClassifier {
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
-        
-        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        //System.out.print("\n MajorityLabel.trainOnInstanceImpl:\n");        
-        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
-        
-        
+
         this.observedClassDistribution.addToValue((int) inst.classValue(), inst.weight());
         for (int i = 0; i < inst.numAttributes() - 1; i++) {
             int instAttIndex = modelAttIndexToInstanceAttIndex(i, inst);
@@ -61,9 +70,6 @@ public class MajorityLabel extends AbstractClassifier {
     public double[] getVotesForInstance(Instance inst) {
        
         double [] v = doMajorityLabelPrediction(inst, this.observedClassDistribution, this.attributeObservers); 
-        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        //System.out.print("MajorityLabel.getVotesForInstance: v[]= " + v[0] + " " + v[1] + "\n");
-        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx    
         double [] vote=new double[1];
         vote[0]=v[0]<v[1]?1:0;
         
@@ -117,21 +123,8 @@ public class MajorityLabel extends AbstractClassifier {
     public static double[] doMajorityLabelPrediction(Instance inst,DoubleVector observedClassDistribution,AutoExpandVector<AttributeClassObserver> attributeObservers) {
         
         
-        //RS
-        // o numValues é 1 quando devia ser dois
-        // A predição está a usar outros outputAttributes
-     
-        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        //System.out.print("MajorityLabel.doMajorityLabelPrediction: numAttributes = " + inst.numAttributes() + "\n");
-        //System.out.print("MajorityLabel.doMajorityLabelPrediction: numOutputAttributes = " + inst.numOutputAttributes() + "\n");
-        //System.out.print("MajorityLabel.doMajorityLabelPrediction: numInputAttributes = " + inst.numInputAttributes() + "\n");
-        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        
-        //RS
-        //==============================
         //double[] votes = new double[observedClassDistribution.numValues()];
         double[] votes = new double[inst.numClasses()];
-        //==============================
         
         double observedClassSum = observedClassDistribution.sumOfValues();
         
@@ -139,31 +132,10 @@ public class MajorityLabel extends AbstractClassifier {
             
             votes[classIndex] = observedClassDistribution.getValue(classIndex)/ observedClassSum;
             
-            //==================================================================
-            /*for (int attIndex = 0; attIndex < inst.numAttributes() - 1; attIndex++) {
-                
-                int instAttIndex = modelAttIndexToInstanceAttIndex(attIndex,inst);
-                AttributeClassObserver obs = attributeObservers.get(attIndex);
-                
-                if ((obs != null) && !inst.isMissing(instAttIndex)) {
-                    votes[classIndex] *= obs.probabilityOfAttributeValueGivenClass(inst.value(instAttIndex), classIndex);
-                }
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                //System.out.print("MajorityLabel.doMajorityLabelPrediction: attIndex=" + attIndex + "instAttIndex = " + instAttIndex + " AttName=" + inst.attribute(instAttIndex).name() + "\n");
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-            }*/
-            //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-            //System.out.print("MajorityLabel.doMajorityLabelPrediction:" + classIndex + " " + votes[classIndex] + "\n");
-            //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-            //==================================================================
         }
         // TODO: need logic to prevent underflow?
         
-        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-        //System.out.print("MajorityLabel.doMajorityLabelPrediction:" + votes[1] + " " + votes.length + "\n");
-        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
         return votes;
     }
 

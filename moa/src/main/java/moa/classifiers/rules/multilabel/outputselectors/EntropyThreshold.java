@@ -1,7 +1,21 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *    EntropyThreshold.java
+ *    Copyright (C) 2017 University of Porto, Portugal
+ *    @author R. Sousa, J. Gama
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *    
+ *    
  */
 package moa.classifiers.rules.multilabel.outputselectors;
 
@@ -14,7 +28,7 @@ import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
 /**
- *
+ * Entropy measure use by online multi-label AMRules for heuristics computation.
  * @author RSousa
  */
 public class EntropyThreshold extends AbstractOptionHandler implements
@@ -23,6 +37,12 @@ OutputAttributesSelector {
 	/**
 	 * 
 	 */
+	
+    @Override
+    public String getPurposeString() {
+        return "Entropy measure use by online multi-label AMRules for heuristics computation.";
+    }
+	
 	private static final long serialVersionUID = 1L;
 
 	public FloatOption thresholdOption = new FloatOption("Threshold",
@@ -35,37 +55,14 @@ OutputAttributesSelector {
 		int numCurrentOutputs=resultingStatistics.length;
 		double threshold=thresholdOption.getValue();
 		
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx    
-                /*System.out.print("\n");
-                 System.out.print( "Antes\n");
-                for(int ii=0 ; ii< numCurrentOutputs ; ii++){
-                      System.out.format( "     Output " + ii +"   '1':" + currentLiteralStatistics[ii].getValue(1) + " (" + "%f" + ")    '0':" + (currentLiteralStatistics[ii].getValue(0)-currentLiteralStatistics[ii].getValue(1)) + " (" + "%f"  + ")     H=" + Utils.computeEntropy(currentLiteralStatistics[ii].getValue(0),currentLiteralStatistics[ii].getValue(1))+ "\n", currentLiteralStatistics[ii].getValue(1)/currentLiteralStatistics[ii].getValue(0),(currentLiteralStatistics[ii].getValue(0)-currentLiteralStatistics[ii].getValue(1))/currentLiteralStatistics[ii].getValue(0));
-                }
-                System.out.print( "Depois\n");
-                for(int ii=0 ; ii< numCurrentOutputs ; ii++){
-                      System.out.format( "     Output " + ii +"   '1':" + resultingStatistics[ii].getValue(1) + " (" + "%f" + ")    '0':" + (resultingStatistics[ii].getValue(0)-resultingStatistics[ii].getValue(1)) + "  (" + "%f" + ")     H=" + Utils.computeEntropy(resultingStatistics[ii].getValue(0),resultingStatistics[ii].getValue(1))+ "\n",resultingStatistics[ii].getValue(1)/resultingStatistics[ii].getValue(0),(resultingStatistics[ii].getValue(0)-resultingStatistics[ii].getValue(1))/resultingStatistics[ii].getValue(0));  
-                }*/
-                
-                
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
 
-                //get new outputs
+        //get new outputs
 		LinkedList<Integer> newOutputsList= new LinkedList<Integer>();
 		for(int i=0; i<numCurrentOutputs;i++){
-			
-                        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                        //System.out.print("EntropyThreshold.getNextOutputIndices:sumShifts " + resultingStatistics[i].getValue(3) + " "+ currentLiteralStatistics[i].getValue(3) + "\n\n");
-                        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                    
 
-                        double EntRes=Utils.computeEntropy(resultingStatistics[i].getValue(0),resultingStatistics[i].getValue(1));
+            double EntRes=Utils.computeEntropy(resultingStatistics[i].getValue(0),resultingStatistics[i].getValue(1));
 			double EntCur=Utils.computeEntropy(currentLiteralStatistics[i].getValue(0),currentLiteralStatistics[i].getValue(1));
-	
-			
-                        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                        //System.out.print("EntropyThreshold.getNextOutputIndices: " + EntRes + " "+ EntCur + " " + threshold + "\n\n");
-                        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                        
+
                         if( (EntCur-EntRes) > 0 || EntCur==0) 
 				newOutputsList.add(currentIndices[i]);
                         

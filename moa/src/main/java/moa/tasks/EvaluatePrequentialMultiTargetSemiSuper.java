@@ -1,7 +1,21 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ *    AMRulesMultiLabel.java
+ *    Copyright (C) 2017 University of Porto, Portugal
+ *    @author R. Sousa, J. Gama
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *    
+ *    
  */
 package moa.tasks;
 
@@ -48,38 +62,26 @@ import java.util.LinkedList;
 import java.util.List;
 import java.io.*;
 
-/**
- *
- * @author RSousa
- */
 
-/*
- *    EvaluatePrequentialMultiTarget.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
- *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- *    @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
- */
+
+/**
+* Multi-target Prequential semi-supervised evaluation
+* 
+*Phase1: Creates a initial model with <dbInitialModelPercentage> of the instances in the dataset 
+*Phase2: When a instance is received:
+* A binary random process with a binomial distribution selects if the instance should be 
+* labeled or unlabeled with probability <unlabeledPercentage>.
+
+* @author RSousa
+* @version $Revision: 2 $
+*/
 
 
 public class EvaluatePrequentialMultiTargetSemiSuper extends MultiTargetMainTask {
 
     @Override
     public String getPurposeString() {
-        return "Evaluates a classifier on a stream by testing then training with each example in sequence.";
+        return "Multi-target Prequential semi-supervised evaluation \n Phase1: Creates a initial model with <dbInitialModelPercentage> of the instances in the dataset\n Phase2: When a instance is received: A binary random process with a binomial distribution selects if the instance should be  labeled or unlabeled with probability <unlabeledPercentage>.";
     }
 
     private static final long serialVersionUID = 1L;
@@ -108,7 +110,8 @@ public class EvaluatePrequentialMultiTargetSemiSuper extends MultiTargetMainTask
                 'a', "Fading factor or exponential smoothing factor", .01);
     public FloatOption unlabeledPercentage = new FloatOption("WithoutTarget",
                 'z', "Without target percentage(%)", 50);
-    public FloatOption dbInitialModelPercentage = new FloatOption("DBPercent",'D', "Initial dataset (%)", 30);
+    public FloatOption dbInitialModelPercentage = new FloatOption("DBPercent",
+    			'D', "Initial dataset (%)", 30);
     public IntOption runSeed = new IntOption("Seed",
                 'r', "Number of predictions",1);
     public IntOption slidingWindowSize = new IntOption("slidingWindowSize",
@@ -198,8 +201,6 @@ public class EvaluatePrequentialMultiTargetSemiSuper extends MultiTargetMainTask
         double RAMHours = 0.0;
         
         
-        
-        //======================================================================
         Random randomGenerator1 = new Random(runSeed.getValue());   //Examples scrambler
         Random randomGenerator2 = new Random(1);                    //Labeled/Unlabeled selector
         List<Double> slidingWindow = new LinkedList<Double>();
@@ -211,7 +212,6 @@ public class EvaluatePrequentialMultiTargetSemiSuper extends MultiTargetMainTask
             StrmDtSz++;
         }
 
-        //System.out.print("EvaluateMultiTargetSemiUnsupervised: StrmDtSz " + StrmDtSz +"\n");
         
         Example [] streamData = new Example[StrmDtSz];
         int[] randIndex= new int[StrmDtSz];
@@ -241,15 +241,12 @@ public class EvaluatePrequentialMultiTargetSemiSuper extends MultiTargetMainTask
         
         
         //TRAIN  initial Model 
-        //================================================================= 
         double errorAllSum=0;
         int examplesCounter=0;
         Example trainInst=streamData[randIndex[0]]; 
         Example testInst= (Example) trainInst;
         Instance inst= (Instance) testInst.getData();
         
-        //System.out.format("Test Start at %d \n",(int)(dbInitialModelPercentage.getValue()/100*StrmDtSz));
-
         while( examplesCounter < dbInitialModelPercentage.getValue()/100*StrmDtSz ){
         	
             trainInst =streamData[randIndex[examplesCounter]]; 
@@ -284,11 +281,8 @@ public class EvaluatePrequentialMultiTargetSemiSuper extends MultiTargetMainTask
 
         double [] exampleOutputs= new double[inst.numOutputAttributes()];
 
-        
-        
-        
+          
         //TEST 
-        //======================================================================
         while (examplesCounter<StrmDtSz-1) {
             
             trainInst =streamData[randIndex[examplesCounter]];
@@ -297,12 +291,7 @@ public class EvaluatePrequentialMultiTargetSemiSuper extends MultiTargetMainTask
 
             Prediction prediction = learner.getPredictionForInstance(testInst);
             evaluator.addResult(testInst,prediction);
-            
-            
-            /*for(int m=0; m < inst.numOutputAttributes() ; m++){
-                exampleOutputs[m]=inst.valueOutputAttribute(m);
-            }*/
-            
+
             //Labeled or unlabeled imposition
             if( randomGenerator2.nextDouble() <= unlabeledPercentage.getValue()/100 ){ 
                 for(int m=0; m < inst.numOutputAttributes() ; m++){
@@ -314,7 +303,6 @@ public class EvaluatePrequentialMultiTargetSemiSuper extends MultiTargetMainTask
             learner.trainOnInstance(trainInst);
 
             //MONITORING 
-            //======================================================================
             instancesProcessed++;
             if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0
                     ) {   //|| stream.hasMoreInstances() == false

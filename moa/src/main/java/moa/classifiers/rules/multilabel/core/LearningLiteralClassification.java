@@ -1,3 +1,23 @@
+/*
+ *    LearningLiteralClassification.java
+ *    Copyright (C) 2017 University of Porto, Portugal
+ *    @author R. Sousa, J. Gama
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *    
+ *    
+ */
+
 package moa.classifiers.rules.multilabel.core;
 
 import moa.core.ObjectRepository;
@@ -27,6 +47,15 @@ import moa.core.DoubleVector;
 import moa.core.StringUtils;
 
 
+/**
+* This class contains the functions for learning the literals for Multi-label classification 
+* (in same way as Multi-Target regression). 
+* used by  multi-label AMRules.
+* @author RSousa
+* * @version $Revision: 1 $
+*/
+
+
 public class LearningLiteralClassification extends LearningLiteral {
 
 	/**
@@ -34,7 +63,7 @@ public class LearningLiteralClassification extends LearningLiteral {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	double [] EntropyShift; //for proper computation of variance
+	double [] EntropyShift; //for proper computation of entropy
 
 	public LearningLiteralClassification() {
 		super();
@@ -76,24 +105,12 @@ public class LearningLiteralClassification extends LearningLiteral {
 
 	@Override
 	public boolean tryToExpand(double splitConfidence, double tieThreshold) {
+
+		boolean shouldSplit=false;
 		
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                //System.out.print("LearningLiteralClassification.tryToExpand: " + "\n\n");
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-            
-                boolean shouldSplit=false;
-		
-                //find the best split per attribute and rank the results
+		//find the best split per attribute and rank the results
 		AttributeExpansionSuggestion[] bestSplitSuggestions = this.getBestSplitSuggestions(splitCriterion);
 
-                
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                //System.out.print("LearningLiteralClassification.tryToExpand: bestSplitSuggestions " + bestSplitSuggestions.length +  "\n\n");
-                //for(int i=0; i< bestSplitSuggestions.length ; i++)
-                    // System.out.print("LearningLiteralClassification.tryToExpand: bestSplitSuggestions[i].merit " + bestSplitSuggestions[i].getMerit() +  "\n\n"); 
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                
-  
 		double sumMerit=0;
 		meritPerInput= new double[attributesMask.length];
 		for (int i=0; i<bestSplitSuggestions.length;i++){
@@ -149,16 +166,11 @@ public class LearningLiteralClassification extends LearningLiteral {
 		if(shouldSplit)
 		{
 			
-                        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                        //System.out.print("LearningLiteralClassification.tryToExpand: bestSuggestion " + bestSuggestion.resultingNodeStatistics.length + " " + shouldSplit+ "\n\n");                    
-                        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                        
-                        
-                        //check which branch is better and update bestSuggestion (in amrules the splits are binary )
+            //check which branch is better and update bestSuggestion (in amrules the splits are binary )
 			DoubleVector[][] resultingStatistics=bestSuggestion.getResultingNodeStatistics();
 			
 
-                        //if not or higher is better, change predicate (negate condition)
+            //if not or higher is better, change predicate (negate condition)
 			double [] branchMerits=splitCriterion.getBranchesSplitMerits(resultingStatistics);
 			DoubleVector[] newLiteralStatistics;
 			if(branchMerits[1]>branchMerits[0]){
@@ -168,22 +180,9 @@ public class LearningLiteralClassification extends LearningLiteral {
 				newLiteralStatistics=getBranchStatistics(resultingStatistics,0);
 			}
                         
-
-			//FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 			int [] newOutputs=outputSelector.getNextOutputIndices(newLiteralStatistics,literalStatistics, outputsToLearn);
 			Arrays.sort(newOutputs); //Must be ordered for latter correspondence algorithm to work
-                        //FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-                        
-                        
-                        
-                        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                        /*for(int i=0; i< outputsToLearn.length ; i++)
-                            System.out.print("     LearningLiteralClassification.tryToExpand: newOutputs " + outputsToLearn[i] +"\n\n");
-                        for(int i=0; i< newOutputs.length ; i++)
-                            System.out.print("     LearningLiteralClassification.tryToExpand: newOutputs " + newOutputs[i] +"\n\n");*/
-                        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-                        
+    
 			//set other branch (only used if default rule expands)
 			otherBranchLearningLiteral=new LearningLiteralClassification();
 			otherBranchLearningLiteral.instanceHeader=instanceHeader;
@@ -239,27 +238,9 @@ public class LearningLiteralClassification extends LearningLiteral {
 			expandedLearningLiteral.learner=(MultiLabelLearner)this.learner.copy();	
 			expandedLearningLiteral.instanceHeader=instanceHeader;
 			expandedLearningLiteral.instanceTransformer=new InstanceOutputAttributesSelector(instanceHeader,newOutputs);
-                        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                        //expandedLearningLiteral.literalStatistics=newLiteralStatistics;
-                        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx  
-                        
-                        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx    
-                        /*StringBuilder sb=new StringBuilder();
-                        for(int jj=0; jj< newOutputs.length ; jj++){
-
-                            System.out.print( instanceHeader.outputAttribute( newOutputs[jj] ).name()+ ": " + "\n");  //System.out.print( instanceHeader.outputAttribute( newOutputs[jj] ).name()+ ": "   "  ");  
-
-                            
-                            //sb.append( instanceInformation.outputAttribute(newOutputs[jj]).name() + ": "  + newLiteralStatistics[jj].getValue(1)/newLiteralStatistics[jj].getValue(0) + " "  ); 
-                        }*/
-                       //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
-                               
-                }
-                
-
-                
-                
-                
+         
+		}
+                   
 		return shouldSplit;
 	}
 
@@ -273,12 +254,7 @@ public class LearningLiteralClassification extends LearningLiteral {
 
 	private AttributeExpansionSuggestion[] getBestSplitSuggestions(MultiLabelSplitCriterion criterion) {
 		
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                //System.out.print("LearningLiteralClassification.getBestSplitSuggestions:" + "\n\n");
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-            
-            
-            
+
                 List<AttributeExpansionSuggestion> bestSuggestions = new LinkedList<AttributeExpansionSuggestion>();
 		for (int i = 0; i < this.inputsToLearn.length; i++) {
 			if(attributesMask[inputsToLearn[i]]){ //Should always be true (check trainOnInstance(). Remove?
@@ -342,25 +318,14 @@ public class LearningLiteralClassification extends LearningLiteral {
 		DoubleVector []exampleStatistics=new DoubleVector[outputsToLearn.length];
 		for (int i=0; i<outputsToLearn.length; i++){
 			double target=instance.valueOutputAttribute(outputsToLearn[i]);
-                        
-
-                        //=====================================================================        
+                           
 			double sum=weight*target;                //Needed for expansion
 			double squaredSum=weight*target*target;  //Not needed for now
 			double sumShifted=weight*target-EntropyShift[i];  //Needed for Output Selector
-			double squaredSumShifted=weight*(target-EntropyShift[i])*(target-EntropyShift[i]);//Not needed for now
-                        
-                        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                        //System.out.print("LearningLiteralClassification.trainOnInstance: sum,sumShifted " +  sum + "  "  + sumShifted + "\n\n");
-                        //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                        
-                        
-                        
+			double squaredSumShifted=weight*(target-EntropyShift[i])*(target-EntropyShift[i]);//Not needed for now         
 			exampleStatistics[i]= new DoubleVector(new double[]{weight,sum, squaredSum,sumShifted,squaredSumShifted});
 			literalStatistics[i].addValues(exampleStatistics[i].getArrayRef());
-                        //=====================================================================
-                        
-                        
+           
 		}
 
 		if(this.attributeObservers==null)

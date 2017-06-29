@@ -1,7 +1,7 @@
 /*
- *    AMRulesMultiLabel.java
- *    Copyright (C) 2014 University of Porto, Portugal
- *    @author J. Duarte, J. Gama
+ *    AMRulesMultiLabelLearnerSemiSuper.java
+ *    Copyright (C) 2017 University of Porto, Portugal
+ *    @author R. Sousa, J. Gama
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -61,6 +61,28 @@ import java.util.List;
 import moa.core.Example;
 import moa.learners.Learner;
 import moa.learners.LearnerSemiSupervised;
+
+
+/**
+* Semi-supervised method for online multi-target regression.
+* This method uses the AMRules as learner and it based on probabilistic method very similar to 
+* anomaly detection.
+* This method measures predicts the benefit of a unlabeled example to the models(using only the input information) to the 
+* model. If this benefit is higher than <scoreThreshold> then the algorithm predicts an output and 
+* artificially labels the example and use it for training.  
+
+
+The algorithm is fully explained in the following publication: 
+
+*Sousa R., Gama J. (2016) Online Semi-supervised Learning for Multi-target Regression 
+*in Data Streams Using AMRules. In: Boström H., Knobbe A., Soares C., Papapetrou P. (eds)
+*Advances in Intelligent Data Analysis XV. IDA 2016. Lecture Notes in Computer Science, 
+*vol 9897. Springer.
+
+* @author RSousa
+* @version $Revision: 2 $
+*/
+
 
 
 
@@ -187,7 +209,6 @@ public abstract class AMRulesMultiLabelLearnerSemiSuper extends AbstractMultiLab
                     errorWeightedVote.addVote(vote,errors);
                 }
                 
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
                 if (VerbosityOption.getValue()>1){
                     System.out.print("Rule " + rule.getRuleNumberID()+ ": ");
                     for (int i=0; i< instance.numOutputAttributes() ; i++){
@@ -195,7 +216,6 @@ public abstract class AMRulesMultiLabelLearnerSemiSuper extends AbstractMultiLab
                     }
                     System.out.print("\n");
                 }
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
  
                 if (!this.unorderedRulesOption.isSet()) { // Ordered Rules Option.
                      break; // Only one rule cover the instance.
