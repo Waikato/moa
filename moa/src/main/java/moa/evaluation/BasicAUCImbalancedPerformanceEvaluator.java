@@ -106,6 +106,7 @@ public class BasicAUCImbalancedPerformanceEvaluator extends AbstractOptionHandle
 			public Score(double value, int position, boolean isPositive) {
 				this.value = value;
 				this.isPositive = isPositive;
+				this.position = position;
 			}
 
 			/**

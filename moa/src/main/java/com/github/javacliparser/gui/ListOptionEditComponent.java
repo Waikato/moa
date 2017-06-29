@@ -38,6 +38,7 @@ public class ListOptionEditComponent extends JTextField implements
 
     public ListOptionEditComponent(Option option) {
         component = new StringOptionEditComponent(option);
+        setText(component.getText());
     }
 
     @Override
@@ -48,11 +49,13 @@ public class ListOptionEditComponent extends JTextField implements
     @Override
     public void setEditState(String cliString) {
         component.setText(cliString);
+        setText(component.getText());
     }
 
     @Override
     public void applyState() {
         getEditedOption().setValueViaCLIString(getText().length() > 0 ? getText() : null);
+        setText(component.getText());
     }
 }
 
