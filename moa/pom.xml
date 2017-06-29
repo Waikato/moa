@@ -4,11 +4,7 @@
   <parent>
     <groupId>nz.ac.waikato.cms.moa</groupId>
     <artifactId>moa-pom</artifactId>
-<<<<<<< HEAD
     <version>2017.10-SNAPSHOT</version>
-=======
-    <version>2012.09-SNAPSHOT</version>
->>>>>>> 565fea170c85d3f827910b8c131dfb891c9b70c4
   </parent>
 
   <artifactId>moa</artifactId>
@@ -88,14 +84,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-<<<<<<< HEAD
           <source>1.7</source>
           <target>1.7</target>
-=======
-          <source>1.6</source>
-          <target>1.6</target>
-		  <encode>UTF-8</encode>
->>>>>>> 565fea170c85d3f827910b8c131dfb891c9b70c4
         </configuration>
       </plugin>
 

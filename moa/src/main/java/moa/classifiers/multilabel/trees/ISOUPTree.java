@@ -577,7 +577,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 				if (child != null) {
 					if (branch == 0) {
 						StringUtils.appendIndented(out, indent, "if ");
-						this.predicate.getDescription(out, 0);
+						this.predicate.getDescription(out, 0, null);
 					} else {
 						StringUtils.appendIndented(out, indent, "else");
 					}
