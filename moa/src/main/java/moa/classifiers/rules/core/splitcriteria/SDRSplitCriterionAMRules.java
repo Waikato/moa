@@ -20,7 +20,6 @@
 package moa.classifiers.rules.core.splitcriteria;
 
 import moa.classifiers.core.splitcriteria.SDRSplitCriterion;
-import moa.classifiers.core.splitcriteria.SplitCriterion;
 
 
 public class SDRSplitCriterionAMRules extends SDRSplitCriterion implements AMRulesSplitCriterion {

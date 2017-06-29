@@ -24,12 +24,12 @@ package moa.classifiers.rules.functions;
  * @author João Duarte 
  * 
  *  */
-import com.github.javacliparser.FloatOption;
-import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Regressor;
 import moa.core.Measurement;
 import moa.core.StringUtils;
+
+import com.github.javacliparser.FloatOption;
+import com.yahoo.labs.samoa.instances.Instance;
 
 
 public class TargetMean extends AbstractClassifier implements AMRulesRegressorFunction {
