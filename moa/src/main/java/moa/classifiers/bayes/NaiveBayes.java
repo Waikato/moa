@@ -62,12 +62,8 @@ public class NaiveBayes extends AbstractClassifier {
 
     @Override
     public double[] getVotesForInstance(Instance inst) {
-        double [] v = doNaiveBayesPrediction(inst, this.observedClassDistribution, this.attributeObservers); 
-  
-        double [] vote=new double[1];
-        vote[0]=v[0]<v[1]?1:0;
-        
-        return vote ;  //doNaiveBayesPrediction(inst, this.observedClassDistribution, this.attributeObservers);
+
+        return doNaiveBayesPrediction(inst, this.observedClassDistribution, this.attributeObservers);
     }
 
     @Override
