@@ -7,10 +7,21 @@ import moa.core.Utils;
 import com.yahoo.labs.samoa.instances.Instance;
 
 /**
- * Random decision trees for data streams.
+ * Adaptive Random Forest Hoeffding Tree.
+ * 
+ * <p>Adaptive Random Forest Hoeffding Tree. This is the base model for the 
+ * Adaptive Random Forest ensemble learner 
+ * (See moa.classifiers.meta.AdaptiveRandomForest.java). This Hoeffding Tree
+ * includes a subspace size k parameter, which defines the number of randomly 
+ * selected features to be considered at each split. </p>
+ * 
+ * <p>See details in:<br> Heitor Murilo Gomes, Albert Bifet, Jesse Read, 
+ * Jean Paul Barddal, Fabricio Enembreck, Bernhard Pfharinger, Geoff Holmes, 
+ * Talel Abdessalem. Adaptive random forests for evolving data stream classification. 
+ * In Machine Learning, DOI: 10.1007/s10994-017-5642-8, Springer, 2017.</p>
  *
  * @author Heitor Murilo Gomes (hmgomes at ppgia dot pucpr dot br)
- * @version $Revision: 7 $
+ * @version $Revision: 1 $
  */
 public class ARFHoeffdingTree extends HoeffdingTree {
 
@@ -22,7 +33,8 @@ public class ARFHoeffdingTree extends HoeffdingTree {
     
     @Override
     public String getPurposeString() {
-        return "Random decision trees for data streams.";
+        return "Adaptive Random Forest Hoeffding Tree for data streams. "
+                + "Base learner for AdaptiveRandomForest.";
     }
 
     public static class RandomLearningNode extends ActiveLearningNode {

@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.meta;
 
@@ -49,8 +49,10 @@ import moa.classifiers.core.driftdetection.ChangeDetector;
  * <p>Adaptive Random Forest (ARF). The 3 most important aspects of this 
  * ensemble classifier are: (1) inducing diversity through resampling;
  * (2) inducing diversity through randomly selecting subsets of features for 
- * node splits (see moa.classifiers.trees.ARFHoeffdingTree.java); (3) drift 
- * detectors per base tree, which cause selective resets in response to drifts. </p>
+ * node splits (See moa.classifiers.trees.ARFHoeffdingTree.java); (3) drift 
+ * detectors per base tree, which cause selective resets in response to drifts. 
+ * It also allows training background trees, which start training if a warning
+ * is detected and replace the active tree if the warning escalates to a drift. </p>
  *
  * <p>See details in:<br> Heitor Murilo Gomes, Albert Bifet, Jesse Read, 
  * Jean Paul Barddal, Fabricio Enembreck, Bernhard Pfharinger, Geoff Holmes, 
@@ -78,6 +80,11 @@ import moa.classifiers.core.driftdetection.ChangeDetector;
  */
 public class AdaptiveRandomForest extends AbstractClassifier {
 
+    @Override
+    public String getPurposeString() {
+        return "Adaptive Random Forest algorithm for evolving data streams from Gomes et al.";
+    }
+    
     private static final long serialVersionUID = 1L;
 
     public ClassOption treeLearnerOption = new ClassOption("treeLearner", 'l',
