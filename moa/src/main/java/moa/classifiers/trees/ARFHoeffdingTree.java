@@ -1,3 +1,22 @@
+/*
+ *    ARFHoeffdingTree.java
+ * 
+ *    @author Heitor Murilo Gomes (heitor_murilo_gomes at yahoo dot com dot br)
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ */
+
 package moa.classifiers.trees;
 
 import com.github.javacliparser.IntOption;
@@ -20,7 +39,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * Talel Abdessalem. Adaptive random forests for evolving data stream classification. 
  * In Machine Learning, DOI: 10.1007/s10994-017-5642-8, Springer, 2017.</p>
  *
- * @author Heitor Murilo Gomes (hmgomes at ppgia dot pucpr dot br)
+ * @author Heitor Murilo Gomes (heitor_murilo_gomes at yahoo dot com dot br)
  * @version $Revision: 1 $
  */
 public class ARFHoeffdingTree extends HoeffdingTree {
@@ -44,7 +63,6 @@ public class ARFHoeffdingTree extends HoeffdingTree {
         protected int[] listAttributes;
 
         protected int numAttributes;
-//        protected int subspaceSize;
         
         public RandomLearningNode(double[] initialClassObservations, int subspaceSize) {
             super(initialClassObservations);
@@ -56,8 +74,6 @@ public class ARFHoeffdingTree extends HoeffdingTree {
             this.observedClassDistribution.addToValue((int) inst.classValue(),
                     inst.weight());
             if (this.listAttributes == null) {
-//                this.numAttributes = (int) Math.floor(Math.sqrt(inst.numAttributes()));
-//                this.numAttributes = this.subspaceSize;
                 this.listAttributes = new int[this.numAttributes];
                 for (int j = 0; j < this.numAttributes; j++) {
                     boolean isUnique = false;
