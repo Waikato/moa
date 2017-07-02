@@ -7,21 +7,21 @@ import java.util.Collections;
 import java.util.Random;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Prediction;
 import com.yahoo.labs.samoa.instances.StructuredInstance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
-import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.core.driftdetection.ChangeDetector;
-import moa.classifiers.multilabel.core.attributeclassobservers.AttributeStatisticsObserver;
-import moa.classifiers.multilabel.core.attributeclassobservers.NominalStatisticsObserver;
-import moa.classifiers.multilabel.core.attributeclassobservers.NumericStatisticsObserver;
-import moa.classifiers.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
+import moa.classifiers.mlc.core.attributeclassobservers.AttributeStatisticsObserver;
+import moa.classifiers.mlc.core.attributeclassobservers.NominalStatisticsObserver;
+import moa.classifiers.mlc.core.attributeclassobservers.NumericStatisticsObserver;
+import moa.classifiers.mlc.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.core.AttributeExpansionSuggestion;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
+import moa.learners.MultiLabelClassifier;
 import moa.options.AbstractOptionHandler;
 
 
@@ -38,7 +38,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 
 	protected int[] outputsToLearn;
 
-	protected MultiLabelLearner learner;
+	protected MultiLabelClassifier learner;
 
 	protected MultiLabelErrorMeasurer errorMeasurer;
 
@@ -88,9 +88,9 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 		this.outputsToLearn=outputsToLearn.clone();
 	}
 
-	abstract public void trainOnInstance(StructuredInstance instance);
+	abstract public void trainOnInstance(Instance instance);
 
-	public Prediction getPredictionForInstance(StructuredInstance instance) {
+	public Prediction getPredictionForInstance(Instance instance) {
 		if (learner!=null)
 			return learner.getPredictionForInstance(instance);
 		else
@@ -100,7 +100,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 
 	public abstract boolean tryToExpand(double splitConfidence, double tieThresholdOption);
 
-	public boolean updateAndCheckChange(StructuredInstance instance) {
+	public boolean updateAndCheckChange(Instance instance) {
 		boolean hasChanged=false;
 		if (hasStarted){
 			if (changeDetectors==null){
@@ -126,7 +126,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	protected abstract double[] getNormalizedErrors(Prediction prediction,
 			Instance inst);
 
-	public boolean updateAndCheckAnomalyDetection(StructuredInstance instance) {
+	public boolean updateAndCheckAnomalyDetection(Instance instance) {
 		if(hasStarted)
 			return anomalyDetector.updateAndCheckAnomalyDetection(instance);
 		else
@@ -190,7 +190,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 		this.numericStatisticsObserver=numericStatisticsObserver;
 	}
 
-	public void setLearner(MultiLabelLearner learner) {
+	public void setLearner(MultiLabelClassifier learner) {
 		this.learner=learner;
 
 	}
@@ -232,7 +232,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 		this.attributesPercentage=attributesPercentage;
 	}
 	
-	protected void initializeAttibutesMask(StructuredInstance inst) {
+	protected void initializeAttibutesMask(Instance inst) {
 		int numInputAttributes=inst.numInputAttributes();
 		int numAttributesSelected=(int)Math.round(numInputAttributes*attributesPercentage/100);
 		

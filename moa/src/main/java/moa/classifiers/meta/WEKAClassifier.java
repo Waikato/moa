@@ -23,6 +23,8 @@ package moa.classifiers.meta;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
 import moa.core.Measurement;
@@ -37,8 +39,7 @@ import weka.classifiers.UpdateableClassifier;
  * @author FracPete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class WEKAClassifier
-        extends AbstractClassifier {
+public class WEKAClassifier extends AbstractClassifier implements moa.learners.Classifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -164,7 +165,7 @@ public class WEKAClassifier
     }
 
     @Override
-    public double[] getVotesForInstance(Instance samoaInstance) {
+    public Prediction getPredictionForInstance(Instance samoaInstance) {
         weka.core.Instance inst = this.instanceConverter.wekaInstance(samoaInstance);
         double[] votes = new double[inst.numClasses()];
         if (isClassificationEnabled == false) {
@@ -178,7 +179,7 @@ public class WEKAClassifier
 				System.err.println(e.getMessage());
 			}
 		}
-		return votes;
+		return new ClassificationPrediction(votes);
 	}
 
     @Override

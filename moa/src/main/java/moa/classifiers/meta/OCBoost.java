@@ -22,11 +22,13 @@ package moa.classifiers.meta;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
 import moa.core.Measurement;
 import moa.core.Utils;
+import moa.learners.Classifier;
 import moa.options.ClassOption;
 
 /**
@@ -53,7 +55,7 @@ import moa.options.ClassOption;
  * @version $Revision: 7 $
  */
 
-public class OCBoost extends AbstractClassifier {
+public class OCBoost extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = 1L;
     
@@ -148,13 +150,12 @@ public class OCBoost extends AbstractClassifier {
         return alpha[i];
     }
 
-    @Override
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
         double[] output = new double[2];
         int vote;
         double combinedVote = 0.0;
         for (int i = 0; i < this.ensemble.length; i++) {
-            vote = Utils.maxIndex(this.ensemble[i].getVotesForInstance(inst));
+            vote = Utils.maxIndex(this.ensemble[i].getPredictionForInstance(inst));
             if (vote == 0) {
                 vote = -1;
             }
@@ -163,7 +164,7 @@ public class OCBoost extends AbstractClassifier {
         output[0] = 0;
         output[1] = 0;
         output[combinedVote > 0 ? 1 : 0] = 1;
-        return output;
+        return new ClassificationPrediction(output);
     }
 
     @Override
@@ -182,7 +183,6 @@ public class OCBoost extends AbstractClassifier {
                     this.ensemble != null ? this.ensemble.length : 0)};
     }
 
-    @Override
     public Classifier[] getSubClassifiers() {
         return this.ensemble.clone();
     }

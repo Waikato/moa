@@ -1,6 +1,6 @@
 package moa.classifiers.rules.core.anomalydetection;
 
-import com.yahoo.labs.samoa.instances.StructuredInstance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
@@ -18,7 +18,7 @@ public class NoAnomalyDetection extends AbstractAnomalyDetector{
 	}
 
 	@Override
-	public boolean updateAndCheckAnomalyDetection(StructuredInstance instance) {
+	public boolean updateAndCheckAnomalyDetection(Instance instance) {
 		return false;
 	}
 

@@ -21,8 +21,8 @@ package moa.streams.generators.multilabel;
 
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.MultilabelInstancesHeader;
 
-import moa.core.MultilabelInstancesHeader;
 import moa.streams.ArffFileStream;
 import moa.streams.MultiTargetInstanceStream;
 

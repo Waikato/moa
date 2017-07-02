@@ -19,12 +19,7 @@ package com.yahoo.labs.samoa.instances;
 /**
  * The Class DenseInstanceData.
  */
-public class DenseInstanceData implements InstanceData{
-
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 8799186995568094103L;
+public class DenseInstanceData implements InstanceData {
 
 	/**
      * Instantiates a new dense instance data.
@@ -152,7 +147,6 @@ public class DenseInstanceData implements InstanceData{
 
     @Override
     public void deleteAttributeAt(int index) {
-        
         double[] newValues = new double[attributeValues.length - 1];
 
         System.arraycopy(attributeValues, 0, newValues, 0, index);

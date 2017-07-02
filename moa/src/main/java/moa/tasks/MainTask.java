@@ -22,11 +22,13 @@ package moa.tasks;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import com.github.javacliparser.FileOption;
 
 import moa.core.ObjectRepository;
 import moa.core.SerializeUtils;
+import moa.streams.clustering.ClusterEvent;
 
 /**
  * Abstract Main Task. All tasks that want to write their result 
@@ -88,4 +90,14 @@ public abstract class MainTask extends AbstractTask {
      */
     protected abstract Object doMainTask(TaskMonitor monitor,
             ObjectRepository repository);
+    
+    protected ArrayList<ClusterEvent> events;
+
+    protected void setEventsList(ArrayList<ClusterEvent> events) {
+        this.events = events;
+    }
+    
+    public ArrayList<ClusterEvent> getEventsList() {
+        return this.events;
+    }
 }

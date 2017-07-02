@@ -27,6 +27,8 @@ import java.text.BreakIterator;
 import java.util.Random;
 import java.util.Vector;
 
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
+
 /**
  * Class implementing some simple utility methods.
  *
@@ -1078,6 +1080,19 @@ public final class Utils {
     return maxIndex;
   }
 
+  /**
+   * Returns index of maximum element in a given
+   * array of doubles. First maximum is returned.
+   *
+   * @param doubles the array of doubles
+   * @return the index of the maximum element
+   */
+  public static /*@pure@*/ int maxIndex(Prediction prediction) {
+
+    return maxIndex(prediction.asDoubleArray());
+  }
+
+  
   /**
    * Returns index of maximum element in a given
    * array of integers. First maximum is returned.

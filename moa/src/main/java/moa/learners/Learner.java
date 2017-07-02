@@ -20,7 +20,7 @@
 package moa.learners;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.MOAObject;
 import moa.core.Example;
@@ -34,8 +34,8 @@ import moa.options.OptionHandler;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
+@SuppressWarnings("rawtypes")
 public interface Learner<E extends Example> extends MOAObject, OptionHandler, AWTRenderable {
-
 
     /**
      * Gets whether this learner needs a random seed.
@@ -90,7 +90,7 @@ public interface Learner<E extends Example> extends MOAObject, OptionHandler, AW
      * @return an array containing the estimated membership
      * probabilities of the test instance in each class
      */
-    public double[] getVotesForInstance(E example);
+	public Prediction getPredictionForInstance(E testInst);
 
     /**
      * Gets the current measurements of this learner.
@@ -105,7 +105,7 @@ public interface Learner<E extends Example> extends MOAObject, OptionHandler, AW
      *
      * @return an array of the learners of the ensemble
      */
-    public Learner[] getSublearners();
+    // public Learner[] getSublearners();
 
      /**
      * Gets the model if this learner.
@@ -131,9 +131,15 @@ public interface Learner<E extends Example> extends MOAObject, OptionHandler, AW
      * @return the reference to the data stream header
      */
     public InstancesHeader getModelContext();
+        
+    /**
+     * Returns a string representation of the model.
+     *
+     * @param out	the stringbuilder to add the description
+     * @param indent	the number of characters to indent
+     */
+    public void getModelDescription(StringBuilder out, int indent);
 
-	public Prediction getPredictionForInstance(E testInst);
-    
 }
 
 

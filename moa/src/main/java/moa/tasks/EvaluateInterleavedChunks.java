@@ -27,6 +27,7 @@ import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.core.Example;
 import moa.core.InstanceExample;
@@ -199,7 +200,7 @@ public class EvaluateInterleavedChunks extends MainTask {
 				for (int i=0; i< chunkInstances.numInstances(); i++) {
 					Example testInst = new InstanceExample((Instance) chunkInstances.instance(i));
 					//testInst.setClassMissing();
-					double[] prediction = learner.getVotesForInstance(testInst);
+					Prediction prediction = learner.getPredictionForInstance(testInst);
 					evaluator.addResult(testInst, prediction);
 			    }
 			}

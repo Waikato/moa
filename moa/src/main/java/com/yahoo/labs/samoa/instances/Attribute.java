@@ -30,11 +30,6 @@ import moa.core.Utils;
  */
 public class Attribute implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3739913325563469730L;
-
 	/** The keyword used to denote the start of an arff attribute declaration */
 	public final static String ARFF_ATTRIBUTE = "@attribute";
 
@@ -114,10 +109,6 @@ public class Attribute implements Serializable {
 		return attributeValues;
 	}
 
-	/**
-	 * The index.
-	 */
-	protected int index;
 
 	/**
 	 * Instantiates a new attribute.
@@ -149,7 +140,6 @@ public class Attribute implements Serializable {
 	 */
 	public Attribute(String attributeName, String dateFormat) {
 		this.name = attributeName;
-		this.index  = -1;
 		this.valuesStringAttribute = null;
 		this.isDate = true;
 
@@ -240,14 +230,6 @@ public class Attribute implements Serializable {
 	}
 
 	
-	/**
-	 * Index.
-	 *
-	 * @return the int
-	 */
-	public int index() { //RuleClassifier
-		return this.index;
-	}
 
 	/**
 	 * Format date.

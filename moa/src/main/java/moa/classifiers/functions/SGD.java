@@ -30,13 +30,16 @@ package moa.classifiers.functions;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
+import com.yahoo.labs.samoa.instances.predictions.RegressionPrediction;
 
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Regressor;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.core.Utils;
+import moa.learners.Classifier;
 
 /**
 <!-- globalinfo-start -->
@@ -45,7 +48,7 @@ import moa.core.Utils;
 <!-- globalinfo-end -->
  *
  */
-public class SGD extends AbstractClassifier implements Regressor{
+public class SGD extends AbstractClassifier implements Classifier {
 
     /** For serialization */
     private static final long serialVersionUID = -3732968666673530290L;
@@ -279,10 +282,10 @@ public class SGD extends AbstractClassifier implements Regressor{
      * @return 		predicted class probability distribution
      */
     @Override
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
 
         if (m_weights == null) {
-            return new double[inst.numClasses()];
+            return new ClassificationPrediction();
         }
         double[] result = (inst.classAttribute().isNominal())
                 ? new double[2]
@@ -293,8 +296,9 @@ public class SGD extends AbstractClassifier implements Regressor{
         double z = (wx + m_bias);
 
         if (inst.classAttribute().isNumeric()) {
+        	// TODO This should not be happening here!
             result[0] = z;
-            return result;
+            return new RegressionPrediction(result[0]);
         }
 
         if (z <= 0) {
@@ -313,7 +317,7 @@ public class SGD extends AbstractClassifier implements Regressor{
                 result[1] = 1;
             }
         }
-        return result;
+        return  new ClassificationPrediction(result);
     }
 
     @Override

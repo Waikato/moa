@@ -36,15 +36,14 @@ import java.util.Iterator;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.Prediction;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
-import moa.classifiers.AbstractMultiLabelLearner;
-import moa.classifiers.MultiLabelLearner;
+import moa.classifiers.AbstractMultiTargetRegressor;
 import moa.classifiers.core.driftdetection.ChangeDetector;
-import moa.classifiers.multilabel.core.attributeclassobservers.NominalStatisticsObserver;
-import moa.classifiers.multilabel.core.attributeclassobservers.NumericStatisticsObserver;
-import moa.classifiers.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
+import moa.classifiers.mlc.core.attributeclassobservers.NominalStatisticsObserver;
+import moa.classifiers.mlc.core.attributeclassobservers.NumericStatisticsObserver;
+import moa.classifiers.mlc.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
 import moa.classifiers.rules.core.anomalydetection.OddsRatioScore;
 import moa.classifiers.rules.multilabel.core.MultiLabelRule;
@@ -55,10 +54,12 @@ import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector
 import moa.classifiers.rules.multilabel.outputselectors.SelectAllOutputs;
 import moa.core.Measurement;
 import moa.core.StringUtils;
+import moa.learners.MultiLabelClassifier;
+import moa.learners.MultiTargetRegressor;
 import moa.options.ClassOption;
 
 
-public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner implements MultiLabelLearner{
+public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegressor implements MultiTargetRegressor {
 
 	private static final long serialVersionUID = 1L;
 	protected MultiLabelRuleSet ruleSet = new MultiLabelRuleSet();
@@ -146,13 +147,13 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 
 
 	@Override
-	public Prediction getPredictionForInstance(StructuredInstance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		/*MultiLabelVote vote=getVotes(inst);
 		if(vote!=null)	
 			return vote.getVote();
 		else
 			return null;*/
-		ErrorWeightedVoteMultiLabel vote=getVotes(inst);
+		ErrorWeightedVoteMultiLabel vote = getVotes(inst);
 		if(vote!=null)	
 			return vote.getPrediction();
 		else
@@ -160,12 +161,12 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	}
 
 	/**
-	 * getVotes extension of the instance method getVotesForInstance 
+	 * getVotes extension of the instance method getPredictionForInstance 
 	 * in moa.classifier.java
 	 * returns the prediction of the instance.
 	 * Called in WeightedRandomRules
 	 */
-	public ErrorWeightedVoteMultiLabel getVotes(StructuredInstance instance) {
+	public ErrorWeightedVoteMultiLabel getVotes(Instance instance) {
 		ErrorWeightedVoteMultiLabel errorWeightedVote=newErrorWeightedVote();
 		//DoubleVector combinedVote = new DoubleVector();
 		debug("Test",3);    
@@ -176,7 +177,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			if (rule.isCovering(instance) == true){
 				numberOfRulesCovering++;
 				//DoubleVector vote = new DoubleVector(rule.getPrediction(instance));
-				Prediction vote=rule.getPredictionForInstance(instance);
+				Prediction vote = rule.getPredictionForInstance(instance);
 				if (vote!=null){ //should only happen for first instance
 					double [] errors= rule.getCurrentErrors();
 					debug("Rule No"+ rule.getRuleNumberID() + " Vote: " + vote.toString() + " Error: " + errors + " Y: " + instance.classValue(),3); //predictionValueForThisRule);
@@ -236,7 +237,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	private double numInstances; //Just for statistics
 
 	@Override
-	public void trainOnInstanceImpl(StructuredInstance instance) {
+	public void trainOnInstanceImpl(Instance instance) {
 		/**
 		 * AMRules Algorithm
 		 * 
@@ -397,7 +398,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 		}
 	}
 
-	protected void VerboseToConsole(StructuredInstance inst) {
+	protected void VerboseToConsole(Instance inst) {
 		if(VerbosityOption.getValue()>=5){	
 			System.out.println(); 
 			System.out.println("I) Dataset: "+inst.dataset().getRelationName()); 
@@ -429,7 +430,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	@Override
 	public void resetLearningImpl() {
 		defaultRule=newDefaultRule();
-		defaultRule.setLearner((MultiLabelLearner)((MultiLabelLearner)getPreparedClassOption(learnerOption)).copy());
+		defaultRule.setLearner( ((MultiLabelClassifier) getPreparedClassOption(learnerOption)).copy());
 		setRuleOptions(defaultRule);
 	}
 	

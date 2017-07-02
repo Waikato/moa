@@ -22,7 +22,7 @@ package moa.classifiers.trees;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import moa.classifiers.AbstractMultipleClassifierTestCase;
-import moa.classifiers.Classifier;
+import moa.learners.Classifier;
 
 /**
  * Tests the HoeffdingTree classifier.
@@ -50,7 +50,7 @@ public class HoeffdingTreeTest
    * @return		the setups
    */
   @Override
-  protected Classifier[] getRegressionClassifierSetups() {
+  protected Classifier[] getLearnerSetups() {
     HoeffdingTree[]	result;
     result    = new HoeffdingTree[2];
     result[0] = new HoeffdingTree();

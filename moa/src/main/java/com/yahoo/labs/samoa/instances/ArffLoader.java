@@ -271,8 +271,8 @@ public class ArffLoader {
         //    setClassValue(instance, valueAttribute);
         //} else {
             //instance.setValue(numAttribute, valueAttribute);
-            indexValues.add(numAttribute);
-            attributeValues.add(valueAttribute);
+        indexValues.add(numAttribute);
+        attributeValues.add(valueAttribute);
         //}
         //System.out.println(numAttribute+":"+valueAttribute+","+this.instanceInformation.classIndex()+","+value);
     }
@@ -357,6 +357,7 @@ public class ArffLoader {
                             }
                             auxAttributes.add(new Attribute(name, attributeLabels));
                             numAttributes++;
+                            /* TODO Hierarchical loading */
 //                        } else if (streamTokenizer.sval != null && streamTokenizer.sval.toUpperCase() == "HIERARCHICAL") {
 //                        	streamTokenizer.nextToken();
 //                        	DAGStructure attributeStructure = new DAGStructure();

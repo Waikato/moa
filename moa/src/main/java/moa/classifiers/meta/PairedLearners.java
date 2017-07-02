@@ -25,11 +25,13 @@ import java.util.List;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
+import moa.classifiers.AbstractInstanceLearner;
 import moa.core.Measurement;
-import moa.core.MiscUtils;
+import moa.core.Utils;
+import moa.learners.Classifier;
 import moa.options.ClassOption;
 
 /**
@@ -48,7 +50,7 @@ import moa.options.ClassOption;
  *
  */
 
-public class PairedLearners extends AbstractClassifier {
+public class PairedLearners extends AbstractClassifier implements Classifier {
     private static final long serialVersionUID = 1L;
 
     public ClassOption stableLearnerOption = new ClassOption("stableLearner", 
@@ -94,8 +96,8 @@ public class PairedLearners extends AbstractClassifier {
     public void trainOnInstanceImpl(Instance inst) {
         this.instances[this.t] = inst;
         int trueClass = (int) inst.classValue();
-        boolean stablePrediction = MiscUtils.maxIndex(this.stableLearner.getVotesForInstance(inst)) == trueClass;
-        boolean reactivePrediction = MiscUtils.maxIndex(this.reactiveLearner.getVotesForInstance(inst)) == trueClass;
+        boolean stablePrediction = Utils.maxIndex(this.stableLearner.getPredictionForInstance(inst)) == trueClass;
+        boolean reactivePrediction = Utils.maxIndex(this.reactiveLearner.getPredictionForInstance(inst)) == trueClass;
 
         this.numberOfErrors = this.numberOfErrors - this.c[this.t];
         if(!stablePrediction && reactivePrediction) {
@@ -119,8 +121,8 @@ public class PairedLearners extends AbstractClassifier {
     }
 
     @Override
-    public double[] getVotesForInstance(Instance inst) {
-        return this.stableLearner.getVotesForInstance(inst);
+    public Prediction getPredictionForInstance(Instance inst) {
+        return this.stableLearner.getPredictionForInstance(inst);
     }
     @Override
     public boolean isRandomizable() {
@@ -131,7 +133,7 @@ public class PairedLearners extends AbstractClassifier {
     protected Measurement[] getModelMeasurementsImpl() {
         List<Measurement> measurementList = new LinkedList();
         measurementList.add(new Measurement("Change detected", this.changeDetected));
-        Measurement[] modelMeasurements = ((AbstractClassifier) this.stableLearner).getModelMeasurements();
+        Measurement[] modelMeasurements = ((AbstractInstanceLearner) this.stableLearner).getModelMeasurements();
         if (modelMeasurements != null) {
             measurementList.addAll(Arrays.asList(modelMeasurements));
         }

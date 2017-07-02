@@ -1,8 +1,8 @@
 package moa.classifiers.rules.multilabel.errormeasurers;
 
 import com.github.javacliparser.FloatOption;
-import com.yahoo.labs.samoa.instances.Prediction;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
@@ -27,7 +27,7 @@ public abstract class AbstractMultiLabelErrorMeasurer  extends AbstractOptionHan
 		addPrediction(prediction, trueClass);
 	}
 	
-	abstract public void addPrediction(Prediction prediction, StructuredInstance inst);
+	abstract public void addPrediction(Prediction prediction, Instance inst);
 	
 	abstract public double getCurrentError();
 	

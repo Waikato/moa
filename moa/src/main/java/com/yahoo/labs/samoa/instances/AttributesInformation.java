@@ -72,6 +72,10 @@ public class AttributesInformation implements Serializable {
         this.attributes.add(attribute);
     }
 
+    public int indexOfAttribute(Attribute a) {
+    	return attributes.indexOf(a);
+    }
+    
     /**
      * Sets the attribute information.
      *

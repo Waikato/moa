@@ -769,8 +769,8 @@ public class MTree<DATA> {
 				thisNode.updateRadius(child);
 			} catch(SplitNodeReplacement e) {
 				// Replace current child with new nodes
-				IndexItem _ = thisNode.children.remove(child.data);
-				assert _ != null;
+				IndexItem _idx = thisNode.children.remove(child.data);
+				assert _idx != null;
 				
 				for(int i = 0; i < e.newNodes.length; ++i) {
 					@SuppressWarnings("unchecked")
@@ -817,8 +817,8 @@ public class MTree<DATA> {
 					try {
 						existingChild.checkMaxCapacity();
 					} catch(SplitNodeReplacement e) {
-						IndexItem _ = thisNode.children.remove(existingChild.data);
-						assert _ != null;
+						IndexItem _idx = thisNode.children.remove(existingChild.data);
+						assert _idx != null;
 						
 						for(int i = 0; i < e.newNodes.length; ++i) {
 							@SuppressWarnings("unchecked")
@@ -928,8 +928,8 @@ public class MTree<DATA> {
 					}
 				}
 
-				IndexItem _ = nearestDonor.children.remove(nearestGrandchild.data);
-				assert _ != null;
+				IndexItem _idx = nearestDonor.children.remove(nearestGrandchild.data);
+				assert _idx != null;
 				theChild.addChild(nearestGrandchild, nearestGrandchildDistance);
 				return theChild;
 			}

@@ -34,11 +34,11 @@ import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.MultilabelInstancesHeader;
 import com.yahoo.labs.samoa.instances.SparseInstance;
 
 import moa.core.FastVector;
 import moa.core.InstanceExample;
-import moa.core.MultilabelInstancesHeader;
 import moa.core.ObjectRepository;
 import moa.core.Utils;
 import moa.options.AbstractOptionHandler;

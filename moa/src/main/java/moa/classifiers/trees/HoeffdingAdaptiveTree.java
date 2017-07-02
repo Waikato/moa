@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Random;
 
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.bayes.NaiveBayes;
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
@@ -478,7 +480,7 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
     }
 
     @Override
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
         if (this.treeRoot != null) {
             FoundNode[] foundNodes = filterInstanceToLeaves(inst,
                     null, -1, false);
@@ -503,8 +505,8 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
             //if (predictionPaths > this.maxPredictionPaths) {
             //	this.maxPredictionPaths++;
             //}
-            return result.getArrayRef();
+            return new ClassificationPrediction(result.getArrayRef());
         }
-        return new double[0];
+        return new ClassificationPrediction();
     }
 }

@@ -23,13 +23,15 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
 import moa.classifiers.trees.HoeffdingTree;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
+import moa.learners.Classifier;
 import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 
@@ -38,7 +40,7 @@ import moa.tasks.TaskMonitor;
  * Brzezinski and Stefanowski in "Combining block-based and online methods 
  * in learning ensembles from concept drifting data streams", Information Sciences, 2014.
  */
-public class OnlineAccuracyUpdatedEnsemble extends AbstractClassifier {
+public class OnlineAccuracyUpdatedEnsemble extends AbstractClassifier implements Classifier {
 
 	private static final long serialVersionUID = 1L;
 
@@ -183,13 +185,13 @@ public class OnlineAccuracyUpdatedEnsemble extends AbstractClassifier {
 	/**
 	 * Predicts a class for an example.
 	 */
-	public double[] getVotesForInstance(Instance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		DoubleVector combinedVote = new DoubleVector();
 
 		if (this.trainingWeightSeenByModel > 0.0) {
 			for (int i = 0; i < this.ensemble.length; i++) {
 				if (this.weights[i][0] > 0.0) {
-					DoubleVector vote = new DoubleVector(this.ensemble[(int) this.weights[i][1]].classifier.getVotesForInstance(inst));
+					DoubleVector vote = this.ensemble[(int) this.weights[i][1]].classifier.getPredictionForInstance(inst).asDoubleVector();
 
 					if (vote.sumOfValues() > 0.0) {
 						vote.normalize();
@@ -202,14 +204,13 @@ public class OnlineAccuracyUpdatedEnsemble extends AbstractClassifier {
 		}
 		
 		//combinedVote.normalize();
-		return combinedVote.getArrayRef();
+		return new ClassificationPrediction(combinedVote.getArrayRef());
 	}
 
 	@Override
 	public void getModelDescription(StringBuilder out, int indent) {
 	}
 
-	@Override
 	public Classifier[] getSubClassifiers() {
 		Classifier[] subClassifiers = new Classifier[this.ensemble.length];
 		
@@ -307,7 +308,7 @@ public class OnlineAccuracyUpdatedEnsemble extends AbstractClassifier {
         double voteSum = 0;
         
         try{
-	        double[] votes = this.ensemble[i].classifier.getVotesForInstance(example);
+	        double[] votes = this.ensemble[i].classifier.getPredictionForInstance(example).asDoubleArray();
 	        
 	        for (double element : votes) {
 	            voteSum += element;

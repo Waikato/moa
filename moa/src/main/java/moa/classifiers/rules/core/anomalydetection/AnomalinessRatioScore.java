@@ -2,7 +2,7 @@ package moa.classifiers.rules.core.anomalydetection;
 
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.rules.core.Utils;
 import moa.classifiers.rules.core.anomalydetection.probabilityfunctions.ProbabilityFunction;
@@ -52,7 +52,7 @@ public class AnomalinessRatioScore extends AbstractAnomalyDetector {
 
 
 	@Override
-	public boolean updateAndCheckAnomalyDetection(StructuredInstance instance) {
+	public boolean updateAndCheckAnomalyDetection(Instance instance) {
 		boolean isAnomaly=false;
 		if(probabilityFunction==null){
 			weightSeen=0.0;

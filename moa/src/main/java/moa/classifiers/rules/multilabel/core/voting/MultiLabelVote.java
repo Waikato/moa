@@ -1,6 +1,6 @@
 package moa.classifiers.rules.multilabel.core.voting;
 
-import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 public class MultiLabelVote {
 	protected Prediction vote;

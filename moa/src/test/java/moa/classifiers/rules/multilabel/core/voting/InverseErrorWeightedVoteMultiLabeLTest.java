@@ -5,8 +5,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
-import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.predictions.MultiLabelClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 public class InverseErrorWeightedVoteMultiLabeLTest {
 	static InverseErrorWeightedVoteMultiLabel weightedVote;
@@ -14,20 +14,20 @@ public class InverseErrorWeightedVoteMultiLabeLTest {
 	@BeforeClass
 	    public static void runBefore() {
 			weightedVote = new InverseErrorWeightedVoteMultiLabel();
-			Prediction pred= new MultiLabelPrediction(4);
+			Prediction pred= new MultiLabelClassificationPrediction(4);
 			pred.setVotes(0, new double[]{1});
 			pred.setVotes(1, new double[]{2});
 			pred.setVotes(2, new double[]{3});
 			pred.setVotes(3, new double[]{4});
 			weightedVote.addVote(pred, new double[]{4,3,2,1});
 			
-			pred= new MultiLabelPrediction(4);
+			pred= new MultiLabelClassificationPrediction(4);
 			pred.setVotes(0, new double[]{1});
 			pred.setVotes(1, new double[]{2});
 			pred.setVotes(3, new double[]{4});
 			weightedVote.addVote(pred, new double[]{3,2,Double.MAX_VALUE,0});
 			
-			pred= new MultiLabelPrediction(4);
+			pred= new MultiLabelClassificationPrediction(4);
 			pred.setVotes(0, new double[]{4});
 			pred.setVotes(1, new double[]{2});
 			pred.setVotes(3, new double[]{1});

@@ -30,6 +30,7 @@ import java.util.Vector;
 
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
@@ -274,7 +275,7 @@ public abstract class MyBaseOutlierDetector extends AbstractClusterer {
     }
 
     @Override
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
         return null;
     }
     

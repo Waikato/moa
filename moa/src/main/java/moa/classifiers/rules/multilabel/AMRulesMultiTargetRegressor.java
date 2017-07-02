@@ -1,15 +1,15 @@
 package moa.classifiers.rules.multilabel;
 
-import moa.classifiers.MultiLabelLearner;
-import moa.classifiers.MultiTargetRegressor;
-import moa.classifiers.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
+import moa.classifiers.mlc.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.core.MultiLabelRule;
 import moa.classifiers.rules.multilabel.core.MultiLabelRuleRegression;
 import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
+import moa.learners.MultiLabelClassifier;
+import moa.learners.MultiTargetRegressor;
 import moa.options.ClassOption;
 
-public class AMRulesMultiTargetRegressor extends AMRulesMultiLabelLearner implements MultiTargetRegressor{
+public class AMRulesMultiTargetRegressor extends AMRulesMultiLabelLearner implements MultiTargetRegressor {
 
 	/**
 	 * 
@@ -27,7 +27,7 @@ public class AMRulesMultiTargetRegressor extends AMRulesMultiLabelLearner implem
 		 
 		 learnerOption = new ClassOption("learnerOption",
 					'L', "Learner", 
-					MultiLabelLearner.class,
+					MultiLabelClassifier.class,
 					"moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor");
 		 
 		 errorMeasurerOption = new ClassOption("errorMeasurer", 'e',

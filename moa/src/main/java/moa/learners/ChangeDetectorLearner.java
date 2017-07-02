@@ -19,6 +19,8 @@
 package moa.learners;
 
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.core.driftdetection.ChangeDetector;
@@ -37,7 +39,7 @@ import moa.options.ClassOption;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class ChangeDetectorLearner extends AbstractClassifier {
+public class ChangeDetectorLearner extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -57,8 +59,8 @@ public class ChangeDetectorLearner extends AbstractClassifier {
 
     }
 
-    public double[] getVotesForInstance(Instance inst) {
-        return this.driftDetectionMethod.getOutput();
+    public Prediction getPredictionForInstance(Instance inst) {
+        return new ClassificationPrediction(this.driftDetectionMethod.getOutput());
     }
 
     public boolean isRandomizable() {

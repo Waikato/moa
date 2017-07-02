@@ -20,6 +20,8 @@
 package moa.classifiers.bayes;
 
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
@@ -29,6 +31,7 @@ import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
+import moa.learners.Classifier;
 
 /**
  * Naive Bayes incremental learner.
@@ -45,7 +48,7 @@ import moa.core.StringUtils;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class NaiveBayes extends AbstractClassifier {
+public class NaiveBayes extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -79,9 +82,9 @@ public class NaiveBayes extends AbstractClassifier {
     }
 
     @Override
-    public double[] getVotesForInstance(Instance inst) {
-        return doNaiveBayesPrediction(inst, this.observedClassDistribution,
-                this.attributeObservers);
+    public Prediction getPredictionForInstance(Instance inst) {
+        return new ClassificationPrediction(doNaiveBayesPrediction(inst, this.observedClassDistribution,
+                this.attributeObservers));
     }
 
     @Override

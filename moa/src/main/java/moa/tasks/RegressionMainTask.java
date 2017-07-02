@@ -12,16 +12,7 @@ import moa.streams.clustering.ClusterEvent;
  *
  * @author albert
  */
-public abstract class RegressionMainTask extends MainTask {
+public interface RegressionMainTask extends MainTaskInterface {
 
-    protected ArrayList<ClusterEvent> events;
-
-    protected void setEventsList(ArrayList<ClusterEvent> events) {
-        this.events = events;
-    }
-    
-    public ArrayList<ClusterEvent> getEventsList() {
-        return this.events;
-    }
     
 }

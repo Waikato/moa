@@ -27,13 +27,15 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.classifiers.trees.LimAttHoeffdingTree;
 import moa.core.Measurement;
 import moa.core.Utils;
+import moa.learners.Classifier;
 import moa.options.ClassOption;
 
 /**
@@ -78,7 +80,7 @@ import moa.options.ClassOption;
  * @author Eibe Frank (eibe{[at]}cs{[dot]}waikato{[dot]}ac{[dot]}nz)
  * @version $Revision: 7 $
  */
-public class LimAttClassifier extends AbstractClassifier {
+public class LimAttClassifier extends AbstractClassifier implements Classifier {
 
     @Override
     public String getPurposeString() {
@@ -292,7 +294,7 @@ public class LimAttClassifier extends AbstractClassifier {
             for (int j = 0; j < v.length; j++) {
                 v[j] = (double) this.oddsOffsetOption.getValue();
             }
-            double[] vt = this.ensemble[i].getVotesForInstance(inst);
+            double[] vt = this.ensemble[i].getPredictionForInstance(inst).asDoubleArray();
             double sum = Utils.sum(vt);
             if (!Double.isNaN(sum) && (sum > 0)) {
                 for (int j = 0; j < vt.length; j++) {
@@ -373,9 +375,9 @@ public class LimAttClassifier extends AbstractClassifier {
     }
 
     @Override
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
         if (this.initClassifiers == true) {
-            return new double[0];
+            return new ClassificationPrediction();
         }
         int numClasses = inst.numClasses();
 
@@ -414,7 +416,7 @@ public class LimAttClassifier extends AbstractClassifier {
             for (int j = 0; j < v.length; j++) {
                 v[j] = (double) this.oddsOffsetOption.getValue();
             }
-            double[] vt = this.ensemble[i].getVotesForInstance(inst);
+            double[] vt = this.ensemble[i].getPredictionForInstance(inst).asDoubleArray();
             double sum = Utils.sum(vt);
             if (!Double.isNaN(sum) && (sum > 0)) {
                 for (int j = 0; j < vt.length; j++) {
@@ -436,7 +438,7 @@ public class LimAttClassifier extends AbstractClassifier {
                 //                    votes[i][j] = vt[j];
             }
         }
-        return getVotesForInstancePerceptron(votes, bestClassifiers, inst.numClasses());
+        return getPredictionForInstancePerceptron(votes, bestClassifiers, inst.numClasses());
     }
 
     @Override
@@ -457,7 +459,6 @@ public class LimAttClassifier extends AbstractClassifier {
                 };
     }
 
-    @Override
     public Classifier[] getSubClassifiers() {
         return this.ensemble.clone();
     }
@@ -525,14 +526,14 @@ public class LimAttClassifier extends AbstractClassifier {
         return 1.0 / (1.0 + Math.exp(-sum));
     }
 
-    public double[] getVotesForInstancePerceptron(double[][] votesEnsemble, int[] bestClassifiers, int numClasses) {
+    public Prediction getPredictionForInstancePerceptron(double[][] votesEnsemble, int[] bestClassifiers, int numClasses) {
         double[] votes = new double[numClasses];
         if (this.reset == false) {
             for (int i = 0; i < votes.length; i++) {
                 votes[i] = predictionPruning(votesEnsemble, bestClassifiers, i);
             }
         }
-        return votes;
+        return new ClassificationPrediction(votes);
 
     }
 }

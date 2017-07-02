@@ -20,11 +20,14 @@
 package moa.classifiers.functions;
 
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
+import moa.learners.Classifier;
 
 /**
  * Majority class learner. This is the simplest classifier.
@@ -32,7 +35,7 @@ import moa.core.StringUtils;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class MajorityClass extends AbstractClassifier {
+public class MajorityClass extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -53,8 +56,8 @@ public class MajorityClass extends AbstractClassifier {
         this.observedClassDistribution.addToValue((int) inst.classValue(), inst.weight());
     }
 
-    public double[] getVotesForInstance(Instance i) {
-        return this.observedClassDistribution.getArrayCopy();
+    public Prediction getPredictionForInstance(Instance i) {
+        return new ClassificationPrediction(this.observedClassDistribution.getArrayCopy());
     }
 
     @Override

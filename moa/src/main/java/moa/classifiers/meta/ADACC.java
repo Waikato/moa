@@ -28,9 +28,9 @@ import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 
-import moa.classifiers.Classifier;
 import moa.core.Measurement;
 import moa.core.Utils;
+import moa.learners.Classifier;
 
 /**
  * Anticipative and Dynamic Adaptation to Concept Changes. 
@@ -150,8 +150,8 @@ public class ADACC extends DACC {
         			
         			int[][] votes=new int[2][tau_size];
         			for (int k=0;k<tau_size;k++){
-        				votes[0][k]=Utils.maxIndex(candidate.getVotesForInstance(recentChunk.get(k)));	
-        				votes[1][k]=Utils.maxIndex(lastSnapshot.getVotesForInstance(recentChunk.get(k)));	
+        				votes[0][k]=Utils.maxIndex(candidate.getPredictionForInstance(recentChunk.get(k)));	
+        				votes[1][k]=Utils.maxIndex(lastSnapshot.getPredictionForInstance(recentChunk.get(k)));	
         			}
         			double kappa=computeKappa(votes[0],votes[1]);
         			
@@ -224,7 +224,7 @@ public class ADACC extends DACC {
     	
     	for (int i=0;i<m;i++){
     		for (int j=0;j<tau_size;j++){
-    			votes[i][j]=Utils.maxIndex(this.ensemble[arr[i].index].getVotesForInstance(recentChunk.get(j)));
+    			votes[i][j]=Utils.maxIndex(this.ensemble[arr[i].index].getPredictionForInstance(recentChunk.get(j)));
     			errors+=(votes[i][j]==(int) this.recentChunk.get(j).classValue())?0:1;
     			count++;
     		}

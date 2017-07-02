@@ -30,6 +30,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
@@ -318,7 +319,7 @@ public class WithDBSCAN extends AbstractClusterer {
 		return true;
 	}
 
-	public double[] getVotesForInstance(Instance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		return null;
 	}
 	

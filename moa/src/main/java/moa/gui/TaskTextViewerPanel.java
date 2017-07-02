@@ -311,7 +311,7 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
     protected String secondLine = "";
 
     protected double round(double d) {
-        return Math.abs(Math.rint(d * 100) / 100);
+        return (Math.rint(d * 100) / 100);
     }
 
     protected MeasureCollection getNewMeasureCollection() {

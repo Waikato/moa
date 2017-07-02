@@ -23,13 +23,15 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
+import moa.learners.Classifier;
 import moa.options.ClassOption;
 
 /**
@@ -38,7 +40,7 @@ import moa.options.ClassOption;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class OzaBoostAdwin extends AbstractClassifier {
+public class OzaBoostAdwin extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -207,15 +209,15 @@ public class OzaBoostAdwin extends AbstractClassifier {
     }
 
     @Override
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
         if (this.outputCodesOption.isSet()) {
-            return getVotesForInstanceBinary(inst);
+            return getPredictionForInstanceBinary(inst);
         }
         DoubleVector combinedVote = new DoubleVector();
         for (int i = 0; i < this.ensemble.length; i++) {
             double memberWeight = getEnsembleMemberWeight(i);
             if (memberWeight > 0.0) {
-                DoubleVector vote = new DoubleVector(this.ensemble[i].getVotesForInstance(inst));
+                DoubleVector vote = this.ensemble[i].getPredictionForInstance(inst).asDoubleVector();
                 if (vote.sumOfValues() > 0.0) {
                     vote.normalize();
                     vote.scaleValues(memberWeight);
@@ -225,10 +227,10 @@ public class OzaBoostAdwin extends AbstractClassifier {
                 break;
             }
         }
-        return combinedVote.getArrayRef();
+        return new ClassificationPrediction(combinedVote.getArrayRef());
     }
 
-    public double[] getVotesForInstanceBinary(Instance inst) {
+    public Prediction getPredictionForInstanceBinary(Instance inst) {
         double combinedVote[] = new double[(int) inst.numClasses()];
         Instance weightedInst = (Instance) inst.copy();
         if (this.initMatrixCodes == false) {
@@ -237,7 +239,7 @@ public class OzaBoostAdwin extends AbstractClassifier {
                 weightedInst.setClassValue((double) this.matrixCodes[i][(int) inst.classValue()]);
 
                 double vote[];
-                vote = this.ensemble[i].getVotesForInstance(weightedInst);
+                vote = this.ensemble[i].getPredictionForInstance(weightedInst).asDoubleArray();
                 //Binary Case
                 int voteClass = 0;
                 if (vote.length == 2) {
@@ -251,7 +253,7 @@ public class OzaBoostAdwin extends AbstractClassifier {
                 }
             }
         }
-        return combinedVote;
+        return new ClassificationPrediction(combinedVote);
     }
 
     @Override
@@ -272,7 +274,6 @@ public class OzaBoostAdwin extends AbstractClassifier {
                 };
     }
 
-    @Override
     public Classifier[] getSubClassifiers() {
         return this.ensemble.clone();
     }

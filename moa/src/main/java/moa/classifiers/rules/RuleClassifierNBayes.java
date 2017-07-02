@@ -25,6 +25,8 @@ import java.util.Collections;
 
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.bayes.NaiveBayes;
 
@@ -59,7 +61,7 @@ public class RuleClassifierNBayes extends RuleClassifier {
             0, 0, Integer.MAX_VALUE);
 	
 	@Override
-	public double[] getVotesForInstance(Instance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		double[] votes = new double[numClass];
 		switch (super.predictionFunctionOption.getChosenIndex()) {
         case 0:
@@ -72,7 +74,7 @@ public class RuleClassifierNBayes extends RuleClassifier {
         	votes = weightedMaxNB(inst);
         	break;
         	}
-		return votes; 
+		return new ClassificationPrediction(votes); 
 		}
 	
 	// The following three functions are used for the prediction 

@@ -21,6 +21,8 @@ package moa.classifiers.rules.functions;
 
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
+import com.yahoo.labs.samoa.instances.predictions.RegressionPrediction;
 
 public class FadingTargetMean extends TargetMean implements AMRulesRegressorFunction{
 
@@ -32,7 +34,7 @@ public class FadingTargetMean extends TargetMean implements AMRulesRegressorFunc
 	public FloatOption fadingFactorOption = new FloatOption(
 			"fadingFactor", 'f', 
 			"Fading factor for the FadingTargetMean accumulated error", 0.99, 0, 1);
-	
+
 	private double nD;
 	private double fadingFactor;
 	@Override
@@ -46,15 +48,13 @@ public class FadingTargetMean extends TargetMean implements AMRulesRegressorFunc
 		super.resetLearningImpl();
 		this.fadingFactor=fadingFactorOption.getValue();
 	}
-	
+
 	@Override
-	public double[] getVotesForInstance(Instance inst) {
-		double[] currentMean=new double[1];
+	public Prediction getPredictionForInstance(Instance inst) {
+		double currentMean = 0;
 		if (nD>0)
-			currentMean[0]=sum/nD;
-		else
-			 currentMean[0]=0;
-		return currentMean;
+			currentMean = sum/nD;
+		return new RegressionPrediction(currentMean);
 	}
 
 }

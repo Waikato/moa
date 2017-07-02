@@ -110,9 +110,9 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 	public double[] getPrediction(Instance instance, int predictionMode) {
 		double[] ret = new double[1];  
 		if (predictionMode == 1)
-			ret=this.perceptron.getVotesForInstance(instance);
+			ret=this.perceptron.getPredictionForInstance(instance).asDoubleArray();
 		else
-			ret=this.targetMean.getVotesForInstance(instance);
+			ret=this.targetMean.getPredictionForInstance(instance).asDoubleArray();
 		return ret;
 	}
 
@@ -126,7 +126,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 			break;
 			//target mean - 2
 		case 2:
-			aux=this.targetMean.getVotesForInstance((Instance)null);
+			aux=this.targetMean.getPredictionForInstance((Instance)null).asDoubleArray();
 			res=normalize(aux[0]);
 			break;
 			//adaptive	- 0
@@ -137,7 +137,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 				res=this.perceptron.normalizedPrediction(instance);
 			}
 			else{
-				aux=this.targetMean.getVotesForInstance(instance);
+				aux=this.targetMean.getPredictionForInstance(instance).asDoubleArray();
 				res = normalize(aux[0]); 
 			}
 			break;
@@ -156,7 +156,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 			double 	perceptronError= this.perceptron.getCurrentError();
 			double meanTargetError =this.targetMean.getCurrentError();
 			debug("\n Check P:" + perceptronError + " M:" + meanTargetError,5);
-			debug("Rule" + this.owner.ruleNumberID + " P:" + this.perceptron.getVotesForInstance(instance)[0] + " (" + perceptronError + ")" + " M:" + this.targetMean.getVotesForInstance(instance)[0]+ " (" + meanTargetError + ")",3) ; //Commented by JD
+			debug("Rule" + this.owner.ruleNumberID + " P:" + this.perceptron.getPredictionForInstance(instance).asDoubleArray()[0] + " (" + perceptronError + ")" + " M:" + this.targetMean.getPredictionForInstance(instance).asDoubleArray()[0]+ " (" + meanTargetError + ")",3) ; //Commented by JD
 			debug("Observed Value: " + instance.classValue(),5);
 			if (perceptronError < meanTargetError) {
 				predictionMode = 1; //PERCEPTRON
@@ -306,7 +306,7 @@ public class RuleActiveRegressionNode extends RuleActiveLearningNode{
 
 	public double[] getSimplePrediction() {
 		if( this.targetMean!=null)
-			return this.targetMean.getVotesForInstance((Instance) null);
+			return this.targetMean.getPredictionForInstance((Instance) null).asDoubleArray();
 		else
 			return new double[]{0};
 

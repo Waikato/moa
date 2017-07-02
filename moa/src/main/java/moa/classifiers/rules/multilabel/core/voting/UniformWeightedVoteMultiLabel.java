@@ -20,8 +20,8 @@
 
 package moa.classifiers.rules.multilabel.core.voting;
 
-import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
-import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.predictions.MultiLabelClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 
 /**
@@ -40,7 +40,7 @@ public class UniformWeightedVoteMultiLabel extends AbstractErrorWeightedVoteMult
 		if (n>0){
 			int numOutputs=outputAttributesCount.length;
 			weights=new double[n][numOutputs];
-				weightedVote=new MultiLabelPrediction(numOutputs);
+				weightedVote=new MultiLabelClassificationPrediction(numOutputs);
 
 				//For each output attribute
 				for (int o=0;o<numOutputs;o++)

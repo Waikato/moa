@@ -6,7 +6,7 @@ public class InstanceExample implements Example<Instance> {
 
 	public Instance instance;
 
-  	public InstanceExample (Instance inst)
+  	public InstanceExample(Instance inst)
    	{                             
 		this.instance = inst;    
   	}  
@@ -26,6 +26,7 @@ public class InstanceExample implements Example<Instance> {
 		this.instance.setWeight(w);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Example copy() {
 		return new InstanceExample(instance.copy());

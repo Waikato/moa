@@ -1,10 +1,10 @@
 package moa.classifiers.rules;
 
-import moa.classifiers.Regressor;
 import moa.classifiers.rules.multilabel.AMRulesMultiTargetRegressor;
+import moa.learners.MultiTargetRegressor;
 
 public class AMRulesRegressor extends AMRulesMultiTargetRegressor implements
-		Regressor {
+		MultiTargetRegressor {
 
 	/**
 	 * 

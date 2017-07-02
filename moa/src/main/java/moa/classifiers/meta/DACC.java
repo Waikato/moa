@@ -28,11 +28,13 @@ import java.util.Collections;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+import moa.learners.Classifier;
 import moa.options.ClassOption;
 
 /**
@@ -47,7 +49,7 @@ import moa.options.ClassOption;
  *
  */
 
-public class DACC extends AbstractClassifier {
+public class DACC extends AbstractClassifier implements Classifier {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -138,7 +140,7 @@ public class DACC extends AbstractClassifier {
     }
 
     @Override 
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
 
         DoubleVector combinedVote = new DoubleVector();
         ArrayList<Integer> arr;
@@ -156,7 +158,7 @@ public class DACC extends AbstractClassifier {
             for (int i = 0; i < arr.size(); i++) {
                 if (this.ensembleWeights[arr.get(i)].val > 0.0) {
 
-                    DoubleVector vote = new DoubleVector(this.ensemble[arr.get(i)].getVotesForInstance(inst));
+                    DoubleVector vote = this.ensemble[arr.get(i)].getPredictionForInstance(inst).asDoubleVector();
 
                     if (vote.sumOfValues() > 0.0) {
                         vote.normalize();
@@ -166,7 +168,7 @@ public class DACC extends AbstractClassifier {
                 }
             }
         }
-        return combinedVote.getArrayRef();
+        return new ClassificationPrediction(combinedVote.getArrayRef());
     }
 
     
@@ -388,7 +390,6 @@ public class DACC extends AbstractClassifier {
         return true;
     }
 
-    @Override
     public Classifier[] getSubClassifiers() {
         return this.ensemble.clone();
     }

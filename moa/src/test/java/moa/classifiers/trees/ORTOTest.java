@@ -22,7 +22,7 @@ package moa.classifiers.trees;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import moa.classifiers.AbstractMultipleRegressorTestCase;
-import moa.classifiers.Classifier;
+import moa.learners.Regressor;
 
 /**
  * Tests the ORTO classifier.
@@ -49,9 +49,9 @@ public class ORTOTest
    * @return		the setups
    */
   @Override
-  protected Classifier[] getRegressionClassifierSetups() {
-    return new Classifier[]{
-	new ORTO2(),
+  protected Regressor[] getLearnerSetups() {
+    return new Regressor[]{
+	new ORTO(),
     };
   }
   

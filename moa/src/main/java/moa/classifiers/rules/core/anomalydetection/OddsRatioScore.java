@@ -3,7 +3,6 @@ package moa.classifiers.rules.core.anomalydetection;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
 
 import moa.classifiers.rules.core.Utils;
 import moa.classifiers.rules.core.anomalydetection.probabilityfunctions.CantellisInequality;
@@ -48,7 +47,7 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 	private ProbabilityFunction probabilityFunction;
 
 	@Override
-	public boolean updateAndCheckAnomalyDetection(StructuredInstance instance) {
+	public boolean updateAndCheckAnomalyDetection(Instance instance) {
 		boolean isAnomaly=false;
 		if(probabilityFunction==null){
 			weightSeen=0.0;

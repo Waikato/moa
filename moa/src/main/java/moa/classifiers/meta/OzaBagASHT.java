@@ -22,12 +22,17 @@ package moa.classifiers.meta;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
-import moa.classifiers.Classifier;
+import moa.classifiers.AbstractClassifier;
 import moa.classifiers.trees.ASHoeffdingTree;
 import moa.core.DoubleVector;
+import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.core.Utils;
+import moa.learners.Classifier;
+import moa.options.ClassOption;
 
 /**
  * Bagging using trees of different size.
@@ -83,7 +88,7 @@ import moa.core.Utils;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class OzaBagASHT extends OzaBag {
+public class OzaBagASHT extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -91,6 +96,9 @@ public class OzaBagASHT extends OzaBag {
     public String getPurposeString() {
         return "Bagging using trees of different size.";
     }
+    
+    public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
+        "The number of models in the bag.", 10, 1, Integer.MAX_VALUE);
     
     public IntOption firstClassifierSizeOption = new IntOption("firstClassifierSize", 'f',
             "The size of first classifier in the bag.", 1, 1, Integer.MAX_VALUE);
@@ -101,19 +109,23 @@ public class OzaBagASHT extends OzaBag {
     public FlagOption resetTreesOption = new FlagOption("resetTrees",
             'e', "Reset trees when size is higher than the max.");
 
+        public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
+    		"ASHoeffdingTree to train.", ASHoeffdingTree.class,
+    		"moa.classifiers.trees.ASHoeffdingTree");
+    
+    protected ASHoeffdingTree[] ensemble;
     protected double[] error;
-
     protected double alpha = 0.01;
 
     @Override
     public void resetLearningImpl() {
-        this.ensemble = new Classifier[this.ensembleSizeOption.getValue()];
+        this.ensemble = new ASHoeffdingTree[this.ensembleSizeOption.getValue()];
         this.error = new double[this.ensembleSizeOption.getValue()];
         Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
         baseLearner.resetLearning();
         int pow = this.firstClassifierSizeOption.getValue(); //EXTENSION TO ASHT
         for (int i = 0; i < this.ensemble.length; i++) {
-            this.ensemble[i] = baseLearner.copy();
+            this.ensemble[i] = (ASHoeffdingTree) baseLearner.copy();
             this.error[i] = 0.0;
             ((ASHoeffdingTree) this.ensemble[i]).setMaxSize(pow); //EXTENSION TO ASHT
             if ((this.resetTreesOption != null)
@@ -132,7 +144,7 @@ public class OzaBagASHT extends OzaBag {
             if (k > 0) {
                 Instance weightedInst = (Instance) inst.copy();
                 weightedInst.setWeight(inst.weight() * k);
-                if (Utils.maxIndex(this.ensemble[i].getVotesForInstance(inst)) == trueClass) {
+                if (Utils.maxIndex(this.ensemble[i].getPredictionForInstance(inst)) == trueClass) {
                     this.error[i] += alpha * (0.0 - this.error[i]); //EWMA
                 } else {
                     this.error[i] += alpha * (1.0 - this.error[i]); //EWMA
@@ -142,10 +154,10 @@ public class OzaBagASHT extends OzaBag {
         }
     }
 
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
         DoubleVector combinedVote = new DoubleVector();
         for (int i = 0; i < this.ensemble.length; i++) {
-            DoubleVector vote = new DoubleVector(this.ensemble[i].getVotesForInstance(inst));
+            DoubleVector vote = this.ensemble[i].getPredictionForInstance(inst).asDoubleVector();
             if (vote.sumOfValues() > 0.0) {
                 vote.normalize();
                 if ((this.useWeightOption != null)
@@ -155,11 +167,26 @@ public class OzaBagASHT extends OzaBag {
                 combinedVote.addValues(vote);
             }
         }
-        return combinedVote.getArrayRef();
+        return new ClassificationPrediction(combinedVote.getArrayRef());
     }
 
     @Override
     public void getModelDescription(StringBuilder out, int indent) {
         // TODO Auto-generated method stub
+    }
+    
+    @Override
+    public boolean isRandomizable() {
+        return true;
+    }
+
+    @Override
+    protected Measurement[] getModelMeasurementsImpl() {
+        return new Measurement[]{new Measurement("ensemble size",
+                    this.ensemble != null ? this.ensemble.length : 0)};
+    }
+    
+    public Classifier[] getSubClassifiers() {
+        return this.ensemble.clone();
     }
 }

@@ -22,7 +22,7 @@ package moa.classifiers.functions;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import moa.classifiers.AbstractMultipleClassifierTestCase;
-import moa.classifiers.Classifier;
+import moa.learners.Classifier;
 
 /**
  * Tests the MajorityClass classifier.
@@ -49,7 +49,7 @@ public class MajorityClassTest
    * @return		the setups
    */
   @Override
-  protected Classifier[] getRegressionClassifierSetups() {
+  protected Classifier[] getLearnerSetups() {
     return new Classifier[]{
 	new MajorityClass(),
     };

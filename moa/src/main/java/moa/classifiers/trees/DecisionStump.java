@@ -22,6 +22,8 @@ package moa.classifiers.trees;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.core.AttributeSplitSuggestion;
@@ -32,6 +34,7 @@ import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+import moa.learners.Classifier;
 import moa.options.ClassOption;
 
 /**
@@ -48,7 +51,7 @@ import moa.options.ClassOption;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class DecisionStump extends AbstractClassifier {
+public class DecisionStump extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -114,14 +117,14 @@ public class DecisionStump extends AbstractClassifier {
     }
 
     @Override
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
         if (this.bestSplit != null) {
             int branch = this.bestSplit.splitTest.branchForInstance(inst);
             if (branch >= 0) {
-                return this.bestSplit.resultingClassDistributionFromSplit(branch);
+                return new ClassificationPrediction(this.bestSplit.resultingClassDistributionFromSplit(branch));
             }
         }
-        return this.observedClassDistribution.getArrayCopy();
+        return new ClassificationPrediction(observedClassDistribution.getArrayCopy());
     }
 
     @Override

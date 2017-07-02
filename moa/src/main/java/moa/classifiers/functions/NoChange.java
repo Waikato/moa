@@ -20,9 +20,12 @@
 package moa.classifiers.functions;
 
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
 import moa.core.Measurement;
+import moa.learners.Classifier;
 
 /**
  * NoChange class classifier. It always predicts the last class seen.
@@ -30,7 +33,7 @@ import moa.core.Measurement;
  * @author Bernhard Pfahringer (bernhard@cs.waikato.ac.nz)
  * @version $Revision: 1 $
  */
-public class NoChange extends AbstractClassifier {
+public class NoChange extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -51,10 +54,10 @@ public class NoChange extends AbstractClassifier {
         this.lastSeenClass = inst.classValue();
     }
 
-    public double[] getVotesForInstance(Instance i) {
+    public Prediction getPredictionForInstance(Instance i) {
         double[] votes = new double[i.numClasses()];
         votes[(int) lastSeenClass] = 1.0;
-        return votes;
+        return new ClassificationPrediction(votes);
     }
 
     @Override

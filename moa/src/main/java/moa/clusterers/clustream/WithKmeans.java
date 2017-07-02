@@ -35,6 +35,7 @@ import java.util.Random;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.cluster.CFCluster;
 import moa.cluster.Cluster;
@@ -461,7 +462,7 @@ public class WithKmeans extends AbstractClusterer {
 		return false;
 	}
 	
-	public double[] getVotesForInstance(Instance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	

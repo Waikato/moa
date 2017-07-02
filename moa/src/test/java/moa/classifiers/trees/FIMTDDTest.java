@@ -22,7 +22,7 @@ package moa.classifiers.trees;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import moa.classifiers.AbstractMultipleRegressorTestCase;
-import moa.classifiers.Classifier;
+import moa.learners.Regressor;
 
 /**
  * Tests the FIMTDD classifier.
@@ -48,9 +48,9 @@ public class FIMTDDTest extends AbstractMultipleRegressorTestCase {
    * @return		the setups
    */
   @Override
-  protected Classifier[] getRegressionClassifierSetups() {
-    return new Classifier[]{
-	new FIMTDD2(),
+  protected Regressor[] getLearnerSetups() {
+    return new Regressor[]{
+	new FIMTDD(),
     };
   }
   

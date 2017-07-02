@@ -24,13 +24,15 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.ListOption;
 import com.github.javacliparser.Option;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.Utils;
+import moa.learners.Classifier;
 import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 
@@ -40,7 +42,7 @@ import moa.tasks.TaskMonitor;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class WeightedMajorityAlgorithm extends AbstractClassifier {
+public class WeightedMajorityAlgorithm extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = 1L;
     
@@ -136,12 +138,12 @@ public class WeightedMajorityAlgorithm extends AbstractClassifier {
         }
     }
 
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
         DoubleVector combinedVote = new DoubleVector();
         if (this.trainingWeightSeenByModel > 0.0) {
             for (int i = 0; i < this.ensemble.length; i++) {
                 if (this.ensembleWeights[i] > 0.0) {
-                    DoubleVector vote = new DoubleVector(this.ensemble[i].getVotesForInstance(inst));
+                    DoubleVector vote = this.ensemble[i].getPredictionForInstance(inst).asDoubleVector();
                     if (vote.sumOfValues() > 0.0) {
                         vote.normalize();
                         vote.scaleValues(this.ensembleWeights[i]);
@@ -150,7 +152,7 @@ public class WeightedMajorityAlgorithm extends AbstractClassifier {
                 }
             }
         }
-        return combinedVote.getArrayRef();
+        return new ClassificationPrediction(combinedVote.getArrayRef());
     }
 
     @Override
@@ -176,7 +178,6 @@ public class WeightedMajorityAlgorithm extends AbstractClassifier {
         return false;
     }
 
-    @Override
     public Classifier[] getSubClassifiers() {
         return this.ensemble.clone();
     }

@@ -35,6 +35,8 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.AbstractMOAObject;
 import moa.classifiers.AbstractClassifier;
@@ -53,6 +55,7 @@ import moa.core.Measurement;
 import moa.core.SizeOf;
 import moa.core.StringUtils;
 import moa.core.Utils;
+import moa.learners.Classifier;
 import moa.options.ClassOption;
 
 /**
@@ -95,7 +98,7 @@ import moa.options.ClassOption;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class HoeffdingOptionTree extends AbstractClassifier {
+public class HoeffdingOptionTree extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -681,7 +684,7 @@ public class HoeffdingOptionTree extends AbstractClassifier {
     }
 
     @Override
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
         if (this.treeRoot != null) {
             FoundNode[] foundNodes = this.treeRoot.filterInstanceToLeaves(inst,
                     null, -1, false);
@@ -706,9 +709,9 @@ public class HoeffdingOptionTree extends AbstractClassifier {
             if (predictionPaths > this.maxPredictionPaths) {
                 this.maxPredictionPaths++;
             }
-            return result.getArrayRef();
+            return new ClassificationPrediction(result.getArrayRef());
         }
-        return new double[0];
+        return new ClassificationPrediction(new double[0]);
     }
 
     @Override

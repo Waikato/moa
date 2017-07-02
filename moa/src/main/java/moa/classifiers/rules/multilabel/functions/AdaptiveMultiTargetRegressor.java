@@ -1,17 +1,17 @@
 package moa.classifiers.rules.multilabel.functions;
 
-import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.StructuredInstance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
-import moa.classifiers.AbstractMultiLabelLearner;
-import moa.classifiers.MultiTargetRegressor;
+import moa.classifiers.AbstractMultiTargetRegressor;
 import moa.classifiers.rules.multilabel.errormeasurers.AbstractMultiTargetErrorMeasurer;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiTargetErrorMeasurer;
 import moa.core.Measurement;
+import moa.learners.MultiTargetRegressor;
 import moa.options.ClassOption;
 
-public class AdaptiveMultiTargetRegressor extends AbstractMultiLabelLearner
-implements MultiTargetRegressor, AMRulesFunction {
+public class AdaptiveMultiTargetRegressor extends AbstractMultiTargetRegressor implements MultiTargetRegressor, AMRulesFunction {
 
 	/**
 	 * 
@@ -42,7 +42,7 @@ implements MultiTargetRegressor, AMRulesFunction {
 
 	}
 	@Override
-	public void trainOnInstanceImpl(StructuredInstance instance) {
+	public void trainOnInstanceImpl(Instance instance) {
 		if (!this.hasStarted){	
 			baseLearner=new MultiTargetRegressor[NUM_LEARNERS];
 			errorMeasurer= new MultiTargetErrorMeasurer[NUM_LEARNERS];
@@ -60,13 +60,13 @@ implements MultiTargetRegressor, AMRulesFunction {
 			if(prediction!=null)//should happen only for first instance
 				errorMeasurer[i].addPrediction(prediction, instance);
 			//Train
-			baseLearner[i].trainOnInstanceImpl(instance);
+			baseLearner[i].trainOnInstanceImpl((StructuredInstance) instance);
 		}
 
 	}
 
 	@Override
-	public Prediction getPredictionForInstance(StructuredInstance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		Prediction prediction=null;
 		if(hasStarted){
 			int bestIndex=0;

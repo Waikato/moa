@@ -22,7 +22,7 @@ package moa.classifiers.trees;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import moa.classifiers.AbstractMultipleClassifierTestCase;
-import moa.classifiers.Classifier;
+import moa.learners.Classifier;
 
 /**
  * Tests the LimAttHoeffdingTree classifier.
@@ -49,7 +49,7 @@ public class LimAttHoeffdingTreeTest
    * @return		the setups
    */
   @Override
-  protected Classifier[] getRegressionClassifierSetups() {
+  protected Classifier[] getLearnerSetups() {
     LimAttHoeffdingTree[]	result;
     result    = new LimAttHoeffdingTree[1];
     result[0] = new LimAttHoeffdingTree();  

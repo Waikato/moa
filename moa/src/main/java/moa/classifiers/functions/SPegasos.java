@@ -28,11 +28,14 @@ package moa.classifiers.functions;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.core.Utils;
+import moa.learners.Classifier;
 
 /**
  * <!-- globalinfo-start --> Implements the stochastic variant of the Pegasos
@@ -57,7 +60,7 @@ import moa.core.Utils;
  * <!-- technical-bibtex-end -->
  *
  */
-public class SPegasos extends AbstractClassifier {
+public class SPegasos extends AbstractClassifier implements Classifier {
 
     /**
      * For serialization
@@ -261,10 +264,10 @@ public class SPegasos extends AbstractClassifier {
      * @return predicted class probability distribution
      */
     @Override
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
 
         if (m_weights == null) {
-            return new double[inst.numAttributes() + 1];
+            return new ClassificationPrediction();
         }
 
         double[] result = new double[2];
@@ -289,7 +292,7 @@ public class SPegasos extends AbstractClassifier {
                 result[1] = 1;
             }
         }
-        return result;
+        return new ClassificationPrediction(result);
     }
 
     @Override

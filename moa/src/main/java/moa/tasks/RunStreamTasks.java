@@ -44,7 +44,7 @@ public class RunStreamTasks extends ConceptDriftMainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption taskOption = new ClassOption("task", 't',
-            "Task to do.", Task.class, "EvaluatePrequential -l active.ActiveClassifier -i 1000000 -d temp.txt");
+            "Task to do.", Task.class, "EvaluatePrequentialClassification -l active.ActiveClassifier -i 1000000 -d temp.txt");
 
     public StringOption streamParameterOption = new StringOption("streamParameter", 'p',
             "Stream parameter to vary.", "b");
@@ -69,7 +69,6 @@ public class RunStreamTasks extends ConceptDriftMainTask {
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Object result = null;
         Task taskBase = (Task) getPreparedClassOption(this.taskOption); 
-        String commandString = this.taskOption.getValueAsCLIString();
         //for each possible value of the parameter
         for (int valueParameter = (int) this.firstValueOption.getValue();
                 valueParameter <= this.lastValueOption.getValue();
@@ -82,7 +81,6 @@ public class RunStreamTasks extends ConceptDriftMainTask {
             }
             //Run task
             result = this.task.doTask(monitor, repository);
-            //System.out.println(((AbstractOptionHandler) this.task).getCLICreationString(Task.class));
         }
         return result;
     }

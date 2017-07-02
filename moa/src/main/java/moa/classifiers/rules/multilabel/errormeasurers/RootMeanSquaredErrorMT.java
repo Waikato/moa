@@ -1,6 +1,6 @@
 package moa.classifiers.rules.multilabel.errormeasurers;
 
-import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 public class RootMeanSquaredErrorMT extends AbstractMultiTargetErrorMeasurer {
 

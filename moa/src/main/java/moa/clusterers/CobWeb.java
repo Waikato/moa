@@ -25,6 +25,8 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
@@ -812,7 +814,7 @@ public class CobWeb extends AbstractClusterer {
      * @throws Exception if instance could not be classified
      * successfully
      */
-    public double[] getVotesForInstance(Instance instance) {
+    public Prediction getPredictionForInstance(Instance instance) {
         //public int clusterInstance(Instance instance) {//throws Exception {
         CNode host = m_cobwebTree;
         CNode temp = null;
@@ -820,7 +822,7 @@ public class CobWeb extends AbstractClusterer {
         determineNumberOfClusters();
 
         if (this.m_numberOfClusters < 1) {
-            return (new double[0]);
+            return new ClassificationPrediction();
         }
         double[] ret = new double[this.m_numberOfClusters];
 
@@ -840,7 +842,7 @@ public class CobWeb extends AbstractClusterer {
         } while (temp != null);
 
         ret[host.m_clusterNum] = 1.0;
-        return ret;
+        return new ClassificationPrediction(ret);
     }
 
     /**

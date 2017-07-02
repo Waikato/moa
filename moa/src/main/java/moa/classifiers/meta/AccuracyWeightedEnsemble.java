@@ -25,13 +25,15 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.Utils;
+import moa.learners.Classifier;
 import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 
@@ -39,7 +41,7 @@ import moa.tasks.TaskMonitor;
  * The Accuracy Weighted Ensemble classifier as proposed by Wang et al. in
  * "Mining concept-drifting data streams using ensemble classifiers", KDD 2003.
  */
-public class AccuracyWeightedEnsemble extends AbstractClassifier {
+public class AccuracyWeightedEnsemble extends AbstractClassifier implements Classifier {
 
     @Override
     public String getPurposeString() {
@@ -294,12 +296,13 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier {
         for (int i = 0; i < chunk.numInstances(); i++) {
             try {
                 voteSum = 0;
-                for (double element : learner.getVotesForInstance(chunk.instance(i))) {
+                double[] prediction = learner.getPredictionForInstance(chunk.instance(i)).asDoubleArray();
+                for (double element : prediction) {
                     voteSum += element;
                 }
 
                 if (voteSum > 0) {
-                    f_ci = learner.getVotesForInstance(chunk.instance(i))[(int) chunk.instance(i).classValue()] / voteSum;
+                    f_ci = prediction[(int) chunk.instance(i).classValue()] / voteSum;
                     mse_i += (1 - f_ci) * (1 - f_ci);
                 } else {
                     mse_i += 1;
@@ -335,13 +338,13 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier {
     /**
      * Predicts a class for an example.
      */
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
         DoubleVector combinedVote = new DoubleVector();
 
         if (this.trainingWeightSeenByModel > 0.0) {
             for (int i = 0; i < this.ensemble.length; i++) {
                 if (this.ensembleWeights[i] > 0.0) {
-                    DoubleVector vote = new DoubleVector(this.ensemble[i].getVotesForInstance(inst));
+                    DoubleVector vote = this.ensemble[i].getPredictionForInstance(inst).asDoubleVector();
 
                     if (vote.sumOfValues() > 0.0) {
                         vote.normalize();
@@ -353,7 +356,7 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier {
             }
         }
         combinedVote.normalize();
-        return combinedVote.getArrayRef();
+        return new ClassificationPrediction(combinedVote.getArrayRef());
     }
 
     @Override
@@ -396,7 +399,6 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier {
         return false;
     }
 
-    @Override
     public Classifier[] getSubClassifiers() {
         return this.ensemble.clone();
     }

@@ -28,6 +28,7 @@ import java.util.Random;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
@@ -330,7 +331,7 @@ public class Clustream extends AbstractClusterer{
 		return false;
 	}
 
-	public double[] getVotesForInstance(Instance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 

@@ -22,13 +22,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
+import moa.classifiers.AbstractInstanceLearner;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.meta.WEKAClassifier;
 import moa.core.Measurement;
 import moa.core.Utils;
+import moa.learners.Classifier;
 import moa.options.ClassOption;
 
 /**
@@ -45,7 +47,7 @@ import moa.options.ClassOption;
  * @author Manuel Baena (mbaena@lcc.uma.es)
  * @version 1.1
  */
-public class DriftDetectionMethodClassifier extends AbstractClassifier {
+public class DriftDetectionMethodClassifier extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -104,7 +106,7 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier {
         //this.numberInstances++;
         int trueClass = (int) inst.classValue();
         boolean prediction;
-        if (Utils.maxIndex(this.classifier.getVotesForInstance(inst)) == trueClass) {
+        if (Utils.maxIndex(this.classifier.getPredictionForInstance(inst)) == trueClass) {
             prediction = true;
         } else {
             prediction = false;
@@ -156,8 +158,8 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier {
         this.classifier.trainOnInstance(inst);
     }
 
-    public double[] getVotesForInstance(Instance inst) {
-        return this.classifier.getVotesForInstance(inst);
+    public Prediction getPredictionForInstance(Instance inst) {
+        return this.classifier.getPredictionForInstance(inst);
     }
 
     @Override
@@ -167,7 +169,7 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier {
 
     @Override
     public void getModelDescription(StringBuilder out, int indent) {
-        ((AbstractClassifier) this.classifier).getModelDescription(out, indent);
+        ((AbstractInstanceLearner) this.classifier).getModelDescription(out, indent);
     }
 
     @Override
@@ -175,7 +177,7 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier {
         List<Measurement> measurementList = new LinkedList<Measurement>();
         measurementList.add(new Measurement("Change detected", this.changeDetected));
         measurementList.add(new Measurement("Warning detected", this.warningDetected));
-        Measurement[] modelMeasurements = ((AbstractClassifier) this.classifier).getModelMeasurements();
+        Measurement[] modelMeasurements = ((AbstractInstanceLearner) this.classifier).getModelMeasurements();
         if (modelMeasurements != null) {
             for (Measurement measurement : modelMeasurements) {
                 measurementList.add(measurement);

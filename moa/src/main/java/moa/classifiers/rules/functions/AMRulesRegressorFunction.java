@@ -1,7 +1,7 @@
 package moa.classifiers.rules.functions;
 
-import moa.classifiers.Regressor;
+import moa.learners.Regressor;
 
-public interface AMRulesRegressorFunction extends AMRulesLearner,Regressor{
+public interface AMRulesRegressorFunction extends AMRulesLearner, Regressor{
 
 }

@@ -30,6 +30,7 @@ import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.cluster.Clustering;
 import moa.core.AutoClassDiscovery;
@@ -205,7 +206,7 @@ public class WekaClusteringAlgorithm extends AbstractClusterer {
         return false;
     }
 
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
         return null;
     }
 

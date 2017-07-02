@@ -26,15 +26,16 @@ import java.io.PrintStream;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
-import moa.classifiers.Classifier;
-import moa.classifiers.Regressor;
 import moa.core.Example;
 import moa.core.ObjectRepository;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
 import moa.evaluation.RegressionPerformanceEvaluator;
-import moa.learners.Learner;
+import moa.learners.Classifier;
+import moa.learners.MultiTargetRegressor;
+import moa.learners.Regressor;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
@@ -45,7 +46,7 @@ import moa.streams.InstanceStream;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class EvaluateModelRegression extends RegressionMainTask {
+public class EvaluateModelRegression extends AbstractEvaluateModel<Regressor> implements RegressionMainTask {
 
     @Override
     public String getPurposeString() {
@@ -54,105 +55,8 @@ public class EvaluateModelRegression extends RegressionMainTask {
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption modelOption = new ClassOption("model", 'm',
-            "Learner to evaluate.", Regressor.class, "LearnModelRegression");
-
-    public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to evaluate on.", ExampleStream.class,
-            "generators.RandomTreeGenerator");
-
-    public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
-            "Classification performance evaluation method.",
-            RegressionPerformanceEvaluator.class,
-            "BasicRegressionPerformanceEvaluator");
-
-
-    public IntOption maxInstancesOption = new IntOption("maxInstances", 'i',
-            "Maximum number of instances to test.", 1000000, 0,
-            Integer.MAX_VALUE);
-
-    public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
-            "File to append output predictions to.", null, "pred", true);
-
     public EvaluateModelRegression() {
-    }
+		super(Regressor.class, "moa.classifiers.trees.FIMTDD");
+	}
 
-    public EvaluateModelRegression(Classifier model, InstanceStream stream,
-            LearningPerformanceEvaluator evaluator, int maxInstances) {
-        this.modelOption.setCurrentObject(model);
-        this.streamOption.setCurrentObject(stream);
-        this.evaluatorOption.setCurrentObject(evaluator);
-        this.maxInstancesOption.setValue(maxInstances);
-    }
-
-    @Override
-    public Class<?> getTaskResultType() {
-        return LearningEvaluation.class;
-    }
-
-    @Override
-    public Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-        Learner model = (Learner) getPreparedClassOption(this.modelOption);
-        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
-        LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
-        int maxInstances = this.maxInstancesOption.getValue();
-        long instancesProcessed = 0;
-        monitor.setCurrentActivity("Evaluating model...", -1.0);
-
-        //File for output predictions
-        File outputPredictionFile = this.outputPredictionFileOption.getFile();
-        PrintStream outputPredictionResultStream = null;
-        if (outputPredictionFile != null) {
-            try {
-                if (outputPredictionFile.exists()) {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile, true), true);
-                } else {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile), true);
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(
-                        "Unable to open prediction result file: " + outputPredictionFile, ex);
-            }
-        }
-        while (stream.hasMoreInstances()
-                && ((maxInstances < 0) || (instancesProcessed < maxInstances))) {
-            Example testInst = (Example) stream.nextInstance();//.copy();
-            double trueClass = ((Instance) testInst.getData()).classValue();
-            //testInst.setClassMissing();
-            double[] prediction = model.getVotesForInstance(testInst);
-            //evaluator.addClassificationAttempt(trueClass, prediction, testInst
-            //		.weight());
-            if (outputPredictionFile != null) {
-                outputPredictionResultStream.println(prediction[0] + "," + trueClass);
-            }
-            evaluator.addResult(testInst, prediction);
-            instancesProcessed++;
-            if (instancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
-                if (monitor.taskShouldAbort()) {
-                    return null;
-                }
-                long estimatedRemainingInstances = stream.estimatedRemainingInstances();
-                if (maxInstances > 0) {
-                    long maxRemaining = maxInstances - instancesProcessed;
-                    if ((estimatedRemainingInstances < 0)
-                            || (maxRemaining < estimatedRemainingInstances)) {
-                        estimatedRemainingInstances = maxRemaining;
-                    }
-                }
-                monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
-                        : (double) instancesProcessed
-                        / (double) (instancesProcessed + estimatedRemainingInstances));
-                if (monitor.resultPreviewRequested()) {
-                    monitor.setLatestResultPreview(new LearningEvaluation(
-                            evaluator, model));
-                }
-            }
-        }
-        if (outputPredictionResultStream != null) {
-            outputPredictionResultStream.close();
-        }
-        return new LearningEvaluation(evaluator, model);
-    }
 }

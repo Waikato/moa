@@ -22,13 +22,15 @@ package moa.classifiers.meta;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
 import moa.classifiers.trees.HoeffdingTree;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
+import moa.learners.Classifier;
 import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 
@@ -37,7 +39,7 @@ import moa.tasks.TaskMonitor;
  * Brzezinski and Stefanowski in "Reacting to Different Types of Concept Drift:
  * The Accuracy Updated Ensemble Algorithm", IEEE Trans. Neural Netw, 2013.
  */
-public class AccuracyUpdatedEnsemble extends AbstractClassifier {
+public class AccuracyUpdatedEnsemble extends AbstractClassifier implements Classifier {
 
 	private static final long serialVersionUID = 1L;
 
@@ -139,13 +141,13 @@ public class AccuracyUpdatedEnsemble extends AbstractClassifier {
 	/**
 	 * Predicts a class for an example.
 	 */
-	public double[] getVotesForInstance(Instance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		DoubleVector combinedVote = new DoubleVector();
 
 		if (this.trainingWeightSeenByModel > 0.0) {
 			for (int i = 0; i < this.learners.length; i++) {
 				if (this.weights[i][0] > 0.0) {
-					DoubleVector vote = new DoubleVector(this.learners[(int) this.weights[i][1]].getVotesForInstance(inst));
+					DoubleVector vote = this.learners[(int) this.weights[i][1]].getPredictionForInstance(inst).asDoubleVector();
 
 					if (vote.sumOfValues() > 0.0) {
 						vote.normalize();
@@ -158,14 +160,13 @@ public class AccuracyUpdatedEnsemble extends AbstractClassifier {
 		}
 		
 		//combinedVote.normalize();
-		return combinedVote.getArrayRef();
+		return new ClassificationPrediction(combinedVote.getArrayRef());
 	}
 
 	@Override
 	public void getModelDescription(StringBuilder out, int indent) {
 	}
 
-	@Override
 	public Classifier[] getSubClassifiers() {
 		return this.learners.clone();
 	}
@@ -257,12 +258,12 @@ public class AccuracyUpdatedEnsemble extends AbstractClassifier {
 		for (int i = 0; i < chunk.numInstances(); i++) {
 			try {
 				voteSum = 0;
-				for (double element : learner.getVotesForInstance(chunk.instance(i))) {
+				for (double element : learner.getPredictionForInstance(chunk.instance(i)).asDoubleArray()) {
 					voteSum += element;
 				}
 
 				if (voteSum > 0) {
-					f_ci = learner.getVotesForInstance(chunk.instance(i))[(int) chunk.instance(i).classValue()]
+					f_ci = learner.getPredictionForInstance(chunk.instance(i)).asDoubleArray()[(int) chunk.instance(i).classValue()]
 							/ voteSum;
 					mse_i += (1 - f_ci) * (1 - f_ci);
 				} else {

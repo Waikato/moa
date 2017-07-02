@@ -26,8 +26,6 @@ import java.util.List;
  */
 public class InstanceInformation implements Serializable {
 
-	private static final long serialVersionUID = 4240189973932498979L;
-
 	/**
      * The dataset's name.
      */
@@ -38,26 +36,6 @@ public class InstanceInformation implements Serializable {
     protected List<Integer> outputIndexes;
     protected List<Integer> inputIndexes;
     
-    
-    /**
-     * Returns the input attribute.
-     * 
-     * @param w the input attribute index (indexes only input attributes)
-     * @return the input attribute.
-     */
-    public Attribute inputAttribute(int w) {
-        return this.attributesInformation.attribute(inputAttributeIndex(w));
-    }
-
-    /**
-     * Returns the output attribute.
-     * 
-     * @param w the output attribute index (indexes only output attributes)
-     * @return the output attribute.
-     */
-    public Attribute outputAttribute(int w) {
-        return this.attributesInformation.attribute(outputAttributeIndex(w));
-    }
     
     /**
      * Instantiates a new instance information.
@@ -99,6 +77,26 @@ public class InstanceInformation implements Serializable {
         this.inputIndexes = null;
         this.outputIndexes = null;
         this.attributesInformation = null;
+    }
+    
+    /**
+     * Returns the input attribute.
+     * 
+     * @param w the input attribute index (indexes only input attributes)
+     * @return the input attribute.
+     */
+    public Attribute inputAttribute(int w) {
+        return this.attributesInformation.attribute(inputAttributeIndex(w));
+    }
+
+    /**
+     * Returns the output attribute.
+     * 
+     * @param w the output attribute index (indexes only output attributes)
+     * @return the output attribute.
+     */
+    public Attribute outputAttribute(int w) {
+        return this.attributesInformation.attribute(outputAttributeIndex(w));
     }
 
     //Information Instances

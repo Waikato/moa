@@ -43,7 +43,7 @@ public class RunTasks extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption taskOption = new ClassOption("task", 't',
-            "Task to do.", Task.class, "EvaluatePrequential -l active.ActiveClassifier -i 1000000 -d temp.txt");
+            "Task to do.", Task.class, "EvaluatePrequentialClassifier -l active.ActiveClassifier -i 1000000 -d temp.txt");
 
     public StringOption classifierParameterOption = new StringOption("classifierParameter", 'p',
             "Classifier parameter to vary.", "b");
@@ -68,20 +68,15 @@ public class RunTasks extends MainTask {
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Object result = null;
 
-        String commandString = this.taskOption.getValueAsCLIString();
         //for each possible value of the parameter
         for (double valueParameter = this.firstValueOption.getValue();
                 valueParameter <= this.lastValueOption.getValue();
                 valueParameter += this.incrementValueOption.getValue()) {
             //Add parameter
             this.task = (Task) getPreparedClassOption(this.taskOption);
-            if (this.task instanceof EvaluatePrequential) {
-                String classifier = ((EvaluatePrequential) this.task).learnerOption.getValueAsCLIString();
-                ((EvaluatePrequential) this.task).learnerOption.setValueViaCLIString(classifier + " -" + classifierParameterOption.getValue() + " " + valueParameter);
-            }
-            if (this.task instanceof EvaluateInterleavedTestThenTrain) {
-                String classifier = ((EvaluateInterleavedTestThenTrain) this.task).learnerOption.getValueAsCLIString();
-                ((EvaluateInterleavedTestThenTrain) this.task).learnerOption.setValueViaCLIString(classifier + " -" + classifierParameterOption.getValue() + " " + valueParameter);
+            if (this.task instanceof AbstractEvaluatePrequential) {
+                String classifier = ((AbstractEvaluatePrequential) this.task).learnerOption.getValueAsCLIString();
+                ((AbstractEvaluatePrequential) this.task).learnerOption.setValueViaCLIString(classifier + " -" + classifierParameterOption.getValue() + " " + valueParameter);
             }
             //Run task
             result = this.task.doTask(monitor, repository);

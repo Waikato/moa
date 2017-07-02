@@ -27,20 +27,22 @@ import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.predictions.MultiTargetRegressionPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
-import moa.classifiers.Regressor;
+import moa.classifiers.AbstractMultiTargetRegressor;
 import moa.classifiers.rules.AMRulesRegressorOld;
 import moa.classifiers.rules.AbstractAMRules;
 import moa.classifiers.rules.core.voting.ErrorWeightedVote;
 import moa.classifiers.rules.core.voting.Vote;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
+import moa.learners.MultiTargetRegressor;
+import moa.learners.Regressor;
 import moa.options.ClassOption;
 
 
-public class RandomAMRulesOld extends AbstractClassifier implements Regressor {
+public class RandomAMRulesOld extends AbstractMultiTargetRegressor implements MultiTargetRegressor {
 
 	public IntOption VerbosityOption = new IntOption(
 			"verbosity",
@@ -50,7 +52,7 @@ public class RandomAMRulesOld extends AbstractClassifier implements Regressor {
 	
 	private static final long serialVersionUID = 1L;
 
-	public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l', "Classifier to train.", AbstractAMRules.class, AMRulesRegressorOld.class.getName()); 
+	public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l', "Regressor to train.", AbstractAMRules.class, AMRulesRegressorOld.class.getName()); 
 
 	public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
 			"The number of models in the bag.", 10, 1, Integer.MAX_VALUE);
@@ -116,7 +118,7 @@ public class RandomAMRulesOld extends AbstractClassifier implements Regressor {
 				inst.setWeight(inst.weight() * k);
 				
 				//estimate error
-				double error = Math.abs(inst.classValue()-ensemble[i].getVotesForInstance(inst)[0]);
+				double error = Math.abs(inst.classValue()-ensemble[i].getPredictionForInstance(inst).asDoubleArray()[0]);
 				sumError[i]=error*inst.weight()+sumError[i]*factor;
 				nError[i]=inst.weight()+nError[i]*factor;		
 				//train learner
@@ -126,7 +128,7 @@ public class RandomAMRulesOld extends AbstractClassifier implements Regressor {
 	}
 
 	@Override
-	public double[] getVotesForInstance(Instance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		double [] votes=null;
 		//ErrorWeightedVote combinedVote = (ErrorWeightedVote)((ErrorWeightedVote) votingTypeOption.getPreMaterializedObject()).copy();
 		ErrorWeightedVote combinedVote = (ErrorWeightedVote)((ErrorWeightedVote) getPreparedClassOption(this.votingFunctionOption)).copy();
@@ -153,7 +155,7 @@ public class RandomAMRulesOld extends AbstractClassifier implements Regressor {
 			sb.append(Arrays.toString(votes)  + ", ").append(inst.classValue()); 
 			System.out.println(sb.toString());
 		}
-		return votes; 
+		return new MultiTargetRegressionPrediction(votes); 
 	}
 
 	@Override
@@ -191,10 +193,9 @@ public class RandomAMRulesOld extends AbstractClassifier implements Regressor {
 		return m;
 	}
 
-	@Override
-	public Classifier[] getSubClassifiers() {
-		return this.ensemble; //.clone();
-	}
+//	public Classifier[] getSubClassifiers() {
+//		return this.ensemble; //.clone();
+//	}
 
 	protected int[][] listAttributes;
 	protected int numAttributes;

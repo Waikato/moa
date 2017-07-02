@@ -21,8 +21,8 @@ package moa.evaluation;
 
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Prediction;
 import com.yahoo.labs.samoa.instances.StructuredInstance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.core.Example;
 import moa.core.Measurement;
@@ -152,7 +152,7 @@ implements MultiTargetPerformanceEvaluator, RegressionPerformanceEvaluator {
 		StructuredInstance inst=(StructuredInstance) testInst.getData();
        double weight = inst.weight();
         if (numberOutputs == 0) {
-        	numberOutputs = inst.numberOutputTargets();
+        	numberOutputs = inst.numOutputAttributes();
         }
         if (weight > 0.0) {
             if (TotalweightObserved == 0) {

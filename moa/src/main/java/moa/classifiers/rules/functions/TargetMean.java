@@ -26,13 +26,15 @@ package moa.classifiers.rules.functions;
  *  */
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
+import com.yahoo.labs.samoa.instances.predictions.RegressionPrediction;
 
-import moa.classifiers.AbstractClassifier;
+import moa.classifiers.AbstractRegressor;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 
 
-public class TargetMean extends AbstractClassifier implements AMRulesRegressorFunction {
+public class TargetMean extends AbstractRegressor implements AMRulesRegressorFunction {
 
 	/**
 	 * 
@@ -42,26 +44,24 @@ public class TargetMean extends AbstractClassifier implements AMRulesRegressorFu
 	protected double errorSum;
 	protected double nError;
 	private double fadingErrorFactor;
-	
+
 	private static final long serialVersionUID = 7152547322803559115L;
 
 	public FloatOption fadingErrorFactorOption = new FloatOption(
 			"fadingErrorFactor", 'e', 
 			"Fading error factor for the TargetMean accumulated error", 0.99, 0, 1);
-	
+
 	@Override
 	public boolean isRandomizable() {
 		return false;
 	}
 
 	@Override
-	public double[] getVotesForInstance(Instance inst) {
-		double[] currentMean=new double[1];
-		if (n>0)
-			currentMean[0]=sum/n;
-		else
-			 currentMean[0]=0;
-		return currentMean;
+	public Prediction getPredictionForInstance(Instance inst) {
+		double currentMean = 0;
+		if (n > 0)
+			currentMean = sum / n;
+		return new RegressionPrediction(currentMean);
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public class TargetMean extends AbstractClassifier implements AMRulesRegressorFu
 	public void getModelDescription(StringBuilder out, int indent) {
 		StringUtils.appendIndented(out, indent, "Current Mean: " + this.sum/this.n);
 		StringUtils.appendNewline(out);	
-		
+
 	}
 	/* JD
 	 * Resets the learner but initializes with a starting point 
@@ -105,7 +105,7 @@ public class TargetMean extends AbstractClassifier implements AMRulesRegressorFu
 		this.n=numberOfInstances;
 		this.resetError();
 	}
-	
+
 	/* JD
 	 * Resets the learner but initializes with a starting point 
 	 * */
@@ -135,7 +135,7 @@ public class TargetMean extends AbstractClassifier implements AMRulesRegressorFu
 		this.errorSum=0;
 		this.nError=0;
 	}
-	
+
 
 
 }

@@ -28,10 +28,11 @@ import moa.options.AbstractOptionHandler;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public abstract class AbstractTask extends AbstractOptionHandler implements
-        Task {
+public abstract class AbstractTask extends AbstractOptionHandler implements Task {
 
-    /**
+	private static final long serialVersionUID = 1L;
+
+	/**
      * Gets the name of this task.
      *
      * @return the name of this task

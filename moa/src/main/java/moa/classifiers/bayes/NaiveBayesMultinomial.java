@@ -25,12 +25,15 @@ import java.util.Arrays;
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.core.Utils;
+import moa.learners.Classifier;
 
 /**
  * <!-- globalinfo-start --> Class for building and using a multinomial Naive
@@ -55,7 +58,7 @@ import moa.core.Utils;
  * <p/>
  * <!-- technical-bibtex-end -->
  */
-public class NaiveBayesMultinomial extends AbstractClassifier {
+public class NaiveBayesMultinomial extends AbstractClassifier implements Classifier {
 
     public FloatOption laplaceCorrectionOption = new FloatOption("laplaceCorrection",
             'l', "Laplace correction factor.",
@@ -160,9 +163,9 @@ public class NaiveBayesMultinomial extends AbstractClassifier {
      * @return predicted class probability distribution
      */
     @Override
-    public double[] getVotesForInstance(Instance instance) {
+    public Prediction getPredictionForInstance(Instance instance) {
         if (this.reset == true) {
-            return new double[2];
+            return new ClassificationPrediction();
         }
         double[] probOfClassGivenDoc = new double[m_numClasses];
         double totalSize = totalSize(instance);
@@ -185,7 +188,7 @@ public class NaiveBayesMultinomial extends AbstractClassifier {
             }
         }
 
-        return Utils.logs2probs(probOfClassGivenDoc);
+        return new ClassificationPrediction(Utils.logs2probs(probOfClassGivenDoc));
     }
 
     public double totalSize(Instance instance) {

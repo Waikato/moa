@@ -5,20 +5,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Prediction;
 import com.yahoo.labs.samoa.instances.StructuredInstance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
-import moa.classifiers.MultiLabelLearner;
-import moa.classifiers.multilabel.core.attributeclassobservers.AttributeStatisticsObserver;
-import moa.classifiers.multilabel.core.attributeclassobservers.NominalStatisticsObserver;
-import moa.classifiers.multilabel.core.attributeclassobservers.NumericStatisticsObserver;
-import moa.classifiers.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
+import moa.classifiers.mlc.core.attributeclassobservers.AttributeStatisticsObserver;
+import moa.classifiers.mlc.core.attributeclassobservers.NominalStatisticsObserver;
+import moa.classifiers.mlc.core.attributeclassobservers.NumericStatisticsObserver;
+import moa.classifiers.mlc.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.core.AttributeExpansionSuggestion;
 import moa.classifiers.rules.core.Utils;
 import moa.classifiers.rules.multilabel.functions.AMRulesFunction;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
+import moa.learners.MultiLabelClassifier;
 import moa.tasks.TaskMonitor;
 
 public class LearningLiteralRegression extends LearningLiteral {
@@ -35,9 +35,6 @@ public class LearningLiteralRegression extends LearningLiteral {
 	public LearningLiteralRegression(int [] outputsToLearn) {
 		super(outputsToLearn);
 	}
-
-
-
 
 	protected double [] getNormalizedErrors(Prediction prediction, Instance instance) {
 		double [] errors= new double[outputsToLearn.length];
@@ -114,11 +111,11 @@ public class LearningLiteralRegression extends LearningLiteral {
 				((AMRulesFunction) learner).resetWithMemory();
 			}
 			expandedLearningLiteral=new LearningLiteralRegression(newOutputs);
-			expandedLearningLiteral.setLearner((MultiLabelLearner)this.learner.copy());
+			expandedLearningLiteral.setLearner((MultiLabelClassifier)this.learner.copy());
 
 			//set other branch (used if default rule expands)
 			otherBranchLearningLiteral=new LearningLiteralRegression(newOutputs);
-			otherBranchLearningLiteral.setLearner((MultiLabelLearner)learner.copy());
+			otherBranchLearningLiteral.setLearner((MultiLabelClassifier)learner.copy());
 
 		}
 		return shouldSplit;
@@ -150,17 +147,17 @@ public class LearningLiteralRegression extends LearningLiteral {
 	}
 
 	@Override
-	public void trainOnInstance(StructuredInstance instance)  {
+	public void trainOnInstance(Instance instance)  {
 		if (attributesMask==null)
 			initializeAttibutesMask(instance);
 		
 		//learn for all output attributes if not specified at construction time
-		int numOutputs=instance.numberOutputTargets();
+		int numOutputs=instance.numOutputAttributes();
 		if(!hasStarted)
 		{
 			if(outputsToLearn==null)
 			{
-				outputsToLearn=new int[instance.numberOutputTargets()];
+				outputsToLearn=new int[instance.numOutputAttributes()];
 				for (int i=0; i<numOutputs;i++){
 					outputsToLearn[i]=i;
 				}

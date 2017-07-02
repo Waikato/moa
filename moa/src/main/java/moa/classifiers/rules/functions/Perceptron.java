@@ -25,12 +25,15 @@ import java.util.Random;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
+import com.yahoo.labs.samoa.instances.predictions.RegressionPrediction;
 
-import moa.classifiers.AbstractClassifier;
+import moa.classifiers.AbstractRegressor;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+import moa.learners.Regressor;
 
-public class Perceptron extends AbstractClassifier implements AMRulesRegressorFunction{
+public class Perceptron extends AbstractRegressor implements AMRulesRegressorFunction, Regressor {
 
 	private final double SD_THRESHOLD = 0.0000001; //THRESHOLD for normalizing attribute and target values
 
@@ -350,11 +353,11 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 	}
 
 	@Override
-	public double[] getVotesForInstance(Instance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		if (!this.initialisePerceptron) //has started training
-			return new double[]{this.prediction(inst)};
+			return new RegressionPrediction(this.prediction(inst));
 		else
-			return new double[]{0};
+			return new RegressionPrediction(0);
 	}
 
 	@Override

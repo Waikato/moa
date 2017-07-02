@@ -27,6 +27,7 @@ import java.util.Random;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
@@ -361,7 +362,7 @@ public class ClusterGenerator extends AbstractClusterer{
         return true;
     }
 
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
         return null;
     }
 }

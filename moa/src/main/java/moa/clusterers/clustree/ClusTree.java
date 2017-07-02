@@ -23,8 +23,10 @@ package moa.clusterers.clustree;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
@@ -46,6 +48,10 @@ public class ClusTree extends AbstractClusterer{
     public IntOption maxHeightOption = new IntOption(
 			"maxHeight", 'H',
 			"The maximal height of the tree", getDefaultHeight());
+    
+    public FlagOption breadthFirstStrategyOption = new FlagOption(
+			"breadthFirstStrategy", 'B',
+			"Use breadth first strategy");
     
     protected int getDefaultHeight() {
     	return 8;
@@ -102,6 +108,7 @@ public class ClusTree extends AbstractClusterer{
     
     @Override
     public void resetLearningImpl() {
+        breadthFirstStrat = breadthFirstStrategyOption.isSet();
         negLambda = (1.0 / (double) horizonOption.getValue())
                 * (Math.log(weightThreshold) / Math.log(2));
         maxHeight = maxHeightOption.getValue();
@@ -127,7 +134,7 @@ public class ClusTree extends AbstractClusterer{
     public void getModelDescription(StringBuilder out, int indent) {
     }
 
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
         return null;
     }
 

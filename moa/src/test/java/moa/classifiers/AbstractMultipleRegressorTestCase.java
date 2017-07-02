@@ -23,6 +23,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.Example;
 import moa.evaluation.BasicRegressionPerformanceEvaluator;
 import moa.evaluation.LearningPerformanceEvaluator;
+import moa.learners.Regressor;
 
 /**
  * Ancestor that defines a setting to test a classifier several times with
@@ -31,8 +32,7 @@ import moa.evaluation.LearningPerformanceEvaluator;
  * @author fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public abstract class AbstractMultipleRegressorTestCase
-        extends AbstractClassifierTestCase {
+public abstract class AbstractMultipleRegressorTestCase extends AbstractInstanceLearnerTestCase<Regressor> {
 
     protected int numberTests = 1;
 
@@ -133,7 +133,7 @@ public abstract class AbstractMultipleRegressorTestCase
      * @return	the setups
      */
     @Override
-    protected abstract Classifier[] getRegressionClassifierSetups();
+    protected abstract Regressor[] getLearnerSetups();
 
     /**
      * Returns the evaluator setups to use in the regression test.
@@ -149,5 +149,8 @@ public abstract class AbstractMultipleRegressorTestCase
         }
         return ret;
     }
-
+    
+    public Regressor copySetup(Regressor setup) {
+    	return ((Regressor) setup).copy();
+    }
 }

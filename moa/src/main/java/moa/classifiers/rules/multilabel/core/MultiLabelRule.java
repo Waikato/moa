@@ -5,19 +5,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import com.yahoo.labs.samoa.instances.Prediction;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.AbstractMOAObject;
-import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.core.driftdetection.ChangeDetector;
-import moa.classifiers.multilabel.core.attributeclassobservers.NominalStatisticsObserver;
-import moa.classifiers.multilabel.core.attributeclassobservers.NumericStatisticsObserver;
-import moa.classifiers.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
+import moa.classifiers.mlc.core.attributeclassobservers.NominalStatisticsObserver;
+import moa.classifiers.mlc.core.attributeclassobservers.NumericStatisticsObserver;
+import moa.classifiers.mlc.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.core.StringUtils;
+import moa.learners.MultiLabelClassifier;
 
 
 public class MultiLabelRule extends AbstractMOAObject {
@@ -57,7 +57,7 @@ public class MultiLabelRule extends AbstractMOAObject {
 		this.ruleNumberID = ruleNumberID;
 	}
 	
-	public boolean isCovering(StructuredInstance inst) {
+	public boolean isCovering(Instance inst) {
 		boolean isCovering = true;
 		for (Literal l : literalList) {
 			if (l.evaluate(inst) == false) {
@@ -84,15 +84,15 @@ public class MultiLabelRule extends AbstractMOAObject {
 		StringUtils.appendNewline(out);
 	}
 
-	public boolean updateChangeDetection(StructuredInstance instance) {
+	public boolean updateChangeDetection(Instance instance) {
 		return this.learningLiteral.updateAndCheckChange(instance);
 	}
 
-	public boolean updateAnomalyDetection(StructuredInstance instance) {
+	public boolean updateAnomalyDetection(Instance instance) {
 		return this.learningLiteral.updateAndCheckAnomalyDetection(instance);
 	}
 
-	public void trainOnInstance(StructuredInstance instance) {
+	public void trainOnInstance(Instance instance) {
 		learningLiteral.trainOnInstance(instance);
 	}
 
@@ -108,7 +108,7 @@ public class MultiLabelRule extends AbstractMOAObject {
 		return learningLiteral.getErrors();
 	}
 
-	public  Prediction getPredictionForInstance(StructuredInstance instance) {
+	public  Prediction getPredictionForInstance(Instance instance) {
 		return learningLiteral.getPredictionForInstance(instance);
 	}
 	
@@ -168,7 +168,7 @@ public class MultiLabelRule extends AbstractMOAObject {
 		
 	}
 
-	public void setLearner(MultiLabelLearner learner) {
+	public void setLearner(MultiLabelClassifier learner) {
 		learningLiteral.setLearner(learner);
 		
 	}

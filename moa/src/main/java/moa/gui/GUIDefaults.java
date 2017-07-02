@@ -36,8 +36,7 @@ import moa.core.Utils;
  * @author  FracPete (fracpete at waikato dot ac dot nz)
  * @version $Revision: 6103 $
  */
-public class GUIDefaults
-        implements Serializable {
+public class GUIDefaults implements Serializable {
 
     /** for serialization. */
     private static final long serialVersionUID = 4954795757927524225L;
@@ -136,7 +135,7 @@ public class GUIDefaults
         String tabs;
 
         // read and split on comma
-        tabs = get("Tabs", "moa.gui.ClassificationTabPanel,moa.gui.RegressionTabPanel,moa.gui.MultiTargetTabPanel,moa.gui.clustertab.ClusteringTabPanel,moa.gui.outliertab.OutlierTabPanel,moa.gui.ConceptDriftTabPanel");
+        tabs = get("Tabs", "moa.gui.ClassificationTabPanel,moa.gui.RegressionTabPanel,moa.gui.MultiTargetRegressionTabPanel,moa.gui.clustertab.ClusteringTabPanel,moa.gui.outliertab.OutlierTabPanel,moa.gui.ConceptDriftTabPanel");
         result = tabs.split(",");
 
         return result;

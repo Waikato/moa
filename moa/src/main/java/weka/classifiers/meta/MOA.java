@@ -24,10 +24,11 @@ package weka.classifiers.meta;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 import com.yahoo.labs.samoa.instances.WekaToSamoaInstanceConverter;
 
-import moa.classifiers.Classifier;
 import moa.classifiers.trees.DecisionStump;
+import moa.learners.Classifier;
 import moa.options.ClassOption;
 import weka.classifiers.UpdateableClassifier;
 import weka.core.Capabilities;
@@ -63,9 +64,7 @@ import weka.core.Utils;
  * @author  fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class MOA
-  extends weka.classifiers.AbstractClassifier
-  implements UpdateableClassifier {
+public class MOA extends weka.classifiers.AbstractClassifier implements UpdateableClassifier {
 
 	/** for serialization. */
 	private static final long serialVersionUID = 2605797948130310166L;
@@ -79,250 +78,253 @@ public class MOA
 			Classifier.class, m_ActualClassifier.getClass().getName().replace("moa.classifiers.", ""),
 			m_ActualClassifier.getClass().getName());
 
-        
-        protected WekaToSamoaInstanceConverter instanceConverter;
-        
-  /**
-   * Returns a string describing the classifier.
-   *
-   * @return a description suitable for
-   * displaying in the explorer/experimenter gui
-   */
-  public String globalInfo() {
-    return
-        "Wrapper for MOA classifiers.\n\n"
-      + "Since MOA doesn't offer a mechanism to query a classifier for the "
-      + "types of attributes and classes it can handle, the capabilities of "
-      + "this wrapper are hard-coded: nominal and numeric attributes and "
-      + "only nominal class attributes are allowed.";
-  }
 
-  /**
-   * Returns an enumeration describing the available options.
-   *
-   * @return an enumeration of all the available options.
-   */
-  public Enumeration listOptions() {
-    Vector result = new Vector();
+	protected WekaToSamoaInstanceConverter samoaConverter;
+	protected SamoaToWekaInstanceConverter wekaConverter;
 
-    result.addElement(new Option(
-        "\tThe MOA classifier to use.\n"
-        + "\t(default: " + MOAUtils.toCommandLine(new DecisionStump()) + ")",
-        "B", 1, "-B <classname + options>"));
+	/**
+	 * Returns a string describing the classifier.
+	 *
+	 * @return a description suitable for
+	 * displaying in the explorer/experimenter gui
+	 */
+	public String globalInfo() {
+		return
+				"Wrapper for MOA classifiers.\n\n"
+				+ "Since MOA doesn't offer a mechanism to query a classifier for the "
+				+ "types of attributes and classes it can handle, the capabilities of "
+				+ "this wrapper are hard-coded: nominal and numeric attributes and "
+				+ "only nominal class attributes are allowed.";
+	}
 
-    Enumeration en = super.listOptions();
-    while (en.hasMoreElements())
-      result.addElement(en.nextElement());
+	/**
+	 * Returns an enumeration describing the available options.
+	 *
+	 * @return an enumeration of all the available options.
+	 */
+	public Enumeration listOptions() {
+		Vector result = new Vector();
 
-    return result.elements();
-  }
+		result.addElement(new Option(
+				"\tThe MOA classifier to use.\n"
+						+ "\t(default: " + MOAUtils.toCommandLine(new DecisionStump()) + ")",
+						"B", 1, "-B <classname + options>"));
 
-  /**
-   * Parses a given list of options. <p/>
-   *
+		Enumeration en = super.listOptions();
+		while (en.hasMoreElements())
+			result.addElement(en.nextElement());
+
+		return result.elements();
+	}
+
+	/**
+	 * Parses a given list of options. <p/>
+	 *
    <!-- options-start -->
-   * Valid options are: <p/>
-   *
-   * <pre> -B &lt;classname + options&gt;
-   *  The MOA classifier to use.
-   *  (default: moa.classifiers.trees.DecisionStump)</pre>
-   *
-   * <pre> -D
-   *  If set, classifier is run in debug mode and
-   *  may output additional info to the console</pre>
-   *
+	 * Valid options are: <p/>
+	 *
+	 * <pre> -B &lt;classname + options&gt;
+	 *  The MOA classifier to use.
+	 *  (default: moa.classifiers.trees.DecisionStump)</pre>
+	 *
+	 * <pre> -D
+	 *  If set, classifier is run in debug mode and
+	 *  may output additional info to the console</pre>
+	 *
    <!-- options-end -->
-   *
-   * @param options the list of options as an array of strings
-   * @throws Exception if an option is not supported
-   */
-  public void setOptions(String[] options) throws Exception {
-    String        			tmpStr;
-    ClassOption					option;
+	 *
+	 * @param options the list of options as an array of strings
+	 * @throws Exception if an option is not supported
+	 */
+	public void setOptions(String[] options) throws Exception {
+		String        			tmpStr;
+		ClassOption					option;
 
-    tmpStr = Utils.getOption('B', options);
-    option = (ClassOption) m_Classifier.copy();
-    if (tmpStr.length() == 0)
-    	option.setCurrentObject(new DecisionStump());
-    else
-    	option.setCurrentObject(MOAUtils.fromCommandLine(m_Classifier, tmpStr));
-    setClassifier(option);
+		tmpStr = Utils.getOption('B', options);
+		option = (ClassOption) m_Classifier.copy();
+		if (tmpStr.length() == 0)
+			option.setCurrentObject(new DecisionStump());
+		else
+			option.setCurrentObject(MOAUtils.fromCommandLine(m_Classifier, tmpStr));
+		setClassifier(option);
 
-    super.setOptions(options);
-  }
+		super.setOptions(options);
+	}
 
-  /**
-   * Gets the current settings of the Classifier.
-   *
-   * @return an array of strings suitable for passing to setOptions
-   */
-  public String[] getOptions() {
-    Vector<String>	result;
-    String[]      	options;
-    int           	i;
+	/**
+	 * Gets the current settings of the Classifier.
+	 *
+	 * @return an array of strings suitable for passing to setOptions
+	 */
+	public String[] getOptions() {
+		Vector<String>	result;
+		String[]      	options;
+		int           	i;
 
-    result = new Vector<String>();
+		result = new Vector<String>();
 
-    result.add("-B");
-    result.add(MOAUtils.toCommandLine(m_ActualClassifier));
+		result.add("-B");
+		result.add(MOAUtils.toCommandLine(m_ActualClassifier));
 
-    options = super.getOptions();
-    for (i = 0; i < options.length; i++)
-      result.add(options[i]);
+		options = super.getOptions();
+		for (i = 0; i < options.length; i++)
+			result.add(options[i]);
 
-    return result.toArray(new String[result.size()]);
-  }
+		return result.toArray(new String[result.size()]);
+	}
 
-  /**
-   * Sets the MOA classifier to use.
-   *
-   * @param value the classifier to use
-   */
-  public void setClassifier(ClassOption value) {
-  	m_Classifier       = value;
-  	m_ActualClassifier = (Classifier) MOAUtils.fromOption(m_Classifier);
-  }
+	/**
+	 * Sets the MOA classifier to use.
+	 *
+	 * @param value the classifier to use
+	 */
+	public void setClassifier(ClassOption value) {
+		m_Classifier       = value;
+		m_ActualClassifier = (Classifier) MOAUtils.fromOption(m_Classifier);
+	}
 
-  /**
-   * Returns the current MOA classifier in use.
-   *
-   * @return the classifier in use
-   */
-  public ClassOption getClassifier() {
-  	return m_Classifier;
-  }
+	/**
+	 * Returns the current MOA classifier in use.
+	 *
+	 * @return the classifier in use
+	 */
+	public ClassOption getClassifier() {
+		return m_Classifier;
+	}
 
-  /**
-   * Returns the tooltip displayed in the GUI.
-   *
-   * @return the tooltip
-   */
-  public String classifierTipText() {
-  	return "The MOA classifier to use.";
-  }
+	/**
+	 * Returns the tooltip displayed in the GUI.
+	 *
+	 * @return the tooltip
+	 */
+	public String classifierTipText() {
+		return "The MOA classifier to use.";
+	}
 
-  /**
-   * Returns the Capabilities of this classifier. Maximally permissive
-   * capabilities are allowed by default. MOA doesn't specify what
-   *
-   * @return            the capabilities of this object
-   * @see               Capabilities
-   */
-  public Capabilities getCapabilities() {
-    Capabilities result = new Capabilities(this);
+	/**
+	 * Returns the Capabilities of this classifier. Maximally permissive
+	 * capabilities are allowed by default. MOA doesn't specify what
+	 *
+	 * @return            the capabilities of this object
+	 * @see               Capabilities
+	 */
+	public Capabilities getCapabilities() {
+		Capabilities result = new Capabilities(this);
 
-    // attributes
-    result.enable(Capability.NOMINAL_ATTRIBUTES);
-    result.enable(Capability.NUMERIC_ATTRIBUTES);
-    result.enable(Capability.MISSING_VALUES);
+		// attributes
+		result.enable(Capability.NOMINAL_ATTRIBUTES);
+		result.enable(Capability.NUMERIC_ATTRIBUTES);
+		result.enable(Capability.MISSING_VALUES);
 
-    // class
-    result.enable(Capability.NOMINAL_CLASS);
-    result.enable(Capability.MISSING_CLASS_VALUES);
+		// class
+		result.enable(Capability.NOMINAL_CLASS);
+		result.enable(Capability.MISSING_CLASS_VALUES);
 
-    result.setMinimumNumberInstances(0);
+		result.setMinimumNumberInstances(0);
 
-    return result;
-  }
+		return result;
+	}
 
-  /**
-   * Generates a classifier.
-   *
-   * @param data set of instances serving as training data
-   * @throws Exception if the classifier has not been
-   * generated successfully
-   */
-  public void buildClassifier(Instances data) throws Exception {
+	/**
+	 * Generates a classifier.
+	 *
+	 * @param data set of instances serving as training data
+	 * @throws Exception if the classifier has not been
+	 * generated successfully
+	 */
+	public void buildClassifier(Instances data) throws Exception {
 
 
-        this.instanceConverter = new WekaToSamoaInstanceConverter();
-  	getCapabilities().testWithFail(data);
+		this.samoaConverter = new WekaToSamoaInstanceConverter();
+		this.wekaConverter = new SamoaToWekaInstanceConverter();
 
-  	data = new Instances(data);
-  	data.deleteWithMissingClass();
+		getCapabilities().testWithFail(data);
 
-  	m_ActualClassifier.resetLearning();
-  	for (int i = 0; i < data.numInstances(); i++)
-  		updateClassifier(data.instance(i));
-        
-  }
+		data = new Instances(data);
+		data.deleteWithMissingClass();
 
-  /**
-   * Updates a classifier using the given instance.
-   *
-   * @param instance the instance to included
-   * @throws Exception if instance could not be incorporated
-   * successfully
-   */
-  public void updateClassifier(Instance instance) throws Exception {
-		m_ActualClassifier.trainOnInstance(instanceConverter.samoaInstance(instance));
-  }
+		m_ActualClassifier.resetLearning();
+		for (int i = 0; i < data.numInstances(); i++)
+			updateClassifier(data.instance(i));
 
-  /**
-   * Predicts the class memberships for a given instance. If
-   * an instance is unclassified, the returned array elements
-   * must be all zero. If the class is numeric, the array
-   * must consist of only one element, which contains the
-   * predicted value.
-   *
-   * @param instance the instance to be classified
-   * @return an array containing the estimated membership
-   * probabilities of the test instance in each class
-   * or the numeric prediction
-   * @throws Exception if distribution could not be
-   * computed successfully
-   */
-  public double[] distributionForInstance(Instance instance) throws Exception {
-  	double[]	result;
+	}
 
-  	result = m_ActualClassifier.getVotesForInstance(instanceConverter.samoaInstance(instance));
-        // ensure that the array has as many elements as there are
-        // class values!
-        if (result.length < instance.numClasses()) {
-          double[] newResult = new double[instance.numClasses()];
-          System.arraycopy(result, 0, newResult, 0, result.length);
-          result = newResult;
-        }
+	/**
+	 * Updates a classifier using the given instance.
+	 *
+	 * @param instance the instance to included
+	 * @throws Exception if instance could not be incorporated
+	 * successfully
+	 */
+	public void updateClassifier(Instance instance) throws Exception {
+		m_ActualClassifier.trainOnInstance(samoaConverter.samoaInstance(instance));
+	}
 
-  	try {
-  		Utils.normalize(result);
-  	}
-  	catch (Exception e) {
-  		result = new double[instance.numClasses()];
-  	}
+	/**
+	 * Predicts the class memberships for a given instance. If
+	 * an instance is unclassified, the returned array elements
+	 * must be all zero. If the class is numeric, the array
+	 * must consist of only one element, which contains the
+	 * predicted value.
+	 *
+	 * @param instance the instance to be classified
+	 * @return an array containing the estimated membership
+	 * probabilities of the test instance in each class
+	 * or the numeric prediction
+	 * @throws Exception if distribution could not be
+	 * computed successfully
+	 */
+	public double[] distributionForInstance(Instance instance) throws Exception {
+		double[]	result;
 
-  	return result;
-  }
+		result = m_ActualClassifier.getPredictionForInstance(samoaConverter.samoaInstance(instance)).asDoubleArray();
+		// ensure that the array has as many elements as there are
+		// class values!
+		if (result.length < instance.numClasses()) {
+			double[] newResult = new double[instance.numClasses()];
+			System.arraycopy(result, 0, newResult, 0, result.length);
+			result = newResult;
+		}
 
-  /**
-   * Returns the revision string.
-   *
-   * @return the revision
-   */
-  public String getRevision() {
-    return RevisionUtils.extract("$Revision$");
-  }
+		try {
+			Utils.normalize(result);
+		}
+		catch (Exception e) {
+			result = new double[instance.numClasses()];
+		}
 
-  /**
-   * Returns a string representation of the model.
-   *
-   * @return the string representation
-   */
-  public String toString() {
-  	StringBuilder		result;
+		return result;
+	}
 
-  	result = new StringBuilder();
-  	m_ActualClassifier.getDescription(result, 0);
+	/**
+	 * Returns the revision string.
+	 *
+	 * @return the revision
+	 */
+	public String getRevision() {
+		return RevisionUtils.extract("$Revision$");
+	}
 
-  	return result.toString();
-  }
+	/**
+	 * Returns a string representation of the model.
+	 *
+	 * @return the string representation
+	 */
+	public String toString() {
+		StringBuilder		result;
 
-  /**
-   * Main method for testing this class.
-   *
-   * @param args the options
-   */
-  public static void main(String [] args) {
-    runClassifier(new MOA(), args);
-  }
+		result = new StringBuilder();
+		m_ActualClassifier.getDescription(result, 0);
+
+		return result.toString();
+	}
+
+	/**
+	 * Main method for testing this class.
+	 *
+	 * @param args the options
+	 */
+	public static void main(String [] args) {
+		runClassifier(new MOA(), args);
+	}
 }

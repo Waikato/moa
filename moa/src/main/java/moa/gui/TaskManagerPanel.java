@@ -61,7 +61,9 @@ import javax.swing.table.TableCellRenderer;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
-import moa.tasks.EvaluatePrequential;
+import moa.tasks.AbstractEvaluatePrequential;
+import moa.tasks.ClassificationMainTask;
+import moa.tasks.EvaluatePrequentialClassification;
 import moa.tasks.MainTask;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
@@ -185,7 +187,7 @@ public class TaskManagerPanel extends JPanel {
         }
     }
 
-    protected MainTask currentTask = new EvaluatePrequential();//LearnModel();
+    protected ClassificationMainTask currentTask = new EvaluatePrequentialClassification();
 
     protected List<TaskThread> taskList = new ArrayList<TaskThread>();
 
@@ -216,7 +218,7 @@ public class TaskManagerPanel extends JPanel {
     public TaskManagerPanel() {
         // Read current task preference
         prefs = Preferences.userRoot().node(this.getClass().getName());
-        currentTask = new EvaluatePrequential();
+        currentTask = new EvaluatePrequentialClassification();
         String taskText = this.currentTask.getCLICreationString(MainTask.class);
         String propertyValue = prefs.get(PREF_NAME, taskText);
         //this.taskDescField.setText(propertyValue);
@@ -377,7 +379,7 @@ public class TaskManagerPanel extends JPanel {
         
     public void setTaskString(String cliString, boolean storePreference) {    
         try {
-            this.currentTask = (MainTask) ClassOption.cliStringToObject(
+            this.currentTask = (ClassificationMainTask) ClassOption.cliStringToObject(
                     cliString, MainTask.class, null);
             String taskText = this.currentTask.getCLICreationString(MainTask.class);
             this.taskDescField.setText(taskText);

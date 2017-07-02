@@ -1,6 +1,6 @@
 package moa.classifiers.rules.multilabel.core.splitcriteria;
 
-import moa.classifiers.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
+import moa.classifiers.mlc.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.core.Utils;
 import moa.core.DoubleVector;
 import moa.core.ObjectRepository;

@@ -23,7 +23,7 @@ package moa.classifiers.meta;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import moa.classifiers.AbstractMultipleClassifierTestCase;
-import moa.classifiers.Classifier;
+import moa.learners.Classifier;
 
 /**
  * Tests the OzaBagASHT classifier.
@@ -50,11 +50,10 @@ public class OzaBagASHTTest
    * @return		the setups
    */
   @Override
-  protected Classifier[] getRegressionClassifierSetups() {
+  protected Classifier[] getLearnerSetups() {
     OzaBagASHT[]	result;
     result    = new OzaBagASHT[1];
     result[0] = new OzaBagASHT();
-    result[0].baseLearnerOption.setValueViaCLIString("trees.ASHoeffdingTree");
     return result;
     
   }

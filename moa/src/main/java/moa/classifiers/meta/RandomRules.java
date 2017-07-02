@@ -25,19 +25,21 @@ import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
+import com.yahoo.labs.samoa.instances.predictions.RegressionPrediction;
 
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
-import moa.classifiers.Regressor;
+import moa.classifiers.AbstractRegressor;
 import moa.core.DoubleVector;
 import moa.core.FastVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
+import moa.learners.Classifier;
+import moa.learners.Regressor;
 import moa.options.ClassOption;
 import moa.streams.InstanceStream;
 
 
-public class RandomRules extends AbstractClassifier implements Regressor {
+public class RandomRules extends AbstractRegressor implements Regressor {
 
 	public IntOption VerbosityOption = new IntOption(
 			"verbosity",
@@ -52,7 +54,7 @@ public class RandomRules extends AbstractClassifier implements Regressor {
 
 	private static final long serialVersionUID = 1L;
 
-	public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l', "Classifier to train.", Classifier.class, "rules.AMRulesRegressor"); 
+	public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l', "Regressor to train.", Regressor.class, "rules.AMRulesRegressor"); 
 
 	public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
 			"The number of models in the bag.", 10, 1, Integer.MAX_VALUE);
@@ -94,14 +96,14 @@ public class RandomRules extends AbstractClassifier implements Regressor {
 	}
 
 	@Override
-	public double[] getVotesForInstance(Instance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		DoubleVector combinedVote = new DoubleVector();
 		StringBuilder sb = null;
 		if (VerbosityOption.getValue()>1)
 			sb=new StringBuilder();
 		
 		for (int i = 0; i < this.ensemble.length; i++) {
-			DoubleVector vote = new DoubleVector(this.ensemble[i].getVotesForInstance(transformInstance(inst,i)));
+			DoubleVector vote = this.ensemble[i].getPredictionForInstance(transformInstance(inst,i)).asDoubleVector();
 			if (VerbosityOption.getValue()>1)
 					sb.append(vote.getValue(0) + ", ");
 			if (this.isRegression == false && vote.sumOfValues() != 0.0){
@@ -116,7 +118,7 @@ public class RandomRules extends AbstractClassifier implements Regressor {
 			sb.append(combinedVote.getValue(0)  + ", ").append(inst.classValue());
 			System.out.println(sb.toString());
 		}
-		return combinedVote.getArrayRef();
+		return new RegressionPrediction(combinedVote.getValue(0));
 	}
 
 	@Override
@@ -134,7 +136,6 @@ public class RandomRules extends AbstractClassifier implements Regressor {
 				this.ensemble != null ? this.ensemble.length : 0)};
 	}
 
-	@Override
 	public Classifier[] getSubClassifiers() {
 		return this.ensemble; //.clone();
 	}

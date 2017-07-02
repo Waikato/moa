@@ -20,8 +20,8 @@
 package moa.evaluation;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Prediction;
 import com.yahoo.labs.samoa.instances.StructuredInstance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.AbstractMOAObject;
 import moa.core.Example;
@@ -58,7 +58,7 @@ public class BasicMultiTargetPerformanceEvaluator extends AbstractMOAObject
 
     StructuredInstance inst = (StructuredInstance) example.getData();
     if (numberOutputs == 0) {
-    	numberOutputs = inst.numberOutputTargets();
+    	numberOutputs = inst.numOutputAttributes();
     }
         if (inst.weight() > 0.0) {
             this.weightObserved += inst.weight();

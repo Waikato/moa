@@ -21,10 +21,13 @@ package moa.classifiers.functions;
 
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
 import moa.core.Measurement;
 import moa.core.Utils;
+import moa.learners.Classifier;
 
 /**
  * Single perceptron classifier.
@@ -36,7 +39,7 @@ import moa.core.Utils;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class Perceptron extends AbstractClassifier {
+public class Perceptron extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = 221L;
 
@@ -125,7 +128,7 @@ public class Perceptron extends AbstractClassifier {
     }
 
     @Override
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
         double[] votes = new double[inst.numClasses()];
         if (this.reset == false) {
             for (int i = 0; i < votes.length; i++) {
@@ -137,7 +140,7 @@ public class Perceptron extends AbstractClassifier {
                 // ignore all zero votes error
             }
         }
-        return votes;
+        return new ClassificationPrediction(votes);
     }
 
     @Override

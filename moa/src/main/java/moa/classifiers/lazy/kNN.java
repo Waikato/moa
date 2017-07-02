@@ -21,12 +21,15 @@ import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.lazy.neighboursearch.KDTree;
 import moa.classifiers.lazy.neighboursearch.LinearNNSearch;
 import moa.classifiers.lazy.neighboursearch.NearestNeighbourSearch;
 import moa.core.Measurement;
+import moa.learners.Classifier;
 
 /**
  * k Nearest Neighbor.<p>
@@ -38,7 +41,7 @@ import moa.core.Measurement;
  * @author Jesse Read (jesse@tsc.uc3m.es)
  * @version 03.2012
  */
-public class kNN extends AbstractClassifier {
+public class kNN extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -94,7 +97,7 @@ public class kNN extends AbstractClassifier {
     }
 
 	@Override
-    public double[] getVotesForInstance(Instance inst) {
+    public Prediction getPredictionForInstance(Instance inst) {
 		double v[] = new double[C+1];
 		try {
 			NearestNeighbourSearch search;
@@ -114,9 +117,9 @@ public class kNN extends AbstractClassifier {
 			//System.err.println("Error: kNN search failed.");
 			//e.printStackTrace();
 			//System.exit(1);
-			return new double[inst.numClasses()];
+			return new ClassificationPrediction();
 		}
-		return v;
+		return new ClassificationPrediction(v);
     }
 
     @Override

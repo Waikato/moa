@@ -19,8 +19,8 @@
  */
 package moa.classifiers.rules.multilabel.core.voting;
 
-import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
-import com.yahoo.labs.samoa.instances.Prediction;
+import com.yahoo.labs.samoa.instances.predictions.MultiLabelClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 /**
  * InverseErrorWeightedVoteMuliLabel class for weighted votes based on estimates of errors. 
@@ -45,7 +45,7 @@ public class InverseErrorWeightedVoteMultiLabel extends AbstractErrorWeightedVot
 			weights=new double[n][numOutputs];
 
 
-			weightedVote=new MultiLabelPrediction(numOutputs);
+			weightedVote=new MultiLabelClassificationPrediction(numOutputs);
 
 			double [] sumError= new double[numOutputs];
 			//For each output attribute

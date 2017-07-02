@@ -189,7 +189,7 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 	}
 
 //	public boolean correctlyClassifies(Instance inst) {
-//		return Utils.maxIndex(getVotesForInstance(inst)) == (int) inst
+//		return Utils.maxIndex(getPredictionForInstance(inst)) == (int) inst
 //				.classValue();
 //	}
 

@@ -553,7 +553,7 @@ public class InstancesHeader implements Serializable {
 	 *
 	 * @return the dataset in ARFF format as a string
 	 */
-	public String toString() {
+	public String toArff() {
 
 		StringBuffer text = new StringBuffer();
 

@@ -33,6 +33,8 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
@@ -45,6 +47,7 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.core.Utils;
+import moa.learners.Classifier;
 
 
 
@@ -69,7 +72,7 @@ import moa.core.Utils;
  * @version $Revision: 2 $
  */
 
-public class RuleClassifier extends AbstractClassifier{
+public class RuleClassifier extends AbstractClassifier implements Classifier {
 	
 	  private static final long serialVersionUID = 1L;
 	  
@@ -191,7 +194,7 @@ public class RuleClassifier extends AbstractClassifier{
 		
 	  
 	@Override
-	public double[] getVotesForInstance(Instance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		double[] votes = new double[this.numClass];
 		switch (this.predictionFunctionOption.getChosenIndex()) {
 		case 0:
@@ -204,7 +207,7 @@ public class RuleClassifier extends AbstractClassifier{
         	votes = weightedMax(inst);
         	break;
 		  }
-		return votes; 
+		return new ClassificationPrediction(votes); 
 	}
 	
 	@Override

@@ -51,6 +51,17 @@ public interface Instance extends Serializable {
      */
     public Attribute attribute(int instAttIndex);
 
+    
+    public int indexOf(Attribute attribute);
+    
+    /**
+     * Index of an Attribute.
+     *
+     * @param Attribute, the attribute to be found.
+     * @return the index of an attribute
+     */
+//    public int indexOfAttribute(Attribute attribute);
+    
     /**
      * Delete attribute at.
      *
@@ -121,6 +132,14 @@ public interface Instance extends Serializable {
     public void setValue(int instAttIndex, double value);
 
     /**
+     * Sets the value of an attribute.
+     *
+     * @param attribute, the Attribute
+     * @param value the value
+     */
+    public void setValue(Attribute attribute, double value);
+    
+    /**
      * Checks if an attribute is missing.
      *
      * @param instAttIndex the inst att index
@@ -131,18 +150,40 @@ public interface Instance extends Serializable {
     /**
      * Checks if an attribute is missing.
      *
+     * @param attribute, the Attribute
+     * @return true, if is missing
+     */
+    public boolean isMissing(Attribute attribute);
+
+    /**
+     * Checks if an attribute is missing.
+     *
      * @param index the instance input attribute index
      * @return true, if is missing
      */
     public boolean isInputMissing(int index);
 
     /**
-     * Checks if an attribute is missing.
+     * Are any of the output values missing.
      *
-     * @param index the instance output attribute index
-     * @return true, if is missing
+     * @return true, if any output has missing value
      */
-    public boolean isOutputMissing(int index);
+    public boolean missingOutputs();
+
+    /**
+     * Sets an attribute as missing
+     *
+     * @param instAttIndex, the attribute's index
+     */
+    public void setMissing(int instAttIndex);        
+    
+    /**
+     * Sets an attribute as missing
+     *
+     * @param attribute, the Attribute
+     */
+    public void setMissing(Attribute attribute);
+    
     
     /**
      * Gets the index of the attribute given the index of the array in a sparse
@@ -197,14 +238,6 @@ public interface Instance extends Serializable {
      * @return true, if successful
      */
     public boolean classIsMissing();
-
-    /**
-     * Are any of the output values missing.
-     *
-     * @return true, if any output has missing value
-     */
-    public boolean missingOutputs();
-
     
     /**
      * Class value.
@@ -261,38 +294,7 @@ public interface Instance extends Serializable {
      * @return the number of output attributes
      */
     public int numOutputAttributes();
-
-    /**
-     * Gets the number of output attributes.
-     *
-     * @return the number of output attributes
-     */
-    public int numberOutputTargets();
-
-    /**
-     * Gets the value of an output attribute.
-     *
-     * @param attributeIndex the index
-     * @return the value
-     */
-    public double classValue(int attributeIndex);
-
-    /**
-     * Sets the value of an output attribute.
-     *
-     * @param indexClass the output attribute index
-     * @param valueAttribute the value of the attribute
-     */
-    public void setClassValue(int indexClass, double valueAttribute);
-
-    /**
-     * Gets an output attribute given its index.
-     *
-     * @param attributeIndex the index
-     * @return the attribute
-     */
-    public Attribute outputAttribute(int attributeIndex);
-
+    
     /**
      * Gets an input attribute given its index.
      *
@@ -310,15 +312,49 @@ public interface Instance extends Serializable {
     public double valueInputAttribute(int attributeIndex);
 
     /**
+     * Checks if an output attribute is missing.
+     *
+     * @param index the instance output attribute index
+     * @return true, if is missing
+     */
+    public boolean isOutputMissing(int index);
+
+    /**
+     * Gets an output attribute given its index.
+     *
+     * @param attributeIndex the index
+     * @return the attribute
+     */
+    public Attribute outputAttribute(int attributeIndex);
+
+    /**
+     * Gets the value of an output attribute.
+     *
+     * @param attributeIndex the index
+     * @return the value
+     */
+    public double classValue(int attributeIndex);
+
+    /**
+     * Sets the value of an output attribute.
+     *
+     * @param indexClass the output attribute index
+     * @param valueAttribute the value of the attribute
+     */
+    public void setClassValue(int indexClass, double valueAttribute);
+    
+    /**
      * Gets the value of an output attribute.
      *
      * @param attributeIndex the index
      * @return the value
      */
     public double valueOutputAttribute(int attributeIndex);
+	
     
     public int structureType();
     
     public AttributeStructure getStructure();
 
+    public String outputAttributesToString();
 }

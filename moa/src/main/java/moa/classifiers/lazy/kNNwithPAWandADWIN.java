@@ -23,6 +23,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.classifiers.core.driftdetection.ADWIN;
+import moa.learners.Classifier;
 
 /**
  * k Nearest Neighbor ADAPTIVE with ADWIN+PAW.<p>
@@ -35,7 +36,7 @@ import moa.classifiers.core.driftdetection.ADWIN;
  * @author Jesse Read (jesse@tsc.uc3m.es)
  * @version 03.2012
  */
-public class kNNwithPAWandADWIN extends kNN {
+public class kNNwithPAWandADWIN extends kNN implements Classifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -97,7 +98,7 @@ public class kNNwithPAWandADWIN extends kNN {
         }
 
     }
-
+    
     @Override
     public void getModelDescription(StringBuilder out, int indent) {
     }

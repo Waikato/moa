@@ -38,8 +38,10 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.MultiTargetRegressionPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
-import moa.classifiers.AbstractClassifier;
+import moa.classifiers.AbstractMultiTargetRegressor;
 import moa.classifiers.rules.core.Rule;
 import moa.classifiers.rules.core.Rule.Builder;
 import moa.classifiers.rules.core.RuleActiveLearningNode;
@@ -52,7 +54,7 @@ import moa.core.StringUtils;
 import moa.options.ClassOption;
 
 
-public abstract class AbstractAMRules extends AbstractClassifier {
+public abstract class AbstractAMRules extends AbstractMultiTargetRegressor {
 
 	private static final long serialVersionUID = 1L;
 	protected RuleSet ruleSet = new RuleSet();
@@ -142,7 +144,7 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 	 * newRule // to build an object with the parameters.
 	 * trainOnInstanceImpl
 	 * isAnomaly
-	 * getVotesForInstance
+	 * getPredictionForInstance
 	 * getModelMeasurementsImpl
 	 * getModelDescription // to printout to MOA GUI
 	 * debug // use debug('string') to printout to console
@@ -278,14 +280,14 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 	}
 
 	/**
-	 * getVotesForInstance extension of the instance method getVotesForInstance 
+	 * getPredictionForInstance extension of the instance method getPredictionForInstance 
 	 * in moa.classifier.java
 	 * returns the prediction of the instance.
 	 * Called in EvaluateModelRegression
 	 */
 	@Override
-	public double[] getVotesForInstance(Instance instance) {
-		return getVotes(instance).getVote();
+	public Prediction getPredictionForInstance(Instance instance) {
+		return new MultiTargetRegressionPrediction(getVotes(instance).getVote());
 	}
 
 	/**
@@ -395,7 +397,7 @@ public abstract class AbstractAMRules extends AbstractClassifier {
 
 	
 	/**
-	 * getVotes extension of the instance method getVotesForInstance 
+	 * getVotes extension of the instance method getPredictionForInstance 
 	 * in moa.classifier.java
 	 * returns the prediction of the instance.
 	 * Called in WeightedRandomRules

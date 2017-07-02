@@ -5,11 +5,9 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Prediction;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
-import moa.classifiers.AbstractMultiLabelLearner;
-import moa.classifiers.MultiTargetRegressor;
+import moa.classifiers.AbstractMultiTargetRegressor;
 import moa.classifiers.rules.multilabel.AMRulesMultiLabelLearner;
 import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
 import moa.classifiers.rules.multilabel.core.voting.UniformWeightedVoteMultiLabel;
@@ -17,10 +15,10 @@ import moa.classifiers.rules.multilabel.errormeasurers.AbstractMultiTargetErrorM
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
+import moa.learners.MultiTargetRegressor;
 import moa.options.ClassOption;
 
-public class MultiLabelRandomAMRules extends AbstractMultiLabelLearner
-implements MultiTargetRegressor {
+public class MultiLabelRandomAMRules extends AbstractMultiTargetRegressor implements MultiTargetRegressor {
 
 	/**
 	 * 
@@ -91,7 +89,7 @@ implements MultiTargetRegressor {
 		this.isRegression = (baseLearner instanceof MultiTargetRegressor);
 	}
 
-	public void trainOnInstanceImpl(StructuredInstance instance) {
+	public void trainOnInstanceImpl(Instance instance) {
 		for (int i = 0; i < this.ensemble.length; i++) {
 			Instance inst=instance.copy();
 			int k = 1;
@@ -112,7 +110,7 @@ implements MultiTargetRegressor {
 	}
 
 	@Override
-	public Prediction getPredictionForInstance(StructuredInstance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		Prediction vote=null;
 		//ErrorWeightedVote combinedVote = (ErrorWeightedVote)((ErrorWeightedVote) votingTypeOption.getPreMaterializedObject()).copy();
 		ErrorWeightedVoteMultiLabel combinedVote = (ErrorWeightedVoteMultiLabel)((ErrorWeightedVoteMultiLabel) getPreparedClassOption(this.votingFunctionOption)).copy();

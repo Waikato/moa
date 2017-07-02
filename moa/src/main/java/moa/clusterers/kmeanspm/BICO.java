@@ -28,6 +28,7 @@ import java.util.Queue;
 
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
@@ -134,10 +135,10 @@ public class BICO extends AbstractClusterer {
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see moa.clusterers.Clusterer#getVotesForInstance(weka.core.Instance)
+	 * @see moa.clusterers.Clusterer#getPredictionForInstance(weka.core.Instance)
 	 */
 	@Override
-	public double[] getVotesForInstance(Instance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 

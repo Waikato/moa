@@ -31,6 +31,7 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.core.Example;
 import moa.core.Measurement;
@@ -40,6 +41,7 @@ import moa.core.TimingUtils;
 import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
+import moa.learners.Classifier;
 import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.CachedInstancesStream;
@@ -61,7 +63,7 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Classifier to train.", Learner.class, "moa.classifiers.trees.HoeffdingTree");
+            "Classifier to train.", Classifier.class, "moa.classifiers.trees.HoeffdingTree");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,
@@ -96,7 +98,7 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
 
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-        Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
+        Classifier learner = (Classifier) getPreparedClassOption(this.learnerOption);
         ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
         LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         learner.setModelContext(stream.getHeader());
@@ -189,9 +191,8 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
 					break;
 				}
                 Example testInst = (Example) testStream.nextInstance(); //.copy();
-                double trueClass = ((Instance) testInst.getData()).classValue();
                 //testInst.setClassMissing();
-                double[] prediction = learner.getVotesForInstance(testInst);
+                Prediction prediction = learner.getPredictionForInstance(testInst);
                 //testInst.setClassValue(trueClass);
                 evaluator.addResult(testInst, prediction);
                 testInstancesProcessed++;

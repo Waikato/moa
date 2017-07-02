@@ -1,8 +1,8 @@
 package moa.classifiers.rules.multilabel.functions;
 
-import moa.classifiers.MultiTargetRegressor;
-import moa.classifiers.multitarget.BasicMultiTargetRegressor;
+import moa.classifiers.mtr.BasicMultiTargetRegressor;
 import moa.classifiers.rules.functions.Perceptron;
+import moa.learners.MultiTargetRegressor;
 import moa.options.ClassOption;
 
 public class MultiLabelPerceptronRegressor extends BasicMultiTargetRegressor

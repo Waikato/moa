@@ -26,12 +26,14 @@ import java.util.List;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
+import moa.classifiers.AbstractInstanceLearner;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.Utils;
+import moa.learners.Classifier;
 import moa.options.ClassOption;
 
 /**
@@ -70,7 +72,7 @@ import moa.options.ClassOption;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class ActiveClassifier extends AbstractClassifier {
+public class ActiveClassifier extends AbstractClassifier implements Classifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -123,7 +125,8 @@ public class ActiveClassifier extends AbstractClassifier {
 
     private double outPosterior;
 
-    private double getMaxPosterior(double[] incomingPrediction) {
+    private double getMaxPosterior(Prediction prediction) {
+    	double[] incomingPrediction = prediction.asDoubleArray();
         if (incomingPrediction.length > 1) {
             DoubleVector vote = new DoubleVector(incomingPrediction);
             if (vote.sumOfValues() > 0.0) {
@@ -148,14 +151,14 @@ public class ActiveClassifier extends AbstractClassifier {
 
     private void labelFixed(double incomingPosterior, Instance inst) {
         if (incomingPosterior < this.fixedThresholdOption.getValue()) {
-            this.classifier.trainOnInstance(inst);
+        	this.classifier.trainOnInstance(inst);
             this.costLabeling++;
         }
     }
 
     private void labelVar(double incomingPosterior, Instance inst) {
         if (incomingPosterior < this.newThreshold) {
-            this.classifier.trainOnInstance(inst);
+        	this.classifier.trainOnInstance(inst);
             this.costLabeling++;
             this.newThreshold *= (1 - this.stepOption.getValue());
         } else {
@@ -174,7 +177,7 @@ public class ActiveClassifier extends AbstractClassifier {
 
     @Override
     public void resetLearningImpl() {
-        this.classifier = ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
+        this.classifier = (Classifier) ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
         this.classifier.resetLearning();
         this.costLabeling = 0;
         this.costLabelingRandom = 0;
@@ -207,29 +210,28 @@ public class ActiveClassifier extends AbstractClassifier {
                     labelRandom(inst);
                     break;
                 case 1: //fixed
-                    maxPosterior = getMaxPosterior(this.classifier.getVotesForInstance(inst));
+                    maxPosterior = getMaxPosterior(this.classifier.getPredictionForInstance(inst));
                     labelFixed(maxPosterior, inst);
                     break;
                 case 2: //variable
-                    maxPosterior = getMaxPosterior(this.classifier.getVotesForInstance(inst));
+                    maxPosterior = getMaxPosterior(this.classifier.getPredictionForInstance(inst));
                     labelVar(maxPosterior, inst);
                     break;
                 case 3: //randomized
-                    maxPosterior = getMaxPosterior(this.classifier.getVotesForInstance(inst));
+                    maxPosterior = getMaxPosterior(this.classifier.getPredictionForInstance(inst));
                     maxPosterior = maxPosterior / (this.classifierRandom.nextGaussian() + 1.0);
                     labelVar(maxPosterior, inst);
                     break;
                 case 4: //selective-sampling
-                    maxPosterior = getMaxPosterior(this.classifier.getVotesForInstance(inst));
+                    maxPosterior = getMaxPosterior(this.classifier.getPredictionForInstance(inst));
                     labelSelSampling(maxPosterior, inst);
                     break;
             }
         }
     }
 
-    @Override
-    public double[] getVotesForInstance(Instance inst) {
-        return this.classifier.getVotesForInstance(inst);
+    public Prediction getPredictionForInstance(Instance inst) {
+    	return this.classifier.getPredictionForInstance(inst);
     }
 
     @Override
@@ -239,7 +241,7 @@ public class ActiveClassifier extends AbstractClassifier {
 
     @Override
     public void getModelDescription(StringBuilder out, int indent) {
-        ((AbstractClassifier) this.classifier).getModelDescription(out, indent);
+        ((AbstractInstanceLearner) this.classifier).getModelDescription(out, indent);
     }
 
     @Override
@@ -249,7 +251,7 @@ public class ActiveClassifier extends AbstractClassifier {
         measurementList.add(new Measurement("newThreshold", this.newThreshold));
         measurementList.add(new Measurement("maxPosterior", this.maxPosterior));
         measurementList.add(new Measurement("accuracyBaseLearner (percent)", 100 * this.accuracyBaseLearner / this.costLabeling));
-        Measurement[] modelMeasurements = ((AbstractClassifier) this.classifier).getModelMeasurements();
+        Measurement[] modelMeasurements = ((AbstractInstanceLearner) this.classifier).getModelMeasurements();
         if (modelMeasurements != null) {
             for (Measurement measurement : modelMeasurements) {
                 measurementList.add(measurement);

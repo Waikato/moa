@@ -30,11 +30,14 @@ import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
+import moa.classifiers.AbstractInstanceLearner;
 import moa.core.Measurement;
 import moa.core.Utils;
+import moa.learners.Classifier;
 import moa.options.ClassOption;
 
 /**
@@ -49,7 +52,7 @@ import moa.options.ClassOption;
  * @author Bernhard Pfahringer (bernhard@cs.waikato.ac.nz)
  * @version $Revision: 1 $
  */
-public class TemporallyAugmentedClassifier extends AbstractClassifier {
+public class TemporallyAugmentedClassifier extends AbstractClassifier implements Classifier {
 
     @Override
     public String getPurposeString() {
@@ -133,6 +136,7 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier {
     public Instance extendWithOldLabels(Instance instance) {
         if (this.header == null) {
             initHeader(instance.dataset());
+            this.baseLearner.setModelContext(new InstancesHeader(this.header));
         }
         int numLabels = this.oldLabels.length;
         if (numLabels == 0) {
@@ -148,13 +152,13 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier {
     }
 
     @Override
-    public double[] getVotesForInstance(Instance instance) {
-        double[] prediction = this.baseLearner.getVotesForInstance(extendWithOldLabels(instance));
+    public Prediction getPredictionForInstance(Instance instance) {
+        double[] prediction = this.baseLearner.getPredictionForInstance(extendWithOldLabels(instance)).asDoubleArray();
         if (this.labelDelayOption.isSet() == true) {
             // Use predicted Labels to add attributes to instances
             addOldLabel(Utils.maxIndex(prediction));
         }
-        return prediction;
+        return new ClassificationPrediction(prediction);
     }
 
     @Override
@@ -165,7 +169,7 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier {
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
         List<Measurement> measurementList = new LinkedList<Measurement>();
-        Measurement[] modelMeasurements = ((AbstractClassifier) this.baseLearner).getModelMeasurements();
+        Measurement[] modelMeasurements = ((AbstractInstanceLearner) this.baseLearner).getModelMeasurements();
         if (modelMeasurements != null) {
             for (Measurement measurement : modelMeasurements) {
                 measurementList.add(measurement);

@@ -1,5 +1,5 @@
 --> classification-out0.arff
-moa.classifiers.meta.OzaBagASHT -l trees.ASHoeffdingTree
+moa.classifiers.meta.OzaBagASHT -l ASHoeffdingTree
 
 Index
   10000

@@ -21,6 +21,7 @@ package moa.clusterers;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.MOAObject;
 import moa.cluster.Clustering;
@@ -46,7 +47,7 @@ public interface Clusterer extends MOAObject, OptionHandler, AWTRenderable {
 
 	public void trainOnInstance(Instance inst);
 
-	public double[] getVotesForInstance(Instance inst);
+	public Prediction getPredictionForInstance(Instance inst);
 
 	public Measurement[] getModelMeasurements();
 
