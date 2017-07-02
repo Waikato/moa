@@ -1,5 +1,6 @@
 /*
- *    EvaluatePrequential.java
+ *    EvaluatePrequentialDelayed.java
+ *
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  *    @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
