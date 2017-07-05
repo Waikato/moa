@@ -10,7 +10,6 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Naive Bayes incremental learner.
@@ -62,12 +61,8 @@ public class NaiveBayes extends AbstractClassifier {
 
     @Override
     public double[] getVotesForInstance(Instance inst) {
-        double [] v = doNaiveBayesPrediction(inst, this.observedClassDistribution, this.attributeObservers); 
-  
-        double [] vote=new double[1];
-        vote[0]=v[0]<v[1]?1:0;
-        
-        return vote ;  //doNaiveBayesPrediction(inst, this.observedClassDistribution, this.attributeObservers);
+        return doNaiveBayesPrediction(inst, this.observedClassDistribution,
+                this.attributeObservers);
     }
 
     @Override
@@ -114,12 +109,10 @@ public class NaiveBayes extends AbstractClassifier {
         return new GaussianNumericAttributeClassObserver();
     }
 
-    public static double[] doNaiveBayesPrediction(Instance inst,DoubleVector observedClassDistribution,AutoExpandVector<AttributeClassObserver> attributeObservers) {
-        
-       
-        //RS
-        //double[] votes = new double[observedClassDistribution.numValues()];
-        double[] votes = new double[inst.numClasses()];
+    public static double[] doNaiveBayesPrediction(Instance inst,
+            DoubleVector observedClassDistribution,
+            AutoExpandVector<AttributeClassObserver> attributeObservers) {
+        double[] votes = new double[observedClassDistribution.numValues()];
         double observedClassSum = observedClassDistribution.sumOfValues();
         for (int classIndex = 0; classIndex < votes.length; classIndex++) {
             votes[classIndex] = observedClassDistribution.getValue(classIndex)

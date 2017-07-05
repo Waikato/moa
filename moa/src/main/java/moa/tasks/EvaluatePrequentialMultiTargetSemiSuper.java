@@ -68,7 +68,7 @@ import java.io.*;
 * Multi-target Prequential semi-supervised evaluation
 * 
 *Phase1: Creates a initial model with <dbInitialModelPercentage> of the instances in the dataset 
-*Phase2: When a instance is received:
+*Phase2: When an instance is received:
 * A binary random process with a binomial distribution selects if the instance should be 
 * labeled or unlabeled with probability <unlabeledPercentage>.
 
