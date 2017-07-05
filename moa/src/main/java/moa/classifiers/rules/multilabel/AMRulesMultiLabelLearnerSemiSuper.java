@@ -563,11 +563,7 @@ public abstract class AMRulesMultiLabelLearnerSemiSuper extends AbstractMultiLab
 		defaultRule=newDefaultRule();
 		this.classifierRandom.setSeed(this.randomSeed);
 		MultiLabelLearner l = (MultiLabelLearner)((MultiLabelLearner)getPreparedClassOption(learnerOption)).copy();
-		   
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                //System.out.print(">>>>>AMRulesMultiLabelLearner.resetLearningImpl: MultiLabelLearner l= " + l.getClass() + " \n");        
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx        
-                
+
                 l.setRandomSeed(this.randomSeed);
                 
 		l.resetLearning();
@@ -579,11 +575,6 @@ public abstract class AMRulesMultiLabelLearnerSemiSuper extends AbstractMultiLab
 		statistics=null;
 		this.featureRanking=(FeatureRanking) getPreparedClassOption(this.featureRankingOption);
 		setObserver(featureRanking);
-                
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                //System.out.print(">>>>>AMRulesMultiLabelLearner.resetLearningImpl: defaultRule..learner= " + defaultRule.learningLiteral.learner.getClass() + " \n");        
-                //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
-                
                 
 	}
 

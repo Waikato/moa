@@ -136,12 +136,7 @@ public class Perceptron extends AbstractClassifier {
                 // ignore all zero votes error
             }
         }
-        double [] vote=new double[1];
-        vote[0]=votes[0]<votes[1]?1:0;
-        
-        
-        
-        return vote;
+        return votes;
     }
 
     @Override
