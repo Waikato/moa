@@ -115,10 +115,10 @@ public class AdaptiveRandomForest extends AbstractClassifier {
     public FlagOption disableWeightedVote = new FlagOption("disableWeightedVote", 'w', 
             "Should use weighted voting?");
     
-    public FlagOption disableAdwinDriftDetectionOption = new FlagOption("disableAdwinDriftDetection", 'u',
+    public FlagOption disableDriftDetectionOption = new FlagOption("disableDriftDetection", 'u',
         "Should use drift detection? If disabled then bkg learner is also disabled");
 
-    public FlagOption disableBackgroundLearnerOption = new FlagOption("disableBackgroundLearnerOption", 'q', 
+    public FlagOption disableBackgroundLearnerOption = new FlagOption("disableBackgroundLearner", 'q', 
         "Should use bkg learner? If disabled then reset tree immediately.");
     
     protected static final int FEATURES_SQRT = 2;
@@ -272,7 +272,7 @@ public class AdaptiveRandomForest extends AbstractClassifier {
                 (BasicClassificationPerformanceEvaluator) classificationEvaluator.copy(), 
                 this.instancesSeen, 
                 ! this.disableBackgroundLearnerOption.isSet(),
-                ! this.disableAdwinDriftDetectionOption.isSet(), 
+                ! this.disableDriftDetectionOption.isSet(), 
                 driftDetectionMethodOption,
                 warningDetectionMethodOption,
                 false);
