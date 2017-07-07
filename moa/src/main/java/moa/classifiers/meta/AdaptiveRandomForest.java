@@ -88,7 +88,7 @@ public class AdaptiveRandomForest extends AbstractClassifier {
 
     public ClassOption treeLearnerOption = new ClassOption("treeLearner", 'l',
             "Random Forest Tree.", ARFHoeffdingTree.class,
-            "moa.classifiers.trees.ARFHoeffdingTree -e 2000000 -g 50 -c 0.01");
+            "ARFHoeffdingTree -e 2000000 -g 50 -c 0.01");
 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
         "The number of trees.", 10, 1, Integer.MAX_VALUE);
@@ -107,10 +107,10 @@ public class AdaptiveRandomForest extends AbstractClassifier {
         "Total number of concurrent jobs used for processing (-1 = as much as possible, 0 = do not use multithreading)", 1, -1, Integer.MAX_VALUE);
     
     public ClassOption driftDetectionMethodOption = new ClassOption("driftDetectionMethod", 'x',
-        "Change detector for drifts and its parameters", ChangeDetector.class, "ADWINChangeDetector -a 0.00001");
+        "Change detector for drifts and its parameters", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-5");
 
     public ClassOption warningDetectionMethodOption = new ClassOption("warningDetectionMethod", 'p',
-        "Change detector for warnings (start training bkg learner)", ChangeDetector.class, "ADWINChangeDetector -a 0.0001");
+        "Change detector for warnings (start training bkg learner)", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-4");
     
     public FlagOption disableWeightedVote = new FlagOption("disableWeightedVote", 'w', 
             "Should use weighted voting?");
