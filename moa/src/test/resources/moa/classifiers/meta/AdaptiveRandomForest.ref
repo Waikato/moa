@@ -1,5 +1,5 @@
 --> classification-out0.arff
-moa.classifiers.meta.AdaptiveRandomForest -l (ARFHoeffdingTree -k 4 -e 2000000 -g 50 -c 0.01) -x (ADWINChangeDetector -a 1.0E-5) -p (ADWINChangeDetector -a 1.0E-4)
+moa.classifiers.meta.AdaptiveRandomForest -l (ARFHoeffdingTree -k 4 -e 2000000 -g 50 -c 0.01)
 
 Index
   10000

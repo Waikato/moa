@@ -30,6 +30,7 @@ import moa.options.ClassOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
+import com.github.javacliparser.MultiChoiceOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
@@ -61,10 +62,10 @@ import moa.classifiers.core.driftdetection.ChangeDetector;
  * <p>Parameters:</p> <ul>
  * <li>-l : Classiﬁer to train. Must be set to ARFHoeffdingTree</li>
  * <li>-s : The number of trees in the ensemble</li>
- * <li>-o : How the number of features is interpreted: 1: use value specified, 
- * 2: sqrt(#features)+1 and ignore k, 3: #features-(sqrt(#features)+1) and ignore k, 
- * 4: #features * (k / 100), 5: #features - #features * (k / 100)</li>
- * <li>-c : The size of features per split. -k corresponds to #features - k</li>
+ * <li>-o : How the number of features is interpreted (4 options): 
+ * "Specified m (integer value)", "sqrt(M)+1", "M-(sqrt(M)+1)"</li>
+ * <li>-m : Number of features allowed considered for each split. Negative 
+ * values corresponds to M - m</li>
  * <li>-a : The lambda value for bagging (lambda=6 corresponds to levBag)</li>
  * <li>-j : Number of threads to be used for training</li>
  * <li>-x : Change detector for drifts and its parameters</li>
@@ -93,12 +94,14 @@ public class AdaptiveRandomForest extends AbstractClassifier {
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
         "The number of trees.", 10, 1, Integer.MAX_VALUE);
     
-    public IntOption kFeaturesModeOption = new IntOption("kFeaturesMode", 'o',
-        "How k is interpreted. 1: use value specified, 2: sqrt(#features)+1 and ignore k, 3: #features-(sqrt(#features)+1) and ignore k, "
-                + "4: #features * (k / 100), 5: #features - #features * (k / 100)", 2, 1, 5);
+    public MultiChoiceOption mFeaturesModeOption = new MultiChoiceOption("mFeaturesMode", 'o', 
+        "Defines how m, defined by mFeaturesPerTreeSize, is interpreted. M represents the total number of features.",
+        new String[]{"Specified m (integer value)", "sqrt(M)+1", "M-(sqrt(M)+1)",
+            "Percentage (M * (m / 100))"},
+        new String[]{"SpecifiedM", "SqrtM1", "MSqrtM1", "Percentage"}, 1);
     
-    public IntOption kFeaturesPerTreeSizeOption = new IntOption("kFeaturesPerTreeSize", 'c',
-        "Number of features allowed during each split. -k corresponds to #features - k", 2, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    public IntOption mFeaturesPerTreeSizeOption = new IntOption("mFeaturesPerTreeSize", 'm',
+        "Number of features allowed considered for each split. Negative values corresponds to M - m", 2, Integer.MIN_VALUE, Integer.MAX_VALUE);
     
     public FloatOption lambdaOption = new FloatOption("lambda", 'a',
         "The lambda parameter for bagging.", 6.0, 1.0, Float.MAX_VALUE);
@@ -121,16 +124,16 @@ public class AdaptiveRandomForest extends AbstractClassifier {
     public FlagOption disableBackgroundLearnerOption = new FlagOption("disableBackgroundLearner", 'q', 
         "Should use bkg learner? If disabled then reset tree immediately.");
     
-    protected static final int FEATURES_SQRT = 2;
-    protected static final int FEATURES_SQRT_INV = 3;
-    protected static final int FEATURES_PERCENT = 4;
-    protected static final int FEATURES_PERCENT_INV = 5;
+    protected static final int FEATURES_M = 0;
+    protected static final int FEATURES_SQRT = 1;
+    protected static final int FEATURES_SQRT_INV = 2;
+    protected static final int FEATURES_PERCENT = 3;
     
     protected static final int SINGLE_THREAD = 0;
 	
     protected ARFBaseLearner[] ensemble;
     protected long instancesSeen;
-    protected int kSubspaceSize;
+    protected int subspaceSize;
     protected BasicClassificationPerformanceEvaluator evaluator;
 
     private ExecutorService executor;
@@ -229,43 +232,48 @@ public class AdaptiveRandomForest extends AbstractClassifier {
 //        BasicClassificationPerformanceEvaluator classificationEvaluator = (BasicClassificationPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         BasicClassificationPerformanceEvaluator classificationEvaluator = new BasicClassificationPerformanceEvaluator();
         
-        this.kSubspaceSize = this.kFeaturesPerTreeSizeOption.getValue();
+        this.subspaceSize = this.mFeaturesPerTreeSizeOption.getValue();
   
-        // The size of k depends on 2 parameters:
-        // 1) kFeaturesPerTreeSizeOption
-        // 2) kFeaturesModeOption
+        // The size of m depends on:
+        // 1) mFeaturesPerTreeSizeOption
+        // 2) mFeaturesModeOption
         int n = instance.numAttributes()-1; // Ignore class label ( -1 )
-        double percent = this.kSubspaceSize / 100.0;
-
-        switch(this.kFeaturesModeOption.getValue()) {
+        
+        switch(this.mFeaturesModeOption.getChosenIndex()) {
             case AdaptiveRandomForest.FEATURES_SQRT:
-                this.kSubspaceSize = (int) Math.round(Math.sqrt(n)) + 1;
+                this.subspaceSize = (int) Math.round(Math.sqrt(n)) + 1;
                 break;
             case AdaptiveRandomForest.FEATURES_SQRT_INV:
-                this.kSubspaceSize = n - (int) Math.round(Math.sqrt(n)) + 1;
+                this.subspaceSize = n - (int) Math.round(Math.sqrt(n) + 1);
                 break;
             case AdaptiveRandomForest.FEATURES_PERCENT:
-                this.kSubspaceSize = (int) Math.round(n * percent);
-                break;
-            case AdaptiveRandomForest.FEATURES_PERCENT_INV:
-                this.kSubspaceSize = (int) Math.round(((double) n - n * percent));
+                // If subspaceSize is negative, then first find out the actual percent, i.e., 100% - m.
+                double percent = this.subspaceSize < 0 ? (100 + this.subspaceSize)/100.0 : this.subspaceSize / 100.0;
+                this.subspaceSize = (int) Math.round(n * percent);
                 break;
         }
-        // k is negative, use size(features) + -k
-        if(this.kSubspaceSize < 0)
-            this.kSubspaceSize = n + this.kSubspaceSize;
-        // k = 0, then use at least 1
-        if(this.kSubspaceSize == 0)
-            this.kSubspaceSize = 1;
-        // k > n, then it should use n
-        if(this.kSubspaceSize > n)
-            this.kSubspaceSize = n;
+        // Notice that if the selected mFeaturesModeOption was 
+        //  AdaptiveRandomForest.FEATURES_M then nothing is performed in the
+        //  previous switch-case, still it is necessary to check (and adjusted) 
+        //  for when a negative value was used. 
+        
+        // m is negative, use size(features) + -m
+        if(this.subspaceSize < 0)
+            this.subspaceSize = n + this.subspaceSize;
+        // Other sanity checks to avoid runtime errors. 
+        //  m <= 0 (m can be negative if this.subspace was negative and 
+        //  abs(m) > n), then use m = 1
+        if(this.subspaceSize <= 0)
+            this.subspaceSize = 1;
+        // m > n, then it should use n
+        if(this.subspaceSize > n)
+            this.subspaceSize = n;
         
         ARFHoeffdingTree treeLearner = (ARFHoeffdingTree) getPreparedClassOption(this.treeLearnerOption);
         treeLearner.resetLearning();
         
         for(int i = 0 ; i < ensembleSize ; ++i) {
-            treeLearner.subspaceSizeOption.setValue(this.kSubspaceSize);
+            treeLearner.subspaceSizeOption.setValue(this.subspaceSize);
             this.ensemble[i] = new ARFBaseLearner(
                 i, 
                 (ARFHoeffdingTree) treeLearner.copy(), 
