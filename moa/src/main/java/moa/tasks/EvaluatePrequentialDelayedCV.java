@@ -105,7 +105,7 @@ public class EvaluatePrequentialDelayedCV extends MainTask {
             "File to append intermediate csv results to.", null, "csv", true);
 
     public IntOption numFoldsOption = new IntOption("numFolds", 'w',
-            "The number of folds (e.g. distributed models) to be use.", 10, 1, Integer.MAX_VALUE);
+            "The number of folds (e.g. distributed models) to be used.", 10, 1, Integer.MAX_VALUE);
 
     public MultiChoiceOption validationMethodologyOption = new MultiChoiceOption(
             "validationMethodology", 'a', "Validation methodology to use.", new String[]{
