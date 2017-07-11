@@ -21,10 +21,8 @@
 package moa.tasks;
 
 import com.github.javacliparser.FileOption;
-import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
-import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.Classifier;
 import moa.core.*;
 import moa.evaluation.*;
@@ -94,8 +92,8 @@ public class EvaluatePrequentialCV extends MainTask {
     public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
             "File to append intermediate csv results to.", null, "csv", true);
 
-    public IntOption ensembleSizeOption = new IntOption("ensembleSize", 'w',
-            "The number of distributed models.", 10, 1, Integer.MAX_VALUE);
+    public IntOption numFoldsOption = new IntOption("numFolds", 'w',
+            "The number of folds (e.g. distributed models) to be used.", 10, 1, Integer.MAX_VALUE);
 
     public MultiChoiceOption validationMethodologyOption = new MultiChoiceOption(
             "validationMethodology", 'a', "Validation methodology to use.", new String[]{
@@ -120,11 +118,11 @@ public class EvaluatePrequentialCV extends MainTask {
         Random random = new Random(this.randomSeedOption.getValue());
         ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
 
-        Learner[] learners = new Learner[this.ensembleSizeOption.getValue()];
+        Learner[] learners = new Learner[this.numFoldsOption.getValue()];
         Learner baseLearner = (Learner) getPreparedClassOption(this.learnerOption);
         baseLearner.resetLearning();
 
-        LearningPerformanceEvaluator[] evaluators = new LearningPerformanceEvaluator[this.ensembleSizeOption.getValue()];
+        LearningPerformanceEvaluator[] evaluators = new LearningPerformanceEvaluator[this.numFoldsOption.getValue()];
         LearningPerformanceEvaluator baseEvaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         for (int i = 0; i < learners.length; i++) {
             learners[i] = (Learner) baseLearner.copy();
