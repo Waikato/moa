@@ -75,15 +75,16 @@ public class CoresetKMeans {
 										* Metric.distanceSquared(lastCenter,
 												point, 1));
 				sum += distance[j];
-			}
 
-			double nextCenterValue = sum * random.nextDouble();
-			double currentValue = distance[0];
+			}
 			int candidate = 0;
-			while (!(nextCenterValue < currentValue)) {
-				currentValue += distance[++candidate];
+			if (sum > 0) {
+				double nextCenterValue = sum * random.nextDouble();
+				double currentValue = distance[0];
+				while (!(nextCenterValue < currentValue)) {
+					currentValue += distance[++candidate];
+				}
 			}
-
 			// Copies the selected centroid
 			lastCenter = new double[d];
 			System.arraycopy(input.get(candidate), 1, lastCenter, 0, d);

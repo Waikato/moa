@@ -143,7 +143,6 @@ public class SAMkNN extends AbstractClassifier {
 		int newWindowSize = this.getNewSTMSize(recalculateSTMErrorOption.isSet());
 
 		if (newWindowSize < oldWindowSize) {
-            //System.out.println(this.trainStepCount + " oldSize " + oldWindowSize + " newSize " + newWindowSize + " ltmSize " + this.ltm.numInstances());
 			int diff = oldWindowSize - newWindowSize;
 			Instances discardedSTMInstances = new Instances(this.stm, 0);
 
@@ -264,30 +263,32 @@ public class SAMkNN extends AbstractClassifier {
 					this.ltm.delete(i);
 				}
 			}
-			//used kMeans++ implementation expects the weight of each sample at the first index,
-			// make sure that the first value gets the uniform weight 1, overwrite class value
-            for (double[] sample: classSamples){
-                if (classIndex != 0) {
-                    sample[classIndex] = sample[0];
-                }
-                sample[0] = 1;
-            }
-
-			List<double[]> centroids = this.kMeans(classSamples, Math.max(classSamples.size()/2, 1));
-
-			for (double[] centroid: centroids){
-
-				double [] attributes = new double[this.ltm.numAttributes()];
-				//returned centroids do not contain the weight anymore, but simply the data
-				System.arraycopy(centroid, 0, attributes, 1, this.ltm.numAttributes()-1);
-				//switch back if necessary
-				if (classIndex != 0) {
-					attributes[0] = attributes[classIndex];
+			if (classSamples.size() > 0) {
+				//used kMeans++ implementation expects the weight of each sample at the first index,
+				// make sure that the first value gets the uniform weight 1, overwrite class value
+				for (double[] sample : classSamples) {
+					if (classIndex != 0) {
+						sample[classIndex] = sample[0];
+					}
+					sample[0] = 1;
 				}
-				attributes[classIndex] = c;
-				Instance inst = new InstanceImpl(1, attributes);
-				inst.setDataset(this.ltm);
-				this.ltm.add(inst);
+
+				List<double[]> centroids = this.kMeans(classSamples, Math.max(classSamples.size() / 2, 1));
+
+				for (double[] centroid : centroids) {
+
+					double[] attributes = new double[this.ltm.numAttributes()];
+					//returned centroids do not contain the weight anymore, but simply the data
+					System.arraycopy(centroid, 0, attributes, 1, this.ltm.numAttributes() - 1);
+					//switch back if necessary
+					if (classIndex != 0) {
+						attributes[0] = attributes[classIndex];
+					}
+					attributes[classIndex] = c;
+					Instance inst = new InstanceImpl(1, attributes);
+					inst.setDataset(this.ltm);
+					this.ltm.add(inst);
+				}
 			}
 
 		}
