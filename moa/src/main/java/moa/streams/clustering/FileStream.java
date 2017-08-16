@@ -229,7 +229,6 @@ public class FileStream extends ClusteringStream{
 				Instance rawInstance = this.instances.instance(0);
 				
 				//remove dataset from instance so we can delete attributes
-				rawInstance.setDataset(null);
 				for (int i = removeAttributes.length-1; i >= 0 ; i--) {
 					rawInstance.deleteAttributeAt(removeAttributes[i]);	
 				}
