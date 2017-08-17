@@ -148,8 +148,6 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 		double[] std = allDataStandartDeviationEstimator.getStd();
 		double n = labeledDataKernelEstimator.getFrequencyEstimate(inst, std);
 		
-		System.out.format("STD=[%.3f,%.3f]",std[0],std[1]);
-		
 		double[] k = new double[numClasses];
 		for(int cIdx = 0; cIdx < numClasses; ++cIdx)
 		{
@@ -423,8 +421,6 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 		
 		double perfGain = getPerfGain(k);
 		
-		System.out.format("p=[%.3f,%.3f], n=%.2f, d=%.2f, ",cp[0],cp[1],k[0]+k[1],density);
-		
 		return density * perfGain;	
 	}
 	
@@ -519,8 +515,6 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 		{
 			point[i] = inst.value(i);
 		}
-
-		System.out.format("%2.3f,%2.3f || ",point[0],point[1]);
 		
 		double[] removedInstance = allDataKernelEstimator.addValue(point);
 		allDataStandartDeviationEstimator.addPoint(removedInstance, point);
@@ -541,8 +535,6 @@ public class PALStream extends AbstractClassifier implements ALClassifier {
 			double[] removedInstance2 = labeledDataKernelEstimator.addValue(point);
 			labeledDataStandartDeviationEstimator.addPoint(removedInstance2, point);
 		}
-		
-		System.out.format("gain=%.3f, %b \n",alScore,acquireLabel);
 		
 	}
 
