@@ -36,7 +36,8 @@ package moa.classifiers.active.budget;
 public interface BudgetManager {
 
 	/**
-	 * Returns true if the previously value is above an internal threshold.
+	 * Returns true if the given value is above an internal threshold and the 
+	 * label should be acquired.
 	 */
 	public boolean isAbove(double value);
 

@@ -47,7 +47,7 @@ public class ALRandom extends AbstractClassifier implements ALClassifier {
 
     public ClassOption budgetManagerOption = new ClassOption("budgetManager",
             'b', "BudgetManager that should be used.",
-            BudgetManager.class, "ThresholdBM");
+            BudgetManager.class, "FixedBM");
 
     
     public Classifier classifier;

@@ -57,7 +57,7 @@ public class ALSufficientWeight extends AbstractClassifier implements ALClassifi
     		"If enabled, the internal threshold will be replaced by the specified budget manager.");
     
     public ClassOption budgetManagerOption = new ClassOption("budgetManager", 'm',
-    		"The budget manager to use.", BudgetManager.class, "ThresholdBM");
+    		"The budget manager to use.", BudgetManager.class, "FixedBM");
     
     public IntOption numInstancesInitOption = new IntOption("numInstancesInit", 'n',
     		"Number of instances at beginning without active learning.", 0, 0, Integer.MAX_VALUE);

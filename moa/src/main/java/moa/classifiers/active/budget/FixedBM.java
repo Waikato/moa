@@ -1,5 +1,5 @@
 /*
- *    ThresholdBM.java
+ *    FixedBM.java
  *    Copyright (C) 2016 Otto von Guericke University, Magdeburg, Germany
  *    @author Daniel Kottke (daniel dot kottke at ovgu dot de)
  *
@@ -25,11 +25,16 @@ import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
-public class ThresholdBM extends AbstractOptionHandler implements BudgetManager {
+public class FixedBM extends AbstractOptionHandler implements BudgetManager {
 
     
-    public FloatOption thresholdOption = new FloatOption("threshold",
-    		't', "The threshold which has to be exceeded to acquire the label.",
+	@Override
+    public String getPurposeString() {
+        return "Budget manager with a fixed budget.";
+    }
+	
+	public FloatOption budgetOption = new FloatOption("budget",
+    		'b', "The budget that should be used by the BudgetManager.",
     		0.1, 0.00, 1.00);
     
 	/**
@@ -42,7 +47,7 @@ public class ThresholdBM extends AbstractOptionHandler implements BudgetManager 
 	@Override
 	public boolean isAbove(double value) {
 		boolean acquire = false;
-		if (value >= thresholdOption.getValue())
+		if (value >= (1-budgetOption.getValue()))
 			acquire = true;
 		if (acquire)
 			this.acquisitionReport++;

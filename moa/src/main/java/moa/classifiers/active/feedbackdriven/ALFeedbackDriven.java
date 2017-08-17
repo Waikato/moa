@@ -10,7 +10,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.active.ALClassifier;
 import moa.classifiers.active.budget.BudgetManager;
-import moa.classifiers.active.budget.ThresholdBM;
+import moa.classifiers.active.budget.FixedBM;
 import moa.core.DoubleVector;
 import moa.core.GaussianEstimator;
 import moa.core.Measurement;
@@ -75,7 +75,7 @@ public class ALFeedbackDriven extends AbstractClassifier implements ALClassifier
 	// ===== MOA Parameters
     public ClassOption budgetManagerOption = new ClassOption("budgetManager",
             'b', "BudgetManager that should be used.",
-            BudgetManager.class, "ThresholdBM");
+            BudgetManager.class, "FixedBM");
     
     public IntOption numberOfInstancesForInitializationOption = new IntOption("numberOfInstancesForInitialization",
     		'n', "The number of Instances used to initialize the Classifier.", 200, 5, 1000);
@@ -399,7 +399,7 @@ public class ALFeedbackDriven extends AbstractClassifier implements ALClassifier
 	 * Gets called by the unittest class instead of resetLearningImpl
 	 */
 	public void resetForTesting() {
-		budgetManager = new ThresholdBM();
+		budgetManager = new FixedBM();
 		budgetManager.resetLearning();
 		
 		numberOfInstancesForInitialization = 50;
