@@ -65,7 +65,7 @@ public class InstanceInformation implements Serializable {
      * Instantiates a new instance information.
      *
      * @param st the st
-     * @param v the v
+     * @param input the input
      */
     public InstanceInformation(String st, List<Attribute> input) {
         this.relationName = st;
@@ -141,14 +141,14 @@ public class InstanceInformation implements Serializable {
      * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#deleteAttributeAt(java.lang.Integer)
      */
     public void deleteAttributeAt(Integer integer) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        this.attributesInformation.deleteAttributeAt(integer);
     }
 
     /* (non-Javadoc)
      * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#insertAttributeAt(com.yahoo.labs.samoa.instances.Attribute, int)
      */
     public void insertAttributeAt(Attribute attribute, int i) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        this.attributesInformation.insertAttributeAt(attribute,i) ;
     }
 
     public void setAttributes(List<Attribute> v) {
