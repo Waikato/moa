@@ -1,3 +1,22 @@
+/*
+ *    AdaptiveMultiTargetRegressor.java
+ *    Copyright (C) 2017 University of Porto, Portugal
+ *    @author J. Duarte, J. Gama
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ *
+ */
 package moa.classifiers.rules.multilabel.functions;
 
 import moa.classifiers.AbstractMultiLabelLearner;
@@ -11,6 +30,15 @@ import moa.options.ClassOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
+
+/**
+ * Adaptive MultiTarget Regressor uses two learner
+ * The first is used in first stage when high error are produced(e.g. Target mean)
+ * The second is used in a second stage when low error are produced(e.g perceptron)
+ * 	baseLearnerOption1- Learner one ;
+ *  baseLearnerOption2- learner two
+ */
+
 
 public class AdaptiveMultiTargetRegressor extends AbstractMultiLabelLearner
 implements MultiTargetRegressor, AMRulesFunction {
