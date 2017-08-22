@@ -344,6 +344,13 @@ public class ALMultiParamTask extends ALMainTask {
 					// skip for loop until all threads before were at least added once
 					break;
 				}
+				else {
+					// set final result as latest preview
+					PreviewCollectionLearningCurveWrapper finalPreview = 
+							(PreviewCollectionLearningCurveWrapper) 
+							currentTaskThread.getFinalResult();
+					previewCollection.setPreview(i, finalPreview);
+				}
 			}
 			double completionFraction = completionSum / numSubtaskThreads;
 			
