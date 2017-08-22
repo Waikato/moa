@@ -240,7 +240,15 @@ public class MeasureOverview extends JPanel {
         }
         
         DecimalFormat d = new DecimalFormat("0.00");
-        MeasureCollection mc = this.measures[this.measureCollectionSelected];
+        
+        MeasureCollection mc;
+        if (this.measures.length > this.measureCollectionSelected) {
+        	mc = this.measures[this.measureCollectionSelected];
+        }
+        else {
+        	mc = this.measures[0];
+        }
+        
         for (int i = 0; i < this.currentValues.length; i++) {
             // set current value
             if(Double.isNaN(mc.getLastValue(i))) {
