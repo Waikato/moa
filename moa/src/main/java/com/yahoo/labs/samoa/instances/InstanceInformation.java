@@ -57,8 +57,20 @@ public class InstanceInformation implements Serializable {
      */
     public InstanceInformation(InstanceInformation chunk) {
         this.relationName = chunk.relationName;
-        this.attributesInformation = chunk.attributesInformation;
+        this.attributesInformation = new AttributesInformation(chunk.attributesInformation);
         this.classIndex = chunk.classIndex;
+        this.range = chunk.range;
+    }
+
+    /**
+     * Instantiates a new instance information.
+     *
+     * @param st the st
+     * @param input the input
+     */
+    public InstanceInformation(String st, Attribute[] input) {
+        this.relationName = st;
+        this.attributesInformation = new AttributesInformation(input, input.length);
     }
 
     /**
@@ -140,8 +152,11 @@ public class InstanceInformation implements Serializable {
     /* (non-Javadoc)
      * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#deleteAttributeAt(java.lang.Integer)
      */
-    public void deleteAttributeAt(Integer integer) {
+    public void deleteAttributeAt(int integer) {
         this.attributesInformation.deleteAttributeAt(integer);
+        if (this.classIndex > integer) {
+            this.classIndex--;
+        }
     }
 
     /* (non-Javadoc)
@@ -149,9 +164,12 @@ public class InstanceInformation implements Serializable {
      */
     public void insertAttributeAt(Attribute attribute, int i) {
         this.attributesInformation.insertAttributeAt(attribute,i) ;
+        if (this.classIndex >= i) {
+            this.classIndex++;
+        }
     }
 
-    public void setAttributes(List<Attribute> v) {
+    public void setAttributes(Attribute[] v) {
     	if(this.attributesInformation==null)
     		this.attributesInformation= new AttributesInformation();
         this.attributesInformation.setAttributes(v);
@@ -206,7 +224,7 @@ public class InstanceInformation implements Serializable {
         this.range = range;
     }
 
-	public void setAttributes(List<Attribute> v, List<Integer> indexValues) {
+	public void setAttributes(Attribute[] v, int[] indexValues) {
     	if(this.attributesInformation==null)
     		this.attributesInformation= new AttributesInformation();
         this.attributesInformation.setAttributes(v,indexValues);
