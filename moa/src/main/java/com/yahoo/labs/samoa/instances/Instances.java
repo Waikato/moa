@@ -112,7 +112,7 @@ public class Instances implements Serializable {
      * @param capacity the capacity
      */
     public Instances(Instances chunk, int capacity) {
-        this.instanceInformation = chunk.instanceInformation();
+        this.instanceInformation = new InstanceInformation(chunk.instanceInformation());
         if (capacity < 0) {
             capacity = 0;
         }
@@ -127,8 +127,25 @@ public class Instances implements Serializable {
      * @param v the v
      * @param capacity the capacity
      */
-    public Instances(String st, List<Attribute> v, int capacity) {
+    public Instances(String st, Attribute[] v, int capacity) {
         this.instanceInformation = new InstanceInformation(st, v);
+        this.instances = new ArrayList<Instance>(capacity);
+        this.computeAttributesIndices();
+    }
+
+    /**
+     * Instantiates a new instances.
+     *
+     * @param st the st
+     * @param v the v
+     * @param capacity the capacity
+     */
+    public Instances(String st, List<Attribute> v, int capacity) {
+        Attribute[] attributes = new Attribute[v.size()];
+        for (int i = 0; i < v.size(); i++) {
+            attributes[i]= v.get(i);
+        }
+        this.instanceInformation = new InstanceInformation(st, attributes);
         this.instances = new ArrayList<Instance>(capacity);
         this.computeAttributesIndices();
     }
@@ -244,19 +261,29 @@ public class Instances implements Serializable {
      */
     public void deleteAttributeAt(Integer integer) {
         this.instanceInformation.deleteAttributeAt(integer);
+        for (int i = 0; i < numInstances(); i++) {
+            instance(i).setDataset(null);
+            instance(i).deleteAttributeAt(integer);
+            instance(i).setDataset(this);
+        }
     }
 
     /**
      * Insert attribute at.
      *
      * @param attribute the attribute
-     * @param i the i
+     * @param position the position
      */
-    public void insertAttributeAt(Attribute attribute, int i) {
+    public void insertAttributeAt(Attribute attribute, int position) {
         if (this.instanceInformation == null) {
             this.instanceInformation = new InstanceInformation();
         }
-        this.instanceInformation.insertAttributeAt(attribute, i);
+        this.instanceInformation.insertAttributeAt(attribute, position);
+        for (int i = 0; i < numInstances(); i++) {
+            instance(i).setDataset(null);
+            instance(i).insertAttributeAt(i);
+            instance(i).setDataset(this);
+        }
     }
 
     //List of Instances
@@ -348,7 +375,6 @@ public class Instances implements Serializable {
      *
      * @param numFolds the num folds
      * @param numFold
-     * @param n the n
      * @param random the random
      * @return the instances
      */
@@ -502,18 +528,28 @@ public class Instances implements Serializable {
 
     }
 
-    public void setAttributes(List<Attribute> v) {
+    public void setAttributes(Attribute[] v) {
         if (this.instanceInformation == null) {
             this.instanceInformation = new InstanceInformation();
         }
         this.instanceInformation.setAttributes(v);
     }
 
-    public void setAttributes(List<Attribute> v, List<Integer> indexValues) {
+    public void setAttributes(Attribute[] v, int[] indexValues) {
         if (this.instanceInformation == null) {
             this.instanceInformation = new InstanceInformation();
         }
         this.instanceInformation.setAttributes(v, indexValues);
+    }
+    public void setAttributes(List<Attribute> v, List<Integer> indexValues) {
+        int[] ret = new int[indexValues.size()];
+        for(int i = 0;i < ret.length;i++)
+            ret[i] = indexValues.get(i);
+        Attribute[] attributes = new Attribute[v.size()];
+        for (int i = 0; i < v.size(); i++) {
+            attributes[i]= v.get(i);
+        }
+       setAttributes(attributes, ret);
     }
 
     /**
