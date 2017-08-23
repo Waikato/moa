@@ -140,9 +140,13 @@ public class AdaptiveRandomForest extends AbstractClassifier {
     
     @Override
     public void resetLearningImpl() {
-        // Init statistics
+        // Reset attributes
+        this.ensemble = null;
+        this.subspaceSize = 0;
         this.instancesSeen = 0;
         this.evaluator = new BasicClassificationPerformanceEvaluator();
+        
+        // Multi-threading
         int numberOfJobs;
         if(this.numberOfJobsOption.getValue() == -1) 
             numberOfJobs = Runtime.getRuntime().availableProcessors();
