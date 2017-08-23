@@ -145,7 +145,7 @@ public class DecisionStump extends AbstractClassifier {
             if (obs != null) {
                 AttributeSplitSuggestion suggestion = obs.getBestEvaluatedSplitSuggestion(criterion,
                         preSplitDist, i, this.binarySplitsOption.isSet());
-                if (suggestion.merit > bestMerit) {
+                if (suggestion != null && suggestion.merit > bestMerit) {
                     bestMerit = suggestion.merit;
                     bestFound = suggestion;
                 }
