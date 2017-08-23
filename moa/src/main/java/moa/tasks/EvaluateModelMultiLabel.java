@@ -67,7 +67,7 @@ public class EvaluateModelMultiLabel extends MultiLabelMainTask {
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
             "Classification performance evaluation method.",
             MultiLabelPerformanceEvaluator.class,
-            "MultilabelWindowClassificationPerformanceEvaluator");
+            "BasicMultiLabelPerformanceEvaluator");
 
 
     public IntOption maxInstancesOption = new IntOption("maxInstances", 'i',

@@ -28,7 +28,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
-public class MultilabelWindowClassificationPerformanceEvaluator extends WindowClassificationPerformanceEvaluator implements MultiLabelPerformanceEvaluator {
+public class BasicMultiLabelPerformanceEvaluator extends WindowClassificationPerformanceEvaluator implements MultiLabelPerformanceEvaluator {
 
 	/** running sum of accuracy */
 	double sumAccuracy = 0.0;
@@ -66,6 +66,10 @@ public class MultilabelWindowClassificationPerformanceEvaluator extends WindowCl
 	 * do not take into account this possibility *yet*. (for this, we would have
 	 * to use y[] differently, another format for y[] e.g. HashMap, or store
 	 * more info in x)
+	 *
+	 * Added instance based F-Measure, Recall, Precision and Accuracy
+	 * @ author R. Sousa, J.Gama
+	 *
 	 */
 	@Override
 	public void addResult(Example<Instance> example, double[] p_y) {
