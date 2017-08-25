@@ -19,17 +19,17 @@
  */
 package moa.classifiers.rules.core;
 
-import com.yahoo.labs.samoa.instances.Instance;
-
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.rules.AbstractAMRules;
-import moa.classifiers.rules.driftdetection.PageHinkleyTest;
 import moa.classifiers.rules.driftdetection.PageHinkleyFading;
+import moa.classifiers.rules.driftdetection.PageHinkleyTest;
 import moa.classifiers.trees.HoeffdingTree;
 import moa.classifiers.trees.HoeffdingTree.ActiveLearningNode;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
+
+import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * A modified ActiveLearningNode that uses a Perceptron as the leaf node model,

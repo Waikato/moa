@@ -1,32 +1,12 @@
-/*
- *    UniformWeightedVote.java
- *    Copyright (C) 2014 University of Porto, Portugal
- *    @author A. Bifet, J. Duarte, J. Gama
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *    
- *    
- */
 
 package moa.classifiers.rules.multilabel.core.voting;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-import com.yahoo.labs.samoa.instances.Prediction;
-
 import moa.AbstractMOAObject;
-import moa.core.DoubleVector;
+
+import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * AbstractErrorWeightedVote class for weighted votes based on estimates of errors. 
@@ -48,8 +28,8 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 
 	public AbstractErrorWeightedVoteMultiLabel() {
 		super();
-		votes = new ArrayList<Prediction>();
-		errors = new ArrayList<double[]>();
+		votes = new LinkedList<Prediction>();
+		errors = new LinkedList<double[]>();
 	}
 
 
@@ -62,7 +42,6 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 		for(int i=0; i<numOutputs; i++)
 			if(vote.hasVotesForAttribute(i))
 				outputAttributesCount[i]++;
-
 		votes.add(vote);
 		errors.add(error);
 	}
@@ -139,6 +118,18 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 		if (this.weightedVote==null)
 			weightedVote=computeWeightedVote();
 		return weightedVote;
+	}
+	
+	public boolean coversAllOutputs(){
+		int i=0;
+		boolean flag=false;
+		
+		if(outputAttributesCount!=null){
+			while( i<outputAttributesCount.length && outputAttributesCount[i]>0)
+				i++;
+			flag=i==outputAttributesCount.length;
+		}
+		return flag;
 	}
 	
 }

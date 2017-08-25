@@ -1,8 +1,26 @@
+/*
+ *    MultiLabelBSTree.java
+ *    Copyright (C) 2017 University of Porto, Portugal
+ *    @author J. Duarte, J. Gama
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ *
+ */
+
 package moa.classifiers.rules.multilabel.attributeclassobservers;
 
 import java.io.Serializable;
-
-import com.github.javacliparser.IntOption;
 
 import moa.classifiers.rules.core.NumericRulePredicate;
 import moa.classifiers.rules.core.Utils;
@@ -12,6 +30,14 @@ import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
+
+import com.github.javacliparser.IntOption;
+
+/**
+ * Binary search tree for AMRules splitting points determination
+ */
+
+
 
 public class MultiLabelBSTree extends AbstractOptionHandler implements NumericStatisticsObserver {
 
@@ -57,8 +83,10 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 			leftStatistics[i]=new DoubleVector(new double [preSplitStatistics[i].numValues()]); //sets statistics to zeros
 			rightStatistics[i]=new DoubleVector(preSplitStatistics[i]);
 		}
-
-		return searchForBestSplitOption(this.root, null, criterion, preSplitStatistics, inputAttributeIndex);
+		AttributeExpansionSuggestion ret=searchForBestSplitOption(this.root, null, criterion, preSplitStatistics, inputAttributeIndex);
+		leftStatistics=null;
+		rightStatistics=null;
+		return ret;
 	}
 
 	protected AttributeExpansionSuggestion searchForBestSplitOption(Node currentNode, AttributeExpansionSuggestion currentBestOption, MultiLabelSplitCriterion criterion, DoubleVector [] preSplitStatistics, int inputAttributeIndex) {

@@ -8,6 +8,12 @@ import org.junit.Test;
 
 import com.yahoo.labs.samoa.instances.Instance;
 
+/**
+ * Test SelectAttributesFilter
+ *
+ * @author João Duarte (joaomaiaduarte@gmail.com)
+ */
+
 public class SelectAttributesFilterTest {
 	private static double EPS=0.00000001;
 	private static SelectAttributesFilter filter;

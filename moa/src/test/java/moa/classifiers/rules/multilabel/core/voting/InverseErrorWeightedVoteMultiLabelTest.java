@@ -1,7 +1,6 @@
 package moa.classifiers.rules.multilabel.core.voting;
 
-import static org.junit.Assert.*;
-import moa.classifiers.rules.core.voting.InverseErrorWeightedVote;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -9,7 +8,12 @@ import org.junit.Test;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
-public class InverseErrorWeightedVoteMultiLabeLTest {
+/**
+ * Test InverseErrorWeightedVoteMultiLabeL class
+ *
+ * @author João Duarte (joaomaiaduarte@gmail.com)
+ */
+public class InverseErrorWeightedVoteMultiLabelTest {
 	static InverseErrorWeightedVoteMultiLabel weightedVote;
 	static final double EPS=0.0000001;
 	@BeforeClass

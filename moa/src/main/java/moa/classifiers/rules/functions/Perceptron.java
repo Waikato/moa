@@ -22,15 +22,14 @@ package moa.classifiers.rules.functions;
 import java.util.LinkedList;
 import java.util.Random;
 
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.FloatOption;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Regressor;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
 
 public class Perceptron extends AbstractClassifier implements AMRulesRegressorFunction{
 
@@ -53,7 +52,10 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 	public FloatOption fadingFactorOption = new FloatOption(
 			"fadingFactor", 'e', 
 			"Fading factor for the Perceptron accumulated error", 0.99, 0, 1);
-
+	
+	public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
+            "Seed for random behaviour of the classifier.", 1);
+	
 	private double nError;
 	protected double fadingFactor;
 
@@ -85,6 +87,8 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 
 	public Perceptron()
 	{
+		super();
+		super.randomSeedOption=randomSeedOption;
 		this.initialisePerceptron = true;
 	}
 
@@ -113,6 +117,7 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 		this.squaredperceptronsumY = p.squaredperceptronsumY;
 		this.perceptronYSeen=p.perceptronYSeen;
 		this.numericAttributesIndex=p.numericAttributesIndex.clone();
+		this.randomSeed=p.randomSeed;
 	}
 
 	public void setWeights(double[] w)
@@ -140,11 +145,12 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 	 * A method to reset the model
 	 */
 	public void resetLearningImpl() {
-		this.initialisePerceptron = true; 
+		this.initialisePerceptron = true;
 		this.reset(); 
 	}
 
 	public void reset(){
+		this.classifierRandom.setSeed(this.randomSeed);
 		this.nError=0.0;
 		this.accumulatedError = 0.0;
 		this.perceptronInstancesSeen = 0;	
@@ -179,8 +185,6 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 				numericAttributesIndex[j++]=index;
 
 			this.fadingFactor=this.fadingFactorOption.getValue();
-			this.classifierRandom=new Random();
-			this.classifierRandom.setSeed(randomSeedOption.getValue()); 
 			this.initialisePerceptron = false; // not in resetLearningImpl() because it needs Instance!
 			this.weightAttribute = new double[numericAttributesIndex.length+1];
 			for (int i = 0; i < numericAttributesIndex.length+1; i++) {
