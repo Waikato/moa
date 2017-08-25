@@ -66,7 +66,7 @@ public class EvaluateModelMultiLabel extends MultiLabelMainTask {
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
             "Classification performance evaluation method.",
-            MultiLabelPerformanceEvaluator.class,
+            MultiTargetPerformanceEvaluator.class,
             "BasicMultiLabelPerformanceEvaluator");
 
 

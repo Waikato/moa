@@ -38,6 +38,7 @@ import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.streams.MultiTargetInstanceStream;
+import weka.core.stopwords.Null;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -66,10 +67,16 @@ public class EvaluatePrequentialMultiLabel extends MultiLabelMainTask {
             "Stream to learn from.", MultiTargetInstanceStream.class,
             "MultiTargetArffFileStream");
 
-    public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
+    /*public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
             "Classification performance evaluation method.",
             MultiLabelPerformanceEvaluator.class,
+            "MultilabelWindowClassificationPerformanceEvaluator");*/
+
+    public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
+            "Classification performance evaluation method.",
+            MultiTargetPerformanceEvaluator.class,
             "BasicMultiLabelPerformanceEvaluator");
+
     
     public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
             "Maximum number of instances to test/train on  (-1 = no limit).",
@@ -190,18 +197,31 @@ public class EvaluatePrequentialMultiLabel extends MultiLabelMainTask {
                 && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
             Example trainInst = stream.nextInstance();
             Example testInst = (Example) trainInst; //.copy();
+
+
             //testInst.setClassMissing();
             //double[] prediction = learner.getVotesForInstance(testInst);
+
+            if ( instancesProcessed==0){
+                learner.trainOnInstance(trainInst);
+                instancesProcessed++;
+                continue;
+            }
+
+            //evaluator.addClassificationAttempt(trueClass, prediction, testInst.weight());
+
             Prediction prediction = learner.getPredictionForInstance(testInst);
+
             // Output prediction
             if (outputPredictionFile != null) {
                 double trueClass = ((Instance) trainInst.getData()).classValue();
                 outputPredictionResultStream.println(prediction + "," + trueClass);
             }
 
-            //evaluator.addClassificationAttempt(trueClass, prediction, testInst.weight());
             evaluator.addResult(testInst, prediction);
+
             learner.trainOnInstance(trainInst);
+
             instancesProcessed++;
             if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0
                     || stream.hasMoreInstances() == false) {
