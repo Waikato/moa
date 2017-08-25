@@ -1,1 +1,6 @@
 /target/
+.idea
+*.iml
+*~
+*.bak
+

@@ -151,4 +151,41 @@ public class AttributesInformation implements Serializable {
 	        this.indexValues=indexValues;
 	}
 
+    public void deleteAttributeAt(Integer position) {
+        if ((position < 0) || (position >= attributes.size())) {
+            throw new IllegalArgumentException("Index out of range");
+        }
+
+        ArrayList<Attribute> newList = new ArrayList<Attribute>(attributes.size() - 1);
+        for (int i = 0 ; i < position; i++) {
+            Attribute att = attributes.get(i);
+            newList.add(att);
+        }
+        for (int i = position + 1; i < attributes.size(); i++) {
+            Attribute newAtt = (Attribute) attributes.get(i);
+            newList.add(newAtt);
+        }
+        attributes = newList;
+    }
+
+    public void insertAttributeAt(Attribute att, int position) {
+
+        if ((position < 0) || (position > attributes.size())) {
+            throw new IllegalArgumentException("Index out of range");
+        }
+
+        ArrayList<Attribute> newList = new ArrayList<Attribute>(attributes.size() + 1);
+        for (int i = 0 ; i < position; i++) {
+            Attribute oldAtt = attributes.get(i);
+            newList.add(oldAtt);
+        }
+        newList.add(att);
+        for (int i = position; i < attributes.size(); i++) {
+            Attribute newAtt = (Attribute) attributes.get(i);
+            newList.add(newAtt);
+        }
+        attributes = newList;
+
+    }
+
 }

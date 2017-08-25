@@ -63,7 +63,7 @@ public class EvaluatePrequential extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Learner to train.", Learner.class, "moa.classifiers.bayes.NaiveBayes");
+            "Learner to train.", Classifier.class, "moa.classifiers.bayes.NaiveBayes");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,
@@ -198,7 +198,8 @@ public class EvaluatePrequential extends MainTask {
             // Output prediction
             if (outputPredictionFile != null) {
                 int trueClass = (int) ((Instance) trainInst.getData()).classValue();
-                outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," + trueClass);
+                outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," + (
+                 ((Instance) testInst.getData()).classIsMissing() == true ? " ? " : trueClass));
             }
 
             //evaluator.addClassificationAttempt(trueClass, prediction, testInst.weight());

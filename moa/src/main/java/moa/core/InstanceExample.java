@@ -26,4 +26,9 @@ public class InstanceExample implements Example<Instance> {
 		this.instance.setWeight(w);
 	}
 
+	@Override
+	public Example copy() {
+		return new InstanceExample(instance.copy());
+	}
+
 } 

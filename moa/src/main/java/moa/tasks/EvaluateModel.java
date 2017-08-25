@@ -52,7 +52,7 @@ public class EvaluateModel extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption modelOption = new ClassOption("model", 'm',
-            "Learner to evaluate.", Learner.class, "LearnModel");
+            "Learner to evaluate.", Classifier.class, "LearnModel");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to evaluate on.", ExampleStream.class,
@@ -121,7 +121,8 @@ public class EvaluateModel extends MainTask {
             //evaluator.addClassificationAttempt(trueClass, prediction, testInst
             //		.weight());
             if (outputPredictionFile != null) {
-                outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," + trueClass);
+                outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," +(
+                        ((Instance) testInst.getData()).classIsMissing() == true ? " ? " : trueClass));
             }
             evaluator.addResult(testInst, prediction);
             instancesProcessed++;

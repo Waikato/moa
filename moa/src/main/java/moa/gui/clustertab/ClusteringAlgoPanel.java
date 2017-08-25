@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.gui.clustertab;
@@ -53,14 +53,14 @@ public class ClusteringAlgoPanel extends javax.swing.JPanel implements ActionLis
 
     private ClassOption streamOption = new ClassOption("Stream", 's',
                 "", ClusteringStream.class,
-                "RandomRBFGeneratorEvents"); 
+                "RandomRBFGeneratorEvents");
 
    private ClassOption algorithmOption0 = new ClassOption("Algorithm0", 'a',
                "Algorithm to use.", Clusterer.class, "ClusterGenerator");
 
    private ClassOption algorithmOption1 = new ClassOption("Algorithm1", 'c',
-               "Comparison algorithm", Clusterer.class, "", "clustream.WithKmeans");
-   
+               "Comparison algorithm", Clusterer.class, "clustream.WithKmeans", "None");
+
 
     public ClusteringAlgoPanel() {
         initComponents();
@@ -78,7 +78,7 @@ public class ClusteringAlgoPanel extends javax.swing.JPanel implements ActionLis
         JPanel optionsPanel = new JPanel();
         GridBagLayout gbLayout = new GridBagLayout();
         optionsPanel.setLayout(gbLayout);
-        
+
         //Create generic label constraints
         GridBagConstraints gbcLabel = new GridBagConstraints();
         gbcLabel.gridx = 0;
@@ -86,7 +86,7 @@ public class ClusteringAlgoPanel extends javax.swing.JPanel implements ActionLis
         gbcLabel.anchor = GridBagConstraints.EAST;
         gbcLabel.weightx = 0;
         gbcLabel.insets = new Insets(5, 5, 5, 5);
-        
+
         //Create generic editor constraints
         GridBagConstraints gbcOption = new GridBagConstraints();
         gbcOption.gridx = 1;
@@ -133,9 +133,9 @@ public class ClusteringAlgoPanel extends javax.swing.JPanel implements ActionLis
         JButton clearButton = new JButton("Clear");
         clearButton.addActionListener(this);
         clearButton.setActionCommand("clear");
-        optionsPanel.add(clearButton, gbcClearButton);      
-        
-            
+        optionsPanel.add(clearButton, gbcClearButton);
+
+
         add(optionsPanel);
     }
 
@@ -148,8 +148,8 @@ public class ClusteringAlgoPanel extends javax.swing.JPanel implements ActionLis
             algorithmOption1.setValueViaCLIString("None");
             editComponents.get(2).setEditState("None");
         }
-    }    
-    
+    }
+
     public AbstractClusterer getClusterer0(){
         AbstractClusterer c = null;
         applyChanges();
@@ -160,7 +160,7 @@ public class ClusteringAlgoPanel extends javax.swing.JPanel implements ActionLis
         }
         return c;
     }
-    
+
     public AbstractClusterer getClusterer1(){
         AbstractClusterer c = null;
         applyChanges();
@@ -173,7 +173,7 @@ public class ClusteringAlgoPanel extends javax.swing.JPanel implements ActionLis
         }
         return c;
     }
-    
+
     public ClusteringStream getStream(){
         ClusteringStream s = null;
         applyChanges();
@@ -194,12 +194,12 @@ public class ClusteringAlgoPanel extends javax.swing.JPanel implements ActionLis
         applyChanges();
         return algorithmOption0.getValueAsCLIString();
     }
-    
+
     public String getAlgorithm1ValueAsCLIString(){
         applyChanges();
         return algorithmOption1.getValueAsCLIString();
     }
-    
+
     /* We need to fetch the right item from editComponents list, index needs to match GUI order */
     public void setStreamValueAsCLIString(String s){
         streamOption.setValueViaCLIString(s);
@@ -214,7 +214,7 @@ public class ClusteringAlgoPanel extends javax.swing.JPanel implements ActionLis
     public void setAlgorithm1ValueAsCLIString(String s){
         algorithmOption1.setValueViaCLIString(s);
         editComponents.get(2).setEditState(algorithmOption1.getValueAsCLIString());
-    }    
+    }
 
     public void applyChanges() {
             for (OptionEditComponent editor : this.editComponents) {

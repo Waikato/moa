@@ -15,6 +15,8 @@
  */
 package com.yahoo.labs.samoa.instances;
 
+import java.text.SimpleDateFormat;
+
 /**
  * The Class InstanceImpl.
  *
@@ -126,6 +128,10 @@ public class InstanceImpl implements MultiLabelInstance {
         return this.instanceHeader.attribute(instAttIndex);
     }
 
+    public int indexOfAttribute(Attribute attribute){
+        return this.instanceHeader.indexOf(attribute);
+    }
+    
     /**
      * Delete attribute at.
      *
@@ -133,7 +139,6 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public void deleteAttributeAt(int i) {
-        //throw new UnsupportedOperationException("Not yet implemented");
         this.instanceData.deleteAttributeAt(i);
     }
 
@@ -143,9 +148,7 @@ public class InstanceImpl implements MultiLabelInstance {
      * @param i the i
      */
     @Override
-    public void insertAttributeAt(int i) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
+    public void insertAttributeAt(int i) {this.instanceData.insertAttributeAt(i);}
 
     /**
      * Num attributes.
@@ -230,8 +233,8 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public double value(Attribute attribute) {
-        return value(attribute.index());
-
+        int index = this.instanceHeader.indexOf(attribute);
+        return value(index);
     }
 
     /**
@@ -381,12 +384,23 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public String toString() {
-        double[] aux = this.instanceData.toDoubleArray();
         StringBuilder str = new StringBuilder();
-        for (int i = 0; i < aux.length; i++) {
-            str.append(aux[i]).append(" ");
+        for (int attIndex = 0; attIndex < this.numAttributes(); attIndex++) {
+            if (!this.isMissing(attIndex)) {
+                if (this.attribute(attIndex).isNominal()) {
+                    int valueIndex = (int) this.value(attIndex);
+                    String stringValue = this.attribute(attIndex).value(valueIndex);
+                    str.append(stringValue).append(",");
+                } else if (this.attribute(attIndex).isNumeric()) {
+                    str.append(this.value(attIndex)).append(",");
+                } else if (this.attribute(attIndex).isDate()) {
+                    SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                    str.append(dateFormatter.format(this.value(attIndex))).append(",");
+                }
+            } else {
+                str.append("?,");
+            }
         }
-
         return str.toString();
     }
 
@@ -399,7 +413,7 @@ public class InstanceImpl implements MultiLabelInstance {
     public int numOutputAttributes() {
         return numberOutputTargets();
     }
-    
+
     @Override
     public int numberOutputTargets() {
         return this.instanceHeader.numOutputAttributes();
@@ -439,5 +453,28 @@ public class InstanceImpl implements MultiLabelInstance {
     public double valueOutputAttribute(int attributeIndex) {
         InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
         return this.instanceData.value(instanceInformation.outputAttributeIndex(attributeIndex));
+    }
+
+    @Override
+    public void setMissing(int instAttIndex) {
+        this.setValue(instAttIndex, Double.NaN);
+    }
+
+    @Override
+    public void setMissing(Attribute attribute) {
+        int index = this.instanceHeader.indexOf(attribute);
+        this.setMissing(index);
+    }
+
+    @Override
+    public boolean isMissing(Attribute attribute) {
+        int index = this.instanceHeader.indexOf(attribute);
+        return this.isMissing(index);
+    }
+
+    @Override
+    public void setValue(Attribute attribute, double value) {
+        int index = this.instanceHeader.indexOf(attribute);
+        this.setValue(index, value);
     }
 }

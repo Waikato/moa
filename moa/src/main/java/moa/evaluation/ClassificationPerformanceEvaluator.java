@@ -19,10 +19,10 @@
  */
 package moa.evaluation;
 
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.MOAObject;
 import moa.core.Example;
 import moa.core.Measurement;
-import weka.core.Instance;
 
 public interface ClassificationPerformanceEvaluator extends LearningPerformanceEvaluator<Example<Instance>> {
 

@@ -19,6 +19,7 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import moa.core.Utils;
@@ -30,12 +31,16 @@ import moa.core.Utils;
  */
 public class Instances implements Serializable {
 
-    /** The keyword used to denote the start of an arff header */
+    /**
+     * The keyword used to denote the start of an arff header
+     */
     public final static String ARFF_RELATION = "@relation";
-  
-    /** The keyword used to denote the start of the arff data section */
+
+    /**
+     * The keyword used to denote the start of the arff data section
+     */
     public final static String ARFF_DATA = "@data";
-  
+
     private static final long serialVersionUID = 8110510475535581577L;
     /**
      * The instance information.
@@ -52,6 +57,11 @@ public class Instances implements Serializable {
     protected ArffLoader arff;
 
     /**
+     * A Hash that stores the indices of features.
+     */
+    protected HashMap<String, Integer> hsAttributesIndices;
+
+    /**
      * Instantiates a new instances.
      *
      * @param chunk the chunk
@@ -59,6 +69,7 @@ public class Instances implements Serializable {
     public Instances(Instances chunk) {
         this(chunk, chunk.numInstances());
         chunk.copyInstances(0, this, chunk.numInstances());
+        this.computeAttributesIndices();
     }
 
     /**
@@ -78,6 +89,7 @@ public class Instances implements Serializable {
         arff = new ArffLoader(reader, 0, classAttribute);
         this.instanceInformation = arff.getStructure();
         this.instances = new ArrayList<Instance>();
+        this.computeAttributesIndices();
     }
 
     /**
@@ -90,6 +102,7 @@ public class Instances implements Serializable {
         this.arff = new MultiTargetArffLoader(reader, range);
         this.instanceInformation = arff.getStructure();
         this.instances = new ArrayList<Instance>();
+        this.computeAttributesIndices();
     }
 
     /**
@@ -104,6 +117,7 @@ public class Instances implements Serializable {
             capacity = 0;
         }
         this.instances = new ArrayList<Instance>(capacity);
+        this.computeAttributesIndices();
     }
 
     /**
@@ -115,6 +129,8 @@ public class Instances implements Serializable {
      */
     public Instances(String st, List<Attribute> v, int capacity) {
         this.instanceInformation = new InstanceInformation(st, v);
+        this.instances = new ArrayList<Instance>(capacity);
+        this.computeAttributesIndices();
     }
 
     /**
@@ -133,6 +149,7 @@ public class Instances implements Serializable {
                     + "of range");
         }
         chunk.copyInstances(first, this, toCopy);
+        this.computeAttributesIndices();
     }
 
     /**
@@ -142,7 +159,8 @@ public class Instances implements Serializable {
      * @param capacity the capacity
      */
     public Instances(StringReader st, int capacity) {
-         this.instances = new ArrayList<Instance>(capacity);
+        this.instances = new ArrayList<Instance>(capacity);
+        this.computeAttributesIndices();
     }
 
     //Information Instances
@@ -235,8 +253,9 @@ public class Instances implements Serializable {
      * @param i the i
      */
     public void insertAttributeAt(Attribute attribute, int i) {
-    	if (this.instanceInformation==null)
-    		this.instanceInformation= new InstanceInformation();
+        if (this.instanceInformation == null) {
+            this.instanceInformation = new InstanceInformation();
+        }
         this.instanceInformation.insertAttributeAt(attribute, i);
     }
 
@@ -427,14 +446,13 @@ public class Instances implements Serializable {
     public void delete() {
         this.instances = new ArrayList<Instance>();
     }
-    
-     /**
+
+    /**
      * Delete.
      */
     public void delete(int index) {
         this.instances.remove(index);
     }
-
 
     /**
      * Swap.
@@ -479,64 +497,86 @@ public class Instances implements Serializable {
         return this.instance(k);
     }
 
-	public void setRangeOutputIndices(Range range) {
-		this.instanceInformation.setRangeOutputIndices(range);
-		
-	}
-	
+    public void setRangeOutputIndices(Range range) {
+        this.instanceInformation.setRangeOutputIndices(range);
+
+    }
+
     public void setAttributes(List<Attribute> v) {
-    	if(this.instanceInformation==null)
-    		this.instanceInformation= new InstanceInformation();
+        if (this.instanceInformation == null) {
+            this.instanceInformation = new InstanceInformation();
+        }
         this.instanceInformation.setAttributes(v);
     }
-    
+
     public void setAttributes(List<Attribute> v, List<Integer> indexValues) {
-    	if(this.instanceInformation==null)
-    		this.instanceInformation= new InstanceInformation();
+        if (this.instanceInformation == null) {
+            this.instanceInformation = new InstanceInformation();
+        }
         this.instanceInformation.setAttributes(v, indexValues);
     }
-    
-      /**
-   * Returns the dataset as a string in ARFF format. Strings
-   * are quoted if they contain whitespace characters, or if they
-   * are a question mark.
-   *
-   * @return the dataset in ARFF format as a string
-   */
-  public String toString() {
-    
-    StringBuffer text = new StringBuffer();
-    
-    text.append(ARFF_RELATION).append(" ").
-      append(Utils.quote( this.instanceInformation.getRelationName())).append("\n\n");
-    for (int i = 0; i < numAttributes(); i++) {
-      text.append(attribute(i).toString()).append("\n");
-    }
-    text.append("\n").append(ARFF_DATA).append("\n");
 
-    text.append(stringWithoutHeader());
-    return text.toString();
-  }
-  
     /**
-   * Returns the instances in the dataset as a string in ARFF format. Strings
-   * are quoted if they contain whitespace characters, or if they
-   * are a question mark.
-   *
-   * @return the dataset in ARFF format as a string
-   */
-  protected String stringWithoutHeader() {
-    
-    StringBuffer text = new StringBuffer();
+     * Returns the dataset as a string in ARFF format. Strings are quoted if
+     * they contain whitespace characters, or if they are a question mark.
+     *
+     * @return the dataset in ARFF format as a string
+     */
+    public String toString() {
 
-    for (int i = 0; i < numInstances(); i++) {
-      text.append(instance(i));
-      if (i < numInstances() - 1) {
-	text.append('\n');
-      }
+        StringBuffer text = new StringBuffer();
+
+        text.append(ARFF_RELATION).append(" ").
+                append(Utils.quote(this.instanceInformation.getRelationName())).append("\n\n");
+        for (int i = 0; i < numAttributes(); i++) {
+            text.append(attribute(i).toString()).append("\n");
+        }
+        text.append("\n").append(ARFF_DATA).append("\n");
+
+        text.append(stringWithoutHeader());
+        return text.toString();
     }
-    return text.toString();
-    
-  }
-  
+
+    /**
+     * Returns the instances in the dataset as a string in ARFF format. Strings
+     * are quoted if they contain whitespace characters, or if they are a
+     * question mark.
+     *
+     * @return the dataset in ARFF format as a string
+     */
+    protected String stringWithoutHeader() {
+
+        StringBuffer text = new StringBuffer();
+
+        for (int i = 0; i < numInstances(); i++) {
+            text.append(instance(i));
+            if (i < numInstances() - 1) {
+                text.append('\n');
+            }
+        }
+        return text.toString();
+
+    }
+
+    /**
+     * Returns the index of an Attribute.
+     *
+     * @param att, the attribute.
+     */
+    protected int indexOf(Attribute att) {
+        return this.hsAttributesIndices.get(att.name());
+    }
+
+    /**
+     * Completes the hashset with attributes indices.
+     */
+    private void computeAttributesIndices() {
+        this.hsAttributesIndices = new HashMap<String, Integer>();
+        // iterates through all existing attributes 
+        // and sets an unique identifier for each one of them
+        for (int i = 0; i < this.numAttributes(); i++) {
+            hsAttributesIndices.put(this.attribute(i).name(), i);
+        }
+    }
+
 }

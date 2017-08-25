@@ -11,6 +11,7 @@ Measurements
   classifications correct (percent): 68.84688469
   Kappa Statistic (percent): 29.94812652
   Kappa Temporal Statistic (percent): 34.3381113
+  Kappa M Statistic (percent): 23.93162393
 Model measurements
   model training instances: 9999
   ensemble size: 10
@@ -42,6 +43,7 @@ Measurements
   classifications correct (percent): 68.93844692
   Kappa Statistic (percent): 31.06711084
   Kappa Temporal Statistic (percent): 35.14980687
+  Kappa M Statistic (percent): 25.53344522
 Model measurements
   model training instances: 19999
   ensemble size: 10
@@ -73,6 +75,7 @@ Measurements
   classifications correct (percent): 68.8689623
   Kappa Statistic (percent): 30.84366977
   Kappa Temporal Statistic (percent): 35.49077848
+  Kappa M Statistic (percent): 25.21620756
 Model measurements
   model training instances: 29999
   ensemble size: 10
@@ -104,6 +107,7 @@ Measurements
   classifications correct (percent): 68.87422186
   Kappa Statistic (percent): 31.0807863
   Kappa Temporal Statistic (percent): 35.66223968
+  Kappa M Statistic (percent): 25.53827751
 Model measurements
   model training instances: 39999
   ensemble size: 10
@@ -135,6 +139,7 @@ Measurements
   classifications correct (percent): 68.90937819
   Kappa Statistic (percent): 31.13970694
   Kappa Temporal Statistic (percent): 35.65278583
+  Kappa M Statistic (percent): 25.60777182
 Model measurements
   model training instances: 49999
   ensemble size: 10
@@ -166,6 +171,7 @@ Measurements
   classifications correct (percent): 69.02781713
   Kappa Statistic (percent): 31.63882988
   Kappa Temporal Statistic (percent): 35.95381699
+  Kappa M Statistic (percent): 26.26378859
 Model measurements
   model training instances: 59999
   ensemble size: 10
@@ -197,6 +203,7 @@ Measurements
   classifications correct (percent): 69.00812869
   Kappa Statistic (percent): 31.75538876
   Kappa Temporal Statistic (percent): 36.11708236
+  Kappa M Statistic (percent): 26.47098698
 Model measurements
   model training instances: 69999
   ensemble size: 10
@@ -228,6 +235,7 @@ Measurements
   classifications correct (percent): 69.06461331
   Kappa Statistic (percent): 31.87934115
   Kappa Temporal Statistic (percent): 36.29694458
+  Kappa M Statistic (percent): 26.59864753
 Model measurements
   model training instances: 79999
   ensemble size: 10
@@ -259,6 +267,7 @@ Measurements
   classifications correct (percent): 69.06410071
   Kappa Statistic (percent): 31.8742916
   Kappa Temporal Statistic (percent): 36.26645302
+  Kappa M Statistic (percent): 26.57700422
 Model measurements
   model training instances: 89999
   ensemble size: 10
@@ -290,6 +299,7 @@ Measurements
   classifications correct (percent): 69.01869019
   Kappa Statistic (percent): 31.83249454
   Kappa Temporal Statistic (percent): 36.17954845
+  Kappa M Statistic (percent): 26.55398037
 Model measurements
   model training instances: 99999
   ensemble size: 10

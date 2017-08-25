@@ -39,19 +39,19 @@ import com.yahoo.labs.samoa.instances.Prediction;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class FadingFactorClassificationPerformanceEvaluator extends AbstractOptionHandler
-        implements LearningPerformanceEvaluator<Example<Instance>> {
+public class FadingFactorClassificationPerformanceEvaluator extends BasicClassificationPerformanceEvaluator {
 
     private static final long serialVersionUID = 1L;
-
-    protected double TotalweightObserved;
 
     public FloatOption alphaOption = new FloatOption("alpha",
             'a', "Fading factor or exponential smoothing factor", .999);
 
-    protected Estimator weightCorrect;
+    @Override
+    protected Estimator newEstimator() {
+        return new FadingFactorEstimator(this.alphaOption.getValue());
+    }
 
-    protected class Estimator {
+    public class FadingFactorEstimator implements Estimator {
 
         protected double alpha;
 
@@ -59,96 +59,23 @@ public class FadingFactorClassificationPerformanceEvaluator extends AbstractOpti
 
         protected double b;
 
-        public Estimator(double a) {
+        public FadingFactorEstimator(double a) {
             alpha = a;
             estimation = 0.0;
             b = 0.0;
         }
 
+        @Override
         public void add(double value) {
             estimation = alpha * estimation + value;
             b = alpha * b + 1.0;
         }
 
+        @Override
         public double estimation() {
             return b > 0.0 ? estimation / b : 0;
         }
+
     }
 
-    /*   public void setalpha(double a) {
-    this.alpha = a;
-    reset();
-    }*/
-
-    @Override
-    public void reset() {
-        weightCorrect = new Estimator(this.alphaOption.getValue());
-    }
-
-    /*public void addClassificationAttempt(int trueClass, double[] classVotes,
-    double weight) {
-    if (weight > 0.0) {
-    this.TotalweightObserved += weight;
-    if (Utils.maxIndex(classVotes) == trueClass) {
-    this.weightCorrect.add(1);
-    } else
-    this.weightCorrect.add(0);
-    }
-    }*/
-    @Override
-    public void addResult(Example<Instance> example, double[] classVotes) {
-        Instance inst = example.getData();
-        double weight = inst.weight();
-        if (inst.classIsMissing() == false){
-            int trueClass = (int) inst.classValue();
-            if (weight > 0.0) {
-                this.TotalweightObserved += weight;
-                if (Utils.maxIndex(classVotes) == trueClass) {
-                    this.weightCorrect.add(1);
-                } else {
-                    this.weightCorrect.add(0);
-                }
-            }
-        }
-    }
-
-    @Override
-    public Measurement[] getPerformanceMeasurements() {
-        return new Measurement[]{
-                    new Measurement("classified instances",
-                    this.TotalweightObserved),
-                    new Measurement("classifications correct (percent)",
-                    getFractionCorrectlyClassified() * 100.0)};
-    }
-
-    public double getTotalWeightObserved() {
-        return this.TotalweightObserved;
-    }
-
-    public double getFractionCorrectlyClassified() {
-        return this.weightCorrect.estimation();
-    }
-
-    public double getFractionIncorrectlyClassified() {
-        return 1.0 - getFractionCorrectlyClassified();
-    }
-
-    @Override
-    public void getDescription(StringBuilder sb, int indent) {
-        Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
-                sb, indent);
-    }
-
-    @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
-        reset();
-    }
-    
-
-	@Override
-	public void addResult(Example<Instance> testInst, Prediction prediction) {
-		// TODO Auto-generated method stub
-		
-	}
 }

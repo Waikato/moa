@@ -84,10 +84,10 @@ public abstract class MeasureCollection extends AbstractMOAObject{
         		 System.out.println("NaN for "+names[index]);
              corrupted[index] = true;
          }
-         if(value < 0){
-        	 if(debug)
-        		 System.out.println("Negative value for "+names[index]);
-         }
+         //if(value < 0){
+        //	 if(debug)
+        //		 System.out.println("Negative value for "+names[index]);
+        // }
 
          values[index].add(value);
          sumValues[index]+=value;

@@ -15,7 +15,6 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 package moa.evaluation;
 
@@ -160,7 +159,6 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
             sumHamming+=(correct/(double)L); 			// Hamming Score
             sumAccuracy += (correct == L) ? 1 : 0; 		// Exact Match
         }
-
     }
 
     @Override
