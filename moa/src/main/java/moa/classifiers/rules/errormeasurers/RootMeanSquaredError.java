@@ -2,8 +2,6 @@ package moa.classifiers.rules.errormeasurers;
 
 import com.yahoo.labs.samoa.instances.Instance;
 
-import moa.AbstractMOAObject;
-
 public class RootMeanSquaredError extends ErrorMeasurement {
 
 	/**

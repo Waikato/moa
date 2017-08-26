@@ -2,7 +2,6 @@ package moa.classifiers.rules.core.anomalydetection;
 
 import moa.classifiers.rules.core.Utils;
 import moa.classifiers.rules.core.anomalydetection.probabilityfunctions.ProbabilityFunction;
-import moa.classifiers.rules.core.attributeclassobservers.FIMTDDNumericAttributeClassLimitObserver;
 import moa.core.AutoExpandVector;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
@@ -10,7 +9,6 @@ import moa.tasks.TaskMonitor;
 
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 
 public class AnomalinessRatioScore extends AbstractAnomalyDetector {
@@ -51,6 +49,12 @@ public class AnomalinessRatioScore extends AbstractAnomalyDetector {
 	AutoExpandVector<double[]> sufficientStatistics;
 	private ProbabilityFunction probabilityFunction;
 
+        public double anomalyScore;
+
+        @Override 
+        public double getAnomalyScore(){
+            return anomalyScore;
+        }
 
 
 	@Override
@@ -91,6 +95,7 @@ public class AnomalinessRatioScore extends AbstractAnomalyDetector {
 			if(total>0)
 				anomaly=anomaly/total;
 			isAnomaly=(anomalousTotal/((double)total)>percentageAnomalous);
+                        anomalyScore=anomaly;
 		}
 		//update stats
 		if(!isAnomaly){

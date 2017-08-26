@@ -2,8 +2,6 @@ package moa.classifiers.rules.multilabel.attributeclassobservers;
 
 import java.io.Serializable;
 
-import com.github.javacliparser.IntOption;
-
 import moa.classifiers.rules.core.NumericRulePredicate;
 import moa.classifiers.rules.core.Utils;
 import moa.classifiers.rules.multilabel.core.AttributeExpansionSuggestion;
@@ -12,6 +10,8 @@ import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
+
+import com.github.javacliparser.IntOption;
 
 public class MultiLabelBSTree extends AbstractOptionHandler implements NumericStatisticsObserver {
 
@@ -57,8 +57,10 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 			leftStatistics[i]=new DoubleVector(new double [preSplitStatistics[i].numValues()]); //sets statistics to zeros
 			rightStatistics[i]=new DoubleVector(preSplitStatistics[i]);
 		}
-
-		return searchForBestSplitOption(this.root, null, criterion, preSplitStatistics, inputAttributeIndex);
+		AttributeExpansionSuggestion ret=searchForBestSplitOption(this.root, null, criterion, preSplitStatistics, inputAttributeIndex);
+		leftStatistics=null;
+		rightStatistics=null;
+		return ret;
 	}
 
 	protected AttributeExpansionSuggestion searchForBestSplitOption(Node currentNode, AttributeExpansionSuggestion currentBestOption, MultiLabelSplitCriterion criterion, DoubleVector [] preSplitStatistics, int inputAttributeIndex) {

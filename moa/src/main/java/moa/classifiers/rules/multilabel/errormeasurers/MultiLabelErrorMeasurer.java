@@ -1,9 +1,9 @@
 package moa.classifiers.rules.multilabel.errormeasurers;
 
+import moa.options.OptionHandler;
+
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
-
-import moa.options.OptionHandler;
 
 public interface MultiLabelErrorMeasurer extends OptionHandler {
 

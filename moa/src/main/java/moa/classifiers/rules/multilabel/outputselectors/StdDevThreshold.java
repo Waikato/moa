@@ -2,46 +2,37 @@ package moa.classifiers.rules.multilabel.outputselectors;
 
 import java.util.LinkedList;
 
-import com.github.javacliparser.FloatOption;
-
 import moa.classifiers.rules.core.Utils;
 import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
+import com.github.javacliparser.FloatOption;
+
 public class StdDevThreshold extends AbstractOptionHandler implements
-		OutputAttributesSelector {
+OutputAttributesSelector {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	public FloatOption percentageThresholdOption = new FloatOption("percentageThreshold",
-			'p', "Percentage of allowed normalized variance increase relative to the best output score.",
-			0.5, 0.0, 1.0);
+
+	public FloatOption thresholdOption = new FloatOption("Threshold",
+			'p', "Maximum allowed standar deviation ratio (stdev(new)/stdev(old)).",
+			1.0, 0.5, 2.0);
 
 
 	public int[] getNextOutputIndices(DoubleVector[] resultingStatistics, DoubleVector[] currentLiteralStatistics, int[] currentIndices) {
 		int numCurrentOutputs=resultingStatistics.length;
-		double [] normalizedVariances= new double [numCurrentOutputs];
-		double minNormVariance=Double.MAX_VALUE;
-		
-		//compute minimum normalized variance
-		for(int i=0; i<numCurrentOutputs;i++){
-			double stdRes=Math.sqrt(Utils.computeVariance(resultingStatistics[i]));
-			double stdCur=Math.sqrt(Utils.computeVariance(currentLiteralStatistics[i]));
-			normalizedVariances[i]=stdRes/stdCur;
-			if(minNormVariance>normalizedVariances[i])
-				minNormVariance=normalizedVariances[i];
-		
-		}
-		double maxAllowedVariance=minNormVariance*(1+percentageThresholdOption.getValue());
+		double threshold=thresholdOption.getValue();
 		//get new outputs
 		LinkedList<Integer> newOutputsList= new LinkedList<Integer>();
 		for(int i=0; i<numCurrentOutputs;i++){
-			if(normalizedVariances[i]<=maxAllowedVariance)
+			double stdRes=Math.sqrt(Utils.computeVariance(resultingStatistics[i].getValue(0),resultingStatistics[i].getValue(3),resultingStatistics[i].getValue(4)));
+			double stdCur=Math.sqrt(Utils.computeVariance(currentLiteralStatistics[i].getValue(0),currentLiteralStatistics[i].getValue(3),currentLiteralStatistics[i].getValue(4)));
+	
+			if(stdRes/stdCur<=threshold)
 				newOutputsList.add(currentIndices[i]);
 		}
 		//list to array
@@ -53,7 +44,7 @@ public class StdDevThreshold extends AbstractOptionHandler implements
 		}
 		return newOutputs;
 	}
-	
+
 
 	@Override
 	public void getDescription(StringBuilder sb, int indent) {

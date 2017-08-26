@@ -1,22 +1,4 @@
-/*
- *    NaiveBayes.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
- *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 3 of the License, or
- *    (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
- */
+
 package moa.classifiers.bayes;
 
 import moa.classifiers.AbstractClassifier;
@@ -28,6 +10,7 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Naive Bayes incremental learner.
@@ -79,8 +62,8 @@ public class NaiveBayes extends AbstractClassifier {
 
     @Override
     public double[] getVotesForInstance(Instance inst) {
-        return doNaiveBayesPrediction(inst, this.observedClassDistribution,
-                this.attributeObservers);
+
+        return doNaiveBayesPrediction(inst, this.observedClassDistribution, this.attributeObservers);
     }
 
     @Override
@@ -127,10 +110,12 @@ public class NaiveBayes extends AbstractClassifier {
         return new GaussianNumericAttributeClassObserver();
     }
 
-    public static double[] doNaiveBayesPrediction(Instance inst,
-            DoubleVector observedClassDistribution,
-            AutoExpandVector<AttributeClassObserver> attributeObservers) {
-        double[] votes = new double[observedClassDistribution.numValues()];
+    public static double[] doNaiveBayesPrediction(Instance inst,DoubleVector observedClassDistribution,AutoExpandVector<AttributeClassObserver> attributeObservers) {
+        
+       
+        //RS
+        //double[] votes = new double[observedClassDistribution.numValues()];
+        double[] votes = new double[inst.numClasses()];
         double observedClassSum = observedClassDistribution.sumOfValues();
         for (int classIndex = 0; classIndex < votes.length; classIndex++) {
             votes[classIndex] = observedClassDistribution.getValue(classIndex)

@@ -21,17 +21,6 @@ package moa.classifiers.rules.meta;
 
 import java.util.Arrays;
 
-import moa.options.ClassOption;
-
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-import com.github.javacliparser.MultiChoiceOption;
-import com.yahoo.labs.samoa.instances.DenseInstance;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.Regressor;
@@ -39,11 +28,16 @@ import moa.classifiers.rules.AMRulesRegressorOld;
 import moa.classifiers.rules.AbstractAMRules;
 import moa.classifiers.rules.core.voting.ErrorWeightedVote;
 import moa.classifiers.rules.core.voting.Vote;
-import moa.core.DoubleVector;
-import moa.core.FastVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
-import moa.streams.InstanceStream;
+import moa.options.ClassOption;
+
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.MultiChoiceOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 
 public class RandomAMRulesOld extends AbstractClassifier implements Regressor {

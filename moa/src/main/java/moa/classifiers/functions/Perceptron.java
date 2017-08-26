@@ -136,6 +136,7 @@ public class Perceptron extends AbstractClassifier {
                 // ignore all zero votes error
             }
         }
+        
         return votes;
     }
 
