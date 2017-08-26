@@ -1,3 +1,22 @@
+/*
+ *    OddsRatioScore.java
+ *    Copyright (C) 2017 University of Porto, Portugal
+ *    @author J. Duarte, J. Gama
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ *
+ */
 package moa.classifiers.rules.core.anomalydetection;
 
 import moa.classifiers.rules.core.Utils;
@@ -12,6 +31,17 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+
+
+/**
+ * Score for anomaly detection: OddsRatio
+ *
+ * thresholdOption - The threshold value for detecting anomalies
+ * minNumberInstancesOption - The minimum number of instances required to perform anomaly detection
+ * probabilityFunctionOption - Probability function selection
+ */
+
+
 
 public class OddsRatioScore extends AbstractAnomalyDetector {
 
@@ -46,6 +76,12 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 	private double threshold;
 	AutoExpandVector<double[]> sufficientStatistics;
 	private ProbabilityFunction probabilityFunction;
+        public double anomalyScore;
+
+        @Override 
+        public double getAnomalyScore(){
+            return anomalyScore;
+        }
 
 	@Override
 	public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance) {
@@ -84,6 +120,7 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 			if(ct>0)
 				anomaly=anomaly/ct;
 			isAnomaly=anomaly<threshold;
+                        anomalyScore=anomaly;
 		}
 		//update stats
 		if(!isAnomaly){
@@ -105,11 +142,12 @@ public class OddsRatioScore extends AbstractAnomalyDetector {
 						}
 					}
 				}
-		}			else
-			{
-				//System.out.println("Anomaly = " + anomaly + "#instances: " + weightSeen);
-				//printAnomaly(instance, anomaly);
-			}
+		}			
+		/*else
+		{
+			//System.out.println("Anomaly = " + anomaly + "#instances: " + weightSeen);
+			printAnomaly(instance, anomaly);
+		}*/
 		return isAnomaly;
 	}
 

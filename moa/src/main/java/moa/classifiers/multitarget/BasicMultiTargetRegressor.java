@@ -1,10 +1,30 @@
-
+/*
+ *    BasicMultiTargetRegressor.java
+ *    Copyright (C) 2017 University of Porto, Portugal
+ *    @author J. Duarte, J. Gama
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ *
+ */
 package moa.classifiers.multitarget;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiTargetRegressor;
+import moa.classifiers.rules.AMRulesRegressor;
+import moa.classifiers.rules.multilabel.AMRulesMultiLabelLearner;
 import moa.core.DoubleVector;
 import moa.core.FastVector;
 import moa.core.Measurement;
@@ -12,6 +32,7 @@ import moa.core.StringUtils;
 import moa.options.ClassOption;
 import moa.streams.InstanceStream;
 
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
@@ -20,21 +41,30 @@ import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
+/**
+ * Binary relevance Multi-Target Regressor
+ *
+ */
+
 
 public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner implements MultiTargetRegressor{
 
+	public IntOption randomSeedOption = new IntOption("randomSeedOption",
+			'r', "randomSeedOption", 
+			1,Integer.MIN_VALUE, Integer.MAX_VALUE);
 
 	public BasicMultiTargetRegressor() {
+		super.randomSeedOption=randomSeedOption;
 		init();
 	}
 
 	protected void init() {
 		baseLearnerOption = new ClassOption("baseLearner", 'l',
-				"Classifier to train.", Classifier.class, "rules.AMRulesRegressor");
+				"Classifier to train.", Classifier.class, AMRulesRegressor.class.getName());
 	}
 
 	private static final long serialVersionUID = 1L;
-
+	
 	public ClassOption baseLearnerOption; //rules.AMRules"); 
 
 	protected Classifier[] ensemble;
@@ -44,6 +74,11 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 	@Override
 	public void resetLearningImpl() {
 		this.hasStarted = false;
+		if(ensemble!=null){
+			for (int i=0; i<ensemble.length; i++){
+				ensemble[i].resetLearning();
+			}
+		}
 	}
 
 	@Override
@@ -51,6 +86,8 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 		if (this.hasStarted == false){		
 			this.ensemble = new Classifier[instance.numberOutputTargets()];
 			Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
+			if(baseLearner.isRandomizable())
+				baseLearner.setRandomSeed(this.randomSeed);
 			baseLearner.resetLearning();
 			for (int i = 0; i < this.ensemble.length; i++) {
 				this.ensemble[i] = baseLearner.copy();
@@ -107,11 +144,25 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 
 	@Override
 	protected Measurement[] getModelMeasurementsImpl() {
-		if(ensemble.length>0)
-			return ensemble[0].getModelMeasurements(); 
-		//TODO: JD - get measurements for all outputs
-		else 
-			return null;
+		Measurement [] baseLearnerMeasurements=((Classifier) getPreparedClassOption(this.baseLearnerOption)).getModelMeasurements();
+		int nMeasurements=baseLearnerMeasurements.length;
+		Measurement [] m=new Measurement[nMeasurements];
+
+		if(this.ensemble !=null){	
+			int ensembleSize=this.ensemble.length;
+			for(int i=0; i<nMeasurements; i++){
+				double value=0;
+				for (int j=0; j<ensembleSize; ++j){
+					value+=ensemble[j].getModelMeasurements()[i].getValue();
+				}
+				m[i]= new Measurement("Sum " + baseLearnerMeasurements[i].getName(), value);
+			}
+		}
+		else{
+			for(int i=0; i<baseLearnerMeasurements.length; i++)
+				m[i]=baseLearnerMeasurements[i];
+		}
+		return m;
 	}
 
 
@@ -120,12 +171,12 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 		if(ensemble.length>0 && ensemble[0] instanceof AbstractClassifier)
 		{
 			for (int i=0; i<ensemble.length;i++){
-				StringUtils.appendIndented(out,indent+1,"Model output attribute #" + i + "\n");
+				StringUtils.appendIndented(out,indent+1,"\nModel output attribute #" + i);
 				((AbstractClassifier)ensemble[i]).getModelDescription(out, indent+1);
 			}
 		}
 	}
-	
+
 
 	@Override
 	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
@@ -138,11 +189,9 @@ public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner impleme
 				prediction.setVote(i, 0, vote);
 			}
 		}
-		
+
 		return prediction;
 	}
-
-
 }
 
 

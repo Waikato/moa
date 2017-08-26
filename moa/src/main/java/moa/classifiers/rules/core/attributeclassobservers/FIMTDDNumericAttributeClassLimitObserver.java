@@ -19,8 +19,9 @@
  */
 package moa.classifiers.rules.core.attributeclassobservers;
 
-import com.github.javacliparser.IntOption;
 import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;
+
+import com.github.javacliparser.IntOption;
 
 
 public class FIMTDDNumericAttributeClassLimitObserver extends FIMTDDNumericAttributeClassObserver {

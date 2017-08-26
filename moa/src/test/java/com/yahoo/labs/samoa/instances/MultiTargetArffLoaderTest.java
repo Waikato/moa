@@ -20,7 +20,11 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
+/**
+ * Test multilabel instances read from MultiTargetArffLoader
+ *
+ * @author João Duarte (joaomaiaduarte@gmail.com)
+ */
 public class MultiTargetArffLoaderTest {
 	private static double EPS=0.00000001;
 	private static Instances instancesRegression;
