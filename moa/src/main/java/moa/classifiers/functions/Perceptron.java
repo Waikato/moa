@@ -20,6 +20,7 @@
 package moa.classifiers.functions;
 
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
 import moa.core.Utils;
 import com.github.javacliparser.FloatOption;
@@ -35,7 +36,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class Perceptron extends AbstractClassifier {
+public class Perceptron extends AbstractClassifier  implements MultiClassClassifier {
 
     private static final long serialVersionUID = 221L;
 

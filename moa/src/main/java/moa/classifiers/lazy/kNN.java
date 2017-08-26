@@ -19,6 +19,7 @@ package moa.classifiers.lazy;
 
 import java.io.StringReader;
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.lazy.neighboursearch.KDTree;
 import moa.classifiers.lazy.neighboursearch.LinearNNSearch;
 import moa.classifiers.lazy.neighboursearch.NearestNeighbourSearch;
@@ -39,7 +40,7 @@ import com.github.javacliparser.MultiChoiceOption;
  * @author Jesse Read (jesse@tsc.uc3m.es)
  * @version 03.2012
  */
-public class kNN extends AbstractClassifier {
+public class kNN extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
 

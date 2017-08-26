@@ -1,5 +1,5 @@
 /*
- *    TaskManagerPanel.java
+ *    AuxiliarTaskManagerPanel.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  *    @author Manuel Martín (msalvador@bournemouth.ac.uk)
@@ -20,52 +20,28 @@
  */
 package moa.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.prefs.Preferences;
+import moa.core.StringUtils;
+import moa.options.ClassOption;
+import moa.options.OptionHandler;
+import moa.tasks.*;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
-
-import moa.core.StringUtils;
-import moa.options.ClassOption;
-import moa.options.OptionHandler;
-import moa.tasks.EvaluatePrequential;
-import moa.tasks.ClassificationMainTask;
-import moa.tasks.MainTask;
-import moa.tasks.Task;
-import moa.tasks.TaskThread;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.prefs.Preferences;
 
 /**
  * This panel displays the running tasks.
@@ -73,7 +49,7 @@ import moa.tasks.TaskThread;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class TaskManagerPanel extends JPanel {
+public class AuxiliarTaskManagerPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
@@ -159,12 +135,12 @@ public class TaskManagerPanel extends JPanel {
 
         @Override
         public int getRowCount() {
-            return TaskManagerPanel.this.taskList.size();
+            return AuxiliarTaskManagerPanel.this.taskList.size();
         }
 
         @Override
         public Object getValueAt(int row, int col) {
-            TaskThread thread = TaskManagerPanel.this.taskList.get(row);
+            TaskThread thread = AuxiliarTaskManagerPanel.this.taskList.get(row);
             switch (col) {
                 case 0:
                     return ((OptionHandler) thread.getTask()).getCLICreationString(MainTask.class);
@@ -186,7 +162,7 @@ public class TaskManagerPanel extends JPanel {
         }
     }
 
-    protected MainTask currentTask = new EvaluatePrequential();//LearnModel();
+    protected MainTask currentTask = new WriteStreamToARFFFile();//LearnModel();
 
     protected List<TaskThread> taskList = new ArrayList<TaskThread>();
 
@@ -211,13 +187,13 @@ public class TaskManagerPanel extends JPanel {
     protected PreviewPanel previewPanel;
 
     private Preferences prefs;
-    
+
     private final String PREF_NAME = "currentTask";
 
-    public TaskManagerPanel() {
+    public AuxiliarTaskManagerPanel() {
         // Read current task preference
         prefs = Preferences.userRoot().node(this.getClass().getName());
-        currentTask = new EvaluatePrequential();
+        currentTask = new WriteStreamToARFFFile();
         String taskText = this.currentTask.getCLICreationString(MainTask.class);
         String propertyValue = prefs.get(PREF_NAME, taskText);
         //this.taskDescField.setText(propertyValue);
@@ -313,9 +289,9 @@ public class TaskManagerPanel extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                String newTaskString = ClassOptionSelectionPanel.showSelectClassDialog(TaskManagerPanel.this,
-                        "Configure task", ClassificationMainTask.class,
-                        TaskManagerPanel.this.currentTask.getCLICreationString(ClassificationMainTask.class),
+                String newTaskString = ClassOptionSelectionPanel.showSelectClassDialog(AuxiliarTaskManagerPanel.this,
+                        "Configure task", AuxiliarMainTask.class,
+                        AuxiliarTaskManagerPanel.this.currentTask.getCLICreationString(AuxiliarMainTask.class),
                         null);
                 setTaskString(newTaskString);
             }
@@ -324,7 +300,7 @@ public class TaskManagerPanel extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                runTask((Task) TaskManagerPanel.this.currentTask.copy());
+                runTask((Task) AuxiliarTaskManagerPanel.this.currentTask.copy());
             }
         });
         this.pauseTaskButton.addActionListener(new ActionListener() {
@@ -361,7 +337,7 @@ public class TaskManagerPanel extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                TaskManagerPanel.this.taskTable.repaint();
+                AuxiliarTaskManagerPanel.this.taskTable.repaint();
             }
         });
         updateListTimer.start();
@@ -375,7 +351,7 @@ public class TaskManagerPanel extends JPanel {
     public void setTaskString(String cliString) {
         setTaskString(cliString, true);
     }
-        
+    
     public void setTaskString(String cliString, boolean storePreference) {    
         try {
             this.currentTask = (MainTask) ClassOption.cliStringToObject(
@@ -496,7 +472,7 @@ public class TaskManagerPanel extends JPanel {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Create and set up the content pane.
-        JPanel panel = new TaskManagerPanel();
+        JPanel panel = new AuxiliarTaskManagerPanel();
         panel.setOpaque(true); // content panes must be opaque
         frame.setContentPane(panel);
 

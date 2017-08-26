@@ -21,6 +21,7 @@ package moa.classifiers.meta;
 import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.InstanceExample;
 import moa.core.Measurement;
@@ -78,7 +79,7 @@ import moa.classifiers.core.driftdetection.ChangeDetector;
  * @author Heitor Murilo Gomes (heitor_murilo_gomes at yahoo dot com dot br)
  * @version $Revision: 1 $
  */
-public class AdaptiveRandomForest extends AbstractClassifier {
+public class AdaptiveRandomForest extends AbstractClassifier implements MultiClassClassifier {
 
     @Override
     public String getPurposeString() {

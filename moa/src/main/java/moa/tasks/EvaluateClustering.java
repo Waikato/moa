@@ -23,7 +23,7 @@ import moa.streams.clustering.ClusteringStream;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class EvaluateClustering extends MainTask {
+public class EvaluateClustering extends AuxiliarMainTask {
 
     @Override
     public String getPurposeString() {

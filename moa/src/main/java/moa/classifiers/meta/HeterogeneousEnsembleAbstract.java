@@ -32,6 +32,7 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
@@ -65,7 +66,7 @@ import moa.tasks.TaskMonitor;
  * @author Jan N. van Rijn (j.n.van.rijn@liacs.leidenuniv.nl)
  * @version $Revision: 1 $
  */
-public abstract class HeterogeneousEnsembleAbstract extends AbstractClassifier {
+public abstract class HeterogeneousEnsembleAbstract extends AbstractClassifier implements MultiClassClassifier {
 
 	private static final long serialVersionUID = 1L;
 

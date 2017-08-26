@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.BinaryTreeNumericAttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.BinaryTreeNumericAttributeClassObserver.Node;
@@ -69,7 +70,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @version $Revision: 2 $
  */
 
-public class RuleClassifier extends AbstractClassifier{
+public class RuleClassifier extends AbstractClassifier implements MultiClassClassifier {
 	
 	  private static final long serialVersionUID = 1L;
 	  

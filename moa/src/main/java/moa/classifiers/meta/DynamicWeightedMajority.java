@@ -27,6 +27,7 @@ import java.util.List;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
 import moa.options.ClassOption;
 import weka.core.Utils;
@@ -52,7 +53,7 @@ import weka.core.Utils;
  * @author Paulo Goncalves (paulogoncalves at recife dot ifpe dot edu dot br)
  *
  */
-public class DynamicWeightedMajority extends AbstractClassifier {
+public class DynamicWeightedMajority extends AbstractClassifier implements MultiClassClassifier {
 
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
             "Base classifiers to train.", Classifier.class, "bayes.NaiveBayes");

@@ -1,5 +1,5 @@
 /*
- *    RegressionMainTask.java
+ *    MultiClassClassifier.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  *
@@ -15,30 +15,17 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
+ *    
  */
-package moa.tasks;
-
-import java.util.ArrayList;
-import moa.streams.clustering.ClusterEvent;
+package moa.classifiers;
 
 /**
- * Abstract Regression Main Task. All tasks that uses regressors must
- * extend this class.
+ * Multiclass classifier interface for incremental classifier models. It
+ * is used only to filter which classifiers appear in the GUI Classification Tab.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public abstract class RegressionMainTask extends MainTask {
-
-    protected ArrayList<ClusterEvent> events;
-
-    protected void setEventsList(ArrayList<ClusterEvent> events) {
-        this.events = events;
-    }
-    
-    public ArrayList<ClusterEvent> getEventsList() {
-        return this.events;
-    }
+public interface MultiClassClassifier {
     
 }

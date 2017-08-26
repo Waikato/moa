@@ -26,6 +26,7 @@ import java.util.List;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
 import moa.options.ClassOption;
 import com.yahoo.labs.samoa.instances.Instance;
@@ -47,7 +48,7 @@ import moa.core.MiscUtils;
  *
  */
 
-public class PairedLearners extends AbstractClassifier {
+public class PairedLearners extends AbstractClassifier implements MultiClassClassifier {
     private static final long serialVersionUID = 1L;
 
     public ClassOption stableLearnerOption = new ClassOption("stableLearner", 

@@ -25,6 +25,7 @@ import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.*;
 import moa.evaluation.*;
 import moa.learners.Learner;
@@ -57,7 +58,7 @@ import java.util.Random;
  * @author Heitor Murilo Gomes (heitor dot gomes at telecom-paristech dot fr)
  * @version $Revision: 7 $
  */
-public class EvaluatePrequentialDelayedCV extends MainTask {
+public class EvaluatePrequentialDelayedCV extends ClassificationMainTask {
 
     @Override
     public String getPurposeString() {
@@ -68,7 +69,7 @@ public class EvaluatePrequentialDelayedCV extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Learner to train.", Classifier.class, "moa.classifiers.bayes.NaiveBayes");
+            "Learner to train.", MultiClassClassifier.class, "moa.classifiers.bayes.NaiveBayes");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,

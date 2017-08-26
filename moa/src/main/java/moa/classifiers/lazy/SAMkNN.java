@@ -19,6 +19,7 @@ import java.util.*;
 
 import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
@@ -52,7 +53,7 @@ import moa.clusterers.kmeanspm.CoresetKMeans;
  * month={Dec}
  * }"
  */
-public class SAMkNN extends AbstractClassifier {
+public class SAMkNN extends AbstractClassifier implements MultiClassClassifier {
     private static final long serialVersionUID = 1L;
 
     public IntOption kOption = new IntOption( "k", 'k', "The number of neighbors", 5, 1, Integer.MAX_VALUE);

@@ -1,5 +1,5 @@
 /*
- *    RegressionMainTask.java
+ *    ClassificationMainTask.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  *
@@ -19,17 +19,18 @@
  */
 package moa.tasks;
 
-import java.util.ArrayList;
 import moa.streams.clustering.ClusterEvent;
 
+import java.util.ArrayList;
+
 /**
- * Abstract Regression Main Task. All tasks that uses regressors must
+ * Abstract Classification Main Task. All tasks that uses classifiers must
  * extend this class.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public abstract class RegressionMainTask extends MainTask {
+public abstract class ClassificationMainTask extends MainTask {
 
     protected ArrayList<ClusterEvent> events;
 

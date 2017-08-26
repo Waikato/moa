@@ -23,6 +23,8 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import java.util.Arrays;
+
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.driftdetection.AbstractChangeDetector;
 
 import com.yahoo.labs.samoa.instances.Instance;
@@ -40,7 +42,7 @@ import moa.core.Measurement;
 import moa.core.Utils;
 import moa.options.ClassOption;
 
-public class Iadem2 extends AbstractClassifier {
+public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
     public ClassOption numericEstimatorOption = new ClassOption("numericEstimator",
