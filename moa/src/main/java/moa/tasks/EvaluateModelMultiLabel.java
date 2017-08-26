@@ -35,7 +35,7 @@ import moa.core.Example;
 import moa.core.ObjectRepository;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
-import moa.evaluation.MultiLabelPerformanceEvaluator;
+import moa.evaluation.MultiTargetPerformanceEvaluator;
 import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;

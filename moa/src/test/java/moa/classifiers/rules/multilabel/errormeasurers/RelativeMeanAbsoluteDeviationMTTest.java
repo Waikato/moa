@@ -59,19 +59,19 @@ public class RelativeMeanAbsoluteDeviationMTTest {
 
 	@Test
 	public void testGetCurrentError() {
-		assertEquals(0.9126998442, m.getCurrentError(), 0.0000001);
+		assertEquals(0.9111995717892043, m.getCurrentError(), 0.0000001);
 	}
 
 	@Test
 	public void testGetCurrentErrorInt() {
-		assertEquals(0.7127508154, m.getCurrentError(0), 0.0000001);
-		assertEquals(0.5083997458, m.getCurrentError(1), 0.0000001);
-		assertEquals(1.5169489713, m.getCurrentError(2), 0.0000001);
+		assertEquals(0.7116760869790253, m.getCurrentError(0), 0.0000001);
+		assertEquals(0.5077398163068827, m.getCurrentError(1), 0.0000001);
+		assertEquals(1.5141828120817051, m.getCurrentError(2), 0.0000001);
 	}
 
 	@Test
 	public void testGetCurrentErrors() {
-		assertArrayEquals(new double []{0.7127508154,0.5083997458,1.5169489713}, m.getCurrentErrors(), 0.0000001);
+		assertArrayEquals(new double []{0.7116760869790253,0.5077398163068827,1.5141828120817051}, m.getCurrentErrors(), 0.0000001);
 	}
 
 

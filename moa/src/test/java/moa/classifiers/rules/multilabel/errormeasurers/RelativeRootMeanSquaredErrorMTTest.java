@@ -57,18 +57,18 @@ public class RelativeRootMeanSquaredErrorMTTest {
 	}
 	@Test
 	public void testGetCurrentError() {
-		assertEquals(0.9385045092, m.getCurrentError(), 0.0000001);
+		assertEquals(0.9402350854416155, m.getCurrentError(), 0.0000001);
 	}
 
 	@Test
 	public void testGetCurrentErrorInt() {
-		assertEquals(0.6643044666, m.getCurrentError(0), 0.0000001);
-		assertEquals(0.5150136019, m.getCurrentError(1), 0.0000001);
-		assertEquals(1.6361954593, m.getCurrentError(2), 0.0000001);
+		assertEquals(0.664202694282111, m.getCurrentError(0), 0.0000001);
+		assertEquals(0.5147167180492306, m.getCurrentError(1), 0.0000001);
+		assertEquals(1.641785843993505, m.getCurrentError(2), 0.0000001);
 	}
 
 	@Test
 	public void testGetCurrentErrors() {
-		assertArrayEquals(new double []{0.6643044666,0.5150136019,1.6361954593}, m.getCurrentErrors(), 0.0000001);
+		assertArrayEquals(new double []{0.664202694282111,0.5147167180492306,1.641785843993505}, m.getCurrentErrors(), 0.0000001);
 	}
 }
