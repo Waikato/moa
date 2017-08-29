@@ -5,9 +5,9 @@
  *             Roberto Souto Maior de Barros (roberto@cin.ufpe.br) 
  *    @version $Version: 1 $
  *
- *    Evolved from AdaptableDiversityBasedOnlineBoosting.java
+ *    Evolved from ADOB.java
  *    Copyright (C) 2014 Federal University of Pernambuco, Pernambuco, Brazil
- *    @author Silas Garrido <sgtcs@cin.ufpe.br>
+ *    @author Silas Garrido (sgtcs@cin.ufpe.br)
  *            Paulo M. Goncalves Jr. (paulomgj@gmail.com)
  *            Roberto S. M. Barros (roberto@cin.ufpe.br)
  *
