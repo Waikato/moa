@@ -29,6 +29,7 @@ import java.util.List;
 import com.yahoo.labs.samoa.instances.*;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
 import moa.core.Utils;
 import moa.options.ClassOption;
@@ -45,7 +46,7 @@ import moa.options.ClassOption;
  * @author Bernhard Pfahringer (bernhard@cs.waikato.ac.nz)
  * @version $Revision: 1 $
  */
-public class TemporallyAugmentedClassifier extends AbstractClassifier {
+public class TemporallyAugmentedClassifier extends AbstractClassifier implements MultiClassClassifier {
 
     @Override
     public String getPurposeString() {

@@ -62,6 +62,7 @@ import moa.core.StringUtils;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
 import moa.tasks.EvaluatePrequential;
+import moa.tasks.ClassificationMainTask;
 import moa.tasks.MainTask;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
@@ -313,8 +314,8 @@ public class TaskManagerPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 String newTaskString = ClassOptionSelectionPanel.showSelectClassDialog(TaskManagerPanel.this,
-                        "Configure task", MainTask.class,
-                        TaskManagerPanel.this.currentTask.getCLICreationString(MainTask.class),
+                        "Configure task", ClassificationMainTask.class,
+                        TaskManagerPanel.this.currentTask.getCLICreationString(ClassificationMainTask.class),
                         null);
                 setTaskString(newTaskString);
             }

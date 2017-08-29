@@ -40,7 +40,7 @@ import moa.streams.InstanceStream;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 
-public class EvaluateInterleavedChunks extends MainTask {
+public class EvaluateInterleavedChunks extends ClassificationMainTask {
 
 	@Override
 	public String getPurposeString() {

@@ -21,6 +21,7 @@ package moa.classifiers.meta;
 
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import moa.classifiers.MultiClassClassifier;
 
 /**
  * BLAST (Best Last) for Heterogeneous Ensembles implemented with Fading Factors
@@ -52,7 +53,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @version $Revision: 1 $
  */
 public class HeterogeneousEnsembleBlastFadingFactors
-		extends HeterogeneousEnsembleAbstract {
+		extends HeterogeneousEnsembleAbstract implements MultiClassClassifier {
 
 	private static final long serialVersionUID = 1L;
 

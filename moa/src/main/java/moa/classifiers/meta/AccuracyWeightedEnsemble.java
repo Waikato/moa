@@ -22,6 +22,7 @@ package moa.classifiers.meta;
 import java.util.Random;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
@@ -37,7 +38,7 @@ import moa.core.Utils;
  * The Accuracy Weighted Ensemble classifier as proposed by Wang et al. in
  * "Mining concept-drifting data streams using ensemble classifiers", KDD 2003.
  */
-public class AccuracyWeightedEnsemble extends AbstractClassifier {
+public class AccuracyWeightedEnsemble extends AbstractClassifier implements MultiClassClassifier {
 
     @Override
     public String getPurposeString() {

@@ -43,7 +43,7 @@ import moa.recommender.rc.data.RecommenderData;
  * @author Alex Catarineu (a.catarineu@gmail.com)
  * @version $Revision: 7 $
  */
-public class EvaluateOnlineRecommender extends MainTask {
+public class EvaluateOnlineRecommender extends AuxiliarMainTask {
 
     @Override
     public String getPurposeString() {

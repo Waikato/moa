@@ -59,21 +59,20 @@ package moa.classifiers.rules;
  * </ul>
  */
 
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.MultiChoiceOption;
-
 import moa.classifiers.Regressor;
-import moa.classifiers.core.splitcriteria.VarianceReductionSplitCriterion;
 import moa.classifiers.rules.core.Rule;
+import moa.classifiers.rules.core.Rule.Builder;
 import moa.classifiers.rules.core.RuleActiveLearningNode;
 import moa.classifiers.rules.core.RuleActiveRegressionNode;
-import moa.classifiers.rules.core.Rule.Builder;
 import moa.classifiers.rules.core.splitcriteria.AMRulesSplitCriterion;
 import moa.classifiers.rules.core.voting.ErrorWeightedVote;
 import moa.classifiers.rules.functions.Perceptron;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
+
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.MultiChoiceOption;
 
 
 
@@ -86,7 +85,6 @@ public class AMRulesRegressorOld extends AbstractAMRules implements Regressor{
 	 */
 	private static final long serialVersionUID = 5988040868275521928L;
 
-	//============================= SET OPTIONS ==============================//
 	
 	public FlagOption constantLearningRatioDecayOption = new FlagOption(
 			"learningRatio_Decay_set_constant", 'd',
@@ -111,10 +109,6 @@ public class AMRulesRegressorOld extends AbstractAMRules implements Regressor{
 			AMRulesSplitCriterion.class,
 			"VRSplitCriterion");
 
-	//============================= END SET OPTIONS ==============================//
-
-	
-	//============================== Classes ====================================//
 
 	protected Rule newRule(int ID, RuleActiveLearningNode node, double[] statistics) {
 		Rule r=newRule(ID);

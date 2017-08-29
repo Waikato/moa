@@ -58,7 +58,7 @@ public class FileStream extends ClusteringStream{
 	private static final long serialVersionUID = 1L;
 
 
-    String defaultfile = "/Users/kokomo40/Dropbox/BT Kim/Datasets/KDDCUP99/KDDCup99.arff";
+    String defaultfile = "KDDCup99.arff";
 
 	public FileOption arffFileOption = new FileOption("arffFile", 'f',
 			"ARFF file to load.", defaultfile, "arff", false);

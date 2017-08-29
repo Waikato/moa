@@ -25,6 +25,7 @@ import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 
@@ -46,7 +47,7 @@ import moa.options.ClassOption;
  *
  */
 
-public class DACC extends AbstractClassifier {
+public class DACC extends AbstractClassifier implements MultiClassClassifier {
 
 	private static final long serialVersionUID = 1L;
 	

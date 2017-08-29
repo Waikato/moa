@@ -23,6 +23,7 @@ import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import com.yahoo.labs.samoa.instances.Instance;
 
+import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
@@ -49,7 +50,7 @@ import com.github.javacliparser.IntOption;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class OzaBag extends AbstractClassifier {
+public class OzaBag extends AbstractClassifier implements MultiClassClassifier {
 
     @Override
     public String getPurposeString() {

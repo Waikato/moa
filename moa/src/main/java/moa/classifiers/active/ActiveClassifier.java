@@ -26,6 +26,7 @@ import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 
 import com.yahoo.labs.samoa.instances.Instance;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.Utils;
 
 import moa.core.DoubleVector;
@@ -70,7 +71,7 @@ import com.github.javacliparser.MultiChoiceOption;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class ActiveClassifier extends AbstractClassifier {
+public class ActiveClassifier extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
 

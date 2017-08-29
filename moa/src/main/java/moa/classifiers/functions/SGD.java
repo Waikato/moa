@@ -28,6 +28,7 @@
 package moa.classifiers.functions;
 
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
@@ -44,7 +45,7 @@ import moa.core.Utils;
 <!-- globalinfo-end -->
  *
  */
-public class SGD extends AbstractClassifier implements Regressor{
+public class SGD extends AbstractClassifier implements MultiClassClassifier, Regressor{
 
     /** For serialization */
     private static final long serialVersionUID = -3732968666673530290L;
