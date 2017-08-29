@@ -21,6 +21,7 @@ package moa.classifiers.meta;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.trees.HoeffdingTree;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
@@ -36,7 +37,7 @@ import com.yahoo.labs.samoa.instances.Instances;
  * Brzezinski and Stefanowski in "Reacting to Different Types of Concept Drift:
  * The Accuracy Updated Ensemble Algorithm", IEEE Trans. Neural Netw, 2013.
  */
-public class AccuracyUpdatedEnsemble extends AbstractClassifier {
+public class AccuracyUpdatedEnsemble extends AbstractClassifier implements MultiClassClassifier {
 
 	private static final long serialVersionUID = 1L;
 

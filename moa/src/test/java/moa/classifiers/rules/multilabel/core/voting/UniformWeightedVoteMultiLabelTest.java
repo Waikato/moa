@@ -8,6 +8,11 @@ import static org.junit.Assert.*;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
+/**
+ * Test UniformWeightedVoteMultiLabel
+ *
+ * @author João Duarte (joaomaiaduarte@gmail.com)
+ */
 public class UniformWeightedVoteMultiLabelTest {
 	
 	static UniformWeightedVoteMultiLabel weightedVote;
@@ -27,13 +32,13 @@ public class UniformWeightedVoteMultiLabelTest {
 		pred.setVotes(0, new double[]{1});
 		pred.setVotes(1, new double[]{2});
 		pred.setVotes(3, new double[]{4});
-		weightedVote.addVote(pred, new double[]{3,2,1,0});
+		weightedVote.addVote(pred, new double[]{3,2,Double.MAX_VALUE,0});
 		
 		pred= new MultiLabelPrediction(4);
 		pred.setVotes(0, new double[]{4});
 		pred.setVotes(1, new double[]{2});
 		pred.setVotes(3, new double[]{1});
-		weightedVote.addVote(pred, new double[]{1,0,1,0});
+		weightedVote.addVote(pred, new double[]{1,0,Double.MAX_VALUE,0});
 		weightedVote.computeWeightedVote(); 
      }
     

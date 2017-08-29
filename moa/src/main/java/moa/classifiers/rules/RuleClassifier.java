@@ -25,20 +25,26 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.util.*;
-import com.github.javacliparser.FlagOption; 
+import java.util.ArrayList;
+import java.util.Collections;
 
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-import com.github.javacliparser.MultiChoiceOption;
 import moa.classifiers.AbstractClassifier;
-import moa.classifiers.core.attributeclassobservers.*;
+import moa.classifiers.MultiClassClassifier;
+import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
+import moa.classifiers.core.attributeclassobservers.BinaryTreeNumericAttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.BinaryTreeNumericAttributeClassObserver.Node;
+import moa.classifiers.core.attributeclassobservers.GaussianNumericAttributeClassObserver;
+import moa.classifiers.core.attributeclassobservers.NominalAttributeClassObserver;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.core.Utils;
+
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
 
@@ -64,7 +70,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @version $Revision: 2 $
  */
 
-public class RuleClassifier extends AbstractClassifier{
+public class RuleClassifier extends AbstractClassifier implements MultiClassClassifier {
 	
 	  private static final long serialVersionUID = 1L;
 	  

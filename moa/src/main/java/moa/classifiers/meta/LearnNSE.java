@@ -29,6 +29,7 @@ import java.util.List;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.options.ClassOption;
@@ -52,7 +53,7 @@ import moa.options.ClassOption;
  *
  *
  */
-public class LearnNSE extends AbstractClassifier {
+public class LearnNSE extends AbstractClassifier implements MultiClassClassifier {
 
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
             "Classifier to train.", Classifier.class, "bayes.NaiveBayes");

@@ -19,6 +19,7 @@
  */
 package moa.classifiers.meta;
 
+import moa.classifiers.MultiClassClassifier;
 import moa.options.ClassOption;
 import moa.classifiers.Classifier;
 import moa.classifiers.trees.ASHoeffdingTree;
@@ -85,7 +86,7 @@ import moa.core.Utils;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class OzaBagASHT extends AbstractClassifier {
+public class OzaBagASHT extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
 

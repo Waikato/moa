@@ -23,6 +23,7 @@ package moa.classifiers.bayes;
 import java.util.Arrays;
 import com.github.javacliparser.FloatOption;
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
@@ -53,7 +54,7 @@ import com.yahoo.labs.samoa.instances.Instances;
  * <p/>
  * <!-- technical-bibtex-end -->
  */
-public class NaiveBayesMultinomial extends AbstractClassifier {
+public class NaiveBayesMultinomial extends AbstractClassifier  implements MultiClassClassifier {
 
     public FloatOption laplaceCorrectionOption = new FloatOption("laplaceCorrection",
             'l', "Laplace correction factor.",

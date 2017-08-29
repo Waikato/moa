@@ -20,6 +20,7 @@
 package moa.classifiers.bayes;
 
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.GaussianNumericAttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.NominalAttributeClassObserver;
@@ -44,7 +45,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class NaiveBayes extends AbstractClassifier {
+public class NaiveBayes extends AbstractClassifier  implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
 

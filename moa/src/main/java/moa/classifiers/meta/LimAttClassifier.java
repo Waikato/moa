@@ -20,6 +20,7 @@
  */
 package moa.classifiers.meta;
 
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.trees.LimAttHoeffdingTree;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.Utils;
@@ -78,7 +79,7 @@ import com.github.javacliparser.IntOption;
  * @author Eibe Frank (eibe{[at]}cs{[dot]}waikato{[dot]}ac{[dot]}nz)
  * @version $Revision: 7 $
  */
-public class LimAttClassifier extends AbstractClassifier {
+public class LimAttClassifier extends AbstractClassifier implements MultiClassClassifier {
 
     @Override
     public String getPurposeString() {

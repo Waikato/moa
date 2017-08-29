@@ -1,0 +1,185 @@
+--> regression-out0.arff
+moa.classifiers.rules.multilabel.AMRulesMultiTargetRegressorSemiSuper -L (rules.multilabel.functions.AdaptiveMultiTargetRegressor -l MultiTargetMeanRegressor -m MultiTargetPerceptronRegressor -e MeanAbsoluteDeviationMT) -A (OddsRatioScore -p CantellisInequality) -S MultiTargetVarianceRatio -e RelativeMeanAbsoluteDeviationMT -w InverseErrorWeightedVoteMultiLabel -O SelectAllOutputs -I SelectAllInputs -F NoFeatureRanking
+
+Index
+  100
+Votes
+  0: 55948.38383838
+Measurements
+  classified instances: 99
+  mean absolute error: 34794.95416064
+  root mean squared error: 65129.5747211
+  relative mean absolute error: 1.00023248
+  relative root mean squared error: 1.00188841
+Model measurements
+  model training instances: 99
+  anomaly detections: 0
+  change detections: 0
+  rules (number): 1
+  Avg #inputs/rule: 8
+  Avg #outputs/rule: 1
+
+Index
+  200
+Votes
+  0: 39692.60681793
+Measurements
+  classified instances: 199
+  mean absolute error: 31087.52678275
+  root mean squared error: 51752.33673783
+  relative mean absolute error: 0.97415822
+  relative root mean squared error: 0.99544337
+Model measurements
+  model training instances: 199
+  anomaly detections: 0
+  change detections: 0
+  rules (number): 1
+  Avg #inputs/rule: 8
+  Avg #outputs/rule: 1
+
+Index
+  300
+Votes
+  0: 42720.37926708
+Measurements
+  classified instances: 299
+  mean absolute error: 29733.47445214
+  root mean squared error: 49145.69117053
+  relative mean absolute error: 0.96732943
+  relative root mean squared error: 0.97689175
+Model measurements
+  model training instances: 299
+  anomaly detections: 0
+  change detections: 0
+  rules (number): 1
+  Avg #inputs/rule: 8
+  Avg #outputs/rule: 1
+
+Index
+  400
+Votes
+  0: -3346.50006093
+Measurements
+  classified instances: 399
+  mean absolute error: 30878.74607908
+  root mean squared error: 51358.13737722
+  relative mean absolute error: 0.94994309
+  relative root mean squared error: 0.95782043
+Model measurements
+  model training instances: 399
+  anomaly detections: 0
+  change detections: 0
+  rules (number): 1
+  Avg #inputs/rule: 8
+  Avg #outputs/rule: 1
+
+Index
+  500
+Votes
+  0: 51068.01539989
+Measurements
+  classified instances: 499
+  mean absolute error: 29199.8139149
+  root mean squared error: 48465.35768983
+  relative mean absolute error: 0.91641167
+  relative root mean squared error: 0.94415448
+Model measurements
+  model training instances: 499
+  anomaly detections: 0
+  change detections: 0
+  rules (number): 1
+  Avg #inputs/rule: 8
+  Avg #outputs/rule: 1
+
+Index
+  600
+Votes
+  0: 38259.18584555
+Measurements
+  classified instances: 599
+  mean absolute error: 28373.04435178
+  root mean squared error: 49053.18023401
+  relative mean absolute error: 0.89375218
+  relative root mean squared error: 0.93560276
+Model measurements
+  model training instances: 599
+  anomaly detections: 0
+  change detections: 0
+  rules (number): 1
+  Avg #inputs/rule: 8
+  Avg #outputs/rule: 1
+
+Index
+  700
+Votes
+  0: 28282.97659308
+Measurements
+  classified instances: 699
+  mean absolute error: 27271.85831087
+  root mean squared error: 46681.82880826
+  relative mean absolute error: 0.86717656
+  relative root mean squared error: 0.91890589
+Model measurements
+  model training instances: 699
+  anomaly detections: 0
+  change detections: 0
+  rules (number): 1
+  Avg #inputs/rule: 8
+  Avg #outputs/rule: 1
+
+Index
+  800
+Votes
+  0: 55951.84345479
+Measurements
+  classified instances: 799
+  mean absolute error: 27746.90658614
+  root mean squared error: 48571.53587788
+  relative mean absolute error: 0.88041499
+  relative root mean squared error: 0.9651345
+Model measurements
+  model training instances: 799
+  anomaly detections: 0
+  change detections: 0
+  rules (number): 1
+  Avg #inputs/rule: 8
+  Avg #outputs/rule: 1
+
+Index
+  900
+Votes
+  0: -1779.42143224
+Measurements
+  classified instances: 899
+  mean absolute error: 27088.7725763
+  root mean squared error: 46810.81877853
+  relative mean absolute error: 0.87444528
+  relative root mean squared error: 0.95901644
+Model measurements
+  model training instances: 899
+  anomaly detections: 0
+  change detections: 0
+  rules (number): 1
+  Avg #inputs/rule: 8
+  Avg #outputs/rule: 1
+
+Index
+  1000
+Votes
+  0: 13432.44591002
+Measurements
+  classified instances: 999
+  mean absolute error: 27231.92632342
+  root mean squared error: 46872.8677322
+  relative mean absolute error: 0.8767323
+  relative root mean squared error: 0.96542486
+Model measurements
+  model training instances: 999
+  anomaly detections: 0
+  change detections: 0
+  rules (number): 1
+  Avg #inputs/rule: 8
+  Avg #outputs/rule: 1
+
+
+

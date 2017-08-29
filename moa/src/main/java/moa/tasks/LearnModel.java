@@ -20,6 +20,7 @@
 package moa.tasks;
 
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.ObjectRepository;
 import moa.learners.Learner;
 import moa.options.ClassOption;
@@ -33,7 +34,7 @@ import moa.streams.InstanceStream;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class LearnModel extends MainTask {
+public class LearnModel extends ClassificationMainTask {
 
     @Override
     public String getPurposeString() {
@@ -43,7 +44,7 @@ public class LearnModel extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Classifier to train.", Classifier.class, "moa.classifiers.bayes.NaiveBayes");
+            "Classifier to train.", MultiClassClassifier.class, "moa.classifiers.bayes.NaiveBayes");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,
@@ -75,7 +76,7 @@ public class LearnModel extends MainTask {
 
     @Override
     public Class<?> getTaskResultType() {
-        return Classifier.class;
+        return MultiClassClassifier.class;
     }
 
     @Override

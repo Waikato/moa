@@ -25,7 +25,7 @@ import com.yahoo.labs.samoa.instances.Prediction;
 /**
  * InverseErrorWeightedVoteMuliLabel class for weighted votes based on estimates of errors. 
  *
- * @author João Duarte (jmduarte@inescporto.pt)
+ * @author João Duarte (joaomaiaduarte@gmail.com)
  * @version $Revision: 1 $
  */
 public class InverseErrorWeightedVoteMultiLabel extends AbstractErrorWeightedVoteMultiLabel {
@@ -59,12 +59,10 @@ public class InverseErrorWeightedVoteMultiLabel extends AbstractErrorWeightedVot
 					}
 				}
 
-				int numClasses=votes.get(0).numClasses(o);
-
-
 				//For each vote
 				for (int i=0; i<n; i++)
 				{
+					int numClasses=votes.get(i).numClasses(o);
 					if(votes.get(i).hasVotesForAttribute(o)){
 						if(sumError[o]>0)
 							weights[i][o]/=sumError[o];
@@ -75,6 +73,7 @@ public class InverseErrorWeightedVoteMultiLabel extends AbstractErrorWeightedVot
 					for(int j=0; j<numClasses; j++){
 						weightedVote.setVote(o, j, weightedVote.getVote(o, j)+votes.get(i).getVote(o, j)*weights[i][o]);
 					}
+
 
 				}	
 

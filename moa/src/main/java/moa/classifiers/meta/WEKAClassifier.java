@@ -21,6 +21,7 @@
 package moa.classifiers.meta;
 
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
 import com.github.javacliparser.IntOption;
 import moa.options.WEKAClassOption;
@@ -38,7 +39,7 @@ import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
  * @version $Revision$
  */
 public class WEKAClassifier
-        extends AbstractClassifier {
+        extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
 

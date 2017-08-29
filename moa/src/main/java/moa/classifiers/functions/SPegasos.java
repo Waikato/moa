@@ -26,6 +26,7 @@
 package moa.classifiers.functions;
 
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import com.github.javacliparser.FloatOption;
@@ -56,7 +57,7 @@ import moa.core.Utils;
  * <!-- technical-bibtex-end -->
  *
  */
-public class SPegasos extends AbstractClassifier {
+public class SPegasos extends AbstractClassifier implements MultiClassClassifier {
 
     /**
      * For serialization
