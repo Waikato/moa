@@ -1,7 +1,7 @@
 /*
  *    ADOB.java
- *    Copyright (C) 2014 Federal University of Pernambuco, Pernambuco, Brazil
- *    @author Silas Garrido (sgtcs@cin.ufpe.br)
+ *    Copyright (C) 2014 Santos, Goncalves, Barros
+ *    @author Silas G. T. C. Santos (sgtcs@cin.ufpe.br)
  *            Paulo M. Goncalves Jr. (paulomgj@gmail.com)
  *            Roberto S. M. Barros (roberto@cin.ufpe.br)
  *    @version $Version: 1 $
@@ -28,6 +28,7 @@
 
 package moa.classifiers.meta;
 
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import com.yahoo.labs.samoa.instances.Instance;
@@ -53,7 +54,7 @@ import com.github.javacliparser.IntOption;
  *     DOI: 10.1007/978-3-662-44845-8_12
  */
 
-public class ADOB extends AbstractClassifier {
+public class ADOB extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -63,7 +64,8 @@ public class ADOB extends AbstractClassifier {
     }
 
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
+            "Classifier to train.", Classifier.class,
+            "drift.SingleClassifierDrift -l trees.HoeffdingTree -d ADWINChangeDetector");
 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
             "The number of models to boost.", 10, 1, Integer.MAX_VALUE);

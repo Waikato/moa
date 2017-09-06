@@ -1,6 +1,6 @@
 /*
  *    RDDM.java
- *    Copyright (C) 2016 Barros, Cabral, Goncalves
+ *    Copyright (C) 2016 Barros, Cabral, Goncalves, Santos
  *    @authors Roberto S. M. Barros (roberto@cin.ufpe.br) 
  *             Danilo Cabral (danilocabral@danilocabral.com.br)
  *             Paulo M. Goncalves Jr. (paulomgj@gmail.com)

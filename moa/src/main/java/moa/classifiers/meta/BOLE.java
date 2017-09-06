@@ -1,13 +1,13 @@
 /*
  *    BOLE.java
  *    Copyright (C) 2015 Santos, Barros
- *    @authors Silas Garrido T. de Carvalho Santos (sgtcs@cin.ufpe.br)
+ *    @authors Silas G. T. C. Santos (sgtcs@cin.ufpe.br)
  *             Roberto Souto Maior de Barros (roberto@cin.ufpe.br) 
  *    @version $Version: 1 $
  *
  *    Evolved from ADOB.java
- *    Copyright (C) 2014 Federal University of Pernambuco, Pernambuco, Brazil
- *    @author Silas Garrido (sgtcs@cin.ufpe.br)
+ *    Copyright (C) 2014 Santos, Goncalves, Barros
+ *    @author Silas G. T. C. Santos (sgtcs@cin.ufpe.br)
  *            Paulo M. Goncalves Jr. (paulomgj@gmail.com)
  *            Roberto S. M. Barros (roberto@cin.ufpe.br)
  *
@@ -48,6 +48,7 @@
 
 package moa.classifiers.meta;
 
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.core.DoubleVector;
@@ -59,12 +60,13 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
-public class BOLE extends AbstractClassifier {
+public class BOLE extends AbstractClassifier implements MultiClassClassifier {
     
     private static final long serialVersionUID = 1L;
 
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
+            "Classifier to train.", Classifier.class,
+            "drift.SingleClassifierDrift -l trees.HoeffdingTree -d (DDM -n 7 -w 1.2 -o 1.95)");
 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
             "The number of models to boost.", 10, 1, Integer.MAX_VALUE);
