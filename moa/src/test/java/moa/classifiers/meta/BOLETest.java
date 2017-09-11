@@ -14,7 +14,7 @@
  */
 
 /**
- * BOLE.java
+ * BOLETest.java
  * Copyright (C) 2015 Santos, Barros
  */
 package moa.classifiers.meta;
