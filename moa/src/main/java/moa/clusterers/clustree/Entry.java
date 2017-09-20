@@ -19,7 +19,9 @@
  */
 package moa.clusterers.clustree;
 
-public class Entry {
+import java.io.Serializable;
+
+public class Entry implements Serializable {
 
     /**
      * The actual entry data.
