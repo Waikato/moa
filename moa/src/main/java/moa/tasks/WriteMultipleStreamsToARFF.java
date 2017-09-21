@@ -100,6 +100,7 @@ public class WriteMultipleStreamsToARFF extends AuxiliarMainTask
 		// Store the original values of these two options, which may be altered during the remainder of this task.
 		String streamCLI = this.streamOption.getValueAsCLIString();
 		String fileCLI = this.arffFileOption.getValueAsCLIString();
+		stream = (InstanceStream) getPreparedClassOption(this.streamOption);
 		
 		// For each stream to be created...
 		for(int i = 0 ; i < this.numStreamsOption.getValue() ; i++)

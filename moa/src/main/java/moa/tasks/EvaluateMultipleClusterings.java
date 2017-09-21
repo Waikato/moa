@@ -29,6 +29,7 @@ import moa.evaluation.LearningCurve;
 import moa.gui.BatchCmd;
 import moa.options.ClassOption;
 import moa.streams.clustering.ClusteringStream;
+import moa.streams.clustering.FileStream;
 
 /**
  * Task for evaluating a clusterer on multiple (related) streams.
@@ -48,20 +49,18 @@ public class EvaluateMultipleClusterings extends AuxiliarMainTask {
 		return "Evaluates a clusterer on multiple (related) streams.";
 	}
 
+	String defaultfile = "covtypeNorm.arff";
+	
 	public ClassOption learnerOption = new ClassOption("learner", 'l',
 			"Clusterer to train.", AbstractClusterer.class, "clustream.Clustream");
 
-	public ClassOption streamOption = new ClassOption("baseStream", 's',
-			"Base stream to learn from.",  ClusteringStream.class,
-			"FileStream");
+	public ClassOption streamOption = new ClassOption("stream", 's',
+            "Base stream to learn from (must use FileStream).",  ClusteringStream.class,
+            "FileStream");
 
 	public IntOption numStreamsOption = new IntOption("numStreams", 'n',
 			"The number of streams to iterate through (must be named according to WriteMultipleStreamsToARFF format.",
 			100, 2, Integer.MAX_VALUE);
-	
-	public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
-			"Maximum number of instances to test/train on  (-1 = no limit).",
-			100000, -1, Integer.MAX_VALUE);
 
 	public IntOption measureCollectionTypeOption = new IntOption(
 			"measureCollectionType", 'm',
@@ -72,7 +71,7 @@ public class EvaluateMultipleClusterings extends AuxiliarMainTask {
 	public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
 			"File to append intermediate csv reslts to.", "dumpClustering.csv", "csv", true);
 
-	protected Task task;
+	protected EvaluateClustering task;
 	
 	@Override
 	public Class<?> getTaskResultType()
@@ -84,18 +83,40 @@ public class EvaluateMultipleClusterings extends AuxiliarMainTask {
 	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository)
 	{
 		Object result = null;
-		Task taskBase = (Task) task;
+		String arffFile, outputFile;
+		FileStream fStream;
 		
 		for(int i = 0 ; i < this.numStreamsOption.getValue() ; i++)
 		{
 			// Get Base task
-            this.task = (Task) ((MOAObject) taskBase).copy();
+            this.task = new EvaluateClustering();
+            
+            // Learner
+            this.task.learnerOption.setValueViaCLIString(this.learnerOption.getValueAsCLIString());
             
             // Build stream
+            fStream = (FileStream) getPreparedClassOption(this.streamOption);
+            arffFile = fStream.arffFileOption.getValueAsCLIString();
+            arffFile = arffFile.substring(0, arffFile.length()-6).concat(i+".arff");
+            fStream.arffFileOption.setValueViaCLIString(arffFile);
+            this.task.streamOption.setValueViaCLIString(fStream.getCLICreationString(fStream.getClass()));
             
             // Build Output File
+            outputFile = this.dumpFileOption.getValueAsCLIString();
+            if(outputFile.substring(outputFile.length()-4, outputFile.length()).equals(".csv"))
+			{
+            	outputFile = outputFile.substring(0, outputFile.length()-4);
+			}
+            outputFile = outputFile.concat("n"+i+".csv");
+            this.task.dumpFileOption.setValueViaCLIString(outputFile);
             
-            // Build Task
+            // Instance Limit
+            this.task.instanceLimitOption.setValue(-1);
+            
+            // Measure Collection
+            this.task.measureCollectionTypeOption.setValue(0);
+            
+            System.out.println(this.task.getCLICreationString(this.task.getClass()));
             
             //Run task
             result = this.task.doTask(monitor, repository);
