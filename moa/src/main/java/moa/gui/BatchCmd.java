@@ -36,11 +36,13 @@ import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
 import moa.clusterers.ClusterGenerator;
 import moa.clusterers.clustream.WithKmeans;
+import moa.evaluation.CMM;
 import moa.evaluation.EntropyCollection;
 import moa.evaluation.F1;
 import moa.evaluation.General;
 import moa.evaluation.MeasureCollection;
 import moa.evaluation.SSQ;
+import moa.evaluation.Separation;
 import moa.evaluation.SilhouetteCoefficient;
 import moa.evaluation.StatisticalCollection;
 import moa.gui.visualization.DataPoint;
@@ -85,14 +87,25 @@ public class BatchCmd implements ClusterEventListener{
 	}
 
 	@SuppressWarnings("unchecked")
-	private static ArrayList<Class> getMeasureSelection(int selection){
+	private static ArrayList<Class> getMeasureSelection(boolean[] selection){
 		ArrayList<Class>mclasses = new ArrayList<Class>();
-		mclasses.add(EntropyCollection.class);
-		mclasses.add(F1.class);
-		mclasses.add(General.class);
-		mclasses.add(SSQ.class);
-		mclasses.add(SilhouetteCoefficient.class);
-		mclasses.add(StatisticalCollection.class);
+		
+		if(selection[0])
+			mclasses.add(General.class);
+		if(selection[1])
+			mclasses.add(F1.class);
+		if(selection[2])
+			mclasses.add(EntropyCollection.class);
+		if(selection[3])
+			mclasses.add(CMM.class);
+		if(selection[4])
+			mclasses.add(SSQ.class);
+		if(selection[5])
+			mclasses.add(Separation.class);
+		if(selection[6])
+			mclasses.add(SilhouetteCoefficient.class);
+		if(selection[7])
+			mclasses.add(StatisticalCollection.class);
 
 		return mclasses;
 	}
@@ -102,18 +115,18 @@ public class BatchCmd implements ClusterEventListener{
 	public static void main(String[] args){
 		RandomRBFGeneratorEvents stream = new RandomRBFGeneratorEvents();
 		AbstractClusterer clusterer = new WithKmeans();
-		int measureCollectionType = 0;
+		boolean[] measureCollection = {true,true,true,true,true,true,true,true};
 		int amountInstances = 20000;
 		String testfile = "d:\\data\\test.csv";
 
-		runBatch(stream, clusterer, measureCollectionType, amountInstances, testfile);
+		runBatch(stream, clusterer, measureCollection, amountInstances, testfile);
 	}
 
 
 	public static void runBatch(ClusteringStream stream, AbstractClusterer clusterer,
-			int measureCollectionType, int amountInstances, String outputFile){
+			boolean[] measureCollection, int amountInstances, String outputFile){
 		// create the measure collection 
-		MeasureCollection[] measures = getMeasures(getMeasureSelection(measureCollectionType));
+		MeasureCollection[] measures = getMeasures(getMeasureSelection(measureCollection));
 		
 		// run the batch job
 		BatchCmd batch = new BatchCmd(clusterer, stream, measures, amountInstances);
@@ -187,8 +200,8 @@ public class BatchCmd implements ClusterEventListener{
 				//evaluate
 				for (int i = 0; i < measures.length; i++) {
 					try {
-						/*double sec =*/ measures[i].evaluateClusteringPerformance(clustering0, gtClustering0, pointBuffer0);
-						//System.out.println("Eval of "+measures[i].getClass().getSimpleName()+" at "+m_timestamp+" took "+sec);
+						double sec = measures[i].evaluateClusteringPerformance(clustering0, gtClustering0, pointBuffer0);
+						System.out.println("Eval of "+measures[i].getClass().getSimpleName()+" at "+m_timestamp+" took "+sec);
 					} catch (Exception ex) { ex.printStackTrace(); }
 				}
 
@@ -204,6 +217,10 @@ public class BatchCmd implements ClusterEventListener{
 		for (int i = 0; i < measure_classes.size(); i++) {
 			try {
 				MeasureCollection m = (MeasureCollection)measure_classes.get(i).newInstance();
+				for(int j = 0 ; j < m.getNumMeasures() ; j++)
+				{
+					m.setEnabled(j, true);
+				}
 				measures[i] = m;
 
 			} catch (Exception ex) {
@@ -237,7 +254,9 @@ public class BatchCmd implements ClusterEventListener{
 			out.write("Event" + delimiter);
 			for (int m = 0; m < 1; m++) {	// TODO: Multiple group of measures
 				for (int i = 0; i < measures.length; i++) {
+					System.out.print("Measure "+i+" ");
 					for (int j = 0; j < measures[i].getNumMeasures(); j++) {
+						System.out.println("NumMeasure "+j+", Enabled? "+measures[i].isEnabled(j));
 						if (measures[i].isEnabled(j)) {
 							out.write(measures[i].getName(j) + delimiter);
 							numValues = measures[i].getNumberOfValues(j);
@@ -256,11 +275,11 @@ public class BatchCmd implements ClusterEventListener{
 					event = eventIt.next();
 				}
 			}
-			
+			System.out.println("numValues is "+numValues);
 			for (int v = 0; v < numValues; v++){
 				// Nr
 				out.write(v + delimiter);
-
+				System.out.print("Row: "+v+" ");
 				// Events
 				if (event != null && event.getTimestamp() <= ((v+1) * horizon)) {
 					out.write(event.getType() + delimiter);
@@ -276,7 +295,9 @@ public class BatchCmd implements ClusterEventListener{
 				// Values
 				for (int m = 0; m < 1; m++) {	// TODO: Multiple group of measures
 					for (int i = 0; i < measures.length; i++) {
+						System.out.print("Measure "+i+" ");
 						for (int j = 0; j < measures[i].getNumMeasures(); j++) {
+							System.out.println("NumMeasure "+j+", Enabled? "+measures[i].isEnabled(j));
 							if (measures[i].isEnabled(j)) {
 								out.write(measures[i].getValue(j, v) + delimiter);
 							}

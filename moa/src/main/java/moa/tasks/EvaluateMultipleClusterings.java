@@ -20,6 +20,7 @@
 package moa.tasks;
 
 import com.github.javacliparser.FileOption;
+import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 
 import moa.MOAObject;
@@ -62,10 +63,24 @@ public class EvaluateMultipleClusterings extends AuxiliarMainTask {
 			"The number of streams to iterate through (must be named according to WriteMultipleStreamsToARFF format.",
 			100, 2, Integer.MAX_VALUE);
 
-	public IntOption measureCollectionTypeOption = new IntOption(
-			"measureCollectionType", 'm',
-			"Type of measure collection", 0, 0,
-			Integer.MAX_VALUE);
+	public FlagOption generalEvalOption = new FlagOption("General", 'g',
+			"GPrecision, GRecall, Redundancy, numCluster, numClasses");
+   
+    public FlagOption f1Option = new FlagOption("F1", 'f', "F1-P, F1-R, Purity.");
+    
+    public FlagOption entropyOption = new FlagOption("Entropy", 'e',
+			"GT cross entropy, FC cross entropy, Homogeneity, Completeness, V-Measure, VarInformation.");
+    
+    public FlagOption cmmOption = new FlagOption("CMM", 'c',
+			"CMM, CMM Basic, CMM Missed, CMM Misplaced, CMM Noise, CA Seperability, CA Noise, CA Model.");
+
+    public FlagOption ssqOption = new FlagOption("SSQ", 'q', "SSQ.");
+    
+    public FlagOption separationOption = new FlagOption("Separation", 'p', "BSS, BSS-GT, BSS-Ratio.");
+    
+    public FlagOption silhouetteOption = new FlagOption("Silhouette", 'h', "SilhCoeff.");
+    
+    public FlagOption statisticalOption = new FlagOption("Statistical", 't', "van Dongen, Rand statistic.");
 
 	
 	public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
@@ -114,7 +129,18 @@ public class EvaluateMultipleClusterings extends AuxiliarMainTask {
             this.task.instanceLimitOption.setValue(-1);
             
             // Measure Collection
-            this.task.measureCollectionTypeOption.setValue(0);
+            // Create an array to summarize the selected measures
+        	boolean[] measureCollection = new boolean[8];
+        	measureCollection[0] = this.generalEvalOption.isSet();
+        	measureCollection[1] = this.f1Option.isSet();
+        	measureCollection[2] = this.entropyOption.isSet();
+        	measureCollection[3] = this.cmmOption.isSet();
+        	measureCollection[4] = this.ssqOption.isSet();
+        	measureCollection[5] = this.separationOption.isSet();
+        	measureCollection[6] = this.silhouetteOption.isSet();
+        	measureCollection[7] = this.statisticalOption.isSet();
+            
+            this.task.setMeasures(measureCollection);
             
             System.out.println(this.task.getCLICreationString(this.task.getClass()));
             
