@@ -68,7 +68,10 @@ public class BatchCmd implements ClusterEventListener{
 	public BatchCmd(AbstractClusterer clusterer, ClusteringStream stream, MeasureCollection[] measures, int totalInstances){
 		this.clusterer = clusterer;
 		this.stream = stream;
-		this.totalInstances = totalInstances;
+		if(totalInstances == -1)
+			this.totalInstances = Integer.MAX_VALUE;
+		else
+			this.totalInstances = totalInstances;
 		this.measures = measures;
 
 		if(stream instanceof RandomRBFGeneratorEvents){
@@ -198,6 +201,7 @@ public class BatchCmd implements ClusterEventListener{
 
 
 				//evaluate
+				System.out.println("It is time to evaluate in Run and measures.length = "+measures.length);
 				for (int i = 0; i < measures.length; i++) {
 					try {
 						double sec = measures[i].evaluateClusteringPerformance(clustering0, gtClustering0, pointBuffer0);
@@ -254,9 +258,7 @@ public class BatchCmd implements ClusterEventListener{
 			out.write("Event" + delimiter);
 			for (int m = 0; m < 1; m++) {	// TODO: Multiple group of measures
 				for (int i = 0; i < measures.length; i++) {
-					System.out.print("Measure "+i+" ");
 					for (int j = 0; j < measures[i].getNumMeasures(); j++) {
-						System.out.println("NumMeasure "+j+", Enabled? "+measures[i].isEnabled(j));
 						if (measures[i].isEnabled(j)) {
 							out.write(measures[i].getName(j) + delimiter);
 							numValues = measures[i].getNumberOfValues(j);
