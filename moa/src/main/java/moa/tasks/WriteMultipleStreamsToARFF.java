@@ -113,7 +113,6 @@ public class WriteMultipleStreamsToARFF extends AuxiliarMainTask
 			}
 			if(this.randomFlagTwo.isSet())
 			{
-				System.out.println("R2Option: "+randomTwoOption.getValue());
 				s = s.concat(" -"+randomTwoOption.getValue()+" "+
 			WriteMultipleStreamsToARFF.primesAndBiprimes[i/WriteMultipleStreamsToARFF.primesAndBiprimes.length]);
 			}

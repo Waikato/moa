@@ -201,11 +201,10 @@ public class BatchCmd implements ClusterEventListener{
 
 
 				//evaluate
-				System.out.println("It is time to evaluate in Run and measures.length = "+measures.length);
 				for (int i = 0; i < measures.length; i++) {
 					try {
-						double sec = measures[i].evaluateClusteringPerformance(clustering0, gtClustering0, pointBuffer0);
-						System.out.println("Eval of "+measures[i].getClass().getSimpleName()+" at "+m_timestamp+" took "+sec);
+						/*double sec =*/ measures[i].evaluateClusteringPerformance(clustering0, gtClustering0, pointBuffer0);
+						//System.out.println("Eval of "+measures[i].getClass().getSimpleName()+" at "+m_timestamp+" took "+sec);
 					} catch (Exception ex) { ex.printStackTrace(); }
 				}
 
@@ -277,11 +276,9 @@ public class BatchCmd implements ClusterEventListener{
 					event = eventIt.next();
 				}
 			}
-			System.out.println("numValues is "+numValues);
 			for (int v = 0; v < numValues; v++){
 				// Nr
 				out.write(v + delimiter);
-				System.out.print("Row: "+v+" ");
 				// Events
 				if (event != null && event.getTimestamp() <= ((v+1) * horizon)) {
 					out.write(event.getType() + delimiter);
@@ -297,9 +294,7 @@ public class BatchCmd implements ClusterEventListener{
 				// Values
 				for (int m = 0; m < 1; m++) {	// TODO: Multiple group of measures
 					for (int i = 0; i < measures.length; i++) {
-						System.out.print("Measure "+i+" ");
 						for (int j = 0; j < measures[i].getNumMeasures(); j++) {
-							System.out.println("NumMeasure "+j+", Enabled? "+measures[i].isEnabled(j));
 							if (measures[i].isEnabled(j)) {
 								out.write(measures[i].getValue(j, v) + delimiter);
 							}

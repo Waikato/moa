@@ -142,7 +142,8 @@ public class EvaluateMultipleClusterings extends AuxiliarMainTask {
             
             this.task.setMeasures(measureCollection);
             
-            System.out.println(this.task.getCLICreationString(this.task.getClass()));
+            System.out.println("Evaluation #"+i+" of "+this.numStreamsOption.getValue()+
+            		": "+this.task.getCLICreationString(this.task.getClass()));
             
             //Run task
             result = this.task.doTask(monitor, repository);
