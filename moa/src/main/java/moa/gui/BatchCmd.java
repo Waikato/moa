@@ -36,11 +36,13 @@ import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
 import moa.clusterers.ClusterGenerator;
 import moa.clusterers.clustream.WithKmeans;
+import moa.evaluation.CMM;
 import moa.evaluation.EntropyCollection;
 import moa.evaluation.F1;
 import moa.evaluation.General;
 import moa.evaluation.MeasureCollection;
 import moa.evaluation.SSQ;
+import moa.evaluation.Separation;
 import moa.evaluation.SilhouetteCoefficient;
 import moa.evaluation.StatisticalCollection;
 import moa.gui.visualization.DataPoint;
@@ -66,7 +68,10 @@ public class BatchCmd implements ClusterEventListener{
 	public BatchCmd(AbstractClusterer clusterer, ClusteringStream stream, MeasureCollection[] measures, int totalInstances){
 		this.clusterer = clusterer;
 		this.stream = stream;
-		this.totalInstances = totalInstances;
+		if(totalInstances == -1)
+			this.totalInstances = Integer.MAX_VALUE;
+		else
+			this.totalInstances = totalInstances;
 		this.measures = measures;
 
 		if(stream instanceof RandomRBFGeneratorEvents){
@@ -85,14 +90,25 @@ public class BatchCmd implements ClusterEventListener{
 	}
 
 	@SuppressWarnings("unchecked")
-	private static ArrayList<Class> getMeasureSelection(int selection){
+	private static ArrayList<Class> getMeasureSelection(boolean[] selection){
 		ArrayList<Class>mclasses = new ArrayList<Class>();
-		mclasses.add(EntropyCollection.class);
-		mclasses.add(F1.class);
-		mclasses.add(General.class);
-		mclasses.add(SSQ.class);
-		mclasses.add(SilhouetteCoefficient.class);
-		mclasses.add(StatisticalCollection.class);
+		
+		if(selection[0])
+			mclasses.add(General.class);
+		if(selection[1])
+			mclasses.add(F1.class);
+		if(selection[2])
+			mclasses.add(EntropyCollection.class);
+		if(selection[3])
+			mclasses.add(CMM.class);
+		if(selection[4])
+			mclasses.add(SSQ.class);
+		if(selection[5])
+			mclasses.add(Separation.class);
+		if(selection[6])
+			mclasses.add(SilhouetteCoefficient.class);
+		if(selection[7])
+			mclasses.add(StatisticalCollection.class);
 
 		return mclasses;
 	}
@@ -102,18 +118,18 @@ public class BatchCmd implements ClusterEventListener{
 	public static void main(String[] args){
 		RandomRBFGeneratorEvents stream = new RandomRBFGeneratorEvents();
 		AbstractClusterer clusterer = new WithKmeans();
-		int measureCollectionType = 0;
+		boolean[] measureCollection = {true,true,true,true,true,true,true,true};
 		int amountInstances = 20000;
 		String testfile = "d:\\data\\test.csv";
 
-		runBatch(stream, clusterer, measureCollectionType, amountInstances, testfile);
+		runBatch(stream, clusterer, measureCollection, amountInstances, testfile);
 	}
 
 
 	public static void runBatch(ClusteringStream stream, AbstractClusterer clusterer,
-			int measureCollectionType, int amountInstances, String outputFile){
+			boolean[] measureCollection, int amountInstances, String outputFile){
 		// create the measure collection 
-		MeasureCollection[] measures = getMeasures(getMeasureSelection(measureCollectionType));
+		MeasureCollection[] measures = getMeasures(getMeasureSelection(measureCollection));
 		
 		// run the batch job
 		BatchCmd batch = new BatchCmd(clusterer, stream, measures, amountInstances);
@@ -204,6 +220,10 @@ public class BatchCmd implements ClusterEventListener{
 		for (int i = 0; i < measure_classes.size(); i++) {
 			try {
 				MeasureCollection m = (MeasureCollection)measure_classes.get(i).newInstance();
+				for(int j = 0 ; j < m.getNumMeasures() ; j++)
+				{
+					m.setEnabled(j, true);
+				}
 				measures[i] = m;
 
 			} catch (Exception ex) {
@@ -256,11 +276,9 @@ public class BatchCmd implements ClusterEventListener{
 					event = eventIt.next();
 				}
 			}
-			
 			for (int v = 0; v < numValues; v++){
 				// Nr
 				out.write(v + delimiter);
-
 				// Events
 				if (event != null && event.getTimestamp() <= ((v+1) * horizon)) {
 					out.write(event.getType() + delimiter);

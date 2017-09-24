@@ -108,7 +108,7 @@ public class CMM extends MeasureCollection{
     @Override
     protected String[] getNames() {
         String[] names = {"CMM","CMM Basic","CMM Missed","CMM Misplaced","CMM Noise",
-                            "CA Seperability", "CA Noise", "CA Modell"};
+                            "CA Seperability", "CA Noise", "CA Model"};
         return names;
     }
 
@@ -132,7 +132,7 @@ public class CMM extends MeasureCollection{
 
         addValue("CA Seperability",gtAnalysis.getClassSeparability());
         addValue("CA Noise",gtAnalysis.getNoiseSeparability());
-        addValue("CA Modell",gtAnalysis.getModelQuality());
+        addValue("CA Model",gtAnalysis.getModelQuality());
 
         /* init the matching and point distances */
         calculateMatching();
