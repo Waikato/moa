@@ -20,7 +20,9 @@
 
 package moa.clusterers.clustree;
 
-public class Node {
+import java.io.Serializable;
+
+public class Node implements Serializable {
 
 	final int NUMBER_ENTRIES = 3;
     static int INSERTIONS_BETWEEN_CLEANUPS = 10000;
