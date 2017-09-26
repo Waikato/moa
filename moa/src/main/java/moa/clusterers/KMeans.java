@@ -102,6 +102,7 @@ public class KMeans {
 
     private static SphereCluster calculateCenter( ArrayList<Cluster> cluster, int dimensions ) {
 	double[] res = new double[dimensions];
+	double totalWeight = 0.0;
 	for ( int i = 0; i < res.length; i++ ) {
 	    res[i] = 0.0;
 	}
@@ -112,14 +113,15 @@ public class KMeans {
 
 	for ( Cluster point : cluster ) {
             double [] center = point.getCenter();
+            totalWeight+=point.getWeight();
             for (int i = 0; i < res.length; i++) {
-               res[i] += center[i];
+               res[i] += (center[i] * point.getWeight());
             }
 	}
 
 	// Normalize
 	for ( int i = 0; i < res.length; i++ ) {
-	    res[i] /= cluster.size();
+	    res[i] /= totalWeight;
 	}
 
 	// Calculate radius
