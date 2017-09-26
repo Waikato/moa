@@ -73,6 +73,10 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
 
     private double totalWeightObserved;
 
+    public FlagOption precisionRecallOutputOption = new FlagOption("precisionRecallOutput",
+            'o',
+            "Outputs average precision, recall and F1 scores.");
+    
     public FlagOption precisionPerClassOption = new FlagOption("precisionPerClass",
             'p',
             "Report precision per class.");
@@ -158,14 +162,17 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
         measurements.add(new Measurement("Kappa Statistic (percent)", this.getKappaStatistic() * 100.0));
         measurements.add(new Measurement("Kappa Temporal Statistic (percent)", this.getKappaTemporalStatistic() * 100.0));
         measurements.add(new Measurement("Kappa M Statistic (percent)", this.getKappaMStatistic() * 100.0));
-        measurements.add(new Measurement("F1 Score (percent)", this.getF1Statistic() * 100.0));
+        if (precisionRecallOutputOption.isSet()) 
+            measurements.add(new Measurement("F1 Score (percent)", 
+                    this.getF1Statistic() * 100.0));
         if (f1PerClassOption.isSet()) {
             for (int i = 0; i < this.numClasses; i++) {
                 measurements.add(new Measurement("F1 Score for class " + i + 
                         " (percent)", 100.0 * this.getF1Statistic(i)));
             }
         }
-        measurements.add(new Measurement("Precision (percent)", 
+        if (precisionRecallOutputOption.isSet())
+            measurements.add(new Measurement("Precision (percent)", 
                 this.getPrecisionStatistic() * 100.0));               
         if (precisionPerClassOption.isSet()) {
             for (int i = 0; i < this.numClasses; i++) {
@@ -173,7 +180,8 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
                         " (percent)", 100.0 * this.getPrecisionStatistic(i)));
             }
         }
-        measurements.add(new Measurement("Recall (percent)", 
+        if (precisionRecallOutputOption.isSet())
+            measurements.add(new Measurement("Recall (percent)", 
                 this.getRecallStatistic() * 100.0));
         if (recallPerClassOption.isSet()) {
             for (int i = 0; i < this.numClasses; i++) {
