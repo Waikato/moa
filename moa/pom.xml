@@ -76,6 +76,11 @@
       <version>1.2.1</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>com.opencsv</groupId>
+    	<artifactId>opencsv</artifactId>
+    	<version>4.0</version>
+    </dependency>
   </dependencies>
 
   <build>
