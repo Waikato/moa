@@ -60,6 +60,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import moa.evaluation.ALMeasureCollection;
+import moa.evaluation.MeanPreviewCollection;
 import moa.evaluation.MeasureCollection;
 import moa.evaluation.Preview;
 import moa.evaluation.PreviewCollection;
@@ -597,7 +598,13 @@ public class ALTaskTextViewerPanel extends JPanel {
 			
 			if (c == ALPartitionEvaluationTask.class) {
 				// calculate mean preview collection for each parameter value
-				pc = ((PreviewCollection<?>) preview).calculateMeanPreview();
+				MeanPreviewCollection mpc = new MeanPreviewCollection(
+						(PreviewCollection<PreviewCollection<Preview>>) preview);
+				pc = mpc.getMeanPreviews();
+				pc = mpc.getStdPreviews();
+				
+				// TODO: handle separate previews
+				
 				gcmpSpecial = readPreviewCollection(pc, true);
 				this.graphCanvas.setStandardDeviationPainted(true);
 				this.paramGraphCanvas.setStandardDeviationPainted(true);
