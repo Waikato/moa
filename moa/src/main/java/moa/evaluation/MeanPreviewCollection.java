@@ -124,19 +124,22 @@ public class MeanPreviewCollection {
         meanMeasurementNames = Arrays.copyOfRange(
                 meanMeasurementNames, 4, meanMeasurementNames.length);
         
-        // create names for standard deviations
+        // Create names for standard deviations.
+        // First name is used for indexing and remains unchanged. For the 
+        // remaining names, [std] is prepended to the original name.
         String[] stdMeasurementNames = new String[meanMeasurementNames.length];
-        for (int m = 0; m < meanMeasurementNames.length; m++) {
+        stdMeasurementNames[0] = meanMeasurementNames[0];
+        for (int m = 1; m < meanMeasurementNames.length; m++) {
             stdMeasurementNames[m] = "[std] " + meanMeasurementNames[m];
         }
         
         // wrap into LearningCurves
         LearningCurve meanLearningCurve = 
-                new LearningCurve("learning evaluation instances");
+                new LearningCurve(meanMeasurementNames[0]);
         meanLearningCurve.setData(
                 Arrays.asList(meanMeasurementNames), meanParamMeasurements);
         LearningCurve stdLearningCurve = 
-                new LearningCurve("learning evaluation instances");
+                new LearningCurve(stdMeasurementNames[0]);
         stdLearningCurve.setData(
                 Arrays.asList(stdMeasurementNames), stdParamMeasurements);
         
@@ -199,7 +202,11 @@ public class MeanPreviewCollection {
             double[] sumEntry  = paramMeasurementsSum.get(entryIdx);
             double[] meanEntry = new double[sumEntry.length];
             
-            for (int m = 0; m < sumEntry.length; m++) {
+            // first measurement is used for indexing -> simply copy
+            meanEntry[0] = sumEntry[0];
+            
+            // calculate mean for remaining measurements
+            for (int m = 1; m < sumEntry.length; m++) {
                 meanEntry[m] = sumEntry[m] / numCompleteFolds;
             }
             
@@ -256,7 +263,11 @@ public class MeanPreviewCollection {
             double[] sumEntry = paramMeasurementsSquaredDiffSum.get(entryIdx);
             double[] stdEntry = new double[sumEntry.length];
             
-            for (int m = 0; m < sumEntry.length; m++) {
+            // first measurement is used for indexing -> simply copy
+            stdEntry[0] = sumEntry[0];
+            
+            // calculate standard deviation for remaining measurements
+            for (int m = 1; m < sumEntry.length; m++) {
                 if (numCompleteFolds > 1) {
                     stdEntry[m] = Math.sqrt(sumEntry[m]/(numCompleteFolds-1));
                 }
@@ -299,8 +310,14 @@ public class MeanPreviewCollection {
                 measurementsSum.add(sumEntry);
             }
             
+            // first measurement is used for indexing
+            // -> simply copy from first preview
+            if (sumEntry[0] == 0.0) {
+                sumEntry[0] = previewEntry[0];
+            }
+            
             // add measurements of current entry
-            for (int measure = 0; measure < sumEntry.length; measure++) {
+            for (int measure = 1; measure < sumEntry.length; measure++) {
                 sumEntry[measure] += previewEntry[measure];
             }
         }
@@ -338,8 +355,14 @@ public class MeanPreviewCollection {
                 measurementsSquaredDiffSum.add(squaredDiffSumEntry);
             }
             
+            // first measurement is used for indexing
+            // -> simply copy from first preview
+            if (squaredDiffSumEntry[0] == 0.0) {
+                squaredDiffSumEntry[0] = previewEntry[0];
+            }
+            
             // add squared differences for current entry
-            for (int m = 0; m < previewEntry.length; m++) {
+            for (int m = 1; m < previewEntry.length; m++) {
                 double diff        = (meanEntry[m] - previewEntry[m]);
                 double squaredDiff = diff * diff;
                 squaredDiffSumEntry[m] += squaredDiff;
