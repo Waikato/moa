@@ -127,7 +127,7 @@ public class MeanPreviewCollection {
         // create names for standard deviations
         String[] stdMeasurementNames = new String[meanMeasurementNames.length];
         for (int m = 0; m < meanMeasurementNames.length; m++) {
-            stdMeasurementNames[m] = "[std] " + meanMeasurementNames[m + 4];
+            stdMeasurementNames[m] = "[std] " + meanMeasurementNames[m];
         }
         
         // wrap into LearningCurves
