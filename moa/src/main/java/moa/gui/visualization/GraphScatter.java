@@ -40,23 +40,17 @@ public class GraphScatter extends AbstractGraphPlot {
     
     private double[] variedParamValues;
     
-    private boolean paintCurrentParam;
-    
-    public GraphScatter(boolean b) {
-        this.paintCurrentParam = b;
-    }
-	
     /**
      * Draws a scatter graph based on the varied parameter and the measures.
-     * @param measures  list of measure collections, one for each task
-     * @param mSelect currently selected measure
-     * @param variedParamName name of the varied parameter
+     * @param measures list of measure collections, one for each task
+     * @param stds standard deviation values
      * @param variedParamValues values of the varied parameter
+     * @param colors color encodings for the different tasks
      */
-    public void setGraph(MeasureCollection[] measures, int mSelect, 
+    public void setGraph(MeasureCollection[] measures, MeasureCollection[] stds, 
     		double[] variedParamValues, Color[] colors) {
         this.variedParamValues = variedParamValues;
-        super.setGraph(measures, mSelect, colors);
+        super.setGraph(measures, stds, colors);
     }
 
     @Override
@@ -67,43 +61,36 @@ public class GraphScatter extends AbstractGraphPlot {
         	// no measures received yet -> nothing to paint
         	return; 
         }
-        
-        // scatter current budgets
+
+        // scatter current param values
         for (int i = 0; i < this.measures.length; i++) {
-            if (this.paintCurrentParam) {
-                this.scatterCurrentParam(g, this.measures[i], this.colors[i%this.colors.length]);
-            } else {
-                this.scatter(g, this.measures[i], this.variedParamValues[i], this.colors[i]);
-            }
+                this.scatter(g, i);
         }
     }
     
     /**
      * Paint a dot onto the panel.
      * @param g graphics object
-     * @param m MeasureCollection containing the data
+     * @param i index of the varied parameter
      */
-    private void scatter(Graphics g, MeasureCollection m, double variedParamValue, Color color) {
+    private void scatter(Graphics g, int i) {
 
     	int height = getHeight();
     	int width = getWidth();
     	
-    	int x = (int)(((m.getLastValue(6) - this.lower_x_value) / (this.upper_x_value - this.lower_x_value)) * width); 
-    	double value = m.getLastValue(this.measureSelected);  
+    	int x = (int)(((this.variedParamValues[i] - this.lower_x_value) / (this.upper_x_value - this.lower_x_value)) * width); 
+    	double value = this.measures[i].getLastValue(this.measureSelected);  
 
         if(Double.isNaN(value)){
         	// no result for this budget yet
             return;
         }
 
-        int y = (int)(height - (value / this.upper_y_value) * height);
-        
-        g.setColor(color);
-        
-        if (this.isStandardDeviationPainted && this.measureSelected <= 6) {
-            // access the corresponding std value
-            double std = m.getLastValue(this.measureSelected + 7);
-            int len = (int) ((std/this.upper_y_value)*height);
+
+        g.setColor(this.colors[i]);
+
+        if (this.isStandardDeviationPainted) {
+            int len = (int) ((this.measureStds[i].getLastValue(this.measureSelected)/this.upper_y_value)*height);
             paintStandardDeviation(g, len, x, y);
         }
         
@@ -111,25 +98,5 @@ public class GraphScatter extends AbstractGraphPlot {
     	
     }
     
-    private void scatterCurrentParam(Graphics g, MeasureCollection m, Color color) {
-        
-        int height = getHeight();
-        int width = getWidth();
-        
-        int x = (int)(((m.getLastValue(6) - this.lower_x_value) / (this.upper_x_value - this.lower_x_value)) * width); 
-        double value = m.getLastValue(this.measureSelected);  
-
-        if(Double.isNaN(value)){
-            // no result for this budget yet
-            return;
-        }
-        
-        int y = (int)(height - (value / this.upper_y_value) * height);
-        
-        g.setColor(color);
-        g.fillOval(x - DOT_SIZE/2, y - DOT_SIZE/2, DOT_SIZE, DOT_SIZE);
-        
-    }
-
 }
  

@@ -74,8 +74,8 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 	 * 
 	 * @param measures
 	 *            information about the curves
-	 * @param mSelect
-	 *            currently selected measure
+	 * @param measureStds
+	 * 			  standard deviation values for the measures
 	 * @param processFrequencies
 	 *            information about the process frequencies of the curves
 	 * @param min_processFrequency
@@ -83,15 +83,14 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 	 * @param colors
 	 *            color encodings for the curves
 	 */
-	public void setGraph(MeasureCollection[] measures, int mSelect, int[] processFrequencies, int min_processFrequency,
+	public void setGraph(MeasureCollection[] measures, MeasureCollection[] measureStds, int[] processFrequencies, int min_processFrequency,
 			Color[] colors) {
 		this.measures = measures;
-		this.measureSelected = mSelect;
 		this.processFrequencies = processFrequencies;
 		this.min_processFrequency = min_processFrequency;
 		((ProcessGraphAxes) this.axesPanel).setProcessFrequency(min_processFrequency);
 		((GraphMultiCurve) this.plotPanel).setProcessFrequency(min_processFrequency);
-		((GraphMultiCurve) this.plotPanel).setGraph(measures, mSelect, processFrequencies, colors);
+		((GraphMultiCurve) this.plotPanel).setGraph(measures, measureStds, processFrequencies, colors);
 		updateCanvas(false);
 	}
 	

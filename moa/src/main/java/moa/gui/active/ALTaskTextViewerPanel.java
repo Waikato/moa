@@ -106,10 +106,6 @@ public class ALTaskTextViewerPanel extends JPanel {
 	
 	private JPanel panelEvalOutput;
 	
-	private MeasureCollection[] measuresAll;
-	
-	private MeasureCollection[] measuresSpecial;
-	
 	private MeasureOverview measureOverview;
 	
 	private GridBagConstraints gridBagConstraints;
@@ -148,7 +144,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 	
 	private double[] variedParamValues;
 	
-	private Color[] colors;
+	private double[] budgets;
 
 	public ALTaskTextViewerPanel() {
 
@@ -253,11 +249,12 @@ public class ALTaskTextViewerPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selected = Integer.parseInt(e.getActionCommand());
-                graphCanvas.setGraph(measuresSpecial, selected, graphCanvas.getProcessFrequencies(),
-                        graphCanvas.getMinProcessFrequency(), colors);
-                paramGraphCanvas.setGraph(measuresSpecial, selected, 
-                        variedParamValues, colors);
-                budgetGraphCanvas.setGraph(measuresAll, selected, variedParamValues, colors);
+                graphCanvas.setMeasureSelected(selected);
+                graphCanvas.updateCanvas(true);
+                paramGraphCanvas.setMeasureSelected(selected);
+                paramGraphCanvas.updateCanvas(true);
+                budgetGraphCanvas.setMeasureSelected(selected);
+                budgetGraphCanvas.updateCanvas(true);
             }
         });
 
@@ -349,7 +346,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 		// graphCanvas displays the live graph
 		graphCanvas = new ProcessGraphCanvas();
 		graphCanvas.setPreferredSize(new Dimension(500, 111));
-		graphCanvas.setGraph(null, 0, null, 1000, null);
+		graphCanvas.setGraph(null, null, null, 1000, null);
 
 		GroupLayout graphCanvasLayout = new GroupLayout(graphCanvas);
 		graphCanvas.setLayout(graphCanvasLayout);
@@ -365,9 +362,9 @@ public class ALTaskTextViewerPanel extends JPanel {
 		paramGraphScrollPanel = new JScrollPane();
 
 		// paramGraphCanvas displays the live varied parameter graph
-		paramGraphCanvas = new ParamGraphCanvas(false);
+		paramGraphCanvas = new ParamGraphCanvas();
 		paramGraphCanvas.setPreferredSize(new Dimension(500, 111));
-		paramGraphCanvas.setGraph(null, 0, null, null);
+		paramGraphCanvas.setGraph(null, null, null, null);
 
 		GroupLayout paramGraphCanvasLayout = new GroupLayout(paramGraphCanvas);
 		paramGraphCanvas.setLayout(paramGraphCanvasLayout);
@@ -383,9 +380,9 @@ public class ALTaskTextViewerPanel extends JPanel {
         budgetGraphScrollPanel = new JScrollPane();
 		
 		// budgetGraphCanvas displays the live actually used budget graph
-		budgetGraphCanvas = new ParamGraphCanvas(true);
+		budgetGraphCanvas = new ParamGraphCanvas();
 		budgetGraphCanvas.setPreferredSize(new Dimension(500, 111));
-        budgetGraphCanvas.setGraph(null, 0, null, null);
+        budgetGraphCanvas.setGraph(null, null, null, null);
         
         GroupLayout budgetGraphCanvasLayout = new GroupLayout(budgetGraphCanvas);
         budgetGraphCanvas.setLayout(budgetGraphCanvasLayout);
@@ -571,17 +568,15 @@ public class ALTaskTextViewerPanel extends JPanel {
 	public void setGraph(Preview preview, Color[] colors) {
 		if (preview == null) {
 			// no preview received
-			this.measuresAll = null;
-		    this.measuresSpecial = null;
 		    this.measureOverview.update(null, "", null);
-			this.graphCanvas.setGraph(null, 0, null, 1000, null);
-			this.paramGraphCanvas.setGraph(null, 0, null, null);
-			this.budgetGraphCanvas.setGraph(null, 0, null, null);
+			this.graphCanvas.setGraph(null, null, null, 1000, null);
+			this.paramGraphCanvas.setGraph(null, null, null, null);
+			this.budgetGraphCanvas.setGraph(null, null, null, null);
 			return;
 		}
 
-		GraphCanvasMultiParams gcmpAll = new GraphCanvasMultiParams();
-		GraphCanvasMultiParams gcmpSpecial = new GraphCanvasMultiParams();
+		ParsedPreview pp;
+		ParsedPreview ppStd;
 		
 		// check which type of task it is
 		Class<?> c = preview.getTaskClass();
@@ -593,23 +588,18 @@ public class ALTaskTextViewerPanel extends JPanel {
 			this.variedParamName = pc.getVariedParamName();
             this.variedParamValues = pc.getVariedParamValues();
 
-			// read all previews
-			gcmpAll = readPreviewCollection(pc, false);
-			
 			if (c == ALPartitionEvaluationTask.class) {
 				// calculate mean preview collection for each parameter value
 				MeanPreviewCollection mpc = new MeanPreviewCollection(
 						(PreviewCollection<PreviewCollection<Preview>>) preview);
-				pc = mpc.getMeanPreviews();
-				pc = mpc.getStdPreviews();
+				pp = readCollection(mpc.getMeanPreviews());
+				ppStd = readCollection(mpc.getStdPreviews());
 				
-				// TODO: handle separate previews
-				
-				gcmpSpecial = readPreviewCollection(pc, true);
 				this.graphCanvas.setStandardDeviationPainted(true);
 				this.paramGraphCanvas.setStandardDeviationPainted(true);
 			} else {
-			    gcmpSpecial = readPreviewCollection(pc, false);
+				pp = readCollection(pc);
+				ppStd = null;
 			    this.graphCanvas.setStandardDeviationPainted(false);
 			    this.paramGraphCanvas.setStandardDeviationPainted(false);
 			}
@@ -625,8 +615,8 @@ public class ALTaskTextViewerPanel extends JPanel {
     		
     	} else if (c == ALPrequentialEvaluationTask.class) {
     		// read Preview (in this case, no special preview is required)
-    		gcmpAll = readPreview(preview, false);
-    		gcmpSpecial = gcmpAll;
+    		pp = read(preview);
+    		ppStd = null;
     		
     		// reset varied param name and values
     		this.variedParamName = "";
@@ -651,33 +641,33 @@ public class ALTaskTextViewerPanel extends JPanel {
     		
     	} else {
     		// sth went wrong
-    		this.measuresAll = null;
-    	    this.measuresSpecial = null;
     	    this.measureOverview.update(null, "", null);
-    		this.graphCanvas.setGraph(null, 0, null, 1000, null);
-    		this.paramGraphCanvas.setGraph(null, 0, null, null);
-    		this.budgetGraphCanvas.setGraph(null, 0, null, null);
+    		this.graphCanvas.setGraph(null, null, null, 1000, null);
+    		this.paramGraphCanvas.setGraph(null, null, null, null);
+    		this.budgetGraphCanvas.setGraph(null, null, null, null);
 			return;
     	}
-		
-		this.measuresAll = gcmpAll.getMeasureCollectionsArray();
-		
-		int[] pfsSpecial = gcmpSpecial.getProcessFrequenciesArray();
-		this.measuresSpecial = gcmpSpecial.getMeasureCollectionsArray();
-		int min_pf = min(pfsSpecial);
-		
-		this.colors = colors;
-		
-		this.measureOverview.update(this.measuresSpecial, this.variedParamName, this.variedParamValues);
-		this.graphCanvas.setGraph(this.measuresSpecial, 
-				this.graphCanvas.getMeasureSelected(), pfsSpecial, min_pf, colors);
-		this.paramGraphCanvas.setGraph(this.measuresSpecial, 
-				this.paramGraphCanvas.getMeasureSelected(), 
-				this.variedParamValues, colors);
-		this.budgetGraphCanvas.setGraph(
-				this.measuresAll, 
-				this.budgetGraphCanvas.getMeasureSelected(), 
-				this.variedParamValues, colors);
+
+		MeasureCollection[] measures = pp.getMeasureCollectionsArray();
+		MeasureCollection[] measuresStd = null;
+		if (ppStd != null) {
+			measuresStd = ppStd.getMeasureCollectionsArray();
+		}
+
+		// restructure latest budgets to make them readable for the
+		// GraphScatter class
+		this.budgets = new double[measures.length];
+		for (int i = 0; i < measures.length; i++) {
+			this.budgets[i] = measures[i].getLastValue(6);
+		}
+
+		int[] pfs = pp.getProcessFrequenciesArray();
+		int min_pf = min(pfs);
+
+		this.measureOverview.update(measures, this.variedParamName, this.variedParamValues);
+		this.graphCanvas.setGraph(measures, measuresStd, pfs, min_pf, colors);
+		this.paramGraphCanvas.setGraph(measures, measuresStd, this.variedParamValues, colors);
+		this.budgetGraphCanvas.setGraph(measures, measuresStd, this.budgets, colors);
 	}
 	
 	private static int min(int[] l) {
@@ -696,14 +686,14 @@ public class ALTaskTextViewerPanel extends JPanel {
 	
 	/**
 	 * Parses a PreviewCollection and return the resulting 
-	 * GraphCanvasMultiParams. If the PreviewCollection contains
+	 * ParsedPreview object. If the PreviewCollection contains
 	 * PreviewCollections again, it recursively adds their results. If it
 	 * contains simple Previews, it adds their properties to the result.
 	 * @param pc PreviewCollection
 	 * @return relevant information contained in the PreviewCollection
 	 */
-	public GraphCanvasMultiParams readPreviewCollection(PreviewCollection<Preview> pc, boolean withStd) {	
-		GraphCanvasMultiParams gcmp = new GraphCanvasMultiParams();
+	public ParsedPreview readCollection(PreviewCollection<Preview> pc) {	
+		ParsedPreview pp = new ParsedPreview();
 		List<Preview> sps = pc.getPreviews();
 
 		if (sps.size() > 0 && sps.get(0) instanceof PreviewCollection) {
@@ -711,36 +701,36 @@ public class ALTaskTextViewerPanel extends JPanel {
 			// NOTE: this assumes that all elements in sps are of the same type
 			for (Preview sp: sps) {
 				@SuppressWarnings("unchecked")
-				GraphCanvasMultiParams tmp = readPreviewCollection((PreviewCollection<Preview>) sp, withStd);
-				gcmp.add(tmp);
+				ParsedPreview tmp = readCollection((PreviewCollection<Preview>) sp);
+				pp.add(tmp);
 			}
 		} else {
 			// members are simple previews
 			for (Preview sp: sps) {
-				GraphCanvasMultiParams tmp = readPreview(sp, withStd);
-				gcmp.add(tmp);
+				ParsedPreview tmp = read(sp);
+				pp.add(tmp);
 			}
 		}
-		
-		return gcmp;
+
+		return pp;
 	}
 	
 	/**
-	 * GraphCanvasMultiParams represents the parsing results of a preview,
+	 * ParsedPreview represents the parsing results of a preview,
 	 * namely the process frequencies and the measure collections.
 	 * @author Tim Sabsch (tim.sabsch@ovgu.de)
 	 * @version $Revision: 1 $
 	 */
-	private class GraphCanvasMultiParams {
+	private class ParsedPreview {
 		private List<Integer> processFrequencies;
 		private List<MeasureCollection> measureCollections;
-		
-		public GraphCanvasMultiParams() {
+
+		public ParsedPreview() {
 			this.processFrequencies = new ArrayList<Integer>();
 			this.measureCollections = new ArrayList<MeasureCollection>();
 		}
 		
-		public void add(GraphCanvasMultiParams other) {
+		public void add(ParsedPreview other) {
 			this.processFrequencies.addAll(other.getProcessFrequencies());
 			this.measureCollections.addAll(other.getMeasureCollections());
 		}
@@ -774,7 +764,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 	 * measurements.
 	 * @param preview
 	 */
-	private GraphCanvasMultiParams readPreview(Preview p, boolean withStd) {
+	private ParsedPreview read(Preview p) {
 		
 		// find measure columns
 		String[] measureNames = p.getMeasurementNames();
@@ -788,14 +778,6 @@ public class ALTaskTextViewerPanel extends JPanel {
 		int timeColumn = -1;
 		int memoryColumn = -1;
 		int budgetColumn = -1;
-		
-        int accuracyColumnStd = -1;
-        int kappaColumnStd = -1;
-        int kappaTempColumnStd = -1;
-        int ramColumnStd = -1;
-        int timeColumnStd = -1;
-        int memoryColumnStd = -1;
-        int budgetColumnStd = -1;
 
 		for (int i = 0; i < numMeasures; i++) {
 			switch (measureNames[i]) {
@@ -804,65 +786,47 @@ public class ALTaskTextViewerPanel extends JPanel {
 				break;
 			case "classifications correct (percent)":
 			case "[avg] classifications correct (percent)":
+			case "[std] classifications correct (percent)":
 				accuracyColumn = i; 
 				break;
 			case "Kappa Statistic (percent)":
 			case "[avg] Kappa Statistic (percent)":
+			case "[std] Kappa Statistic (percent)":
 				kappaColumn = i;
 				break;
 			case "Kappa Temporal Statistic (percent)":
 			case "[avg] Kappa Temporal Statistic (percent)":
+			case "[std] Kappa Temporal Statistic (percent)":
 				kappaTempColumn = i;
 				break;
 			case "model cost (RAM-Hours)":
+			case "[std] model cost (RAM-Hours)":
 				ramColumn = i;
 				break;
 			case "evaluation time (cpu seconds)":
 			case "total train time":
+			case "[std] evaluation time (cpu seconds)":
 				timeColumn = i;
 				break;
 			case "model serialized size (bytes)":
+			case "[std] model serialized size (bytes)":
 				memoryColumn = i;
 				break;
 			case "Rel Number of Label Acquisitions":
+			case "[std] Rel Number of Label Acquisitions":
 				budgetColumn = i;
 				break;
-
-            case "[std] classifications correct (percent)":
-            case "[std] [avg] classifications correct (percent)":
-                accuracyColumnStd = i; 
-                break;
-            case "[std] Kappa Statistic (percent)":
-            case "[std] [avg] Kappa Statistic (percent)":
-                kappaColumnStd = i;
-                break;
-            case "[std] Kappa Temporal Statistic (percent)":
-            case "[std] [avg] Kappa Temporal Statistic (percent)":
-                kappaTempColumnStd = i;
-                break;
-            case "[std] model cost (RAM-Hours)":
-                ramColumnStd = i;
-                break;
-            case "[std] evaluation time (cpu seconds)":
-            case "[std] total train time":
-                timeColumnStd = i;
-                break;
-            case "[std] model serialized size (bytes)":
-                memoryColumnStd = i;
-                break;
-            case "[std] Rel Number of Label Acquisitions":
-                budgetColumnStd = i;
-                break;
 			default:
 				break;
 			}
 		}
-		
+
 		List<double[]> data = p.getData();
-		
+
 		MeasureCollection m = new ALMeasureCollection();
-    		
+
 		// set entries
+		// TODO: obviously this should be changed into a dict
 		for (double[] entry: data) {
 			m.addValue(0, entry[accuracyColumn]);
 			m.addValue(1, entry[kappaColumn]);
@@ -871,24 +835,14 @@ public class ALTaskTextViewerPanel extends JPanel {
 			m.addValue(4, entry[timeColumn]);
 			m.addValue(5, entry[memoryColumn] / (1024 * 1024));
 			m.addValue(6, entry[budgetColumn]);
-			
-			if (withStd) {
-                m.addValue(7, entry[accuracyColumnStd]);
-                m.addValue(8, entry[kappaColumnStd]);
-                m.addValue(9, entry[kappaTempColumnStd]);
-                m.addValue(10, Math.abs(entry[ramColumnStd]));
-                m.addValue(11, entry[timeColumnStd]);
-                m.addValue(12, entry[memoryColumnStd] / (1024 * 1024));
-                m.addValue(13, entry[budgetColumnStd]);
-			}
     	}
-		
+
 		// determine process frequency
 		int processFrequency = (int) data.get(0)[processFrequencyColumn];
-		
-		GraphCanvasMultiParams gcmp = new GraphCanvasMultiParams();
-		gcmp.addMeasureCollection(m);
-		gcmp.addProcessFrequency(processFrequency);
-		return gcmp;
+
+		ParsedPreview pp = new ParsedPreview();
+		pp.addMeasureCollection(m);
+		pp.addProcessFrequency(processFrequency);
+		return pp;
 	}
 }

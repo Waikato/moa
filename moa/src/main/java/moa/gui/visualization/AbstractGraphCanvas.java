@@ -48,6 +48,8 @@ public abstract class AbstractGraphCanvas extends JPanel {
 
     protected MeasureCollection[] measures;
 
+    protected MeasureCollection[] measureStds;
+    
     protected int measureSelected;
 
     protected AbstractGraphAxes axesPanel;
@@ -81,13 +83,13 @@ public abstract class AbstractGraphCanvas extends JPanel {
         this.axesPanel = ax;
         this.plotPanel = g;
 
+        this.measureSelected = 0;
+
         this.plotPanel.setLocation(X_OFFSET_LEFT + 1, Y_OFFSET_TOP);
 
         add(this.axesPanel);
         this.axesPanel.add(this.plotPanel);
 
-        this.measureSelected = 0;
-        
         this.min_x_value = 0;
         this.max_x_value = 1;
         this.max_y_value = 1;
@@ -167,12 +169,14 @@ public abstract class AbstractGraphCanvas extends JPanel {
     }
 
     /**
-     * Returns the currently selected measure index.
-     * 
-     * @return currently selected measure index
+     * Sets the currently selected measure index.
+     *
+     * @param selected
+     * 			  new selected measure
      */
-    public int getMeasureSelected() {
-        return this.measureSelected;
+    public void setMeasureSelected(int selected) {
+    	this.measureSelected = selected;
+        this.plotPanel.setMeasureSelected(selected);
     }
 
     /**

@@ -41,6 +41,7 @@ public abstract class AbstractGraphPlot extends JPanel{
 	private static final long serialVersionUID = 1L;
 	
 	protected MeasureCollection[] measures;
+	protected MeasureCollection[] measureStds;
     protected int measureSelected;
 	
     protected double min_x_value;
@@ -81,21 +82,31 @@ public abstract class AbstractGraphPlot extends JPanel{
             .addGap(0, 300, Short.MAX_VALUE)
         );
 	}
-	
+
 	/**
 	 * Sets the graph by updating the measures and currently measure index.
 	 * This method should not be directly called, but may be used by subclasses
 	 * to save space.
 	 * @param measures measure information
-	 * @param mSelect index of the currently selected measure
+	 * @param stds standard deviation of the measures
 	 * @param colors color encoding for the plots
 	 */
-	protected void setGraph(MeasureCollection[] measures, int mSelect, Color[] colors) {
+	protected void setGraph(MeasureCollection[] measures, MeasureCollection[] stds, Color[] colors) {
 		this.measures = measures;
-	    this.measureSelected = mSelect;
+		this.measureStds = stds;
 	    this.colors = colors;
 	    repaint();
 	}
+
+    /**
+     * Sets the currently selected measure index.
+     *
+     * @param selected
+     * 			  new selected measure
+     */
+    public void setMeasureSelected(int selected) {
+        this.measureSelected = selected;
+    }
 
     /**
      * Sets minimum x value.
@@ -167,7 +178,6 @@ public abstract class AbstractGraphPlot extends JPanel{
         this.isStandardDeviationPainted = b;
     }
 
-    
     protected void paintStandardDeviation(Graphics g, int len, int x, int y) {
         // draw vertical line
         g.drawLine(x, y-len, x, y+len);

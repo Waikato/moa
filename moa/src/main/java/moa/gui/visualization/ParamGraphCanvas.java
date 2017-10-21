@@ -43,28 +43,27 @@ public class ParamGraphCanvas extends AbstractGraphCanvas {
      * ParamGraphAxes as instance of AbstractGraphAxes and GraphScatter as
      * instance of AbstractGraphPlot.
      */
-    public ParamGraphCanvas(boolean paintCurrentParam) {
-        super(new ParamGraphAxes(), new GraphScatter(paintCurrentParam));
+    public ParamGraphCanvas() {
+        super(new ParamGraphAxes(), new GraphScatter());
     }
 
     /**
      * Sets the scatter graph.
-     * 
+     *
      * @param measures
      *            information about the curves
-     * @param mSelect
-     *            currently selected measure
+     * @param measureStds
+     *            standard deviation for the measures
      * @param variedParamValues
      *            values of the varied parameter
      * @param colors
      *            color encoding for the param array
      */
-    public void setGraph(MeasureCollection[] measures, int mSelect,
+    public void setGraph(MeasureCollection[] measures, MeasureCollection[] measureStds,
             double[] variedParamValues, Color[] colors) {
         this.measures = measures;
-        this.measureSelected = mSelect;
         this.variedParamValues = variedParamValues;
-        ((GraphScatter) this.plotPanel).setGraph(measures, mSelect,
+        ((GraphScatter) this.plotPanel).setGraph(measures, measureStds,
                 variedParamValues, colors);
         updateCanvas(false);
     }

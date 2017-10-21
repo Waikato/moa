@@ -41,13 +41,14 @@ public class GraphMultiCurve extends AbstractGraphPlot {
     /**
      * Updates the measure collection information and repaints the curves.
      * @param measures 			 information about the curves
-     * @param mSelect 		 	 currently selected measure
+     * @param measureStds		 standard deviation of the measures
      * @param processFrequencies information about the process frequencies of
      * 							 the curves
+     * @param colors			 color encodings of the curves
      */
-    protected void setGraph(MeasureCollection[] measures, int mSelect, int[] processFrequencies, Color[] colors){
-    	this.processFrequencies = processFrequencies;   
-    	super.setGraph(measures, mSelect, colors);
+    protected void setGraph(MeasureCollection[] measures, MeasureCollection[] measureStds, int[] processFrequencies, Color[] colors){
+//    	this.processFrequencies = processFrequencies;   
+    	super.setGraph(measures, measureStds, colors);
     }
     
     /**
@@ -63,54 +64,49 @@ public class GraphMultiCurve extends AbstractGraphPlot {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
+
         if (this.measures == null) { 
         	// no measures received yet -> nothing to paint
         	return; 
         }
-        
+
         // paint all curves
         for (int i = 0; i < this.measures.length; i++) {
-        	paintFullCurve(g, this.measures[i], this.measureSelected, this.processFrequencies[i], this.colors[i]);
+        	paintFullCurve(g, i);
         }
-        
+
     }
 
     /**
      * Draws a single curve on the canvas.
      * @param g 	  the Graphics context in which to paint
-     * @param m 	  curve information
-     * @param mSelect currently selected measure
-     * @param pf 	  process frequency of the curve
-     * @param color   colour the curve will be drawn in
+	 * @param i       index of the currently selected measure
      */
-    private void paintFullCurve(Graphics g, MeasureCollection m, int mSelect, int pf, Color color){
-            if (m.getNumberOfValues(mSelect) == 0) {
+    private void paintFullCurve(Graphics g, int i){
+            if (this.measures[i].getNumberOfValues(this.measureSelected) == 0) {
             	// no values of this measure available
             	return;
             }
-            
-            g.setColor(color);
-            
+
+            g.setColor(this.colors[i]);
+
             int height = getHeight();
-            
+
 //          // compute the relation of minimum PF and current PF
 //          double processFrequencyFactor = pf / this.min_processFrequency;
 
-            int n = m.getNumberOfValues(mSelect);
+            int n = this.measures[i].getNumberOfValues(this.measureSelected);
 
             int[] x = new int[n];
             int[] y = new int[n];
 
-            for (int i = 0; i < n; i ++) {
-            	x[i] = (int) (i * x_resolution);
-            	y[i] = (int)(height-(m.getValue(mSelect, i)/this.upper_y_value)*height);
-            	
-            	if (this.isStandardDeviationPainted && mSelect <= 6) {
-            	    // access the corresponding std value
-            	    double std = m.getValue(mSelect + 7, i);
-            	    int len = (int) ((std/this.upper_y_value)*height);
-            	    paintStandardDeviation(g, len, x[i], y[i]);
+            for (int j = 0; j < n; j++) {
+            	x[j] = (int) (j * x_resolution);
+            	y[j] = (int)(height-(this.measures[i].getValue(this.measureSelected, j)/this.upper_y_value)*height);
+
+            	if (this.isStandardDeviationPainted) {
+            	    int len = (int) ((this.measureStds[i].getValue(this.measureSelected, j)/this.upper_y_value)*height);
+            	    paintStandardDeviation(g, len, x[j], y[j]);
             	}
             }
 
