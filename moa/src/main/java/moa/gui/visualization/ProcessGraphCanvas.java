@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.gui.visualization;
 
@@ -27,7 +27,7 @@ import moa.evaluation.MeasureCollection;
 /**
  * ProcessGraphCanvas is an implementation of AbstractGraphCanvas, showing one
  * or multiple curves over a process.
- * 
+ *
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
  * @see AbstractGraphCanvas
@@ -42,18 +42,19 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 
 	/**
 	 * Initialises a ProcessGraphCanvas by calling the super constructor with a
-	 * ScalableGraphAxes as instance of AbstractGraphAxes and GraphMultiCurve as
+	 * ProcessGraphAxes as instance of AbstractGraphAxes and GraphMultiCurve as
 	 * instance of AbstractGraphPlot. Also sets the min_processfrequency to
 	 * initial value.
 	 */
 	public ProcessGraphCanvas() {
 		super(new ProcessGraphAxes(), new GraphMultiCurve());
+		// TODO implement
 		this.min_processFrequency = 10000;
 	}
 
 	/**
 	 * Returns the minimum process frequency.
-	 * 
+	 *
 	 * @return minimum process frequency
 	 */
 	public int getMinProcessFrequency() {
@@ -71,7 +72,7 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 
 	/**
 	 * Sets the graph containing multiple curves.
-	 * 
+	 *
 	 * @param measures
 	 *            information about the curves
 	 * @param measureStds
@@ -93,7 +94,7 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 		((GraphMultiCurve) this.plotPanel).setGraph(measures, measureStds, processFrequencies, colors);
 		updateCanvas(false);
 	}
-	
+
 	@Override
 	public double getMinXValue() {
 	    return 0;

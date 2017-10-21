@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.visualization;
 
@@ -27,7 +27,7 @@ import moa.evaluation.MeasureCollection;
 /**
  * GraphScatter is an implementation of AbstractGraphPlot that draws a scatter
  * plot.
- * 
+ *
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
  * @see AbstractGraphPlot
@@ -35,11 +35,11 @@ import moa.evaluation.MeasureCollection;
 public class GraphScatter extends AbstractGraphPlot {
 
 	private static final long serialVersionUID = 1L;
-    
+
     private static final int DOT_SIZE = 6;
-    
+
     private double[] variedParamValues;
-    
+
     /**
      * Draws a scatter graph based on the varied parameter and the measures.
      * @param measures list of measure collections, one for each task
@@ -56,7 +56,7 @@ public class GraphScatter extends AbstractGraphPlot {
     @Override
     protected void paintComponent(Graphics g) {
     	super.paintComponent(g);
-    	
+
         if (this.measures == null || this.variedParamValues == null) { 
         	// no measures received yet -> nothing to paint
         	return; 
@@ -67,7 +67,7 @@ public class GraphScatter extends AbstractGraphPlot {
                 this.scatter(g, i);
         }
     }
-    
+
     /**
      * Paint a dot onto the panel.
      * @param g graphics object
@@ -77,7 +77,7 @@ public class GraphScatter extends AbstractGraphPlot {
 
     	int height = getHeight();
     	int width = getWidth();
-    	
+
     	int x = (int)(((this.variedParamValues[i] - this.lower_x_value) / (this.upper_x_value - this.lower_x_value)) * width); 
     	double value = this.measures[i].getLastValue(this.measureSelected);  
 
@@ -93,10 +93,10 @@ public class GraphScatter extends AbstractGraphPlot {
             int len = (int) ((this.measureStds[i].getLastValue(this.measureSelected)/this.upper_y_value)*height);
             paintStandardDeviation(g, len, x, y);
         }
-        
+
     	g.fillOval(x - DOT_SIZE/2, y - DOT_SIZE/2, DOT_SIZE, DOT_SIZE);
-    	
+
     }
-    
+
 }
  

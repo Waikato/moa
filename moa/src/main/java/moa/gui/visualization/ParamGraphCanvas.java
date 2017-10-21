@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.gui.visualization;
 
@@ -27,7 +27,7 @@ import moa.evaluation.MeasureCollection;
 /**
  * ParamGraphCanvas is an implementation of AbstractGraphCanvas showing the
  * relation between a parameter and the measures.
- * 
+ *
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
  * @see AbstractGraphCanvas
@@ -67,7 +67,7 @@ public class ParamGraphCanvas extends AbstractGraphCanvas {
                 variedParamValues, colors);
         updateCanvas(false);
     }
-    
+
     @Override
     public double getMinXValue() {
         if (this.variedParamValues == null) {
@@ -82,7 +82,7 @@ public class ParamGraphCanvas extends AbstractGraphCanvas {
             }
         }
         return min;
-    }    
+    }
 
     @Override
     public double getMaxXValue() {

@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.gui.visualization;
 
@@ -26,7 +26,7 @@ import moa.evaluation.MeasureCollection;
 /**
  * GraphMultiCurve is an an implementation of AbstractGraphPlot that draws
  * several curves on a Canvas.
- * 
+ *
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
  * @see AbstractGraphPlot
@@ -34,8 +34,8 @@ import moa.evaluation.MeasureCollection;
 public class GraphMultiCurve extends AbstractGraphPlot {
 
 	private static final long serialVersionUID = 1L;
-    
-    private int[] processFrequencies;
+
+//    private int[] processFrequencies;
 //    private int min_processFrequency;
 
     /**
@@ -50,7 +50,7 @@ public class GraphMultiCurve extends AbstractGraphPlot {
 //    	this.processFrequencies = processFrequencies;   
     	super.setGraph(measures, measureStds, colors);
     }
-    
+
     /**
      * Sets the minimum process frequency, which may be used to stretch or
      * compress curves.

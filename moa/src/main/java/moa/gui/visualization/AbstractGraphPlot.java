@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.gui.visualization;
 
@@ -29,33 +29,33 @@ import moa.evaluation.MeasureCollection;
 /**
  * AbstractGraphPlot is an abstract class defining the structure of a Plot
  * class.
- * 
+ *
  * This class is partially based on GraphCurve.
- * 
+ *
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
  * @see GraphCurve
  */
 public abstract class AbstractGraphPlot extends JPanel{
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	protected MeasureCollection[] measures;
 	protected MeasureCollection[] measureStds;
     protected int measureSelected;
-	
+
     protected double min_x_value;
     protected double max_x_value;
     protected double max_y_value;
-    
+
     protected double lower_x_value;
     protected double upper_x_value;
     protected double upper_y_value;
 
     protected double x_resolution;
-    
+
     protected Color[] colors;
-    
+
     protected boolean isStandardDeviationPainted;
 
 	public AbstractGraphPlot() {
@@ -66,9 +66,9 @@ public abstract class AbstractGraphPlot extends JPanel{
 		this.lower_x_value = 0;
 		this.upper_x_value = 1;
 		this.upper_y_value = 1;
-		
+
 		this.isStandardDeviationPainted = false;
-    	
+
     	setOpaque(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -115,7 +115,7 @@ public abstract class AbstractGraphPlot extends JPanel{
     protected void setMinXValue(double min){
         this.min_x_value = min;
     }
-	
+
     /**
      * Sets maximum x value.
      * @param max maximum x value
@@ -123,7 +123,7 @@ public abstract class AbstractGraphPlot extends JPanel{
     protected void setMaxXValue(double max){
         this.max_x_value = max;
     }
-	
+
     /**
      * Sets maximum y value.
      * @param max maximum y value
@@ -141,7 +141,7 @@ public abstract class AbstractGraphPlot extends JPanel{
     protected void setLowerXValue(double value) {
         this.lower_x_value = value;
     }
-    
+
     /**
      * Sets the upper value for the x-axis.
      * 
@@ -151,7 +151,7 @@ public abstract class AbstractGraphPlot extends JPanel{
     protected void setUpperXValue(double value) {
     	this.upper_x_value = value;
     }
-    
+
     /**
      * Sets the upper value for the y-axis.
      * 
@@ -169,7 +169,7 @@ public abstract class AbstractGraphPlot extends JPanel{
     protected void setXResolution(double x_resolution) {
         this.x_resolution = x_resolution;
     }
-    
+
     /**
      * Sets the value for isStandardDeviationPainted.
      * @param b new setting for isStandardDeviationPainted

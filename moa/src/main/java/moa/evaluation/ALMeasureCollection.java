@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
@@ -26,7 +26,7 @@ import moa.gui.visualization.DataPoint;
 
 /**
  * Collection of measures used to evaluate AL tasks.
- * 
+ *
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
  *
@@ -43,7 +43,7 @@ public class ALMeasureCollection extends MeasureCollection implements Classifica
 
     @Override
     public void evaluateClustering(Clustering clustering, Clustering trueClsutering, ArrayList<DataPoint> points) {
-    	
+
     }
 
 }
