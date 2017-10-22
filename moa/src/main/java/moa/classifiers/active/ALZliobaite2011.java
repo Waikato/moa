@@ -26,7 +26,8 @@ import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import moa.classifiers.MultiClassClassifier;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.core.Utils;
 
 import moa.core.DoubleVector;
@@ -67,11 +68,15 @@ import com.github.javacliparser.MultiChoiceOption;
  * threshold</li> <li>-s : Floating budget step</li> <li>-n : Number of
  * instances at beginning without active learning</li>
  *
+ * <p>Structural changes to match active learning framework by Daniel Kottke.
+ * </p>
+ *
  * @author Indre Zliobaite (zliobaite at gmail dot com)
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
+ * @author Daniel Kottke (daniel dot kottke at ovgu dot de) - adapted to AL framework
  * @version $Revision: 7 $
  */
-public class ActiveClassifier extends AbstractClassifier implements MultiClassClassifier {
+public class ALZliobaite2011 extends AbstractClassifier implements ALClassifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -110,6 +115,8 @@ public class ActiveClassifier extends AbstractClassifier implements MultiClassCl
 
     public Classifier classifier;
 
+    public int lastLabelAcq = 0;
+    
     public int costLabeling;
 
     public int costLabelingRandom;
@@ -143,6 +150,7 @@ public class ActiveClassifier extends AbstractClassifier implements MultiClassCl
             this.classifier.trainOnInstance(inst);
             this.costLabeling++;
             this.costLabelingRandom++;
+            this.lastLabelAcq += 1;
         }
 
     }
@@ -151,6 +159,7 @@ public class ActiveClassifier extends AbstractClassifier implements MultiClassCl
         if (incomingPosterior < this.fixedThresholdOption.getValue()) {
             this.classifier.trainOnInstance(inst);
             this.costLabeling++;
+            this.lastLabelAcq += 1;
         }
     }
 
@@ -158,6 +167,7 @@ public class ActiveClassifier extends AbstractClassifier implements MultiClassCl
         if (incomingPosterior < this.newThreshold) {
             this.classifier.trainOnInstance(inst);
             this.costLabeling++;
+            this.lastLabelAcq += 1;
             this.newThreshold *= (1 - this.stepOption.getValue());
         } else {
             this.newThreshold *= (1 + this.stepOption.getValue());
@@ -170,6 +180,7 @@ public class ActiveClassifier extends AbstractClassifier implements MultiClassCl
         if (this.classifierRandom.nextDouble() < budget) {
             this.classifier.trainOnInstance(inst);
             this.costLabeling++;
+            this.lastLabelAcq += 1;
         }
     }
 
@@ -182,6 +193,7 @@ public class ActiveClassifier extends AbstractClassifier implements MultiClassCl
         this.iterationControl = 0;
         this.newThreshold = 1.0;
         this.accuracyBaseLearner = 0;
+        this.lastLabelAcq = 0;
     }
 
     @Override
@@ -195,12 +207,11 @@ public class ActiveClassifier extends AbstractClassifier implements MultiClassCl
             costNow = 0;
             //Use all instances at the beginning
             this.classifier.trainOnInstance(inst);
-	    this.costLabeling++;
+            this.costLabeling++;
             return;
         } else {
             costNow = (this.costLabeling - this.numInstancesInitOption.getValue()) / ((double) this.iterationControl - this.numInstancesInitOption.getValue());
         }
-
 
         if (costNow < this.budgetOption.getValue()) { //allow to label
             switch (this.activeLearningStrategyOption.getChosenIndex()) {
@@ -258,4 +269,17 @@ public class ActiveClassifier extends AbstractClassifier implements MultiClassCl
         }
         return measurementList.toArray(new Measurement[measurementList.size()]);
     }
+
+	@Override
+	public int getLastLabelAcqReport() {
+		int help = this.lastLabelAcq;
+		this.lastLabelAcq = 0;
+		return help; 
+	}
+	
+	@Override
+	public void setModelContext(InstancesHeader ih) {
+		super.setModelContext(ih);
+		classifier.setModelContext(ih);
+	}
 }

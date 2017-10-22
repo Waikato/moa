@@ -70,13 +70,13 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier implement
 
     protected int ddmLevel;
 
-   /* public boolean isWarningDetected() {
-        return (this.ddmLevel == DriftDetectionMethod.DDM_WARNING_LEVEL);
+    public boolean isWarningDetected() {
+        return (this.ddmLevel == DDM_WARNING_LEVEL);
     }
 
     public boolean isChangeDetected() {
-        return (this.ddmLevel == DriftDetectionMethod.DDM_OUTCONTROL_LEVEL);
-    }*/
+        return (this.ddmLevel == DDM_OUTCONTROL_LEVEL);
+    }
 
     public static final int DDM_INCONTROL_LEVEL = 0;
 

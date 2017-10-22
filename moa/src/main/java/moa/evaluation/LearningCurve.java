@@ -48,6 +48,17 @@ public class LearningCurve extends AbstractMOAObject {
     public String getOrderingMeasurementName() {
         return this.measurementNames.get(0);
     }
+    
+    public void setData(
+    		List<String> measurementNames, 
+    		List<double[]> measurementValues) 
+    {
+    	this.measurementNames.clear();
+    	this.measurementValues.clear();
+    	
+    	this.measurementNames.addAll(measurementNames);
+    	this.measurementValues.addAll(measurementValues);
+    }
 
     public void insertEntry(LearningEvaluation learningEvaluation) {
         Measurement[] measurements = learningEvaluation.getMeasurements();
@@ -127,5 +138,13 @@ public class LearningCurve extends AbstractMOAObject {
 
     public String getMeasurementName(int measurementIndex) {
         return this.measurementNames.get(measurementIndex);
+    }
+
+    public int getMeasurementNameCount() {
+        return this.measurementNames.size();
+    }
+
+    public int getEntryMeasurementCount(int entryIdx) {
+        return this.measurementValues.get(entryIdx).length;
     }
 }

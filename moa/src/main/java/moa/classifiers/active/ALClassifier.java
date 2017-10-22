@@ -1,7 +1,7 @@
 /*
- *    ListOptionEditComponent.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
- *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ *    ALClassifier.java
+ *    Copyright (C) 2016 Otto von Guericke University, Magdeburg, Germany
+ *    @author Daniel Kottke (daniel dot kottke at ovgu dot de)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -17,22 +17,22 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package com.github.javacliparser.gui;
+package moa.classifiers.active;
 
-import com.github.javacliparser.Option;
+import moa.classifiers.Classifier;
 
 /**
- * An OptionEditComponent that lets the user edit a list option.
+ * Active Learning Classifier Interface to make AL Classifiers selectable in AL tasks.
  *
- * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $
+ * @author Daniel Kottke (daniel dot kottke at ovgu dot de)
+ * @version $Revision: 1 $
  */
-public class ListOptionEditComponent extends StringOptionEditComponent {
+public interface ALClassifier extends Classifier {
 
-    private static final long serialVersionUID = 1L;
-
-    public ListOptionEditComponent(Option option) {
-    	super(option);
-    }
+   /**
+     * Returns true if the previously chosen instance was added to the training set 
+     * of the active learner.
+     *
+     */
+	public int getLastLabelAcqReport();
 }
-
