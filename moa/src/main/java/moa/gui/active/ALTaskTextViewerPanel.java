@@ -514,6 +514,9 @@ public class ALTaskTextViewerPanel extends JPanel {
 	 */
 	public void setErrorText(FailedTaskReport failedTaskReport) {
 		Point p = this.scrollPaneText.getViewport().getViewPosition();
+		
+		final String failedTaskReportString = failedTaskReport == null ? 
+				"Failed Task Report is null" : failedTaskReport.toString();
 
 		SwingUtilities.invokeLater(
 			new Runnable(){
@@ -526,7 +529,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 						scrollPaneText.setVisible(true);
 						topWrapper.validate();
 					}
-					errorTextField.setText(failedTaskReport == null ? "Failed Task Report is null" : failedTaskReport.toString());
+					errorTextField.setText(failedTaskReportString);
 					errorTextField.repaint();
 				}
 			}
@@ -742,7 +745,14 @@ public class ALTaskTextViewerPanel extends JPanel {
 		}
 
 		public int[] getProcessFrequenciesArray() {
-			return this.processFrequencies.stream().mapToInt(i->i).toArray(); //NOTE: this is Java 8
+			// Convert Integer list of process frequencies to int Array
+			int[] processFrequenciesArray = new int[this.processFrequencies.size()];
+			int i = 0;
+			for (Integer freq : this.processFrequencies) {
+				processFrequenciesArray[i] = freq.intValue();
+				++i;
+			}
+			return processFrequenciesArray;
 		}
 		public MeasureCollection[] getMeasureCollectionsArray() {
 			return this.measureCollections.toArray(new MeasureCollection[this.measureCollections.size()]);

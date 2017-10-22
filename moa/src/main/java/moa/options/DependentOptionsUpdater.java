@@ -21,7 +21,6 @@ package moa.options;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.event.ChangeEvent;
@@ -125,33 +124,37 @@ public class DependentOptionsUpdater implements ChangeListener, Serializable {
 			List<String> optionNames, List<String> optionDescriptions,
 			String namePrefix) 
 	{
-		OptionHandler optionHandler = 
-				(OptionHandler) option.getPreMaterializedObject();
-		Option[] options = optionHandler.getOptions().getOptionArray();
+		OptionHandler optionHandler = (OptionHandler) option.getPreMaterializedObject();
+		Option[]      options       = optionHandler.getOptions().getOptionArray();
 		
 		// filter for Int and Float Options
-		Option[] numberOptions = Arrays.stream(options)
-				.filter(x -> x instanceof IntOption || 
-							 x instanceof FloatOption)
-				.toArray(Option[]::new);
+		List<Option> numberOptions = new ArrayList<Option>(options.length);
+		for (Option o : options) {
+			if (o instanceof IntOption || o instanceof FloatOption) {
+				numberOptions.add(o);
+			}
+		}
 		
 		// get names and descriptions
-		String newNamePrefix = namePrefix + option.getName() + "/";
-		String[] names = Arrays.stream(numberOptions)
-				.map(x -> newNamePrefix + x.getName())
-				.toArray(String[]::new);
-		String[] descriptions = Arrays.stream(numberOptions)
-				.map(x -> x.getPurpose())
-				.toArray(String[]::new);
+		String       newNamePrefix = namePrefix + option.getName() + "/";
+		List<String> names         = new ArrayList<String>(numberOptions.size());
+		List<String> descriptions  = new ArrayList<String>(numberOptions.size());
+		for (Option o : numberOptions) {
+			names.add(newNamePrefix + o.getName());
+			descriptions.add(o.getPurpose());
+		}
 		
 		// add to overall lists
-		optionNames.addAll(Arrays.asList(names));
-		optionDescriptions.addAll(Arrays.asList(descriptions));
+		optionNames.addAll(names);
+		optionDescriptions.addAll(descriptions);
 		
 		// filter for ClassOptions
-		ClassOption[] classOptions = Arrays.stream(options)
-				.filter(x -> x instanceof ClassOption)
-				.toArray(ClassOption[]::new);
+		List<ClassOption> classOptions = new ArrayList<ClassOption>(options.length);
+		for (Option o : options) {
+			if (o instanceof ClassOption) {
+				classOptions.add((ClassOption) o);
+			}
+		}
 		
 		// add number options of this class option to the overall list
 		for (ClassOption classOption : classOptions) {
