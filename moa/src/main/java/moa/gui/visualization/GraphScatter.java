@@ -86,6 +86,7 @@ public class GraphScatter extends AbstractGraphPlot {
             return;
         }
 
+        int y = (int)(height - (value / this.upper_y_value) * height);
 
         g.setColor(this.colors[i]);
 
