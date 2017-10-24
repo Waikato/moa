@@ -57,9 +57,9 @@ public class DoTask {
     public static boolean isJavaVersionOK() {
         boolean isJavaVersionOK = true;
         String version = System.getProperty("java.version");
+        char major = version.charAt(0);
         char minor = version.charAt(2);
-        char point = version.charAt(4);
-        if (minor < '6' || point < '0') {
+        if (major == '1' && minor < '6') {
             isJavaVersionOK = false;
             System.err.println();
             System.err.println(Globals.getWorkbenchInfoString());
