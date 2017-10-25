@@ -20,6 +20,7 @@
 package moa.classifiers.functions;
 
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
 import com.yahoo.labs.samoa.instances.Instance;
 
@@ -29,7 +30,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Bernhard Pfahringer (bernhard@cs.waikato.ac.nz)
  * @version $Revision: 1 $
  */
-public class NoChange extends AbstractClassifier {
+public class NoChange extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
 
