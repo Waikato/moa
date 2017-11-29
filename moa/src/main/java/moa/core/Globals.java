@@ -29,7 +29,7 @@ public class Globals {
 
     public static final String workbenchTitle = "{M}assive {O}nline {A}nalysis";
 
-    public static final String versionString = " 17.06 June 2017";
+    public static final String versionString = " 17.10 October 2017";
 
     public static final String copyrightNotice = "(C) 2007-2017 University of Waikato, Hamilton, New Zealand";
 
