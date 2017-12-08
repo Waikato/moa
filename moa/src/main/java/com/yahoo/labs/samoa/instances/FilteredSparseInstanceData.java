@@ -17,7 +17,7 @@ package com.yahoo.labs.samoa.instances;
 /**
  * The Class SparseInstanceData.
  *
- * @author abifet
+ * @author Jean Paul Barddal
  */
 public class FilteredSparseInstanceData extends SparseInstanceData {
 
