@@ -67,7 +67,7 @@ public class Instances implements Serializable {
     protected int[] indicesRelevants;
 
     /**
-     * Indices of relevant features.
+     * Indices of irrelevant features.
      */
     protected int[] indicesIrrelevants;
 
@@ -651,7 +651,9 @@ public class Instances implements Serializable {
 
     /**
      * Sets the indices of relevant features.
-     * This method also sets the irrelevant ones as it is the complement.
+     * This method also sets the irrelevant ones since
+     * it is the set complement.
+     *
      * @param indicesRelevants
      */
     public void setIndicesRelevants(int[] indicesRelevants) {
@@ -659,6 +661,7 @@ public class Instances implements Serializable {
         // -1 to skip the class attribute
         int numIrrelevantFeatures = this.numAttributes() - this.indicesRelevants.length - 1;
         this.indicesIrrelevants = new int[numIrrelevantFeatures];
+
         // Infers and sets the set of irrelevant features
         int index = 0;
         int indexRel = 0;

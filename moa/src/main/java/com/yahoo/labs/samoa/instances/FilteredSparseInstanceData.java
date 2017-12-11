@@ -15,7 +15,14 @@
 package com.yahoo.labs.samoa.instances;
 
 /**
- * The Class SparseInstanceData.
+ * The Class FilteredSparseInstanceData.
+ *
+ * This class is an extension to the original SparseInstanceData.
+ * It has been created to be used with feature selection
+ * algorithms for data streams.
+ * In contrast to SparseInstanceData objects, missing values are
+ * represented as NaNs instead of 0s (zeros).
+ * This allows learners to skip features with missing values.
  *
  * @author Jean Paul Barddal
  */
@@ -35,7 +42,9 @@ public class FilteredSparseInstanceData extends SparseInstanceData {
 
 
     /**
-     * Value.
+     * Value of the attribute in the indexAttribute position.
+     * If this value is absent, a NaN value (marker of missing value)
+     * is returned, otherwise this method returns the actual value.
      *
      * @param indexAttribute the index attribute
      * @return the double
@@ -43,11 +52,10 @@ public class FilteredSparseInstanceData extends SparseInstanceData {
     @Override
     public double value(int indexAttribute) {
         int location = locateIndex(indexAttribute);
-        //return location == -1 ? 0 : this.attributeValues[location];
-        //      int index = locateIndex(attIndex);
         if ((location >= 0) && (indexValues[location] == indexAttribute)) {
             return attributeValues[location];
         } else {
+            // returns a NaN value which represents missing values instead of a 0 (zero)
             return Double.NaN;
         }
     }

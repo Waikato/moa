@@ -14,10 +14,15 @@
  */
 package com.yahoo.labs.samoa.instances;
 
-import moa.streams.ExampleStream;
-
 /**
  * The Class FilteredSparseInstance.
+ *
+ * This class is an extension to the original SparseInstance.
+ * It has been created to be used with feature selection
+ * algorithms for data streams.
+ * In contrast to SparseInstance objects, missing values are
+ * represented as NaNs instead of 0s (zeros).
+ * This allows learners to skip features with missing values.
  *
  * @author Jean Paul Barddal
  */
@@ -61,6 +66,7 @@ public class FilteredSparseInstance extends SparseInstance {
      * @param numberAttributes the number attributes
      */
     public FilteredSparseInstance(double weight, double[] attributeValues, int[] indexValues, int numberAttributes) {
+        super(numberAttributes);
         this.weight = weight;
         this.instanceData = new FilteredSparseInstanceData(attributeValues, indexValues, numberAttributes);
     }
