@@ -32,8 +32,10 @@ import moa.core.StringUtils;
 import moa.evaluation.Accuracy;
 import moa.evaluation.ChangeDetectionMeasures;
 import moa.evaluation.MeasureCollection;
+import moa.evaluation.Preview;
 import moa.evaluation.RegressionAccuracy;
 import moa.gui.conceptdrift.CDTaskManagerPanel;
+import moa.tasks.FailedTaskReport;
 import moa.tasks.ResultPreviewListener;
 import moa.tasks.TaskThread;
 
@@ -129,7 +131,7 @@ public class PreviewPanel extends JPanel implements ResultPreviewListener {
     public void refresh() {
         if (this.previewedThread != null) {
             if (this.previewedThread.isComplete()) {
-                setLatestPreview(null);
+                setLatestPreview();
                 disableRefresh();
             } else {
                 this.previewedThread.getPreview(PreviewPanel.this);
@@ -139,8 +141,7 @@ public class PreviewPanel extends JPanel implements ResultPreviewListener {
 
     public void setTaskThreadToPreview(TaskThread thread) {
         this.previewedThread = thread;
-        setLatestPreview(thread != null ? thread.getLatestResultPreview()
-                : null);
+        setLatestPreview();
         if (thread == null) {
             disableRefresh();
         } else if (!thread.isComplete()) {
@@ -148,27 +149,71 @@ public class PreviewPanel extends JPanel implements ResultPreviewListener {
         }
     }
 
-    public void setLatestPreview(Object preview) {
-        if ((this.previewedThread != null) && this.previewedThread.isComplete()) {
-            this.previewLabel.setText("Final result");
-            Object finalResult = this.previewedThread.getFinalResult();
-            this.textViewerPanel.setText(finalResult != null ? finalResult.toString() : null);
-            disableRefresh();
-        } else {
-            double grabTime = this.previewedThread != null ? this.previewedThread.getLatestPreviewGrabTimeSeconds()
-                    : 0.0;
-            String grabString = grabTime > 0.0 ? (" ("
-                    + StringUtils.secondsToDHMSString(grabTime) + ")") : "";
-            this.textViewerPanel.setText(preview != null ? preview.toString()
-                    : null);
-            if (preview == null) {
-                this.previewLabel.setText("No preview available" + grabString);
-            } else {
-                this.previewLabel.setText("Preview" + grabString);
-            }
-        }
-    }
+//    public void setLatestPreview(Object preview) {
+//        if ((this.previewedThread != null) && this.previewedThread.isComplete()) {
+//            this.previewLabel.setText("Final result");
+//            Object finalResult = this.previewedThread.getFinalResult();
+//            this.textViewerPanel.setText(finalResult != null ? finalResult.toString() : null);
+//            disableRefresh();
+//        } else {
+//            double grabTime = this.previewedThread != null ? this.previewedThread.getLatestPreviewGrabTimeSeconds()
+//                    : 0.0;
+//            String grabString = grabTime > 0.0 ? (" ("
+//                    + StringUtils.secondsToDHMSString(grabTime) + ")") : "";
+//            this.textViewerPanel.setText(preview != null ? preview.toString()
+//                    : null);
+//            if (preview == null) {
+//                this.previewLabel.setText("No preview available" + grabString);
+//            } else {
+//                this.previewLabel.setText("Preview" + grabString);
+//            }
+//        }
+//    }
 
+    /**
+     * Requests the latest preview and sends it to the TextViewerPanel to
+     * display it.
+     */
+    private void setLatestPreview() {
+
+    	
+    	if(this.previewedThread != null && this.previewedThread.failed())
+    	{
+    		FailedTaskReport failedTaskReport = (FailedTaskReport) this.previewedThread.getFinalResult();
+    		this.textViewerPanel.setErrorText(failedTaskReport);
+    		this.textViewerPanel.setGraph(null);
+    	}
+    	else
+    	{
+        	Preview preview = null;
+    		if ((this.previewedThread != null) && this.previewedThread.isComplete()) {
+    			// cancelled, completed or failed task
+    			// TODO if the task is failed, the finalResult is a FailedTaskReport, which is not a Preview
+    			preview = (Preview) this.previewedThread.getFinalResult();
+    			this.previewLabel.setText("Final result");
+    			disableRefresh();
+    		} else if (this.previewedThread != null){
+    			// running task
+    			preview = (Preview) this.previewedThread.getLatestResultPreview();
+    			double grabTime = this.previewedThread.getLatestPreviewGrabTimeSeconds();
+    			String grabString = " (" + StringUtils.secondsToDHMSString(grabTime) + ")";
+    			if (preview == null) {
+    				this.previewLabel.setText("No preview available" + grabString);
+    			} else {
+    				this.previewLabel.setText("Preview" + grabString);
+    			}
+    		} else {
+    			// no thread
+    			this.previewLabel.setText("No preview available");
+    			preview = null;
+    		}
+        	
+    		this.textViewerPanel.setText(preview);
+    		if(preview != null)
+    			this.textViewerPanel.setGraph(preview.toString());
+    	}
+    }
+    
     public void updateAutoRefreshTimer() {
         int autoDelay = autoFreqTimeSecs[this.autoRefreshComboBox.getSelectedIndex()];
         if (autoDelay > 0) {
