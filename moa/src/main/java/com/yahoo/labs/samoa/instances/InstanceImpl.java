@@ -364,7 +364,11 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public void setDataset(Instances dataset) {
-        this.instanceHeader = new InstancesHeader(dataset);
+        if(dataset instanceof InstancesHeader) {
+            this.instanceHeader = (InstancesHeader) dataset;
+        }else {
+            this.instanceHeader = new InstancesHeader(dataset);
+        }
     }
 
     /**
