@@ -64,7 +64,7 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 	
 	public ClassOption learnerOption = new ClassOption("learner", 'l',
             "Learner to train.", ALClassifier.class, 
-            "moa.classifiers.active.PALStream");
+            "moa.classifiers.active.ALRandom");
 	
 	public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,
