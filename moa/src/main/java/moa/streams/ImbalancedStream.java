@@ -18,8 +18,8 @@
 
 package moa.streams;
 
-import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+import com.github.javacliparser.StringOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
@@ -39,19 +39,8 @@ import java.util.Random;
  * This is a meta-generator that produces class imbalance in a stream.
  * Only two parameters are required to be set:
  * - The original stream
- * - The proportion of the stream with the minority label (1)
+ * - The ratio (proportion) of each class in the stream.
  *
- *
- * ------------------------------------------------------------------
- * |                          Disclaimer                            |
- * ------------------------------------------------------------------
- * | The current version of the meta-generator                      |
- * | works under the following assumptions:                         |
- * | 1. The original stream is balanced (or close to being balanced)|
- * | 2. The majority class is represented by index 0 and the        |
- * |  minority class is represented by 1.                           |
- * |                                                                |
- * ------------------------------------------------------------------
  *
  * @author Jean Paul Barddal (jean.barddal@ppgia.pucpr.br)
  * @version 1.0
@@ -65,9 +54,13 @@ public class ImbalancedStream extends AbstractOptionHandler implements
             "Stream to imbalance.", ExampleStream.class,
             "generators.RandomTreeGenerator");
 
-    public FloatOption minorityClassProportionOption = new FloatOption("minorityClassProportion", 'm',
-            "Approximate proportion of the output stream that should belong to the minority class.",
-            0.1, 0.0, 1.0);
+    public StringOption classRatioOption = new StringOption("classRatio", 'c',
+            "Determine the ratio of each class in the output stream. " +
+                    "The ratio of each class should be given as a real number " +
+                    "between 0 and 1, each followed by a semicolon, and their sum should be equal to 1. " +
+                    "(the default value of \"0.9;0.1\" stands for an output stream with approximately 90% " +
+                    "of the instances belonging to the first class and 10% to the second class.",
+            "0.9;0.1");
 
     public IntOption instanceRandomSeedOption = new IntOption(
             "instanceRandomSeed", 'i',
@@ -75,13 +68,39 @@ public class ImbalancedStream extends AbstractOptionHandler implements
 
     protected ExampleStream originalStream    = null;
     protected Instances     instancesBuffer[] = null;
+    protected double        probPerClass[]    = null;
     protected Random        random            = null;
+    protected int           numClasses        = 0;
 
     @Override
     protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         originalStream = (ExampleStream) getPreparedClassOption(streamOption);
-        // TODO: Make the overall procedure multi-class
-        instancesBuffer = new Instances[2];
+        numClasses = originalStream.getHeader().numClasses();
+        probPerClass = new double[numClasses];
+        instancesBuffer = new Instances[numClasses];
+        probPerClass = new double[numClasses];
+
+
+        // checks and sets the probabilities
+        double sumProbs = 0.0;
+        String probs[] = classRatioOption.getValue().split(";");
+        for(int i = 0; i < probs.length; i++){
+            if(i > probPerClass.length - 1) throw new IllegalArgumentException("Please make sure the number of class " +
+                    "ratios provided is less or equal the number of classes in the original stream.");
+            Double p = Double.parseDouble(probs[i]);
+            if(!p.isNaN() && ! p.isInfinite() && p.doubleValue() >= 0.0 && p.doubleValue() <= 1.0){
+                // aka is a valid number between 0.0 and 1.0
+                probPerClass[i]  = p;
+                sumProbs        += p;
+            }else{
+                throw new IllegalArgumentException("Please make sure only numbers between 0.0 and 1.0 are inputted.");
+            }
+        }
+
+        // checks if the values sum to 1.0
+        if(sumProbs != 1.0) throw new IllegalArgumentException("Please make sure the class ratios sum up to 1.0.");
+
+
         // initializes the buffers using the original header
         for(int i = 0; i < instancesBuffer.length; i++){
             instancesBuffer[i] = new Instances(originalStream.getHeader());
@@ -107,11 +126,16 @@ public class ImbalancedStream extends AbstractOptionHandler implements
 
     @Override
     public Example<Instance> nextInstance() {
-        // randomly defines whether the next instance should be from the minority class or not.
-        double p = random.nextDouble();
-        int iClass = p <= minorityClassProportionOption.getValue() ? 1 : 0;
+        // a value between 0.0 and 1.0 uniformly distributed
+        double p   = random.nextDouble();
+        int iClass = -1;
+        // loops over all class probabilities to see from which class the next instance should be from
+        while(p > 0.0){
+            iClass++;
+            p -= probPerClass[iClass];
+        }
 
-        // keeps on creating instances until we have an instance for the desired class
+        // keeps on creating and storing instances until we have an instance for the desired class
         while(instancesBuffer[iClass].size() == 0){
             Example<Instance> inst = originalStream.nextInstance();
             instancesBuffer[(int) inst.getData().classValue()].add(inst.getData());
