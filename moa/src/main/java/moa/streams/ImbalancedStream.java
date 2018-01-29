@@ -41,6 +41,12 @@ import java.util.Random;
  * - The original stream
  * - The ratio (proportion) of each class in the stream.
  *
+ * The second parameter determines the ratio of each class in the output stream.
+ * The ratio of each class should be provided as a real number between 0.0 and 1.0,
+ * each being followed by a semicolon, and their sum should add up to 1.0.
+ * The default value of 0.9;0.1 stands for an output stream where approximately 90%
+ * of the instances belonging to the first class while the remainder 10% would
+ * belong to the secondary class.
  *
  * @author Jean Paul Barddal (jean.barddal@ppgia.pucpr.br)
  * @version 1.0
@@ -58,7 +64,7 @@ public class ImbalancedStream extends AbstractOptionHandler implements
             "Determine the ratio of each class in the output stream. " +
                     "The ratio of each class should be given as a real number " +
                     "between 0 and 1, each followed by a semicolon, and their sum should be equal to 1. " +
-                    "(the default value of \"0.9;0.1\" stands for an output stream with approximately 90% " +
+                    "The default value of \"0.9;0.1\" stands for an output stream with approximately 90% " +
                     "of the instances belonging to the first class and 10% to the second class.",
             "0.9;0.1");
 
