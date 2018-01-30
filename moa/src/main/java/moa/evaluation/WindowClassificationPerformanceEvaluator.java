@@ -33,12 +33,17 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.Prediction;
 
+import java.util.LinkedList;
+
 /**
  * Classification evaluator that updates evaluation results using a sliding
  * window.
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
- * @version $Revision: 7 $
+ * @author Jean Paul Barddal (jpbarddal@gmail.com)
+ * @version $Revision: 8 $
+ *
+ *
  */
 public class WindowClassificationPerformanceEvaluator extends BasicClassificationPerformanceEvaluator {
 
@@ -54,38 +59,34 @@ public class WindowClassificationPerformanceEvaluator extends BasicClassificatio
 
     public class WindowEstimator implements Estimator {
 
-        protected double[] window;
+        protected LinkedList<Double> window;
 
-        protected int posWindow;
-
-        protected int lenWindow;
-
-        protected int SizeWindow;
-
+        protected int sizeWindow;
         protected double sum;
+        // NaN values are used to 'balance' the number of instances observed across classes (precision and recall only)
+        protected double qtyNaNs;
 
         public WindowEstimator(int sizeWindow) {
-            window = new double[sizeWindow];
-            SizeWindow = sizeWindow;
-            posWindow = 0;
-            lenWindow = 0;
+            sum = 0.0;
+            qtyNaNs = 0.0;
+            this.sizeWindow = sizeWindow;
+            this.window = new LinkedList<>();
         }
 
         public void add(double value) {
-            sum -= window[posWindow];
-            sum += value;
-            window[posWindow] = value;
-            posWindow++;
-            if (posWindow == SizeWindow) {
-                posWindow = 0;
+            window.add(value);
+            if(!Double.isNaN(value)) sum += value;
+            else qtyNaNs++;
+            if(window.size() > sizeWindow){
+                double forget = window.removeFirst();
+                if(!Double.isNaN(forget)) sum -= forget;
+                else qtyNaNs--;
             }
-            if (lenWindow < SizeWindow) {
-                lenWindow++;
-            }
+
         }
 
         public double estimation(){
-            return sum/(double) lenWindow;
+            return sum / (double) (window.size() - qtyNaNs);
         }
 
     }
