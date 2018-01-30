@@ -59,34 +59,45 @@ public class WindowClassificationPerformanceEvaluator extends BasicClassificatio
 
     public class WindowEstimator implements Estimator {
 
-        protected LinkedList<Double> window;
+        protected double[] window;
 
-        protected int sizeWindow;
+        protected int posWindow;
+
+        protected int lenWindow;
+
+        protected int SizeWindow;
+
         protected double sum;
-        // NaN values are used to 'balance' the number of instances observed across classes (precision and recall only)
+
         protected double qtyNaNs;
 
         public WindowEstimator(int sizeWindow) {
-            sum = 0.0;
-            qtyNaNs = 0.0;
-            this.sizeWindow = sizeWindow;
-            this.window = new LinkedList<>();
+            window = new double[sizeWindow];
+            SizeWindow = sizeWindow;
+            posWindow = 0;
+            lenWindow = 0;
         }
 
         public void add(double value) {
-            window.add(value);
-            if(!Double.isNaN(value)) sum += value;
-            else qtyNaNs++;
-            if(window.size() > sizeWindow){
-                double forget = window.removeFirst();
-                if(!Double.isNaN(forget)) sum -= forget;
-                else qtyNaNs--;
+            double forget = window[posWindow];
+            if(!Double.isNaN(forget)){
+                sum -= forget;
+            }else qtyNaNs--;
+            if(!Double.isNaN(value)) {
+                sum += value;
+            }else qtyNaNs++;
+            window[posWindow] = value;
+            posWindow++;
+            if (posWindow == SizeWindow) {
+                posWindow = 0;
             }
-
+            if (lenWindow < SizeWindow) {
+                lenWindow++;
+            }
         }
 
         public double estimation(){
-            return sum / (double) (window.size() - qtyNaNs);
+            return sum / (lenWindow - qtyNaNs);
         }
 
     }
