@@ -1,5 +1,5 @@
 /*
- *    ActiveClassifier.java
+ *    ALUncertainty.java
  *    Copyright (C) 2011 University of Waikato, Hamilton, New Zealand
  *    @author Indre Zliobaite (zliobaite at gmail dot com)
  *    @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
@@ -46,13 +46,11 @@ import com.github.javacliparser.MultiChoiceOption;
  * concentrate on querying the most uncertain instances, which are typically
  * concentrated around the decision boundary. If changes do not occur close to
  * the boundary, they will be missed and classifiers will fail to adapt. This
- * class contains four active learning strategies for streaming data that
- * explicitly handle concept drift. They are based on randomization, fixed
- * uncertainty, dynamic allocation of labeling efforts over time and
- * randomization of the search space [ZBPH]. It also contains the Selective
- * Sampling strategy, which is adapted from [CGZ] it uses a variable labeling
- * threshold.
- *
+ * class contains three active learning strategies for streaming data that
+ * explicitly handle concept drift. They are based on fixed uncertainty,
+ * dynamic allocation of labeling efforts over time and randomization of the
+ * search space [ZBPH]. It also contains the Selective Sampling strategy, which
+ * is adapted from [CGZ] and uses a variable labeling threshold.
  * </p>
  *
  * <p>[ZBPH] Indre Zliobaite, Albert Bifet, Bernhard Pfahringer, Geoff Holmes:
@@ -62,11 +60,16 @@ import com.github.javacliparser.MultiChoiceOption;
  * selective sampling for linear classification. J. Mach. Learn. Res. (7) 2006:
  * 1205-1230</p>.
  *
- * <p>Parameters:</p> <ul> <li>-l : Classiﬁer to train</li> <li>-d : Strategy to
- * use: Random, FixedUncertainty, VarUncertainty, RandVarUncertainty,
- * SelSampling</li> </ul> <li>-b : Budget to use</li> <li>-u : Fixed
- * threshold</li> <li>-s : Floating budget step</li> <li>-n : Number of
- * instances at beginning without active learning</li>
+ * <p>Parameters:</p>
+ * <ul>
+ *   <li>-l : Classifier to train</li>
+ *   <li>-d : Strategy to use: FixedUncertainty, VarUncertainty,
+ *            RandVarUncertainty, SelSampling</li>
+ *   <li>-b : Budget to use</li>
+ *   <li>-u : Fixed threshold</li>
+ *   <li>-s : Floating budget step</li>
+ *   <li>-n : Number of instances at beginning without active learning</li>
+ * </ul>
  *
  * <p>Structural changes to match active learning framework by Daniel Kottke.
  * </p>
@@ -76,26 +79,31 @@ import com.github.javacliparser.MultiChoiceOption;
  * @author Daniel Kottke (daniel dot kottke at ovgu dot de) - adapted to AL framework
  * @version $Revision: 7 $
  */
-public class ALZliobaite2011 extends AbstractClassifier implements ALClassifier {
+public class ALUncertainty extends AbstractClassifier implements ALClassifier {
 
     private static final long serialVersionUID = 1L;
 
     @Override
     public String getPurposeString() {
-        return "Active learning classifier for evolving data streams";
+        return "Active learning classifier for evolving data streams based on uncertainty";
     }
 
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
             "Classifier to train.", Classifier.class, "drift.SingleClassifierDrift");
 
     public MultiChoiceOption activeLearningStrategyOption = new MultiChoiceOption(
-            "activeLearningStrategy", 'd', "Active Learning Strategy to use.", new String[]{
-                "Random", "FixedUncertainty", "VarUncertainty", "RandVarUncertainty", "SelSampling"}, new String[]{
-                "Random strategy",
-                "Fixed uncertainty strategy",
-                "Uncertainty strategy with variable threshold",
-                "Uncertainty strategy with randomized variable threshold",
-                "Selective Sampling"}, 0);
+            "activeLearningStrategy", 'd', "Active Learning Strategy to use.",
+            new String[]{
+                    "FixedUncertainty",
+                    "VarUncertainty",
+                    "RandVarUncertainty",
+                    "SelSampling"},
+            new String[]{
+                    "Fixed uncertainty strategy",
+                    "Uncertainty strategy with variable threshold",
+                    "Uncertainty strategy with randomized variable threshold",
+                    "Selective Sampling"}, 
+            0);
 
     public FloatOption budgetOption = new FloatOption("budget",
             'b', "Budget to use.",
@@ -119,8 +127,6 @@ public class ALZliobaite2011 extends AbstractClassifier implements ALClassifier 
     
     public int costLabeling;
 
-    public int costLabelingRandom;
-
     public int iterationControl;
 
     public double newThreshold;
@@ -143,16 +149,6 @@ public class ALZliobaite2011 extends AbstractClassifier implements ALClassifier 
             outPosterior = 0;
         }
         return outPosterior;
-    }
-
-    private void labelRandom(Instance inst) {
-        if (this.classifierRandom.nextDouble() < this.budgetOption.getValue()) {
-            this.classifier.trainOnInstance(inst);
-            this.costLabeling++;
-            this.costLabelingRandom++;
-            this.lastLabelAcq += 1;
-        }
-
     }
 
     private void labelFixed(double incomingPosterior, Instance inst) {
@@ -189,7 +185,6 @@ public class ALZliobaite2011 extends AbstractClassifier implements ALClassifier 
         this.classifier = ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
         this.classifier.resetLearning();
         this.costLabeling = 0;
-        this.costLabelingRandom = 0;
         this.iterationControl = 0;
         this.newThreshold = 1.0;
         this.accuracyBaseLearner = 0;
@@ -215,23 +210,20 @@ public class ALZliobaite2011 extends AbstractClassifier implements ALClassifier 
 
         if (costNow < this.budgetOption.getValue()) { //allow to label
             switch (this.activeLearningStrategyOption.getChosenIndex()) {
-                case 0: //Random
-                    labelRandom(inst);
-                    break;
-                case 1: //fixed
+                case 0: //fixed
                     maxPosterior = getMaxPosterior(this.classifier.getVotesForInstance(inst));
                     labelFixed(maxPosterior, inst);
                     break;
-                case 2: //variable
+                case 1: //variable
                     maxPosterior = getMaxPosterior(this.classifier.getVotesForInstance(inst));
                     labelVar(maxPosterior, inst);
                     break;
-                case 3: //randomized
+                case 2: //randomized
                     maxPosterior = getMaxPosterior(this.classifier.getVotesForInstance(inst));
                     maxPosterior = maxPosterior / (this.classifierRandom.nextGaussian() + 1.0);
                     labelVar(maxPosterior, inst);
                     break;
-                case 4: //selective-sampling
+                case 3: //selective-sampling
                     maxPosterior = getMaxPosterior(this.classifier.getVotesForInstance(inst));
                     labelSelSampling(maxPosterior, inst);
                     break;
