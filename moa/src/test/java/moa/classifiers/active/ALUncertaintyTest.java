@@ -14,7 +14,7 @@
  */
 
 /**
- * ALZliobaite2011Test.java
+ * ALUncertaintyTest.java
  * Copyright (C) 2013 University of Waikato, Hamilton, New Zealand
  */
 package moa.classifiers.active;
