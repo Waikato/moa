@@ -23,15 +23,14 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
-import static moa.test.MoaTestCase.runTest;
 
 /**
- * Tests the ALZliobaite2011 classifier.
+ * Tests the ALUncertainty classifier.
  * 
  * @author  fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class ALZliobaite2011Test
+public class ALUncertaintyTest
   extends AbstractMultipleClassifierTestCase {
 
   /**
@@ -39,9 +38,9 @@ public class ALZliobaite2011Test
    *
    * @param name 	the name of the test
    */
-  public ALZliobaite2011Test(String name) {
+  public ALUncertaintyTest(String name) {
     super(name);
-    this.setNumberTests(1);
+    this.setNumberTests(4);
   }
 
   /**
@@ -51,9 +50,19 @@ public class ALZliobaite2011Test
    */
   @Override
   protected Classifier[] getRegressionClassifierSetups() {
-    return new Classifier[]{
-	new ALZliobaite2011(),
-    };
+	ALUncertainty fixed       = new ALUncertainty();
+	ALUncertainty var         = new ALUncertainty();
+	ALUncertainty randVar     = new ALUncertainty();
+	ALUncertainty selSampling = new ALUncertainty();
+	
+	fixed.activeLearningStrategyOption.setChosenLabel("FixedUncertainty");
+	var.activeLearningStrategyOption.setChosenLabel("VarUncertainty");
+	randVar.activeLearningStrategyOption.setChosenLabel("RandVarUncertainty");
+	selSampling.activeLearningStrategyOption.setChosenLabel("SelSampling");
+	
+	return new Classifier[]{
+		fixed, var, randVar, selSampling
+	};
   }
   
   /**
@@ -62,7 +71,7 @@ public class ALZliobaite2011Test
    * @return		the test suite
    */
   public static Test suite() {
-    return new TestSuite(ALZliobaite2011Test.class);
+    return new TestSuite(ALUncertaintyTest.class);
   }
 
   /**
