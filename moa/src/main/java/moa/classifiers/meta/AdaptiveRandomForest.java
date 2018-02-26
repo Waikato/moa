@@ -41,6 +41,7 @@ import moa.evaluation.BasicClassificationPerformanceEvaluator;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import moa.AbstractMOAObject;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 
 
@@ -296,7 +297,7 @@ public class AdaptiveRandomForest extends AbstractClassifier implements MultiCla
      * Inner class that represents a single tree member of the forest. 
      * It contains some analysis information, such as the numberOfDriftsDetected, 
      */
-    protected final class ARFBaseLearner {
+    protected final class ARFBaseLearner extends AbstractMOAObject {
         public int indexOriginal;
         public long createdOn;
         public long lastDriftOn;
@@ -427,6 +428,10 @@ public class AdaptiveRandomForest extends AbstractClassifier implements MultiCla
         public double[] getVotesForInstance(Instance instance) {
             DoubleVector vote = new DoubleVector(this.classifier.getVotesForInstance(instance));
             return vote.getArrayRef();
+        }
+
+        @Override
+        public void getDescription(StringBuilder sb, int indent) {
         }
     }
     
