@@ -98,8 +98,7 @@ public class Measurement extends AbstractMOAObject {
                 averagedMeasurements.add(new Measurement("[avg] " + mName,
                         mEstimator.getMean()));
                 averagedMeasurements.add(new Measurement("[err] " + mName,
-                        mEstimator.getStdDev()
-                        / Math.sqrt(mEstimator.getTotalWeightObserved())));
+                        mEstimator.getStdDev()));
             }
         }
         return averagedMeasurements.toArray(new Measurement[averagedMeasurements.size()]);
