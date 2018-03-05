@@ -32,9 +32,9 @@ import com.github.javacliparser.Options;
 
 import moa.classifiers.active.ALClassifier;
 import moa.core.ObjectRepository;
-import moa.evaluation.LearningCurve;
-import moa.evaluation.PreviewCollection;
-import moa.evaluation.PreviewCollectionLearningCurveWrapper;
+import moa.evaluation.preview.LearningCurve;
+import moa.evaluation.preview.PreviewCollection;
+import moa.evaluation.preview.PreviewCollectionLearningCurveWrapper;
 import moa.gui.colorGenerator.HSVColorGenerator;
 import moa.options.ClassOption;
 import moa.options.ClassOptionWithListenerOption;

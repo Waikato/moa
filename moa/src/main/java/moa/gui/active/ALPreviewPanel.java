@@ -33,7 +33,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import moa.core.StringUtils;
-import moa.evaluation.Preview;
+import moa.evaluation.preview.Preview;
 import moa.gui.PreviewPanel;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.ResultPreviewListener;

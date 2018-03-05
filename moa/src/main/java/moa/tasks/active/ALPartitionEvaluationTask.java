@@ -28,8 +28,8 @@ import com.github.javacliparser.IntOption;
 import com.github.javacliparser.Option;
 
 import moa.core.ObjectRepository;
-import moa.evaluation.PreviewCollection;
-import moa.evaluation.PreviewCollectionLearningCurveWrapper;
+import moa.evaluation.preview.PreviewCollection;
+import moa.evaluation.preview.PreviewCollectionLearningCurveWrapper;
 import moa.options.ClassOption;
 import moa.streams.PartitioningStream;
 import moa.tasks.TaskMonitor;

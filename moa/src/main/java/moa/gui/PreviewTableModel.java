@@ -24,7 +24,7 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import moa.evaluation.Preview;
+import moa.evaluation.preview.Preview;
 
 /**
  * Class to display the latest preview in a table

@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.evaluation;
+package moa.evaluation.preview;
 
 /**
  * Class used to wrap LearningCurve so that it can be used in 
