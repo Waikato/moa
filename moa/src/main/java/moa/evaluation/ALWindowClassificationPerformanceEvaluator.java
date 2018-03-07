@@ -31,7 +31,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Daniel Kottke (daniel.kottke@ovgu.de)
  * @version $Revision: 1 $
  */
-public class ALBasicClassificationPerformanceEvaluator extends WindowClassificationPerformanceEvaluator implements ALClassificationPerformanceEvaluator{
+public class ALWindowClassificationPerformanceEvaluator extends WindowClassificationPerformanceEvaluator implements ALClassificationPerformanceEvaluator{
 
 	/**
 	 * 

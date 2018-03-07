@@ -74,7 +74,7 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 			"evaluator", 'e',
             "Active Learning classification performance evaluation method.",
             ALClassificationPerformanceEvaluator.class,
-            "ALBasicClassificationPerformanceEvaluator");
+            "ALWindowClassificationPerformanceEvaluator");
 	
 	public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
             "Maximum number of instances to test/train on  (-1 = no limit).",
