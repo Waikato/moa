@@ -60,10 +60,10 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import moa.evaluation.ALMeasureCollection;
-import moa.evaluation.MeanPreviewCollection;
 import moa.evaluation.MeasureCollection;
-import moa.evaluation.Preview;
-import moa.evaluation.PreviewCollection;
+import moa.evaluation.preview.MeanPreviewCollection;
+import moa.evaluation.preview.Preview;
+import moa.evaluation.preview.PreviewCollection;
 import moa.gui.FileExtensionFilter;
 import moa.gui.GUIUtils;
 import moa.gui.PreviewTableModel;

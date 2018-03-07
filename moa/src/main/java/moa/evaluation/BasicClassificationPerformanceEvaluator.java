@@ -128,12 +128,14 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
                 for (int i = 0; i < this.numClasses; i++) {
                     this.rowKappa[i].add(predictedClass == i ? weight : 0);
                     this.columnKappa[i].add(trueClass == i ? weight : 0);
+                    // for both precision and recall, NaN values are used to 'balance' the number
+                    // of instances seen across classes
                     if (predictedClass == i) {
                         precision[i].add(predictedClass == trueClass ? weight : 0.0);
-                    }
+                    } else precision[i].add(Double.NaN);
                     if (trueClass == i) {
                         recall[i].add(predictedClass == trueClass ? weight : 0.0);
-                    }
+                    } else recall[i].add(Double.NaN);
                 }
             }
             this.weightCorrectNoChangeClassifier.add(this.lastSeenClass == trueClass ? weight : 0);
@@ -310,8 +312,10 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
 
         @Override
         public void add(double value) {
-            sum += value;
-            len++;
+            if(!Double.isNaN(value)) {
+                sum += value;
+                len++;
+            }
         }
 
         @Override

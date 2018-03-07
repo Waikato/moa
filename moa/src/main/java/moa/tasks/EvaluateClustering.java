@@ -10,7 +10,7 @@ package moa.tasks;
 
 import moa.clusterers.AbstractClusterer;
 import moa.core.ObjectRepository;
-import moa.evaluation.LearningCurve;
+import moa.evaluation.preview.LearningCurve;
 import moa.gui.BatchCmd;
 import moa.options.ClassOption;
 import com.github.javacliparser.FileOption;
