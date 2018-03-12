@@ -37,8 +37,14 @@ import java.util.Random;
  * This is a meta-generator that appends irrelevant features in a stream.
  * The following parameters are required to be set:
  * - The original stream,
- * - The number of numeric features to be appended, and
- * - The number of categorical features to be appended.
+ * - The number of numeric features to be appended,
+ * - The number of categorical features to be appended, and
+ * - The number of values for each categorical feature.
+ *
+ * The values for each new feature are drawn from an uniform distribution
+ * and are not related with the class anyhow. This means that no
+ * correlation between each feature and the class will be observed,
+ * and the entropy will be maximum.
  *
  * @author Jean Paul Barddal (jean.barddal@ppgia.pucpr.br)
  * @version 1.0
@@ -56,7 +62,7 @@ public class IrrelevantFeatureAppenderStream extends AbstractOptionHandler imple
             "Number of categorical features to be appended.", 0, 0, 1000);
 
     public IntOption numValuesCategoricalFeatureOption = new IntOption("numValuesCategoricalFeature", 'v',
-            "Number of categorical features to be appended.", 2, 1, 1000);
+            "Number of values for each categorical feature.", 2, 1, 1000);
 
     public IntOption instanceRandomSeedOption          = new IntOption("instanceRandomSeed", 'i',
             "Seed for random generation of instances.", 1);
