@@ -30,7 +30,7 @@ import moa.tasks.AbstractTask;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.MainTask;
 import moa.tasks.TaskThread;
-import moa.tasks.meta.ALMainTask;
+import moa.tasks.meta.MetaMainTask;
 
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
@@ -137,9 +137,9 @@ public class DoTask {
                 	task = (AbstractTask) ClassOption.cliStringToObject(
                 			cliString.toString(), MainTask.class, extraOptions);
                 } catch(Exception e) {
-                	// regular task could not be found, maybe it is an active learning task
+                	// regular task could not be found, maybe it is a meta task
             		task = (AbstractTask) ClassOption.cliStringToObject(
-            				cliString.toString(), ALMainTask.class, extraOptions);
+            				cliString.toString(), MetaMainTask.class, extraOptions);
                 }
                 task.prepareForUse();
                 
