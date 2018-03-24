@@ -111,8 +111,7 @@ public class IrrelevantFeatureAppenderStream extends AbstractOptionHandler imple
         // copies the original values
         double values[] = new double[this.newHeader.numAttributes()];
         int ix = 0;
-        int i = 0;
-        for(; i < original.getData().dataset().numAttributes(); i++){
+        for(int i = 0; i < original.getData().dataset().numAttributes(); i++){
             if(original.getData().dataset().classIndex() != i) {
                 values[ix] = original.getData().value(i);
                 ix++;
@@ -120,12 +119,11 @@ public class IrrelevantFeatureAppenderStream extends AbstractOptionHandler imple
         }
 
         // appends the new values
-        while(i < values.length - 1){
-            Attribute att = this.newHeader.attribute(i);
+        while(ix < values.length - 1){
+            Attribute att = this.newHeader.attribute(ix);
             if(att.isNumeric()) values[ix] = this.random.nextDouble();
             else values[ix] = this.random.nextInt(numValuesCategoricalFeatureOption.getValue());
             ix++;
-            i++;
         }
 
         //copies the class value
@@ -136,6 +134,7 @@ public class IrrelevantFeatureAppenderStream extends AbstractOptionHandler imple
         // instantiates and returns the actual instance
         Instance instnc = new DenseInstance(1.0, values);
         instnc.setDataset(this.newHeader);
+
         return new InstanceExample(instnc);
     }
 
@@ -194,7 +193,7 @@ public class IrrelevantFeatureAppenderStream extends AbstractOptionHandler imple
 
         // builds the new header
         Instances format = new Instances(getCLICreationString(InstanceStream.class), attributes, 0);
-        format.setClassIndex(originalHeader.classIndex());
+        format.setClassIndex(attributes.size() - 1);
         newHeader = new InstancesHeader(format);
     }
 
