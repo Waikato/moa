@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.tasks.active;
+package moa.tasks.meta;
 
 import java.awt.Color;
 import java.io.File;
@@ -68,7 +68,7 @@ public class ALMultiParamTask extends ALMainTask {
 				"prequentialEvaluationTask", 'e', 
 				"Prequential evaluation task to be performed for each " + 
 				"parameter value.", ALPrequentialEvaluationTask.class, 
-				"moa.tasks.active.ALPrequentialEvaluationTask");
+				"moa.tasks.meta.ALPrequentialEvaluationTask");
 	
 	public EditableMultiChoiceOption variedParamNameOption = 
 			new EditableMultiChoiceOption(

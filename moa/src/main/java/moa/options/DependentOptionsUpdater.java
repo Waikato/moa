@@ -30,7 +30,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.Option;
 
-import moa.tasks.active.ALPrequentialEvaluationTask;
+import moa.tasks.meta.ALPrequentialEvaluationTask;
 
 /**
  * This class handles the dependency between two options by updating the 

@@ -30,7 +30,7 @@ import moa.tasks.AbstractTask;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.MainTask;
 import moa.tasks.TaskThread;
-import moa.tasks.active.ALMainTask;
+import moa.tasks.meta.ALMainTask;
 
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;

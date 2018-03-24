@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.tasks.active;
+package moa.tasks.meta;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -61,7 +61,7 @@ public class ALPartitionEvaluationTask extends ALMainTask {
 	public ClassOption multiParamTaskOption = new ClassOption(
 			"multiParamTask", 't', 
 			"Multi param task to be performed for each partition", 
-			ALMultiParamTask.class, "moa.tasks.active.ALMultiParamTask");
+			ALMultiParamTask.class, "moa.tasks.meta.ALMultiParamTask");
 
 	public IntOption numPartitionsOption = new IntOption("numPartitions", 'k', 
 			"Number of data set partitions.", 10);

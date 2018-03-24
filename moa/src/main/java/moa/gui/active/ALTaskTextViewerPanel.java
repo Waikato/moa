@@ -70,9 +70,9 @@ import moa.gui.PreviewTableModel;
 import moa.gui.visualization.ParamGraphCanvas;
 import moa.gui.visualization.ProcessGraphCanvas;
 import moa.tasks.FailedTaskReport;
-import moa.tasks.active.ALPartitionEvaluationTask;
-import moa.tasks.active.ALMultiParamTask;
-import moa.tasks.active.ALPrequentialEvaluationTask;
+import moa.tasks.meta.ALMultiParamTask;
+import moa.tasks.meta.ALPartitionEvaluationTask;
+import moa.tasks.meta.ALPrequentialEvaluationTask;
 
 /**
  * This panel displays text. Used to output the results of tasks. In contrast to

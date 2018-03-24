@@ -17,9 +17,10 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.tasks;
+package moa.tasks.meta;
 
 import moa.tasks.MainTask;
+import moa.tasks.TaskThread;
 
 import java.awt.Color;
 import java.util.List;

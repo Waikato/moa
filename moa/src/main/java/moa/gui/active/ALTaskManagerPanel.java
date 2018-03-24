@@ -66,9 +66,9 @@ import moa.gui.FileExtensionFilter;
 import moa.gui.GUIUtils;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
-import moa.tasks.active.ALPartitionEvaluationTask;
-import moa.tasks.active.ALMainTask;
-import moa.tasks.active.ALTaskThread;
+import moa.tasks.meta.ALMainTask;
+import moa.tasks.meta.ALPartitionEvaluationTask;
+import moa.tasks.meta.ALTaskThread;
 
 
 /**

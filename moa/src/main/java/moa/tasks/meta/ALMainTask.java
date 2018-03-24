@@ -17,11 +17,9 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.tasks.active;
+package moa.tasks.meta;
 
 import java.util.List;
-
-import moa.tasks.MetaMainTask;
 
 /**
  * This class provides a superclass for Active Learning tasks, which 

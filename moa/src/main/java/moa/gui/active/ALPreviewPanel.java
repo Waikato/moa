@@ -37,9 +37,9 @@ import moa.evaluation.preview.Preview;
 import moa.gui.PreviewPanel;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.ResultPreviewListener;
-import moa.tasks.active.ALPartitionEvaluationTask;
-import moa.tasks.active.ALMainTask;
-import moa.tasks.active.ALTaskThread;
+import moa.tasks.meta.ALMainTask;
+import moa.tasks.meta.ALPartitionEvaluationTask;
+import moa.tasks.meta.ALTaskThread;
 
 /**
  * ALPreviewPanel provides a graphical interface to display the latest preview
