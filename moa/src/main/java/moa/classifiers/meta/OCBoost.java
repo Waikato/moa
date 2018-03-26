@@ -22,6 +22,7 @@ package moa.classifiers.meta;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import com.yahoo.labs.samoa.instances.Instance;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.Utils;
 
 import moa.core.Measurement;
@@ -53,7 +54,7 @@ import com.github.javacliparser.IntOption;
  * @version $Revision: 7 $
  */
 
-public class OCBoost extends AbstractClassifier {
+public class OCBoost extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
     

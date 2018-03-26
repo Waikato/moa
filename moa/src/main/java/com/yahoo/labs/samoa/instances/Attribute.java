@@ -90,11 +90,7 @@ public class Attribute implements Serializable {
     public List<String> getAttributeValues() {
         return attributeValues;
     }
-
-    /**
-     * The index.
-     */
-    protected int index;
+    
 
     /**
      * Instantiates a new attribute.
@@ -125,8 +121,7 @@ public class Attribute implements Serializable {
      * @param dateFormat the format of the date used
      */
     public Attribute(String attributeName, String dateFormat) {
-        this.name = attributeName;
-        this.index  = -1;
+        this.name = attributeName;        
         this.valuesStringAttribute = null;
         this.isDate = true;
         
@@ -199,9 +194,9 @@ public class Attribute implements Serializable {
      *
      * @return the int
      */
-    public int index() { //RuleClassifier
-        return this.index;
-    }
+//    public int index() { //RuleClassifier        
+//        return this.index;
+//    }
 
     /**
      * Format date.
@@ -247,8 +242,14 @@ public class Attribute implements Serializable {
             }
         }
         Integer val = (Integer) this.valuesStringAttribute.get(value);
+        
+        // in case value was not on a list of unique values of nominal attribute yet, add it
+        // Hence, the list of values can be extended with new entries arriving in the stream
         if (val == null) {
-            return -1;
+          int currentValueCount=this.valuesStringAttribute.size();
+          this.valuesStringAttribute.put(value,currentValueCount);
+          this.attributeValues.add(value);
+          return currentValueCount;
         } else {
             return val.intValue();
         }

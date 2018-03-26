@@ -25,6 +25,7 @@ import java.io.PrintStream;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.Example;
 import moa.core.ObjectRepository;
 import moa.core.Utils;
@@ -42,7 +43,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class EvaluateModel extends MainTask {
+public class EvaluateModel extends ClassificationMainTask {
 
     @Override
     public String getPurposeString() {
@@ -52,7 +53,7 @@ public class EvaluateModel extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption modelOption = new ClassOption("model", 'm',
-            "Learner to evaluate.", Learner.class, "LearnModel");
+            "Learner to evaluate.", MultiClassClassifier.class, "LearnModel");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to evaluate on.", ExampleStream.class,

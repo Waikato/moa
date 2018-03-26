@@ -22,6 +22,7 @@ package moa.classifiers.meta;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.FlagOption;
+import moa.classifiers.MultiClassClassifier;
 import moa.options.ClassOption;
 import com.github.javacliparser.MultiChoiceOption;
 import moa.classifiers.core.driftdetection.ADWIN;
@@ -45,7 +46,7 @@ import moa.options.*;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class LeveragingBag extends AbstractClassifier {
+public class LeveragingBag extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
 

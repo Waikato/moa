@@ -5,15 +5,16 @@ Release
   * Update version tag in <<<moa/release.xml>>> to upcoming release and check in changes:
 
 +---
-  hg commit
-  hg push
+  git add release.xml 
+  git commit -m "Update version tag in release.xml to upcoming release"
+  git push
 +---
 
-  * Performing the actual release (use your GoogleCode credentials; you can accept
+  * Performing the actual release (use your GitHub credentials; you can accept
     all the default prompts regarding version numbers usually):
 
 +---
-  mvn release:clean release:prepare release:perform -Dusername=google-code-user -Dpassword=google-code-pw
+  mvn release:clean release:prepare release:perform -Dusername=github-user -Dpassword=github-pw
 +---
 
   * Publish the uploaded artifacts through Sonatype's Nexus
@@ -28,9 +29,9 @@ Release
     * tick the checkbox next to <<<nz.ac.waikato.cms.moa>>> again
     * click on <Release> this time and provide a comment
     * once again, you should receive an email, stating that <promotion complete>
-    * push the changes out to GoogleCode again
+    * push the changes out to GitHub again
 +---
-  hg push
+  git push
 +---
   
   * Create the release archive (in the moa sub-directory), once the artifacts are

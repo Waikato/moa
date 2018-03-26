@@ -32,7 +32,7 @@ import com.github.javacliparser.StringOption;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class RunTasks extends MainTask {
+public class RunTasks extends AuxiliarMainTask {
 
     @Override
     public String getPurposeString() {

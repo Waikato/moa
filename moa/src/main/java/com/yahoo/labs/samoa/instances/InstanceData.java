@@ -100,6 +100,13 @@ public interface InstanceData extends Serializable {
      * @param index the indes
      */
     public void deleteAttributeAt(int index);
+
+    /**
+     * Inserts an attribute.
+     *
+     * @param index the indes
+     */
+    public void insertAttributeAt(int index);
     
    /**
    * Produces a shallow copy of this instance data. 

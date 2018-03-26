@@ -39,7 +39,7 @@ import moa.streams.InstanceStream;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class WriteStreamToARFFFile extends MainTask {
+public class WriteStreamToARFFFile extends AuxiliarMainTask {
 
     @Override
     public String getPurposeString() {

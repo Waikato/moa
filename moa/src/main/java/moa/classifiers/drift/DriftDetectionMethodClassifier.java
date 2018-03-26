@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.meta.WEKAClassifier;
 import moa.core.Measurement;
 import moa.core.Utils;
@@ -43,7 +44,7 @@ import moa.options.ClassOption;
  * @author Manuel Baena (mbaena@lcc.uma.es)
  * @version 1.1
  */
-public class DriftDetectionMethodClassifier extends AbstractClassifier {
+public class DriftDetectionMethodClassifier extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
 

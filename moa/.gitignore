@@ -1,6 +1,8 @@
 /target/
-<<<<<<< HEAD
-=======
 /dumpClustering.csv
 /SeaAnomaliesUnsupervised.txt
->>>>>>> 764cc6bacfbb36387569e5e8fd26dc9e0605530b
+.idea
+*.iml
+*~
+*.bak
+
