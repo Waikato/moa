@@ -26,7 +26,7 @@ import com.github.javacliparser.IntOption;
 import moa.MOAObject;
 import moa.clusterers.AbstractClusterer;
 import moa.core.ObjectRepository;
-import moa.evaluation.LearningCurve;
+import moa.evaluation.preview.LearningCurve;
 import moa.gui.BatchCmd;
 import moa.options.ClassOption;
 import moa.streams.clustering.ClusteringStream;

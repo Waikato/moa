@@ -49,7 +49,7 @@ import java.util.ArrayList;
  * @version $Revision: 8 $
  */
 public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandler
-        implements LearningPerformanceEvaluator<Example<Instance>> {
+        implements ClassificationPerformanceEvaluator {
 
     private static final long serialVersionUID = 1L;
 

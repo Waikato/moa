@@ -110,12 +110,12 @@ Model measurements
   ensemble size: 10
   [avg] model training instances: 28753.21243854
   [err] model training instances: 545.74298905
-  [avg] tree size (nodes): 52.7
-  [err] tree size (nodes): 9.10494371
-  [avg] tree size (leaves): 37.8
-  [err] tree size (leaves): 6.61311828
-  [avg] active learning leaves: 37.8
-  [err] active learning leaves: 6.61311828
+  [avg] tree size (nodes): 53
+  [err] tree size (nodes): 9.01849951
+  [avg] tree size (leaves): 38.1
+  [err] tree size (leaves): 6.48845128
+  [avg] active learning leaves: 38.1
+  [err] active learning leaves: 6.48845128
   [avg] tree depth: 3.8
   [err] tree depth: 0.42163702
   [avg] active leaf byte size estimate: 0
@@ -141,12 +141,12 @@ Model measurements
   ensemble size: 10
   [avg] model training instances: 34777.80523119
   [err] model training instances: 767.64429107
-  [avg] tree size (nodes): 55.3
-  [err] tree size (nodes): 9.34582497
-  [avg] tree size (leaves): 39.1
-  [err] tree size (leaves): 6.77331365
-  [avg] active learning leaves: 39.1
-  [err] active learning leaves: 6.77331365
+  [avg] tree size (nodes): 55.6
+  [err] tree size (nodes): 9.16757571
+  [avg] tree size (leaves): 39.4
+  [err] tree size (leaves): 6.58618082
+  [avg] active learning leaves: 39.4
+  [err] active learning leaves: 6.58618082
   [avg] tree depth: 4
   [err] tree depth: 0
   [avg] active leaf byte size estimate: 0
@@ -172,12 +172,12 @@ Model measurements
   ensemble size: 10
   [avg] model training instances: 40783.21210629
   [err] model training instances: 960.92540852
-  [avg] tree size (nodes): 60.9
-  [err] tree size (nodes): 14.35618334
-  [avg] tree size (leaves): 42.8
-  [err] tree size (leaves): 9.71596624
-  [avg] active learning leaves: 42.8
-  [err] active learning leaves: 9.71596624
+  [avg] tree size (nodes): 61.2
+  [err] tree size (nodes): 14.1562707
+  [avg] tree size (leaves): 43.1
+  [err] tree size (leaves): 9.49210198
+  [avg] active learning leaves: 43.1
+  [err] active learning leaves: 9.49210198
   [avg] tree depth: 4.2
   [err] tree depth: 0.42163702
   [avg] active leaf byte size estimate: 0
@@ -203,12 +203,12 @@ Model measurements
   ensemble size: 10
   [avg] model training instances: 46830.07791904
   [err] model training instances: 1148.73184776
-  [avg] tree size (nodes): 64.5
-  [err] tree size (nodes): 18.22848808
-  [avg] tree size (leaves): 44.9
-  [err] tree size (leaves): 12.07798732
-  [avg] active learning leaves: 44.9
-  [err] active learning leaves: 12.07798732
+  [avg] tree size (nodes): 64.8
+  [err] tree size (nodes): 18.04192648
+  [avg] tree size (leaves): 45.2
+  [err] tree size (leaves): 11.86779021
+  [avg] active learning leaves: 45.2
+  [err] active learning leaves: 11.86779021
   [avg] tree depth: 4.6
   [err] tree depth: 0.51639778
   [avg] active leaf byte size estimate: 0
@@ -234,12 +234,12 @@ Model measurements
   ensemble size: 10
   [avg] model training instances: 52733.24227107
   [err] model training instances: 1321.2056227
-  [avg] tree size (nodes): 75.4
-  [err] tree size (nodes): 14.31549277
-  [avg] tree size (leaves): 52.9
-  [err] tree size (leaves): 8.68523652
-  [avg] active learning leaves: 52.9
-  [err] active learning leaves: 8.68523652
+  [avg] tree size (nodes): 75.7
+  [err] tree size (nodes): 14.17391971
+  [avg] tree size (leaves): 53.2
+  [err] tree size (leaves): 8.54790423
+  [avg] active learning leaves: 53.2
+  [err] active learning leaves: 8.54790423
   [avg] tree depth: 4.7
   [err] tree depth: 0.48304589
   [avg] active leaf byte size estimate: 0
@@ -265,12 +265,12 @@ Model measurements
   ensemble size: 10
   [avg] model training instances: 58560.19117091
   [err] model training instances: 1568.6729505
-  [avg] tree size (nodes): 82.3
-  [err] tree size (nodes): 16.61358213
-  [avg] tree size (leaves): 56.8
-  [err] tree size (leaves): 9.80702696
-  [avg] active learning leaves: 56.8
-  [err] active learning leaves: 9.80702696
+  [avg] tree size (nodes): 82.6
+  [err] tree size (nodes): 16.39241017
+  [avg] tree size (leaves): 57.1
+  [err] tree size (leaves): 9.58528966
+  [avg] active learning leaves: 57.1
+  [err] active learning leaves: 9.58528966
   [avg] tree depth: 5
   [err] tree depth: 0
   [avg] active leaf byte size estimate: 0
@@ -297,11 +297,11 @@ Model measurements
   [avg] model training instances: 64255.7300068
   [err] model training instances: 1859.08409412
   [avg] tree size (nodes): 87.4
-  [err] tree size (nodes): 17.06979138
+  [err] tree size (nodes): 16.83382838
   [avg] tree size (leaves): 59.8
-  [err] tree size (leaves): 10.46475566
+  [err] tree size (leaves): 10.27186016
   [avg] active learning leaves: 59.8
-  [err] active learning leaves: 10.46475566
+  [err] active learning leaves: 10.27186016
   [avg] tree depth: 5.2
   [err] tree depth: 0.42163702
   [avg] active leaf byte size estimate: 0

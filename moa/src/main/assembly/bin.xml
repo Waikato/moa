@@ -13,6 +13,8 @@
     <fileSet>
       <directory>${project.basedir}/moa/src/main/scripts/</directory>
       <outputDirectory>/bin</outputDirectory>
+      <filtered>true</filtered>
+      <fileMode>0755</fileMode>
     </fileSet>
     
     <fileSet>
