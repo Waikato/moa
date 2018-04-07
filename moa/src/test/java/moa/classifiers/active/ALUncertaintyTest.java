@@ -14,7 +14,7 @@
  */
 
 /**
- * ActiveClassifierTest.java
+ * ALUncertaintyTest.java
  * Copyright (C) 2013 University of Waikato, Hamilton, New Zealand
  */
 package moa.classifiers.active;
@@ -23,15 +23,14 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
-import static moa.test.MoaTestCase.runTest;
 
 /**
- * Tests the ActiveClassifier classifier.
+ * Tests the ALUncertainty classifier.
  * 
  * @author  fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class ActiveClassifierTest
+public class ALUncertaintyTest
   extends AbstractMultipleClassifierTestCase {
 
   /**
@@ -39,9 +38,9 @@ public class ActiveClassifierTest
    *
    * @param name 	the name of the test
    */
-  public ActiveClassifierTest(String name) {
+  public ALUncertaintyTest(String name) {
     super(name);
-    this.setNumberTests(1);
+    this.setNumberTests(4);
   }
 
   /**
@@ -51,9 +50,19 @@ public class ActiveClassifierTest
    */
   @Override
   protected Classifier[] getRegressionClassifierSetups() {
-    return new Classifier[]{
-	new ActiveClassifier(),
-    };
+	ALUncertainty fixed       = new ALUncertainty();
+	ALUncertainty var         = new ALUncertainty();
+	ALUncertainty randVar     = new ALUncertainty();
+	ALUncertainty selSampling = new ALUncertainty();
+	
+	fixed.activeLearningStrategyOption.setChosenLabel("FixedUncertainty");
+	var.activeLearningStrategyOption.setChosenLabel("VarUncertainty");
+	randVar.activeLearningStrategyOption.setChosenLabel("RandVarUncertainty");
+	selSampling.activeLearningStrategyOption.setChosenLabel("SelSampling");
+	
+	return new Classifier[]{
+		fixed, var, randVar, selSampling
+	};
   }
   
   /**
@@ -62,7 +71,7 @@ public class ActiveClassifierTest
    * @return		the test suite
    */
   public static Test suite() {
-    return new TestSuite(ActiveClassifierTest.class);
+    return new TestSuite(ALUncertaintyTest.class);
   }
 
   /**

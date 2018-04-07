@@ -21,8 +21,8 @@ package moa.tasks;
 
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
-import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
+import moa.evaluation.preview.LearningCurve;
 import moa.options.ClassOption;
 import com.github.javacliparser.IntOption;
 import moa.recommender.dataset.Dataset;

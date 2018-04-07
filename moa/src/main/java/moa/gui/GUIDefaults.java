@@ -136,7 +136,7 @@ public class GUIDefaults
         String tabs;
 
         // read and split on comma
-        tabs = get("Tabs", "moa.gui.ClassificationTabPanel,moa.gui.RegressionTabPanel,moa.gui.MultiLabelTabPanel,moa.gui.MultiTargetTabPanel,moa.gui.clustertab.ClusteringTabPanel,moa.gui.outliertab.OutlierTabPanel,moa.gui.ConceptDriftTabPanel,moa.gui.AuxiliarTabPanel");
+        tabs = get("Tabs", "moa.gui.ClassificationTabPanel,moa.gui.RegressionTabPanel,moa.gui.MultiLabelTabPanel,moa.gui.MultiTargetTabPanel,moa.gui.clustertab.ClusteringTabPanel,moa.gui.outliertab.OutlierTabPanel,moa.gui.ConceptDriftTabPanel,moa.gui.ALTabPanel,moa.gui.AuxiliarTabPanel");
         result = tabs.split(",");
 
         return result;

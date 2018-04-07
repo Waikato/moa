@@ -1,0 +1,900 @@
+--> classification-out0.arff
+moa.classifiers.active.ALUncertainty
+
+Index
+  10000
+Votes
+  0: 0
+  1: 0
+Measurements
+  classified instances: 9999
+  classifications correct (percent): 40.95409541
+  Kappa Statistic (percent): 0
+  Kappa Temporal Statistic (percent): -24.45193929
+  Kappa M Statistic (percent): -44.17582418
+Model measurements
+  model training instances: 9999
+  labeling cost: 3
+  newThreshold: 1
+  maxPosterior: 1
+  accuracyBaseLearner (percent): 0
+  model training instances: 3
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 3
+
+Index
+  20000
+Votes
+  0: 0.00000241
+  1: 0
+Measurements
+  classified instances: 19999
+  classifications correct (percent): 41.7120856
+  Kappa Statistic (percent): 0
+  Kappa Temporal Statistic (percent): -21.6932874
+  Kappa M Statistic (percent): -39.73867178
+Model measurements
+  model training instances: 19999
+  labeling cost: 3
+  newThreshold: 1
+  maxPosterior: 1
+  accuracyBaseLearner (percent): 0
+  model training instances: 3
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 3
+
+Index
+  30000
+Votes
+  0: 0.00000438
+  1: 0
+Measurements
+  classified instances: 29999
+  classifications correct (percent): 41.62805427
+  Kappa Statistic (percent): 0
+  Kappa Temporal Statistic (percent): -20.95738067
+  Kappa M Statistic (percent): -40.22261371
+Model measurements
+  model training instances: 29999
+  labeling cost: 3
+  newThreshold: 1
+  maxPosterior: 1
+  accuracyBaseLearner (percent): 0
+  model training instances: 3
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 3
+
+Index
+  40000
+Votes
+  0: 0.00000013
+  1: 0
+Measurements
+  classified instances: 39999
+  classifications correct (percent): 41.80104503
+  Kappa Statistic (percent): 0
+  Kappa Temporal Statistic (percent): -20.29869257
+  Kappa M Statistic (percent): -39.2284689
+Model measurements
+  model training instances: 39999
+  labeling cost: 3
+  newThreshold: 1
+  maxPosterior: 1
+  accuracyBaseLearner (percent): 0
+  model training instances: 3
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 3
+
+Index
+  50000
+Votes
+  0: 0
+  1: 0
+Measurements
+  classified instances: 49999
+  classifications correct (percent): 41.79283586
+  Kappa Statistic (percent): 0
+  Kappa Temporal Statistic (percent): -20.46940972
+  Kappa M Statistic (percent): -39.27545942
+Model measurements
+  model training instances: 49999
+  labeling cost: 3
+  newThreshold: 1
+  maxPosterior: 1
+  accuracyBaseLearner (percent): 0
+  model training instances: 3
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 3
+
+Index
+  60000
+Votes
+  0: 0
+  1: 0
+Measurements
+  classified instances: 59999
+  classifications correct (percent): 42.0040334
+  Kappa Statistic (percent): 0
+  Kappa Temporal Statistic (percent): -19.92762364
+  Kappa M Statistic (percent): -38.07237521
+Model measurements
+  model training instances: 59999
+  labeling cost: 3
+  newThreshold: 1
+  maxPosterior: 1
+  accuracyBaseLearner (percent): 0
+  model training instances: 3
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 3
+
+Index
+  70000
+Votes
+  0: 0.00007391
+  1: 0
+Measurements
+  classified instances: 69999
+  classifications correct (percent): 42.14917356
+  Kappa Statistic (percent): 0
+  Kappa Temporal Statistic (percent): -19.24673871
+  Kappa M Statistic (percent): -37.25257592
+Model measurements
+  model training instances: 69999
+  labeling cost: 3
+  newThreshold: 1
+  maxPosterior: 1
+  accuracyBaseLearner (percent): 0
+  model training instances: 3
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 3
+
+Index
+  80000
+Votes
+  0: 0
+  1: 0
+Measurements
+  classified instances: 79999
+  classifications correct (percent): 42.14552682
+  Kappa Statistic (percent): 0
+  Kappa Temporal Statistic (percent): -19.13562769
+  Kappa M Statistic (percent): -37.27310476
+Model measurements
+  model training instances: 79999
+  labeling cost: 3
+  newThreshold: 1
+  maxPosterior: 1
+  accuracyBaseLearner (percent): 0
+  model training instances: 3
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 3
+
+Index
+  90000
+Votes
+  0: 0.00000004
+  1: 0
+Measurements
+  classified instances: 89999
+  classifications correct (percent): 42.13380149
+  Kappa Statistic (percent): 0
+  Kappa Temporal Statistic (percent): -19.21483347
+  Kappa M Statistic (percent): -37.33913502
+Model measurements
+  model training instances: 89999
+  labeling cost: 3
+  newThreshold: 1
+  maxPosterior: 1
+  accuracyBaseLearner (percent): 0
+  model training instances: 3
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 3
+
+Index
+  100000
+Votes
+  0: 0
+  1: 0
+Measurements
+  classified instances: 99999
+  classifications correct (percent): 42.18242182
+  Kappa Statistic (percent): 0
+  Kappa Temporal Statistic (percent): -19.10225775
+  Kappa M Statistic (percent): -37.06557299
+Model measurements
+  model training instances: 99999
+  labeling cost: 3
+  newThreshold: 1
+  maxPosterior: 1
+  accuracyBaseLearner (percent): 0
+  model training instances: 3
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 3
+
+
+
+--> classification-out1.arff
+moa.classifiers.active.ALUncertainty -d VarUncertainty
+
+Index
+  10000
+Votes
+  0: 0.00010131
+  1: 0.00005771
+Measurements
+  classified instances: 9999
+  classifications correct (percent): 70.89708971
+  Kappa Statistic (percent): 38.21578124
+  Kappa Temporal Statistic (percent): 38.65935919
+  Kappa M Statistic (percent): 28.93772894
+Model measurements
+  model training instances: 9999
+  labeling cost: 1000
+  newThreshold: 0.63241028
+  maxPosterior: 0.59391012
+  accuracyBaseLearner (percent): 0
+  model training instances: 1000
+  Change detected: 0
+  Warning detected: 1
+  model training instances: 1000
+
+Index
+  20000
+Votes
+  0: 0.00010521
+  1: 0.00016432
+Measurements
+  classified instances: 19999
+  classifications correct (percent): 72.21861093
+  Kappa Statistic (percent): 41.09638343
+  Kappa Temporal Statistic (percent): 41.99812089
+  Kappa M Statistic (percent): 33.39726684
+Model measurements
+  model training instances: 19999
+  labeling cost: 2000
+  newThreshold: 0.64479816
+  maxPosterior: 0.64303449
+  accuracyBaseLearner (percent): 0
+  model training instances: 2000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 2000
+
+Index
+  30000
+Votes
+  0: 0.00030629
+  1: 0.00040856
+Measurements
+  classified instances: 29999
+  classifications correct (percent): 72.78242608
+  Kappa Statistic (percent): 42.2729061
+  Kappa Temporal Statistic (percent): 43.60019341
+  Kappa M Statistic (percent): 34.61723254
+Model measurements
+  model training instances: 29999
+  labeling cost: 3000
+  newThreshold: 0.6509195
+  maxPosterior: 0.63864977
+  accuracyBaseLearner (percent): 0
+  model training instances: 3000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 3000
+
+Index
+  40000
+Votes
+  0: 0.00007477
+  1: 0.00013549
+Measurements
+  classified instances: 39999
+  classifications correct (percent): 73.10432761
+  Kappa Statistic (percent): 43.16891867
+  Kappa Temporal Statistic (percent): 44.40597385
+  Kappa M Statistic (percent): 35.65789474
+Model measurements
+  model training instances: 39999
+  labeling cost: 4000
+  newThreshold: 0.6252071
+  maxPosterior: 0.50895233
+  accuracyBaseLearner (percent): 0
+  model training instances: 4000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 4000
+
+Index
+  50000
+Votes
+  0: 0.00004512
+  1: 0.00007234
+Measurements
+  classified instances: 49999
+  classifications correct (percent): 73.26746535
+  Kappa Statistic (percent): 43.56325768
+  Kappa Temporal Statistic (percent): 44.67257223
+  Kappa M Statistic (percent): 36.0356049
+Model measurements
+  model training instances: 49999
+  labeling cost: 5000
+  newThreshold: 0.6065155
+  maxPosterior: 0.53672845
+  accuracyBaseLearner (percent): 0
+  model training instances: 5000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 5000
+
+Index
+  60000
+Votes
+  0: 0.00000026
+  1: 0.00000277
+Measurements
+  classified instances: 59999
+  classifications correct (percent): 73.39788996
+  Kappa Statistic (percent): 43.96445189
+  Kappa Temporal Statistic (percent): 44.99052214
+  Kappa M Statistic (percent): 36.66772478
+Model measurements
+  model training instances: 59999
+  labeling cost: 6000
+  newThreshold: 0.61839613
+  maxPosterior: 0.62098209
+  accuracyBaseLearner (percent): 0
+  model training instances: 6000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 6000
+
+Index
+  70000
+Votes
+  0: 0.00021788
+  1: 0.0002799
+Measurements
+  classified instances: 69999
+  classifications correct (percent): 73.56247946
+  Kappa Statistic (percent): 44.39029401
+  Kappa Temporal Statistic (percent): 45.50487352
+  Kappa M Statistic (percent): 37.27630152
+Model measurements
+  model training instances: 69999
+  labeling cost: 7000
+  newThreshold: 0.6305095
+  maxPosterior: 0.54372915
+  accuracyBaseLearner (percent): 0
+  model training instances: 7000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 7000
+
+Index
+  80000
+Votes
+  0: 0.0002594
+  1: 0.00021338
+Measurements
+  classified instances: 79999
+  classifications correct (percent): 73.64717059
+  Kappa Statistic (percent): 44.57945506
+  Kappa Temporal Statistic (percent): 45.73348091
+  Kappa M Statistic (percent): 37.47182347
+Model measurements
+  model training instances: 79999
+  labeling cost: 8000
+  newThreshold: 0.63649519
+  maxPosterior: 0.56892545
+  accuracyBaseLearner (percent): 0
+  model training instances: 8000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 8000
+
+Index
+  90000
+Votes
+  0: 0.00014868
+  1: 0.00014333
+Measurements
+  classified instances: 89999
+  classifications correct (percent): 73.70748564
+  Kappa Statistic (percent): 44.69842907
+  Kappa Temporal Statistic (percent): 45.83266567
+  Kappa M Statistic (percent): 37.59757384
+Model measurements
+  model training instances: 89999
+  labeling cost: 9000
+  newThreshold: 0.6174661
+  maxPosterior: 0.53982451
+  accuracyBaseLearner (percent): 0
+  model training instances: 9000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 9000
+
+Index
+  100000
+Votes
+  0: 0.00010582
+  1: 0.0000259
+Measurements
+  classified instances: 99999
+  classifications correct (percent): 73.69573696
+  Kappa Statistic (percent): 44.67977211
+  Kappa Temporal Statistic (percent): 45.81410679
+  Kappa M Statistic (percent): 37.6416481
+Model measurements
+  model training instances: 99999
+  labeling cost: 10000
+  newThreshold: 0.64221543
+  maxPosterior: 0.6453217
+  accuracyBaseLearner (percent): 0
+  model training instances: 10000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 10000
+
+
+
+--> classification-out2.arff
+moa.classifiers.active.ALUncertainty -d RandVarUncertainty
+
+Index
+  10000
+Votes
+  0: 0.00007486
+  1: 0.00004159
+Measurements
+  classified instances: 9999
+  classifications correct (percent): 70.1470147
+  Kappa Statistic (percent): 34.62707786
+  Kappa Temporal Statistic (percent): 37.07841484
+  Kappa M Statistic (percent): 27.10622711
+Model measurements
+  model training instances: 9999
+  labeling cost: 1000
+  newThreshold: 0.4599546
+  maxPosterior: 0.37971923
+  accuracyBaseLearner (percent): 0
+  model training instances: 1000
+  Change detected: 0
+  Warning detected: 4
+  model training instances: 1000
+
+Index
+  20000
+Votes
+  0: 0.00006232
+  1: 0.00012928
+Measurements
+  classified instances: 19999
+  classifications correct (percent): 71.80859043
+  Kappa Statistic (percent): 39.36175366
+  Kappa Temporal Statistic (percent): 41.14208164
+  Kappa M Statistic (percent): 32.41428914
+Model measurements
+  model training instances: 19999
+  labeling cost: 2000
+  newThreshold: 0.47365399
+  maxPosterior: 0.31781666
+  accuracyBaseLearner (percent): 0
+  model training instances: 2000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 2000
+
+Index
+  30000
+Votes
+  0: 0.00019361
+  1: 0.00029824
+Measurements
+  classified instances: 29999
+  classifications correct (percent): 72.49574986
+  Kappa Statistic (percent): 41.03102624
+  Kappa Temporal Statistic (percent): 43.00614768
+  Kappa M Statistic (percent): 33.92857143
+Model measurements
+  model training instances: 29999
+  labeling cost: 3000
+  newThreshold: 0.47341642
+  maxPosterior: 0.44973714
+  accuracyBaseLearner (percent): 0
+  model training instances: 3000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 3000
+
+Index
+  40000
+Votes
+  0: 0.00003834
+  1: 0.00011934
+Measurements
+  classified instances: 39999
+  classifications correct (percent): 72.92182305
+  Kappa Statistic (percent): 42.2141353
+  Kappa Temporal Statistic (percent): 44.02873237
+  Kappa M Statistic (percent): 35.22129187
+Model measurements
+  model training instances: 39999
+  labeling cost: 4000
+  newThreshold: 0.51750888
+  maxPosterior: 0.20547105
+  accuracyBaseLearner (percent): 0
+  model training instances: 4000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 4000
+
+Index
+  50000
+Votes
+  0: 0.00002422
+  1: 0.00005871
+Measurements
+  classified instances: 49999
+  classifications correct (percent): 73.12746255
+  Kappa Statistic (percent): 42.76308934
+  Kappa Temporal Statistic (percent): 44.38281315
+  Kappa M Statistic (percent): 35.70061256
+Model measurements
+  model training instances: 49999
+  labeling cost: 5000
+  newThreshold: 0.44553242
+  maxPosterior: 0.32531672
+  accuracyBaseLearner (percent): 0
+  model training instances: 5000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 5000
+
+Index
+  60000
+Votes
+  0: 0.00002841
+  1: 0.00015453
+Measurements
+  classified instances: 59999
+  classifications correct (percent): 73.2662211
+  Kappa Statistic (percent): 43.26247586
+  Kappa Temporal Statistic (percent): 44.71824918
+  Kappa M Statistic (percent): 36.3542576
+Model measurements
+  model training instances: 59999
+  labeling cost: 6000
+  newThreshold: 0.51698988
+  maxPosterior: -2.30723928
+  accuracyBaseLearner (percent): 0
+  model training instances: 6000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 6000
+
+Index
+  70000
+Votes
+  0: 0.00012486
+  1: 0.00017803
+Measurements
+  classified instances: 69999
+  classifications correct (percent): 73.33819055
+  Kappa Statistic (percent): 43.54586967
+  Kappa Temporal Statistic (percent): 45.04255131
+  Kappa M Statistic (percent): 36.74417028
+Model measurements
+  model training instances: 69999
+  labeling cost: 7000
+  newThreshold: 0.47246734
+  maxPosterior: 0.43499024
+  accuracyBaseLearner (percent): 0
+  model training instances: 7000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 7000
+
+Index
+  80000
+Votes
+  0: 0.00018288
+  1: 0.00014315
+Measurements
+  classified instances: 79999
+  classifications correct (percent): 73.37716721
+  Kappa Statistic (percent): 43.68137967
+  Kappa Temporal Statistic (percent): 45.17748205
+  Kappa M Statistic (percent): 36.83117808
+Model measurements
+  model training instances: 79999
+  labeling cost: 8000
+  newThreshold: 0.53744221
+  maxPosterior: 0.36052638
+  accuracyBaseLearner (percent): 0
+  model training instances: 8000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 8000
+
+Index
+  90000
+Votes
+  0: 0.00009879
+  1: 0.00009577
+Measurements
+  classified instances: 89999
+  classifications correct (percent): 73.4263714
+  Kappa Statistic (percent): 43.80737128
+  Kappa Temporal Statistic (percent): 45.25351951
+  Kappa M Statistic (percent): 36.93037975
+Model measurements
+  model training instances: 89999
+  labeling cost: 9000
+  newThreshold: 0.48629539
+  maxPosterior: -3.98116538
+  accuracyBaseLearner (percent): 0
+  model training instances: 9000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 9000
+
+Index
+  100000
+Votes
+  0: 0.00020051
+  1: 0.00003375
+Measurements
+  classified instances: 99999
+  classifications correct (percent): 73.4697347
+  Kappa Statistic (percent): 43.95123789
+  Kappa Temporal Statistic (percent): 45.34854977
+  Kappa M Statistic (percent): 37.10587454
+Model measurements
+  model training instances: 99999
+  labeling cost: 10000
+  newThreshold: 0.46708592
+  maxPosterior: 0.44241337
+  accuracyBaseLearner (percent): 0
+  model training instances: 10000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 10000
+
+
+
+--> classification-out3.arff
+moa.classifiers.active.ALUncertainty -d SelSampling
+
+Index
+  10000
+Votes
+  0: 0.00007643
+  1: 0.00004787
+Measurements
+  classified instances: 9999
+  classifications correct (percent): 70.77707771
+  Kappa Statistic (percent): 36.5722619
+  Kappa Temporal Statistic (percent): 38.40640809
+  Kappa M Statistic (percent): 28.64468864
+Model measurements
+  model training instances: 9999
+  labeling cost: 1000
+  newThreshold: 1
+  maxPosterior: 0.52619273
+  accuracyBaseLearner (percent): 0
+  model training instances: 1000
+  Change detected: 0
+  Warning detected: 6
+  model training instances: 1000
+
+Index
+  20000
+Votes
+  0: 0.00006756
+  1: 0.00015253
+Measurements
+  classified instances: 19999
+  classifications correct (percent): 72.14860743
+  Kappa Statistic (percent): 40.5236068
+  Kappa Temporal Statistic (percent): 41.85196785
+  Kappa M Statistic (percent): 33.22944138
+Model measurements
+  model training instances: 19999
+  labeling cost: 2000
+  newThreshold: 1
+  maxPosterior: 0.61569278
+  accuracyBaseLearner (percent): 0
+  model training instances: 2000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 2000
+
+Index
+  30000
+Votes
+  0: 0.00022833
+  1: 0.00031104
+Measurements
+  classified instances: 29999
+  classifications correct (percent): 72.80576019
+  Kappa Statistic (percent): 42.07347415
+  Kappa Temporal Statistic (percent): 43.64854597
+  Kappa M Statistic (percent): 34.67328635
+Model measurements
+  model training instances: 29999
+  labeling cost: 3000
+  newThreshold: 1
+  maxPosterior: 0.61098225
+  accuracyBaseLearner (percent): 0
+  model training instances: 3000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 3000
+
+Index
+  40000
+Votes
+  0: 0.00005121
+  1: 0.00011644
+Measurements
+  classified instances: 39999
+  classifications correct (percent): 73.2118303
+  Kappa Statistic (percent): 43.17505565
+  Kappa Temporal Statistic (percent): 44.62818459
+  Kappa M Statistic (percent): 35.91507177
+Model measurements
+  model training instances: 39999
+  labeling cost: 4000
+  newThreshold: 1
+  maxPosterior: 0.79338134
+  accuracyBaseLearner (percent): 0
+  model training instances: 4000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 4000
+
+Index
+  50000
+Votes
+  0: 0.00002409
+  1: 0.00005778
+Measurements
+  classified instances: 49999
+  classifications correct (percent): 73.39546791
+  Kappa Statistic (percent): 43.60758369
+  Kappa Temporal Statistic (percent): 44.93749483
+  Kappa M Statistic (percent): 36.34188361
+Model measurements
+  model training instances: 49999
+  labeling cost: 5000
+  newThreshold: 1
+  maxPosterior: 0.53078639
+  accuracyBaseLearner (percent): 0
+  model training instances: 5000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 5000
+
+Index
+  60000
+Votes
+  0: 0.00002083
+  1: 0.0000977
+Measurements
+  classified instances: 59999
+  classifications correct (percent): 73.59955999
+  Kappa Statistic (percent): 44.19280156
+  Kappa Temporal Statistic (percent): 45.40754782
+  Kappa M Statistic (percent): 37.14784541
+Model measurements
+  model training instances: 59999
+  labeling cost: 6000
+  newThreshold: 1
+  maxPosterior: 0.5098229
+  accuracyBaseLearner (percent): 0
+  model training instances: 6000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 6000
+
+Index
+  70000
+Votes
+  0: 0.00016805
+  1: 0.00020438
+Measurements
+  classified instances: 69999
+  classifications correct (percent): 73.72248175
+  Kappa Statistic (percent): 44.56258365
+  Kappa Temporal Statistic (percent): 45.834683
+  Kappa M Statistic (percent): 37.65591106
+Model measurements
+  model training instances: 69999
+  labeling cost: 7000
+  newThreshold: 1
+  maxPosterior: 0.52870392
+  accuracyBaseLearner (percent): 0
+  model training instances: 7000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 7000
+
+Index
+  80000
+Votes
+  0: 0.0001934
+  1: 0.0001706
+Measurements
+  classified instances: 79999
+  classifications correct (percent): 73.74967187
+  Kappa Statistic (percent): 44.65743531
+  Kappa Temporal Statistic (percent): 45.94455456
+  Kappa M Statistic (percent): 37.71503144
+Model measurements
+  model training instances: 79999
+  labeling cost: 8000
+  newThreshold: 1
+  maxPosterior: 0.71911942
+  accuracyBaseLearner (percent): 0
+  model training instances: 8000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 8000
+
+Index
+  90000
+Votes
+  0: 0.00010791
+  1: 0.00010443
+Measurements
+  classified instances: 89999
+  classifications correct (percent): 73.82637585
+  Kappa Statistic (percent): 44.83795833
+  Kappa Temporal Statistic (percent): 46.07760101
+  Kappa M Statistic (percent): 37.87974684
+Model measurements
+  model training instances: 89999
+  labeling cost: 9000
+  newThreshold: 1
+  maxPosterior: 0.51270807
+  accuracyBaseLearner (percent): 0
+  model training instances: 9000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 9000
+
+Index
+  100000
+Votes
+  0: 0.00018747
+  1: 0.00003942
+Measurements
+  classified instances: 99999
+  classifications correct (percent): 73.85473855
+  Kappa Statistic (percent): 44.94084226
+  Kappa Temporal Statistic (percent): 46.14164469
+  Kappa M Statistic (percent): 38.01858613
+Model measurements
+  model training instances: 99999
+  labeling cost: 10000
+  newThreshold: 1
+  maxPosterior: 0.74877043
+  accuracyBaseLearner (percent): 0
+  model training instances: 10000
+  Change detected: 0
+  Warning detected: 0
+  model training instances: 10000
+
+
+

@@ -30,9 +30,9 @@ import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
-import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
+import moa.evaluation.preview.LearningCurve;
 import moa.learners.ChangeDetectorLearner;
 import moa.options.ClassOption;
 

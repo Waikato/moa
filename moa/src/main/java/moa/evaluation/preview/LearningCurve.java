@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.evaluation;
+package moa.evaluation.preview;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +26,7 @@ import moa.AbstractMOAObject;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
+import moa.evaluation.LearningEvaluation;
 
 /**
  * Class that stores and keeps the history of evaluation measurements.
@@ -47,6 +48,17 @@ public class LearningCurve extends AbstractMOAObject {
 
     public String getOrderingMeasurementName() {
         return this.measurementNames.get(0);
+    }
+    
+    public void setData(
+    		List<String> measurementNames, 
+    		List<double[]> measurementValues) 
+    {
+    	this.measurementNames.clear();
+    	this.measurementValues.clear();
+    	
+    	this.measurementNames.addAll(measurementNames);
+    	this.measurementValues.addAll(measurementValues);
     }
 
     public void insertEntry(LearningEvaluation learningEvaluation) {
@@ -127,5 +139,13 @@ public class LearningCurve extends AbstractMOAObject {
 
     public String getMeasurementName(int measurementIndex) {
         return this.measurementNames.get(measurementIndex);
+    }
+
+    public int getMeasurementNameCount() {
+        return this.measurementNames.size();
+    }
+
+    public int getEntryMeasurementCount(int entryIdx) {
+        return this.measurementValues.get(entryIdx).length;
     }
 }
