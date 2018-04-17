@@ -30,24 +30,20 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 	protected DoubleVector[] rightStatistics;
 
 	public static double roundToSignificantFigures(double num, int n) {
-	    final double d = Math.ceil(Math.log10(num < 0 ? -num: num));
-	    final int power = n - (int) d;
+		final double d = Math.ceil(Math.log10(num < 0 ? -num: num));
+		final int power = n - (int) d;
 
-	    final double magnitude = Math.pow(10, power);
-	    final long shifted = (long) (num*magnitude);
-	    return shifted/magnitude;
+		final double magnitude = Math.pow(10, power);
+		final long shifted = (long) (num*magnitude);
+		return shifted/magnitude;
 	}
-	
+
 	@Override
-	public void observeAttribute(double inputAttributeValue,
-			DoubleVector[] statistics) {
-		if (!Double.isNaN(inputAttributeValue))
-		{
-//			if ((long) inputAttributeValue != inputAttributeValue) 
-//				inputAttributeValue = roundToSignificantFigures(inputAttributeValue, 4);
+	public void observeAttribute(double inputAttributeValue, DoubleVector[] statistics) {
+		if (!Double.isNaN(inputAttributeValue)) {
 			if (this.root == null) {
 				this.root = new Node(inputAttributeValue, statistics);
-				maxNodes=maxNodesOption.getValue();
+				maxNodes = maxNodesOption.getValue();
 			} else {
 				this.root.observeAttribute(inputAttributeValue, statistics);
 			}
@@ -57,8 +53,7 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 
 
 	@Override
-	public AttributeExpansionSuggestion getBestEvaluatedSplitSuggestion(
-			MultiLabelSplitCriterion criterion, DoubleVector[] preSplitStatistics, int inputAttributeIndex) {
+	public AttributeExpansionSuggestion getBestEvaluatedSplitSuggestion(MultiLabelSplitCriterion criterion, DoubleVector[] preSplitStatistics, int inputAttributeIndex) {
 		// Initialize global variables
 		int numOutputs = preSplitStatistics.length;
 		leftStatistics = new DoubleVector[numOutputs];
@@ -69,10 +64,13 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 			rightStatistics[i] = new DoubleVector(preSplitStatistics[i]);
 		}
 
-		return searchForBestSplitOption(this.root, null, criterion, preSplitStatistics, inputAttributeIndex);
+		AttributeExpansionSuggestion out = searchForBestSplitOption(this.root, null, criterion, preSplitStatistics, inputAttributeIndex);
+		leftStatistics = null;
+		rightStatistics = null;
+		return out;
 	}
 
-	protected AttributeExpansionSuggestion searchForBestSplitOption(Node currentNode, AttributeExpansionSuggestion currentBestOption, MultiLabelSplitCriterion criterion, DoubleVector [] preSplitStatistics, int inputAttributeIndex) {
+	protected AttributeExpansionSuggestion searchForBestSplitOption(Node currentNode, AttributeExpansionSuggestion currentBestOption, MultiLabelSplitCriterion criterion, DoubleVector[] preSplitStatistics, int inputAttributeIndex) {
 		// Return null if the current node is null or we have finished looking through all the possible splits
 		if (currentNode == null) { // TODO: JD check || countRightTotal == 0.0
 			return currentBestOption;
@@ -81,7 +79,7 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 		if (currentNode.left != null) {
 			currentBestOption = searchForBestSplitOption(currentNode.left, currentBestOption, criterion, preSplitStatistics, inputAttributeIndex);
 		}
-		
+
 		for (int i=0; i<leftStatistics.length; i++)
 		{
 			leftStatistics[i].addValues(currentNode.statistics[i]);
@@ -110,7 +108,7 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 			leftStatistics[i].subtractValues(currentNode.statistics[i]);
 			rightStatistics[i].addValues(currentNode.statistics[i]);
 		}
-		
+
 		return currentBestOption;
 	}
 
@@ -149,7 +147,7 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 		private Node left;
 		private Node right;
 
-		public Node(double inputAttributeValue, DoubleVector [] statistics) {
+		public Node(double inputAttributeValue, DoubleVector[] statistics) {
 			cutPoint = inputAttributeValue;
 			int numOutputAttributes = statistics.length;
 			this.statistics=new DoubleVector[numOutputAttributes];
@@ -162,8 +160,8 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 		/**
 		 * Updates tree with new observation
 		 */
-		public void observeAttribute(double inputAttributeValue, DoubleVector [] statistics) {
-			if (inputAttributeValue <= this.cutPoint) {
+		public void observeAttribute(double inputAttributeValue, DoubleVector[] statistics) {
+			if (inputAttributeValue == this.cutPoint) {
 				for (int i=0; i < statistics.length; i++)
 					this.statistics[i].addValues(statistics[i]);
 			}
@@ -189,6 +187,4 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 			}
 		}
 	}
-
-
 }

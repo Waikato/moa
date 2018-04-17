@@ -27,18 +27,29 @@ public abstract class AbstractEnsembleLearner<MLTask extends InstanceLearner> ex
     		size += c.measureByteSize();
     	return size;
     }
-    
+
     @SuppressWarnings("unchecked")
 	@Override
     public void resetLearningImpl() {
-        this.ensemble = new ArrayList<MLTask>(this.ensembleSizeOption.getValue());
+        this.ensemble = new ArrayList<>(this.ensembleSizeOption.getValue());
         MLTask baseLearner = (MLTask) getPreparedClassOption(this.baseLearnerOption);
-        for (int i = 0; i < this.ensemble.size(); i++) {
-            this.ensemble.set(i, (MLTask) baseLearner.copy());
-            this.ensemble.get(i).setRandomSeed(this.randomSeed + i * 100);
+        for (int i = 0; i < this.ensembleSizeOption.getValue(); i++) {
+        	MLTask learner = (MLTask) baseLearner.copy();
+        	learner.setRandomSeed(this.randomSeed + i + 1);
+        	learner.prepareForUse();
+            this.ensemble.add(learner);
         }
     }
-
+   
+    public void setRandomSeed(int seed) {
+    	super.setRandomSeed(seed);
+    	if (this.ensemble != null) 
+    		for (int i = 0; i < this.ensembleSizeOption.getValue(); i++) {
+    			if (this.ensemble.get(i) != null)
+    				this.ensemble.get(i).setRandomSeed(this.randomSeed + i + 1);
+    		}	
+    }
+    
 	public abstract Prediction combinePredictions(Prediction[] predictions);
 	
 	public Prediction getPredictionForInstance(Instance inst) {

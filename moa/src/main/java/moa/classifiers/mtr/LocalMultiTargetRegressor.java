@@ -1,4 +1,4 @@
-package moa.classifiers.mlc;
+package moa.classifiers.mtr;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractMultiTargetRegressor;
 import moa.classifiers.AbstractRegressor;
+import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.SizeOf;
 import moa.learners.MultiTargetRegressor;
@@ -94,12 +95,13 @@ public class LocalMultiTargetRegressor extends AbstractMultiTargetRegressor impl
 
 	@Override
 	public Prediction getPredictionForInstance(Instance inst) {
-		MultiTargetRegressionPrediction prediction = new MultiTargetRegressionPrediction(getModelContext().numOutputAttributes());
+		DoubleVector pred = new DoubleVector();
+		// MultiTargetRegressionPrediction prediction = new MultiTargetRegressionPrediction(getModelContext().numOutputAttributes());
 		for (int j = 0; j < inst.numOutputAttributes(); j++) {
 			Instance STInst = getSTInstance(inst, j);
-			prediction.setVote(j, 1, regressors.get(j).getPredictionForInstance(STInst).asDouble());
+			pred.setValue(j, regressors.get(j).getPredictionForInstance(STInst).asDouble());
 		}
-		return prediction;
+		return new MultiTargetRegressionPrediction(pred);
 	}
 
 	@Override

@@ -9,7 +9,6 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
 
 import moa.classifiers.mlc.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.mlc.core.splitcriteria.WeightedICVarianceReduction;
@@ -104,7 +103,7 @@ public class ISOUPOptionTree extends ISOUPTree {
 			return num;
 		}
 
-		public double[] getPrediction(StructuredInstance inst) {
+		public double[] getPrediction(Instance inst) {
 			double[][] predictions = new double[numChildren()][tree.getModelContext().numOutputAttributes()];
 			for (int i = 0; i < numChildren(); i++) {
 				predictions[i] = getChild(i).getPrediction(inst);
@@ -210,7 +209,7 @@ public class ISOUPOptionTree extends ISOUPTree {
 					((LeafNode) currentNode).learnFromInstance(inst, prediction, growthAllowed);
 					break;
 				} else {
-					currentNode.examplesSeen += inst.weight();
+					//currentNode.examplesSeen += inst.weight();
 //					if (!inAlternate && iNode.alternateTree != null) {
 //						boolean altTree = true;
 //						double lossO = Math.pow(inst.classValue() - prediction, 2);
@@ -314,7 +313,6 @@ public class ISOUPOptionTree extends ISOUPTree {
 		// Using this criterion, find the best split per attribute and rank the results
 		AttributeExpansionSuggestion[] bestSplitSuggestions = node.getBestSplitSuggestions(splitCriterion); // TODO update with split criterion option
 		List<AttributeExpansionSuggestion> acceptedSplits = new LinkedList<AttributeExpansionSuggestion>();
-		Arrays.sort(bestSplitSuggestions);
 
 		// Declare a variable to determine the number of splits to be performed
 		int numSplits = 0;
@@ -324,10 +322,11 @@ public class ISOUPOptionTree extends ISOUPTree {
 			numSplits = 1;
 			acceptedSplits.add(bestSplitSuggestions[0]);
 		} else if (bestSplitSuggestions.length > 1) { // Otherwise, consider which of the splits proposed may be worth trying
-
+			Arrays.sort(bestSplitSuggestions);
 			// Determine the Hoeffding bound value, used to select how many instances should be used to make a test decision
 			// to feel reasonably confident that the test chosen by this sample is the same as what would be chosen using infinite examples
-			double hoeffdingBound = computeHoeffdingBound(1, splitConfidenceOption.getValue(), node.examplesSeen);
+			double numExamples = node.examplesSeen.getValue(node.examplesSeen.maxIndex()); // Use the max index (TODO for partially labeled)
+			double hoeffdingBound = computeHoeffdingBound(1, splitConfidenceOption.getValue(), numExamples);
 			// Determine the top two ranked splitting suggestions
 			AttributeExpansionSuggestion bestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1];
 			AttributeExpansionSuggestion secondBestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 2];
@@ -381,7 +380,7 @@ public class ISOUPOptionTree extends ISOUPTree {
 		// make two new branches leading to (empty) leaves
 		if (numSplits > 0) {
 			double optionFactor = numSplits * Math.pow(optionDecayFactorOption.getValue(), (double) node.getLevel());
-			log(Integer.toString(node.ID) + ',' + Integer.toString((int) this.examplesSeen));
+			log(Integer.toString(node.ID) + ',' + this.examplesSeen.toString());
 
 			if (numSplits == 1) {
 				AttributeExpansionSuggestion splitDecision = acceptedSplits.get(0);

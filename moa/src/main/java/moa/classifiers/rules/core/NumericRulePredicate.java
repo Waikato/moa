@@ -49,9 +49,9 @@ public class NumericRulePredicate extends AbstractMOAObject implements Predicate
 	@Override
 	public void getDescription(StringBuilder sb, int indent) {
 		if(isEqualOrLower)
-			StringUtils.appendIndented(sb, indent+1, "In" + inputAttributeIndex + " <= " + attributeValue);
+			StringUtils.appendIndented(sb, indent+1, inputAttributeIndex + " <= " + attributeValue);
 		else
-			StringUtils.appendIndented(sb, indent+1, "In" + inputAttributeIndex + " > " + attributeValue);
+			StringUtils.appendIndented(sb, indent+1, inputAttributeIndex + " > " + attributeValue);
 	}
 	@Override
 	public String toString(){
@@ -73,6 +73,7 @@ public class NumericRulePredicate extends AbstractMOAObject implements Predicate
 	public double getAttributeValue() {
 		return attributeValue;
 	}
+	
 	@Override
 	public void getDescription(StringBuilder sb, int indent, InstancesHeader header) {
 		if(isEqualOrLower)

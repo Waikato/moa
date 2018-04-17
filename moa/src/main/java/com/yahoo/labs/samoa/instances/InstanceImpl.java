@@ -24,6 +24,8 @@ import java.text.SimpleDateFormat;
  */
 public class InstanceImpl implements StructuredInstance {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
      * The weight.
      */
@@ -328,7 +330,7 @@ public class InstanceImpl implements StructuredInstance {
     		return classIsMissing();
     	else {
     		for (int i = 0; i < this.instanceHeader.numOutputAttributes(); i++) {
-    			if (this.instanceData.isMissing(this.indexOf(outputAttribute(i)))) {
+    			if (this.isOutputMissing(i)) {
     				return true;
     			}
     		}
@@ -508,11 +510,22 @@ public class InstanceImpl implements StructuredInstance {
 		else {
 			String ret = "{";
 			for (int i = 0; i < numOutputAttributes(); i++) {
-				ret += String.valueOf(this.valueOutputAttribute(i)) + (i != numOutputAttributes() - 1 ? "," : "");
+				ret += String.valueOf(this.valueOutputAttribute(i)) + (i != numOutputAttributes() - 1 ? "|" : "");
 			}
 			ret += "}";
 			return ret;
 		}
+	}
+
+	@Override
+	public void setInputMissing(int inputAttributeIndex) {
+		this.setMissing(this.instanceHeader.getInputInstanceIndex(inputAttributeIndex));
+		
+	}
+
+	@Override
+	public void setOutputMissing(int outputAttributeIndex) {
+		this.setMissing(this.instanceHeader.getOutputInstanceIndex(outputAttributeIndex));
 	}
 
 }

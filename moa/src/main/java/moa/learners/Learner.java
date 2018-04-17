@@ -53,6 +53,12 @@ public interface Learner<E extends Example> extends MOAObject, OptionHandler, AW
     public void setRandomSeed(int s);
 
     /**
+     * Gets the seed for random number generation.
+     */
+    public int getRandomSeed();
+
+    
+    /**
      * Gets whether training has started.
      *
      * @return true if training has started

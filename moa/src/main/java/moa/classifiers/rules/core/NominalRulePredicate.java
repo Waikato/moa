@@ -40,6 +40,11 @@ public class NominalRulePredicate extends AbstractMOAObject implements Predicate
 
 	}
 
+	public double getAttributeValue() {
+		return attributeValue;
+	}
+
+	
 	@Override
 	public void negateCondition() {
 		isEqual=!isEqual;

@@ -1,5 +1,5 @@
 /*
- *    FIMTDDMultilabel.java
+ *    ISOUPTree.java
  *    Copyright (C) 2014 Jožef Stefan Institute, Ljubljana, Slovenia
  *    @author Aljaž Osojnik <aljaz.osojnik@ijs.si>
  *
@@ -43,11 +43,11 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
-import com.yahoo.labs.samoa.instances.predictions.MultiLabelClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.MultiTargetRegressionPrediction;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractMultiTargetRegressor;
+import moa.classifiers.SemiSupervisedLearner;
 import moa.classifiers.mlc.core.attributeclassobservers.AttributeStatisticsObserver;
 import moa.classifiers.mlc.core.attributeclassobservers.MultiLabelBSTree;
 import moa.classifiers.mlc.core.attributeclassobservers.MultiLabelBSTreePCT;
@@ -72,18 +72,21 @@ import moa.learners.MultiTargetRegressor;
  * @author Aljaž Osojnik (aljaz.osojnik@ijs.si)
  * @version $Revision: 1 $
  */
-public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTargetRegressor {
+public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTargetRegressor, SemiSupervisedLearner {
 
 	private static final long serialVersionUID = 1L;
 
 	public Node treeRoot;
 
-	protected double examplesSeen = 0.0;
-	private DoubleVector sumOfValues = new DoubleVector();
-	private DoubleVector sumOfSquares = new DoubleVector();
+	protected double learningWeight = 0.0;
 
-	private DoubleVector sumOfAttrValues = new DoubleVector();
-	private DoubleVector sumOfAttrSquares = new DoubleVector();
+	public DoubleVector examplesSeen = new DoubleVector();
+	public DoubleVector sumOfValues = new DoubleVector();
+	public DoubleVector sumOfSquares = new DoubleVector();
+
+	public DoubleVector weightOfInputs = new DoubleVector();
+	public DoubleVector sumOfAttrValues = new DoubleVector();
+	public DoubleVector sumOfAttrSquares = new DoubleVector();
 
 	private int numInputAttributes;
 	private int numOutputAttributes;
@@ -205,17 +208,19 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 		protected boolean changeDetection = true;
 
 		// The statistics for this node:
-		// Number of instances that have reached it
-		protected double examplesSeen;
+		// Number of instances with the given target that have reached it
+		public DoubleVector examplesSeen = new DoubleVector();
 		// Sum of y values
-		protected DoubleVector sumOfValues = new DoubleVector();
+		public DoubleVector sumOfValues = new DoubleVector();
 		// Sum of squared y values
-		protected DoubleVector sumOfSquares = new DoubleVector();
+		public DoubleVector sumOfSquares = new DoubleVector();
 
 		// Sum of y values
-		protected DoubleVector sumOfInputValues;
+		public DoubleVector weightOfInputs;
+		// Sum of y values
+		public DoubleVector sumOfInputValues;
 		// Sum of squared y values
-		protected DoubleVector sumOfInputSquares;
+		public DoubleVector sumOfInputSquares;
 
 
 		public Node(ISOUPTree tree) {
@@ -224,19 +229,20 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 		}
 
 		public void copyStatistics(Node node) {
-			examplesSeen = node.examplesSeen;
+			examplesSeen = (DoubleVector) node.examplesSeen.copy();
 			sumOfValues = (DoubleVector) node.sumOfValues.copy();
 			sumOfSquares = (DoubleVector) node.sumOfSquares.copy();
 			if (tree.runAsPCTOption.isSet()) {
+				weightOfInputs = (DoubleVector) node.weightOfInputs.copy();
 				sumOfInputValues = (DoubleVector) node.sumOfInputValues.copy();
 				sumOfInputSquares = (DoubleVector) node.sumOfInputSquares.copy();
 			}
 		}
 
 		public long calcByteSize() {
-			long size = SizeOf.sizeOf(this) + SizeOf.sizeOf(sumOfSquares) + SizeOf.sizeOf(sumOfValues);
+			long size = SizeOf.sizeOf(this) + SizeOf.sizeOf(sumOfSquares) + SizeOf.sizeOf(sumOfValues) + SizeOf.sizeOf(examplesSeen);
 			if (tree.runAsPCTOption.isSet()) {
-				size += SizeOf.sizeOf(sumOfInputSquares) + SizeOf.sizeOf(sumOfInputValues);
+				size += SizeOf.sizeOf(sumOfInputSquares) + SizeOf.sizeOf(sumOfInputValues) + SizeOf.sizeOf(weightOfInputs);
 			}
 			return size;
 		}
@@ -265,9 +271,7 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 
 		public void getDescription(StringBuilder sb, int i) {}
 
-		public double[] getPrediction(Instance inst) {
-			return null;
-		}
+		public abstract double[] getPrediction(Instance inst);
 
 		public void describeSubtree(StringBuilder out, int indent) {
 			StringUtils.appendIndented(out, indent, "Leaf");
@@ -313,6 +317,8 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 
 		// Perceptron model that carries out the actual learning in each node
 		public MultitargetPerceptron learningModel;
+		
+		public double learningWeight = 0.0;
 
 		public DoubleVector errorP = new DoubleVector();
 		public DoubleVector errorM = new DoubleVector();
@@ -332,10 +338,12 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 				learningModel = tree.newLeafModel();
 			}
 			initializeInputIndexes();
-			examplesSeen = 0;
+			learningWeight = 0.0;
+			examplesSeen = new DoubleVector();
 			sumOfValues = new DoubleVector();
 			sumOfSquares = new DoubleVector();
 			if (tree.runAsPCTOption.isSet()) {
+				weightOfInputs = new DoubleVector();
 				sumOfInputValues = new DoubleVector();
 				sumOfInputSquares = new DoubleVector();
 			}
@@ -369,12 +377,19 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 			double[] predictionP = tree.buildingModelTree() ? getPredictionModel(inst) : null;
 			double[] predictionM = getPredictionTargetMean(inst);
 
-			// number of instances passing through the node
-			examplesSeen += weight;
+			DoubleVector[] observations = new DoubleVector[tree.numOutputAttributes];
+			DoubleVector[] inputObservations = null;
+			
+			learningWeight += weight;
 
+			// number of instances passing through the node
+
+			if (tree.buildingModelTree() && !inst.missingOutputs()) learningModel.updatePerceptron(inst);
+			
 			for (int i = 0; i < tree.numOutputAttributes; i++) {
 				if (!inst.isOutputMissing(i)) {
 					double outVal = inst.valueOutputAttribute(i);
+					examplesSeen.addToValue(i, weight);
 					// sum of y values
 					sumOfValues.addToValue(i, weight * outVal);
 
@@ -385,50 +400,25 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 						errorP.setValue(i, errorP.getValue(i) * 0.95 + Math.abs(predictionP[i] - outVal));
 						errorM.setValue(i, errorM.getValue(i) * 0.95 + Math.abs(predictionM[i] - outVal));
 					}
+
+					observations[i] = new DoubleVector(new double[] {weight, weight * outVal, weight * outVal * outVal}); 
 				}
 			}
 
 			if (tree.runAsPCTOption.isSet()) {
-				for (int i = 0; i < tree.numInputAttributes; i++) {
+				inputObservations = new DoubleVector[tree.numInputAttributes];
+				for (int i : inputIndexes) {
 					if (!inst.isInputMissing(i)) {
 						double inVal = inst.valueInputAttribute(i);
+						weightOfInputs.addToValue(i, weight);
 
 						// sum of attr values
 						sumOfInputValues.addToValue(i, weight * inVal);
 
 						// sum of squared attr values
 						sumOfInputSquares.addToValue(i, weight * inVal * inVal);
-					}
-				}
-			}
 
-
-
-			if (tree.buildingModelTree()) learningModel.updatePerceptron(inst);
-
-			DoubleVector[] observations = new DoubleVector[tree.numOutputAttributes];
-			DoubleVector[] inputObservations = null;
-
-			for (int j = 0; j < tree.numOutputAttributes; j++) {
-				observations[j] = new DoubleVector();
-				if (!inst.isOutputMissing(j)) {
-					double outVal = inst.valueOutputAttribute(j);
-					observations[j].setValue(0, weight);
-					observations[j].setValue(1, weight * outVal);
-					observations[j].setValue(2, weight * outVal * outVal);
-				}
-			}
-			
-			if (tree.runAsPCTOption.isSet()) {
-				inputObservations = new DoubleVector[tree.numInputAttributes];
-				for (int j = 0; j < tree.numInputAttributes; j++) {
-					
-					inputObservations[j] = new DoubleVector();
-					if (!inst.isInputMissing(j)) {
-						double inVal = inst.valueInputAttribute(j);
-						inputObservations[j].setValue(0, weight);
-						inputObservations[j].setValue(1, weight * inVal);
-						inputObservations[j].setValue(2, weight * inVal * inVal);
+						inputObservations[i] = new DoubleVector(new double[] {weight, weight * inVal, weight * inVal * inVal}); 
 					}
 				}
 			}
@@ -436,7 +426,6 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 			for (int i : inputIndexes) {
 				AttributeStatisticsObserver obs = attributeObservers.get(i);
 				if (obs == null) {
-					// At this stage all nominal attributes are ignored
 					if (inst.inputAttribute(i).isNumeric()) {
 						obs = tree.newNumericClassObserver();
 						attributeObservers.set(i, obs);
@@ -446,14 +435,10 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 					}
 
 				}
-				if (obs != null ) {
-					if (!tree.runAsPCTOption.isSet() || !inst.inputAttribute(i).isNumeric()) {
-						obs.observeAttribute(inst.valueInputAttribute(i), observations);
-					} else {
-						((MultiLabelBSTreePCT) obs).observeAttribute(inst.valueInputAttribute(i), observations, inputObservations);
-					}
-
-					//obs.observeAttributeClassVector(inst.valueInputAttribute(i), getTargetVector(inst), inst.weight());
+				if (!tree.runAsPCTOption.isSet() || !inst.inputAttribute(i).isNumeric()) {
+					obs.observeAttribute(inst.valueInputAttribute(i), observations);
+				} else {
+					((MultiLabelBSTreePCT) obs).observeAttribute(inst.valueInputAttribute(i), observations, inputObservations);
 				}
 			}
 
@@ -476,16 +461,16 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 					DoubleVector[] preSplitInputStatistics = null;
 					for (int j = 0; j < tree.numOutputAttributes; j++) {
 						preSplitStatistics[j] = new DoubleVector();
-						preSplitStatistics[j].setValue(0, examplesSeen);
+						preSplitStatistics[j].setValue(0, examplesSeen.getValue(j));
 						preSplitStatistics[j].setValue(1, sumOfValues.getValue(j));
 						preSplitStatistics[j].setValue(2, sumOfSquares.getValue(j));
 					}
-					
+
 					if (tree.runAsPCTOption.isSet() && tree.modelContext.inputAttribute(i).isNumeric()) {
 						preSplitInputStatistics = new DoubleVector[tree.numInputAttributes];
 						for (int j = 0; j < tree.numInputAttributes; j++) {
 							preSplitInputStatistics[j] = new DoubleVector();
-							preSplitInputStatistics[j].setValue(0, examplesSeen);
+							preSplitInputStatistics[j].setValue(0, weightOfInputs.getValue(j));
 							preSplitInputStatistics[j].setValue(1, sumOfInputValues.getValue(j));
 							preSplitInputStatistics[j].setValue(2, sumOfInputSquares.getValue(j));
 						}
@@ -517,8 +502,8 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 		public double[] getPredictionTargetMean(Instance inst) {
 			double[] pred = new double[tree.numOutputAttributes];
 			for (int i = 0; i < tree.numOutputAttributes; i++) {
-				if (examplesSeen > 0) {
-					pred[i] = sumOfValues.getValue(i) / examplesSeen;
+				if (examplesSeen.getValue(i) > 0) {
+					pred[i] = sumOfValues.getValue(i) / examplesSeen.getValue(i);
 				} else {
 					pred[i] = 0;
 				}
@@ -526,7 +511,7 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 			return pred;
 		}
 
-		public double[] getPrediction(StructuredInstance inst) {
+		public double[] getPrediction(Instance inst) {
 			if (tree.buildingModelTree()) {
 				double[] predictionP = getPredictionModel(inst);
 				double[] predictionM = getPredictionTargetMean(inst);
@@ -551,12 +536,13 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 
 		public void checkForSplit() {
 			// If it has seen Nmin examples since it was last tested for splitting, attempt a split of this node
-			if (examplesSeen - examplesSeenAtLastSplitEvaluation >= tree.gracePeriodOption.getValue()) {
+			// TODO How does this interact with partially labeled examples
+			if (learningWeight - examplesSeenAtLastSplitEvaluation >= tree.gracePeriodOption.getValue()) {
 				int index = (parent != null) ? parent.getChildIndex(this) : 0;
 				tree.attemptToSplit(this, parent, index);
 
 				// Take note of how many instances were seen when this split evaluation was made, so we know when to perform the next split evaluation
-				examplesSeenAtLastSplitEvaluation = examplesSeen;
+				examplesSeenAtLastSplitEvaluation = learningWeight;
 			}
 		}
 
@@ -688,7 +674,7 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 
 		private static final long serialVersionUID = 1L;
 
-		protected Predicate predicate;
+		public Predicate predicate;
 
 		/**
 		 * Create a new SplitNode
@@ -731,7 +717,12 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 		}
 	}
 
-	public class MultitargetPerceptron {
+	public class MultitargetPerceptron implements Serializable {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		protected ISOUPTree tree;
 
@@ -743,7 +734,10 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 
 		public MultitargetPerceptron(ISOUPTree tree, MultitargetPerceptron original) {
 			this.tree = tree;
-			weights = original.weights.clone();
+			weights = new double[original.weights.length][original.weights[0].length];
+			for (int i = 0; i < original.weights.length; i++)
+				for (int j = 0; j < original.weights[0].length; j++)
+					weights[i][j] = original.weights[i][j];
 		}
 
 		public MultitargetPerceptron(ISOUPTree tree) {
@@ -765,7 +759,6 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 			int numTargets = tree.numOutputAttributes;
 			int numInputs = tree.numInputAttributes;
 			weights = new double[numTargets][numInputs+1];
-			tree.classifierRandom.setSeed(1234);
 			for (int i = 0; i < numTargets; i++) {
 				for (int j = 0; j < numInputs + 1; j++) { 
 					// The last index corresponds to the constant b
@@ -787,7 +780,7 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 			if (tree.learningRatioConstOption.isSet()) {
 				learningRatio = tree.learningRatioOption.getValue();
 			} else {
-				learningRatio = learningRatioOption.getValue() / (1 + instancesSeen * tree.learningRateDecayFactorOption.getValue());
+				learningRatio = tree.learningRatioOption.getValue() / (1 + instancesSeen * tree.learningRateDecayFactorOption.getValue());
 			}
 
 			// Loop for compatibility with bagging methods 
@@ -804,7 +797,7 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 
 				double[] normalizedTarget = tree.normalizedTargetVector(inst);
 				for (int i = 0; i < tree.numOutputAttributes; i++){
-					if (normalizedTarget[i] != Double.NaN) { /* to account for missing target values */
+					if (!Double.isNaN(normalizedTarget[i])) { /* to account for missing target values */
 						double delta = normalizedTarget[i] - normalizedPrediction[i];
 						for (int j = 0; j < normalizedInput.length; j++) {
 							weights[i][j] += delta * learningRatio * normalizedInput[j];
@@ -849,9 +842,9 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 			double[] out = new double[normalizedPrediction.length];
 			if (tree.normalize()) {
 				for (int i = 0; i < tree.numOutputAttributes; i++) {
-					double mean = tree.sumOfValues.getValue(i) / tree.examplesSeen;
-					double sd = computeSD(tree.sumOfSquares.getValue(i), tree.sumOfValues.getValue(i), tree.examplesSeen);
-					if (examplesSeen > 1) 
+					double mean = tree.sumOfValues.getValue(i) / tree.examplesSeen.getValue(i);
+					double sd = computeSD(tree.sumOfSquares.getValue(i), tree.sumOfValues.getValue(i), tree.examplesSeen.getValue(i));
+					if (examplesSeen.getValue(i) > 1) 
 						out[i] = normalizedPrediction[i] * sd + mean;
 					else
 						out[i] = 0;
@@ -902,10 +895,16 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 
 	public void resetLearningImpl() {
 		treeRoot = null;
-		examplesSeen = 0.0;
+		
+		if (this.getModelContext() != null)
+			checkRoot();
+
+		learningWeight = 0.0;
+		examplesSeen = new DoubleVector();
 		sumOfValues = new DoubleVector();
 		sumOfSquares = new DoubleVector();
 
+		weightOfInputs = new DoubleVector();
 		sumOfAttrValues = new DoubleVector();
 		sumOfAttrSquares = new DoubleVector();
 
@@ -913,7 +912,6 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 
 	@Override
 	public void modelContextSet() {
-		assert getModelContext() != null;
 		this.numInputAttributes = getModelContext().numInputAttributes();
 		this.numOutputAttributes = getModelContext().numOutputAttributes();
 		loadWeights();
@@ -946,15 +944,16 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 		};
 	}
 
-	public long measureByteSize() {
-		return calcByteSize();
-	}
+//	public long measureByteSize() {
+//		return calcByteSize();
+//	}
 
 	public long calcByteSize() {
 		long size = SizeOf.sizeOf(this);
 		if (this.treeRoot != null) {
 			size += this.treeRoot.calcByteSize();
 		}
+		size += SizeOf.sizeOf(examplesSeen) + SizeOf.sizeOf(weightOfInputs);
 		size += SizeOf.sizeOf(sumOfValues) + SizeOf.sizeOf(sumOfSquares);
 		size += SizeOf.sizeOf(sumOfAttrValues) + SizeOf.sizeOf(sumOfAttrSquares);
 		size += SizeOf.sizeOf(targetWeights);
@@ -963,11 +962,7 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 
 	public Prediction getPredictionForInstance(Instance inst) {
 		double[] predictionVector = treeRoot.getPrediction(inst);
-		MultiLabelClassificationPrediction prediction = new MultiLabelClassificationPrediction(this.numOutputAttributes);
-		for (int i = 0; i < this.numOutputAttributes; i++) {
-			prediction.setVote(i, 1, predictionVector[i]);
-		}
-		return prediction;
+		return new MultiTargetRegressionPrediction(predictionVector);
 	}
 
 	public double[] normalizedInputVector(Instance inst) {
@@ -977,9 +972,9 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 			for (int j = 0; j < this.numInputAttributes; j++) {
 				Attribute attr = inst.inputAttribute(j);
 				double value =  inst.valueInputAttribute(j);
-				double mean = sumOfAttrValues.getValue(j) / examplesSeen;
-				double sd = computeSD(sumOfAttrSquares.getValue(j), sumOfAttrValues.getValue(j), examplesSeen);
-				if (examplesSeen > 1 && sd > 0.00001) {
+				double mean = sumOfAttrValues.getValue(j) / weightOfInputs.getValue(j);
+				double sd = computeSD(sumOfAttrSquares.getValue(j), sumOfAttrValues.getValue(j), weightOfInputs.getValue(j));
+				if (weightOfInputs.getValue(j) > 1 && sd > 0.00001) {
 					if (attr.isNumeric())
 						normalizedInput[j] = (value - mean) / sd;
 					else
@@ -987,10 +982,7 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 				} else
 					normalizedInput[j] = 0;
 			}
-			if (examplesSeen > 1)
-				normalizedInput[this.numInputAttributes] = 1.0; // Value to be multiplied with the constant factor
-			else
-				normalizedInput[this.numInputAttributes] =  0.0;
+			normalizedInput[this.numInputAttributes] = 1.0; // Value to be multiplied with the constant factor
 		} else {
 			for (int j = 0; j < this.numInputAttributes; j++) {
 				normalizedInput[j] = inst.valueInputAttribute(j);
@@ -1005,10 +997,10 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 		if (normalize()) {
 			for (int i = 0; i < this.numOutputAttributes; i++) {
 				double value = (inst.isOutputMissing(i)) ? Double.NaN : inst.valueOutputAttribute(i);;
-				if (value != Double.NaN) {
-					double sd = computeSD(sumOfSquares.getValue(i), sumOfValues.getValue(i), examplesSeen);
-					double average = sumOfValues.getValue(i) / examplesSeen;
-					if (sd > 0 && examplesSeen > 1)
+				if (!Double.isNaN(value)) {
+					double sd = computeSD(sumOfSquares.getValue(i), sumOfValues.getValue(i), examplesSeen.getValue(i));
+					double average = sumOfValues.getValue(i) / examplesSeen.getValue(i);
+					if (sd > 0 && examplesSeen.getValue(i) > 1)
 						out[i] = (value - average) / (sd);
 					else
 						out[i] = 0;
@@ -1023,13 +1015,13 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 	}
 
 	public double[] normalizeTargetVector(double[] pred) {
-		if (normalize()) {
+		if (pred != null && normalize()) {
 			double[] out = new double[pred.length];
 			for (int i = 0; i < pred.length; i++) {
 				double value = pred[i];
-				double sd = computeSD(sumOfSquares.getValue(i), sumOfValues.getValue(i), examplesSeen);
-				double average = sumOfValues.getValue(i) / examplesSeen;
-				if (sd > 0 && examplesSeen > 1)
+				double sd = computeSD(sumOfSquares.getValue(i), sumOfValues.getValue(i), examplesSeen.getValue(i));
+				double average = sumOfValues.getValue(i) / examplesSeen.getValue(i);
+				if (sd > 0 && examplesSeen.getValue(i) > 1)
 					out[i] = (value - average) / sd;
 				else
 					out[i] = 0;
@@ -1039,12 +1031,12 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 	}
 
 
-	public double normalizeTargetValue(StructuredInstance inst, int i) {
+	public double normalizeTargetValue(Instance inst, int i) {
 		if (normalize()) {
-			if (examplesSeen > 1) {
+			if (examplesSeen.getValue(i) > 1) {
 				double value = inst.valueOutputAttribute(i);
-				double sd = computeSD(sumOfSquares.getValue(i), sumOfValues.getValue(i), examplesSeen);
-				double average = sumOfValues.getValue(i) / examplesSeen;
+				double sd = computeSD(sumOfSquares.getValue(i), sumOfValues.getValue(i), examplesSeen.getValue(i));
+				double average = sumOfValues.getValue(i) / examplesSeen.getValue(i);
 				if (sd > 0)
 					return (value - average) / sd;
 				else
@@ -1056,9 +1048,9 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 
 	public double normalizeTargetValue(double value, int i) {
 		if (normalize()) {
-			if (examplesSeen > 1) {
-				double sd = computeSD(sumOfSquares.getValue(i), sumOfValues.getValue(i), examplesSeen);
-				double average = sumOfValues.getValue(i) / examplesSeen;
+			if (examplesSeen.getValue(i) > 1) {
+				double sd = computeSD(sumOfSquares.getValue(i), sumOfValues.getValue(i), examplesSeen.getValue(i));
+				double average = sumOfValues.getValue(i) / examplesSeen.getValue(i);
 				if (sd > 0)
 					return (value - average) / sd;
 				else
@@ -1072,9 +1064,10 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 		double[] normalPrediction = normalizeTargetVector(prediction);
 		double[] normalValue = normalizedTargetVector(inst);
 		double[] out = new double[this.numOutputAttributes];
-		for (int i = 0; i < this.numOutputAttributes; i++) {
-			out[i] = Math.abs(normalValue[i] - normalPrediction[i]);
-		}
+		if (normalPrediction != null)
+			for (int i = 0; i < this.numOutputAttributes; i++) {
+				out[i] = Math.abs(normalValue[i] - normalPrediction[i]);
+			}
 		return out;
 	}
 
@@ -1086,23 +1079,30 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 		if (inst.weight() > 0) {
 
 			double[] prediction = treeRoot.getPrediction(inst);
-			double[] normalError = getNormalizedError(inst, prediction);
+			//double[] normalError = getNormalizedError(inst, prediction);
+			double[] normalError = null;
 
 			processInstance(inst, treeRoot, prediction, normalError, true, false);
 
 			double weight = inst.weight();
 
-			examplesSeen += weight;
+			learningWeight += weight;
 			for (int i = 0; i < this.numOutputAttributes; i++) {
-				double iVal = inst.valueOutputAttribute(i);
-				sumOfValues.addToValue(i, weight * iVal);
-				sumOfSquares.addToValue(i, weight * iVal * iVal);
+				if (!inst.isOutputMissing(i)) {
+					double iVal = inst.valueOutputAttribute(i);
+					examplesSeen.addToValue(i, weight);
+					sumOfValues.addToValue(i, weight * iVal);
+					sumOfSquares.addToValue(i, weight * iVal * iVal);
+				}
 			}
 
 			for (int i = 0; i < this.numInputAttributes; i++) {
-				double iVal = inst.valueInputAttribute(i);
-				sumOfAttrValues.addToValue(i, weight * iVal);
-				sumOfAttrSquares.addToValue(i, weight * iVal * iVal);
+				if (!inst.isInputMissing(i)) {
+					double iVal = inst.valueInputAttribute(i);
+					weightOfInputs.addToValue(i, weight);
+					sumOfAttrValues.addToValue(i, weight * iVal);
+					sumOfAttrSquares.addToValue(i, weight * iVal * iVal);
+				}
 			}
 		}
 	}
@@ -1114,8 +1114,8 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 				((LeafNode) currentNode).learnFromInstance(inst, prediction, growthAllowed);
 				break;
 			} else {
-				currentNode.examplesSeen += inst.weight();
-				//currentNode.sumOfAbsErrors.addValues(normalError);
+				// currentNode.examplesSeen += inst.weight();
+				//  currentNode.sumOfAbsErrors.addValues(normalError);
 				//				SplitNode iNode = (SplitNode) currentNode;
 				//				if (!inAlternate && iNode.alternateTree != null) {
 				//					boolean altTree = true;
@@ -1247,12 +1247,12 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 		} else {
 			DoubleVector inputWeights = new DoubleVector();
 			for (int i = 0; i < numInputAttributes; i++) inputWeights.setValue(i, 1);
-			splitCriterion = new PCTWeightedICVarianceReduction(targetWeights, new DoubleVector(), 0.5);
+			splitCriterion = new PCTWeightedICVarianceReduction(targetWeights, inputWeights, 0.5);
 		}
 
 		// Using this criterion, find the best split per attribute and rank the results
 		AttributeExpansionSuggestion[] bestSplitSuggestions = node.getBestSplitSuggestions(splitCriterion); // TODO update with split criterion option
-		
+
 
 
 		// Declare a variable to determine if any of the splits should be performed
@@ -1264,7 +1264,8 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 			Arrays.sort(bestSplitSuggestions);
 			// Determine the Hoeffding bound value, used to select how many instances should be used to make a test decision
 			// to feel reasonably confident that the test chosen by this sample is the same as what would be chosen using infinite examples
-			double hoeffdingBound = computeHoeffdingBound(1, splitConfidenceOption.getValue(), node.examplesSeen);
+			double numExamples = node.learningWeight;
+			double hoeffdingBound = computeHoeffdingBound(1, splitConfidenceOption.getValue(), numExamples);
 			// Determine the top two ranked splitting suggestions
 			AttributeExpansionSuggestion bestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1];
 			AttributeExpansionSuggestion secondBestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 2];
@@ -1276,33 +1277,27 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 			// Alternatively, if two or more splits are very similar or identical in terms of their splits, then a threshold limit
 			// (default 0.05) is applied to the Hoeffding bound; if the Hoeffding bound is smaller than this limit then the two
 			// competing attributes are equally good, and the split will be made on the one with the higher SDR value.
-			if ((secondBestSuggestion.merit / bestSuggestion.merit < 1 - hoeffdingBound) || (hoeffdingBound < this.tieThresholdOption.getValue())) {
-				shouldSplit = true;
-			}
+			shouldSplit = (secondBestSuggestion.merit / bestSuggestion.merit < 1 - hoeffdingBound) || (hoeffdingBound < this.tieThresholdOption.getValue());
+			// shouldSplit = true;
+
 			// If the splitting criterion was not met, initiate pruning of the E-BST structures in each attribute observer
-			else {
-				// TODO pruning is currently disabled
-				for (int i = 0; i < node.attributeObservers.size(); i++) {
-					AttributeStatisticsObserver obs = node.attributeObservers.get(i);
-					if (obs != null) {
-						if (getModelContext().attribute(i).isNumeric());
-						//TODO obs.removeBadSplits(null, secondBestSuggestion.merit / bestSuggestion.merit, bestSuggestion.merit, hoeffdingBound, getModelContext().numOutputAttributes());
-						if (getModelContext().attribute(i).isNominal());
-						// TODO nominal class observers
-					}
-				}
-			}
+//			if (!shouldSplit) {
+//				// TODO pruning is currently disabled
+//				for (int i = 0; i < node.attributeObservers.size(); i++) {
+//					AttributeStatisticsObserver obs = node.attributeObservers.get(i);
+//					if (obs != null) {
+//						if (getModelContext().attribute(i).isNumeric());
+//						//TODO obs.removeBadSplits(null, secondBestSuggestion.merit / bestSuggestion.merit, bestSuggestion.merit, hoeffdingBound, getModelContext().numOutputAttributes());
+//						if (getModelContext().attribute(i).isNominal());
+//						// TODO nominal class observers
+//					}
+//				}
+//			}
 		}
 
+		
+		
 		// If the splitting criterion were met, split the current node using the chosen attribute test, and
-		// make two new branches leading to (empty) leaves
-		//		try {
-		//			Thread.sleep(20000);
-		//		} catch (InterruptedException e) {
-		//			// TODO Auto-generated catch block
-		//			e.printStackTrace();
-		//		}
-
 		if (shouldSplit) {
 			AttributeExpansionSuggestion splitDecision = bestSplitSuggestions[bestSplitSuggestions.length - 1];
 
@@ -1310,14 +1305,21 @@ public class ISOUPTree extends AbstractMultiTargetRegressor implements MultiTarg
 			newSplit.ID = node.ID;
 			newSplit.copyStatistics(node);
 			newSplit.changeDetection = node.changeDetection;
-			newSplit.ID = node.ID;
-			log(Integer.toString(node.ID) + ',' + Integer.toString((int) this.examplesSeen));
+			log(Integer.toString(node.ID) + ',' + this.examplesSeen.toString());
 			for (int i = 0; i < 2; i++) { // Hardcoded for 2 values (due to the use of the Predicate class)
 				LeafNode newChild = newLeafNode();
 				if (buildingModelTree()) {
 					// Copy the splitting node's perceptron to it's children
 					newChild.learningModel = new MultitargetPerceptron(this, node.learningModel);
-
+					newChild.errorM = (DoubleVector) node.errorM.copy();
+					newChild.errorP = (DoubleVector) node.errorP.copy();
+				} else {
+					// Retrieve the seen average from the split
+					for (int j = 0; j < getModelContext().numOutputAttributes(); j++) {
+						newChild.examplesSeen.setValue(j, splitDecision.getResultingNodeStatistics()[j][i].getValue(0));
+						newChild.sumOfValues.setValue(j, splitDecision.getResultingNodeStatistics()[j][i].getValue(1));
+						newChild.sumOfSquares.setValue(j, splitDecision.getResultingNodeStatistics()[j][i].getValue(2));
+					}
 				}
 				newChild.changeDetection = node.changeDetection;
 				newChild.setParent(newSplit);

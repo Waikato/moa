@@ -104,7 +104,7 @@ public abstract class AbstractOzaBagAdwin<MLTask extends InstanceLearner> extend
     public void trainOnInstanceImpl(Instance inst) {
         boolean Change = false;
         for (int i = 0; i < this.ensemble.size(); i++) {
-            int k = MiscUtils.poisson(1.0, this.classifierRandom);
+            int k = MiscUtils.poisson(6.0, this.classifierRandom);
             if (k > 0) {
                 Instance weightedInst = (Instance) inst.copy();
                 weightedInst.setWeight(inst.weight() * k);
@@ -128,6 +128,7 @@ public abstract class AbstractOzaBagAdwin<MLTask extends InstanceLearner> extend
             }
             if (imax != -1) {
                 this.ensemble.get(imax).resetLearning();
+                this.ensemble.get(imax).setRandomSeed(this.ensemble.get(imax).getRandomSeed() * 2);
                 this.ensemble.get(imax).trainOnInstance(inst);
                 this.ADError[imax] = new ADWIN();
             }

@@ -176,6 +176,21 @@ public interface Instance extends Serializable {
      * @param instAttIndex, the attribute's index
      */
     public void setMissing(int instAttIndex);        
+
+    /**
+     * Sets an input attribute as missing
+     *
+     * @param inputAttributeIndex the index of the input attribute
+     */
+    public void setInputMissing(int inputAttributeIndex);        
+
+    /**
+     * Sets an output attribute as missing
+     *
+     * @param outputAttributeIndex the index of the output attribute
+     */
+    public void setOutputMissing(int outputAttributeIndex);        
+
     
     /**
      * Sets an attribute as missing

@@ -73,6 +73,9 @@ public class AttributeExpansionSuggestion extends AbstractMOAObject implements
 
     @Override
     public int compareTo(AttributeExpansionSuggestion comp) {
+    	if (Double.isNaN(this.merit) && Double.isNaN(comp.merit)) return 0;
+    	if (Double.isNaN(this.merit)) return -1;
+    	if (Double.isNaN(comp.merit)) return 1;
         return Double.compare(this.merit, comp.merit);
     }
 

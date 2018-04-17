@@ -70,7 +70,7 @@ public class ICVarianceReduction extends AbstractOptionHandler implements MultiL
 		//count number of branches with weightSeen higher than threshold
 		int count = 0; 
 		for(int i = 0; i < postSplitDists.length; i++)
-			if(postSplitDists[i].getValue(0) >=0.05*preSplitDist.getValue(0))
+			if(postSplitDists[i].getValue(0) >= 0.05 * preSplitDist.getValue(0))
 				count = count +1;
 		//Consider split if all branches have required weight seen
 		if(count == postSplitDists.length){
@@ -82,9 +82,12 @@ public class ICVarianceReduction extends AbstractOptionHandler implements MultiL
 			}
 			double [] variances=getBranchSplitVarianceOutput(postSplitDists);
 			for(int i = 0; i < variances.length; i++)
-				if(postSplitDists[i].getValue(0)>0)
-					sumVarPostSplit+=(postSplitDists[i].getValue(0)/weightTotal*variances[i]);  //weight variance
-			merit= 1 - sumVarPostSplit / varPreSplit;
+				if(postSplitDists[i].getValue(0) > 0)
+					sumVarPostSplit += (postSplitDists[i].getValue(0)/weightTotal*variances[i]);  //weight variance
+			if (sumVarPostSplit == 0 && varPreSplit == 0)
+				merit = 0;
+			else
+				merit= 1 - sumVarPostSplit / varPreSplit;
 		}
 		/*if(merit<0 || merit>1)
 			System.out.println("out of range");*/

@@ -29,6 +29,8 @@ public class WeightedICVarianceReduction extends ICVarianceReduction {
 		double error=0;
 		int numOutputs=preSplitDist.length;
 		for (int i=0; i<numOutputs; i++)
+			// TEMPORARY
+			//error += (1 / weights.getValue(i)) * getMeritOfSplitForOutput(preSplitDist,postSplitDists,i);
 			error += weights.getValue(i) * getMeritOfSplitForOutput(preSplitDist,postSplitDists,i);
 		return error / weights.sumOfValues();
 	}

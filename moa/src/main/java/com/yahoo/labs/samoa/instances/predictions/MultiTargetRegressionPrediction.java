@@ -41,7 +41,8 @@ public class MultiTargetRegressionPrediction implements Prediction, Serializable
 	}
 	
 	public MultiTargetRegressionPrediction(double[] prediction) {
-		this.prediction = new DoubleVector(prediction);
+		if (prediction != null)
+			this.prediction = new DoubleVector(prediction);
 	}
 	
 	
@@ -122,7 +123,10 @@ public class MultiTargetRegressionPrediction implements Prediction, Serializable
     }
     
 	public String asPredictionString() {
-		return String.valueOf(prediction.toString());
+		if (prediction != null)
+			return String.valueOf(prediction.toString().replace(",", ""));
+		else
+			return "?";
 	}
 
 	@Override

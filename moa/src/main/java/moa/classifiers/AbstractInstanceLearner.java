@@ -57,7 +57,7 @@ public abstract class AbstractInstanceLearner<MLTask extends InstanceLearner> ex
     protected double trainingWeightSeenByModel = 0.0;
 
     /** Random seed used in randomizable learners */
-    protected int randomSeed = 1;
+    public int randomSeed = 1;
 
     /** Option for randomizable learners to change the random seed */
     public IntOption randomSeedOption;
@@ -127,6 +127,11 @@ public abstract class AbstractInstanceLearner<MLTask extends InstanceLearner> ex
         }
     }
 
+    @Override
+    public int getRandomSeed() {
+    	return this.randomSeed;
+    }
+    
     @Override
     public boolean trainingHasStarted() {
         return this.trainingWeightSeenByModel > 0.0;
@@ -289,40 +294,30 @@ public abstract class AbstractInstanceLearner<MLTask extends InstanceLearner> ex
      */
     public static boolean contextIsCompatible(InstancesHeader originalContext,
             InstancesHeader newContext) {
-
-        if (newContext.numClasses() < originalContext.numClasses()) {
-            return false; // rule 1
-        }
-        if (newContext.numAttributes() < originalContext.numAttributes()) {
-            return false; // rule 2
-        }
-        int oPos = 0;
-        int nPos = 0;
-        while (oPos < originalContext.numAttributes()) {
-            if (oPos == originalContext.classIndex()) {
-                oPos++;
-                if (!(oPos < originalContext.numAttributes())) {
-                    break;
-                }
+		if (newContext.numInputAttributes() < originalContext.numInputAttributes()) {
+			return false; // rule 2
+		}
+		if (newContext.numOutputAttributes() < originalContext.numOutputAttributes()) {
+			return false; // rule 2
+		}
+    	for (int i = 0; i < originalContext.numOutputAttributes(); i++) {
+    		if (originalContext.inputAttribute(i).attributeType() != newContext.inputAttribute(i).attributeType()) {
+                return false; // rule 4
             }
-            if (nPos == newContext.classIndex()) {
-                nPos++;
+    		if (newContext.outputAttribute(i).numValues() < originalContext.outputAttribute(i).numValues()) {
+    			return false; // rule 1
+    		}
+    	}
+        // Input attributes
+        for (int i = 0; i < originalContext.numInputAttributes(); i++) {
+            if (originalContext.inputAttribute(i).attributeType() != newContext.inputAttribute(i).attributeType()) {
+                return false; // rule 4
             }
-            if (originalContext.attribute(oPos).isNominal()) {
-                if (!newContext.attribute(nPos).isNominal()) {
-                    return false; // rule 4
-                }
-                if (newContext.attribute(nPos).numValues() < originalContext.attribute(oPos).numValues()) {
+            else if (originalContext.inputAttribute(i).isNumeric()) {
+                if (newContext.inputAttribute(i).numValues() < originalContext.inputAttribute(i).numValues()) {
                     return false; // rule 3
                 }
-            } else {
-                assert (originalContext.attribute(oPos).isNumeric());
-                if (!newContext.attribute(nPos).isNumeric()) {
-                    return false; // rule 4
-                }
             }
-            oPos++;
-            nPos++;
         }
         return true; // all checks clear
     }

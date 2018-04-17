@@ -39,7 +39,7 @@ public class OzaBagMultiTargetRegression extends AbstractOzaBag<MultiTargetRegre
 	private static final long serialVersionUID = 1L;
 
 	public OzaBagMultiTargetRegression() {
-    	super(MultiTargetRegressor.class, "multilabel.trees.ISOUPTree");
+    	super(MultiTargetRegressor.class, "moa.classifiers.mtr.trees.ISOUPTree");
     }
 
 	@Override

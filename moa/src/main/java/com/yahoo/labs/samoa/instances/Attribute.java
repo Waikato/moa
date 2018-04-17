@@ -336,4 +336,16 @@ public class Attribute implements Serializable {
 		}
 		return null;
 	}
+
+
+	public String attributeType() {
+		if (this.isNominal())
+			return "nominal";
+		else if (this.isNumeric())
+			return "numeric";
+		else if (this.isHierarchical()) 
+			return "hierarchical";
+		else
+			return "other";
+	}
 }

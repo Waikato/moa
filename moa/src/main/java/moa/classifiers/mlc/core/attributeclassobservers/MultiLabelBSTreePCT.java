@@ -33,42 +33,27 @@ public class MultiLabelBSTreePCT extends AbstractOptionHandler implements Numeri
 	protected DoubleVector[] leftInputStatistics;
 	protected DoubleVector[] rightInputStatistics;
 
-	
-	public static double roundToSignificantFigures(double num, int n) {
-	    final double d = Math.ceil(Math.log10(num < 0 ? -num: num));
-	    final int power = n - (int) d;
 
-	    final double magnitude = Math.pow(10, power);
-	    final long shifted = (long) (num*magnitude);
-	    return shifted/magnitude;
+	public static double roundToSignificantFigures(double num, int n) {
+		final double d = Math.ceil(Math.log10(num < 0 ? -num: num));
+		final int power = n - (int) d;
+
+		final double magnitude = Math.pow(10, power);
+		final long shifted = (long) (num*magnitude);
+		return shifted/magnitude;
 	}
-	
+
 	@Override
 	public void observeAttribute(double inputAttributeValue, DoubleVector[] statistics) {
-		// DON'T CALL THIS
-		if (!Double.isNaN(inputAttributeValue))
-		{
-//			if ((long) inputAttributeValue != inputAttributeValue) 
-////				inputAttributeValue = roundToSignificantFigures(inputAttributeValue, 4);
-//			if (this.root == null) {
-//				this.root = new Node(inputAttributeValue, statistics);
-//				maxNodes=maxNodesOption.getValue();
-//			} else {
-//				this.root.observeAttribute(inputAttributeValue, statistics);
-//			}
-		}
-
+		throw new UnsupportedOperationException("This is an attribute observer used for PCTs and needs both input and output statistics.");
 	}
 
 	public void observeAttribute(double inputAttributeValue, DoubleVector[] targetStatistics, DoubleVector[] inputStatistics) {
-		// DON'T CALL THIS
 		if (!Double.isNaN(inputAttributeValue))
 		{
-//			if ((long) inputAttributeValue != inputAttributeValue) 
-////				inputAttributeValue = roundToSignificantFigures(inputAttributeValue, 4);
 			if (this.root == null) {
 				this.root = new Node(inputAttributeValue, targetStatistics, inputStatistics);
-				maxNodes=maxNodesOption.getValue();
+				maxNodes = maxNodesOption.getValue();
 			} else {
 				this.root.observeAttribute(inputAttributeValue, targetStatistics, inputStatistics);
 			}
@@ -78,24 +63,11 @@ public class MultiLabelBSTreePCT extends AbstractOptionHandler implements Numeri
 
 
 	@Override
-	public AttributeExpansionSuggestion getBestEvaluatedSplitSuggestion(
-			MultiLabelSplitCriterion criterion, DoubleVector[] preSplitStatistics, int inputAttributeIndex) {
-		// Initialize global variables
-//		int numOutputs = preSplitStatistics.length;
-//		leftStatistics = new DoubleVector[numOutputs];
-//		rightStatistics = new DoubleVector[numOutputs];
-//		for (int i=0; i< numOutputs; i++)
-//		{
-//			leftStatistics[i] = new DoubleVector(new double [preSplitStatistics[i].numValues()]); //sets statistics to zeros
-//			rightStatistics[i] = new DoubleVector(preSplitStatistics[i]);
-//		}
-
-//		return searchForBestSplitOption(this.root, null, criterion, preSplitStatistics, inputAttributeIndex);
-		return null;
+	public AttributeExpansionSuggestion getBestEvaluatedSplitSuggestion(MultiLabelSplitCriterion criterion, DoubleVector[] preSplitStatistics, int inputAttributeIndex) {
+		throw new UnsupportedOperationException("This is an attribute observer used for PCTs and needs both input and output statistics.");
 	}
 
-	public AttributeExpansionSuggestion getBestEvaluatedSplitSuggestion(
-			MultiLabelSplitCriterion criterion, DoubleVector[] preSplitTargetStatistics, DoubleVector[] preSplitInputStatistics, int inputAttributeIndex) {
+	public AttributeExpansionSuggestion getBestEvaluatedSplitSuggestion(MultiLabelSplitCriterion criterion, DoubleVector[] preSplitTargetStatistics, DoubleVector[] preSplitInputStatistics, int inputAttributeIndex) {
 		// Initialize global variables
 		int numOutputs = preSplitTargetStatistics.length;
 		int numInputs = preSplitInputStatistics.length;
@@ -106,12 +78,12 @@ public class MultiLabelBSTreePCT extends AbstractOptionHandler implements Numeri
 		leftInputStatistics = new DoubleVector[numInputs];
 		rightInputStatistics = new DoubleVector[numInputs];
 
-		for (int i=0; i< numOutputs; i++)
+		for (int i=0; i < numOutputs; i++)
 		{
 			leftTargetStatistics[i] = new DoubleVector(new double [preSplitTargetStatistics[i].numValues()]); //sets statistics to zeros
 			rightTargetStatistics[i] = new DoubleVector(preSplitTargetStatistics[i]);
 		}
-		for (int i=0; i< numInputs; i++)
+		for (int i=0; i < numInputs; i++)
 		{
 			leftInputStatistics[i] = new DoubleVector(new double [preSplitInputStatistics[i].numValues()]); //sets statistics to zeros
 			rightInputStatistics[i] = new DoubleVector(preSplitInputStatistics[i]);
@@ -120,9 +92,8 @@ public class MultiLabelBSTreePCT extends AbstractOptionHandler implements Numeri
 		return searchForBestSplitOption(this.root, null, criterion, preSplitTargetStatistics, preSplitInputStatistics, inputAttributeIndex);
 	}
 
-	
-	protected AttributeExpansionSuggestion searchForBestSplitOption(Node currentNode, AttributeExpansionSuggestion currentBestOption,
-			MultiLabelSplitCriterion criterion, DoubleVector [] preSplitTargetStatistics, DoubleVector [] preSplitInputStatistics, int inputAttributeIndex) {
+
+	protected AttributeExpansionSuggestion searchForBestSplitOption(Node currentNode, AttributeExpansionSuggestion currentBestOption, MultiLabelSplitCriterion criterion, DoubleVector[] preSplitTargetStatistics, DoubleVector[] preSplitInputStatistics, int inputAttributeIndex) {
 		// Return null if the current node is null or we have finished looking through all the possible splits
 		if (currentNode == null) { // TODO: JD check || countRightTotal == 0.0
 			return currentBestOption;
@@ -131,7 +102,7 @@ public class MultiLabelBSTreePCT extends AbstractOptionHandler implements Numeri
 		if (currentNode.left != null) {
 			currentBestOption = searchForBestSplitOption(currentNode.left, currentBestOption, criterion, preSplitTargetStatistics, preSplitInputStatistics, inputAttributeIndex);
 		}
-		
+
 		for (int i=0; i<leftTargetStatistics.length; i++)
 		{
 			leftTargetStatistics[i].addValues(currentNode.targetStatistics[i]);
@@ -144,9 +115,9 @@ public class MultiLabelBSTreePCT extends AbstractOptionHandler implements Numeri
 			rightInputStatistics[i].subtractValues(currentNode.inputStatistics[i]);
 		}
 
-		
-		DoubleVector[][] postSplitTargetDists = new DoubleVector [leftTargetStatistics.length + leftInputStatistics.length][2];
-		DoubleVector[][] postSplitInputDists = new DoubleVector [leftTargetStatistics.length + leftInputStatistics.length][2];
+
+		DoubleVector[][] postSplitTargetDists = new DoubleVector [leftTargetStatistics.length][2];
+		DoubleVector[][] postSplitInputDists = new DoubleVector [leftInputStatistics.length][2];
 		for (int i=0; i<leftTargetStatistics.length; i++)
 		{
 			postSplitTargetDists[i] = new DoubleVector[2];
@@ -163,7 +134,7 @@ public class MultiLabelBSTreePCT extends AbstractOptionHandler implements Numeri
 
 		double merit = ((PCTWeightedICVarianceReduction) criterion).getMeritOfSplit(preSplitTargetStatistics, postSplitTargetDists, preSplitInputStatistics, postSplitInputDists);
 
-		if ((currentBestOption == null) || (merit > currentBestOption.merit)) {
+		if ((!Double.isNaN(merit)) && (currentBestOption == null || (merit > currentBestOption.merit))) {
 			currentBestOption = new AttributeExpansionSuggestion(new NumericRulePredicate(inputAttributeIndex, currentNode.cutPoint, true), Utils.copy(postSplitTargetDists), merit);
 		}
 
@@ -178,7 +149,7 @@ public class MultiLabelBSTreePCT extends AbstractOptionHandler implements Numeri
 			leftInputStatistics[i].subtractValues(currentNode.inputStatistics[i]);
 			rightInputStatistics[i].addValues(currentNode.inputStatistics[i]);
 		}
-		
+
 		return currentBestOption;
 	}
 
@@ -213,7 +184,7 @@ public class MultiLabelBSTreePCT extends AbstractOptionHandler implements Numeri
 		// E-BST statistics
 		private DoubleVector[] targetStatistics;
 		private DoubleVector[] inputStatistics;
-		
+
 
 		// Child nodes
 		private Node left;
@@ -225,8 +196,11 @@ public class MultiLabelBSTreePCT extends AbstractOptionHandler implements Numeri
 			int numInputAttributes = inputStatistics.length;
 			this.targetStatistics = new DoubleVector[numOutputAttributes];
 			this.inputStatistics = new DoubleVector[numInputAttributes];
-			for (int i=0; i<numOutputAttributes; i++) {					
-				this.targetStatistics[i]=new DoubleVector(targetStatistics[i]);
+			for (int i=0; i<numOutputAttributes; i++) {		
+				if (targetStatistics[i] != null)
+					this.targetStatistics[i]= new DoubleVector(targetStatistics[i]);
+				else
+					this.targetStatistics[i] = new DoubleVector();
 			}
 			for (int i=0; i<numInputAttributes; i++) {					
 				this.inputStatistics[i]=new DoubleVector(inputStatistics[i]);
@@ -236,28 +210,28 @@ public class MultiLabelBSTreePCT extends AbstractOptionHandler implements Numeri
 		/**
 		 * Updates tree with new observation
 		 */
-		public void observeAttribute(double inputAttributeValue, DoubleVector[]targetStatistics, DoubleVector[] inputStatistics) {
-			if (inputAttributeValue <= this.cutPoint) {
+		public void observeAttribute(double inputAttributeValue, DoubleVector[] targetStatistics, DoubleVector[] inputStatistics) {
+			if (inputAttributeValue == this.cutPoint) {
 				for (int i=0; i < targetStatistics.length; i++)
-					this.targetStatistics[i].addValues(targetStatistics[i]);
+					if (targetStatistics[i] != null)
+						this.targetStatistics[i].addValues(targetStatistics[i]);
 				for (int i=0; i < inputStatistics.length; i++)
 					this.inputStatistics[i].addValues(inputStatistics[i]);
-			}
-			else if (inputAttributeValue < this.cutPoint) {
+
+			} else if (inputAttributeValue < this.cutPoint) {
 				if (this.left == null) {
-					if (numNodes<maxNodes) {
+					if (numNodes < maxNodes) {
 						this.left = new Node(inputAttributeValue, targetStatistics, inputStatistics);
-						++numNodes;
+						numNodes++;
 					}
 				} else {
 					this.left.observeAttribute(inputAttributeValue, targetStatistics, inputStatistics);
 				}
-			}
-			else { 
+			} else { 
 				if (this.right == null) {
-					if(numNodes<maxNodes){
+					if(numNodes < maxNodes){
 						this.right = new Node(inputAttributeValue, targetStatistics, inputStatistics);
-						++numNodes;
+						numNodes++;
 					}
 				} else {
 					this.right.observeAttribute(inputAttributeValue, targetStatistics, inputStatistics);

@@ -25,6 +25,7 @@ import com.yahoo.labs.samoa.instances.predictions.MultiTargetRegressionPredictio
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.meta.AbstractOzaBagAdwin;
+import moa.classifiers.mtr.trees.ISOUPTree;
 import moa.core.DoubleVector;
 import moa.learners.MultiTargetRegressor;
 
@@ -33,14 +34,22 @@ public class OzaBagAdwinMultiTargetRegression extends AbstractOzaBagAdwin<MultiT
 	private static final long serialVersionUID = 1L;
 
 	public OzaBagAdwinMultiTargetRegression() {
-		super(MultiTargetRegressor.class, "classifiers.trees.FIMTD");
+		super(MultiTargetRegressor.class, "moa.classifiers.mtr.trees.ISOUPTree");
 	}
 
 	public double getAdwinError(Instance inst, int i) {
 		// TODO this needs a rework
 		double sum = 0.0;
-		for (int j = 0; j < inst.numOutputAttributes(); j++) {
-			sum += Math.abs(this.ensemble.get(i).getPredictionForInstance(inst).asDouble() - inst.valueOutputAttribute(j));
+		if (this.ensemble.get(i) instanceof ISOUPTree) {
+			double[] normalizedError = ((ISOUPTree) this.ensemble.get(i)).getNormalizedError(inst, this.ensemble.get(i).getPredictionForInstance(inst).asDoubleArray());
+			for (int j = 0; j < inst.numOutputAttributes(); j++) {
+				sum += normalizedError[j];
+			}
+		} else {
+			Prediction prediction = this.ensemble.get(i).getPredictionForInstance(inst);
+			for (int j = 0; j < inst.numOutputAttributes(); j++) {
+				sum += Math.abs(prediction.getPrediction(j) - inst.valueOutputAttribute(j));
+			}
 		}
 		sum = sum / inst.numOutputAttributes();
 		return sum;
@@ -52,7 +61,7 @@ public class OzaBagAdwinMultiTargetRegression extends AbstractOzaBagAdwin<MultiT
 		for (Prediction p : predictions) {
 			sums.addValues(p.asDoubleVector());
 		}
-		sums.scaleValues(1 / sums.numValues());
+		sums.scaleValues(1.0 / predictions.length);
 		return new MultiTargetRegressionPrediction(sums);
 	}
 

@@ -43,7 +43,7 @@ public class DoubleVector extends AbstractMOAObject {
     }
 
     public DoubleVector(DoubleVector toCopy) {
-        this(toCopy.getArrayRef());
+        this(toCopy.getArrayCopy());
     }
 
     public int numValues() {
@@ -190,7 +190,7 @@ public class DoubleVector extends AbstractMOAObject {
             if (i > 0) {
                 out.append("|");
             }
-            out.append(StringUtils.doubleToString(getValue(i), 3));
+            out.append(String.valueOf(this.array[i]));
         }
         out.append("}");
     }
