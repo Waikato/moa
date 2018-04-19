@@ -11,18 +11,17 @@
  *            Paulo M. Goncalves Jr. (paulomgj@gmail.com)
  *            Roberto S. M. Barros (roberto@cin.ufpe.br)
  *
- *    This program is free software; you can redistribute it and/or modify
- *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 3 of the License, or
- *    (at your option) any later version.
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
  *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- *    You should have received a copy of the GNU General Public License
- *    along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
  */
 
 /**
@@ -35,15 +34,6 @@
  *     In Proceedings of IEEE International Joint Conference 
  *     on Neural Networks (IJCNN), Vancouver, Canada, 2016.
  *     DOI: 10.1109/IJCNN.2016.7727427
- *
- * Inspired in (and generalized from) ADOB method, published as: 
- *     Silas Garrido Teixeira de Carvalho Santos, Paulo Mauricio Gonçalves Júnior,
- *     Geyson Daniel dos Santos Silva, and Roberto Souto Maior de Barros: 
- *     Speeding Up Recovery From Concept Drifts. 
- *     In book: Machine Learning and Knowledge Discovery in Databases, 
- *     ECML/PKDD 2014, Part III, LNCS 8726, pp. 179-194. 09/2014. 
- *     DOI: 10.1007/978-3-662-44845-8_12.
- *
  */
 
 package moa.classifiers.meta;
@@ -74,9 +64,8 @@ public class BOLE extends AbstractClassifier implements MultiClassClassifier {
     public FlagOption pureBoostOption = new FlagOption("pureBoost", 
             'p', "Boost with weights only; no poisson.");
 
-    public IntOption breakVotesOption = new IntOption("breakVotes", 
-            'b', "Break Votes? 0=no, 1=yes", 
-            0, 0, 1);
+    public FlagOption breakVotesOption = new FlagOption("breakVotes",
+            'b', "Break Votes? unchecked=no, checked=yes");
 
     public FloatOption errorBoundOption = new FloatOption("errorBound", 
             'e', "Error bound percentage for allowing experts to vote.",
@@ -206,7 +195,7 @@ public class BOLE extends AbstractClassifier implements MultiClassClassifier {
                     combinedVote.addValues(vote);
                 } 
             } 
-            else if (this.breakVotesOption.getValue() == 1) {
+            else if (this.breakVotesOption.isSet()) {
                 break;
             }
         }

@@ -53,6 +53,8 @@ public class DDM extends AbstractChangeDetector {
     
     private int m_n;
 
+    private int minNumInstances;
+
     private double m_p;
 
     private double m_s;
@@ -62,6 +64,10 @@ public class DDM extends AbstractChangeDetector {
     private double m_pmin;
 
     private double m_smin;
+
+    private double warningLevel;
+
+    private double outcontrolLevel;
 
     public DDM() {
         resetLearning();
@@ -75,6 +81,9 @@ public class DDM extends AbstractChangeDetector {
         m_psmin = Double.MAX_VALUE;
         m_pmin = Double.MAX_VALUE;
         m_smin = Double.MAX_VALUE;
+        minNumInstances = this.minNumInstancesOption.getValue();
+        warningLevel = this.warningLevelOption.getValue();
+        outcontrolLevel = this.outcontrolLevelOption.getValue();
     }
 
     @Override
@@ -96,7 +105,7 @@ public class DDM extends AbstractChangeDetector {
         this.isWarningZone = false;
         this.delay = 0;
 
-        if (m_n < this.minNumInstancesOption.getValue()) {
+        if (m_n < minNumInstances) {
             return;
         }
 
@@ -106,12 +115,11 @@ public class DDM extends AbstractChangeDetector {
             m_psmin = m_p + m_s;
         }
 
-        if (m_n > this.minNumInstancesOption.getValue() && m_p + m_s > m_pmin + 
-                this.outcontrolLevelOption.getValue() * m_smin) {
+        if (m_n > minNumInstances && m_p + m_s > m_pmin + outcontrolLevel * m_smin) {
             //System.out.println(m_p + ",D");
             this.isChangeDetected = true;
             //resetLearning();
-        } else if (m_p + m_s > m_pmin + this.warningLevelOption.getValue() * m_smin) {
+        } else if (m_p + m_s > m_pmin + warningLevel * m_smin) {
             //System.out.println(m_p + ",W");
             this.isWarningZone = true;
         } else {
