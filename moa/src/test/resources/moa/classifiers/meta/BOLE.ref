@@ -16,19 +16,19 @@ Model measurements
   model training instances: 9999
   ensemble size: 10
   [avg] model training instances: 8690.4
-  [err] model training instances: 450.92152077
+  [err] model training instances: 2016.58234592
   [avg] Change detected: 6.7
-  [err] Change detected: 1.33374993
+  [err] Change detected: 4.21768762
   [avg] Warning detected: 146.7
-  [err] Warning detected: 17.97161342
+  [err] Warning detected: 56.83123163
   [avg] tree size (nodes): 12.4
-  [err] tree size (nodes): 2.30072452
+  [err] tree size (nodes): 7.27552976
   [avg] tree size (leaves): 10
-  [err] tree size (leaves): 1.77012241
+  [err] tree size (leaves): 5.59761854
   [avg] active learning leaves: 10
-  [err] active learning leaves: 1.77012241
+  [err] active learning leaves: 5.59761854
   [avg] tree depth: 1.8
-  [err] tree depth: 0.29059326
+  [err] tree depth: 0.91893658
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -51,19 +51,19 @@ Model measurements
   model training instances: 19999
   ensemble size: 10
   [avg] model training instances: 18094.65
-  [err] model training instances: 745.38296506
+  [err] model training instances: 3333.4539583
   [avg] Change detected: 0.1
-  [err] Change detected: 0.1
+  [err] Change detected: 0.31622777
   [avg] Warning detected: 19.4
-  [err] Warning detected: 7.42398515
+  [err] Warning detected: 23.4767024
   [avg] tree size (nodes): 34.6
-  [err] tree size (nodes): 5.96508359
+  [err] tree size (nodes): 18.86325057
   [avg] tree size (leaves): 26.5
-  [err] tree size (leaves): 4.305681
+  [err] tree size (leaves): 13.61575884
   [avg] active learning leaves: 26.5
-  [err] active learning leaves: 4.305681
+  [err] active learning leaves: 13.61575884
   [avg] tree depth: 2.7
-  [err] tree depth: 0.21343747
+  [err] tree depth: 0.67494856
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -86,19 +86,19 @@ Model measurements
   model training instances: 29999
   ensemble size: 10
   [avg] model training instances: 27337.25
-  [err] model training instances: 919.23655072
+  [err] model training instances: 4110.95082964
   [avg] Change detected: 0
   [err] Change detected: 0
   [avg] Warning detected: 7.4
-  [err] Warning detected: 3.05577777
+  [err] Warning detected: 9.66321778
   [avg] tree size (nodes): 52.9
-  [err] tree size (nodes): 5.98043105
+  [err] tree size (nodes): 18.91178351
   [avg] tree size (leaves): 39.1
-  [err] tree size (leaves): 3.87714099
+  [err] tree size (leaves): 12.26059632
   [avg] active learning leaves: 39.1
-  [err] active learning leaves: 3.87714099
+  [err] active learning leaves: 12.26059632
   [avg] tree depth: 3.3
-  [err] tree depth: 0.21343747
+  [err] tree depth: 0.67494856
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -121,19 +121,19 @@ Model measurements
   model training instances: 39999
   ensemble size: 10
   [avg] model training instances: 35792.75
-  [err] model training instances: 2096.61332162
+  [err] model training instances: 9376.33981935
   [avg] Change detected: 0.3
-  [err] Change detected: 0.3
+  [err] Change detected: 0.9486833
   [avg] Warning detected: 13.2
-  [err] Warning detected: 9.10408944
+  [err] Warning detected: 28.78965864
   [avg] tree size (nodes): 60.9
-  [err] tree size (nodes): 10.58767627
+  [err] tree size (nodes): 33.48117216
   [avg] tree size (leaves): 43.7
-  [err] tree size (leaves): 6.9984919
+  [err] tree size (leaves): 22.13117459
   [avg] active learning leaves: 43.7
-  [err] active learning leaves: 6.9984919
+  [err] active learning leaves: 22.13117459
   [avg] tree depth: 3.7
-  [err] tree depth: 0.44845413
+  [err] tree depth: 1.41813649
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -156,19 +156,19 @@ Model measurements
   model training instances: 49999
   ensemble size: 10
   [avg] model training instances: 45527.85
-  [err] model training instances: 2246.92539669
+  [err] model training instances: 10048.55585474
   [avg] Change detected: 0
   [err] Change detected: 0
   [avg] Warning detected: 6.3
-  [err] Warning detected: 3.01127511
+  [err] Warning detected: 9.522488
   [avg] tree size (nodes): 71.9
-  [err] tree size (nodes): 9.99938887
+  [err] tree size (nodes): 31.62084404
   [avg] tree size (leaves): 51.3
-  [err] tree size (leaves): 6.21297925
+  [err] tree size (leaves): 19.64716547
   [avg] active learning leaves: 51.3
-  [err] active learning leaves: 6.21297925
+  [err] active learning leaves: 19.64716547
   [avg] tree depth: 4.3
-  [err] tree depth: 0.21343747
+  [err] tree depth: 0.67494856
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -191,19 +191,19 @@ Model measurements
   model training instances: 59999
   ensemble size: 10
   [avg] model training instances: 55481.65
-  [err] model training instances: 2440.60645858
+  [err] model training instances: 10914.72389542
   [avg] Change detected: 0
   [err] Change detected: 0
   [avg] Warning detected: 6
-  [err] Warning detected: 3.22834667
+  [err] Warning detected: 10.20892855
   [avg] tree size (nodes): 86.2
-  [err] tree size (nodes): 11.41519455
+  [err] tree size (nodes): 36.09801472
   [avg] tree size (leaves): 61
-  [err] tree size (leaves): 7.04745817
+  [err] tree size (leaves): 22.28601953
   [avg] active learning leaves: 61
-  [err] active learning leaves: 7.04745817
+  [err] active learning leaves: 22.28601953
   [avg] tree depth: 4.5
-  [err] tree depth: 0.26874192
+  [err] tree depth: 0.84983659
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -226,19 +226,19 @@ Model measurements
   model training instances: 69999
   ensemble size: 10
   [avg] model training instances: 65189.15
-  [err] model training instances: 2675.24247034
+  [err] model training instances: 11964.04803997
   [avg] Change detected: 0
   [err] Change detected: 0
   [avg] Warning detected: 3.6
-  [err] Warning detected: 1.89853745
+  [err] Warning detected: 6.00370256
   [avg] tree size (nodes): 102.7
-  [err] tree size (nodes): 14.05469475
+  [err] tree size (nodes): 44.44484722
   [avg] tree size (leaves): 72.4
-  [err] tree size (leaves): 8.99654255
+  [err] tree size (leaves): 28.44956551
   [avg] active learning leaves: 72.4
-  [err] active learning leaves: 8.99654255
+  [err] active learning leaves: 28.44956551
   [avg] tree depth: 4.7
-  [err] tree depth: 0.3
+  [err] tree depth: 0.9486833
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -261,19 +261,19 @@ Model measurements
   model training instances: 79999
   ensemble size: 10
   [avg] model training instances: 70595.15
-  [err] model training instances: 4273.39246124
+  [err] model training instances: 19111.19207573
   [avg] Change detected: 0.1
-  [err] Change detected: 0.1
+  [err] Change detected: 0.31622777
   [avg] Warning detected: 3.9
-  [err] Warning detected: 2.96066809
+  [err] Warning detected: 9.36245457
   [avg] tree size (nodes): 107.2
-  [err] tree size (nodes): 18.37135451
+  [err] tree size (nodes): 58.09532397
   [avg] tree size (leaves): 74.5
-  [err] tree size (leaves): 11.90448095
+  [err] tree size (leaves): 37.64527416
   [avg] active learning leaves: 74.5
-  [err] active learning leaves: 11.90448095
+  [err] active learning leaves: 37.64527416
   [avg] tree depth: 4.6
-  [err] tree depth: 0.37118429
+  [err] tree depth: 1.17378779
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -296,19 +296,19 @@ Model measurements
   model training instances: 89999
   ensemble size: 10
   [avg] model training instances: 80167.25
-  [err] model training instances: 4365.72297255
+  [err] model training instances: 19524.1066751
   [avg] Change detected: 0
   [err] Change detected: 0
   [avg] Warning detected: 3.5
-  [err] Warning detected: 3.39034577
+  [err] Warning detected: 10.72121469
   [avg] tree size (nodes): 123.9
-  [err] tree size (nodes): 18.68180933
+  [err] tree size (nodes): 59.07706831
   [avg] tree size (leaves): 85.7
-  [err] tree size (leaves): 12.01762594
+  [err] tree size (leaves): 38.00307005
   [avg] active learning leaves: 85.7
-  [err] active learning leaves: 12.01762594
+  [err] active learning leaves: 38.00307005
   [avg] tree depth: 4.9
-  [err] tree depth: 0.27688746
+  [err] tree depth: 0.87559504
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -331,19 +331,19 @@ Model measurements
   model training instances: 99999
   ensemble size: 10
   [avg] model training instances: 89444.85
-  [err] model training instances: 4450.78739591
+  [err] model training instances: 19904.52634129
   [avg] Change detected: 0
   [err] Change detected: 0
   [avg] Warning detected: 5.1
-  [err] Warning detected: 2.72621023
+  [err] Warning detected: 8.62103371
   [avg] tree size (nodes): 148
-  [err] tree size (nodes): 19.74279053
+  [err] tree size (nodes): 62.43218543
   [avg] tree size (leaves): 102.7
-  [err] tree size (leaves): 12.90998752
+  [err] tree size (leaves): 40.82496513
   [avg] active learning leaves: 102.7
-  [err] active learning leaves: 12.90998752
+  [err] active learning leaves: 40.82496513
   [avg] tree depth: 5.1
-  [err] tree depth: 0.34801022
+  [err] tree depth: 1.10050493
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
