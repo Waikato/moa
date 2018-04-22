@@ -131,19 +131,17 @@ public class AdaGrad extends SGD{
         double z = dotProd(instance, m_weights, instance.classIndex()) + m_bias;
 
         double y;
-        double yhat;
         double dldz;
 
         if (instance.classAttribute().isNominal()) {
             y = (instance.classValue() == 0) ? 0 : 1;
             
             if (m_loss == LOGLOSS) {
-                yhat = 1.0 / (1.0 + Math.exp(-z));
-                dldz = (yhat - y) * (yhat * (1.0 - yhat));
+                double yhat = 1.0 / (1.0 + Math.exp(-z));
+                dldz = (yhat - y);
             }
             else {
                 y = y * 2 - 1;
-                yhat = z > 0.0 ? 1.0 : -1.0;
                 
                 if(y * z < 1.0)
                 {
@@ -157,7 +155,6 @@ public class AdaGrad extends SGD{
         }
         else {
             y = instance.classValue();
-            yhat = z;
             dldz = z - y;
         }
 
