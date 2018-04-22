@@ -58,16 +58,40 @@ public class DoTask {
      */
     public static boolean isJavaVersionOK() {
         boolean isJavaVersionOK = true;
-        String version = System.getProperty("java.version");
-        char major = version.charAt(0);
-        char minor = version.length() > 1 ? version.charAt(2): '0';
-        if (major == '1' && minor < '6') {
+        String versionStr = System.getProperty("java.version");
+        String[] parts;
+        double version;
+        if (versionStr.contains(".")) {
+          parts = versionStr.split("\\.");
+	}
+	else {
+          parts = new String[]{versionStr};
+	}
+	if (parts.length == 1) {
+          try {
+            version = Double.parseDouble(parts[0]);
+	  }
+	  catch (Exception e) {
+            System.err.println("Unparsable Java version: " + versionStr);
+            return false;
+	  }
+	}
+	else {
+          try {
+            version = Double.parseDouble(parts[0]) + Double.parseDouble(parts[1]) / 10;
+	  }
+	  catch (Exception e) {
+            System.err.println("Unparsable Java version: " + versionStr);
+            return false;
+	  }
+	}
+        if (version < 1.8) {
             isJavaVersionOK = false;
             System.err.println();
             System.err.println(Globals.getWorkbenchInfoString());
             System.err.println();
-            System.err.print("JDK 1.6.0 or higher is required to run MOA. ");
-            System.err.println("JDK version " + version + " found");
+            System.err.print("Java 8 or higher is required to run MOA. ");
+            System.err.println("Java version " + versionStr + " found");
         }
         return isJavaVersionOK;
     }
