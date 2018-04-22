@@ -82,11 +82,11 @@ public class DoTask {
      */
     public static boolean isWekaVersionOK() {
         Version version = new Version();
-        if (version.isOlder("3.7.1")) {
+        if (version.isOlder("3.9.2")) {
             System.err.println();
             System.err.println(Globals.getWorkbenchInfoString());
             System.err.println();
-            System.err.print("Weka 3.7.1 or higher is required to run MOA. ");
+            System.err.print("Weka 3.9.2 or higher is required to run MOA. ");
             System.err.println("Weka version " + Version.VERSION + " found");
             return false;
         } else {
