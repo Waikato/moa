@@ -28,9 +28,9 @@ import moa.core.InstanceExample;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
-import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
+import moa.evaluation.preview.LearningCurve;
 import moa.learners.Learner;
 import moa.options.ClassOption;
 import com.github.javacliparser.FileOption;
@@ -40,7 +40,7 @@ import moa.streams.InstanceStream;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 
-public class EvaluateInterleavedChunks extends MainTask {
+public class EvaluateInterleavedChunks extends ClassificationMainTask {
 
 	@Override
 	public String getPurposeString() {

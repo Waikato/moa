@@ -33,12 +33,17 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.Prediction;
 
+import java.util.LinkedList;
+
 /**
  * Classification evaluator that updates evaluation results using a sliding
  * window.
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
- * @version $Revision: 7 $
+ * @author Jean Paul Barddal (jpbarddal@gmail.com)
+ * @version $Revision: 8 $
+ *
+ *
  */
 public class WindowClassificationPerformanceEvaluator extends BasicClassificationPerformanceEvaluator {
 
@@ -64,6 +69,8 @@ public class WindowClassificationPerformanceEvaluator extends BasicClassificatio
 
         protected double sum;
 
+        protected double qtyNaNs;
+
         public WindowEstimator(int sizeWindow) {
             window = new double[sizeWindow];
             SizeWindow = sizeWindow;
@@ -72,8 +79,13 @@ public class WindowClassificationPerformanceEvaluator extends BasicClassificatio
         }
 
         public void add(double value) {
-            sum -= window[posWindow];
-            sum += value;
+            double forget = window[posWindow];
+            if(!Double.isNaN(forget)){
+                sum -= forget;
+            }else qtyNaNs--;
+            if(!Double.isNaN(value)) {
+                sum += value;
+            }else qtyNaNs++;
             window[posWindow] = value;
             posWindow++;
             if (posWindow == SizeWindow) {
@@ -85,7 +97,7 @@ public class WindowClassificationPerformanceEvaluator extends BasicClassificatio
         }
 
         public double estimation(){
-            return sum/(double) lenWindow;
+            return sum / (lenWindow - qtyNaNs);
         }
 
     }

@@ -26,9 +26,11 @@ import moa.core.StringUtils;
 import moa.core.TimingUtils;
 import moa.core.WekaUtils;
 import moa.options.ClassOption;
+import moa.tasks.AbstractTask;
 import moa.tasks.FailedTaskReport;
-import moa.tasks.Task;
+import moa.tasks.MainTask;
 import moa.tasks.TaskThread;
+import moa.tasks.meta.MetaMainTask;
 
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
@@ -57,9 +59,9 @@ public class DoTask {
     public static boolean isJavaVersionOK() {
         boolean isJavaVersionOK = true;
         String version = System.getProperty("java.version");
-        char minor = version.charAt(2);
-        char point = version.charAt(4);
-        if (minor < '6' || point < '0') {
+        char major = version.charAt(0);
+        char minor = version.length() > 1 ? version.charAt(2): '0';
+        if (major == '1' && minor < '6') {
             isJavaVersionOK = false;
             System.err.println();
             System.err.println(Globals.getWorkbenchInfoString());
@@ -130,7 +132,17 @@ public class DoTask {
                     cliString.append(" ").append(args[i]);
                 }
                 // parse options
-                Task task = (Task) ClassOption.cliStringToObject(cliString.toString(), Task.class, extraOptions);
+                AbstractTask task;
+                try {
+                	task = (AbstractTask) ClassOption.cliStringToObject(
+                			cliString.toString(), MainTask.class, extraOptions);
+                } catch(Exception e) {
+                	// regular task could not be found, maybe it is a meta task
+            		task = (AbstractTask) ClassOption.cliStringToObject(
+            				cliString.toString(), MetaMainTask.class, extraOptions);
+                }
+                task.prepareForUse();
+                
                 Object result = null;
                 if (suppressStatusOutputOption.isSet()) {
                     result = task.doTask();

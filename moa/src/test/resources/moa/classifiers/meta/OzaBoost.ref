@@ -16,15 +16,15 @@ Model measurements
   model training instances: 9999
   ensemble size: 10
   [avg] model training instances: 9824.6
-  [err] model training instances: 111.07196866
+  [err] model training instances: 351.24040517
   [avg] tree size (nodes): 13.9
-  [err] tree size (nodes): 4.19907397
+  [err] tree size (nodes): 13.27863782
   [avg] tree size (leaves): 11.2
-  [err] tree size (leaves): 3.24482494
+  [err] tree size (leaves): 10.26103742
   [avg] active learning leaves: 11.2
-  [err] active learning leaves: 3.24482494
+  [err] active learning leaves: 10.26103742
   [avg] tree depth: 1.7
-  [err] tree depth: 0.21343747
+  [err] tree depth: 0.67494856
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -47,15 +47,15 @@ Model measurements
   model training instances: 19999
   ensemble size: 10
   [avg] model training instances: 19564.5
-  [err] model training instances: 156.4649233
+  [err] model training instances: 494.78553154
   [avg] tree size (nodes): 35.7
-  [err] tree size (nodes): 3.45462653
+  [err] tree size (nodes): 10.92448829
   [avg] tree size (leaves): 26.9
-  [err] tree size (leaves): 2.46057807
+  [err] tree size (leaves): 7.78103107
   [avg] active learning leaves: 26.9
-  [err] active learning leaves: 2.46057807
+  [err] active learning leaves: 7.78103107
   [avg] tree depth: 2.7
-  [err] tree depth: 0.15275252
+  [err] tree depth: 0.48304589
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -78,15 +78,15 @@ Model measurements
   model training instances: 29999
   ensemble size: 10
   [avg] model training instances: 28852.9
-  [err] model training instances: 220.98222402
+  [err] model training instances: 698.80715032
   [avg] tree size (nodes): 50.1
-  [err] tree size (nodes): 5.49636243
+  [err] tree size (nodes): 17.38102414
   [avg] tree size (leaves): 37.7
-  [err] tree size (leaves): 3.98622629
+  [err] tree size (leaves): 12.60555433
   [avg] active learning leaves: 37.7
-  [err] active learning leaves: 3.98622629
+  [err] active learning leaves: 12.60555433
   [avg] tree depth: 3.1
-  [err] tree depth: 0.23333333
+  [err] tree depth: 0.73786479
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -109,15 +109,15 @@ Model measurements
   model training instances: 39999
   ensemble size: 10
   [avg] model training instances: 38824.7
-  [err] model training instances: 309.72209945
+  [err] model training instances: 979.42727596
   [avg] tree size (nodes): 59.9
-  [err] tree size (nodes): 7.05447061
+  [err] tree size (nodes): 22.30819481
   [avg] tree size (leaves): 43.8
-  [err] tree size (leaves): 4.75347826
+  [err] tree size (leaves): 15.03181811
   [avg] active learning leaves: 43.8
-  [err] active learning leaves: 4.75347826
+  [err] active learning leaves: 15.03181811
   [avg] tree depth: 3.7
-  [err] tree depth: 0.21343747
+  [err] tree depth: 0.67494856
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -140,15 +140,15 @@ Model measurements
   model training instances: 49999
   ensemble size: 10
   [avg] model training instances: 48554.6
-  [err] model training instances: 390.04783752
+  [err] model training instances: 1233.43956299
   [avg] tree size (nodes): 74.8
-  [err] tree size (nodes): 8.19864487
+  [err] tree size (nodes): 25.92639153
   [avg] tree size (leaves): 53.8
-  [err] tree size (leaves): 5.22982898
+  [err] tree size (leaves): 16.53817134
   [avg] active learning leaves: 53.8
-  [err] active learning leaves: 5.22982898
+  [err] active learning leaves: 16.53817134
   [avg] tree depth: 4.1
-  [err] tree depth: 0.27688746
+  [err] tree depth: 0.87559504
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -171,15 +171,15 @@ Model measurements
   model training instances: 59999
   ensemble size: 10
   [avg] model training instances: 58211.7
-  [err] model training instances: 454.07652439
+  [err] model training instances: 1435.91604908
   [avg] tree size (nodes): 90
-  [err] tree size (nodes): 8.6909915
+  [err] tree size (nodes): 27.48332828
   [avg] tree size (leaves): 64.4
-  [err] tree size (leaves): 5.51603722
+  [err] tree size (leaves): 17.44324129
   [avg] active learning leaves: 64.4
-  [err] active learning leaves: 5.51603722
+  [err] active learning leaves: 17.44324129
   [avg] tree depth: 4.3
-  [err] tree depth: 0.21343747
+  [err] tree depth: 0.67494856
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -202,15 +202,15 @@ Model measurements
   model training instances: 69999
   ensemble size: 10
   [avg] model training instances: 67846.9
-  [err] model training instances: 514.99276047
+  [err] model training instances: 1628.55010157
   [avg] tree size (nodes): 107
-  [err] tree size (nodes): 10.47642857
+  [err] tree size (nodes): 33.12937602
   [avg] tree size (leaves): 76.2
-  [err] tree size (leaves): 6.55709963
+  [err] tree size (leaves): 20.73536967
   [avg] active learning leaves: 76.2
-  [err] active learning leaves: 6.55709963
+  [err] active learning leaves: 20.73536967
   [avg] tree depth: 4.6
-  [err] tree depth: 0.22110832
+  [err] tree depth: 0.6992059
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -233,15 +233,15 @@ Model measurements
   model training instances: 79999
   ensemble size: 10
   [avg] model training instances: 77355.6
-  [err] model training instances: 582.88745245
+  [err] model training instances: 1843.25196927
   [avg] tree size (nodes): 118.6
-  [err] tree size (nodes): 12.06850815
+  [err] tree size (nodes): 38.1639737
   [avg] tree size (leaves): 84.1
-  [err] tree size (leaves): 7.50325855
+  [err] tree size (leaves): 23.7273869
   [avg] active learning leaves: 84.1
-  [err] active learning leaves: 7.50325855
+  [err] active learning leaves: 23.7273869
   [avg] tree depth: 4.7
-  [err] tree depth: 0.21343747
+  [err] tree depth: 0.67494856
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -264,15 +264,15 @@ Model measurements
   model training instances: 89999
   ensemble size: 10
   [avg] model training instances: 86627.9
-  [err] model training instances: 664.33332413
+  [err] model training instances: 2100.80642982
   [avg] tree size (nodes): 136.4
-  [err] tree size (nodes): 11.20733887
+  [err] tree size (nodes): 35.44071732
   [avg] tree size (leaves): 96.3
-  [err] tree size (leaves): 6.23974715
+  [err] tree size (leaves): 19.731813
   [avg] active learning leaves: 96.3
-  [err] active learning leaves: 6.23974715
+  [err] active learning leaves: 19.731813
   [avg] tree depth: 5.1
-  [err] tree depth: 0.17950549
+  [err] tree depth: 0.56764621
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0
@@ -295,15 +295,15 @@ Model measurements
   model training instances: 99999
   ensemble size: 10
   [avg] model training instances: 95899.9
-  [err] model training instances: 753.28617035
+  [err] model training instances: 2382.10002822
   [avg] tree size (nodes): 159.1
-  [err] tree size (nodes): 10.21159472
+  [err] tree size (nodes): 32.29189785
   [avg] tree size (leaves): 112.6
-  [err] tree size (leaves): 5.35661585
+  [err] tree size (leaves): 16.93910663
   [avg] active learning leaves: 112.6
-  [err] active learning leaves: 5.35661585
+  [err] active learning leaves: 16.93910663
   [avg] tree depth: 5.2
-  [err] tree depth: 0.2
+  [err] tree depth: 0.63245553
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0

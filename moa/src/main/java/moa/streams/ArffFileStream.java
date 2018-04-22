@@ -28,11 +28,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader; 
+import java.io.Reader;
+import java.util.ArrayList;
+
 import moa.core.InputStreamProgressMonitor;
 import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
+import moa.streams.clustering.ClusterEvent;
+import moa.streams.generators.cd.ConceptDriftGenerator;
 import moa.tasks.TaskMonitor;
 
 /**
@@ -42,7 +46,7 @@ import moa.tasks.TaskMonitor;
  * @version $Revision: 7 $
  */
 public class ArffFileStream extends AbstractOptionHandler implements
-        InstanceStream {
+        InstanceStream, ConceptDriftGenerator {
 
     @Override
     public String getPurposeString() {
@@ -142,6 +146,7 @@ public class ArffFileStream extends AbstractOptionHandler implements
         } catch (IOException ioe) {
             throw new RuntimeException("ArffFileStream restart failed.", ioe);
         }
+        this.clusterEvents = new ArrayList<ClusterEvent>();
     }
 
     protected boolean readNextInstanceFromFile() {
@@ -166,5 +171,13 @@ public class ArffFileStream extends AbstractOptionHandler implements
     @Override
     public void getDescription(StringBuilder sb, int indent) {
         // TODO Auto-generated method stub
+    }
+
+    protected ArrayList<ClusterEvent> clusterEvents;
+
+    @Override
+    public ArrayList<ClusterEvent> getEventsList() {
+        //This is used only in the CD Tab
+        return this.clusterEvents;
     }
 }

@@ -19,6 +19,7 @@
  */
 package moa.classifiers.meta;
 
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
@@ -79,7 +80,7 @@ import com.github.javacliparser.IntOption;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class OzaBagAdwin extends AbstractClassifier {
+public class OzaBagAdwin extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
 

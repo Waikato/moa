@@ -25,6 +25,7 @@ import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
 
 import java.util.Arrays;
@@ -44,7 +45,7 @@ import moa.core.Utils;
  *
  */
 
-public class ADACC extends DACC {
+public class ADACC extends DACC implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
     

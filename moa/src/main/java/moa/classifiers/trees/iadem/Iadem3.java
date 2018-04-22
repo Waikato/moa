@@ -23,6 +23,8 @@ import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import java.io.Serializable;
 import java.util.Arrays;
+
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.driftdetection.AbstractChangeDetector;
 import moa.core.AutoExpandVector;
 import java.util.ArrayList;
@@ -40,7 +42,7 @@ import weka.core.Utils;
  *
  * @author Isvani Frías Blanco (ifriasb at hotmail dot com)
  */
-public class Iadem3 extends Iadem2 {
+public class Iadem3 extends Iadem2 implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
 

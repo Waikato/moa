@@ -21,6 +21,7 @@ package moa.classifiers.meta;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
@@ -39,7 +40,7 @@ import moa.core.Utils;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class WeightedMajorityAlgorithm extends AbstractClassifier {
+public class WeightedMajorityAlgorithm extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
     

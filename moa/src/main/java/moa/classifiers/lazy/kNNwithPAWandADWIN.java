@@ -18,6 +18,8 @@
 package moa.classifiers.lazy;
 
 import java.util.ArrayList;
+
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.driftdetection.ADWIN;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
@@ -33,7 +35,7 @@ import com.yahoo.labs.samoa.instances.Instances;
  * @author Jesse Read (jesse@tsc.uc3m.es)
  * @version 03.2012
  */
-public class kNNwithPAWandADWIN extends kNN {
+public class kNNwithPAWandADWIN extends kNN implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
 

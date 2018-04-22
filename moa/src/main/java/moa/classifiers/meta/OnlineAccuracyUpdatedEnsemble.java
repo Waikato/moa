@@ -25,6 +25,7 @@ import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.trees.HoeffdingTree;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
@@ -37,7 +38,7 @@ import moa.tasks.TaskMonitor;
  * Brzezinski and Stefanowski in "Combining block-based and online methods 
  * in learning ensembles from concept drifting data streams", Information Sciences, 2014.
  */
-public class OnlineAccuracyUpdatedEnsemble extends AbstractClassifier {
+public class OnlineAccuracyUpdatedEnsemble extends AbstractClassifier implements MultiClassClassifier {
 
 	private static final long serialVersionUID = 1L;
 

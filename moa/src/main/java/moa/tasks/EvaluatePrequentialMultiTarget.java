@@ -39,12 +39,12 @@ import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
 import moa.evaluation.EWMAClassificationPerformanceEvaluator;
 import moa.evaluation.FadingFactorClassificationPerformanceEvaluator;
-import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
 import moa.evaluation.MultiTargetPerformanceEvaluator;
 import moa.evaluation.RegressionPerformanceEvaluator;
 import moa.evaluation.WindowClassificationPerformanceEvaluator;
+import moa.evaluation.preview.LearningCurve;
 import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
@@ -266,6 +266,8 @@ public class EvaluatePrequentialMultiTarget extends MultiTargetMainTask {
                         - evaluateStartTime);
             }
         }
+        
+        
         StringBuilder sb= new StringBuilder();
         learner.getDescription(sb, 0);
         System.out.println(sb.toString());

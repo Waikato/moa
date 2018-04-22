@@ -29,14 +29,15 @@ import com.github.javacliparser.FileOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.StringUtils;
 import moa.core.TimingUtils;
-import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
+import moa.evaluation.preview.LearningCurve;
 import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.CachedInstancesStream;
@@ -50,7 +51,7 @@ import com.yahoo.labs.samoa.instances.Instances;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class EvaluatePeriodicHeldOutTest extends MainTask {
+public class EvaluatePeriodicHeldOutTest extends ClassificationMainTask {
 
     @Override
     public String getPurposeString() {
@@ -60,7 +61,7 @@ public class EvaluatePeriodicHeldOutTest extends MainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Classifier to train.", Classifier.class, "moa.classifiers.trees.HoeffdingTree");
+            "Classifier to train.", MultiClassClassifier.class, "moa.classifiers.trees.HoeffdingTree");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,

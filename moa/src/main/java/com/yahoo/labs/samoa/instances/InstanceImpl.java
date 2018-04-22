@@ -148,9 +148,7 @@ public class InstanceImpl implements MultiLabelInstance {
      * @param i the i
      */
     @Override
-    public void insertAttributeAt(int i) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
+    public void insertAttributeAt(int i) {this.instanceData.insertAttributeAt(i);}
 
     /**
      * Num attributes.
@@ -289,7 +287,13 @@ public class InstanceImpl implements MultiLabelInstance {
     @Override
     public int classIndex() {
         int classIndex = instanceHeader.classIndex();
-        return classIndex != Integer.MAX_VALUE ? classIndex : 0;
+       // return  ? classIndex : 0;
+        if(classIndex == Integer.MAX_VALUE)
+        	if(this.instanceHeader.instanceInformation.range!=null)
+        		classIndex=instanceHeader.instanceInformation.range.getStart();
+        	else
+        		classIndex=0;
+        return classIndex;
     }
 
     /**
@@ -360,7 +364,11 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public void setDataset(Instances dataset) {
-        this.instanceHeader = new InstancesHeader(dataset);
+        if(dataset instanceof InstancesHeader) {
+            this.instanceHeader = (InstancesHeader) dataset;
+        }else {
+            this.instanceHeader = new InstancesHeader(dataset);
+        }
     }
 
     /**

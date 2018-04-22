@@ -22,6 +22,7 @@ package moa.classifiers.trees;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.GaussianNumericAttributeClassObserver;
@@ -47,7 +48,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class DecisionStump extends AbstractClassifier {
+public class DecisionStump extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -145,7 +146,7 @@ public class DecisionStump extends AbstractClassifier {
             if (obs != null) {
                 AttributeSplitSuggestion suggestion = obs.getBestEvaluatedSplitSuggestion(criterion,
                         preSplitDist, i, this.binarySplitsOption.isSet());
-                if (suggestion.merit > bestMerit) {
+                if (suggestion != null && suggestion.merit > bestMerit) {
                     bestMerit = suggestion.merit;
                     bestFound = suggestion;
                 }

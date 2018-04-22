@@ -24,13 +24,14 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
-import moa.evaluation.LearningCurve;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
+import moa.evaluation.preview.LearningCurve;
 import moa.learners.Learner;
 import moa.options.ClassOption;
 import com.github.javacliparser.FileOption;
@@ -45,7 +46,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class EvaluateInterleavedTestThenTrain extends MainTask {
+public class EvaluateInterleavedTestThenTrain extends ClassificationMainTask {
 
     @Override
     public String getPurposeString() {
@@ -55,7 +56,7 @@ public class EvaluateInterleavedTestThenTrain extends MainTask {
     private static final long serialVersionUID = 1L;
 
      public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Learner to train.", Learner.class, "moa.classifiers.bayes.NaiveBayes");
+            "Learner to train.", MultiClassClassifier.class, "moa.classifiers.bayes.NaiveBayes");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,
