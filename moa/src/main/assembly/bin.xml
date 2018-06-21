@@ -77,52 +77,28 @@
       </excludes>
     </dependencySet>
     <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>*:linux-x86</include>
+        <include>*:netlib-native_ref-linux-i686:*</include>
+        <include>*:linux-x86_64</include>
+        <include>*:netlib-native_ref-linux-x86_64:*</include>
+        <include>*:windows-x86</include>
+        <include>*:netlib-native_ref-win-i686:*</include>
+        <include>*:windows-x86_64</include>
+        <include>*:netlib-native_ref-win-x86_64:*</include>
+        <include>*:macosx-x86_64</include>
+        <include>*:netlib-native_ref-osx-x86_64:*</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
       <outputDirectory>doc/apidocs</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>nz.ac.waikato.cms.moa:moa:*:javadoc</include>
       </includes>
       <unpack>true</unpack>
-    </dependencySet>
-    <dependencySet>
-      <outputDirectory>lib/linux32</outputDirectory>
-      <useProjectArtifact>false</useProjectArtifact>
-      <includes>
-        <include>*:linux-x86</include>
-        <include>*:netlib-native_ref-linux-i686:*</include>
-      </includes>
-    </dependencySet>
-    <dependencySet>
-      <outputDirectory>lib/linux64</outputDirectory>
-      <useProjectArtifact>false</useProjectArtifact>
-      <includes>
-        <include>*:linux-x86_64</include>
-        <include>*:netlib-native_ref-linux-x86_64:*</include>
-      </includes>
-    </dependencySet>
-    <dependencySet>
-      <outputDirectory>lib/windows32</outputDirectory>
-      <useProjectArtifact>false</useProjectArtifact>
-      <includes>
-        <include>*:windows-x86</include>
-        <include>*:netlib-native_ref-win-i686:*</include>
-      </includes>
-    </dependencySet>
-    <dependencySet>
-      <outputDirectory>lib/windows64</outputDirectory>
-      <useProjectArtifact>false</useProjectArtifact>
-      <includes>
-        <include>*:windows-x86_64</include>
-        <include>*:netlib-native_ref-win-x86_64:*</include>
-      </includes>
-    </dependencySet>
-    <dependencySet>
-      <outputDirectory>lib/macosx64</outputDirectory>
-      <useProjectArtifact>false</useProjectArtifact>
-      <includes>
-        <include>*:macosx-x86_64</include>
-        <include>*:netlib-native_ref-osx-x86_64:*</include>
-      </includes>
     </dependencySet>
   </dependencySets>
 </assembly>
