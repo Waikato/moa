@@ -90,11 +90,10 @@
                 <goal>copy-dependencies</goal>
               </goals>
               <configuration>
-                <!--failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact-->
                 <includeScope>compile</includeScope>
                 <outputDirectory>${project.basedir}/lib</outputDirectory>
                 <excludeArtifactIds>weka-dev,netlib-native_ref-linux-armhf,netlib-native_system-linux-armhf</excludeArtifactIds>
-                <!--excludeClassifiers></excludeClassifiers-->
+                <stripVersion>true</stripVersion>
               </configuration>
             </execution>
           </executions>
