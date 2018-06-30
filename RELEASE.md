@@ -71,7 +71,7 @@
 
 ## Publish release
     
-* create new release tag on Gihub (tag version `yyyy.mm.0`, release title `MOA yy.mm.0`) 
+* create new release tag on Github (tag version `yyyy.mm.0`, release title `MOA yy.mm.0`) 
   and upload the generated MOA release zip file from the top-level `target` directory 
   and the zip file from the `weka-package/target` directory
   
