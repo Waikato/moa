@@ -62,7 +62,19 @@
     <dependencySet>
       <outputDirectory>lib</outputDirectory>
       <useProjectArtifact>false</useProjectArtifact>
+      <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
+      <includes>
+        <include>nz.ac.waikato.cms.moa:*</include>
+      </includes>
       <excludes>
+        <exclude>*:javadoc</exclude>
+      </excludes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <excludes>
+        <exclude>nz.ac.waikato.cms.moa:*</exclude>
         <exclude>*:javadoc</exclude>
         <exclude>*:android-arm</exclude>
         <exclude>*:android-x86</exclude>
