@@ -33,6 +33,8 @@
 
 * Subsequently **Close** and then **Release** the artifacts
 
+* perform a `git push`
+
 
 ## Generate release files
 
@@ -51,13 +53,14 @@
     
 * go into the `weka-package` directory 
 
+* update the *parent version* in `update_libs.xml` to the just released version,
+  i.e., `yyyy.mm.0` (without the `-SNAPSHOT` suffix, check correct patch level)
+
 * execute the following command to update libraries in the `lib` directory
 
    ```
    mvn -f update_libs.xml clean package
    ```
-
-* commit/push the changes in regards to the libraries
 
 * execute the following command (replace `X.Y.Z` with actual version of MOA, 
   eg `yyyy.mm.0`, check correct patch level)
@@ -68,9 +71,9 @@
 
 ## Publish release
     
-* create new release tag on Gihub and upload the generated MOA release zip file 
-  from the top-level `target` directory and the zip file from the 
-  `weka-package/target` directory
+* create new release tag on Gihub (tag version `yyyy.mm.0`, release title `MOA yy.mm.0`) 
+  and upload the generated MOA release zip file from the top-level `target` directory 
+  and the zip file from the `weka-package/target` directory
   
 * email Mark Hall (mhall at waikato.ac.nz) the link to the Weka package zip
   file to upload to the central Weka package repository on Sourceforge.net
@@ -78,6 +81,9 @@
 * synchronize the *parent version* in `release.xml` and `update_libs.xml` to 
   match the new version in the top-level `pom.xml` file; this is required to 
   make the snapshots work ([jenkins](https://adams.cms.waikato.ac.nz/jenkins/job/MOA/), 
-  [download](https://adams.cms.waikato.ac.nz/snapshots/moa/))
+  [download](https://adams.cms.waikato.ac.nz/snapshots/moa/));
+ 
+* ensure that the `Y` in `X.Y.Z` is two digits in all `pom.xml` files, `release.xml` 
+  and `update_libs.xml`; the automatic increment will strip a leading zero.
   
 * commit/push all changes
