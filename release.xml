@@ -4,7 +4,7 @@
   <parent>
     <groupId>nz.ac.waikato.cms.moa</groupId>
     <artifactId>moa-pom</artifactId>
-    <version>2018.6-SNAPSHOT</version>  <!-- adjust -->
+    <version>2018.6.0-SNAPSHOT</version>  <!-- adjust -->
   </parent>
 
   <artifactId>moa-release</artifactId>
@@ -19,7 +19,7 @@
 
   This Maven model file is for generating a release archive.
 
-  See RELEASE.md for instructions on how to perform a release.
+  See RELEASE.md for instructions on how to make a release.
   </description>
   <url>http://moa.cms.waikato.ac.nz/</url>
   <organization>
