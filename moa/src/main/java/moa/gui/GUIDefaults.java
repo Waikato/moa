@@ -169,6 +169,42 @@ public class GUIDefaults
     }
 
     /**
+     * Returns the width for the frame.
+     *
+     * @return the width in pixel
+     */
+    public static int getFrameWidth() {
+        int result;
+        String str;
+        str = get("FrameWidth", "1200");
+        try {
+            result = Integer.parseInt(str);
+        }
+        catch (Exception e) {
+            result = 1200;
+        }
+        return result;
+    }
+
+    /**
+     * Returns the height for the frame.
+     *
+     * @return the height in pixel
+     */
+    public static int getFrameHeight() {
+        int result;
+        String str;
+        str = get("FrameHeight", "900");
+        try {
+            result = Integer.parseInt(str);
+        }
+        catch (Exception e) {
+            result = 900;
+        }
+        return result;
+    }
+
+    /**
      * only for testing - prints the content of the props file.
      *
      * @param args	commandline parameters - ignored

@@ -20,16 +20,13 @@
  */
 package moa.gui;
 
-import java.awt.BorderLayout;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import moa.DoTask;
+import moa.core.WekaUtils;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
-import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.UnsupportedLookAndFeelException;
-import moa.DoTask;
-import moa.core.WekaUtils;
+import java.awt.BorderLayout;
 
 /**
  * The main class for the MOA gui. Lets the user configure
@@ -75,7 +72,7 @@ public class GUI extends JPanel {
 
     public static void main(String[] args) {
         try {
-            if (DoTask.isJavaVersionOK() == false || WekaUtils.isWekaVersionOK() == false) {
+            if (!DoTask.isJavaVersionOK() || !WekaUtils.isWekaVersionOK()) {
                 return;
             }
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -102,7 +99,7 @@ public class GUI extends JPanel {
                     frame.getContentPane().add(gui);
 
                     // Display the window.
-                    frame.pack();
+                    frame.setSize(GUIDefaults.getFrameWidth(), GUIDefaults.getFrameHeight());
                     frame.setVisible(true);
                 }
             });
