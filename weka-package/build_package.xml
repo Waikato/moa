@@ -45,58 +45,20 @@
 <!-- <target name="init_compile" depends="init_all"> -->
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build}/classes"/>    
-
-    <copy todir="src">
-      <fileset dir="../moa/src">
-        <include name="**/*"/>
-      </fileset>
-    </copy>
   </target>
 
   <!-- Compile the java code from ${src}/weka into ${build}/classes -->
-  <target name="compile" depends="init_compile" 
+  <target name="compile" depends="init_compile"
    description="Compile weka and deposit class files in build/classes">
-    <javac srcdir="${src}" 
-      fork="yes" memoryMaximumSize="${javac_max_memory}"
-      destdir="${build}/classes"
-      optimize="${optimization}"
-      debug="${debug}"
-      deprecation="${deprecation}"
-      source="1.7" target="1.7">
-
-      <classpath refid="project.class.path" /> 
-    </javac>
-    <copy todir="${build}/classes" >
-       <fileset dir="${src}">
-         <include name="**/*.gif"/>
-         <include name="**/*.png"/>
-         <include name="**/*.jpeg"/>
-         <include name="**/*.jpg"/>
-         <include name="**/*.props"/>
-         <include name="**/*.txt"/>
-         <include name="**/*.xml"/>
-         <include name="**/*.cup"/>
-         <include name="**/*.flex"/>
-         <include name="**/*.jflex"/>
-         <include name="**/*.properties"/>
-         <include name="**/*.default"/>
-       </fileset>
-    </copy>
+    <!-- dummy target, as all MOA jars get pulled in via "lib" directory -->
   </target>
 
   <!-- Make the javadocs -->
   <target name="docs" 
           depends="init_all" 
           description="Make javadocs into ./doc">
-    <delete dir="${src}/moa"/>
-    <mkdir dir="${doc}"/>
-    <javadoc sourcepath="${src}" 
-             classpathref="project.class.path"
-             destdir="${doc}" 
-             Author="yes" 
-             Public="yes" 
-             maxmemory="256m"/>          
-  </target> 
+    <!-- dummy target, as all MOA jars get pulled in via "lib" directory -->
+  </target>
 
 
 <!--
@@ -113,11 +75,7 @@
   <!-- Put everything in ${build}/classes into the massiveOnlineAnalysis.jar file -->
   <target name="exejar" depends="compile, docs, init_dist"
    description="Create a binary jar file in ./dist">
-    <!-- make sure that the moa classes are not included (separate download required) -->
-    <delete dir="${build}/classes/moa"/>
-    <jar jarfile="${dist}/${package}.jar" 
-      basedir="${build}/classes">
-    </jar>
+    <copy file="lib/moa.jar" todir="${dist}"/>
   </target>
 
   <target name="make_package" depends="exejar" description="Make the moa package zip file">
@@ -142,6 +100,7 @@
          <include name="*.jar"/>
          <include name="*.zip"/>
          <exclude name="weka*.jar"/>
+         <exclude name="moa*.jar"/>
        </fileset>
     </copy>
     <mkdir dir="${dist}/${package}/doc"/>
