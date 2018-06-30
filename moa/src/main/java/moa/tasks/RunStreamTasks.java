@@ -43,7 +43,7 @@ public class RunStreamTasks extends ConceptDriftMainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption taskOption = new ClassOption("task", 't',
-            "Task to do.", Task.class, "EvaluatePrequential -l active.ActiveClassifier -i 1000000 -d temp.txt");
+            "Task to do.", Task.class, "EvaluatePrequential -l active.ALUncertainty -i 1000000 -d temp.txt");
 
     public StringOption streamParameterOption = new StringOption("streamParameter", 'p',
             "Stream parameter to vary.", "b");
