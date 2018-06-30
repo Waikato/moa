@@ -78,6 +78,8 @@
 * email Mark Hall (mhall at waikato.ac.nz) the link to the Weka package zip
   file to upload to the central Weka package repository on Sourceforge.net
 
+## Finish up
+
 * synchronize the *parent version* in `release.xml` and `update_libs.xml` to 
   match the new version in the top-level `pom.xml` file; this is required to 
   make the snapshots work ([jenkins](https://adams.cms.waikato.ac.nz/jenkins/job/MOA/), 
