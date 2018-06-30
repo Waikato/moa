@@ -71,6 +71,9 @@
                   <includes>
                     <include>*.*</include>
                   </includes>
+                  <excludes>
+                    <exclude>.gitignore</exclude>
+                  </excludes>
                 </fileset>
               </filesets>
             </configuration>
@@ -84,7 +87,7 @@
           <version>2.10</version>
           <executions>
             <execution>
-              <id>lib</id>
+              <id>lib-moa</id>
               <phase>package</phase>
               <goals>
                 <goal>copy-dependencies</goal>
@@ -92,8 +95,20 @@
               <configuration>
                 <includeScope>compile</includeScope>
                 <outputDirectory>${project.basedir}/lib</outputDirectory>
-                <excludeArtifactIds>weka-dev,netlib-native_ref-linux-armhf,netlib-native_system-linux-armhf</excludeArtifactIds>
+                <includeArtifactIds>moa</includeArtifactIds>
                 <stripVersion>true</stripVersion>
+              </configuration>
+            </execution>
+            <execution>
+              <id>lib-others</id>
+              <phase>package</phase>
+              <goals>
+                <goal>copy-dependencies</goal>
+              </goals>
+              <configuration>
+                <includeScope>compile</includeScope>
+                <outputDirectory>${project.basedir}/lib</outputDirectory>
+                <excludeArtifactIds>moa,netlib-native_ref-linux-armhf,netlib-native_system-linux-armhf</excludeArtifactIds>
               </configuration>
             </execution>
           </executions>
