@@ -22,6 +22,37 @@
  */
 package moa.gui.active;
 
+import moa.evaluation.ALMeasureCollection;
+import moa.evaluation.MeasureCollection;
+import moa.evaluation.preview.MeanPreviewCollection;
+import moa.evaluation.preview.Preview;
+import moa.evaluation.preview.PreviewCollection;
+import moa.gui.FileExtensionFilter;
+import moa.gui.GUIUtils;
+import moa.gui.PreviewTableModel;
+import moa.gui.visualization.ParamGraphCanvas;
+import moa.gui.visualization.ProcessGraphCanvas;
+import moa.tasks.FailedTaskReport;
+import moa.tasks.meta.ALMultiParamTask;
+import moa.tasks.meta.ALPartitionEvaluationTask;
+import moa.tasks.meta.ALPrequentialEvaluationTask;
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
+
+import javax.swing.BorderFactory;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -41,38 +72,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-
-import moa.evaluation.ALMeasureCollection;
-import moa.evaluation.MeasureCollection;
-import moa.evaluation.preview.MeanPreviewCollection;
-import moa.evaluation.preview.Preview;
-import moa.evaluation.preview.PreviewCollection;
-import moa.gui.FileExtensionFilter;
-import moa.gui.GUIUtils;
-import moa.gui.PreviewTableModel;
-import moa.gui.visualization.ParamGraphCanvas;
-import moa.gui.visualization.ProcessGraphCanvas;
-import moa.tasks.FailedTaskReport;
-import moa.tasks.meta.ALMultiParamTask;
-import moa.tasks.meta.ALPartitionEvaluationTask;
-import moa.tasks.meta.ALPrequentialEvaluationTask;
 
 /**
  * This panel displays text. Used to output the results of tasks. In contrast to
@@ -196,10 +195,10 @@ public class ALTaskTextViewerPanel extends JPanel {
 		this.exportButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileChooser = new JFileChooser();
+				BaseFileChooser fileChooser = new BaseFileChooser();
 				fileChooser.setAcceptAllFileFilterUsed(true);
 				fileChooser.addChoosableFileFilter(new FileExtensionFilter(EXPORT_FILE_EXTENSION));
-				if (fileChooser.showSaveDialog(ALTaskTextViewerPanel.this) == JFileChooser.APPROVE_OPTION) {
+				if (fileChooser.showSaveDialog(ALTaskTextViewerPanel.this) == BaseFileChooser.APPROVE_OPTION) {
 					File chosenFile = fileChooser.getSelectedFile();
 					String fileName = chosenFile.getPath();
 					if (!chosenFile.exists() && !fileName.endsWith(EXPORT_FILE_EXTENSION)) {

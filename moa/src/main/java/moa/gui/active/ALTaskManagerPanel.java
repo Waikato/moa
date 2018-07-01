@@ -22,6 +22,33 @@
  */
 package moa.gui.active;
 
+import moa.core.StringUtils;
+import moa.gui.ClassOptionSelectionPanel;
+import moa.gui.FileExtensionFilter;
+import moa.gui.GUIUtils;
+import moa.options.ClassOption;
+import moa.options.OptionHandler;
+import moa.tasks.meta.ALMainTask;
+import moa.tasks.meta.ALPartitionEvaluationTask;
+import moa.tasks.meta.ALTaskThread;
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
+
+import javax.swing.JButton;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -41,34 +68,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
-
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
-
-import moa.core.StringUtils;
-import moa.gui.ClassOptionSelectionPanel;
-import moa.gui.FileExtensionFilter;
-import moa.gui.GUIUtils;
-import moa.options.ClassOption;
-import moa.options.OptionHandler;
-import moa.tasks.meta.ALMainTask;
-import moa.tasks.meta.ALPartitionEvaluationTask;
-import moa.tasks.meta.ALTaskThread;
 
 
 /**
@@ -532,11 +531,11 @@ public class ALTaskManagerPanel extends JPanel{
         	tasksLog += ((OptionHandler) thread.getTask()).getCLICreationString(ALMainTask.class) + "\n";
         }
 
-        JFileChooser fileChooser = new JFileChooser();
+        BaseFileChooser fileChooser = new BaseFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(true);
         fileChooser.addChoosableFileFilter(new FileExtensionFilter(
                 exportFileExtension));
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(this) == BaseFileChooser.APPROVE_OPTION) {
             File chosenFile = fileChooser.getSelectedFile();
             String fileName = chosenFile.getPath();
             if (!chosenFile.exists()

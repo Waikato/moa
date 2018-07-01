@@ -205,6 +205,42 @@ public class GUIDefaults
     }
 
     /**
+     * Returns the width for the file chooser.
+     *
+     * @return the width in pixel
+     */
+    public static int getFileChooserWidth() {
+        int result;
+        String str;
+        str = get("FileChooserWidth", "1200");
+        try {
+            result = Integer.parseInt(str);
+        }
+        catch (Exception e) {
+            result = 1200;
+        }
+        return result;
+    }
+
+    /**
+     * Returns the height for the file chooser.
+     *
+     * @return the height in pixel
+     */
+    public static int getFileChooserHeight() {
+        int result;
+        String str;
+        str = get("FileChooserHeight", "900");
+        try {
+            result = Integer.parseInt(str);
+        }
+        catch (Exception e) {
+            result = 900;
+        }
+        return result;
+    }
+
+    /**
      * only for testing - prints the content of the props file.
      *
      * @param args	commandline parameters - ignored

@@ -4,7 +4,7 @@
   <groupId>nz.ac.waikato.cms.moa</groupId>
   <artifactId>moa-pom</artifactId>
   <packaging>pom</packaging>
-  <version>2018.06.1-SNAPSHOT</version>
+  <version>2018.07.0-SNAPSHOT</version>
 
   <name>MOA: meta-package</name>
   <description>
@@ -82,6 +82,12 @@
         <groupId>com.github.waikato</groupId>
         <artifactId>jclasslocator</artifactId>
         <version>0.0.12</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.github.fracpete</groupId>
+        <artifactId>jshell-scripting</artifactId>
+        <version>0.0.1</version>
       </dependency>
 
       <dependency>

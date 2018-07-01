@@ -14,6 +14,7 @@ Tabs=\
   moa.gui.outliertab.OutlierTabPanel,\
   moa.gui.ConceptDriftTabPanel,\
   moa.gui.ALTabPanel,\
+  moa.gui.ScriptingTabPanel,\
   moa.gui.AuxiliarTabPanel
 
 # the default frame width
@@ -21,3 +22,9 @@ FrameWidth=1200
 
 # the default frame height
 FrameHeight=900
+
+# the filechooser width
+FileChooserWidth=750
+
+# the filechooser height
+FileChooserHeight=500
