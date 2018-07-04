@@ -4,3 +4,5 @@
 *~
 *.bak
 src/
+doc/
+dist/
