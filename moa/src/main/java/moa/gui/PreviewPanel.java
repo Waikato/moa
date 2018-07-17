@@ -32,7 +32,7 @@ import moa.core.StringUtils;
 import moa.evaluation.Accuracy;
 import moa.evaluation.ChangeDetectionMeasures;
 import moa.evaluation.MeasureCollection;
-import moa.evaluation.Preview;
+import moa.evaluation.preview.Preview;
 import moa.evaluation.RegressionAccuracy;
 import moa.gui.conceptdrift.CDTaskManagerPanel;
 import moa.tasks.FailedTaskReport;

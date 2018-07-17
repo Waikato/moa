@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -50,7 +49,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import moa.evaluation.MeasureCollection;
-import moa.evaluation.Preview;
+import moa.evaluation.preview.Preview;
 import moa.gui.PreviewPanel.TypePanel;
 import moa.gui.conceptdrift.CDTaskManagerPanel;
 import moa.streams.clustering.ClusterEvent;
