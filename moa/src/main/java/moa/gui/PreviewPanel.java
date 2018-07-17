@@ -63,7 +63,7 @@ public class PreviewPanel extends JPanel implements ResultPreviewListener {
 
     protected JLabel autoRefreshLabel = new JLabel("Auto refresh: ");
 
-    protected JComboBox autoRefreshComboBox = new JComboBox(autoFreqStrings);
+    protected JComboBox<String> autoRefreshComboBox = new JComboBox<String>(autoFreqStrings);
 
     protected TaskTextViewerPanel textViewerPanel; // = new TaskTextViewerPanel();
 
@@ -149,46 +149,20 @@ public class PreviewPanel extends JPanel implements ResultPreviewListener {
         }
     }
 
-//    public void setLatestPreview(Object preview) {
-//        if ((this.previewedThread != null) && this.previewedThread.isComplete()) {
-//            this.previewLabel.setText("Final result");
-//            Object finalResult = this.previewedThread.getFinalResult();
-//            this.textViewerPanel.setText(finalResult != null ? finalResult.toString() : null);
-//            disableRefresh();
-//        } else {
-//            double grabTime = this.previewedThread != null ? this.previewedThread.getLatestPreviewGrabTimeSeconds()
-//                    : 0.0;
-//            String grabString = grabTime > 0.0 ? (" ("
-//                    + StringUtils.secondsToDHMSString(grabTime) + ")") : "";
-//            this.textViewerPanel.setText(preview != null ? preview.toString()
-//                    : null);
-//            if (preview == null) {
-//                this.previewLabel.setText("No preview available" + grabString);
-//            } else {
-//                this.previewLabel.setText("Preview" + grabString);
-//            }
-//        }
-//    }
-
     /**
      * Requests the latest preview and sends it to the TextViewerPanel to
      * display it.
      */
     private void setLatestPreview() {
-
-    	
-    	if(this.previewedThread != null && this.previewedThread.failed())
-    	{
+    	if(this.previewedThread != null && this.previewedThread.isFailed()) {
+    		// failed task
     		FailedTaskReport failedTaskReport = (FailedTaskReport) this.previewedThread.getFinalResult();
     		this.textViewerPanel.setErrorText(failedTaskReport);
     		this.textViewerPanel.setGraph(null);
-    	}
-    	else
-    	{
+    	} else {
         	Preview preview = null;
     		if ((this.previewedThread != null) && this.previewedThread.isComplete()) {
-    			// cancelled, completed or failed task
-    			// TODO if the task is failed, the finalResult is a FailedTaskReport, which is not a Preview
+    			// cancelled or completed task
     			preview = (Preview) this.previewedThread.getFinalResult();
     			this.previewLabel.setText("Final result");
     			disableRefresh();

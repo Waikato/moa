@@ -322,7 +322,7 @@ public class ALMultiParamTask extends ALMainTask {
 				allThreadsCompleted &= currentTaskThread.isComplete();
 				
 				// request cancel if subtask failed or was cancelled
-				if(currentTaskThread.failed() || currentTaskThread.cancelled())
+				if(currentTaskThread.isFailed() || currentTaskThread.isCancelled())
 				{
 					monitor.requestCancel();
 				}

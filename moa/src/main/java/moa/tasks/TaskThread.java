@@ -172,9 +172,12 @@ public class TaskThread extends Thread {
                 || (this.currentStatus == Status.COMPLETED) || (this.currentStatus == Status.FAILED));
     }
 
-	public boolean failed()
-	{
+	public boolean isFailed() {
 		return currentStatus == Status.FAILED;
+	}
+	
+	public boolean isCancelled() {
+		return currentStatus == Status.CANCELLED;
 	}
 
     public Object getFinalResult() {

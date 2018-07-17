@@ -80,7 +80,7 @@ public class ALTaskThread extends TaskThread {
 		
         super.cancelTask();
         
-        if(!failed())
+        if(!isFailed())
         	this.finalResult = getLatestResultPreview();
         
 
@@ -93,18 +93,6 @@ public class ALTaskThread extends TaskThread {
         	}
         }
     }
-	
-	public boolean failed()
-	{
-		return currentStatus == Status.FAILED;
-	}
-	
-	public boolean cancelled()
-	{
-		return currentStatus == Status.CANCELLED;
-	}
-	
-
 
     @Override
     public void run() {
