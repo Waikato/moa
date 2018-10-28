@@ -20,20 +20,11 @@
  */
 package moa.gui;
 
-import moa.evaluation.MeasureCollection;
-import moa.gui.PreviewPanel.TypePanel;
-import moa.gui.conceptdrift.CDTaskManagerPanel;
-import moa.streams.clustering.ClusterEvent;
-import moa.tasks.ConceptDriftMainTask;
-import nz.ac.waikato.cms.gui.core.BaseFileChooser;
-
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -45,6 +36,27 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+
+import moa.evaluation.MeasureCollection;
+import moa.evaluation.preview.Preview;
+import moa.gui.PreviewPanel.TypePanel;
+import moa.gui.conceptdrift.CDTaskManagerPanel;
+import moa.streams.clustering.ClusterEvent;
+import moa.tasks.ConceptDriftMainTask;
+import moa.tasks.FailedTaskReport;
+
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
 /**
  * This panel displays text. Used to output the results of tasks.
@@ -58,9 +70,15 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
     public static String exportFileExtension = "txt";
 
-    protected JTextArea textArea;
+    private PreviewTableModel previewTableModel;
 
-    protected JScrollPane scrollPane;
+    private JTable previewTable;
+
+    private JTextArea errorTextField;
+
+    private JScrollPane scrollPaneTable;
+
+    private JScrollPane scrollPaneText;
 
     protected JButton exportButton;
 
@@ -70,9 +88,9 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
    //Added for stream events
     protected CDTaskManagerPanel taskManagerPanel;
-    
+
     protected TypePanel typePanel;
-    
+
     public void initVisualEvalPanel() {
         acc1[0] = getNewMeasureCollection();
         acc2[0] = getNewMeasureCollection();
@@ -81,35 +99,61 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         }
         clusteringVisualEvalPanel1 = new moa.gui.clustertab.ClusteringVisualEvalPanel();
         clusteringVisualEvalPanel1.setMeasures(acc1, acc2, this);
-        this.graphCanvas.setGraph(acc1[0], acc2[0], 0, 1000); 
+        this.graphCanvas.setGraph(acc1[0], acc2[0], 0, 1000);
         this.graphCanvas.forceAddEvents();
         clusteringVisualEvalPanel1.setMinimumSize(new java.awt.Dimension(280, 118));
         clusteringVisualEvalPanel1.setPreferredSize(new java.awt.Dimension(290, 115));
          panelEvalOutput.add(clusteringVisualEvalPanel1, gridBagConstraints);
     }
-        public TaskTextViewerPanel() {
-           this(TypePanel.CLASSIFICATION, null);
-        }
-        
-        public java.awt.GridBagConstraints gridBagConstraints;
-        
-        public TaskTextViewerPanel(PreviewPanel.TypePanel typePanel, CDTaskManagerPanel taskManagerPanel) { 
+
+    public TaskTextViewerPanel() {
+       this(TypePanel.CLASSIFICATION, null);
+    }
+
+    public java.awt.GridBagConstraints gridBagConstraints;
+
+    public TaskTextViewerPanel(PreviewPanel.TypePanel typePanel, CDTaskManagerPanel taskManagerPanel) {
         this.typePanel = typePanel;
         this.taskManagerPanel = taskManagerPanel;
-        jSplitPane1 = new javax.swing.JSplitPane();
         topWrapper = new javax.swing.JPanel();
 
-        this.textArea = new JTextArea();
-        this.textArea.setEditable(false);
-        this.textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        setLayout(new GridBagLayout());
+
+        // mainPane contains the two main components of the text viewer panel:
+        // top component: preview table panel
+        // bottom component: interactive graph panel
+        this.jSplitPane1 = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        this.jSplitPane1.setDividerLocation(200);
+
+        // topWrapper is the wrapper of the top component of mainPane
+        this.topWrapper = new JPanel();
+        this.topWrapper.setLayout(new BorderLayout());
+
+        // previewTable displays live results in table form
+        // (or in text form, if an error occurs)
+        this.previewTableModel = new PreviewTableModel();
+        this.previewTable = new JTable(this.previewTableModel);
+        this.previewTable.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        this.previewTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+        this.errorTextField = new JTextArea();
+        this.errorTextField.setEditable(false);
+        this.errorTextField.setFont(new Font("Monospaced", Font.PLAIN, 12));
+
+        // scrollPane enables scroll support for previewTable
+        this.scrollPaneTable = new JScrollPane(this.previewTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        this.scrollPaneText = new JScrollPane(this.errorTextField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        this.scrollPaneText.setVisible(false);
+
+        this.topWrapper.add(this.scrollPaneTable, BorderLayout.CENTER);
+
         this.exportButton = new JButton("Export as .txt file...");
         this.exportButton.setEnabled(false);
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(1, 2));
         buttonPanel.add(this.exportButton);
-        topWrapper.setLayout(new BorderLayout());
-        this.scrollPane = new JScrollPane(this.textArea);
-        topWrapper.add(this.scrollPane, BorderLayout.CENTER);
         topWrapper.add(buttonPanel, BorderLayout.SOUTH);
         this.exportButton.addActionListener(new ActionListener() {
 
@@ -128,7 +172,16 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
                     try {
                         PrintWriter out = new PrintWriter(new BufferedWriter(
                                 new FileWriter(fileName)));
-                        out.write(TaskTextViewerPanel.this.textArea.getText());
+
+                        String text = "";
+
+                        if (scrollPaneTable.isVisible()) {
+                            text = previewTableModel.toString();
+                        } else {
+                            text = errorTextField.getText();
+                        }
+
+                        out.write(text);
                         out.close();
                     } catch (IOException ioe) {
                         GUIUtils.showExceptionDialog(
@@ -295,12 +348,94 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
     }
 
-    public void setText(String newText) {
-        Point p = this.scrollPane.getViewport().getViewPosition();
-        this.textArea.setText(newText);
-        this.scrollPane.getViewport().setViewPosition(p);
-        this.exportButton.setEnabled(newText != null);
-        setGraph(newText);
+    /**
+     * Updates the preview table based on the information given by preview.
+     *
+     * @param preview
+     *            the new information used to update the table
+     */
+     public void setText(Preview preview) {
+         Point p = this.scrollPaneTable.getViewport().getViewPosition();
+
+         previewTableModel.setPreview(preview);
+         SwingUtilities.invokeLater(new Runnable() {
+             boolean structureChanged = previewTableModel.structureChanged();
+
+             public void run() {
+                 if (!scrollPaneTable.isVisible()) {
+                     topWrapper.remove(scrollPaneText);
+                     scrollPaneText.setVisible(false);
+                     topWrapper.add(scrollPaneTable, BorderLayout.CENTER);
+                     scrollPaneTable.setVisible(true);
+                     topWrapper.validate();
+                 }
+
+                 if (structureChanged) {
+                     previewTableModel.fireTableStructureChanged();
+                     rescaleTableColumns();
+                 } else {
+                     previewTableModel.fireTableDataChanged();
+                 }
+                 previewTable.repaint();
+             }
+         });
+
+         this.scrollPaneTable.getViewport().setViewPosition(p);
+         this.exportButton.setEnabled(preview != null);
+     }
+
+    /**
+     * Displays the error message.
+     * @param failedTaskReport error message
+     */
+    public void setErrorText(FailedTaskReport failedTaskReport) {
+        Point p = this.scrollPaneText.getViewport().getViewPosition();
+
+        final String failedTaskReportString = failedTaskReport == null ?
+                "Failed Task Report is null" : failedTaskReport.toString();
+
+        SwingUtilities.invokeLater(
+            new Runnable(){
+                public void run(){
+                    if(!scrollPaneText.isVisible())
+                    {
+                        topWrapper.remove(scrollPaneTable);
+                        scrollPaneTable.setVisible(false);
+                        topWrapper.add(scrollPaneText, BorderLayout.CENTER);
+                        scrollPaneText.setVisible(true);
+                        topWrapper.validate();
+                    }
+                    errorTextField.setText(failedTaskReportString);
+                    errorTextField.repaint();
+                }
+            }
+        );
+
+        this.scrollPaneText.getViewport().setViewPosition(p);
+        this.exportButton.setEnabled(failedTaskReport != null);
+    }
+
+    private void rescaleTableColumns() {
+        // iterate over all columns to resize them individually
+        TableColumnModel columnModel = previewTable.getColumnModel();
+        for (int columnIdx = 0; columnIdx < columnModel.getColumnCount(); ++columnIdx) {
+            // get the current column
+            TableColumn column = columnModel.getColumn(columnIdx);
+            // get the renderer for the column header to calculate the preferred
+            // with for the header
+            TableCellRenderer renderer = column.getHeaderRenderer();
+            // check if the renderer is null
+            if (renderer == null) {
+                // if it is null use the default renderer for header
+                renderer = previewTable.getTableHeader().getDefaultRenderer();
+            }
+            // create a cell to calculate its preferred size
+            Component comp = renderer.getTableCellRendererComponent(previewTable, column.getHeaderValue(), false, false,
+                    0, columnIdx);
+            int width = comp.getPreferredSize().width;
+            // set the maximum width which was calculated
+            column.setPreferredWidth(width);
+        }
     }
 
     protected MeasureCollection[] acc1 = new MeasureCollection[1];
@@ -401,7 +536,7 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
             } else {
                 this.acc2[0] = getNewMeasureCollection();
             }
-
+            scanner.close();
         } else {
             this.acc1[0] = getNewMeasureCollection();
             this.acc2[0] = getNewMeasureCollection();
@@ -531,7 +666,7 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        //reacte on graph selection and find out which measure was selected
+        // reacte on graph selection and find out which measure was selected
         int selected = Integer.parseInt(e.getActionCommand());
         int counter = selected;
         int m_select = 0;
@@ -553,7 +688,8 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
                 break;
             }
         }
-        this.graphCanvas.setGraph(acc1[m_select], acc2[m_select], m_select_offset, this.graphCanvas.getProcessFrequency());
+        this.graphCanvas.setGraph(acc1[m_select], acc2[m_select], m_select_offset,
+                this.graphCanvas.getProcessFrequency());
         this.graphCanvas.forceAddEvents();
     }
 }
