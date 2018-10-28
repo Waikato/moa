@@ -158,7 +158,7 @@ public class ArffLoader {
                         numAttribute++;
 
                     } else if (streamTokenizer.sval != null && (streamTokenizer.ttype == StreamTokenizer.TT_WORD
-                            || streamTokenizer.ttype == 34)) {
+                            || streamTokenizer.ttype == 34 || streamTokenizer.ttype == 39)) {
                         //System.out.println(streamTokenizer.sval + "Str");
                         boolean isNumeric = this.instanceInformation.attribute(numAttribute).isNumeric();
                         double value;
