@@ -27,10 +27,12 @@ import com.github.javacliparser.IntOption;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.Example;
+import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.Utils;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
+import moa.evaluation.preview.LearningCurve;
 import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
@@ -65,8 +67,13 @@ public class EvaluateModel extends ClassificationMainTask {
             "BasicClassificationPerformanceEvaluator");
 
     public IntOption maxInstancesOption = new IntOption("maxInstances", 'i',
-            "Maximum number of instances to test.", 1000000, 0,
+            "Maximum number of instances to test.", 100000000, 0,
             Integer.MAX_VALUE);
+    
+    public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
+            'f',
+            "How many instances between samples of the learning performance.",
+            100000, 0, Integer.MAX_VALUE);
 
     public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
             "File to append output predictions to.", null, "pred", true);
@@ -92,6 +99,7 @@ public class EvaluateModel extends ClassificationMainTask {
         Learner model = (Learner) getPreparedClassOption(this.modelOption);
         ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
         LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
+        LearningCurve learningCurve = new LearningCurve("learning evaluation instances");
         int maxInstances = this.maxInstancesOption.getValue();
         long instancesProcessed = 0;
         monitor.setCurrentActivity("Evaluating model...", -1.0);
@@ -127,6 +135,17 @@ public class EvaluateModel extends ClassificationMainTask {
             }
             evaluator.addResult(testInst, prediction);
             instancesProcessed++;
+
+            if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0
+                    || stream.hasMoreInstances() == false) {
+	            learningCurve.insertEntry(new LearningEvaluation(
+	                    new Measurement[]{
+	                        new Measurement(
+	                        "learning evaluation instances",
+	                        instancesProcessed)
+	                    },
+	                    evaluator, model));
+            }
             if (instancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
                 if (monitor.taskShouldAbort()) {
                     return null;
@@ -143,14 +162,13 @@ public class EvaluateModel extends ClassificationMainTask {
                         : (double) instancesProcessed
                         / (double) (instancesProcessed + estimatedRemainingInstances));
                 if (monitor.resultPreviewRequested()) {
-                    monitor.setLatestResultPreview(new LearningEvaluation(
-                            evaluator, model));
+                    monitor.setLatestResultPreview(learningCurve.copy());
                 }
             }
         }
         if (outputPredictionResultStream != null) {
             outputPredictionResultStream.close();
         }
-        return new LearningEvaluation(evaluator, model);
+        return learningCurve;
     }
 }
