@@ -61,7 +61,7 @@ public class AdaGrad extends SGD{
 
     public FloatOption epsilonOption = new FloatOption("epsilon",
             'p', "epsilon parameter.",
-            1e-8, 0.00, 1);
+            1e-8);
 
     /** Stores the weights (+ bias in the last element) */
     protected DoubleVector m_velocity;
@@ -85,10 +85,27 @@ public class AdaGrad extends SGD{
         return m_epsilon;
     }
 
+    public AdaGrad() {
+        lambdaRegularizationOption = new FloatOption(
+                lambdaRegularizationOption.getName(),
+                lambdaRegularizationOption.getCLIChar(),
+                lambdaRegularizationOption.getPurpose(),
+                0.0);
+
+        learningRateOption = new FloatOption(
+                learningRateOption.getName(),
+                learningRateOption.getCLIChar(),
+                learningRateOption.getPurpose(),
+                0.01);
+    }
+
     @Override
     public void resetLearningImpl() {
         reset();
+        setLambda(this.lambdaRegularizationOption.getValue());
+        setLearningRate(this.learningRateOption.getValue());
         setEpsilon(this.epsilonOption.getValue());
+        setLossFunction(this.lossFunctionOption.getChosenIndex());
     }
 
     /**
@@ -149,7 +166,7 @@ public class AdaGrad extends SGD{
         for(int i = 0; i < n; i++)
         {
             int idx = instance.index(i);
-            gradients.setValue(idx, instance.valueSparse(i) * dldz + m_lambda * m_weights.getValue(idx));
+            gradients.setValue(idx, instance.valueSparse(i) * dldz + (m_lambda / (m_t + m_epsilon)) * m_weights.getValue(idx));
         }
 
         //Weight update for the bias
@@ -163,52 +180,12 @@ public class AdaGrad extends SGD{
             m_velocity.addToValue(i, g * g);
             m_weights.addToValue(i, -(m_learningRate / (Math.sqrt(m_velocity.getValue(i)) + m_epsilon)) * g);
         }
+
+        m_t += 1.0;
     }
 
-    /**
-     * Prints out the classifier.
-     *
-     * @return a description of the classifier as a string
-     */
-    public String toString() {
-        if (m_weights == null) {
-            return "AdaGrad: No model built yet.\n";
-        }
-        StringBuffer buff = new StringBuffer();
-        buff.append("Loss function: ");
-        if (m_loss == HINGE) {
-            buff.append("Hinge loss (SVM)\n\n");
-        } else if (m_loss == LOGLOSS) {
-            buff.append("Log loss (logistic regression)\n\n");
-        } else {
-            buff.append("Squared loss (linear regression)\n\n");
-        }
-
-        // buff.append(m_data.classAttribute().name() + " = \n\n");
-        int printed = 0;
-
-        for (int i = 0; i < m_weights.numValues(); i++) {
-            // if (i != m_data.classIndex()) {
-            if (printed > 0) {
-                buff.append(" + ");
-            } else {
-                buff.append("   ");
-            }
-
-            buff.append(Utils.doubleToString(m_weights.getValue(i), 12, 4) + " "
-                    // + m_data.attribute(i).name()
-                    + "\n");
-
-            printed++;
-            //}
-        }
-
-        if (m_bias > 0) {
-            buff.append(" + " + Utils.doubleToString(m_bias, 12, 4));
-        } else {
-            buff.append(" - " + Utils.doubleToString(-m_bias, 12, 4));
-        }
-
-        return buff.toString();
+    @Override
+    protected String getModelName() {
+        return "AdaGrad";
     }
 }
