@@ -17,22 +17,10 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-
-/*
- *    AdaGrad.java
- *    Copyright (C) 2009 University of Waikato, Hamilton, New Zealand
- *
- */
-
 package moa.classifiers.functions;
 
-import moa.classifiers.AbstractClassifier;
 import moa.core.DoubleVector;
-import moa.core.Measurement;
-import moa.core.StringUtils;
 import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.MultiChoiceOption;
-import moa.classifiers.Regressor;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.Utils;
 
@@ -76,7 +64,6 @@ public class AdaGrad extends SGD{
             1e-8, 0.00, 1);
 
     /** Stores the weights (+ bias in the last element) */
-    protected DoubleVector m_gradients;
     protected DoubleVector m_velocity;
     protected double m_biasVelocity;
 
@@ -101,10 +88,7 @@ public class AdaGrad extends SGD{
     @Override
     public void resetLearningImpl() {
         reset();
-        setLambda(this.lambdaRegularizationOption.getValue());
-        setLearningRate(this.learningRateOption.getValue());
         setEpsilon(this.epsilonOption.getValue());
-        setLossFunction(this.lossFunctionOption.getChosenIndex());
     }
 
     /**
@@ -117,11 +101,11 @@ public class AdaGrad extends SGD{
 
         if (m_weights == null) {
             m_weights = new DoubleVector();
-            m_gradients = new DoubleVector();
             m_velocity = new DoubleVector();
+            m_bias = 0;
 
-            //Allocate the weights
             m_weights.setValue(instance.numAttributes(), 0);
+            m_velocity.setValue(instance.numAttributes(), 0);
         }
 
         if (instance.classIsMissing()) {
@@ -158,18 +142,14 @@ public class AdaGrad extends SGD{
             dldz = z - y;
         }
 
-
-        for (int i = 0; i < m_weights.numValues(); i++) {
-            //L2 Weight decay
-            m_gradients.setValue(i, (m_lambda / m_t) * m_weights.getValue(i));
-        }
-
         int n = instance.numValues();
+        DoubleVector gradients = new DoubleVector();
+        gradients.setValue(instance.numAttributes(), 0);
 
         for(int i = 0; i < n; i++)
         {
-            //Loss function gradient (sans regularisation)
-            m_gradients.addToValue(instance.index(i), instance.valueSparse(i) * dldz);
+            int idx = instance.index(i);
+            gradients.setValue(idx, instance.valueSparse(i) * dldz + m_lambda * m_weights.getValue(idx));
         }
 
         //Weight update for the bias
@@ -179,12 +159,10 @@ public class AdaGrad extends SGD{
 
         for(int i = 0; i < m_weights.numValues(); i++) {
             //Weight update
-            double g = m_gradients.getValue(i);
+            double g = gradients.getValue(i);
             m_velocity.addToValue(i, g * g);
             m_weights.addToValue(i, -(m_learningRate / (Math.sqrt(m_velocity.getValue(i)) + m_epsilon)) * g);
         }
-
-        m_t += 1.0;
     }
 
     /**
