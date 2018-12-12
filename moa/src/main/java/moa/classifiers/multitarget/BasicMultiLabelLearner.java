@@ -22,9 +22,7 @@ package moa.classifiers.multitarget;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.Classifier;
-import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.rules.AMRulesRegressor;
-import moa.classifiers.rules.multilabel.AMRulesMultiLabelLearner;
 import moa.core.DoubleVector;
 import moa.core.FastVector;
 import moa.core.Measurement;
@@ -33,6 +31,7 @@ import moa.options.ClassOption;
 import moa.streams.InstanceStream;
 
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
@@ -108,7 +107,7 @@ public class BasicMultiLabelLearner extends AbstractMultiLabelLearner{
 		}
 		if (header[outputIndex] == null) {
 			//Create Header
-			FastVector attributes = new FastVector();
+			FastVector<Attribute> attributes = new FastVector<>();
 			for (int attributeIndex = 0; attributeIndex < inst.numInputAttributes(); attributeIndex++) {
 				attributes.addElement(inst.inputAttribute(attributeIndex));
 			}
@@ -181,11 +180,10 @@ public class BasicMultiLabelLearner extends AbstractMultiLabelLearner{
 	@Override
 	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
 		Prediction prediction=null;
-                double [] votes= new double[instance.numClasses()];
-                double vote;
+		double vote;
+		
 		if (this.hasStarted){ 
 			prediction=new MultiLabelPrediction(ensemble.length);
-			DoubleVector combinedVote = new DoubleVector();
 			for (int i = 0; i < this.ensemble.length; i++) {
                         vote= this.ensemble[i].getVotesForInstance(transformInstance(instance,i))[0];
 				prediction.setVote(i, 0, vote);
