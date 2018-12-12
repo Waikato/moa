@@ -23,7 +23,6 @@ import moa.classifiers.AbstractClassifier;
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.Classifier;
 import moa.classifiers.rules.AMRulesRegressor;
-import moa.core.DoubleVector;
 import moa.core.FastVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
@@ -39,6 +38,8 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
+
+import java.util.Arrays;;
 
 /**
  * Binary relevance Multilabel Classifier
@@ -180,13 +181,31 @@ public class BasicMultiLabelLearner extends AbstractMultiLabelLearner{
 	@Override
 	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
 		Prediction prediction=null;
-		double vote;
 		
 		if (this.hasStarted){ 
 			prediction=new MultiLabelPrediction(ensemble.length);
 			for (int i = 0; i < this.ensemble.length; i++) {
-                        vote= this.ensemble[i].getVotesForInstance(transformInstance(instance,i))[0];
-				prediction.setVote(i, 0, vote);
+				Instance inst = transformInstance(instance,i);
+				double[] votes = this.ensemble[i].getVotesForInstance(inst);
+				
+				if(inst.classAttribute().isNumeric()) {
+					prediction.setVote(i, 0, votes[0]);
+				}
+				else {
+					double[] dist = new double[2];
+					double sum = 0;
+					
+					for(int l = 0; l < votes.length; l++) {
+						dist[l] = votes[l];
+						sum += votes[l];
+					}
+
+					for(int l = 0; l < votes.length; l++) {
+						dist[l] /= sum;
+					}
+
+					prediction.setVote(i, 0, dist[1]);
+				}
 			}
 		}
 
