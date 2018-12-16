@@ -192,7 +192,7 @@ public class BasicMultiLabelLearner extends AbstractMultiLabelLearner{
 					prediction.setVote(i, 0, votes[0]);
 				}
 				else {
-					double[] dist = new double[2];
+					double[] dist = new double[votes.length];
 					double sum = 0;
 					
 					for(int l = 0; l < votes.length; l++) {
@@ -204,7 +204,7 @@ public class BasicMultiLabelLearner extends AbstractMultiLabelLearner{
 						dist[l] /= sum;
 					}
 
-					prediction.setVote(i, 0, dist[1]);
+					prediction.setVotes(i, dist);
 				}
 			}
 		}
