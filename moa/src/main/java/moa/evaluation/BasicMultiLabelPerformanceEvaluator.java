@@ -106,7 +106,6 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
             int correct = 0;
             for (int j = 0; j < y.numOutputAttributes(); j++) {
                 int yp = (y.getVote(j,1) > t) ? 1 : 0;
-                correct += ((int)x.classValue(j) == yp) ? 1 : 0;
 
                 int y_true = (int)x.valueOutputAttribute(j);
                 if (y_true == yp)
