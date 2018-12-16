@@ -105,7 +105,7 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
             sumExamples++;
             int correct = 0;
             for (int j = 0; j < y.numOutputAttributes(); j++) {
-                int yp = (y.getVote(j,0) > t) ? 1 : 0;
+                int yp = (y.getVote(j,1) > t) ? 1 : 0;
                 correct += ((int)x.classValue(j) == yp) ? 1 : 0;
 
                 int y_true = (int)x.valueOutputAttribute(j);
@@ -167,8 +167,8 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
         // gather measurements
         Measurement m[] = new Measurement[]{
                 new Measurement("Exact Match", sumAccuracy/sumExamples),
+                new Measurement("Accuracy", (double) sumAccuracy2/sumExamples),
                 new Measurement("Hamming Score", sumHamming/sumExamples),
-                new Measurement("Accuracy", (double) sumAccuracy/sumExamples),
                 new Measurement("Precision",((double) sumPrecision)/sumExamples),
                 new Measurement("Recall",(double) sumRecall/sumExamples),
                 new Measurement("F-Measure", (double) sumFmeasure/sumExamples),
