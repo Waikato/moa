@@ -85,7 +85,7 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
 
 
         for (int j = 0; j < y.numOutputAttributes(); j++) {
-            System.out.print( (y.getVote(j,0) > t) ? 1 : 0);
+            System.out.print( (y.getVote(j,1) > t) ? 1 : 0);
         }
         System.out.print("\n");
 
