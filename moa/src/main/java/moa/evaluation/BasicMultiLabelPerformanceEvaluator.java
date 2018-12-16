@@ -53,9 +53,6 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
     /** running number of examples */
     int sumExamples = 0;
 
-    /** preset threshold */
-    private double t = 0.5;
-
     @Override
     public void reset() {
         sumAccuracy = 0.0;
@@ -75,21 +72,7 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
         int sumOnesTrue=0;
         int sumOnesPred=0;
 
-
         MultiLabelInstance x = (MultiLabelInstance) example.getData();
-
-        for (int j = 0; j < y.numOutputAttributes(); j++) {
-            System.out.print( (int)x.classValue(j));
-        }
-        System.out.print(" ");
-
-
-        for (int j = 0; j < y.numOutputAttributes(); j++) {
-            System.out.print( (y.getVote(j,1) > t) ? 1 : 0);
-        }
-        System.out.print("\n");
-
-
 
         if (L == 0) {
             L = x.numberOutputTargets();
@@ -105,7 +88,7 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
             sumExamples++;
             int correct = 0;
             for (int j = 0; j < y.numOutputAttributes(); j++) {
-                int yp = (y.getVote(j,1) > t) ? 1 : 0;
+                int yp = (y.getVote(j,1) > y.getVote(j, 0)) ? 1 : 0;
 
                 int y_true = (int)x.valueOutputAttribute(j);
                 if (y_true == yp)
@@ -125,15 +108,11 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
 
             }
 
-            double tmp=0;
-
             //Accuracy by instance(Jaccard Index)
             if(sumReunion>0){
-                tmp=(double)sumInterse/sumReunion;
                 sumAccuracy2 += (double)sumInterse/sumReunion;
             }
             else{
-                tmp=1;
                 sumAccuracy2+=0.0;
             }
 
