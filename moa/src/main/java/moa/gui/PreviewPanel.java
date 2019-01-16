@@ -163,20 +163,27 @@ public class PreviewPanel extends JPanel implements ResultPreviewListener {
         	Preview preview = null;
     		if ((this.previewedThread != null) && this.previewedThread.isComplete()) {
     			// cancelled or completed task
-    			preview = (Preview) this.previewedThread.getFinalResult();
-    			this.previewLabel.setText("Final result");
+    			Object previewObject = this.previewedThread.getFinalResult();
+    			if(Preview.class.isInstance(previewObject))
+    			{
+        			preview = (Preview) this.previewedThread.getFinalResult();
+        			this.previewLabel.setText("Final result");
+    			}
     			disableRefresh();
     		} else if (this.previewedThread != null){
     			// running task
-    			preview = (Preview) this.previewedThread.getLatestResultPreview();
-    			double grabTime = this.previewedThread.getLatestPreviewGrabTimeSeconds();
-    			String grabString = " (" + StringUtils.secondsToDHMSString(grabTime) + ")";
-    			if (preview == null) {
-    				this.previewLabel.setText("No preview available" + grabString);
-    			} else {
-    				this.previewLabel.setText("Preview" + grabString);
+    			Object previewObject = this.previewedThread.getLatestResultPreview();
+    			if(Preview.class.isInstance(previewObject))
+    			{
+        			preview = (Preview) this.previewedThread.getLatestResultPreview();
+        			double grabTime = this.previewedThread.getLatestPreviewGrabTimeSeconds();
+        			String grabString = " (" + StringUtils.secondsToDHMSString(grabTime) + ")";
+        			if (preview != null) {
+        				this.previewLabel.setText("Preview" + grabString);
+        			}
     			}
-    		} else {
+    		} 
+    		if (preview == null){
     			// no thread
     			this.previewLabel.setText("No preview available");
     			preview = null;
