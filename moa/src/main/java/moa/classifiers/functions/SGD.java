@@ -322,6 +322,10 @@ public class SGD extends AbstractClassifier implements MultiClassClassifier, Reg
         StringUtils.appendNewline(result);
     }
 
+    protected String getModelName() {
+        return "SGD";
+    }
+
     /**
      * Prints out the classifier.
      *
@@ -329,7 +333,7 @@ public class SGD extends AbstractClassifier implements MultiClassClassifier, Reg
      */
     public String toString() {
         if (m_weights == null) {
-            return "SGD: No model built yet.\n";
+            return getModelName() + ": No model built yet.\n";
         }
         StringBuffer buff = new StringBuffer();
         buff.append("Loss function: ");
