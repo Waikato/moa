@@ -20,27 +20,16 @@
  */
 package moa.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.prefs.Preferences;
+import moa.core.StringUtils;
+import moa.options.ClassOption;
+import moa.options.OptionHandler;
+import moa.tasks.EvaluatePrequentialRegression;
+import moa.tasks.RegressionMainTask;
+import moa.tasks.Task;
+import moa.tasks.TaskThread;
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -57,14 +46,24 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
-
-import moa.core.StringUtils;
-import moa.options.ClassOption;
-import moa.options.OptionHandler;
-import moa.tasks.EvaluatePrequentialRegression;
-import moa.tasks.RegressionMainTask;
-import moa.tasks.Task;
-import moa.tasks.TaskThread;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.prefs.Preferences;
 
 /**
  * This panel displays the running tasks.
@@ -464,11 +463,11 @@ public class RegressionTaskManagerPanel extends JPanel {
             tasksLog += ((OptionHandler) thread.getTask()).getCLICreationString(RegressionMainTask.class) + "\n";
         }
 
-        JFileChooser fileChooser = new JFileChooser();
+        BaseFileChooser fileChooser = new BaseFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(true);
         fileChooser.addChoosableFileFilter(new FileExtensionFilter(
                 exportFileExtension));
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(this) == BaseFileChooser.APPROVE_OPTION) {
             File chosenFile = fileChooser.getSelectedFile();
             String fileName = chosenFile.getPath();
             if (!chosenFile.exists()

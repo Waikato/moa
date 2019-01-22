@@ -31,7 +31,7 @@ import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.table.AbstractTableModel;
 
-import moa.evaluation.LearningCurve;
+import moa.evaluation.preview.LearningCurve;
 
 /**
  * This panel displays an evaluation learning curve.

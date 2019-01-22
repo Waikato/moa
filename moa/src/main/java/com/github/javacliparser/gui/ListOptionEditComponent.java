@@ -1,5 +1,5 @@
 /*
- *    StringOptionEditComponent.java
+ *    ListOptionEditComponent.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  *
@@ -21,41 +21,18 @@ package com.github.javacliparser.gui;
 
 import com.github.javacliparser.Option;
 
-import javax.swing.*;
-
 /**
  * An OptionEditComponent that lets the user edit a list option.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class ListOptionEditComponent extends JTextField implements
-        OptionEditComponent {
-
-    protected StringOptionEditComponent component;
+public class ListOptionEditComponent extends StringOptionEditComponent {
 
     private static final long serialVersionUID = 1L;
 
     public ListOptionEditComponent(Option option) {
-        component = new StringOptionEditComponent(option);
-        setText(component.getText());
-    }
-
-    @Override
-    public Option getEditedOption() {
-        return component.getEditedOption();
-    }
-
-    @Override
-    public void setEditState(String cliString) {
-        component.setText(cliString);
-        setText(component.getText());
-    }
-
-    @Override
-    public void applyState() {
-        getEditedOption().setValueViaCLIString(getText().length() > 0 ? getText() : null);
-        setText(component.getText());
+    	super(option);
     }
 }
 

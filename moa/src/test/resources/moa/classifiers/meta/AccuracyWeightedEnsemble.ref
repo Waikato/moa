@@ -467,13 +467,13 @@ Model measurements
   [avg] model training instances: 500
   [err] model training instances: 0
   [avg] tree size (nodes): 6.33333333
-  [err] tree size (nodes): 0.33333333
+  [err] tree size (nodes): 1.29099445
   [avg] tree size (leaves): 5.26666667
-  [err] tree size (leaves): 0.26666667
+  [err] tree size (leaves): 1.03279556
   [avg] active learning leaves: 5.26666667
-  [err] active learning leaves: 0.26666667
+  [err] active learning leaves: 1.03279556
   [avg] tree depth: 1.06666667
-  [err] tree depth: 0.06666667
+  [err] tree depth: 0.25819889
   [avg] active leaf byte size estimate: 0
   [err] active leaf byte size estimate: 0
   [avg] inactive leaf byte size estimate: 0

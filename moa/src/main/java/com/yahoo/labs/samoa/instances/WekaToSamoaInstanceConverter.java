@@ -55,7 +55,11 @@ public class WekaToSamoaInstanceConverter implements Serializable{
             this.samoaInstanceInformation = this.samoaInstancesInformation(inst.dataset());
         }
         samoaInstance.setDataset(samoaInstanceInformation);
-        samoaInstance.setClassValue(inst.classValue());
+
+        if(inst.classIndex() >= 0) { // class attribute is present
+            samoaInstance.setClassValue(inst.classValue());
+        }
+        
         return samoaInstance;
     }
 
@@ -88,7 +92,11 @@ public class WekaToSamoaInstanceConverter implements Serializable{
             attInfo.add(samoaAttribute(i, instances.attribute(i)));
         }
         samoaInstances = new Instances(instances.relationName(), attInfo, 0);
-        samoaInstances.setClassIndex(instances.classIndex());
+        
+        if(instances.classIndex() >= 0) { // class attribute is present
+            samoaInstances.setClassIndex(instances.classIndex());
+        }
+        
         return samoaInstances;
     }
 

@@ -34,6 +34,7 @@ import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
 import moa.evaluation.*;
+import moa.evaluation.preview.LearningCurve;
 import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;

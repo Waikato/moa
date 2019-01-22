@@ -20,6 +20,32 @@
  */
 package moa.gui;
 
+import moa.core.StringUtils;
+import moa.options.ClassOption;
+import moa.options.OptionHandler;
+import moa.tasks.EvaluatePrequentialMultiTarget;
+import moa.tasks.MultiTargetMainTask;
+import moa.tasks.Task;
+import moa.tasks.TaskThread;
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -38,31 +64,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
-import moa.core.StringUtils;
-import moa.options.ClassOption;
-import moa.options.OptionHandler;
-import moa.tasks.EvaluatePrequentialMultiTarget;
-import moa.tasks.MultiTargetMainTask;
-import moa.tasks.Task;
-import moa.tasks.TaskThread;
 
 /**
  * This panel displays the running tasks.
@@ -462,11 +463,11 @@ public class MultiTargetTaskManagerPanel extends JPanel {
             tasksLog += ((OptionHandler) thread.getTask()).getCLICreationString(MultiTargetMainTask.class) + "\n";
         }
 
-        JFileChooser fileChooser = new JFileChooser();
+        BaseFileChooser fileChooser = new BaseFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(true);
         fileChooser.addChoosableFileFilter(new FileExtensionFilter(
                 exportFileExtension));
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(this) == BaseFileChooser.APPROVE_OPTION) {
             File chosenFile = fileChooser.getSelectedFile();
             String fileName = chosenFile.getPath();
             if (!chosenFile.exists()

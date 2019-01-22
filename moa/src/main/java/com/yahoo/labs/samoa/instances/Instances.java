@@ -62,6 +62,16 @@ public class Instances implements Serializable {
     protected HashMap<String, Integer> hsAttributesIndices;
 
     /**
+     * Indices of relevant features.
+     */
+    protected int[] indicesRelevants;
+
+    /**
+     * Indices of irrelevant features.
+     */
+    protected int[] indicesIrrelevants;
+
+    /**
      * Instantiates a new instances.
      *
      * @param chunk the chunk
@@ -70,6 +80,10 @@ public class Instances implements Serializable {
         this(chunk, chunk.numInstances());
         chunk.copyInstances(0, this, chunk.numInstances());
         this.computeAttributesIndices();
+        if(chunk.indicesRelevants != null) {
+            this.indicesRelevants = chunk.indicesRelevants.clone();
+            this.indicesIrrelevants = chunk.indicesIrrelevants.clone();
+        }
     }
 
     /**
@@ -118,6 +132,10 @@ public class Instances implements Serializable {
         }
         this.instances = new ArrayList<Instance>(capacity);
         this.computeAttributesIndices();
+        if(chunk.indicesRelevants != null) {
+            this.indicesRelevants = chunk.indicesRelevants.clone();
+            this.indicesIrrelevants = chunk.indicesIrrelevants.clone();
+        }
     }
 
     /**
@@ -615,4 +633,47 @@ public class Instances implements Serializable {
         }
     }
 
+    /**
+     * Returns the indices of the relevant features indicesRelevants.
+     * @return indicesRelevants
+     */
+    public int[] getIndicesRelevants() {
+        return indicesRelevants;
+    }
+
+    /**
+     * Returns the indices of the irrelevant features indicesIrrelevants.
+     * @return indicesIrrelevants
+     */
+    public int[] getIndicesIrrelevants() {
+        return indicesIrrelevants;
+    }
+
+    /**
+     * Sets the indices of relevant features.
+     * This method also sets the irrelevant ones since
+     * it is the set complement.
+     *
+     * @param indicesRelevants
+     */
+    public void setIndicesRelevants(int[] indicesRelevants) {
+        this.indicesRelevants = indicesRelevants;
+        // -1 to skip the class attribute
+        int numIrrelevantFeatures = this.numAttributes() - this.indicesRelevants.length - 1;
+        this.indicesIrrelevants = new int[numIrrelevantFeatures];
+
+        // Infers and sets the set of irrelevant features
+        int index = 0;
+        int indexRel = 0;
+        for(int i = 0; i < numAttributes(); i++){
+            if(i != classIndex()) {
+                while (indexRel < indicesRelevants.length - 1 &&
+                        i > indicesRelevants[indexRel]) indexRel++;
+                if (indicesRelevants[indexRel] != i){
+                    indicesIrrelevants[index] = i;
+                    index++;
+                }
+            }
+        }
+    }
 }

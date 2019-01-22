@@ -1,0 +1,355 @@
+--> classification-out0.arff
+moa.classifiers.meta.BOLE
+
+Index
+  10000
+Votes
+  0: 3.03848023
+  1: 2.88340964
+Measurements
+  classified instances: 9999
+  classifications correct (percent): 74.94749475
+  Kappa Statistic (percent): 48.16264129
+  Kappa Temporal Statistic (percent): 47.19645868
+  Kappa M Statistic (percent): 38.82783883
+Model measurements
+  model training instances: 9999
+  ensemble size: 10
+  [avg] model training instances: 8690.4
+  [err] model training instances: 2016.58234592
+  [avg] Change detected: 6.7
+  [err] Change detected: 4.21768762
+  [avg] Warning detected: 146.7
+  [err] Warning detected: 56.83123163
+  [avg] tree size (nodes): 12.4
+  [err] tree size (nodes): 7.27552976
+  [avg] tree size (leaves): 10
+  [err] tree size (leaves): 5.59761854
+  [avg] active learning leaves: 10
+  [err] active learning leaves: 5.59761854
+  [avg] tree depth: 1.8
+  [err] tree depth: 0.91893658
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  20000
+Votes
+  0: 2.46748285
+  1: 4.19196964
+Measurements
+  classified instances: 19999
+  classifications correct (percent): 79.76898845
+  Kappa Statistic (percent): 58.39484147
+  Kappa Temporal Statistic (percent): 57.76177054
+  Kappa M Statistic (percent): 51.49844162
+Model measurements
+  model training instances: 19999
+  ensemble size: 10
+  [avg] model training instances: 18094.65
+  [err] model training instances: 3333.4539583
+  [avg] Change detected: 0.1
+  [err] Change detected: 0.31622777
+  [avg] Warning detected: 19.4
+  [err] Warning detected: 23.4767024
+  [avg] tree size (nodes): 34.6
+  [err] tree size (nodes): 18.86325057
+  [avg] tree size (leaves): 26.5
+  [err] tree size (leaves): 13.61575884
+  [avg] active learning leaves: 26.5
+  [err] active learning leaves: 13.61575884
+  [avg] tree depth: 2.7
+  [err] tree depth: 0.67494856
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  30000
+Votes
+  0: 0.27354188
+  1: 7.39019223
+Measurements
+  classified instances: 29999
+  classifications correct (percent): 82.66275543
+  Kappa Statistic (percent): 64.32411446
+  Kappa Temporal Statistic (percent): 64.07404849
+  Kappa M Statistic (percent): 58.35201794
+Model measurements
+  model training instances: 29999
+  ensemble size: 10
+  [avg] model training instances: 27337.25
+  [err] model training instances: 4110.95082964
+  [avg] Change detected: 0
+  [err] Change detected: 0
+  [avg] Warning detected: 7.4
+  [err] Warning detected: 9.66321778
+  [avg] tree size (nodes): 52.9
+  [err] tree size (nodes): 18.91178351
+  [avg] tree size (leaves): 39.1
+  [err] tree size (leaves): 12.26059632
+  [avg] active learning leaves: 39.1
+  [err] active learning leaves: 12.26059632
+  [avg] tree depth: 3.3
+  [err] tree depth: 0.67494856
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  40000
+Votes
+  0: 2.21997743
+  1: 5.90869048
+Measurements
+  classified instances: 39999
+  classifications correct (percent): 84.31460787
+  Kappa Statistic (percent): 67.79601989
+  Kappa Temporal Statistic (percent): 67.57790295
+  Kappa M Statistic (percent): 62.47607656
+Model measurements
+  model training instances: 39999
+  ensemble size: 10
+  [avg] model training instances: 35792.75
+  [err] model training instances: 9376.33981935
+  [avg] Change detected: 0.3
+  [err] Change detected: 0.9486833
+  [avg] Warning detected: 13.2
+  [err] Warning detected: 28.78965864
+  [avg] tree size (nodes): 60.9
+  [err] tree size (nodes): 33.48117216
+  [avg] tree size (leaves): 43.7
+  [err] tree size (leaves): 22.13117459
+  [avg] active learning leaves: 43.7
+  [err] active learning leaves: 22.13117459
+  [avg] tree depth: 3.7
+  [err] tree depth: 1.41813649
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  50000
+Votes
+  0: 4.28259731
+  1: 4.08632595
+Measurements
+  classified instances: 49999
+  classifications correct (percent): 85.45970919
+  Kappa Statistic (percent): 70.14361818
+  Kappa Temporal Statistic (percent): 69.90644921
+  Kappa M Statistic (percent): 65.20865237
+Model measurements
+  model training instances: 49999
+  ensemble size: 10
+  [avg] model training instances: 45527.85
+  [err] model training instances: 10048.55585474
+  [avg] Change detected: 0
+  [err] Change detected: 0
+  [avg] Warning detected: 6.3
+  [err] Warning detected: 9.522488
+  [avg] tree size (nodes): 71.9
+  [err] tree size (nodes): 31.62084404
+  [avg] tree size (leaves): 51.3
+  [err] tree size (leaves): 19.64716547
+  [avg] active learning leaves: 51.3
+  [err] active learning leaves: 19.64716547
+  [avg] tree depth: 4.3
+  [err] tree depth: 0.67494856
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  60000
+Votes
+  0: 0.79328783
+  1: 7.76270847
+Measurements
+  classified instances: 59999
+  classifications correct (percent): 86.23310389
+  Kappa Statistic (percent): 71.78216485
+  Kappa Temporal Statistic (percent): 71.53196622
+  Kappa M Statistic (percent): 67.22482343
+Model measurements
+  model training instances: 59999
+  ensemble size: 10
+  [avg] model training instances: 55481.65
+  [err] model training instances: 10914.72389542
+  [avg] Change detected: 0
+  [err] Change detected: 0
+  [avg] Warning detected: 6
+  [err] Warning detected: 10.20892855
+  [avg] tree size (nodes): 86.2
+  [err] tree size (nodes): 36.09801472
+  [avg] tree size (leaves): 61
+  [err] tree size (leaves): 22.28601953
+  [avg] active learning leaves: 61
+  [err] active learning leaves: 22.28601953
+  [avg] tree depth: 4.5
+  [err] tree depth: 0.84983659
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  70000
+Votes
+  0: 1.3948847
+  1: 7.34491032
+Measurements
+  classified instances: 69999
+  classifications correct (percent): 86.87838398
+  Kappa Statistic (percent): 73.1286334
+  Kappa Temporal Statistic (percent): 72.95267823
+  Kappa M Statistic (percent): 68.86862798
+Model measurements
+  model training instances: 69999
+  ensemble size: 10
+  [avg] model training instances: 65189.15
+  [err] model training instances: 11964.04803997
+  [avg] Change detected: 0
+  [err] Change detected: 0
+  [avg] Warning detected: 3.6
+  [err] Warning detected: 6.00370256
+  [avg] tree size (nodes): 102.7
+  [err] tree size (nodes): 44.44484722
+  [avg] tree size (leaves): 72.4
+  [err] tree size (leaves): 28.44956551
+  [avg] active learning leaves: 72.4
+  [err] active learning leaves: 28.44956551
+  [avg] tree depth: 4.7
+  [err] tree depth: 0.9486833
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  80000
+Votes
+  0: 2.87689943
+  1: 6.07641818
+Measurements
+  classified instances: 79999
+  classifications correct (percent): 87.4723434
+  Kappa Statistic (percent): 74.34195208
+  Kappa Temporal Statistic (percent): 74.20268218
+  Kappa M Statistic (percent): 70.27524024
+Model measurements
+  model training instances: 79999
+  ensemble size: 10
+  [avg] model training instances: 70595.15
+  [err] model training instances: 19111.19207573
+  [avg] Change detected: 0.1
+  [err] Change detected: 0.31622777
+  [avg] Warning detected: 3.9
+  [err] Warning detected: 9.36245457
+  [avg] tree size (nodes): 107.2
+  [err] tree size (nodes): 58.09532397
+  [avg] tree size (leaves): 74.5
+  [err] tree size (leaves): 37.64527416
+  [avg] active learning leaves: 74.5
+  [err] active learning leaves: 37.64527416
+  [avg] tree depth: 4.6
+  [err] tree depth: 1.17378779
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  90000
+Votes
+  0: 0.15679556
+  1: 8.99272524
+Measurements
+  classified instances: 89999
+  classifications correct (percent): 87.89542106
+  Kappa Statistic (percent): 75.20133022
+  Kappa Temporal Statistic (percent): 75.06237839
+  Kappa M Statistic (percent): 71.27109705
+Model measurements
+  model training instances: 89999
+  ensemble size: 10
+  [avg] model training instances: 80167.25
+  [err] model training instances: 19524.1066751
+  [avg] Change detected: 0
+  [err] Change detected: 0
+  [avg] Warning detected: 3.5
+  [err] Warning detected: 10.72121469
+  [avg] tree size (nodes): 123.9
+  [err] tree size (nodes): 59.07706831
+  [avg] tree size (leaves): 85.7
+  [err] tree size (leaves): 38.00307005
+  [avg] active learning leaves: 85.7
+  [err] active learning leaves: 38.00307005
+  [avg] tree depth: 4.9
+  [err] tree depth: 0.87559504
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+Index
+  100000
+Votes
+  0: 5.79266118
+  1: 3.54275315
+Measurements
+  classified instances: 99999
+  classifications correct (percent): 88.25888259
+  Kappa Statistic (percent): 75.95161595
+  Kappa Temporal Statistic (percent): 75.81369479
+  Kappa M Statistic (percent): 72.16585273
+Model measurements
+  model training instances: 99999
+  ensemble size: 10
+  [avg] model training instances: 89444.85
+  [err] model training instances: 19904.52634129
+  [avg] Change detected: 0
+  [err] Change detected: 0
+  [avg] Warning detected: 5.1
+  [err] Warning detected: 8.62103371
+  [avg] tree size (nodes): 148
+  [err] tree size (nodes): 62.43218543
+  [avg] tree size (leaves): 102.7
+  [err] tree size (leaves): 40.82496513
+  [avg] active learning leaves: 102.7
+  [err] active learning leaves: 40.82496513
+  [avg] tree depth: 5.1
+  [err] tree depth: 1.10050493
+  [avg] active leaf byte size estimate: 0
+  [err] active leaf byte size estimate: 0
+  [avg] inactive leaf byte size estimate: 0
+  [err] inactive leaf byte size estimate: 0
+  [avg] byte size estimate overhead: 1
+  [err] byte size estimate overhead: 0
+
+
+
