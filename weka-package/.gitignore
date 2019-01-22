@@ -3,4 +3,6 @@
 *.iml
 *~
 *.bak
-
+src/
+doc/
+dist/

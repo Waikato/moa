@@ -19,6 +19,7 @@
 package moa.classifiers.core.driftdetection;
 
 import com.github.javacliparser.IntOption;
+import com.github.javacliparser.FloatOption;
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
 
@@ -41,7 +42,18 @@ public class DDM extends AbstractChangeDetector {
             'n',
             "The minimum number of instances before permitting detecting change.",
             30, 0, Integer.MAX_VALUE);
+    
+    public FloatOption warningLevelOption = new FloatOption(
+            "warningLevel", 'w', "Warning Level.",
+            2.0, 1.0, 4.0);
+        
+    public FloatOption outcontrolLevelOption = new FloatOption(
+            "outcontrolLevel", 'o', "Outcontrol Level.",
+            3.0, 1.0, 5.0);
+    
     private int m_n;
+
+    private int minNumInstances;
 
     private double m_p;
 
@@ -52,6 +64,10 @@ public class DDM extends AbstractChangeDetector {
     private double m_pmin;
 
     private double m_smin;
+
+    private double warningLevel;
+
+    private double outcontrolLevel;
 
     public DDM() {
         resetLearning();
@@ -65,6 +81,9 @@ public class DDM extends AbstractChangeDetector {
         m_psmin = Double.MAX_VALUE;
         m_pmin = Double.MAX_VALUE;
         m_smin = Double.MAX_VALUE;
+        minNumInstances = this.minNumInstancesOption.getValue();
+        warningLevel = this.warningLevelOption.getValue();
+        outcontrolLevel = this.outcontrolLevelOption.getValue();
     }
 
     @Override
@@ -86,7 +105,7 @@ public class DDM extends AbstractChangeDetector {
         this.isWarningZone = false;
         this.delay = 0;
 
-        if (m_n < this.minNumInstancesOption.getValue()) {
+        if (m_n < minNumInstances) {
             return;
         }
 
@@ -96,11 +115,11 @@ public class DDM extends AbstractChangeDetector {
             m_psmin = m_p + m_s;
         }
 
-        if (m_n > this.minNumInstancesOption.getValue() && m_p + m_s > m_pmin + 3 * m_smin) {
+        if (m_n > minNumInstances && m_p + m_s > m_pmin + outcontrolLevel * m_smin) {
             //System.out.println(m_p + ",D");
             this.isChangeDetected = true;
             //resetLearning();
-        } else if (m_p + m_s > m_pmin + 2 * m_smin) {
+        } else if (m_p + m_s > m_pmin + warningLevel * m_smin) {
             //System.out.println(m_p + ",W");
             this.isWarningZone = true;
         } else {

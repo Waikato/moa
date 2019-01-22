@@ -17,22 +17,10 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-
-/*
- *    AdaGrad.java
- *    Copyright (C) 2009 University of Waikato, Hamilton, New Zealand
- *
- */
-
 package moa.classifiers.functions;
 
-import moa.classifiers.AbstractClassifier;
 import moa.core.DoubleVector;
-import moa.core.Measurement;
-import moa.core.StringUtils;
 import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.MultiChoiceOption;
-import moa.classifiers.Regressor;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.Utils;
 
@@ -73,10 +61,9 @@ public class AdaGrad extends SGD{
 
     public FloatOption epsilonOption = new FloatOption("epsilon",
             'p', "epsilon parameter.",
-            1e-8, 0.00, 1);
+            1e-8);
 
     /** Stores the weights (+ bias in the last element) */
-    protected DoubleVector m_gradients;
     protected DoubleVector m_velocity;
     protected double m_biasVelocity;
 
@@ -98,6 +85,20 @@ public class AdaGrad extends SGD{
         return m_epsilon;
     }
 
+    public AdaGrad() {
+        lambdaRegularizationOption = new FloatOption(
+                lambdaRegularizationOption.getName(),
+                lambdaRegularizationOption.getCLIChar(),
+                lambdaRegularizationOption.getPurpose(),
+                0.0);
+
+        learningRateOption = new FloatOption(
+                learningRateOption.getName(),
+                learningRateOption.getCLIChar(),
+                learningRateOption.getPurpose(),
+                0.01);
+    }
+
     @Override
     public void resetLearningImpl() {
         reset();
@@ -117,11 +118,11 @@ public class AdaGrad extends SGD{
 
         if (m_weights == null) {
             m_weights = new DoubleVector();
-            m_gradients = new DoubleVector();
             m_velocity = new DoubleVector();
+            m_bias = 0;
 
-            //Allocate the weights
             m_weights.setValue(instance.numAttributes(), 0);
+            m_velocity.setValue(instance.numAttributes(), 0);
         }
 
         if (instance.classIsMissing()) {
@@ -131,19 +132,17 @@ public class AdaGrad extends SGD{
         double z = dotProd(instance, m_weights, instance.classIndex()) + m_bias;
 
         double y;
-        double yhat;
         double dldz;
 
         if (instance.classAttribute().isNominal()) {
             y = (instance.classValue() == 0) ? 0 : 1;
             
             if (m_loss == LOGLOSS) {
-                yhat = 1.0 / (1.0 + Math.exp(-z));
-                dldz = (yhat - y) * (yhat * (1.0 - yhat));
+                double yhat = 1.0 / (1.0 + Math.exp(-z));
+                dldz = (yhat - y);
             }
             else {
                 y = y * 2 - 1;
-                yhat = z > 0.0 ? 1.0 : -1.0;
                 
                 if(y * z < 1.0)
                 {
@@ -157,22 +156,17 @@ public class AdaGrad extends SGD{
         }
         else {
             y = instance.classValue();
-            yhat = z;
             dldz = z - y;
         }
 
-
-        for (int i = 0; i < m_weights.numValues(); i++) {
-            //L2 Weight decay
-            m_gradients.setValue(i, (m_lambda / m_t) * m_weights.getValue(i));
-        }
-
         int n = instance.numValues();
+        DoubleVector gradients = new DoubleVector();
+        gradients.setValue(instance.numAttributes(), 0);
 
         for(int i = 0; i < n; i++)
         {
-            //Loss function gradient (sans regularisation)
-            m_gradients.addToValue(instance.index(i), instance.valueSparse(i) * dldz);
+            int idx = instance.index(i);
+            gradients.setValue(idx, instance.valueSparse(i) * dldz + (m_lambda / (m_t + m_epsilon)) * m_weights.getValue(idx));
         }
 
         //Weight update for the bias
@@ -182,7 +176,7 @@ public class AdaGrad extends SGD{
 
         for(int i = 0; i < m_weights.numValues(); i++) {
             //Weight update
-            double g = m_gradients.getValue(i);
+            double g = gradients.getValue(i);
             m_velocity.addToValue(i, g * g);
             m_weights.addToValue(i, -(m_learningRate / (Math.sqrt(m_velocity.getValue(i)) + m_epsilon)) * g);
         }
@@ -190,50 +184,8 @@ public class AdaGrad extends SGD{
         m_t += 1.0;
     }
 
-    /**
-     * Prints out the classifier.
-     *
-     * @return a description of the classifier as a string
-     */
-    public String toString() {
-        if (m_weights == null) {
-            return "AdaGrad: No model built yet.\n";
-        }
-        StringBuffer buff = new StringBuffer();
-        buff.append("Loss function: ");
-        if (m_loss == HINGE) {
-            buff.append("Hinge loss (SVM)\n\n");
-        } else if (m_loss == LOGLOSS) {
-            buff.append("Log loss (logistic regression)\n\n");
-        } else {
-            buff.append("Squared loss (linear regression)\n\n");
-        }
-
-        // buff.append(m_data.classAttribute().name() + " = \n\n");
-        int printed = 0;
-
-        for (int i = 0; i < m_weights.numValues(); i++) {
-            // if (i != m_data.classIndex()) {
-            if (printed > 0) {
-                buff.append(" + ");
-            } else {
-                buff.append("   ");
-            }
-
-            buff.append(Utils.doubleToString(m_weights.getValue(i), 12, 4) + " "
-                    // + m_data.attribute(i).name()
-                    + "\n");
-
-            printed++;
-            //}
-        }
-
-        if (m_bias > 0) {
-            buff.append(" + " + Utils.doubleToString(m_bias, 12, 4));
-        } else {
-            buff.append(" - " + Utils.doubleToString(-m_bias, 12, 4));
-        }
-
-        return buff.toString();
+    @Override
+    protected String getModelName() {
+        return "AdaGrad";
     }
 }

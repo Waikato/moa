@@ -20,18 +20,19 @@
 
 package moa.gui.clustertab;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.ToolTipManager;
 import moa.gui.FileExtensionFilter;
 import moa.gui.visualization.GraphCanvas;
 import moa.gui.visualization.RunVisualizer;
 import moa.gui.visualization.StreamPanel;
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.ToolTipManager;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 public class ClusteringVisualTab extends javax.swing.JPanel implements ActionListener{
 	private RunVisualizer visualizer = null;
@@ -608,11 +609,11 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonScreenshotMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonScreenshotMouseClicked
-        JFileChooser fileChooser = new JFileChooser();
+        BaseFileChooser fileChooser = new BaseFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(true);
         if(screenshotFilebase!=null)
             fileChooser.setSelectedFile(new File(screenshotFilebase));
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(this) == BaseFileChooser.APPROVE_OPTION) {
         	screenshotFilebase = fileChooser.getSelectedFile().getPath();
         	streamPanel0.screenshot(screenshotFilebase+"_"+label_processed_points_value.getText()+"_0", true, true);
             streamPanel1.screenshot(screenshotFilebase+"_"+label_processed_points_value.getText()+"_1", true, true);
@@ -742,12 +743,12 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() instanceof JButton){
             if(e.getActionCommand().equals("csv export")){
-                JFileChooser fileChooser = new JFileChooser();
+                BaseFileChooser fileChooser = new BaseFileChooser();
                 fileChooser.setAcceptAllFileFilterUsed(true);
                 fileChooser.addChoosableFileFilter(new FileExtensionFilter("csv"));
                 if(exportFile!=null)
                     fileChooser.setSelectedFile(new File(exportFile));
-                if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                if (fileChooser.showSaveDialog(this) == BaseFileChooser.APPROVE_OPTION) {
                     exportFile = fileChooser.getSelectedFile().getPath();
                     visualizer.exportCSV(exportFile);
                 }

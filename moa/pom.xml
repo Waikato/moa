@@ -4,7 +4,7 @@
   <parent>
     <groupId>nz.ac.waikato.cms.moa</groupId>
     <artifactId>moa-pom</artifactId>
-    <version>2017.10-SNAPSHOT</version>
+    <version>2018.07.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>moa</artifactId>
@@ -49,14 +49,24 @@
     </dependency>
 
     <dependency>
-      <groupId>com.googlecode.sizeofag</groupId>
+      <groupId>com.github.fracpete</groupId>
       <artifactId>sizeofag</artifactId>
     </dependency>
 
-      <dependency>
-          <groupId>net.sf.meka</groupId>
-          <artifactId>meka</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>com.github.waikato</groupId>
+      <artifactId>jclasslocator</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.fracpete</groupId>
+      <artifactId>jshell-scripting</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.meka</groupId>
+      <artifactId>meka</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
@@ -89,14 +99,33 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
 
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.6.0</version>
+        <executions>
+          <execution>
+            <id>generate-class-list</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <executable>java</executable>
+          <arguments>
+            <argument>-cp</argument>
+            <classpath />
+            <argument>moa.core.AutoClassDiscovery</argument>
+            <argument>${project.build.outputDirectory}/moa.classes</argument>
+          </arguments>
+        </configuration>
       </plugin>
 
       <plugin>
@@ -118,7 +147,29 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>moa.gui.GUI</mainClass>
+              <classpathPrefix>.</classpathPrefix>
+            </manifest>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
+
     <pluginManagement>
     	<plugins>
     		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->

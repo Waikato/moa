@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>nz.ac.waikato.cms.moa</groupId>
+    <artifactId>moa-pom</artifactId>
+    <version>2018.07.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>weka-package</artifactId>
+  <packaging>jar</packaging>
+
+  <name>MOA: WEKA Package (libs update)</name>
+  <description>
+    Updates the libraries in the "lib" directory.
+    Execute as follows:
+    mvn -f update_libs.xml clean package
+  </description>
+  <url>http://moa.cms.waikato.ac.nz/</url>
+  <organization>
+    <name>University of Waikato, Hamilton, NZ</name>
+    <url>http://www.waikato.ac.nz/</url>
+  </organization>
+  <licenses>
+    <license>
+      <name>GNU General Public License 3</name>
+      <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>abifet</id>
+      <name>Albert Bifet</name>
+      <email>abifet@waikato.ac.nz</email>
+    </developer>
+    <developer>
+      <id>fracpete</id>
+      <name>Peter Reutemann</name>
+      <email>fracpete@waikato.ac.nz</email>
+    </developer>
+  </developers>
+
+  <dependencies>
+    <dependency>
+      <groupId>nz.ac.waikato.cms.moa</groupId>
+      <artifactId>moa</artifactId>
+      <version>[${project.version},)</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.5</version>
+        <executions>
+          <execution>
+            <id>clean-lib-dir</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <configuration>
+              <filesets>
+                <fileset>
+                  <directory>${project.basedir}/lib</directory>
+                  <includes>
+                    <include>*.*</include>
+                  </includes>
+                  <excludes>
+                    <exclude>.gitignore</exclude>
+                  </excludes>
+                </fileset>
+              </filesets>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>2.10</version>
+          <executions>
+            <execution>
+              <id>lib-moa</id>
+              <phase>package</phase>
+              <goals>
+                <goal>copy-dependencies</goal>
+              </goals>
+              <configuration>
+                <includeScope>compile</includeScope>
+                <outputDirectory>${project.basedir}/lib</outputDirectory>
+                <includeArtifactIds>moa</includeArtifactIds>
+                <stripVersion>true</stripVersion>
+              </configuration>
+            </execution>
+            <execution>
+              <id>lib-others</id>
+              <phase>package</phase>
+              <goals>
+                <goal>copy-dependencies</goal>
+              </goals>
+              <configuration>
+                <includeScope>compile</includeScope>
+                <outputDirectory>${project.basedir}/lib</outputDirectory>
+                <excludeArtifactIds>moa,netlib-native_ref-linux-armhf,netlib-native_system-linux-armhf</excludeArtifactIds>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+    </plugins>
+  </build>
+</project>

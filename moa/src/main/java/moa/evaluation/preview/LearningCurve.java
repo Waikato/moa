@@ -17,15 +17,15 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.evaluation;
+package moa.evaluation.preview;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import moa.AbstractMOAObject;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
+import moa.evaluation.LearningEvaluation;
 
 /**
  * Class that stores and keeps the history of evaluation measurements.
@@ -33,7 +33,7 @@ import moa.core.StringUtils;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class LearningCurve extends AbstractMOAObject {
+public class LearningCurve extends Preview {
 
     private static final long serialVersionUID = 1L;
 
@@ -41,12 +41,30 @@ public class LearningCurve extends AbstractMOAObject {
 
     protected List<double[]> measurementValues = new ArrayList<double[]>();
 
+    Class<?> taskClass = null;
+    
     public LearningCurve(String orderingMeasurementName) {
         this.measurementNames.add(orderingMeasurementName);
+    }
+    
+    public LearningCurve(String orderingMeasurementName, Class<?> taskClass) {
+        this.measurementNames.add(orderingMeasurementName);
+        this.taskClass = taskClass;
     }
 
     public String getOrderingMeasurementName() {
         return this.measurementNames.get(0);
+    }
+    
+    public void setData(
+    		List<String> measurementNames, 
+    		List<double[]> measurementValues) 
+    {
+    	this.measurementNames.clear();
+    	this.measurementValues.clear();
+    	
+    	this.measurementNames.addAll(measurementNames);
+    	this.measurementValues.addAll(measurementValues);
     }
 
     public void insertEntry(LearningEvaluation learningEvaluation) {
@@ -128,4 +146,40 @@ public class LearningCurve extends AbstractMOAObject {
     public String getMeasurementName(int measurementIndex) {
         return this.measurementNames.get(measurementIndex);
     }
+
+    public int getMeasurementNameCount() {
+        return this.measurementNames.size();
+    }
+
+    public int getEntryMeasurementCount(int entryIdx) {
+        return this.measurementValues.get(entryIdx).length;
+    }
+
+	@Override
+	public Class<?> getTaskClass() {
+		return taskClass;
+	}
+
+	@Override
+	public double[] getEntryData(int entryIndex) {
+		// get the number of measurements
+		int numMeasurements = getMeasurementNameCount();
+
+		int numEntryMeasurements = getEntryMeasurementCount(entryIndex);
+		// preallocate the array to store all measurements
+		double[] data = new double[numMeasurements];
+		// get measuements from the learning curve
+		for(int measurementIdx = 0; measurementIdx < numMeasurements; ++measurementIdx)
+		{
+			if(measurementIdx < numEntryMeasurements)
+			{
+				data[measurementIdx] = getMeasurement(entryIndex, measurementIdx);	
+			}
+			else
+			{
+				data[measurementIdx] = Double.NaN;
+			}
+		}
+		return data;
+	}
 }

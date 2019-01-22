@@ -136,7 +136,7 @@ public class GUIDefaults
         String tabs;
 
         // read and split on comma
-        tabs = get("Tabs", "moa.gui.ClassificationTabPanel,moa.gui.RegressionTabPanel,moa.gui.MultiLabelTabPanel,moa.gui.MultiTargetTabPanel,moa.gui.clustertab.ClusteringTabPanel,moa.gui.outliertab.OutlierTabPanel,moa.gui.ConceptDriftTabPanel,moa.gui.AuxiliarTabPanel");
+        tabs = get("Tabs", "moa.gui.ClassificationTabPanel,moa.gui.RegressionTabPanel,moa.gui.MultiLabelTabPanel,moa.gui.MultiTargetTabPanel,moa.gui.clustertab.ClusteringTabPanel,moa.gui.outliertab.OutlierTabPanel,moa.gui.ConceptDriftTabPanel,moa.gui.ALTabPanel,moa.gui.AuxiliarTabPanel");
         result = tabs.split(",");
 
         return result;
@@ -165,6 +165,78 @@ public class GUIDefaults
         result = result.replaceAll("%c", System.getProperty("user.dir"));
         result = result.replaceAll("%%", System.getProperty("%"));
 
+        return result;
+    }
+
+    /**
+     * Returns the width for the frame.
+     *
+     * @return the width in pixel
+     */
+    public static int getFrameWidth() {
+        int result;
+        String str;
+        str = get("FrameWidth", "1200");
+        try {
+            result = Integer.parseInt(str);
+        }
+        catch (Exception e) {
+            result = 1200;
+        }
+        return result;
+    }
+
+    /**
+     * Returns the height for the frame.
+     *
+     * @return the height in pixel
+     */
+    public static int getFrameHeight() {
+        int result;
+        String str;
+        str = get("FrameHeight", "900");
+        try {
+            result = Integer.parseInt(str);
+        }
+        catch (Exception e) {
+            result = 900;
+        }
+        return result;
+    }
+
+    /**
+     * Returns the width for the file chooser.
+     *
+     * @return the width in pixel
+     */
+    public static int getFileChooserWidth() {
+        int result;
+        String str;
+        str = get("FileChooserWidth", "1200");
+        try {
+            result = Integer.parseInt(str);
+        }
+        catch (Exception e) {
+            result = 1200;
+        }
+        return result;
+    }
+
+    /**
+     * Returns the height for the file chooser.
+     *
+     * @return the height in pixel
+     */
+    public static int getFileChooserHeight() {
+        int result;
+        String str;
+        str = get("FileChooserHeight", "900");
+        try {
+            result = Integer.parseInt(str);
+        }
+        catch (Exception e) {
+            result = 900;
+        }
         return result;
     }
 

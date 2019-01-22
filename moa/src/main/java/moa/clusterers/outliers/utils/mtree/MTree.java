@@ -16,6 +16,8 @@
 
 package moa.clusterers.outliers.utils.mtree;
 
+import moa.clusterers.outliers.utils.mtree.SplitFunction.SplitResult;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
@@ -24,7 +26,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.PriorityQueue;
 import java.util.Set;
-import moa.clusterers.outliers.utils.mtree.SplitFunction.SplitResult;
 
 
 
@@ -768,8 +769,8 @@ public class MTree<DATA> {
 				thisNode.updateRadius(child);
 			} catch(SplitNodeReplacement e) {
 				// Replace current child with new nodes
-				IndexItem _ = thisNode.children.remove(child.data);
-				assert _ != null;
+				IndexItem ii = thisNode.children.remove(child.data);
+				assert ii != null;
 				
 				for(int i = 0; i < e.newNodes.length; ++i) {
 					@SuppressWarnings("unchecked")
@@ -816,8 +817,8 @@ public class MTree<DATA> {
 					try {
 						existingChild.checkMaxCapacity();
 					} catch(SplitNodeReplacement e) {
-						IndexItem _ = thisNode.children.remove(existingChild.data);
-						assert _ != null;
+						IndexItem ii = thisNode.children.remove(existingChild.data);
+						assert ii != null;
 						
 						for(int i = 0; i < e.newNodes.length; ++i) {
 							@SuppressWarnings("unchecked")
@@ -927,8 +928,8 @@ public class MTree<DATA> {
 					}
 				}
 
-				IndexItem _ = nearestDonor.children.remove(nearestGrandchild.data);
-				assert _ != null;
+				IndexItem ii = nearestDonor.children.remove(nearestGrandchild.data);
+				assert ii != null;
 				theChild.addChild(nearestGrandchild, nearestGrandchildDistance);
 				return theChild;
 			}
