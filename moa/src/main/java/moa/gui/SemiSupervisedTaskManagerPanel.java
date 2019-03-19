@@ -130,7 +130,7 @@ public class SemiSupervisedTaskManagerPanel extends JPanel {
         }
     }
 
-    protected SemiSupervisedMainTask currentTask = new EvaluateInterleavedTestThenTrainSemi();
+    protected SemiSupervisedMainTask currentTask;
 
     protected java.util.List<TaskThread> taskList = new ArrayList<>();
 

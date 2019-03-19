@@ -3,11 +3,21 @@ package moa.tasks;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import moa.classifiers.SemiSupervisedLearner;
+import moa.core.Example;
+import moa.core.Measurement;
 import moa.core.ObjectRepository;
+import moa.core.TimingUtils;
+import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
 import moa.evaluation.preview.LearningCurve;
+import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
+import moa.streams.InstanceStream;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 /**
  * An evaluation task that relies on the mechanism of Interleaved Test Then Train,
@@ -63,7 +73,129 @@ public class EvaluateInterleavedTestThenTrainSemi extends SemiSupervisedMainTask
 
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-        return null;
+
+        String learnerString = this.learnerOption.getValueAsCLIString();
+        String streamString = this.streamOption.getValueAsCLIString();
+        //this.learnerOption.setValueViaCLIString(this.learnerOption.getValueAsCLIString() + " -r " +this.randomSeedOption);
+        // this.streamOption.setValueViaCLIString(streamString + " -i " + this.randomSeedOption.getValueAsCLIString());
+
+        Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
+        if (learner.isRandomizable()) {
+            learner.setRandomSeed(this.randomSeedOption.getValue());
+            learner.resetLearning();
+        }
+        ExampleStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
+
+        LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
+        learner.setModelContext(stream.getHeader());
+        int maxInstances = this.instanceLimitOption.getValue();
+        long instancesProcessed = 0;
+        int maxSeconds = this.timeLimitOption.getValue();
+        int secondsElapsed = 0;
+        monitor.setCurrentActivity("Evaluating learner...", -1.0);
+        LearningCurve learningCurve = new LearningCurve(
+                "learning evaluation instances");
+        File dumpFile = this.dumpFileOption.getFile();
+        PrintStream immediateResultStream = null;
+        if (dumpFile != null) {
+            try {
+                if (dumpFile.exists()) {
+                    immediateResultStream = new PrintStream(
+                            new FileOutputStream(dumpFile, true), true);
+                } else {
+                    immediateResultStream = new PrintStream(
+                            new FileOutputStream(dumpFile), true);
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException(
+                        "Unable to open immediate result file: " + dumpFile, ex);
+            }
+        }
+        boolean firstDump = true;
+        boolean preciseCPUTiming = TimingUtils.enablePreciseTiming();
+        long evaluateStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
+        long lastEvaluateStartTime = evaluateStartTime;
+        double RAMHours = 0.0;
+        while (stream.hasMoreInstances()
+                && ((maxInstances < 0) || (instancesProcessed < maxInstances))
+                && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
+            Example trainInst = stream.nextInstance();
+            Example testInst = trainInst; //.copy();
+
+            // does nothing if the instance is unlabelled (cannot have the ground truth to evaluate)
+
+
+            //int trueClass = (int) trainInst.classValue();
+            //testInst.setClassMissing();
+
+            double[] prediction = learner.getVotesForInstance(testInst);
+
+            //evaluator.addClassificationAttempt(trueClass, prediction, testInst.weight());
+
+            evaluator.addResult(testInst, prediction);
+            learner.trainOnInstance(trainInst);
+            instancesProcessed++;
+            if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0
+                    ||  stream.hasMoreInstances() == false) {
+                long evaluateTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
+                double time = TimingUtils.nanoTimeToSeconds(evaluateTime - evaluateStartTime);
+                double timeIncrement = TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);
+                double RAMHoursIncrement = learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); //GBs
+                RAMHoursIncrement *= (timeIncrement / 3600.0); //Hours
+                RAMHours += RAMHoursIncrement;
+                lastEvaluateStartTime = evaluateTime;
+                learningCurve.insertEntry(new LearningEvaluation(
+                        new Measurement[]{
+                                new Measurement(
+                                        "learning evaluation instances",
+                                        instancesProcessed),
+                                new Measurement(
+                                        "evaluation time ("
+                                                + (preciseCPUTiming ? "cpu "
+                                                : "") + "seconds)",
+                                        time),
+                                new Measurement(
+                                        "model cost (RAM-Hours)",
+                                        RAMHours)
+                        },
+                        evaluator, learner));
+                if (immediateResultStream != null) {
+                    if (firstDump) {
+                        immediateResultStream.print("Learner,stream,randomSeed,");
+                        immediateResultStream.println(learningCurve.headerToString());
+                        firstDump = false;
+                    }
+                    immediateResultStream.print(learnerString + "," + streamString + "," + this.randomSeedOption.getValueAsCLIString() + ",");
+                    immediateResultStream.println(learningCurve.entryToString(learningCurve.numEntries() - 1));
+                    immediateResultStream.flush();
+                }
+            }
+            if (instancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
+                if (monitor.taskShouldAbort()) {
+                    return null;
+                }
+                long estimatedRemainingInstances = stream.estimatedRemainingInstances();
+                if (maxInstances > 0) {
+                    long maxRemaining = maxInstances - instancesProcessed;
+                    if ((estimatedRemainingInstances < 0)
+                            || (maxRemaining < estimatedRemainingInstances)) {
+                        estimatedRemainingInstances = maxRemaining;
+                    }
+                }
+                monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
+                        : (double) instancesProcessed
+                        / (double) (instancesProcessed + estimatedRemainingInstances));
+                if (monitor.resultPreviewRequested()) {
+                    monitor.setLatestResultPreview(learningCurve.copy());
+                }
+                secondsElapsed = (int) TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread()
+                        - evaluateStartTime);
+            }
+        }
+        if (immediateResultStream != null) {
+            immediateResultStream.close();
+        }
+        return learningCurve;
     }
 
     @Override
