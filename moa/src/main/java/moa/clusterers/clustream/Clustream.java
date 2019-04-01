@@ -20,23 +20,24 @@
 
 package moa.clusterers.clustream;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;
-import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.DenseInstance;
-import com.yahoo.labs.samoa.instances.Instance;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 
 /** Citation: CluStream: Charu C. Aggarwal, Jiawei Han, Jianyong Wang, Philip S. Yu:
  * A Framework for Clustering Evolving Data Streams. VLDB 2003: 81-92
  */
-public class Clustream extends AbstractClusterer{
+public class Clustream extends AbstractClusterer {
 
 	private static final long serialVersionUID = 1L;
 
@@ -121,27 +122,31 @@ public class Clustream extends AbstractClusterer{
 
 		// 2. Check whether instance fits into closestKernel
 		double radius = 0.0;
-		if ( closestKernel.getWeight() == 1 ) {
-			// Special case: estimate radius by determining the distance to the
-			// next closest cluster
-			radius = Double.MAX_VALUE;
-			double[] center = closestKernel.getCenter();
-			for ( int i = 0; i < kernels.length; i++ ) {
-				if ( kernels[i] == closestKernel ) {
-					continue;
-				}
+		if (closestKernel != null) {
+			if ( closestKernel.getWeight() == 1 ) {
+				// Special case: estimate radius by determining the distance to the
+				// next closest cluster
+				radius = Double.MAX_VALUE;
+				double[] center = closestKernel.getCenter();
+				for ( int i = 0; i < kernels.length; i++ ) {
+					if ( kernels[i] == closestKernel ) {
+						continue;
+					}
 
-				double distance = distance(kernels[i].getCenter(), center );
-				radius = Math.min( distance, radius );
+					double distance = distance(kernels[i].getCenter(), center );
+					radius = Math.min( distance, radius );
+				}
+			} else {
+				radius = closestKernel.getRadius();
 			}
-		} else {
-			radius = closestKernel.getRadius();
 		}
 
-		if ( minDistance < radius ) {
-			// Date fits, put into kernel and be happy
-			closestKernel.insert( instance, timestamp );
-			return;
+		if (closestKernel != null) {
+			if ( minDistance < radius ) {
+				// Date fits, put into kernel and be happy
+				closestKernel.insert( instance, timestamp );
+				return;
+			}
 		}
 
 		// 3. Date does not fit, we need to free
@@ -235,11 +240,7 @@ public class Clustream extends AbstractClusterer{
 		return clustering;
 	}
 
-
-
-
-
-	public static Clustering kMeans( int k, Cluster[] centers, List<? extends Cluster> data ) {
+	private static Clustering kMeans( int k, Cluster[] centers, List<? extends Cluster> data ) {
 		assert (centers.length == k);
 		assert (k > 0);
 

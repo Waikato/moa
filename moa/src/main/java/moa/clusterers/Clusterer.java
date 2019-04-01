@@ -20,6 +20,7 @@
 package moa.clusterers;
 
 import moa.MOAObject;
+import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.Measurement;
@@ -61,4 +62,5 @@ public interface Clusterer extends MOAObject, OptionHandler, AWTRenderable {
     
     public boolean keepClassLabel();
 
+    public Cluster getUpdatedCluster();
 }

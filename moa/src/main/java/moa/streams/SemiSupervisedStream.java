@@ -27,16 +27,16 @@ public class SemiSupervisedStream extends AbstractOptionHandler implements Insta
             "Stream generator to simulate semi-supervised setting", InstanceStream.class,
             "generators.SEAGenerator");
 
-    /** Float option to choose the threshold above which the label of an instance will be removed */
+    /** Option: Probability of having a label */
     public FloatOption thresholdOption = new FloatOption("threshold", 't',
-            "The probability threshold above which an instance will have its labels removed",
+            "The ratio of unlabeled data",
             0.5);
 
     /** Random generator to obtain the probability of removing label from an instance.
      * It is not seeded otherwise the probability will always be the same number */
     private Random random = new Random();
 
-    /** Threshold above which the label of an instance will be removed */
+    /** Probability that an instance will have a label */
     private double threshold;
 
     private static final long serialVersionUID = 1L;
@@ -82,13 +82,15 @@ public class SemiSupervisedStream extends AbstractOptionHandler implements Insta
         Objects.requireNonNull(this.stream, "The stream must not be null");
 
         Example<Instance> inst = this.stream.nextInstance();
-        // if the probability is above the threshold, remove the label
-        if (this.random.nextDouble() >= this.threshold) {
+        // if the probability is below the threshold, remove the label
+        // i.e. the higher the probability, the more likely this instance is unlabeled (and vice-versa)
+        // ==> it corresponds to the ratio of unlabeled data
+        if (this.random.nextDouble() <= this.threshold) {
             InstanceExample instEx = new InstanceExample(inst.getData().copy());
             instEx.instance.setMissing(instEx.instance.classIndex());
             return instEx;
         }
-        // else just return the labeled instance
+        // else, just return the labeled instance
         return inst;
     }
 

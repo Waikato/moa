@@ -1,12 +1,12 @@
 package moa.tasks;
 
 import com.github.javacliparser.FileOption;
+import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.SemiSupervisedLearner;
-import moa.core.Example;
-import moa.core.Measurement;
-import moa.core.ObjectRepository;
-import moa.core.TimingUtils;
+import moa.core.*;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
 import moa.evaluation.preview.LearningCurve;
@@ -33,8 +33,15 @@ public class EvaluateInterleavedTestThenTrainSemi extends SemiSupervisedMainTask
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Learner to train.", SemiSupervisedLearner.class,
+    public FlagOption onlyLabeledDataOption = new FlagOption("labeledDataOnly", 'a',
+            "Learner only trained on labeled data");
+
+    public ClassOption standarLearnerOption = new ClassOption("standardLearner", 'b',
+            "A standard learner to train. This will be ignored if labeledDataOnly flag is not set.",
+            MultiClassClassifier.class, "moa.classifiers.trees.HoeffdingTree");
+
+    public ClassOption sslLearnerOption = new ClassOption("semiLeaner", 'l',
+            "A semi-supervised learner to train.", SemiSupervisedLearner.class,
             "moa.classifiers.semisupervised.BaseSemiSupervisedClassifier");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
@@ -71,15 +78,19 @@ public class EvaluateInterleavedTestThenTrainSemi extends SemiSupervisedMainTask
     public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
             "File to append intermediate csv reslts to.", null, "csv", true);
 
+    private int numUnlabeledData = 0;
+
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-
-        String learnerString = this.learnerOption.getValueAsCLIString();
         String streamString = this.streamOption.getValueAsCLIString();
-        //this.learnerOption.setValueViaCLIString(this.learnerOption.getValueAsCLIString() + " -r " +this.randomSeedOption);
-        // this.streamOption.setValueViaCLIString(streamString + " -i " + this.randomSeedOption.getValueAsCLIString());
+        boolean isFullySupervised = this.onlyLabeledDataOption.isSet();
 
-        Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
+        // if we only want the standard classification on labeled data on
+        Learner learner = (Learner) (isFullySupervised ?
+                getPreparedClassOption(this.standarLearnerOption) : getPreparedClassOption(this.sslLearnerOption));
+        String learnerString = isFullySupervised ?
+                this.standarLearnerOption.getValueAsCLIString() : this.sslLearnerOption.getValueAsCLIString();
+
         if (learner.isRandomizable()) {
             learner.setRandomSeed(this.randomSeedOption.getValue());
             learner.resetLearning();
@@ -116,27 +127,21 @@ public class EvaluateInterleavedTestThenTrainSemi extends SemiSupervisedMainTask
         long evaluateStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
         long lastEvaluateStartTime = evaluateStartTime;
         double RAMHours = 0.0;
+
         while (stream.hasMoreInstances()
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))
                 && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
             Example trainInst = stream.nextInstance();
             Example testInst = trainInst; //.copy();
 
-            // does nothing if the instance is unlabelled (cannot have the ground truth to evaluate)
-
-
-            //int trueClass = (int) trainInst.classValue();
-            //testInst.setClassMissing();
+            Instance inst = (Instance) testInst.getData();
+            if (inst.classIsMissing()) this.numUnlabeledData++;
 
             double[] prediction = learner.getVotesForInstance(testInst);
-
-            //evaluator.addClassificationAttempt(trueClass, prediction, testInst.weight());
-
             evaluator.addResult(testInst, prediction);
             learner.trainOnInstance(trainInst);
             instancesProcessed++;
-            if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0
-                    ||  stream.hasMoreInstances() == false) {
+            if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0 || !stream.hasMoreInstances()) {
                 long evaluateTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
                 double time = TimingUtils.nanoTimeToSeconds(evaluateTime - evaluateStartTime);
                 double timeIncrement = TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);
@@ -156,7 +161,11 @@ public class EvaluateInterleavedTestThenTrainSemi extends SemiSupervisedMainTask
                                         time),
                                 new Measurement(
                                         "model cost (RAM-Hours)",
-                                        RAMHours)
+                                        RAMHours),
+                                new Measurement(
+                                        "Unlabeled instances",
+                                        this.numUnlabeledData
+                                )
                         },
                         evaluator, learner));
                 if (immediateResultStream != null) {
@@ -165,7 +174,8 @@ public class EvaluateInterleavedTestThenTrainSemi extends SemiSupervisedMainTask
                         immediateResultStream.println(learningCurve.headerToString());
                         firstDump = false;
                     }
-                    immediateResultStream.print(learnerString + "," + streamString + "," + this.randomSeedOption.getValueAsCLIString() + ",");
+                    immediateResultStream.print(learnerString + "," + streamString + ","
+                            + this.randomSeedOption.getValueAsCLIString() + ",");
                     immediateResultStream.println(learningCurve.entryToString(learningCurve.numEntries() - 1));
                     immediateResultStream.flush();
                 }
@@ -183,8 +193,7 @@ public class EvaluateInterleavedTestThenTrainSemi extends SemiSupervisedMainTask
                     }
                 }
                 monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
-                        : (double) instancesProcessed
-                        / (double) (instancesProcessed + estimatedRemainingInstances));
+                        : (double) instancesProcessed / (double) (instancesProcessed + estimatedRemainingInstances));
                 if (monitor.resultPreviewRequested()) {
                     monitor.setLatestResultPreview(learningCurve.copy());
                 }

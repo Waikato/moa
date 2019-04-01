@@ -22,6 +22,8 @@ package moa.clusterers;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+
+import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
@@ -301,4 +303,8 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
         public Clustering getMicroClusteringResult(){
             return null;
         };
+
+	public Cluster getUpdatedCluster() {
+		return null;
+	}
 }
