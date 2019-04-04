@@ -105,13 +105,24 @@ public class LabeledClustreamKernel extends ClustreamKernel {
     }
 
     public double[] getLabelVotes() {
-        // TODO properly normalize the probability
         DoubleVector votes = new DoubleVector();
         for (Map.Entry<Double, Integer> entry : this.labelCount.entrySet()) {
             votes.addToValue(entry.getKey().intValue(), entry.getValue());
         }
         votes.normalize();
         return votes.getArrayRef();
+    }
+
+    public double getMajorityLabel() {
+        double label = 0;
+        int maxCount = 0;
+        for (Map.Entry<Double, Integer> entry : this.labelCount.entrySet()) {
+            if (entry.getValue() > maxCount) {
+                maxCount = entry.getValue();
+                label = entry.getKey();
+            }
+        }
+        return label;
     }
 
     public Map<Double, Integer> getLabelCount() { return this.labelCount; }

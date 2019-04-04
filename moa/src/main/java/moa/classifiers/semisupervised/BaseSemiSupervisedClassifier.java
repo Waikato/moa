@@ -12,6 +12,7 @@ import moa.clusterers.semisupervised.ClustreamSSL;
 import moa.clusterers.semisupervised.LabeledClustreamKernel;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
+import moa.core.Utils;
 import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 
@@ -41,6 +42,8 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
 
     private static final long serialVersionUID = 1L;
 
+    private int[] predictionCount;
+
     /** Maximum number of memorized labels */
     private int maxCount = 0;
 
@@ -65,11 +68,15 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     @Override
     public double[] getVotesForInstance(Instance inst) {
         Objects.requireNonNull(this.clusterer, "Clusterer must not be null!");
-
         LabeledClustreamKernel C = this.findClosestCluster(inst);
         if (C == null) return new double[0];
+
         double[] votes = C.getLabelVotes();
-        return votes;
+        if (this.predictionCount == null) this.predictionCount = new int[inst.dataset().numClasses()];
+        int predictedClass = Utils.maxIndex(votes);
+        predictionCount[predictedClass]++;
+
+        return C.getLabelVotes();
     }
 
     @Override
@@ -82,28 +89,17 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     @Override
     public void trainOnInstanceImpl(Instance inst) {
         Objects.requireNonNull(this.clusterer, "Clusterer must not be null!");
-
-        // TODO Train on instance with or without its label?
-        // Instance instNoLabel = inst.copy();
-        // instNoLabel.setValue(inst.classIndex(), 0);
-        // this.clusterer.trainOnInstance(instNoLabel);
         this.clusterer.trainOnInstance(inst);
 
         // If X has no label, do nothing
         if (inst.classIsMissing()) return;
 
         // Else, update the cluster's label
-        // Clustering clustering = this.getClusteringResult();
-        // if (clustering == null) return; // if it's null don't do stuffs
-
-        // Get the updated cluster
         Cluster C = this.clusterer.getUpdatedCluster();
         if (C == null) return;
         if (!(C instanceof LabeledClustreamKernel)) return;
-
-        // Update the count
         LabeledClustreamKernel labeledC = (LabeledClustreamKernel) C;
-        labeledC.incrementLabelCount(inst.classValue(), 1);
+        labeledC.incrementLabelCount(inst.classValue(), 1); // update the count (+ 1)
     }
 
     /**
@@ -164,23 +160,27 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     protected Measurement[] getModelMeasurementsImpl() {
         Clustering clustering = this.getClusteringResult();
         if (clustering == null) return new Measurement[0];
+        List<Measurement> measurements = new ArrayList<>();
 
-        // TODO not many counts in a micro-cluster, maybe something is not quite right?
+        // print the count of predictions
+        for (int i = 0; i < this.predictionCount.length; i++) {
+            measurements.add(new Measurement("prediction count of class " + i, this.predictionCount[i]));
+        }
 
         // print the total count in each micro-cluster
-        Measurement[] measures = new Measurement[clustering.getClustering().size() + 1];
-        int i = 0;
+        int j = 0;
         for (Cluster cluster : clustering.getClustering()) {
             if (!(cluster instanceof LabeledClustreamKernel)) return new Measurement[0];
             LabeledClustreamKernel lc = (LabeledClustreamKernel) cluster;
             int total = 0;
             for (Map.Entry<Double, Integer> entry : lc.getLabelCount().entrySet()) total += entry.getValue();
             if (total > maxCount) maxCount = total;
-            measures[i++] = new Measurement("count cluster " + i, total);
+            measurements.add(new Measurement("count cluster " + j++, total));
         }
-        measures[i] = new Measurement("max count", maxCount);
+        measurements.add(new Measurement("max count", maxCount));
 
-        return measures;
+        Measurement[] result = new Measurement[measurements.size()];
+        return measurements.toArray(result);
     }
 
     @Override

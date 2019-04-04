@@ -62,14 +62,6 @@ public class ClustreamSSL extends AbstractClusterer {
         int dim = instance.numValues();
         timestamp++;
 
-        // TODO should we make sure the cluster doesn't see the instance's label?
-//        if (!instance.classIsMissing()) {
-//            dim--; // exclude the dimension of the class label
-//            double[] data = new double[dim];
-//            for (int i = 0; i < dim; i++) data[i] = instance.value(i);
-//            instance = new InstanceImpl(1, data);
-//        }
-
         // 0. Initialize
         if (!initialized) {
             if (buffer.size() < bufferSize) {
@@ -86,10 +78,11 @@ public class ClustreamSSL extends AbstractClusterer {
 
             Clustering kmeans_clustering = kMeans(k, centers, buffer);
             for ( int i = 0; i < kmeans_clustering.size(); i++ ) {
+                // TODO if doing this, we lost the label count (only one for each label, but still...)
                 kernels[i] = new LabeledClustreamKernel(
                         new DenseInstance(1.0, centers[i].getCenter()),
                         dim, timestamp, t, m);
-                kernels[i] = centers[i];
+                // kernels[i] = centers[i]; // TODO if doing this, we omit the result of k-means clustering
             }
 
             buffer.clear();

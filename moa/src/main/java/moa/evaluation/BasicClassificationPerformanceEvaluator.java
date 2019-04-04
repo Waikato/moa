@@ -116,7 +116,14 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
     public void addResult(Example<Instance> example, double[] classVotes) {
         Instance inst = example.getData();
         double weight = inst.weight();
-        if (inst.classIsMissing() == false) {
+
+        // accumulate the count of a prediction
+//        if (this.predictionCount != null) {
+//            int predicted = Utils.maxIndex(classVotes);
+//            this.predictionCount[predicted]++;
+//        }
+
+        if (!inst.classIsMissing()) {
             int trueClass = (int) inst.classValue();
             int predictedClass = Utils.maxIndex(classVotes);
             if (weight > 0.0) {
@@ -192,6 +199,11 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
             }
         }
 
+        // show the label counts
+//        for (int i = 0; i < this.numClasses; i++) {
+//            measurements.add(new Measurement("Predictions of class " + i, this.predictionCount[i]));
+//        }
+
         Measurement[] result = new Measurement[measurements.size()];
 
         return measurements.toArray(result);
@@ -203,6 +215,9 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
     }
 
     public double getFractionCorrectlyClassified() {
+        // it can be null if the number of unlabeled instances is too large
+        // and the function reset() is never called
+        if (this.weightCorrect == null) return 0;
         return this.weightCorrect.estimation();
     }
 
