@@ -135,7 +135,7 @@ public class EvaluateInterleavedTestThenTrainSemi extends SemiSupervisedMainTask
             Example testInst = trainInst; //.copy();
 
             Instance inst = (Instance) testInst.getData();
-            if (inst.classIsMissing()) this.numUnlabeledData++;
+            if (inst.classIsMasked() || inst.classIsMissing()) this.numUnlabeledData++;
 
             double[] prediction = learner.getVotesForInstance(testInst);
             evaluator.addResult(testInst, prediction);

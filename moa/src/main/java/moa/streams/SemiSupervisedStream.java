@@ -82,12 +82,13 @@ public class SemiSupervisedStream extends AbstractOptionHandler implements Insta
         Objects.requireNonNull(this.stream, "The stream must not be null");
 
         Example<Instance> inst = this.stream.nextInstance();
-        // if the probability is below the threshold, remove the label
+        // if the probability is below the threshold, mask the label
         // i.e. the higher the probability, the more likely this instance is unlabeled (and vice-versa)
         // ==> it corresponds to the ratio of unlabeled data
         if (this.random.nextDouble() <= this.threshold) {
             InstanceExample instEx = new InstanceExample(inst.getData().copy());
-            instEx.instance.setMissing(instEx.instance.classIndex());
+            // instEx.instance.setMissing(instEx.instance.classIndex());
+            instEx.instance.setMasked(instEx.instance.classIndex());
             return instEx;
         }
         // else, just return the labeled instance

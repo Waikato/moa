@@ -116,7 +116,7 @@ public interface Instance extends Serializable {
     public double value(Attribute attribute);
 
     /**
-     * Sets an attribute as missing
+     * Sets an attribute as missing. It will permanently discard the value of this attribute.
      *
      * @param instAttIndex, the attribute's index     
      */
@@ -124,7 +124,7 @@ public interface Instance extends Serializable {
     
     
     /**
-     * Sets an attribute as missing
+     * Sets an attribute as missing. It will permanently discard the value of this attribute.
      *
      * @param attribute, the Attribute
      */
@@ -138,7 +138,16 @@ public interface Instance extends Serializable {
      */
     public void setValue(int instAttIndex, double value);
 
-    
+    /**
+     * Sets the value of at index of the current data as missing (?),
+     * but the original value is saved. So the value at this index
+     * later will be reported as "masked", not "missing"
+     *
+     * @param instAttIndex the index
+     * @param value the value to be saved in the original data
+     */
+    public void setMaskedValue(int instAttIndex, double value);
+
     /**
      * Sets the value of an attribute.
      *
@@ -149,6 +158,7 @@ public interface Instance extends Serializable {
     
     /**
      * Checks if an attribute is missing.
+     * An attribute is seen is missing if both the current and original value are missing.
      *
      * @param instAttIndex the inst att index
      * @return true, if is missing
@@ -157,6 +167,7 @@ public interface Instance extends Serializable {
 
     /**
      * Checks if an attribute is missing.
+     * An attribute is seen is missing if both the current and original value are missing.
      *
      * @param attribute, the Attribute
      * @return true, if is missing
@@ -212,10 +223,21 @@ public interface Instance extends Serializable {
 
     /**
      * Class is missing.
+     * The class is missing if both the current and original value don't have any information about it.
      *
      * @return true, if successful
      */
     public boolean classIsMissing();
+
+    /**
+     * Class is masked.
+     * The class value is marked if the current data has no information about it, but
+     * the original does.
+     *
+     * @return true if the current value returns ? for class value, but the original data
+     * keeps the original class
+     */
+    public boolean classIsMasked();
 
     /**
      * Class value.
@@ -223,6 +245,13 @@ public interface Instance extends Serializable {
      * @return the double
      */
     public double classValue();
+
+    /**
+     * Gets the masked class value
+     *
+     * @return the class value
+     */
+    public double maskedClassValue();
 
     /**
      * Num classes.
@@ -237,6 +266,14 @@ public interface Instance extends Serializable {
      * @param d the new class value
      */
     public void setClassValue(double d);
+
+    /**
+     * Sets the class of the current data as ?, but assigns the given value to the original data.
+     * The class will later be reported as masked but not missing.
+     *
+     * @param d the value to be stored in the original data
+     */
+    public void setMaskedClassValue(double d);
 
     /**
      * Copy.
@@ -328,4 +365,33 @@ public interface Instance extends Serializable {
      */
     public double valueOutputAttribute(int attributeIndex);
 
+    /**
+     * Gets the masked value of an attribute.
+     * This value isn't stored in the current data. It can only be accessed via
+     * method that accesses masked information.
+     *
+     * @param attributeIndex the index
+     * @return the masked value
+     */
+    public double getMaskedValue(int attributeIndex);
+
+    /**
+     * Sets a value at an index as masked in the current data, but its original value is still accessible.
+     * The value at this index will later be reported as "masked" but not "missing".
+     *
+     * <code>getMaskedValue</code>
+     * @param attributeIndex the index
+     */
+    public void setMasked(int attributeIndex);
+
+    /**
+     * Checks if the value at the given index is masked and not missing.
+     * It's "masked" if the current data doesn't have any information about it,
+     * but the original data does.
+     *
+     * @param attributeIndex the index
+     * @return <code>true</code> the value is masked but not missing,
+     * <code>false</code> is the value is really missing
+     */
+    public boolean isMasked(int attributeIndex);
 }

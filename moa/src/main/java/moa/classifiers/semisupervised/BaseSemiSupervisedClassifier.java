@@ -163,8 +163,10 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         List<Measurement> measurements = new ArrayList<>();
 
         // print the count of predictions
-        for (int i = 0; i < this.predictionCount.length; i++) {
-            measurements.add(new Measurement("prediction count of class " + i, this.predictionCount[i]));
+        if (this.predictionCount != null) {
+            for (int i = 0; i < this.predictionCount.length; i++) {
+                measurements.add(new Measurement("prediction count of class " + i, this.predictionCount[i]));
+            }
         }
 
         // print the total count in each micro-cluster

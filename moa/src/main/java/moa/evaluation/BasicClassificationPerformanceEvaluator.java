@@ -116,15 +116,9 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
     public void addResult(Example<Instance> example, double[] classVotes) {
         Instance inst = example.getData();
         double weight = inst.weight();
-
-        // accumulate the count of a prediction
-//        if (this.predictionCount != null) {
-//            int predicted = Utils.maxIndex(classVotes);
-//            this.predictionCount[predicted]++;
-//        }
-
-        if (!inst.classIsMissing()) {
-            int trueClass = (int) inst.classValue();
+        if (inst.classIsMasked() || !inst.classIsMissing()) {
+            // get masked classes as well
+            int trueClass = inst.classIsMasked ()? (int) inst.maskedClassValue() : (int) inst.classValue();
             int predictedClass = Utils.maxIndex(classVotes);
             if (weight > 0.0) {
                 if (this.totalWeightObserved == 0) {

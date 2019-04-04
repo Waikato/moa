@@ -34,6 +34,9 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     protected InstanceData instanceData;
 
+    /** The original, unmasked data */
+    protected InstanceData instanceOriginal;
+
     /**
      * The instance information.
      */
@@ -47,6 +50,7 @@ public class InstanceImpl implements MultiLabelInstance {
     public InstanceImpl(InstanceImpl inst) {
         this.weight = inst.weight;
         this.instanceData = inst.instanceData.copy();
+        this.instanceOriginal = inst.instanceOriginal.copy(); // make a copy
         this.instanceHeader = inst.instanceHeader;
     }
 
@@ -60,6 +64,7 @@ public class InstanceImpl implements MultiLabelInstance {
     public InstanceImpl(double weight, double[] res) {
         this.weight = weight;
         this.instanceData = new DenseInstanceData(res);
+        this.instanceOriginal = new DenseInstanceData(res); // make a copy
     }
 
     //Sparse
@@ -74,6 +79,7 @@ public class InstanceImpl implements MultiLabelInstance {
     public InstanceImpl(double weight, double[] attributeValues, int[] indexValues, int numberAttributes) {
         this.weight = weight;
         this.instanceData = new SparseInstanceData(attributeValues, indexValues, numberAttributes);
+        this.instanceOriginal = new SparseInstanceData(attributeValues, indexValues, numberAttributes);
     }
 
     /**
@@ -85,6 +91,7 @@ public class InstanceImpl implements MultiLabelInstance {
     public InstanceImpl(double weight, InstanceData instanceData) {
         this.weight = weight;
         this.instanceData = instanceData;
+        this.instanceOriginal = instanceData.copy(); // make a copy
     }
 
     /**
@@ -94,6 +101,7 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     public InstanceImpl(int numAttributes) {
         this.instanceData = new DenseInstanceData(new double[numAttributes]); //JD
+        this.instanceOriginal = new DenseInstanceData(new double[numAttributes]); // make a copy
         this.weight = 1;
     }
 
@@ -140,6 +148,7 @@ public class InstanceImpl implements MultiLabelInstance {
     @Override
     public void deleteAttributeAt(int i) {
         this.instanceData.deleteAttributeAt(i);
+        this.instanceOriginal.deleteAttributeAt(i);
     }
 
     /**
@@ -148,7 +157,10 @@ public class InstanceImpl implements MultiLabelInstance {
      * @param i the i
      */
     @Override
-    public void insertAttributeAt(int i) {this.instanceData.insertAttributeAt(i);}
+    public void insertAttributeAt(int i) {
+        this.instanceData.insertAttributeAt(i);
+        this.instanceOriginal.insertAttributeAt(i);
+    }
 
     /**
      * Num attributes.
@@ -179,7 +191,7 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public boolean isMissing(int instAttIndex) {
-        return this.instanceData.isMissing(instAttIndex);
+        return this.instanceData.isMissing(instAttIndex) && this.instanceOriginal.isMissing(instAttIndex);
     }
 
     /**
@@ -267,6 +279,13 @@ public class InstanceImpl implements MultiLabelInstance {
     @Override
     public void setValue(int numAttribute, double d) {
         this.instanceData.setValue(numAttribute, d);
+        this.instanceOriginal.setValue(numAttribute, d);
+    }
+
+    @Override
+    public void setMaskedValue(int instAttIndex, double value) {
+        this.instanceData.setValue(instAttIndex, Double.NaN);
+        this.instanceOriginal.setValue(instAttIndex, value);
     }
 
     /**
@@ -277,6 +296,11 @@ public class InstanceImpl implements MultiLabelInstance {
     @Override
     public double classValue() {
         return this.instanceData.value(classIndex());
+    }
+
+    @Override
+    public double maskedClassValue() {
+        return this.instanceOriginal.value(classIndex());
     }
 
     /**
@@ -316,6 +340,11 @@ public class InstanceImpl implements MultiLabelInstance {
         return this.instanceData.isMissing(classIndex());
     }
 
+    @Override
+    public boolean classIsMasked() {
+        return this.isMasked(this.classIndex());
+    }
+
     /**
      * Class attribute.
      *
@@ -334,6 +363,14 @@ public class InstanceImpl implements MultiLabelInstance {
     @Override
     public void setClassValue(double d) {
         this.setValue(classIndex(), d);
+        this.instanceOriginal.setValue(classIndex(), d);
+    }
+
+    @Override
+    public void setMaskedClassValue(double d) {
+        int classIndex = this.classIndex();
+        this.instanceOriginal.setValue(classIndex, d);
+        this.instanceData.setValue(classIndex, Double.NaN);
     }
 
     /**
@@ -380,7 +417,8 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public void addSparseValues(int[] indexValues, double[] attributeValues, int numberAttributes) {
-        this.instanceData = new SparseInstanceData(attributeValues, indexValues, numberAttributes); //???
+        this.instanceData = this.instanceOriginal =
+                new SparseInstanceData(attributeValues, indexValues, numberAttributes); //???
     }
 
     /**
@@ -390,22 +428,33 @@ public class InstanceImpl implements MultiLabelInstance {
     public String toString() {
         StringBuilder str = new StringBuilder();
         for (int attIndex = 0; attIndex < this.numAttributes(); attIndex++) {
-            if (!this.isMissing(attIndex)) {
-                if (this.attribute(attIndex).isNominal()) {
-                    int valueIndex = (int) this.value(attIndex);
-                    String stringValue = this.attribute(attIndex).value(valueIndex);
-                    str.append(stringValue).append(",");
-                } else if (this.attribute(attIndex).isNumeric()) {
-                    str.append(this.value(attIndex)).append(",");
-                } else if (this.attribute(attIndex).isDate()) {
-                    SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                    str.append(dateFormatter.format(this.value(attIndex))).append(",");
-                }
-            } else {
-                str.append("?,");
+            if (this.isMissing(attIndex)) { // missing value in both origina & current data
+                str.append("?");
+            } else if (this.isMasked(attIndex)) { // not missing but masked --> "?(real value)"
+                str.append("?(");
+                writeAttributeValue(str, attIndex);
+                str.append(")");
+            } else { // not missing nor masked
+                writeAttributeValue(str, attIndex);
             }
+
+            if (attIndex != this.numAttributes() - 1) str.append(",");
         }
+
         return str.toString();
+    }
+
+    private void writeAttributeValue(StringBuilder str, int attIndex) {
+        if (this.attribute(attIndex).isNominal()) {
+            int valueIndex = (int) this.value(attIndex);
+            String stringValue = this.attribute(attIndex).value(valueIndex);
+            str.append(stringValue);
+        } else if (this.attribute(attIndex).isNumeric()) {
+            str.append(this.value(attIndex));
+        } else if (this.attribute(attIndex).isDate()) {
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            str.append(dateFormatter.format(this.value(attIndex)));
+        }
     }
 
     @Override
@@ -460,8 +509,27 @@ public class InstanceImpl implements MultiLabelInstance {
     }
 
     @Override
+    public double getMaskedValue(int attributeIndex) {
+        return this.instanceOriginal.value(attributeIndex);
+    }
+
+    @Override
+    public void setMasked(int attributeIndex) {
+        // TODO is it a bit redundant?
+        this.instanceData.setValue(attributeIndex, Double.NaN);
+    }
+
+    @Override
+    public boolean isMasked(int attributeIndex) {
+        return (Double.isNaN(this.instanceData.value(attributeIndex)) &&
+                !Double.isNaN(this.instanceOriginal.value(attributeIndex)));
+    }
+
+    @Override
     public void setMissing(int instAttIndex) {
-        this.setValue(instAttIndex, Double.NaN);
+        // this.setValue(instAttIndex, Double.NaN);
+        this.instanceData.setValue(instAttIndex, Double.NaN);
+        this.instanceOriginal.setValue(instAttIndex, Double.NaN);
     }
 
     @Override

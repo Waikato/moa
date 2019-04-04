@@ -36,6 +36,8 @@ public class ArffLoader {
 
     protected InstancesHeader streamHeader;
 
+    private final String REGEX_MASKED_VALUE = "^\\? \\((.+)\\)$";
+
     /**
      * The stream tokenizer.
      */
@@ -65,9 +67,6 @@ public class ArffLoader {
      * Instantiates a new arff loader.
      *
      * @param reader the reader
-     * @param range
-     * @param size the size
-     * @param classAttribute the class attribute
      */
     public ArffLoader(Reader reader) {
         this(reader, null);
@@ -78,8 +77,6 @@ public class ArffLoader {
      *
      * @param reader the reader
      * @param range
-     * @param size the size
-     * @param classAttribute the class attribute
      */
     public ArffLoader(Reader reader, Range range) {
         this.range = range;
@@ -154,7 +151,7 @@ public class ArffLoader {
                     //For each item
                     if (streamTokenizer.ttype == StreamTokenizer.TT_NUMBER) {
                         //System.out.println(streamTokenizer.nval + "Num ");
-                        this.setValue(instance, numAttribute, streamTokenizer.nval, true);
+                        this.setValue(instance, numAttribute, streamTokenizer.nval, true, false);
                         numAttribute++;
 
                     } else if (streamTokenizer.sval != null && (streamTokenizer.ttype == StreamTokenizer.TT_WORD
@@ -162,15 +159,23 @@ public class ArffLoader {
                         //System.out.println(streamTokenizer.sval + "Str");
                         boolean isNumeric = this.instanceInformation.attribute(numAttribute).isNumeric();
                         double value;
+                        boolean isMasked = false;
                         if ("?".equals(streamTokenizer.sval)) {
                             value = Double.NaN; //Utils.missingValue();
-                        } else if (isNumeric == true) {
-                            value = Double.valueOf(streamTokenizer.sval).doubleValue();
+                        } else if (streamTokenizer.sval.startsWith("?(")) { // a masked value i.e. "? (...)"
+                            isMasked = true;
+                            int firstIndex = streamTokenizer.sval.indexOf("(") + 1;
+                            int lastIndex = streamTokenizer.sval.indexOf(")");
+                            String stringValue = streamTokenizer.sval.substring(firstIndex, lastIndex);
+                            value = isNumeric ? Double.valueOf(stringValue) :
+                                    this.instanceInformation.attribute(numAttribute).indexOfValue(stringValue);
+                        } else if (isNumeric) {
+                            value = Double.valueOf(streamTokenizer.sval);
                         } else {
                             value = this.instanceInformation.attribute(numAttribute).indexOfValue(streamTokenizer.sval);
                         }
 
-                        this.setValue(instance, numAttribute, value, isNumeric);
+                        this.setValue(instance, numAttribute, value, isNumeric, isMasked);
                         numAttribute++;
                     }
                     streamTokenizer.nextToken();
@@ -185,24 +190,25 @@ public class ArffLoader {
         return (numAttribute > 0) ? instance : null;
     }
 
-    protected void setValue(Instance instance, int numAttribute, double value, boolean isNumber) {
+    protected void setValue(Instance instance, int numAttribute, double value, boolean isNumber, boolean isMasked) {
         double valueAttribute;
 
         if (isNumber && this.instanceInformation.attribute(numAttribute).isNominal) {
             valueAttribute = this.instanceInformation.attribute(numAttribute).indexOfValue(Double.toString(value));
             //System.out.println(value +"/"+valueAttribute+" ");
-
         } else {
             valueAttribute = value;
             //System.out.println(value +"/"+valueAttribute+" ");
         }
+
         if (this.instanceInformation.classIndex() == numAttribute) {
-            setClassValue(instance, valueAttribute);
+            setClassValue(instance, valueAttribute, isMasked);
             //System.out.println(value +"<"+this.instanceInformation.classIndex()+">");
         } else {
         	//if(numAttribute>this.instanceInformation.classIndex())
             //	numAttribute--;
-            instance.setValue(numAttribute, valueAttribute);
+            if (isMasked) instance.setMaskedValue(numAttribute, valueAttribute);
+            else instance.setValue(numAttribute, valueAttribute);
         }
     }
 
@@ -246,9 +252,12 @@ public class ArffLoader {
                             || streamTokenizer.ttype == 34)) {
                         //System.out.print(streamTokenizer.sval + "-");
                         if (this.auxAttributes.get(numAttribute).isNumeric()) {
-                            this.setSparseValue(instance, indexValues, attributeValues, numAttribute, Double.valueOf(streamTokenizer.sval).doubleValue(), true);
+                            this.setSparseValue(instance, indexValues, attributeValues, numAttribute,
+                                    Double.valueOf(streamTokenizer.sval), true);
                         } else {
-                            this.setSparseValue(instance, indexValues, attributeValues, numAttribute, this.instanceInformation.attribute(numAttribute).indexOfValue(streamTokenizer.sval), false);
+                            this.setSparseValue(instance, indexValues, attributeValues, numAttribute,
+                                    this.instanceInformation.attribute(numAttribute).indexOfValue(streamTokenizer.sval),
+                                    false);
                         }
                     }
                     streamTokenizer.nextToken();
@@ -265,8 +274,8 @@ public class ArffLoader {
         int[] arrayIndexValues = new int[attributeValues.size()];
         double[] arrayAttributeValues = new double[attributeValues.size()];
         for (int i = 0; i < arrayIndexValues.length; i++) {
-            arrayIndexValues[i] = indexValues.get(i).intValue();
-            arrayAttributeValues[i] = attributeValues.get(i).doubleValue();
+            arrayIndexValues[i] = indexValues.get(i);
+            arrayAttributeValues[i] = attributeValues.get(i);
         }
         instance.addSparseValues(arrayIndexValues, arrayAttributeValues, this.instanceInformation.numAttributes());
         return instance;
@@ -316,16 +325,24 @@ public class ArffLoader {
 
                     if (streamTokenizer.ttype == StreamTokenizer.TT_NUMBER) {
                         //System.out.print(streamTokenizer.nval + " ");
-                        this.setValue(instance, numAttribute, streamTokenizer.nval, true);
+                        this.setValue(instance, numAttribute, streamTokenizer.nval, true, false);
                         //numAttribute++;
-
                     } else if (streamTokenizer.sval != null && (streamTokenizer.ttype == StreamTokenizer.TT_WORD
                             || streamTokenizer.ttype == 34)) {
                         //System.out.print(streamTokenizer.sval + "/"+this.instanceInformation.attribute(numAttribute).indexOfValue(streamTokenizer.sval)+" ");
                         if (this.auxAttributes.get(numAttribute).isNumeric()) {
-                            this.setValue(instance, numAttribute, Double.valueOf(streamTokenizer.sval).doubleValue(), true);
+                            this.setValue(instance, numAttribute, Double.valueOf(streamTokenizer.sval),
+                                    true, false);
+                        } else if (streamTokenizer.sval.contains("? (")) {
+                            int firstIndex = streamTokenizer.sval.indexOf("(");
+                            int lastIndex = streamTokenizer.sval.indexOf(")");
+                            this.setValue(instance, numAttribute,
+                                    Double.valueOf(streamTokenizer.sval.substring(firstIndex, lastIndex)),
+                                    false, true);
                         } else {
-                            this.setValue(instance, numAttribute, this.instanceInformation.attribute(numAttribute).indexOfValue(streamTokenizer.sval), false);
+                            this.setValue(instance, numAttribute,
+                                    this.instanceInformation.attribute(numAttribute).indexOfValue(streamTokenizer.sval),
+                                    false, false);
                             //numAttribute++;
                         }
                     }
@@ -363,7 +380,7 @@ public class ArffLoader {
             while (streamTokenizer.ttype != StreamTokenizer.TT_EOF) {
                 //For each line
                 //if (streamTokenizer.ttype == '@') {
-                if (streamTokenizer.ttype == StreamTokenizer.TT_WORD && streamTokenizer.sval.startsWith("@") == true) {
+                if (streamTokenizer.ttype == StreamTokenizer.TT_WORD && streamTokenizer.sval.startsWith("@")) {
                     //streamTokenizer.nextToken();
                     String token = streamTokenizer.sval.toUpperCase();
                     if (token.startsWith("@RELATION")) {
@@ -468,8 +485,9 @@ public class ArffLoader {
         return inst;
     }
 
-    private void setClassValue(Instance instance, double valueAttribute) {
-        instance.setValue(this.instanceInformation.classIndex(), valueAttribute);
+    private void setClassValue(Instance instance, double valueAttribute, boolean isMasked) {
+        if (isMasked) instance.setMaskedValue(this.instanceInformation.classIndex(), valueAttribute);
+        else instance.setValue(this.instanceInformation.classIndex(), valueAttribute);
     }
 
 }
