@@ -77,7 +77,7 @@ public class ClustreamSSL extends AbstractClusterer {
             // kernels = centers; // TODO soft copy?
 
             Clustering kmeans_clustering = kMeans(k, centers, buffer);
-            for ( int i = 0; i < kmeans_clustering.size(); i++ ) {
+            for ( int i = 0; i < kmeans_clustering.size(); i++) {
                 // TODO if doing this, we lost the label count (only one for each label, but still...)
                 kernels[i] = new LabeledClustreamKernel(
                         new DenseInstance(1.0, centers[i].getCenter()),
@@ -191,12 +191,12 @@ public class ClustreamSSL extends AbstractClusterer {
             return new Clustering(new Cluster[0]);
         }
 
-        LabeledClustreamKernel[] res = new LabeledClustreamKernel[kernels.length];
-        for ( int i = 0; i < res.length; i++ ) {
-            res[i] = new LabeledClustreamKernel(kernels[i], t, m);
-        }
+//        LabeledClustreamKernel[] res = new LabeledClustreamKernel[kernels.length];
+//        for ( int i = 0; i < res.length; i++ ) {
+//            res[i] = new LabeledClustreamKernel(kernels[i], t, m);
+//        }
 
-        return new Clustering(res);
+        return new Clustering(this.kernels);
     }
 
     /**
