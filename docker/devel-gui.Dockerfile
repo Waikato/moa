@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 
-RUN git clone https://github.com/garawalid/moa.git
+RUN git clone https://github.com/Waikato/moa.git
 
 RUN cd moa && \
     export JAVA_HOME="/usr" && \
