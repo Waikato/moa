@@ -5,4 +5,4 @@ build-devel:
 push-latest:
 	    docker push waikato/moa:latest
 push-devel:
-	    docker push waikato/moa:latest
+	    docker push waikato/moa:devel
