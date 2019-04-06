@@ -1,13 +1,14 @@
 language: java
 
-jdk:
-  - oraclejdk11
+jdk: oraclejdk11
 
 install: true
 
+script: true
+
 deploy:
   provider: script
-  script: mvn clean package
+  script: mvn clean test
 
 notifications:
   email: false
