@@ -1,5 +1,6 @@
 package moa.classifiers.semisupervised;
 
+import com.github.javacliparser.FlagOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.SemiSupervisedLearner;
@@ -25,6 +26,8 @@ import java.util.*;
 public class BaseSemiSupervisedClassifier extends AbstractClassifier
         implements SemiSupervisedLearner {
 
+    private static final long serialVersionUID = 1L;
+
     /** Does clustering and holds the micro-clusters for classification */
     private Clusterer clusterer;
 
@@ -33,7 +36,10 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
             "A clusterer to perform clustering",
             AbstractClusterer.class, "clustream.Clustream -M");
 
-    private static final long serialVersionUID = 1L;
+    public FlagOption usePseudoLabelOption = new FlagOption("pseudo-label", 'p',
+            "Using pseudo-label while training");
+
+    private boolean usePseudoLabel;
 
     /** Count the number of times a class is predicted */
     private int[] predictionCount;
@@ -54,6 +60,7 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         this.clusterer = (AbstractClusterer) getPreparedClassOption(this.clustererOption);
         this.clusterer.prepareForUse();
+        this.usePseudoLabel = usePseudoLabelOption.isSet();
         super.prepareForUseImpl(monitor, repository);
     }
 
