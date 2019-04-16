@@ -31,6 +31,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.core.InputStreamProgressMonitor;
 import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
@@ -46,7 +49,7 @@ import moa.tasks.TaskMonitor;
  * @version $Revision: 7 $
  */
 public class ArffFileStream extends AbstractOptionHandler implements
-        InstanceStream, ConceptDriftGenerator {
+        InstanceStream, ConceptDriftGenerator, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -179,5 +182,13 @@ public class ArffFileStream extends AbstractOptionHandler implements
     public ArrayList<ClusterEvent> getEventsList() {
         //This is used only in the CD Tab
         return this.clusterEvents;
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == ArffFileStream.class)
+            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STABLE);
     }
 }

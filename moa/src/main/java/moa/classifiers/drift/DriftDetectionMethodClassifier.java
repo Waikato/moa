@@ -21,6 +21,10 @@ package moa.classifiers.drift;
 import com.yahoo.labs.samoa.instances.Instance;
 import java.util.LinkedList;
 import java.util.List;
+
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
@@ -44,7 +48,8 @@ import moa.options.ClassOption;
  * @author Manuel Baena (mbaena@lcc.uma.es)
  * @version 1.1
  */
-public class DriftDetectionMethodClassifier extends AbstractClassifier implements MultiClassClassifier {
+public class DriftDetectionMethodClassifier extends AbstractClassifier implements MultiClassClassifier,
+                                                                                  CapabilitiesHandler {
 
     private static final long serialVersionUID = 1L;
 
@@ -185,4 +190,11 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier implement
         return measurementList.toArray(new Measurement[measurementList.size()]);
     }
 
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == DriftDetectionMethodClassifier.class)
+            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STABLE);
+    }
 }

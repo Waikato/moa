@@ -19,6 +19,10 @@
  */
 package moa.streams;
 
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.CapabilityRequirement;
+import moa.capabilities.ImmutableCapabilities;
 import moa.core.Example;
 import com.yahoo.labs.samoa.instances.Instance;
 
@@ -28,9 +32,12 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $ 
  */
-public interface InstanceStream extends ExampleStream<Example<Instance>> {
+public interface InstanceStream extends ExampleStream<Example<Instance>>,
+  					CapabilitiesHandler {
 
-
-
+  default ImmutableCapabilities defineImmutableCapabilities() {
+    // We are restricting streams based on view mode
+    return new ImmutableCapabilities(Capability.VIEW_STABLE);
+  }
 
 }

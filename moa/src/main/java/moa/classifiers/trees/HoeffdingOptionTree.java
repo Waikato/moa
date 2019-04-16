@@ -34,6 +34,9 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import moa.AbstractMOAObject;
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.bayes.NaiveBayes;
@@ -94,7 +97,8 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class HoeffdingOptionTree extends AbstractClassifier implements MultiClassClassifier {
+public class HoeffdingOptionTree extends AbstractClassifier implements MultiClassClassifier,
+                                                                       CapabilitiesHandler {
 
     private static final long serialVersionUID = 1L;
 
@@ -1200,5 +1204,13 @@ public class HoeffdingOptionTree extends AbstractClassifier implements MultiClas
             ret = new LearningNodeNBAdaptive(initialClassObservations);
         }
         return ret;
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == HoeffdingOptionTree.class)
+            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STABLE);
     }
 }

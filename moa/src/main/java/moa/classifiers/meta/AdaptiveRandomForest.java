@@ -20,6 +20,9 @@ package moa.classifiers.meta;
 
 import com.yahoo.labs.samoa.instances.Instance;
 
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
@@ -80,7 +83,8 @@ import moa.classifiers.core.driftdetection.ChangeDetector;
  * @author Heitor Murilo Gomes (heitor_murilo_gomes at yahoo dot com dot br)
  * @version $Revision: 1 $
  */
-public class AdaptiveRandomForest extends AbstractClassifier implements MultiClassClassifier {
+public class AdaptiveRandomForest extends AbstractClassifier implements MultiClassClassifier,
+                                                                        CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -291,6 +295,14 @@ public class AdaptiveRandomForest extends AbstractClassifier implements MultiCla
                 warningDetectionMethodOption,
                 false);
         }
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == AdaptiveRandomForest.class)
+            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STABLE);
     }
     
     /**

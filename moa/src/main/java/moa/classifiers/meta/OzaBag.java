@@ -19,6 +19,9 @@
  */
 package moa.classifiers.meta;
 
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import com.yahoo.labs.samoa.instances.Instance;
@@ -50,7 +53,8 @@ import com.github.javacliparser.IntOption;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class OzaBag extends AbstractClassifier implements MultiClassClassifier {
+public class OzaBag extends AbstractClassifier implements MultiClassClassifier,
+                                                          CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -121,5 +125,13 @@ public class OzaBag extends AbstractClassifier implements MultiClassClassifier {
     @Override
     public Classifier[] getSubClassifiers() {
         return this.ensemble.clone();
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == OzaBag.class)
+            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STABLE);
     }
 }

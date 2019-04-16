@@ -329,6 +329,7 @@ public class TaskManagerPanel extends JPanel {
                         TaskManagerPanel.this.currentTask.getCLICreationString(ClassificationMainTask.class),
                         null);
                 setTaskString(newTaskString);
+                ClassOptionSelectionPanel.setRequiredCapabilities(null);
             }
         });
         this.runTaskButton.addActionListener(new ActionListener() {

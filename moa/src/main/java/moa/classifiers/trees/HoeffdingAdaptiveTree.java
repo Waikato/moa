@@ -22,6 +22,10 @@ package moa.classifiers.trees;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.bayes.NaiveBayes;
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.classifiers.core.driftdetection.ADWIN;
@@ -504,5 +508,13 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
             return result.getArrayRef();
         }
         return new double[0];
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == HoeffdingAdaptiveTree.class)
+            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STABLE);
     }
 }

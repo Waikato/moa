@@ -22,6 +22,9 @@ package moa.classifiers.meta;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.FlagOption;
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.MultiClassClassifier;
 import moa.options.ClassOption;
 import com.github.javacliparser.MultiChoiceOption;
@@ -46,7 +49,8 @@ import moa.options.*;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class LeveragingBag extends AbstractClassifier implements MultiClassClassifier {
+public class LeveragingBag extends AbstractClassifier implements MultiClassClassifier,
+                                                                 CapabilitiesHandler {
 
     private static final long serialVersionUID = 1L;
 
@@ -268,6 +272,14 @@ public class LeveragingBag extends AbstractClassifier implements MultiClassClass
     @Override
     public Classifier[] getSubClassifiers() {
         return this.ensemble.clone();
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == LeveragingBag.class)
+            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STABLE);
     }
 }
 

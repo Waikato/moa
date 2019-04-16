@@ -19,6 +19,9 @@
  */
 package moa.classifiers.meta;
 
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.classifiers.AbstractClassifier;
@@ -80,7 +83,8 @@ import com.github.javacliparser.IntOption;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class OzaBagAdwin extends AbstractClassifier implements MultiClassClassifier {
+public class OzaBagAdwin extends AbstractClassifier implements MultiClassClassifier,
+                                                               CapabilitiesHandler {
 
     private static final long serialVersionUID = 1L;
 
@@ -180,5 +184,13 @@ public class OzaBagAdwin extends AbstractClassifier implements MultiClassClassif
     @Override
     public Classifier[] getSubClassifiers() {
         return this.ensemble.clone();
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == OzaBagAdwin.class)
+            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STABLE);
     }
 }

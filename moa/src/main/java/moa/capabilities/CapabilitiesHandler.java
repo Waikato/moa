@@ -50,6 +50,6 @@ public interface CapabilitiesHandler {
    * @return  The capabilities of the object.
    */
   default ImmutableCapabilities defineImmutableCapabilities() {
-    return new ImmutableCapabilities(Capability.VIEW_STABLE);
+    return CapabilityRequirement.NON_HANDLER_CAPABILITIES;
   }
 }
