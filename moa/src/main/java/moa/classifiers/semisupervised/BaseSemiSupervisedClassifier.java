@@ -36,7 +36,7 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
             "A clusterer to perform clustering",
             AbstractClusterer.class, "clustream.Clustream -M");
 
-    public FlagOption usePseudoLabelOption = new FlagOption("pseudo-label", 'p',
+    public FlagOption usePseudoLabelOption = new FlagOption("pseudoLabel", 'p',
             "Using pseudo-label while training");
 
     private boolean usePseudoLabel;
@@ -98,9 +98,38 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     @Override
     public void trainOnInstanceImpl(Instance inst) {
         Objects.requireNonNull(this.clusterer, "Clusterer must not be null!");
+        if (this.usePseudoLabel) this.trainOnInstanceWithPseudoLabel(inst);
+        else this.trainOnInstanceNoPseudoLabel(inst);
+    }
+
+    private void trainOnInstanceNoPseudoLabel(Instance inst) {
+        // train stuffs
         this.clusterer.trainOnInstance(inst);
 
         // If X has no label, do nothing
+        if (inst.classIsMissing()) return;
+
+        // Else, update the cluster's label
+        Cluster C = this.clusterer.getUpdatedCluster();
+        if (C == null) return;
+        if (!(C instanceof LabeledClustreamKernel)) return;
+        LabeledClustreamKernel labeledC = (LabeledClustreamKernel) C;
+        labeledC.incrementLabelCount(inst.classValue(), 1); // update the count (+ 1)
+    }
+
+    private void trainOnInstanceWithPseudoLabel(Instance inst) {
+        // if the class is masked (simulated as missing) or is missing (for real) --> pseudo-label
+        if (inst.classIsMasked() || inst.classIsMissing()) {
+            Instance instPseudoLabel = inst.copy();
+            LabeledClustreamKernel C = this.findClosestCluster(instPseudoLabel);
+            double pseudoLabel = C != null ? C.getMajorityLabel() : 0.0;
+            instPseudoLabel.setClassValue(pseudoLabel);
+            this.clusterer.trainOnInstance(instPseudoLabel);
+        } else {
+            this.clusterer.trainOnInstance(inst); // else, just train it normally
+        }
+
+        // If X has no label, do nothing (we don't use the pseudo-label to update the count)
         if (inst.classIsMissing()) return;
 
         // Else, update the cluster's label

@@ -432,10 +432,10 @@ public class InstanceImpl implements MultiLabelInstance {
                 str.append("?");
             } else if (this.isMasked(attIndex)) { // not missing but masked --> "?(real value)"
                 str.append("?(");
-                writeAttributeValue(str, attIndex);
+                writeAttributeValue(str, attIndex, true);
                 str.append(")");
             } else { // not missing nor masked
-                writeAttributeValue(str, attIndex);
+                writeAttributeValue(str, attIndex, false);
             }
 
             if (attIndex != this.numAttributes() - 1) str.append(",");
@@ -444,16 +444,20 @@ public class InstanceImpl implements MultiLabelInstance {
         return str.toString();
     }
 
-    private void writeAttributeValue(StringBuilder str, int attIndex) {
+    private void writeAttributeValue(StringBuilder str, int attIndex, boolean getMasked) {
+        double value = getMasked ? this.instanceOriginal.value(attIndex) : this.instanceData.value(attIndex);
         if (this.attribute(attIndex).isNominal()) {
-            int valueIndex = (int) this.value(attIndex);
+            // int valueIndex = (int) this.value(attIndex);
+            int valueIndex = (int) value;
             String stringValue = this.attribute(attIndex).value(valueIndex);
             str.append(stringValue);
         } else if (this.attribute(attIndex).isNumeric()) {
-            str.append(this.value(attIndex));
+            str.append(value);
+            // str.append(this.value(attIndex));
         } else if (this.attribute(attIndex).isDate()) {
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            str.append(dateFormatter.format(this.value(attIndex)));
+            str.append(dateFormatter.format(value));
+            // str.append(dateFormatter.format(this.value(attIndex)));
         }
     }
 
