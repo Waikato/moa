@@ -1,4 +1,24 @@
 /*
+ *    RandomHoeffdingTree.java
+ *    Copyright (C) 2019 University of Waikato, Hamilton, New Zealand
+ *    @author Chaitanya Manapragada
+ *
+ *    This program is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 3 of the License, or
+ *    (at your option) any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+/*
  * Author: Chaitanya Manapragada.
  * <p>
  * Based on HoeffdingTree.java by Richard Kirkby.
@@ -14,9 +34,8 @@
  * Bug2: splitting was occurring when the top attribute had no IG, and splitting was occurring on the same attribute. This was also fixed.
  * <p>
  * The correct reference is:
- * * Domingos, P., & Hulten, G. (2000, August). Mining high-speed data streams. In Proceedings of the sixth ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 71-80). ACM.
+ * Domingos, P., & Hulten, G. (2000, August). Mining high-speed data streams. In Proceedings of the sixth ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 71-80). ACM.
  */
-
 
 package moa.classifiers.trees;
 
@@ -37,6 +56,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.AbstractMOAObject;
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.bayes.NaiveBayes;
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
@@ -56,7 +76,7 @@ import moa.core.StringUtils;
 import moa.core.Utils;
 import moa.options.ClassOption;
 
-public class EFDT extends AbstractClassifier {
+public class EFDT extends AbstractClassifier implements MultiClassClassifier {
 
   private static final long serialVersionUID = 2L;
 
@@ -1359,6 +1379,237 @@ public class EFDT extends AbstractClassifier {
       }
       return NaiveBayes.doNaiveBayesPrediction(inst,
 	this.observedClassDistribution, this.attributeObservers);
+    }
+  }
+
+  static class VFDT extends EFDT {
+
+    @Override
+    protected void attemptToSplit(ActiveLearningNode node, SplitNode parent,
+				  int parentIndex) {
+      if (!node.observedClassDistributionIsPure()) {
+
+
+	SplitCriterion splitCriterion = (SplitCriterion) getPreparedClassOption(this.splitCriterionOption);
+	AttributeSplitSuggestion[] bestSplitSuggestions = node.getBestSplitSuggestions(splitCriterion, this);
+
+	Arrays.sort(bestSplitSuggestions);
+	boolean shouldSplit = false;
+
+	for (int i = 0; i < bestSplitSuggestions.length; i++){
+
+	  node.addToSplitAttempts(1); // even if we don't actually attempt to split, we've computed infogains
+
+
+	  if (bestSplitSuggestions[i].splitTest != null){
+	    if (!node.getInfogainSum().containsKey((bestSplitSuggestions[i].splitTest.getAttsTestDependsOn()[0])))
+	    {
+	      node.getInfogainSum().put((bestSplitSuggestions[i].splitTest.getAttsTestDependsOn()[0]), 0.0);
+	    }
+	    double currentSum = node.getInfogainSum().get((bestSplitSuggestions[i].splitTest.getAttsTestDependsOn()[0]));
+	    node.getInfogainSum().put((bestSplitSuggestions[i].splitTest.getAttsTestDependsOn()[0]), currentSum + bestSplitSuggestions[i].merit);
+	  }
+
+	  else { // handle the null attribute
+	    double currentSum = node.getInfogainSum().get(-1); // null split
+	    node.getInfogainSum().put(-1, currentSum + Math.max(0.0, bestSplitSuggestions[i].merit));
+	    assert node.getInfogainSum().get(-1) >= 0.0 : "Negative infogain shouldn't be possible here.";
+	  }
+
+	}
+
+	if (bestSplitSuggestions.length < 2) {
+	  shouldSplit = bestSplitSuggestions.length > 0;
+	}
+
+	else {
+
+
+	  double hoeffdingBound = computeHoeffdingBound(splitCriterion.getRangeOfMerit(node.getObservedClassDistribution()),
+	    this.splitConfidenceOption.getValue(), node.getWeightSeen());
+
+	  AttributeSplitSuggestion bestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1];
+	  AttributeSplitSuggestion secondBestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 2];
+
+
+	  double bestSuggestionAverageMerit = 0.0;
+	  double secondBestSuggestionAverageMerit = 0.0;
+
+	  if(bestSuggestion.splitTest == null){ // if you have a null split
+	    bestSuggestionAverageMerit = node.getInfogainSum().get(-1) / node.getNumSplitAttempts();
+	  } else{
+	    bestSuggestionAverageMerit = node.getInfogainSum().get((bestSuggestion.splitTest.getAttsTestDependsOn()[0])) / node.getNumSplitAttempts();
+	  }
+
+	  if(secondBestSuggestion.splitTest == null){ // if you have a null split
+	    secondBestSuggestionAverageMerit = node.getInfogainSum().get(-1) / node.getNumSplitAttempts();
+	  } else{
+	    secondBestSuggestionAverageMerit = node.getInfogainSum().get((secondBestSuggestion.splitTest.getAttsTestDependsOn()[0])) / node.getNumSplitAttempts();
+	  }
+
+	  //comment this if statement to get VFDT bug
+	  if(bestSuggestion.merit < 1e-10){ // we don't use average here
+	    shouldSplit = false;
+	  }
+
+	  else
+	  if ((bestSuggestionAverageMerit - secondBestSuggestionAverageMerit > hoeffdingBound)
+	    || (hoeffdingBound < this.tieThresholdOption.getValue()))
+	  {
+	    shouldSplit = true;
+	  }
+
+	  if(shouldSplit){
+	    for(Integer i : node.usedNominalAttributes){
+	      if(bestSuggestion.splitTest.getAttsTestDependsOn()[0] == i){
+		shouldSplit = false;
+		break;
+	      }
+	    }
+	  }
+
+	  // }
+	  if ((this.removePoorAttsOption != null)
+	    && this.removePoorAttsOption.isSet()) {
+	    Set<Integer> poorAtts = new HashSet<Integer>();
+	    // scan 1 - add any poor to set
+	    for (int i = 0; i < bestSplitSuggestions.length; i++) {
+	      if (bestSplitSuggestions[i].splitTest != null) {
+		int[] splitAtts = bestSplitSuggestions[i].splitTest.getAttsTestDependsOn();
+		if (splitAtts.length == 1) {
+		  if (bestSuggestion.merit
+		    - bestSplitSuggestions[i].merit > hoeffdingBound) {
+		    poorAtts.add(new Integer(splitAtts[0]));
+		  }
+		}
+	      }
+	    }
+	    // scan 2 - remove good ones from set
+	    for (int i = 0; i < bestSplitSuggestions.length; i++) {
+	      if (bestSplitSuggestions[i].splitTest != null) {
+		int[] splitAtts = bestSplitSuggestions[i].splitTest.getAttsTestDependsOn();
+		if (splitAtts.length == 1) {
+		  if (bestSuggestion.merit
+		    - bestSplitSuggestions[i].merit < hoeffdingBound) {
+		    poorAtts.remove(new Integer(splitAtts[0]));
+		  }
+		}
+	      }
+	    }
+	    for (int poorAtt : poorAtts) {
+	      node.disableAttribute(poorAtt);
+	    }
+	  }
+	}
+	if (shouldSplit) {
+	  splitCount++;
+
+	  AttributeSplitSuggestion splitDecision = bestSplitSuggestions[bestSplitSuggestions.length - 1];
+	  if (splitDecision.splitTest == null) {
+	    // preprune - null wins
+	    deactivateLearningNode(node, parent, parentIndex);
+	  } else {
+	    SplitNode newSplit = newSplitNode(splitDecision.splitTest,
+	      node.getObservedClassDistribution(), splitDecision.numSplits());
+	    for (int i = 0; i < splitDecision.numSplits(); i++) {
+
+	      double[] j = splitDecision.resultingClassDistributionFromSplit(i);
+
+	      Node newChild = newLearningNode(splitDecision.resultingClassDistributionFromSplit(i));
+
+	      if(splitDecision.splitTest.getClass() == NominalAttributeBinaryTest.class
+		||splitDecision.splitTest.getClass() == NominalAttributeMultiwayTest.class){
+		newChild.usedNominalAttributes = new ArrayList<Integer>(node.usedNominalAttributes); //deep copy
+		newChild.usedNominalAttributes.add(splitDecision.splitTest.getAttsTestDependsOn()[0]);
+		// no  nominal attribute should be split on more than once in the path
+	      }
+	      newSplit.setChild(i, newChild);
+	    }
+	    this.activeLeafNodeCount--;
+	    this.decisionNodeCount++;
+	    this.activeLeafNodeCount += splitDecision.numSplits();
+	    if (parent == null) {
+	      this.treeRoot = newSplit;
+	    } else {
+	      parent.setChild(parentIndex, newSplit);
+	    }
+
+	  }
+
+	  // manage memory
+	  enforceTrackerLimit();
+	}
+      }
+    }
+
+    @Override
+    protected LearningNode newLearningNode() {
+      return newLearningNode(new double[0]);
+    }
+
+    @Override
+    protected LearningNode newLearningNode(double[] initialClassObservations) {
+      LearningNode ret;
+      int predictionOption = this.leafpredictionOption.getChosenIndex();
+      if (predictionOption == 0) { //MC
+	ret = new ActiveLearningNode(initialClassObservations);
+      } else if (predictionOption == 1) { //NB
+	ret = new LearningNodeNB(initialClassObservations);
+      } else { //NBAdaptive
+	ret = new LearningNodeNBAdaptive(initialClassObservations);
+      }
+      return ret;
+    }
+
+    @Override
+    protected SplitNode newSplitNode(InstanceConditionalTest splitTest,
+				     double[] classObservations, int size) {
+      return new SplitNode(splitTest, classObservations, size);
+    }
+
+    @Override
+    protected SplitNode newSplitNode(InstanceConditionalTest splitTest,
+				     double[] classObservations) {
+      return new SplitNode(splitTest, classObservations);
+    }
+
+    @Override
+    public void trainOnInstanceImpl(Instance inst) {
+      //System.err.println(i++);
+      if (this.treeRoot == null) {
+	this.treeRoot = newLearningNode();
+	this.activeLeafNodeCount = 1;
+      }
+      FoundNode foundNode = this.treeRoot.filterInstanceToLeaf(inst, null, -1);
+      Node leafNode = foundNode.node;
+
+      if (leafNode == null) {
+	leafNode = newLearningNode();
+	foundNode.parent.setChild(foundNode.parentBranch, leafNode);
+	this.activeLeafNodeCount++;
+      }
+
+      if (leafNode instanceof LearningNode) {
+	LearningNode learningNode = (LearningNode) leafNode;
+	learningNode.learnFromInstance(inst, this);
+	if (this.growthAllowed
+	  && (learningNode instanceof ActiveLearningNode)) {
+	  ActiveLearningNode activeLearningNode = (ActiveLearningNode) learningNode;
+	  double weightSeen = activeLearningNode.getWeightSeen();
+	  if (activeLearningNode.nodeTime % this.gracePeriodOption.getValue() == 0) {
+	    attemptToSplit(activeLearningNode, foundNode.parent,
+	      foundNode.parentBranch);
+	    activeLearningNode.setWeightSeenAtLastSplitEvaluation(weightSeen);
+	  }
+	}
+      }
+
+      if (this.trainingWeightSeenByModel
+	% this.memoryEstimatePeriodOption.getValue() == 0) {
+	estimateModelByteSizes();
+      }
+
+      numInstances++;
     }
   }
 }
