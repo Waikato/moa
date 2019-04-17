@@ -237,7 +237,7 @@ public class NearestNeighbourDescription extends AbstractClassifier implements C
 	/**
 	 * Initializes the Nearest Neighbour Distance (NN-d) classifier with the argument training points.
 	 * 
-	 * @param traininPoints the Collection of instances on which to initialize the NN-d classifier.
+	 * @param trainingPoints the Collection of instances on which to initialize the NN-d classifier.
 	 */
 	@Override
 	public void initialize(Collection<Instance> trainingPoints)
@@ -246,37 +246,5 @@ public class NearestNeighbourDescription extends AbstractClassifier implements C
 		
 		if(trgPtsIterator.hasNext())
 			this.trainOnInstance(trgPtsIterator.next());
-	}
-	
-	/**
-	 * Useful for diagnostics.
-	 *
-	 */
-	private void printStatus()
-	{
-		double anomalies = 0;
-		
-		for (int i = 0 ; i < this.neighbourhood.size() ; i++)
-		{
-			anomalies += this.neighbourhood.get(i).classValue();
-		}
-		
-		System.out.print("("+this.instances+":"+this.neighbourhood.size()+":"+new Double(anomalies).toString()+") Last Printed: "+this.lastPrinted+"\ninst:");
-		for(int i = 0 ; i < inst.numAttributes() ; i++)
-		{
-			System.out.print(" "+inst.value(i));
-		}
-		System.out.print("\nnn:");
-		for(int i = 0 ; i < nearestNeighbour.numAttributes() ; i++)
-		{
-			System.out.print(" "+nearestNeighbour.value(i));
-		}
-		System.out.print("\nnnNN:");
-		for(int i = 0 ; i < nnNearestNeighbour.numAttributes() ; i++)
-		{
-			System.out.print(" "+nnNearestNeighbour.value(i));
-		}
-		System.out.println("\nknh: "+distance(inst, nearestNeighbour)+", nnknh: "+distance(nearestNeighbour, nnNearestNeighbour)+", iA: "+indicatorArgument+", tau: "+tau);
-		System.out.println(indicatorArgument + " -> " + (indicatorArgument / this.tau) + " --> ["+votes[0]+", "+votes[1]+"]");
 	}
 }
