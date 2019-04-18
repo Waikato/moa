@@ -19,6 +19,21 @@
 
 ## Deploy to Maven Central
 
+* Ensure your GPG signing key and Sonatype credentials are available in your
+  Maven settings.xml file (found at either ~/.m2/ or /usr/share/maven/conf/).
+  You can check the settings have been applied correctly by running the command:
+  
+   ```
+   mvn help:effective-settings
+   ```
+   
+* For more information, follow the instructions at the following pages:
+  
+  https://blog.sonatype.com/2010/01/how-to-generate-pgp-signatures-with-maven/
+  https://blog.sonatype.com/2010/11/what-to-do-when-nexus-returns-401/
+  
+* Publish your public GPG signing key to the keyserver at keyserver.ubuntu.com
+
 * Run the following maven command, which will automatically use the current
   version present in the `pom.xml` files and then increment it after the 
   release has succeeded. 
