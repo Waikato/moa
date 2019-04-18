@@ -34,7 +34,7 @@ public class CapabilityRequirement
    * The capabilities to assume a class has if it does not implement
    * the CapabilitiesHandler interface.
    */
-  public static final ImmutableCapabilities NON_HANDLER_CAPABILITIES = new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+  public static final ImmutableCapabilities NON_HANDLER_CAPABILITIES = new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
 
   /** The function to use to test if the requirement is met. */
   private Predicate<Capabilities> m_Test;

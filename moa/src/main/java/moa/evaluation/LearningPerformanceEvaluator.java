@@ -19,10 +19,12 @@
  */
 package moa.evaluation;
 
-import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.MOAObject;
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.core.Example;
 import moa.core.Measurement;
 
@@ -33,7 +35,7 @@ import moa.core.Measurement;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public interface LearningPerformanceEvaluator<E extends Example> extends MOAObject {
+public interface LearningPerformanceEvaluator<E extends Example> extends MOAObject, CapabilitiesHandler {
 
     /**
      * Resets this evaluator. It must be similar to
@@ -50,8 +52,8 @@ public interface LearningPerformanceEvaluator<E extends Example> extends MOAObje
      * probabilities of the test instance in each class
      * @return an array of measurements monitored in this evaluator
      */
-	public void addResult(E testInst, Prediction prediction);
     public void addResult(E example, double[] classVotes);
+    public void addResult(E testInst, Prediction prediction);
 
     /**
      * Gets the current measurements monitored by this evaluator.
@@ -59,5 +61,10 @@ public interface LearningPerformanceEvaluator<E extends Example> extends MOAObje
      * @return an array of measurements monitored by this evaluator
      */
 	public Measurement[] getPerformanceMeasurements();
+
+	@Override
+	default ImmutableCapabilities defineImmutableCapabilities() {
+	  return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+	}
 
 }

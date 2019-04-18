@@ -189,8 +189,8 @@ public class OzaBagAdwin extends AbstractClassifier implements MultiClassClassif
     @Override
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == OzaBagAdwin.class)
-            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
         else
-            return new ImmutableCapabilities(Capability.VIEW_STABLE);
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

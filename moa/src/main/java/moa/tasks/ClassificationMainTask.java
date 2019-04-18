@@ -21,7 +21,6 @@ package moa.tasks;
 
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
-import moa.capabilities.CapabilityRequirement;
 import moa.capabilities.ImmutableCapabilities;
 import moa.streams.clustering.ClusterEvent;
 
@@ -49,7 +48,7 @@ public abstract class ClassificationMainTask extends MainTask
 
     public ImmutableCapabilities defineImmutableCapabilities() {
         // We are restricting tasks based on view mode
-        return new ImmutableCapabilities(Capability.VIEW_STABLE);
+        return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
     
 }

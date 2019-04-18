@@ -625,8 +625,8 @@ public class SAMkNN extends AbstractClassifier implements MultiClassClassifier,
   @Override
   public ImmutableCapabilities defineImmutableCapabilities() {
     if (this.getClass() == SAMkNN.class)
-      return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+      return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
     else
-      return new ImmutableCapabilities(Capability.VIEW_STABLE);
+      return new ImmutableCapabilities(Capability.VIEW_STANDARD);
   }
 }

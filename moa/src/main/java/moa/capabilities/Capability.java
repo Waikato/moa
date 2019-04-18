@@ -27,7 +27,7 @@ package moa.capabilities;
  * @author Corey Sterling (csterlin at waikato dot ac dot nz)
  */
 public enum Capability {
-  VIEW_STABLE, // Can be viewed in STABLE mode
+  VIEW_STANDARD, // Can be viewed in STANDARD mode
   VIEW_LITE, // Can be viewed in LITE mode
   VIEW_EXPERIMENTAL; // Can be viewed in EXPERIMENTAL mode
 

@@ -21,14 +21,14 @@
 package moa.evaluation;
 
 import com.github.javacliparser.FlagOption;
-import moa.AbstractMOAObject;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.Utils;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.Prediction;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
@@ -327,5 +327,14 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
 
     protected Estimator newEstimator() {
         return new BasicEstimator();
+    }
+
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == BasicClassificationPerformanceEvaluator.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

@@ -29,7 +29,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 
 import java.util.Random;
-import moa.core.Example;
+
 import moa.core.InstanceExample;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
@@ -38,7 +38,6 @@ import moa.options.AbstractOptionHandler;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
@@ -428,8 +427,8 @@ public class AgrawalGenerator extends AbstractOptionHandler implements
     @Override
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == AgrawalGenerator.class)
-            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
         else
-            return new ImmutableCapabilities(Capability.VIEW_STABLE);
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

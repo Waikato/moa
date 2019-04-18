@@ -28,7 +28,6 @@ import java.util.Random;
 import moa.MOAObject;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
-import moa.capabilities.CapabilityRequirement;
 import moa.capabilities.ImmutableCapabilities;
 import moa.core.Example;
 
@@ -45,11 +44,8 @@ import com.github.javacliparser.IntOption;
 
 import moa.tasks.TaskMonitor;
 
-import com.yahoo.labs.samoa.instances.DenseInstanceData;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.Instances;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
@@ -441,6 +437,6 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     @Override
     public ImmutableCapabilities defineImmutableCapabilities() {
         // We are restricting classifiers based on view mode
-        return new ImmutableCapabilities(Capability.VIEW_STABLE);
+        return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

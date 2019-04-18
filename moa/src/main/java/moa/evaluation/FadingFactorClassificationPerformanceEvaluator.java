@@ -19,19 +19,10 @@
  */
 package moa.evaluation;
 
-import moa.core.Example;
-import moa.core.Measurement;
-import moa.core.ObjectRepository;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 
 import com.github.javacliparser.FloatOption;
-
-import moa.options.AbstractOptionHandler;
-import moa.tasks.TaskMonitor;
-import moa.core.Utils;
-
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Classification evaluator that updates evaluation results using a fading factor.
@@ -49,6 +40,14 @@ public class FadingFactorClassificationPerformanceEvaluator extends BasicClassif
     @Override
     protected Estimator newEstimator() {
         return new FadingFactorEstimator(this.alphaOption.getValue());
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == FadingFactorClassificationPerformanceEvaluator.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 
     public class FadingFactorEstimator implements Estimator {

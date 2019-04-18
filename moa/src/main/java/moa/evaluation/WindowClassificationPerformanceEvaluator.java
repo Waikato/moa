@@ -19,21 +19,10 @@
  */
 package moa.evaluation;
 
-import moa.core.Example;
-import moa.core.Measurement;
-import moa.core.ObjectRepository;
-import moa.options.AbstractOptionHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 
 import com.github.javacliparser.IntOption;
-
-import moa.tasks.TaskMonitor;
-import moa.core.Utils;
-
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.Prediction;
-
-import java.util.LinkedList;
 
 /**
  * Classification evaluator that updates evaluation results using a sliding
@@ -55,6 +44,14 @@ public class WindowClassificationPerformanceEvaluator extends BasicClassificatio
     @Override
     protected Estimator newEstimator() {
         return new WindowEstimator(this.widthOption.getValue());
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == WindowClassificationPerformanceEvaluator.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 
     public class WindowEstimator implements Estimator {
