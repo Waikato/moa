@@ -31,12 +31,6 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $ 
  */
-public interface InstanceStream extends ExampleStream<Example<Instance>>,
-  					CapabilitiesHandler {
-
-  default ImmutableCapabilities defineImmutableCapabilities() {
-    // We are restricting streams based on view mode
-    return new ImmutableCapabilities(Capability.VIEW_STANDARD);
-  }
+public interface InstanceStream extends ExampleStream<Example<Instance>> {
 
 }

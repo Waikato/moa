@@ -20,6 +20,9 @@
 package moa.streams;
 
 import moa.MOAObject;
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.core.Example;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Instance;
@@ -30,7 +33,8 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $ 
  */
-public interface ExampleStream<E extends Example> extends MOAObject {
+public interface ExampleStream<E extends Example> extends MOAObject,
+                                                          CapabilitiesHandler {
 
     /**
      * Gets the header of this stream.
@@ -76,4 +80,9 @@ public interface ExampleStream<E extends Example> extends MOAObject {
      *
      */
     public void restart();
+
+    default ImmutableCapabilities defineImmutableCapabilities() {
+        // We are restricting streams based on view mode
+        return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+    }
 }
