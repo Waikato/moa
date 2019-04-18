@@ -29,11 +29,21 @@
 
 * Log into [https://oss.sonatype.org](https://oss.sonatype.org)
 
-* Select **Staging Repositories**
+* Select **Staging Repositories**, scroll right to the bottom of the list
+  and look for a repository called something like *nzacwaikatocmsmoa-XYZ*
 
-* Subsequently **Close** and then **Release** the artifacts
+* Subsequently **Close** and then **Release** the artifacts. NB: It may take a
+  few minutes before the *Release* button becomes available, as the system
+  is flagging all the artifacts from the staging repo.
 
-* perform a `git push`
+* Perform a `git push`
+
+* Check the following URL after 15-20min (sync with Maven Central only happens 
+  every 15min or so) to see whether they artifacts are indeed available from 
+  Maven Central (the search index at https://search.maven.org/ only gets updated
+  every few hours):
+  
+  http://central.maven.org/maven2/nz/ac/waikato/cms/moa/
 
 
 ## Generate release files
