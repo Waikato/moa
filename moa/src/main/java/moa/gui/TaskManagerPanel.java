@@ -198,7 +198,7 @@ public class TaskManagerPanel extends JPanel {
 
     protected JButton runTaskButton = new JButton("Run");
 
-    protected JComboBox<String> viewModeList = new JComboBox<>(Capability.stringValues());
+    protected JComboBox<String> viewModeList = new JComboBox<>(new String[]{Capability.VIEW_STABLE.toString(), Capability.VIEW_LITE.toString()});
 
     protected TaskTableModel taskTableModel;
 
