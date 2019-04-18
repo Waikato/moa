@@ -26,6 +26,10 @@ import java.util.List;
 import java.util.Random;
 
 import moa.MOAObject;
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.CapabilityRequirement;
+import moa.capabilities.ImmutableCapabilities;
 import moa.core.Example;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
@@ -52,7 +56,7 @@ import com.yahoo.labs.samoa.instances.Prediction;
 import moa.core.Utils;
 
 public abstract class AbstractClassifier extends AbstractOptionHandler
-        implements Classifier { //Learner<Example<Instance>> {
+        implements Classifier, CapabilitiesHandler { //Learner<Example<Instance>> {
 
     @Override
     public String getPurposeString() {
@@ -432,5 +436,11 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     protected static int modelAttIndexToInstanceAttIndex(int index,
             Instances insts) {
         return insts.classIndex() > index ? index : index + 1;
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        // We are restricting classifiers based on view mode
+        return new ImmutableCapabilities(Capability.VIEW_STABLE);
     }
 }

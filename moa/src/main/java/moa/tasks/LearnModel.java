@@ -19,6 +19,9 @@
  */
 package moa.tasks;
 
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.ObjectRepository;
@@ -34,7 +37,7 @@ import moa.streams.InstanceStream;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class LearnModel extends ClassificationMainTask {
+public class LearnModel extends ClassificationMainTask implements CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -121,5 +124,13 @@ public class LearnModel extends ClassificationMainTask {
         }
         learner.setModelContext(stream.getHeader());
         return learner;
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == LearnModel.class)
+            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STABLE);
     }
 }

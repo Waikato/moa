@@ -19,6 +19,9 @@
  */
 package moa.classifiers.bayes;
 
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
@@ -45,7 +48,8 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class NaiveBayes extends AbstractClassifier  implements MultiClassClassifier {
+public class NaiveBayes extends AbstractClassifier  implements MultiClassClassifier,
+                                                               CapabilitiesHandler {
 
     private static final long serialVersionUID = 1L;
 
@@ -180,5 +184,13 @@ public class NaiveBayes extends AbstractClassifier  implements MultiClassClassif
 
     public void manageMemory(int currentByteSize, int maxByteSize) {
         // TODO Auto-generated method stub
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == NaiveBayes.class)
+            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STABLE);
     }
 }

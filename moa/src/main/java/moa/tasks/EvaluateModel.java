@@ -24,6 +24,9 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.Example;
@@ -45,7 +48,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class EvaluateModel extends ClassificationMainTask {
+public class EvaluateModel extends ClassificationMainTask implements CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -170,5 +173,13 @@ public class EvaluateModel extends ClassificationMainTask {
             outputPredictionResultStream.close();
         }
         return learningCurve;
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == EvaluateModel.class)
+            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STABLE);
     }
 }

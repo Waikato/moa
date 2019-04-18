@@ -24,6 +24,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.Example;
@@ -54,7 +57,7 @@ import moa.core.Utils;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class EvaluatePrequential extends ClassificationMainTask {
+public class EvaluatePrequential extends ClassificationMainTask implements CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -270,5 +273,13 @@ public class EvaluatePrequential extends ClassificationMainTask {
             outputPredictionResultStream.close();
         }
         return learningCurve;
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == EvaluatePrequential.class)
+            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STABLE);
     }
 }

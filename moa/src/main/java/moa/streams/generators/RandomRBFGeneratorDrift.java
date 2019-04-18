@@ -20,11 +20,13 @@
 package moa.streams.generators;
 
 import java.util.Random;
+
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.core.InstanceExample;
 
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.FloatOption;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Stream generator for a random radial basis function stream with drift.
@@ -99,5 +101,13 @@ public class RandomRBFGeneratorDrift extends RandomRBFGenerator {
     @Override
     public void getDescription(StringBuilder sb, int indent) {
         // TODO Auto-generated method stub
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == RandomRBFGeneratorDrift.class)
+            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STABLE);
     }
 }

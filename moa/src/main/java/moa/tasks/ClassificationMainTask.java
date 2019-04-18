@@ -19,6 +19,10 @@
  */
 package moa.tasks;
 
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.CapabilityRequirement;
+import moa.capabilities.ImmutableCapabilities;
 import moa.streams.clustering.ClusterEvent;
 
 import java.util.ArrayList;
@@ -30,7 +34,8 @@ import java.util.ArrayList;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public abstract class ClassificationMainTask extends MainTask {
+public abstract class ClassificationMainTask extends MainTask
+                                             implements CapabilitiesHandler {
 
     protected ArrayList<ClusterEvent> events;
 
@@ -40,6 +45,11 @@ public abstract class ClassificationMainTask extends MainTask {
     
     public ArrayList<ClusterEvent> getEventsList() {
         return this.events;
+    }
+
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        // We are restricting tasks based on view mode
+        return new ImmutableCapabilities(Capability.VIEW_STABLE);
     }
     
 }

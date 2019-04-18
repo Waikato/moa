@@ -22,6 +22,9 @@ package moa.streams.generators;
 import java.util.Random;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.core.FastVector;
 import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
@@ -41,7 +44,7 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
  * @version $Revision: 7 $
  */
 public class HyperplaneGenerator extends AbstractOptionHandler implements
-        InstanceStream {
+        InstanceStream, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -180,5 +183,13 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
     @Override
     public void getDescription(StringBuilder sb, int indent) {
         // TODO Auto-generated method stub
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == HyperplaneGenerator.class)
+            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STABLE);
     }
 }

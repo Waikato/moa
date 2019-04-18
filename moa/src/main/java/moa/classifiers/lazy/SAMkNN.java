@@ -18,6 +18,9 @@ package moa.classifiers.lazy;
 import java.util.*;
 
 import com.yahoo.labs.samoa.instances.InstanceImpl;
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
@@ -53,7 +56,8 @@ import moa.clusterers.kmeanspm.CoresetKMeans;
  * month={Dec}
  * }"
  */
-public class SAMkNN extends AbstractClassifier implements MultiClassClassifier {
+public class SAMkNN extends AbstractClassifier implements MultiClassClassifier,
+  							  CapabilitiesHandler {
     private static final long serialVersionUID = 1L;
 
     public IntOption kOption = new IntOption( "k", 'k', "The number of neighbors", 5, 1, Integer.MAX_VALUE);
@@ -617,4 +621,12 @@ public class SAMkNN extends AbstractClassifier implements MultiClassClassifier {
 		else
 			return this.getMinErrorRateWindowSizeIncremental();
 	}
+
+  @Override
+  public ImmutableCapabilities defineImmutableCapabilities() {
+    if (this.getClass() == SAMkNN.class)
+      return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+    else
+      return new ImmutableCapabilities(Capability.VIEW_STABLE);
+  }
 }
