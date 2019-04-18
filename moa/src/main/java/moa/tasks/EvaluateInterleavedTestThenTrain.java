@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.Example;
@@ -216,5 +218,13 @@ public class EvaluateInterleavedTestThenTrain extends ClassificationMainTask {
             immediateResultStream.close();
         }
         return learningCurve;
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == EvaluateInterleavedTestThenTrain.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }
