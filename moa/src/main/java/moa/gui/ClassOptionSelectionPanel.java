@@ -32,6 +32,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import moa.capabilities.CapabilityRequirement;
 import moa.core.AutoClassDiscovery;
 import moa.core.AutoExpandVector;
 import moa.options.ClassOption;
@@ -53,6 +54,18 @@ public class ClassOptionSelectionPanel extends JPanel {
     // e.g. if user switches from LearnModel to EvaluateLearner, retain whatever
     // the 'stream' option was set to
     private static final long serialVersionUID = 1L;
+
+    /** The requirements that classes must meet in order to be listed. */
+    private static CapabilityRequirement requiredCapabilities = null;
+
+    /**
+     * Sets the capability requirement of listed classes.
+     *
+     * @param requirements	The capability requirements.
+     */
+    public static void setRequiredCapabilities(CapabilityRequirement requirements) {
+        requiredCapabilities = requirements;
+    }
 
     protected JComboBox classChoiceBox;
 
@@ -107,6 +120,10 @@ public class ClassOptionSelectionPanel extends JPanel {
         Class<?>[] classesFound = AutoClassDiscovery.findClassesOfType("moa",
                 requiredType);
         for (Class<?> foundClass : classesFound) {
+            // Skip this class if it doesn't meet the capabilities requirement
+            if (requiredCapabilities != null && !requiredCapabilities.isMetBy(foundClass))
+                continue;
+
             finalClasses.add(foundClass);
         }
         Class<?>[] tasksFound = AutoClassDiscovery.findClassesOfType("moa",
@@ -115,6 +132,10 @@ public class ClassOptionSelectionPanel extends JPanel {
             try {
                 Task task = (Task) foundTask.newInstance();
                 if (requiredType.isAssignableFrom(task.getTaskResultType())) {
+		    // Skip this task if its result type doesn't meet the capabilities requirement
+                    if (requiredCapabilities != null && !requiredCapabilities.isMetBy(task.getTaskResultType()))
+                        continue;
+
                     finalClasses.add(foundTask);
                 }
             } catch (Exception e) {

@@ -20,6 +20,8 @@
  */
 package moa.gui;
 
+import moa.capabilities.Capability;
+import moa.capabilities.CapabilityRequirement;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
@@ -31,6 +33,7 @@ import moa.tasks.TaskThread;
 import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -195,6 +198,8 @@ public class TaskManagerPanel extends JPanel {
 
     protected JButton runTaskButton = new JButton("Run");
 
+    protected JComboBox<String> viewModeList = new JComboBox<>(new String[]{Capability.VIEW_STABLE.toString(), Capability.VIEW_LITE.toString()});
+
     protected TaskTableModel taskTableModel;
 
     protected JTable taskTable;
@@ -280,7 +285,12 @@ public class TaskManagerPanel extends JPanel {
         configPanel.setLayout(new BorderLayout());
         configPanel.add(this.configureTaskButton, BorderLayout.WEST);
         configPanel.add(this.taskDescField, BorderLayout.CENTER);
-        configPanel.add(this.runTaskButton, BorderLayout.EAST);
+        JPanel runViewPanel = new JPanel();
+        runViewPanel.setLayout(new BorderLayout());
+        runViewPanel.add(this.runTaskButton, BorderLayout.WEST);
+        this.viewModeList.setPrototypeDisplayValue(Capability.VIEW_EXPERIMENTAL.toString() + "        "); // Require extra spacing to force enough width
+        runViewPanel.add(this.viewModeList, BorderLayout.EAST);
+        configPanel.add(runViewPanel, BorderLayout.EAST);
         this.taskTableModel = new TaskTableModel();
         this.taskTable = new JTable(this.taskTableModel);
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -312,11 +322,14 @@ public class TaskManagerPanel extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent arg0) {
+                CapabilityRequirement capReq = forViewSelection();
+                ClassOptionSelectionPanel.setRequiredCapabilities(capReq);
                 String newTaskString = ClassOptionSelectionPanel.showSelectClassDialog(TaskManagerPanel.this,
                         "Configure task", ClassificationMainTask.class,
                         TaskManagerPanel.this.currentTask.getCLICreationString(ClassificationMainTask.class),
                         null);
                 setTaskString(newTaskString);
+                ClassOptionSelectionPanel.setRequiredCapabilities(null);
             }
         });
         this.runTaskButton.addActionListener(new ActionListener() {
@@ -486,6 +499,15 @@ public class TaskManagerPanel extends JPanel {
                         "Problem saving file " + fileName, ioe);
             }
         }
+    }
+
+    /**
+     * Gets the requirement that a capabilities object must have the selected view.
+     *
+     * @return  The requirement.
+     */
+    private CapabilityRequirement forViewSelection() {
+        return CapabilityRequirement.has(Capability.forShortName((String) this.viewModeList.getSelectedItem()));
     }
 
     private static void createAndShowGUI() {

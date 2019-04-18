@@ -21,6 +21,9 @@ package moa.streams.generators;
 
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.core.FastVector;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
@@ -60,7 +63,7 @@ import moa.tasks.TaskMonitor;
  * @version $Revision: 7 $
  */
 public class AgrawalGenerator extends AbstractOptionHandler implements
-        InstanceStream {
+        InstanceStream, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -420,5 +423,13 @@ public class AgrawalGenerator extends AbstractOptionHandler implements
     @Override
     public void getDescription(StringBuilder sb, int indent) {
         // TODO Auto-generated method stub
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == AgrawalGenerator.class)
+            return new ImmutableCapabilities(Capability.VIEW_STABLE, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STABLE);
     }
 }

@@ -15,7 +15,8 @@ Tabs=\
   moa.gui.ConceptDriftTabPanel,\
   moa.gui.ALTabPanel,\
   moa.gui.ScriptingTabPanel,\
-  moa.gui.AuxiliarTabPanel
+  moa.gui.AuxiliarTabPanel,\
+  moa.gui.experimentertab.ExperimenterTabPanel
 
 # the default frame width
 FrameWidth=1200

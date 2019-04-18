@@ -52,7 +52,7 @@ public class OutlierAlgoPanel extends javax.swing.JPanel implements ActionListen
                "Algorithm to use.", MyBaseOutlierDetector.class, "MCOD.MCOD");
     
     private ClassOption algorithmOption1 = new ClassOption("Algorithm1", 'a',
-               "Algorithm to use.", MyBaseOutlierDetector.class, "Angiulli.ExactSTORM");
+               "Algorithm to use.", MyBaseOutlierDetector.class, "Angiulli.ExactSTORM","None");
    
     public OutlierAlgoPanel() {
         initComponents();
