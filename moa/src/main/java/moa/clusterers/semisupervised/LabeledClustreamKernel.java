@@ -5,6 +5,7 @@ import moa.cluster.CFCluster;
 import moa.clusterers.clustream.ClustreamKernel;
 import moa.core.DoubleVector;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 

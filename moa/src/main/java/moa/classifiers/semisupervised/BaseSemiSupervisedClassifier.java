@@ -1,6 +1,7 @@
 package moa.classifiers.semisupervised;
 
 import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.SemiSupervisedLearner;
@@ -16,7 +17,9 @@ import moa.core.Utils;
 import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * A simple semi-supervised classifier that serves as a baseline.
@@ -36,10 +39,17 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
             "A clusterer to perform clustering",
             AbstractClusterer.class, "clustream.Clustream -M");
 
+    /** Lets user decide if they want to use pseudo-labels */
     public FlagOption usePseudoLabelOption = new FlagOption("pseudoLabel", 'p',
             "Using pseudo-label while training");
 
+    /** Decides the labels based on k-nearest cluster, k defaults to 1 */
+    public IntOption kNearestClusterOption = new IntOption("kNearestCluster", 'k',
+            "Issue predictions based on the majority vote from k-nearest cluster", 1);
+
     private boolean usePseudoLabel;
+
+    private int k;
 
     /** Count the number of times a class is predicted */
     private int[] predictionCount;
@@ -61,6 +71,7 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         this.clusterer = (AbstractClusterer) getPreparedClassOption(this.clustererOption);
         this.clusterer.prepareForUse();
         this.usePseudoLabel = usePseudoLabelOption.isSet();
+        this.k = kNearestClusterOption.getValue();
         super.prepareForUseImpl(monitor, repository);
     }
 
@@ -72,11 +83,15 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     @Override
     public double[] getVotesForInstance(Instance inst) {
         Objects.requireNonNull(this.clusterer, "Clusterer must not be null!");
+
+        // TODO get votes from k nearest cluster
         LabeledClustreamKernel C = this.findClosestCluster(inst);
         if (C == null) {
             nullCTimes++;
             return new double[0];
         }
+
+        // LabeledClustreamKernel[] kC = this.findKNearestClusters(inst, this.k);
 
         double[] votes = C.getLabelVotes();
         if (this.predictionCount == null) this.predictionCount = new int[inst.dataset().numClasses()];
@@ -140,6 +155,40 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         labeledC.incrementLabelCount(inst.classValue(), 1); // update the count (+ 1)
     }
 
+    class DistanceKernelComparator implements Comparator<LabeledClustreamKernel> {
+
+        private Instance instance;
+
+        public DistanceKernelComparator(Instance instance) {
+            this.instance = instance;
+        }
+
+        @Override
+        public int compare(LabeledClustreamKernel C1, LabeledClustreamKernel C2) {
+            double distanceC1 = ClustreamSSL.distance(C1.getCenter(), instance.toDoubleArray());
+            double distanceC2 = ClustreamSSL.distance(C2.getCenter(), instance.toDoubleArray());
+            return Double.compare(distanceC1, distanceC2);
+        }
+    }
+
+    private LabeledClustreamKernel[] findKNearestClusters(Instance instance, int k) {
+        Set<LabeledClustreamKernel> sortedClusters = new TreeSet<>(new DistanceKernelComparator(instance));
+        Clustering clustering = this.getClusteringResult();
+        if (clustering == null) return new LabeledClustreamKernel[0];
+        for (Cluster cluster : clustering.getClustering()) {
+            if (!(cluster instanceof LabeledClustreamKernel)) continue;
+            LabeledClustreamKernel lCluster = (LabeledClustreamKernel) cluster;
+            sortedClusters.add(lCluster);
+        }
+        LabeledClustreamKernel[] topK = new LabeledClustreamKernel[k];
+        Iterator<LabeledClustreamKernel> it = sortedClusters.iterator();
+        int i = 0;
+        while (it.hasNext() && i < k) {
+            topK[i++] = it.next();
+        }
+        return topK;
+    }
+
     /**
      * Finds the nearest cluster to the given point.
      * @param instance an instance point
@@ -166,14 +215,11 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
             if (!(cluster instanceof LabeledClustreamKernel)) continue;
             LabeledClustreamKernel labeledC = (LabeledClustreamKernel) cluster;
             double distance = ClustreamSSL.distance(labeledC.getCenter(), instance.toDoubleArray());
-//            System.out.println("Distance " + distance);
             if (distance < minDistance) {
                 minDistance = distance;
                 C = labeledC;
             }
         }
-//        System.out.println("Closest distance " + minDistance + "\n");
-//        if (minDistance > 5.0) System.out.println("Quite big distance...\n");
 
         return C;
     }
