@@ -21,6 +21,7 @@
 package moa.cluster;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import com.yahoo.labs.samoa.instances.DenseInstance;
@@ -46,13 +47,15 @@ public class SphereCluster extends Cluster {
 	}
 
 	public SphereCluster() {
+		this.labelCount = new HashMap<>();
 	}
 
-	public SphereCluster( double[] center, double radius, double weightedSize) {
+	public SphereCluster(double[] center, double radius, double weightedSize) {
 		this();
 		this.center = center;
 		this.radius = radius;
 		this.weight = weightedSize;
+		this.labelCount = new HashMap<>();
 	}
 
 	public SphereCluster(int dimensions, double radius, Random random) {

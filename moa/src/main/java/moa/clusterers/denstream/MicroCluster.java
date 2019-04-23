@@ -24,10 +24,10 @@ import com.yahoo.labs.samoa.instances.Instance;
 
 public class MicroCluster extends CFCluster {
 
-    private long lastEditT = -1;
-    private long creationTimestamp = -1;
-    private double lambda;
-    private Timestamp currentTimestamp;
+    protected long lastEditT = -1;
+    protected long creationTimestamp = -1;
+    protected double lambda;
+    protected Timestamp currentTimestamp;
 
     public MicroCluster(double[] center, int dimensions, long creationTimestamp, double lambda, Timestamp currentTimestamp) {
         super(center, dimensions);
@@ -39,6 +39,8 @@ public class MicroCluster extends CFCluster {
 
     public MicroCluster(Instance instance, int dimensions, long timestamp, double lambda, Timestamp currentTimestamp) {
         this(instance.toDoubleArray(), dimensions, timestamp, lambda, currentTimestamp);
+
+        
     }
 
     public void insert(Instance instance, long timestamp) {
@@ -91,7 +93,7 @@ public class MicroCluster extends CFCluster {
         return getCenter(currentTimestamp.getTimestamp());
     }
 
-    private double[] getCenter(long timestamp) {
+    protected double[] getCenter(long timestamp) {
         long dt = timestamp - lastEditT;
         double w = getWeight(timestamp);
         double[] res = new double[LS.length];

@@ -92,6 +92,7 @@ public class LabeledClustreamKernel extends ClustreamKernel {
      * @param label the class label
      * @param amount the amount to increment
      */
+    @Override
     public void incrementLabelCount(Double label, int amount) {
         if (labelCount.containsKey(label)) {
             labelCount.put(label, labelCount.get(label) + amount);

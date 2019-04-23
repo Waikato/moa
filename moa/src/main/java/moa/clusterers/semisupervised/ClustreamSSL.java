@@ -181,7 +181,7 @@ public class ClustreamSSL extends AbstractClusterer {
     }
 
     @Override
-    public Clustering getClusteringResult() {
+        public Clustering getClusteringResult() {
         return null;
     }
 

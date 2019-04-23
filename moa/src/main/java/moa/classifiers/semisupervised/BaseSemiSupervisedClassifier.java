@@ -5,6 +5,7 @@ import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.SemiSupervisedLearner;
+import moa.cluster.CFCluster;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
@@ -85,7 +86,7 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         Objects.requireNonNull(this.clusterer, "Clusterer must not be null!");
 
         // TODO get votes from k nearest cluster
-        LabeledClustreamKernel C = this.findClosestCluster(inst);
+        Cluster C = this.findClosestCluster(inst);
         if (C == null) {
             nullCTimes++;
             return new double[0];
@@ -97,8 +98,8 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         if (this.predictionCount == null) this.predictionCount = new int[inst.dataset().numClasses()];
         int predictedClass = Utils.maxIndex(votes);
         predictionCount[predictedClass]++;
-        C.incrementTimesGivingPrediction(1);
-        C.setHasGivenPrediction();
+        //C.incrementTimesGivingPrediction(1);
+        //C.setHasGivenPrediction();
         this.notNullCTimes++;
 
         return votes;
@@ -127,16 +128,16 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         // Else, update the cluster's label
         Cluster C = this.clusterer.getUpdatedCluster();
         if (C == null) return;
-        if (!(C instanceof LabeledClustreamKernel)) return;
-        LabeledClustreamKernel labeledC = (LabeledClustreamKernel) C;
-        labeledC.incrementLabelCount(inst.classValue(), 1); // update the count (+ 1)
+        // if (!(C instanceof LabeledClustreamKernel)) return;
+        // LabeledClustreamKernel labeledC = (LabeledClustreamKernel) C;
+        C.incrementLabelCount(inst.classValue(), 1); // update the count (+ 1)
     }
 
     private void trainOnInstanceWithPseudoLabel(Instance inst) {
         // if the class is masked (simulated as missing) or is missing (for real) --> pseudo-label
         if (inst.classIsMasked() || inst.classIsMissing()) {
             Instance instPseudoLabel = inst.copy();
-            LabeledClustreamKernel C = this.findClosestCluster(instPseudoLabel);
+            Cluster C = this.findClosestCluster(instPseudoLabel);
             double pseudoLabel = C != null ? C.getMajorityLabel() : 0.0;
             instPseudoLabel.setClassValue(pseudoLabel);
             this.clusterer.trainOnInstance(instPseudoLabel);
@@ -150,9 +151,9 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         // Else, update the cluster's label
         Cluster C = this.clusterer.getUpdatedCluster();
         if (C == null) return;
-        if (!(C instanceof LabeledClustreamKernel)) return;
-        LabeledClustreamKernel labeledC = (LabeledClustreamKernel) C;
-        labeledC.incrementLabelCount(inst.classValue(), 1); // update the count (+ 1)
+        // if (!(C instanceof CFCluster)) return;
+        // CFCluster labeledC = (LabeledClustreamKernel) C;
+        C.incrementLabelCount(inst.classValue(), 1); // update the count (+ 1)
     }
 
     class DistanceKernelComparator implements Comparator<LabeledClustreamKernel> {
@@ -194,7 +195,7 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
      * @param instance an instance point
      * @return the nearest cluster if any found, <code>null</code> otherwise
      */
-    private LabeledClustreamKernel findClosestCluster(Instance instance) {
+    private Cluster findClosestCluster(Instance instance) {
         return findClosestClusterByEuclidean(instance);
         // return findClosestClusterByInclusionProbab(instance);
     }
@@ -207,17 +208,17 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
      * @return the cluster whose center is nearest to the instance,
      * <code>null</code> otherwise
      */
-    private LabeledClustreamKernel findClosestClusterByEuclidean(Instance instance) {
-        LabeledClustreamKernel C = null;
+    private Cluster findClosestClusterByEuclidean(Instance instance) {
+        Cluster C = null;
         double minDistance = Double.MAX_VALUE;
         Clustering clustering = this.getClusteringResult();
         for (Cluster cluster : clustering.getClustering()) {
-            if (!(cluster instanceof LabeledClustreamKernel)) continue;
-            LabeledClustreamKernel labeledC = (LabeledClustreamKernel) cluster;
-            double distance = ClustreamSSL.distance(labeledC.getCenter(), instance.toDoubleArray());
+            // if (!(cluster instanceof LabeledClustreamKernel)) continue;
+            // CFCluster labeledC = (LabeledClustreamKernel) cluster;
+            double distance = ClustreamSSL.distance(cluster.getCenter(), instance.toDoubleArray());
             if (distance < minDistance) {
                 minDistance = distance;
-                C = labeledC;
+                C = cluster;
             }
         }
 
@@ -238,31 +239,32 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         }
 
         // print the total count in each micro-cluster & number of times it has given prediction
-        int j = 0;
-        int countEffectiveCluster = 0;
-        for (Cluster cluster : clustering.getClustering()) {
-            if (!(cluster instanceof LabeledClustreamKernel)) return new Measurement[0];
-            LabeledClustreamKernel lc = (LabeledClustreamKernel) cluster;
-
-            // count the number of labels stored in one cluster & the prediction times of that cluster
-            int total = 0;
-            for (Map.Entry<Double, Integer> entry : lc.getLabelCount().entrySet()) total += entry.getValue();
-            if (total > maxCount) maxCount = total;
-            measurements.add(new Measurement("count cluster " + j, total));
-            measurements.add(new Measurement("prediction times " + j, lc.getTimesGivingPrediction()));
-            if (lc.hasGivenPrediction()) countEffectiveCluster++;
-
-            // reset some measures
-//            lc.setTimesGivingPrediction(0);
-//            lc.unsetHasGivenPrediction();
-
-            j++;
-        }
+//        int j = 0;
+//        int countEffectiveCluster = 0;
+//        // System.out.println(clustering.getClustering().size());
+//        for (Cluster cluster : clustering.getClustering()) {
+//            // if (!(cluster instanceof LabeledClustreamKernel)) return new Measurement[0];
+//            // LabeledClustreamKernel lc = (LabeledClustreamKernel) cluster;
+//
+//            // count the number of labels stored in one cluster & the prediction times of that cluster
+//            int total = 0;
+//            for (Map.Entry<Double, Integer> entry : cluster.getLabelCount().entrySet()) total += entry.getValue();
+//            if (total > maxCount) maxCount = total;
+//            measurements.add(new Measurement("count cluster " + j, total));
+//            // measurements.add(new Measurement("prediction times " + j, cluster.getTimesGivingPrediction()));
+//            // if (cluster.hasGivenPrediction()) countEffectiveCluster++;
+//
+//            // reset some measures
+////            lc.setTimesGivingPrediction(0);
+////            lc.unsetHasGivenPrediction();
+//
+//            j++;
+//        }
 
 
         // side information
         measurements.add(new Measurement("max count", maxCount));
-        measurements.add(new Measurement("useful clusters", countEffectiveCluster));
+        // measurements.add(new Measurement("useful clusters", countEffectiveCluster));
         measurements.add(new Measurement("null times", this.nullCTimes));
         measurements.add(new Measurement("not null times", this.notNullCTimes));
 

@@ -40,7 +40,7 @@ public class NonConvexCluster extends CFCluster implements IDenseMacroCluster {
 
 	public NonConvexCluster(CFCluster cluster, List<CFCluster> microclusters) {
 		super(cluster); // required
-		mMicroClusters = new Vector<CFCluster>();
+		mMicroClusters = new Vector<>();
 		mMicroClusters.addAll(microclusters);
 		// assuming we have a circular shaped cluster, compute it's center: only
 		// for visualization
@@ -48,6 +48,9 @@ public class NonConvexCluster extends CFCluster implements IDenseMacroCluster {
 			if (!cf.equals(cluster))
 				this.add(cf);
 		}
+
+		// copy the label count also
+		this.labelCount = cluster.getLabelCountCopy();
 	}
 
 	@Override

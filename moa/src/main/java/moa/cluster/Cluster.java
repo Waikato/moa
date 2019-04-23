@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Random;
 import moa.AbstractMOAObject;
 import com.yahoo.labs.samoa.instances.Instance;
+import moa.core.DoubleVector;
 
 public abstract class Cluster extends AbstractMOAObject {
 
@@ -39,8 +40,10 @@ public abstract class Cluster extends AbstractMOAObject {
 
 
     public Cluster(){
-        this.measure_values = new HashMap<String, String>();
+        this.measure_values = new HashMap<>();
+        this.labelCount = new HashMap<>();
     }
+
     /**
      * @return the center of the cluster
      */
@@ -58,7 +61,7 @@ public abstract class Cluster extends AbstractMOAObject {
      * Returns the probability of the given point belonging to
      * this cluster.
      *
-     * @param point
+     * @param instance
      * @return a value between 0 and 1
      */
     public abstract double getInclusionProbability(Instance instance);
@@ -167,6 +170,53 @@ public abstract class Cluster extends AbstractMOAObject {
         sb.append("</table>");
         sb.append("</html>");
         return sb.toString();
+    }
+
+
+    ////////////////////////////////////
+    // From this part it concerns SSL //
+    ////////////////////////////////////
+
+    /** Keeps track of the count of the class labels */
+    protected Map<Double, Integer> labelCount;
+
+    public void incrementLabelCount(Double label, int amount) {
+        if (labelCount.containsKey(label)) {
+            labelCount.put(label, labelCount.get(label) + amount);
+        } else {
+            labelCount.put(label, amount);
+        }
+    }
+
+    public double getMajorityLabel() {
+        double label = 0;
+        int maxCount = 0;
+        for (Map.Entry<Double, Integer> entry : this.labelCount.entrySet()) {
+            if (entry.getValue() > maxCount) {
+                maxCount = entry.getValue();
+                label = entry.getKey();
+            }
+        }
+        return label;
+    }
+
+    public double[] getLabelVotes() {
+        DoubleVector votes = new DoubleVector();
+        for (Map.Entry<Double, Integer> entry : this.labelCount.entrySet()) {
+            votes.addToValue(entry.getKey().intValue(), entry.getValue());
+        }
+        votes.normalize();
+        return votes.getArrayRef();
+    }
+
+    public Map<Double, Integer> getLabelCount() { return this.labelCount; }
+
+    public Map<Double, Integer> getLabelCountCopy() {
+        Map<Double, Integer> result = new HashMap<>();
+        for (Map.Entry<Double, Integer> entry : this.labelCount.entrySet()) {
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
     }
 
 }
