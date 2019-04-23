@@ -188,12 +188,13 @@ public class Clustream extends AbstractClusterer {
 			return new Clustering( new Cluster[0] );
 		}
 
-		ClustreamKernel[] res = new ClustreamKernel[kernels.length];
-		for ( int i = 0; i < res.length; i++ ) {
-			res[i] = new ClustreamKernel( kernels[i], t, m );
-		}
+//		ClustreamKernel[] res = new ClustreamKernel[kernels.length];
+//		for ( int i = 0; i < res.length; i++ ) {
+//			res[i] = new ClustreamKernel( kernels[i], t, m );
+//		}
+//		return new Clustering( res );
 
-		return new Clustering( res );
+		return new Clustering(this.kernels);
 	}
 
 	@Override
@@ -213,8 +214,11 @@ public class Clustream extends AbstractClusterer {
 	private static double distance(double[] pointA, double [] pointB){
 		double distance = 0.0;
 		for (int i = 0; i < pointA.length; i++) {
-			double d = pointA[i] - pointB[i];
-			distance += d * d;
+			// sometimes, the value of the missing class is NaN & the final distance is NaN (which we don't want)
+			if (!Double.isNaN(pointA[i]) && !Double.isNaN(pointB[i])) {
+				double d = pointA[i] - pointB[i];
+				distance += d * d;
+			}
 		}
 		return Math.sqrt(distance);
 	}

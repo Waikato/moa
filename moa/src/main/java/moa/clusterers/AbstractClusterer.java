@@ -282,29 +282,38 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 
 	public abstract void getModelDescription(StringBuilder out, int indent);
 
-	protected static int modelAttIndexToInstanceAttIndex(int index,
-			Instance inst) {
+	protected static int modelAttIndexToInstanceAttIndex(int index, Instance inst) {
 		return inst.classIndex() > index ? index : index + 1;
 	}
 
-	protected static int modelAttIndexToInstanceAttIndex(int index,
-			Instances insts) {
+	protected static int modelAttIndexToInstanceAttIndex(int index, Instances insts) {
 		return insts.classIndex() > index ? index : index + 1;
 	}
 
-        public boolean  implementsMicroClusterer(){
+    public boolean  implementsMicroClusterer(){
             return false;
         }
 
-        public boolean  keepClassLabel(){
+    public boolean  keepClassLabel(){
             return false;
         }
-        
-        public Clustering getMicroClusteringResult(){
+
+    public Clustering getMicroClusteringResult(){
             return null;
         };
 
-	public Cluster getUpdatedCluster() {
-		return null;
-	}
+
+	////////////////////////////////////////////////////////////////////////
+	// From this part it concerns clustering for semi-supervised learning //
+	////////////////////////////////////////////////////////////////////////
+
+	/** The cluster updated by a point p during the training phase */
+	protected Cluster updatedCluster;
+
+	/**
+	 * Gets the one cluster being update as a new point p arrives.
+	 * It may be null if the clusterer doesn't keep track of the updated clusters.
+	 * @return the cluster that has been updated by a point p
+	 */
+	public Cluster getUpdatedCluster() { return updatedCluster; }
 }

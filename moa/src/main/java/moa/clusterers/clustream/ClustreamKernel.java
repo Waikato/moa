@@ -20,6 +20,7 @@
 package moa.clusterers.clustream;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Random;
 import moa.cluster.CFCluster;
 import com.yahoo.labs.samoa.instances.Instance;
@@ -37,20 +38,30 @@ public class ClustreamKernel extends CFCluster {
     double t;
 
 
-    public ClustreamKernel( Instance instance, int dimensions, long timestamp , double t, int m) {
+    public ClustreamKernel(Instance instance, int dimensions, long timestamp , double t, int m) {
         super(instance, dimensions);
         this.t = t;
         this.m = m;
         this.LST = timestamp;
 		this.SST = timestamp*timestamp;
+
+		// update the label count
+        try {
+            if (!instance.classIsMissing() && !instance.classIsMissing()) {
+                super.incrementLabelCount(instance.classValue(), 1);
+            }
+        } catch (NullPointerException e) {  /* sometimes the instance header is null... */}
     }
 
-    public ClustreamKernel( ClustreamKernel cluster, double t, int m ) {
+    public ClustreamKernel(ClustreamKernel cluster, double t, int m ) {
         super(cluster);
         this.t = t;
         this.m = m;
         this.LST = cluster.LST;
         this.SST = cluster.SST;
+
+        // copy the label count
+        this.labelCount = cluster.getLabelCountCopy();
     }
 
     public void insert( Instance instance, long timestamp ) {
@@ -62,6 +73,11 @@ public class ClustreamKernel extends CFCluster {
 		    LS[i] += instance.value(i);
 		    SS[i] += instance.value(i)*instance.value(i);
 		}
+
+        // update the label count
+        if (!instance.classIsMissing() && !instance.classIsMissing()) {
+            super.incrementLabelCount(instance.classValue(), 1);
+        }
     }
 
     @Override
@@ -76,6 +92,11 @@ public class ClustreamKernel extends CFCluster {
 		    this.LS[i] += other.LS[i];
 		    this.SS[i] += other.SS[i];
 		}
+
+		// accumulate the count
+        for (Map.Entry<Double, Integer> entry : other2.getLabelCount().entrySet()) {
+            super.incrementLabelCount(entry.getKey(), entry.getValue());
+        }
     }
 
     public double getRelevanceStamp() {
@@ -139,7 +160,7 @@ public class ClustreamKernel extends CFCluster {
 
     /**
      * See interface <code>Cluster</code>
-     * @param point
+     * @param instance
      * @return
      */
     @Override
@@ -206,7 +227,7 @@ public class ClustreamKernel extends CFCluster {
     /**
      * Calculate the normalized euclidean distance (Mahalanobis distance for
      * distribution w/o covariances) to a point.
-     * @param other The point to which the distance is calculated.
+     * @param point The point to which the distance is calculated.
      * @return The normalized distance to the cluster center.
      *
      * TODO: check whether WEIGHTING is correctly applied to variances
@@ -226,7 +247,7 @@ public class ClustreamKernel extends CFCluster {
 
         /**
      * Approximates the inverse error function. Clustream needs this.
-     * @param z
+     * @param x
      */
     public static double inverseError(double x) {
         double z = Math.sqrt(Math.PI) * x;

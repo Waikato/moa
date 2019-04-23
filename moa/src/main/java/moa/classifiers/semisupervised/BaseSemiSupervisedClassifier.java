@@ -5,7 +5,6 @@ import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.SemiSupervisedLearner;
-import moa.cluster.CFCluster;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
@@ -77,8 +76,12 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     }
 
     private Clustering getClusteringResult() {
-        return (this.clusterer.getClusteringResult() != null ?
-                this.clusterer.getClusteringResult() : this.clusterer.getMicroClusteringResult());
+//        return (this.clusterer.getClusteringResult() != null ?
+//                this.clusterer.getClusteringResult() : this.clusterer.getMicroClusteringResult());
+
+        // get the online clustering result?
+        if (clusterer.implementsMicroClusterer()) return clusterer.getMicroClusteringResult();
+        return clusterer.getClusteringResult();
     }
 
     @Override
@@ -123,14 +126,14 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         this.clusterer.trainOnInstance(inst);
 
         // If X has no label, do nothing
-        if (inst.classIsMissing()) return;
+        // if (inst.classIsMissing()) return;
 
         // Else, update the cluster's label
-        Cluster C = this.clusterer.getUpdatedCluster();
-        if (C == null) return;
+        // Cluster C = this.clusterer.getUpdatedCluster();
+        // if (C == null) return;
         // if (!(C instanceof LabeledClustreamKernel)) return;
         // LabeledClustreamKernel labeledC = (LabeledClustreamKernel) C;
-        C.incrementLabelCount(inst.classValue(), 1); // update the count (+ 1)
+        // C.incrementLabelCount(inst.classValue(), 1); // update the count (+ 1)
     }
 
     private void trainOnInstanceWithPseudoLabel(Instance inst) {
@@ -146,14 +149,14 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         }
 
         // If X has no label, do nothing (we don't use the pseudo-label to update the count)
-        if (inst.classIsMissing()) return;
+        // if (inst.classIsMissing()) return;
 
         // Else, update the cluster's label
-        Cluster C = this.clusterer.getUpdatedCluster();
-        if (C == null) return;
+        // Cluster C = this.clusterer.getUpdatedCluster();
+        // if (C == null) return;
         // if (!(C instanceof CFCluster)) return;
         // CFCluster labeledC = (LabeledClustreamKernel) C;
-        C.incrementLabelCount(inst.classValue(), 1); // update the count (+ 1)
+        // C.incrementLabelCount(inst.classValue(), 1); // update the count (+ 1)
     }
 
     class DistanceKernelComparator implements Comparator<LabeledClustreamKernel> {
@@ -238,10 +241,20 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
             }
         }
 
+        System.out.println("\n#clusters: " + clustering.getClustering().size());
+        for (Cluster cluster : clustering.getClustering()) {
+            //if (cluster.getLabelCount().size() > 1) {
+                System.out.println("\t#entries: " + cluster.getLabelCount().size() + "-----------------");
+                cluster.getLabelCount().entrySet().forEach(e -> {
+                    System.out.println("\t\t" + e.getKey() + " : " + e.getValue());
+                });
+            //}
+        }
         // print the total count in each micro-cluster & number of times it has given prediction
 //        int j = 0;
 //        int countEffectiveCluster = 0;
-//        // System.out.println(clustering.getClustering().size());
+
+
 //        for (Cluster cluster : clustering.getClustering()) {
 //            // if (!(cluster instanceof LabeledClustreamKernel)) return new Measurement[0];
 //            // LabeledClustreamKernel lc = (LabeledClustreamKernel) cluster;

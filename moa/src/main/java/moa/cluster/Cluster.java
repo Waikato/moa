@@ -39,7 +39,7 @@ public abstract class Cluster extends AbstractMOAObject {
     private HashMap<String, String> measure_values;
 
 
-    public Cluster(){
+    public Cluster() {
         this.measure_values = new HashMap<>();
         this.labelCount = new HashMap<>();
     }

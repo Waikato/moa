@@ -40,7 +40,10 @@ public class MicroCluster extends CFCluster {
     public MicroCluster(Instance instance, int dimensions, long timestamp, double lambda, Timestamp currentTimestamp) {
         this(instance.toDoubleArray(), dimensions, timestamp, lambda, currentTimestamp);
 
-        
+        // update the label count
+        if (!instance.classIsMasked() && !instance.classIsMissing()) {
+            super.incrementLabelCount(instance.classValue(), 1);
+        }
     }
 
     public void insert(Instance instance, long timestamp) {
@@ -51,6 +54,11 @@ public class MicroCluster extends CFCluster {
         for (int i = 0; i < instance.numValues(); i++) {
             LS[i] += instance.value(i);
             SS[i] += instance.value(i) * instance.value(i);
+        }
+
+        // update the label count
+        if (!instance.classIsMasked() && !instance.classIsMissing()) {
+            super.incrementLabelCount(instance.classValue(), 1);
         }
     }
 
@@ -137,6 +145,10 @@ public class MicroCluster extends CFCluster {
         copy.SS = this.SS.clone();
         copy.LS = this.LS.clone();
         copy.lastEditT = this.lastEditT;
+
+        // copy the label count
+        copy.labelCount = super.getLabelCountCopy();
+
         return copy;
     }
 
