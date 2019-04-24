@@ -337,5 +337,9 @@ public class SparseInstanceData implements InstanceData {
       return new SparseInstanceData(this.attributeValues.clone(),this.indexValues.clone(),this.numberAttributes);   
     }
 
+    @Override
+    public void normalize() {
+      // TODO
+    }
 
 }

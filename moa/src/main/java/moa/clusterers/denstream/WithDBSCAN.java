@@ -63,8 +63,7 @@ public class WithDBSCAN extends AbstractClusterer {
 	 "offline multiplier for epsilion.", 2, 2, 20);
 	 
 	 public FloatOption lambdaOption = new FloatOption("lambda", 'l', "",
-			 0.25,
-			 0, 1);
+			 0.25,0, 1);
 	 
 	 public IntOption speedOption = new IntOption("processingSpeed", 's',
 				"Number of incoming points per time unit.", 100, 1, 1000);
@@ -138,7 +137,8 @@ public class WithDBSCAN extends AbstractClusterer {
 		o_micro_cluster = new Clustering();
 		initBuffer = new ArrayList<>();
 
-		tp = Math.round(1 / lambda * Math.log((beta * mu) / (beta * mu - 1))) + 1;
+		// TODO why +1 at the end?
+		tp = Math.round((1 / lambda) * Math.log((beta * mu) / (beta * mu - 1))) + 1;
 		
 		numProcessedPerUnit = 0;
 		processingSpeed = speedOption.getValue();
@@ -294,12 +294,7 @@ public class WithDBSCAN extends AbstractClusterer {
 		for (int p = 0; p < points.size(); p++) {
 			DenPoint npoint = points.get(p);
 			if (!npoint.covered) {
-				DoubleVector p1 = new DoubleVector(point.toDoubleArray());
-				DoubleVector p2 = new DoubleVector(points.get(p).toDoubleArray());
-				p1.normalize();
-				p2.normalize();
-				double dist = distance(p1.getArrayRef(), p2.getArrayRef());
-				// double dist = distance(point.toDoubleArray(), points.get(p).toDoubleArray());
+				double dist = distance(point.toDoubleArray(), points.get(p).toDoubleArray());
 				if (dist < eps) {
 					neighbourIDs.add(p);
 				}
@@ -323,7 +318,7 @@ public class WithDBSCAN extends AbstractClusterer {
 				min = x;
 			}
 			double dist = distance(p.toDoubleArray(), x.getCenter());
-			dist -= x.getRadius(timestamp);
+			dist -= x.getRadius(timestamp); // TODO why do we subtract x.radius from the distance?
 			if (dist < minDist) {
 				minDist = dist;
 				min = x;
@@ -362,9 +357,7 @@ public class WithDBSCAN extends AbstractClusterer {
 	}
 
 	@Override
-	public Clustering getMicroClusteringResult() {
-		return p_micro_cluster;
-	}
+	public Clustering getMicroClusteringResult() { return p_micro_cluster; }
 
 	@Override
 	protected Measurement[] getModelMeasurementsImpl() {

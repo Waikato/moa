@@ -180,6 +180,13 @@ public abstract class Cluster extends AbstractMOAObject {
     /** Keeps track of the count of the class labels */
     protected Map<Double, Integer> labelCount;
 
+    /**
+     * Increments the count of a label in this cluster.
+     * If the label is not yet seen in the cluster, its count will be initialized
+     *
+     * @param label the class label
+     * @param amount the amount to increment
+     */
     public void incrementLabelCount(Double label, int amount) {
         if (labelCount.containsKey(label)) {
             labelCount.put(label, labelCount.get(label) + amount);
@@ -188,6 +195,10 @@ public abstract class Cluster extends AbstractMOAObject {
         }
     }
 
+    /**
+     * Gets the majority label in this cluster
+     * @return the majority label
+     */
     public double getMajorityLabel() {
         double label = 0;
         int maxCount = 0;
@@ -200,6 +211,10 @@ public abstract class Cluster extends AbstractMOAObject {
         return label;
     }
 
+    /**
+     * Gets the frequency of each label in this cluster
+     * @return the frequency (probability) of each label in this cluster
+     */
     public double[] getLabelVotes() {
         DoubleVector votes = new DoubleVector();
         for (Map.Entry<Double, Integer> entry : this.labelCount.entrySet()) {
@@ -209,8 +224,16 @@ public abstract class Cluster extends AbstractMOAObject {
         return votes.getArrayRef();
     }
 
+    /**
+     * Returns the label count
+     * @return the label count
+     */
     public Map<Double, Integer> getLabelCount() { return this.labelCount; }
 
+    /**
+     * Returns a clone of the label count
+     * @return a clone of the label count
+     */
     public Map<Double, Integer> getLabelCountCopy() {
         Map<Double, Integer> result = new HashMap<>();
         for (Map.Entry<Double, Integer> entry : this.labelCount.entrySet()) {

@@ -20,6 +20,8 @@
 
 package moa.cluster;
 import java.util.Arrays;
+import java.util.Map;
+
 import com.yahoo.labs.samoa.instances.Instance;
 
 /* micro cluster, as defined by Aggarwal et al, On Clustering Massive Data Streams: A Summarization Praradigm 
@@ -78,9 +80,15 @@ public abstract class CFCluster extends SphereCluster {
 	 */
 	public CFCluster(Instance instance, int dimensions) {
 		this(instance.toDoubleArray(), dimensions);
+
+		// update the label count
+		if (!instance.classIsMasked() && !instance.classIsMissing()) {
+			super.incrementLabelCount(instance.classValue(), 1);
+		}
 	}
 
 	protected CFCluster(int dimensions) {
+		super();
 		this.N = 0;
 		this.LS = new double[dimensions];
 		this.SS = new double[dimensions];
@@ -89,6 +97,7 @@ public abstract class CFCluster extends SphereCluster {
 	}
 
 	public CFCluster(double [] center, int dimensions) {
+		super();
 		this.N = 1;
 		this.LS = center;
 		this.SS = new double[dimensions];
@@ -98,15 +107,24 @@ public abstract class CFCluster extends SphereCluster {
 	}
 
 	public CFCluster(CFCluster cluster) {
+		super();
 		this.N = cluster.N;
 		this.LS = Arrays.copyOf(cluster.LS, cluster.LS.length);
 		this.SS = Arrays.copyOf(cluster.SS, cluster.SS.length);
+
+		// copy the label count
+		this.labelCount = cluster.getLabelCountCopy();
 	}
 
-	public void add(CFCluster cluster ) {
+	public void add(CFCluster cluster) {
 		this.N += cluster.N;
 		addVectors( this.LS, cluster.LS );
 		addVectors( this.SS, cluster.SS );
+
+		// accumulate the label count
+		for (Map.Entry<Double, Integer> entry : cluster.getLabelCount().entrySet()) {
+			super.incrementLabelCount(entry.getKey(), entry.getValue());
+		}
 	}
 
 	public abstract CFCluster getCF();
@@ -117,7 +135,7 @@ public abstract class CFCluster extends SphereCluster {
 	 @Override
 	 public double[] getCenter() {
 		 assert (this.N>0);
-		 double res[] = new double[this.LS.length];
+		 double[] res = new double[this.LS.length];
 		 for ( int i = 0; i < res.length; i++ ) {
 			 res[i] = this.LS[i] / N;
 		 }

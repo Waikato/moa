@@ -43,11 +43,11 @@ public class SphereCluster extends Cluster {
 
 
 	public SphereCluster(double[] center, double radius) {
-		this( center, radius, 1.0 );
+		this(center, radius,1.0 );
 	}
 
 	public SphereCluster() {
-		this.labelCount = new HashMap<>();
+		super();
 	}
 
 	public SphereCluster(double[] center, double radius, double weightedSize) {

@@ -394,4 +394,7 @@ public interface Instance extends Serializable {
      * <code>false</code> is the value is really missing
      */
     public boolean isMasked(int attributeIndex);
+
+    /** Normalizes the data */
+    public void normalize();
 }

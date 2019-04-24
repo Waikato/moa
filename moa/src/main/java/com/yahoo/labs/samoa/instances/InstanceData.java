@@ -115,4 +115,6 @@ public interface InstanceData extends Serializable {
    */
     public InstanceData copy();
 
+    /** Normalizes the attribute values */
+    public void normalize();
 }

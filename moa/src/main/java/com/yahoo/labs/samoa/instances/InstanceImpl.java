@@ -557,4 +557,9 @@ public class InstanceImpl implements MultiLabelInstance {
         int index = this.instanceHeader.indexOf(attribute);
         this.setValue(index, value);
     }
+
+    @Override
+    public void normalize() {
+        this.instanceData.normalize();
+    }
 }

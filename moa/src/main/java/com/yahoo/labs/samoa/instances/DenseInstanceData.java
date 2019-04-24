@@ -178,5 +178,12 @@ public class DenseInstanceData implements InstanceData{
     public InstanceData copy() {
         return new DenseInstanceData(this.attributeValues.clone());
     }
-       
+
+    @Override
+    public void normalize() {
+        double sumAbsoluteValue = 0;
+        for (double v : attributeValues) sumAbsoluteValue += (v > 0 ? v : -v);
+        for (int i = 0; i < attributeValues.length; i++) attributeValues[i] *= (1.0 / sumAbsoluteValue);
+    }
+
 }

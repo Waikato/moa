@@ -11,6 +11,7 @@ import moa.clusterers.AbstractClusterer;
 import moa.clusterers.Clusterer;
 import moa.clusterers.semisupervised.ClustreamSSL;
 import moa.clusterers.semisupervised.LabeledClustreamKernel;
+import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.Utils;
@@ -47,7 +48,12 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     public IntOption kNearestClusterOption = new IntOption("kNearestCluster", 'k',
             "Issue predictions based on the majority vote from k-nearest cluster", 1);
 
+    /** Decides whether to normalize the data or not */
+    public FlagOption normalizeOption = new FlagOption("normalize", 'n', "Normalize the data");
+
     private boolean usePseudoLabel;
+
+    private boolean doNormalization;
 
     private int k;
 
@@ -72,6 +78,7 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         this.clusterer.prepareForUse();
         this.usePseudoLabel = usePseudoLabelOption.isSet();
         this.k = kNearestClusterOption.getValue();
+        this.doNormalization = normalizeOption.isSet();
         super.prepareForUseImpl(monitor, repository);
     }
 
@@ -87,6 +94,9 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     @Override
     public double[] getVotesForInstance(Instance inst) {
         Objects.requireNonNull(this.clusterer, "Clusterer must not be null!");
+
+        // normalize the instance
+        if (doNormalization) inst.normalize();
 
         // TODO get votes from k nearest cluster
         Cluster C = this.findClosestCluster(inst);
@@ -117,6 +127,10 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     @Override
     public void trainOnInstanceImpl(Instance inst) {
         Objects.requireNonNull(this.clusterer, "Clusterer must not be null!");
+
+        // normalize the data
+        if (doNormalization) inst.normalize();
+
         if (this.usePseudoLabel) this.trainOnInstanceWithPseudoLabel(inst);
         else this.trainOnInstanceNoPseudoLabel(inst);
     }
@@ -131,8 +145,6 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         // Else, update the cluster's label
         // Cluster C = this.clusterer.getUpdatedCluster();
         // if (C == null) return;
-        // if (!(C instanceof LabeledClustreamKernel)) return;
-        // LabeledClustreamKernel labeledC = (LabeledClustreamKernel) C;
         // C.incrementLabelCount(inst.classValue(), 1); // update the count (+ 1)
     }
 
@@ -216,8 +228,6 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         double minDistance = Double.MAX_VALUE;
         Clustering clustering = this.getClusteringResult();
         for (Cluster cluster : clustering.getClustering()) {
-            // if (!(cluster instanceof LabeledClustreamKernel)) continue;
-            // CFCluster labeledC = (LabeledClustreamKernel) cluster;
             double distance = ClustreamSSL.distance(cluster.getCenter(), instance.toDoubleArray());
             if (distance < minDistance) {
                 minDistance = distance;
@@ -241,15 +251,12 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
             }
         }
 
-        System.out.println("\n#clusters: " + clustering.getClustering().size());
-        for (Cluster cluster : clustering.getClustering()) {
-            //if (cluster.getLabelCount().size() > 1) {
-                System.out.println("\t#entries: " + cluster.getLabelCount().size() + "-----------------");
-                cluster.getLabelCount().entrySet().forEach(e -> {
-                    System.out.println("\t\t" + e.getKey() + " : " + e.getValue());
-                });
-            //}
-        }
+        System.out.println("#clusters: " + clustering.getClustering().size());
+        clustering.getClustering().forEach(c -> {
+            System.out.println("\t#entries: " + c.getLabelCount().size() + "-----------------");
+            c.getLabelCount().forEach((key, value) -> System.out.println("\t\t" + key + " : " + value));
+        });
+
         // print the total count in each micro-cluster & number of times it has given prediction
 //        int j = 0;
 //        int countEffectiveCluster = 0;
