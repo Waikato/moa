@@ -6,6 +6,9 @@
 
 * ensure that all `pom.xml` files list the same version, update them if 
   necessary to `yyyy.mm.0-SNAPSHOT` (check correct patch level)
+
+* in the moa.core.Globals class, update the versionString variable to
+  match the upcoming version
   
 * in the `weka-package/Description.props` file, ensure that the following
   properties have been updated and aligned with the upcoming version:

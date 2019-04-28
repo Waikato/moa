@@ -22,6 +22,8 @@ package moa.classifiers.bayes;
 
 import java.util.Arrays;
 import com.github.javacliparser.FloatOption;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
@@ -106,7 +108,7 @@ public class NaiveBayesMultinomial extends AbstractClassifier  implements MultiC
     /**
      * Trains the classifier with the given instance.
      *
-     * @param instance the new training instance to include in the model
+     * @param inst the new training instance to include in the model
      */
     @Override
     public void trainOnInstanceImpl(Instance inst) {
@@ -252,5 +254,13 @@ public class NaiveBayesMultinomial extends AbstractClassifier  implements MultiC
     @Override
     public boolean isRandomizable() {
         return false;
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == NaiveBayesMultinomial.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

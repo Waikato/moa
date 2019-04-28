@@ -19,6 +19,8 @@
  */
 package moa.classifiers.functions;
 
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
@@ -80,5 +82,13 @@ public class MajorityClass extends AbstractClassifier implements MultiClassClass
 
     public boolean isRandomizable() {
         return false;
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == MajorityClass.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }
