@@ -2,7 +2,9 @@
 
 ## Prerequisites
 
-* use Java 9+ for making release
+* use Java 9+ for making release. Make sure the JAVA_HOME environment
+  variable is set to the correct JDK directory and exported in your
+  terminal
 
 * ensure that all `pom.xml` files list the same version, update them if 
   necessary to `yyyy.mm.0-SNAPSHOT` (check correct patch level)
@@ -37,9 +39,9 @@
   
 * Publish your public GPG signing key to the keyserver at keyserver.ubuntu.com
 
-* Run the following maven command, which will automatically use the current
-  version present in the `pom.xml` files and then increment it after the 
-  release has succeeded. 
+* Run the following maven command (from the top-level MOA directory), which
+  will automatically use the current version present in the `pom.xml` files
+  and then increment it after the release has succeeded.
 
     ```
     mvn --batch-mode release:prepare release:perform
@@ -48,11 +50,13 @@
 * Log into [https://oss.sonatype.org](https://oss.sonatype.org)
 
 * Select **Staging Repositories**, scroll right to the bottom of the list
-  and look for a repository called something like *nzacwaikatocmsmoa-XYZ*
+  and look for a repository called something like *nzacwaikatocmsmoa-XYZ*.
+  Select this repository via the check-box.
 
 * Subsequently **Close** and then **Release** the artifacts. NB: It may take a
   few minutes before the *Release* button becomes available, as the system
-  is flagging all the artifacts from the staging repo.
+  is flagging all the artifacts from the staging repo. When releasing, leave
+  the **Drop Repository** check-box ticked.
 
 * Perform a `git push`
 
@@ -101,7 +105,7 @@
     
 * create new release tag on Github (tag version `yyyy.mm.0`, release title `MOA yy.mm.0`) 
   and upload the generated MOA release zip file from the top-level `target` directory 
-  and the zip file from the `weka-package/target` directory
+  and the zip file from the `weka-package/dist` directory
   
 * email Mark Hall (mhall at waikato.ac.nz) the link to the Weka package zip
   file to upload to the central Weka package repository on Sourceforge.net
