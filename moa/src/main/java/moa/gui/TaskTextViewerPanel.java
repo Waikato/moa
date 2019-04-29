@@ -74,7 +74,7 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
     private JTable previewTable;
 
-    private JTextArea errorTextField;
+    private JTextArea previewText;
 
     private JScrollPane scrollPaneTable;
 
@@ -136,14 +136,14 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         this.previewTable.setFont(new Font("Monospaced", Font.PLAIN, 12));
         this.previewTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        this.errorTextField = new JTextArea();
-        this.errorTextField.setEditable(false);
-        this.errorTextField.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        this.previewText = new JTextArea();
+        this.previewText.setEditable(false);
+        this.previewText.setFont(new Font("Monospaced", Font.PLAIN, 12));
 
         // scrollPane enables scroll support for previewTable
         this.scrollPaneTable = new JScrollPane(this.previewTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        this.scrollPaneText = new JScrollPane(this.errorTextField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+        this.scrollPaneText = new JScrollPane(this.previewText, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         this.scrollPaneText.setVisible(false);
 
@@ -178,7 +178,7 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
                         if (scrollPaneTable.isVisible()) {
                             text = previewTableModel.toString();
                         } else {
-                            text = errorTextField.getText();
+                            text = previewText.getText();
                         }
 
                         out.write(text);
@@ -384,15 +384,19 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
          this.exportButton.setEnabled(preview != null);
      }
 
-    /**
-     * Displays the error message.
-     * @param failedTaskReport error message
-     */
-    public void setErrorText(FailedTaskReport failedTaskReport) {
+    public void setText(Object object) {
+        // Dynamic dispatch
+        if (object instanceof Preview) {
+            setText((Preview) object);
+            return;
+        } else if (object instanceof FailedTaskReport) {
+            setText((FailedTaskReport) object);
+            return;
+        }
+
         Point p = this.scrollPaneText.getViewport().getViewPosition();
 
-        final String failedTaskReportString = failedTaskReport == null ?
-                "Failed Task Report is null" : failedTaskReport.toString();
+        final String string = object == null ? null : object.toString();
 
         SwingUtilities.invokeLater(
             new Runnable(){
@@ -405,14 +409,25 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
                         scrollPaneText.setVisible(true);
                         topWrapper.validate();
                     }
-                    errorTextField.setText(failedTaskReportString);
-                    errorTextField.repaint();
+                    previewText.setText(string);
+                    previewText.repaint();
                 }
             }
         );
 
         this.scrollPaneText.getViewport().setViewPosition(p);
-        this.exportButton.setEnabled(failedTaskReport != null);
+        this.exportButton.setEnabled(object != null);
+    }
+
+    /**
+     * Displays the error message.
+     * @param failedTaskReport error message
+     */
+    public void setText(FailedTaskReport failedTaskReport) {
+        final String failedTaskReportString = failedTaskReport == null ?
+                "Failed Task Report is null" : failedTaskReport.toString();
+
+        setText(failedTaskReportString);
     }
 
     private void rescaleTableColumns() {

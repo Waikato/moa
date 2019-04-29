@@ -154,45 +154,38 @@ public class PreviewPanel extends JPanel implements ResultPreviewListener {
      * display it.
      */
     private void setLatestPreview() {
-    	if(this.previewedThread != null && this.previewedThread.isFailed()) {
-    		// failed task
-    		FailedTaskReport failedTaskReport = (FailedTaskReport) this.previewedThread.getFinalResult();
-    		this.textViewerPanel.setErrorText(failedTaskReport);
-    		this.textViewerPanel.setGraph(null);
-    	} else {
-        	Preview preview = null;
-    		if ((this.previewedThread != null) && this.previewedThread.isComplete()) {
-    			// cancelled or completed task
-    			Object previewObject = this.previewedThread.getFinalResult();
-    			if(Preview.class.isInstance(previewObject))
-    			{
-        			preview = (Preview) this.previewedThread.getFinalResult();
-        			this.previewLabel.setText("Final result");
-    			}
-    			disableRefresh();
-    		} else if (this.previewedThread != null){
-    			// running task
-    			Object previewObject = this.previewedThread.getLatestResultPreview();
-    			if(Preview.class.isInstance(previewObject))
-    			{
-        			preview = (Preview) this.previewedThread.getLatestResultPreview();
-        			double grabTime = this.previewedThread.getLatestPreviewGrabTimeSeconds();
-        			String grabString = " (" + StringUtils.secondsToDHMSString(grabTime) + ")";
-        			if (preview != null) {
-        				this.previewLabel.setText("Preview" + grabString);
-        			}
-    			}
-    		} 
-    		if (preview == null){
-    			// no thread
-    			this.previewLabel.setText("No preview available");
-    			preview = null;
-    		}
-        	
-    		this.textViewerPanel.setText(preview);
-    		if(preview != null)
-    			this.textViewerPanel.setGraph(preview.toString());
-    	}
+    	Object previewObject = null;
+    	if (this.previewedThread != null) {
+    	    if (this.previewedThread.isFailed()) {
+                previewObject = this.previewedThread.getFinalResult();
+                this.previewLabel.setText("Error");
+                disableRefresh();
+            }
+            else if (this.previewedThread.isComplete()) {
+                // cancelled or completed task
+                previewObject = this.previewedThread.getFinalResult();
+                this.previewLabel.setText("Final result");
+                disableRefresh();
+            }
+            else {
+                // running task
+                previewObject = this.previewedThread.getLatestResultPreview();
+                double grabTime = this.previewedThread.getLatestPreviewGrabTimeSeconds();
+                String grabString = " (" + StringUtils.secondsToDHMSString(grabTime) + ")";
+                this.previewLabel.setText("Preview" + grabString);
+            }
+	}
+
+	if (previewObject == null){
+            // no thread
+            this.previewLabel.setText("No preview available");
+	}
+
+	this.textViewerPanel.setText(previewObject);
+	if (previewObject instanceof Preview)
+	    this.textViewerPanel.setGraph(previewObject.toString());
+	else
+	    this.textViewerPanel.setGraph(null);
     }
     
     public void updateAutoRefreshTimer() {
