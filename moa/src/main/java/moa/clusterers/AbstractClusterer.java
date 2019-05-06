@@ -310,10 +310,12 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 	/** The cluster updated by a point p during the training phase */
 	protected Cluster updatedCluster;
 
-	/**
-	 * Gets the one cluster being update as a new point p arrives.
-	 * It may be null if the clusterer doesn't keep track of the updated clusters.
-	 * @return the cluster that has been updated by a point p
-	 */
+	@Override
 	public Cluster getUpdatedCluster() { return updatedCluster; }
+
+	@Override
+	public Cluster getNearestCluster(Instance X) {
+		// by default it's null; concrete behavior should be overriden in subclasses
+		return null;
+	}
 }

@@ -46,11 +46,9 @@ public class ClustreamKernel extends CFCluster {
 		this.SST = timestamp*timestamp;
 
 		// update the label count
-        try {
-            if (!instance.classIsMissing() && !instance.classIsMissing()) {
-                super.incrementLabelCount(instance.classValue(), 1);
-            }
-        } catch (NullPointerException e) {  /* sometimes the instance header is null... */}
+        if (!instance.classIsMissing() && !instance.classIsMissing()) {
+            super.incrementLabelCount(instance.classValue(), 1);
+        }
     }
 
     public ClustreamKernel(ClustreamKernel cluster, double t, int m ) {

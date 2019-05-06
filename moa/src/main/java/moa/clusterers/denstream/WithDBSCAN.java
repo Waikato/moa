@@ -107,6 +107,10 @@ public class WithDBSCAN extends AbstractClusterer {
 	protected int processingSpeed;
 	// TODO Some variables to prevent duplicated processes
 
+	public int grownClusters;
+	public int prunedPMC;
+	public int prunedOMC;
+
 	private class DenPoint extends DenseInstance {
 		
 		private static final long serialVersionUID = 1L;
@@ -216,6 +220,7 @@ public class WithDBSCAN extends AbstractClusterer {
 					if (x.getWeight() > beta * mu) {
 						o_micro_cluster.getClustering().remove(x);
 						p_micro_cluster.getClustering().add(x);
+						grownClusters++;
 					}
 					updatedCluster = x;
 				}
@@ -243,6 +248,8 @@ public class WithDBSCAN extends AbstractClusterer {
 				for (Cluster c : removalList) {
 					p_micro_cluster.getClustering().remove(c);
 				}
+				prunedPMC += removalList.size();
+				int tmp = removalList.size();
 
 				// prune away some omc's
 				for (Cluster c : o_micro_cluster.getClustering()) {
@@ -257,6 +264,7 @@ public class WithDBSCAN extends AbstractClusterer {
 				for (Cluster c : removalList) {
 					o_micro_cluster.getClustering().remove(c);
 				}
+				prunedOMC += (removalList.size() - tmp);
 			}
 
 		}
@@ -357,7 +365,18 @@ public class WithDBSCAN extends AbstractClusterer {
 	}
 
 	@Override
-	public Clustering getMicroClusteringResult() { return p_micro_cluster; }
+	public Clustering getMicroClusteringResult() {
+		// also includes the outlier ones?
+		return p_micro_cluster;
+	}
+
+	public Clustering getOutlierClusteringResult() {
+		return o_micro_cluster;
+	}
+
+	public double getMinimalTimeSpan() {
+		return tp;
+	}
 
 	@Override
 	protected Measurement[] getModelMeasurementsImpl() {
@@ -373,6 +392,12 @@ public class WithDBSCAN extends AbstractClusterer {
 
 	public double[] getVotesForInstance(Instance inst) {
 		return null;
+	}
+
+	@Override
+	public Cluster getNearestCluster(Instance X) {
+		DenPoint point = new DenPoint(X, this.timestamp);
+		return this.nearestCluster(point, this.p_micro_cluster);
 	}
 	
 	public String getParameterString() {

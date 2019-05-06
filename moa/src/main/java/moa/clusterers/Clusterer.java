@@ -62,5 +62,40 @@ public interface Clusterer extends MOAObject, OptionHandler, AWTRenderable {
     
     public boolean keepClassLabel();
 
+    /////////////////////////////////////////////////////////////////
+    // From this point onward it concerns semi-supervised learning //
+	/////////////////////////////////////////////////////////////////
+
+	/**
+	 * Gets the one cluster that is updated during the update on an instance X.
+	 * It may return null, since the clustering mechanism varies by clusterers.
+	 * @return the one cluster being updated after the training phase.
+	 */
     public Cluster getUpdatedCluster();
+
+	/**
+	 * Gets the cluster nearest to an instance X.
+	 * Each clusterer makes use of different
+	 * distance measures to find the nearest cluster
+	 * @return
+	 */
+	public Cluster getNearestCluster(Instance X);
+
+	/**
+	 * Computes the euclidean distance between two points.
+	 * @param p1 point 1
+	 * @param p2 point 2
+	 * @return the euclidean distance
+	 */
+	public static double distance(double[] p1, double[] p2) {
+		double distance = 0.0;
+		for (int i = 0; i < p1.length; i++) {
+			// sometimes, the value of the missing class is NaN & the final distance is NaN (which we don't want)
+			if (!Double.isNaN(p1[i]) && !Double.isNaN(p2[i])) {
+				double d = p1[i] - p2[i];
+				distance += d * d;
+			}
+		}
+		return Math.sqrt(distance);
+	}
 }

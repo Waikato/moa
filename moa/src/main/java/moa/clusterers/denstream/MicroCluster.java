@@ -21,6 +21,7 @@ package moa.clusterers.denstream;
 
 import moa.cluster.CFCluster;
 import com.yahoo.labs.samoa.instances.Instance;
+import moa.cluster.SphereCluster;
 
 public class MicroCluster extends CFCluster {
 
@@ -48,6 +49,7 @@ public class MicroCluster extends CFCluster {
 
     public void insert(Instance instance, long timestamp) {
         N++;
+        // TODO the weight is not 1.0 !
         super.setWeight(super.getWeight() + 1);
         this.lastEditT = timestamp;
 

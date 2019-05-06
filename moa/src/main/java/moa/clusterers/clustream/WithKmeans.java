@@ -37,6 +37,7 @@ import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.clusterers.AbstractClusterer;
+import moa.clusterers.Clusterer;
 import moa.core.Measurement;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.DenseInstance;
@@ -69,7 +70,12 @@ public class WithKmeans extends AbstractClusterer {
 	private int bufferSize;
 	private double t;
 	private int m;
-	
+
+	// for measurement
+	public int numUpdated = 0;
+	public int numAdded = 0;
+	public int numDeleted = 0;
+
 	public WithKmeans() {
 	
 	}
@@ -96,7 +102,13 @@ public class WithKmeans extends AbstractClusterer {
 				return;
 			} else {
 				for (int i = 0; i < buffer.size(); i++) {
-					kernels[i] = new ClustreamKernel(new DenseInstance(1.0, buffer.get(i).getCenter()), dim, timestamp, t, m);
+					double[] data = buffer.get(i).getCenter();
+					Instance x = instance.copy();
+					x.setWeight(1.0);
+					for (int j = 0; j < data.length; j++) x.setValue(j, data[j]);
+					kernels[i] = new ClustreamKernel(x, dim, timestamp, t, m);
+					//kernels[i] = new ClustreamKernel(new DenseInstance(1.0, buffer.get(i).getCenter()), dim, timestamp, t, m);
+					numAdded++;
 				}
 	
 				buffer.clear();
@@ -140,6 +152,7 @@ public class WithKmeans extends AbstractClusterer {
 		if ( minDistance < radius ) {
 			// Date fits, put into kernel and be happy
 			closestKernel.insert( instance, timestamp );
+			numUpdated++;
 			return;
 		}
 
@@ -151,6 +164,8 @@ public class WithKmeans extends AbstractClusterer {
 		for ( int i = 0; i < kernels.length; i++ ) {
 			if ( kernels[i].getRelevanceStamp() < threshold ) {
 				kernels[i] = new ClustreamKernel( instance, dim, timestamp, t, m );
+				numDeleted++;
+				numAdded++;
 				return;
 			}
 		}
@@ -174,6 +189,9 @@ public class WithKmeans extends AbstractClusterer {
 
 		kernels[closestA].add( kernels[closestB] );
 		kernels[closestB] = new ClustreamKernel( instance, dim, timestamp, t,  m );
+		numUpdated++;
+		numAdded++;
+		numDeleted++;
 	}
 	
 	@Override
@@ -226,8 +244,8 @@ public class WithKmeans extends AbstractClusterer {
 	 * k-means of (micro)clusters, with ground-truth-aided initialization.
 	 * (to produce best results) 
 	 * 
-	 * @param k
-	 * @param data
+	 * @param k k centroids for k-means
+	 * @param clustering the clustering result
 	 * @return (macro)clustering - CFClusters
 	 */
 	public static Clustering kMeans_gta(int k, Clustering clustering, Clustering gtClustering) {
@@ -264,8 +282,8 @@ public class WithKmeans extends AbstractClusterer {
 	/**
 	 * k-means of (micro)clusters, with randomized initialization. 
 	 * 
-	 * @param k
-	 * @param data
+	 * @param k k centroids
+	 * @param clustering clustering result
 	 * @return (macro)clustering - CFClusters
 	 */
 	public static Clustering kMeans_rand(int k, Clustering clustering) {
@@ -275,7 +293,8 @@ public class WithKmeans extends AbstractClusterer {
             if (clustering.get(i) instanceof CFCluster) {
                 microclusters.add((CFCluster)clustering.get(i));
             } else {
-                System.out.println("Unsupported Cluster Type:" + clustering.get(i).getClass() + ". Cluster needs to extend moa.cluster.CFCluster");
+                System.out.println("Unsupported Cluster Type:" + clustering.get(i).getClass()
+						+ ". Cluster needs to extend moa.cluster.CFCluster");
             }
         }
         
@@ -472,5 +491,22 @@ public class WithKmeans extends AbstractClusterer {
 	@Override
 	public void getModelDescription(StringBuilder out, int indent) {
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public Cluster getNearestCluster(Instance X) {
+		// use Euclidean distance for now
+		double minDist = Double.MAX_VALUE;
+		double distance;
+		Cluster result = null;
+		for (ClustreamKernel kernel : kernels) {
+			if (kernel == null) continue;
+			distance = Clusterer.distance(kernel.getCenter(), X.toDoubleArray());
+			if (distance < minDist) {
+				minDist = distance;
+				result = kernel;
+			}
+		}
+		return result;
 	}
 }

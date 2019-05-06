@@ -88,7 +88,6 @@ public class Clustream extends AbstractClusterer {
 			}
 
 			int k = kernels.length;
-			//System.err.println("k="+k+" bufferSize="+bufferSize);
 			assert (k <= bufferSize);
 
 			ClustreamKernel[] centers = new ClustreamKernel[k];
@@ -99,7 +98,12 @@ public class Clustream extends AbstractClusterer {
 //			Clustering kmeans_clustering = kMeans(k, buffer);
 
 			for ( int i = 0; i < kmeans_clustering.size(); i++ ) {
-				kernels[i] = new ClustreamKernel( new DenseInstance(1.0,centers[i].getCenter()), dim, timestamp, t, m );
+				double[] data = buffer.get(i).getCenter();
+				Instance x = instance.copy();
+				x.setWeight(1.0);
+				for (int j = 0; j < data.length; j++) x.setValue(j, data[j]);
+				kernels[i] = new ClustreamKernel(x, dim, timestamp, t, m);
+				//kernels[i] = new ClustreamKernel( new DenseInstance(1.0,centers[i].getCenter()), dim, timestamp, t, m );
 			}
 
 			buffer.clear();
@@ -336,7 +340,5 @@ public class Clustream extends AbstractClusterer {
 	public double[] getVotesForInstance(Instance inst) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
-
-
 }
 
