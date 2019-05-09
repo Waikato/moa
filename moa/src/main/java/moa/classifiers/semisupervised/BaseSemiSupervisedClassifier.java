@@ -11,6 +11,7 @@ import moa.clusterers.AbstractClusterer;
 import moa.clusterers.Clusterer;
 import moa.clusterers.clustream.WithKmeans;
 import moa.clusterers.denstream.WithDBSCAN;
+import moa.clusterers.dstream.Dstream;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
@@ -61,9 +62,16 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     /** Count the number of times a class is predicted */
     private int[] predictionCount;
 
+    ////////////////////////
+    // just some measures //
+    ////////////////////////
     private int nullCTimes = 0;
-
     private int notNullCTimes = 0;
+    private Map<String, Long> times = new HashMap<>();
+    private long start = 0, end = 0;
+    ////////////////////////
+    // just some measures //
+    ////////////////////////
 
     @Override
     public String getPurposeString() {
@@ -93,6 +101,7 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         // normalize the instance
         if (doNormalization) inst.normalize();
 
+        start = System.nanoTime();
         // get the votes
         double[] votes = new double[0];
         if (k == 1) {
@@ -107,6 +116,8 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
             Cluster[] kC = this.findKNearestClusters(inst, this.k);
             votes = getVotesFromKClusters(kC);
         }
+        end = System.nanoTime();
+        times.put("Prediction", end - start);
 
         // collect some measurement
         if (this.predictionCount == null) this.predictionCount = new int[inst.dataset().numClasses()];
@@ -141,8 +152,11 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         // normalize the data
         if (doNormalization) inst.normalize();
 
+        start = System.nanoTime();
         if (this.usePseudoLabel) this.trainOnInstanceWithPseudoLabel(inst);
         else this.trainOnInstanceNoPseudoLabel(inst);
+        end = System.nanoTime();
+        times.put("Training", end - start);
     }
 
     private void trainOnInstanceNoPseudoLabel(Instance inst) {
@@ -267,11 +281,26 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
             ((WithKmeans) clusterer).numAdded = 0;
             ((WithKmeans) clusterer).numDeleted = 0;
             ((WithKmeans) clusterer).numUpdated = 0;
+
+            // time measurement
+            for (Map.Entry<String, Long> entry : ((WithKmeans) clusterer).time_measures.entrySet()) {
+                measurements.add(new Measurement(entry.getKey(), entry.getValue()));
+            }
+            for (Map.Entry<String, Long> entry : times.entrySet()) {
+                measurements.add(new Measurement(entry.getKey(), entry.getValue()));
+            }
+
+        } else if (clusterer instanceof Dstream) {
+            measurements.add(new Measurement("num_clusters", clustering.size()));
+            measurements.add(new Measurement("#pruning", ((Dstream) clusterer).countPruning));
+            measurements.add(new Measurement("times_pruning", ((Dstream) clusterer).timePruning));
+            ((Dstream) clusterer).countPruning = 0;
+            ((Dstream) clusterer).timePruning = 0;
         }
 
         // side information
-        measurements.add(new Measurement("null times", this.nullCTimes));
-        measurements.add(new Measurement("not null times", this.notNullCTimes));
+        // measurements.add(new Measurement("null times", this.nullCTimes));
+        // measurements.add(new Measurement("not null times", this.notNullCTimes));
 
         Measurement[] result = new Measurement[measurements.size()];
         return measurements.toArray(result);

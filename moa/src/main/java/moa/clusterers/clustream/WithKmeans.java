@@ -26,11 +26,7 @@
 
 package moa.clusterers.clustream;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import moa.cluster.CFCluster;
 import moa.cluster.Cluster;
@@ -76,8 +72,19 @@ public class WithKmeans extends AbstractClusterer {
 	public int numAdded = 0;
 	public int numDeleted = 0;
 
+	// time measuring
+	public Map<String, Long> time_measures;
+	private long startInit = -1;
+	private long start, end;
+
 	public WithKmeans() {
-	
+		// init the time measurement mapping
+		time_measures = new HashMap<>();
+		time_measures.put("Init", 0L);
+		time_measures.put("Find closest kernel", 0L);
+		time_measures.put("Check fit kernel", 0L);
+		time_measures.put("Forgetting kernels", 0L);
+		time_measures.put("Merging kernels", 0L);
 	}
 
 	@Override
@@ -95,41 +102,52 @@ public class WithKmeans extends AbstractClusterer {
 	public void trainOnInstanceImpl(Instance instance) {
 		int dim = instance.numValues();
 		timestamp++;
+
 		// 0. Initialize
 		if (!initialized) {
+			if (startInit == -1) startInit = System.nanoTime();
 			if (buffer.size() < bufferSize) {
 				buffer.add(new ClustreamKernel(instance, dim, timestamp, t, m));
 				return;
 			} else {
 				for (int i = 0; i < buffer.size(); i++) {
+					// do this to keep the instance header in order to update the label count
 					double[] data = buffer.get(i).getCenter();
 					Instance x = instance.copy();
 					x.setWeight(1.0);
 					for (int j = 0; j < data.length; j++) x.setValue(j, data[j]);
 					kernels[i] = new ClustreamKernel(x, dim, timestamp, t, m);
+
 					//kernels[i] = new ClustreamKernel(new DenseInstance(1.0, buffer.get(i).getCenter()), dim, timestamp, t, m);
 					numAdded++;
 				}
 	
 				buffer.clear();
 				initialized = true;
+
+				// get initialization total time
+				end = System.nanoTime();
+				time_measures.put("Init", end - startInit);
+
 				return;
 			}
 		}
 
-
+		start = System.nanoTime();
 		// 1. Determine closest kernel
 		ClustreamKernel closestKernel = null;
 		double minDistance = Double.MAX_VALUE;
 		for ( int i = 0; i < kernels.length; i++ ) {
-			//System.out.println(i+" "+kernels[i].getWeight()+" "+kernels[i].getDeviation());
-			double distance = distance(instance.toDoubleArray(), kernels[i].getCenter());
+			double distance = Clusterer.distance(instance.toDoubleArray(), kernels[i].getCenter());
 			if (distance < minDistance) {
 				closestKernel = kernels[i];
 				minDistance = distance;
 			}
 		}
+		end = System.nanoTime();
+		time_measures.put("Find closest kernel", end - start);
 
+		start = System.nanoTime();
 		// 2. Check whether instance fits into closestKernel
 		double radius = 0.0;
 		if ( closestKernel.getWeight() == 1 ) {
@@ -138,16 +156,15 @@ public class WithKmeans extends AbstractClusterer {
 			radius = Double.MAX_VALUE;
 			double[] center = closestKernel.getCenter();
 			for ( int i = 0; i < kernels.length; i++ ) {
-				if ( kernels[i] == closestKernel ) {
-					continue;
-				}
-
+				if ( kernels[i] == closestKernel ) continue;
 				double distance = distance(kernels[i].getCenter(), center );
 				radius = Math.min( distance, radius );
 			}
 		} else {
 			radius = closestKernel.getRadius();
 		}
+		end = System.nanoTime();
+		time_measures.put("Check fit kernel", end - start);
 
 		if ( minDistance < radius ) {
 			// Date fits, put into kernel and be happy
@@ -160,16 +177,22 @@ public class WithKmeans extends AbstractClusterer {
 		// some space to insert a new kernel
 		long threshold = timestamp - timeWindow; // Kernels before this can be forgotten
 
+		start = System.nanoTime();
 		// 3.1 Try to forget old kernels
 		for ( int i = 0; i < kernels.length; i++ ) {
 			if ( kernels[i].getRelevanceStamp() < threshold ) {
 				kernels[i] = new ClustreamKernel( instance, dim, timestamp, t, m );
 				numDeleted++;
 				numAdded++;
+				end = System.nanoTime();
+				time_measures.put("Forgetting kernels", end - start);
 				return;
 			}
 		}
+		end = System.nanoTime();
+		time_measures.put("Forgetting kernels", end - start);
 
+		start = System.nanoTime();
 		// 3.2 Merge closest two kernels
 		int closestA = 0;
 		int closestB = 0;
@@ -186,6 +209,8 @@ public class WithKmeans extends AbstractClusterer {
 			}
 		}
 		assert (closestA != closestB);
+		end = System.nanoTime();
+		time_measures.put("Merging kernels", end - start);
 
 		kernels[closestA].add( kernels[closestB] );
 		kernels[closestB] = new ClustreamKernel( instance, dim, timestamp, t,  m );
