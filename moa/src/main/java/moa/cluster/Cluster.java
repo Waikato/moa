@@ -20,6 +20,7 @@
 
 package moa.cluster;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,10 +39,14 @@ public abstract class Cluster extends AbstractMOAObject {
 
     private HashMap<String, String> measure_values;
 
-
     public Cluster() {
         this.measure_values = new HashMap<>();
-        this.labelCount = new HashMap<>();
+        this.labelFeature = new LabelFeature(0.0);
+    }
+
+    public Cluster(double decayFactor) {
+        this.measure_values = new HashMap<>();
+        this.labelFeature = new LabelFeature(decayFactor);
     }
 
     /**
@@ -50,8 +55,8 @@ public abstract class Cluster extends AbstractMOAObject {
     public abstract double[] getCenter();
 
     /**
-     * Returns the weight of this cluster, not neccessarily normalized.
-     * It could, for instance, simply return the number of points contined
+     * Returns the weight of this cluster, not necessarily normalized.
+     * It could, for instance, simply return the number of points contained
      * in this cluster.
      * @return the weight
      */
@@ -178,20 +183,18 @@ public abstract class Cluster extends AbstractMOAObject {
     ////////////////////////////////////
 
     /** Keeps track of the count of the class labels */
-    protected Map<Double, Integer> labelCount;
+    protected LabelFeature labelFeature;
 
     /**
      * Increments the count of a label in this cluster.
      * If the label is not yet seen in the cluster, its count will be initialized
      *
-     * @param label the class label
+     * @param X the instance
      * @param amount the amount to increment
      */
-    public void incrementLabelCount(Double label, int amount) {
-        if (labelCount.containsKey(label)) {
-            labelCount.put(label, labelCount.get(label) + amount);
-        } else {
-            labelCount.put(label, amount);
+    public void updateLabelWeight(Instance X, double amount, long timestamp) {
+        if (!X.classIsMissing() && !X.classIsMasked()) {
+            this.labelFeature.increment(X.classValue(), amount, timestamp);
         }
     }
 
@@ -200,15 +203,7 @@ public abstract class Cluster extends AbstractMOAObject {
      * @return the majority label
      */
     public double getMajorityLabel() {
-        double label = 0;
-        int maxCount = 0;
-        for (Map.Entry<Double, Integer> entry : this.labelCount.entrySet()) {
-            if (entry.getValue() > maxCount) {
-                maxCount = entry.getValue();
-                label = entry.getKey();
-            }
-        }
-        return label;
+        return this.labelFeature.getMajorityLabel();
     }
 
     /**
@@ -216,30 +211,43 @@ public abstract class Cluster extends AbstractMOAObject {
      * @return the frequency (probability) of each label in this cluster
      */
     public double[] getLabelVotes() {
-        DoubleVector votes = new DoubleVector();
-        for (Map.Entry<Double, Integer> entry : this.labelCount.entrySet()) {
-            votes.addToValue(entry.getKey().intValue(), entry.getValue());
-        }
-        votes.normalize();
-        return votes.getArrayRef();
+        return this.labelFeature.getVotes();
     }
 
     /**
      * Returns the label count
      * @return the label count
      */
-    public Map<Double, Integer> getLabelCount() { return this.labelCount; }
+    public LabelFeature getLabelFeature() { return this.labelFeature; }
 
     /**
      * Returns a clone of the label count
      * @return a clone of the label count
      */
-    public Map<Double, Integer> getLabelCountCopy() {
-        Map<Double, Integer> result = new HashMap<>();
-        for (Map.Entry<Double, Integer> entry : this.labelCount.entrySet()) {
-            result.put(entry.getKey(), entry.getValue());
-        }
-        return result;
+    public LabelFeature getLabelFeatureCopy() { return this.labelFeature.copy(); }
+
+    /**
+     * Accumulates the label weight from another cluster, and dynamically decays the weights
+     * @param c a cluster
+     * @param timestamp the timestamp when it is updated
+     */
+    public void accumulateWeight(Cluster c, long timestamp) {
+        this.labelFeature.accumulate(c.labelFeature, timestamp);
     }
 
+    /**
+     * Accumulates the label weight from another cluster
+     * @param c a cluster
+     */
+    public void accumulateWeight(Cluster c) {
+        this.labelFeature.accumulate(c.labelFeature);
+    }
+
+    /**
+     * Sets the decay factor for the label feature
+     * @param lambda the decay factor
+     */
+    public void setDecayFactor(double lambda) {
+        this.labelFeature.setDecayFactor(lambda);
+    }
 }

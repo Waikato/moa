@@ -21,7 +21,6 @@ package moa.clusterers.denstream;
 
 import moa.cluster.CFCluster;
 import com.yahoo.labs.samoa.instances.Instance;
-import moa.cluster.SphereCluster;
 
 public class MicroCluster extends CFCluster {
 
@@ -42,9 +41,7 @@ public class MicroCluster extends CFCluster {
         this(instance.toDoubleArray(), dimensions, timestamp, lambda, currentTimestamp);
 
         // update the label count
-        if (!instance.classIsMasked() && !instance.classIsMissing()) {
-            super.incrementLabelCount(instance.classValue(), 1);
-        }
+        super.updateLabelWeight(instance, 1, timestamp);
     }
 
     public void insert(Instance instance, long timestamp) {
@@ -59,9 +56,7 @@ public class MicroCluster extends CFCluster {
         }
 
         // update the label count
-        if (!instance.classIsMasked() && !instance.classIsMissing()) {
-            super.incrementLabelCount(instance.classValue(), 1);
-        }
+        super.updateLabelWeight(instance, 1, timestamp);
     }
 
     public long getLastEditTimestamp() {
@@ -149,7 +144,9 @@ public class MicroCluster extends CFCluster {
         copy.lastEditT = this.lastEditT;
 
         // copy the label count
-        copy.labelCount = super.getLabelCountCopy();
+        copy.labelFeature = this.getLabelFeatureCopy();
+
+//        copy.labelCount = super.getLabelCountCopy();
 
         return copy;
     }

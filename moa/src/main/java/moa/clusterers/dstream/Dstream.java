@@ -321,8 +321,10 @@ public class Dstream extends AbstractClusterer {
         dg = new DensityGrid(g);
 
         // update the label count (if X is labeled)
-        if (!inst.classIsMasked() && !inst.classIsMissing())
-            dg.incrementLabelCount(inst.classValue(), 1);
+        dg.updateLabelWeight(inst, 1, getCurrTime());
+
+//        if (!inst.classIsMasked() && !inst.classIsMissing())
+//            dg.updateLabelWeight(inst.classValue(), 1);
 
         // 3. If (g not in grid_list) insert dg to grid_list
         if(!this.grid_list.containsKey(dg))
@@ -389,7 +391,8 @@ public class Dstream extends AbstractClusterer {
         // accumulate the count in the existing grid stored in grid_list with the count in d
         for (DensityGrid k : grid_list.keySet()) {
             if (k.equals(d)) {
-                d.getLabelCount().forEach(k::incrementLabelCount);
+                //d.getLabelCount().forEach(k::updateLabelWeight);
+                d.accumulateWeight(k);
                 return k;
             }
         }

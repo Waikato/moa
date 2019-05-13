@@ -1,24 +1,24 @@
 package moa.clusterers.semisupervised;
 
 import com.yahoo.labs.samoa.instances.Instance;
+import moa.cluster.LabelFeature;
 import moa.clusterers.denstream.MicroCluster;
 import moa.clusterers.denstream.Timestamp;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class MicroClusterSSL extends MicroCluster {
 
     public MicroClusterSSL(double[] center, int dimensions, long creationTimestamp, double lambda, Timestamp currentTimestamp) {
         super(center, dimensions, creationTimestamp, lambda, currentTimestamp);
-        this.labelCount = new HashMap<>();
+        this.labelFeature = new LabelFeature(currentTimestamp.getTimestamp(), lambda);
+//        this.labelCount = new HashMap<>();
     }
 
     public MicroClusterSSL(Instance instance, int dimensions, long timestamp, double lambda, Timestamp currentTimestamp) {
         this(instance.toDoubleArray(), dimensions, timestamp, lambda, currentTimestamp);
-        if (!instance.classIsMissing() && !instance.classIsMasked()) {
-            incrementLabelCount(instance.classValue(), 1);
-        }
+        updateLabelWeight(instance, 1, currentTimestamp.getTimestamp());
+//        if (!instance.classIsMissing() && !instance.classIsMasked()) {
+//            updateLabelWeight(instance.classValue(), 1);
+//        }
     }
 
     /**
@@ -29,9 +29,10 @@ public class MicroClusterSSL extends MicroCluster {
      */
     public void insert(Instance instance, long timestamp) {
         super.insert(instance, timestamp);
-        if (!instance.classIsMasked() && !instance.classIsMissing()) {
-            this.incrementLabelCount(instance.classValue(), 1);
-        }
+        updateLabelWeight(instance, 1, timestamp);
+//        if (!instance.classIsMasked() && !instance.classIsMissing()) {
+//            this.updateLabelWeight(instance.classValue(), 1);
+//        }
     }
 
     /**
@@ -40,11 +41,11 @@ public class MicroClusterSSL extends MicroCluster {
      * @param amount the amount to increment
      */
     public void decrementLabelCount(Double label, int amount) {
-        if (labelCount.containsKey(label)) {
-            labelCount.put(label, labelCount.get(label) - amount);
-        } else {
-            labelCount.put(label, amount);
-        }
+//        if (labelCount.containsKey(label)) {
+//            labelCount.put(label, labelCount.get(label) - amount);
+//        } else {
+//            labelCount.put(label, amount);
+//        }
     }
 
     @Override
@@ -57,9 +58,10 @@ public class MicroClusterSSL extends MicroCluster {
         copy.lastEditT = this.lastEditT;
 
         // get the copy of the label count
-        for (Map.Entry<Double, Integer> entry : this.labelCount.entrySet()) {
-            copy.labelCount.put(entry.getKey(), entry.getValue());
-        }
+        copy.labelFeature = this.getLabelFeatureCopy();
+//        for (Map.Entry<Double, Integer> entry : this.labelCount.entrySet()) {
+//            copy.labelCount.put(entry.getKey(), entry.getValue());
+//        }
         return copy;
     }
 }

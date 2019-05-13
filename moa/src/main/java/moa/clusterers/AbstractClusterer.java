@@ -66,11 +66,18 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 					"Seed for random behaviour of the Clusterer.", 1);
 		}
 
-        if( implementsMicroClusterer()){
+        if (implementsMicroClusterer()){
             this.evaluateMicroClusteringOption =
                     new FlagOption("evaluateMicroClustering", 'M',
                     "Evaluate the underlying microclustering instead of the macro clustering");
         }
+
+        this.labelDecayFactor = 0.25; // default value to 0.25
+	}
+
+	public AbstractClusterer(double labelDecayFactor) {
+		this();
+		this.labelDecayFactor = labelDecayFactor;
 	}
 
 	@Override
@@ -82,7 +89,7 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 		if (!trainingHasStarted()) {
 			resetLearning();
 		}
-                clustering = new Clustering();
+		clustering = new Clustering();
 	}
 
 	public void setModelContext(InstancesHeader ih) {
@@ -309,6 +316,8 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 
 	/** The cluster updated by a point p during the training phase */
 	protected Cluster updatedCluster;
+
+	protected double labelDecayFactor;
 
 	@Override
 	public Cluster getUpdatedCluster() { return updatedCluster; }

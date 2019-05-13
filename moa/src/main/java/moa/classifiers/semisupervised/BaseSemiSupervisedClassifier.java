@@ -12,6 +12,7 @@ import moa.clusterers.Clusterer;
 import moa.clusterers.clustream.WithKmeans;
 import moa.clusterers.denstream.WithDBSCAN;
 import moa.clusterers.dstream.Dstream;
+import moa.clusterers.semisupervised.ClustreamSSL;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
@@ -31,9 +32,6 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
 
     private static final long serialVersionUID = 1L;
 
-    /** Does clustering and holds the micro-clusters for classification */
-    private Clusterer clusterer;
-
     /** Lets user choose a clusterer, defaulted to Clustream */
     public ClassOption clustererOption = new ClassOption("clusterer", 'c',
             "A clusterer to perform clustering",
@@ -50,6 +48,9 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     /** Decides whether to normalize the data or not */
     public FlagOption normalizeOption = new FlagOption("normalize", 'n', "Normalize the data");
 
+    /** Does clustering and holds the micro-clusters for classification */
+    private Clusterer clusterer;
+
     /** To train using pseudo-label or not */
     private boolean usePseudoLabel;
 
@@ -59,14 +60,12 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     /** Number of nearest clusters used to issue prediction */
     private int k;
 
-    /** Count the number of times a class is predicted */
-    private int[] predictionCount;
-
     ////////////////////////
     // just some measures //
     ////////////////////////
     private int nullCTimes = 0;
     private int notNullCTimes = 0;
+    private int[] predictionCount;
     private Map<String, Long> times = new HashMap<>();
     private long start = 0, end = 0;
     ////////////////////////
@@ -132,10 +131,10 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         for (Cluster cluster : kC) {
             if (cluster == null) continue;
             int predictedClass = Utils.maxIndex(cluster.getLabelVotes());
-            int oldCount = (int) result.getValue(predictedClass);
-            result.setValue(predictedClass, oldCount + 1);
+            double oldCount = result.getValue(predictedClass);
+            result.setValue(predictedClass, oldCount + cluster.getWeight());
         }
-        result.normalize();
+        if (result.numValues() > 0) result.normalize(); // avoid division by 0
         return result.getArrayRef();
     }
 
@@ -194,8 +193,8 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
 
         @Override
         public int compare(Cluster C1, Cluster C2) {
-            double distanceC1 = distance(C1.getCenter(), instance.toDoubleArray());
-            double distanceC2 = distance(C2.getCenter(), instance.toDoubleArray());
+            double distanceC1 = Clusterer.distance(C1.getCenter(), instance.toDoubleArray());
+            double distanceC2 = Clusterer.distance(C2.getCenter(), instance.toDoubleArray());
             return Double.compare(distanceC1, distanceC2);
         }
     }
@@ -242,7 +241,7 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         double minDistance = Double.MAX_VALUE;
         Clustering clustering = this.getClusteringResult();
         for (Cluster cluster : clustering.getClustering()) {
-            double distance = distance(cluster.getCenter(), instance.toDoubleArray());
+            double distance = Clusterer.distance(cluster.getCenter(), instance.toDoubleArray());
             if (distance < minDistance) {
                 minDistance = distance;
                 C = cluster;
@@ -289,13 +288,14 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
             for (Map.Entry<String, Long> entry : times.entrySet()) {
                 measurements.add(new Measurement(entry.getKey(), entry.getValue()));
             }
-
         } else if (clusterer instanceof Dstream) {
             measurements.add(new Measurement("num_clusters", clustering.size()));
             measurements.add(new Measurement("#pruning", ((Dstream) clusterer).countPruning));
             measurements.add(new Measurement("times_pruning", ((Dstream) clusterer).timePruning));
             ((Dstream) clusterer).countPruning = 0;
             ((Dstream) clusterer).timePruning = 0;
+        } else if (clusterer instanceof ClustreamSSL) {
+            
         }
 
         // side information
@@ -306,6 +306,10 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         return measurements.toArray(result);
     }
 
+    private double sigmoid(double d) {
+        return 1 / (1 + Math.exp(-d));
+    }
+
     @Override
     public void getModelDescription(StringBuilder out, int indent) {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -314,17 +318,5 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     @Override
     public boolean isRandomizable() {
         return false;
-    }
-
-    private double distance(double[] pointA, double[] pointB) {
-        double distance = 0.0;
-        for (int i = 0; i < pointA.length; i++) {
-            // sometimes, the value of the missing class is NaN & the final distance is NaN (which we don't want)
-            if (!Double.isNaN(pointA[i]) && !Double.isNaN(pointB[i])) {
-                double d = pointA[i] - pointB[i];
-                distance += d * d;
-            }
-        }
-        return Math.sqrt(distance);
     }
 }

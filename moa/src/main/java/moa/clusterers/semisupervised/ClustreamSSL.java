@@ -1,61 +1,85 @@
 package moa.clusterers.semisupervised;
 
+import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+import moa.cluster.CFCluster;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.clusterers.AbstractClusterer;
+import moa.clusterers.Clusterer;
+import moa.clusterers.clustream.ClustreamKernel;
 import moa.core.Measurement;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
- * An extension of the Clustream algorithm. Apart from the statistics of the micro-clusters,
- * it also updates the label count in each cluster. To be used with <code>LabeledClustreamKernel</code>.
+ * A modified version of Clustream to work with SSL paradigm
  */
 public class ClustreamSSL extends AbstractClusterer {
 
     private static final long serialVersionUID = 1L;
 
     public IntOption timeWindowOption = new IntOption("horizon",
-            'h', "Range of the window.", 1000);
+            'h', "Rang of the window.", 1000);
 
     public IntOption maxNumKernelsOption = new IntOption(
-            "maxNumKernels", 'k',
+            "maxNumKernels", 'm',
             "Maximum number of micro kernels to use.", 100);
 
     public IntOption kernelRadiFactorOption = new IntOption(
             "kernelRadiFactor", 't',
             "Multiplier for the kernel radius", 2);
 
+    public IntOption kOption = new IntOption(
+            "k", 'k',
+            "k of macro k-means (number of clusters)", 5);
+
+    public FloatOption decayFactorOption = new FloatOption("labelDecay", 'l',
+            "Controls the decaying of old labels", 0.25, 0.0, 1.0);
+
     private int timeWindow;
     private long timestamp = -1;
-    private LabeledClustreamKernel[] kernels;
+    private ClustreamKernel[] kernels;
     private boolean initialized;
-    private List<LabeledClustreamKernel> buffer; // Buffer for initialization with kNN
+    private List<ClustreamKernel> buffer; // Buffer for initialization with kNN
     private int bufferSize;
     private double t;
     private int m;
+    private double lambda;
 
-    private LabeledClustreamKernel updatedCluster;
+    // for measurement
+    public int numUpdated = 0;
+    public int numAdded = 0;
+    public int numDeleted = 0;
+
+    // time measuring
+    public Map<String, Long> time_measures;
+    private long startInit = -1;
+    private long start, end;
+
+    public ClustreamSSL() {
+        // init the time measurement mapping
+        time_measures = new HashMap<>();
+        time_measures.put("Init", 0L);
+        time_measures.put("Find closest kernel", 0L);
+        time_measures.put("Check fit kernel", 0L);
+        time_measures.put("Forgetting kernels", 0L);
+        time_measures.put("Merging kernels", 0L);
+    }
 
     @Override
     public void resetLearningImpl() {
-        this.kernels = new LabeledClustreamKernel[maxNumKernelsOption.getValue()];
+        this.kernels = new ClustreamKernel[maxNumKernelsOption.getValue()];
         this.timeWindow = timeWindowOption.getValue();
         this.initialized = false;
         this.buffer = new LinkedList<>();
         this.bufferSize = maxNumKernelsOption.getValue();
+        this.lambda = decayFactorOption.getValue();
         t = kernelRadiFactorOption.getValue();
         m = maxNumKernelsOption.getValue();
     }
-
-    @Override
-    public LabeledClustreamKernel getUpdatedCluster() { return this.updatedCluster; }
 
     @Override
     public void trainOnInstanceImpl(Instance instance) {
@@ -64,89 +88,102 @@ public class ClustreamSSL extends AbstractClusterer {
 
         // 0. Initialize
         if (!initialized) {
+            if (startInit == -1) startInit = System.nanoTime();
             if (buffer.size() < bufferSize) {
-                buffer.add(new LabeledClustreamKernel(instance, dim, timestamp, t, m));
+                buffer.add(new ClustreamKernel(instance, dim, timestamp, t, m));
+                return;
+            } else {
+                for (int i = 0; i < buffer.size(); i++) {
+                    // do this to keep the instance header in order to update the label count
+                    double[] data = buffer.get(i).getCenter();
+                    Instance x = instance.copy();
+                    x.setWeight(1.0);
+                    for (int j = 0; j < data.length; j++) x.setValue(j, data[j]);
+                    kernels[i] = new ClustreamKernel(x, dim, timestamp, t, m);
+                    kernels[i].setDecayFactor(lambda);
+                    numAdded++;
+                }
+
+                buffer.clear();
+                initialized = true;
+
+                // get initialization total time
+                end = System.nanoTime();
+                time_measures.put("Init", end - startInit);
+
                 return;
             }
-
-            int k = kernels.length;
-            assert (k <= bufferSize);
-
-            LabeledClustreamKernel[] centers = new LabeledClustreamKernel[k];
-            for ( int i = 0; i < k; i++ ) centers[i] = buffer.get(i); // TODO: make random!
-            // kernels = centers; // TODO soft copy?
-
-            Clustering kmeans_clustering = kMeans(k, centers, buffer);
-            for ( int i = 0; i < kmeans_clustering.size(); i++) {
-                // TODO if doing this, we lost the label count (only one for each label, but still...)
-                kernels[i] = new LabeledClustreamKernel(
-                        new DenseInstance(1.0, centers[i].getCenter()),
-                        dim, timestamp, t, m);
-                // kernels[i] = centers[i]; // TODO if doing this, we omit the result of k-means clustering
-            }
-
-            buffer.clear();
-            initialized = true;
-            return;
         }
 
-        // 1. Determine closest kernel
-        LabeledClustreamKernel closestKernel = null;
+        start = System.nanoTime();
+        // 1. Determine closest kernel using Euclidean distance
+        ClustreamKernel closestKernel = null;
         double minDistance = Double.MAX_VALUE;
-        for (LabeledClustreamKernel kernel : kernels) {
-            double distance = distance(instance.toDoubleArray(), kernel.getCenter());
+        for (ClustreamKernel kernel : kernels) {
+            double distance = Clusterer.distance(instance.toDoubleArray(), kernel.getCenter());
             if (distance < minDistance) {
                 closestKernel = kernel;
                 minDistance = distance;
             }
         }
+        end = System.nanoTime();
+        time_measures.put("Find closest kernel", end - start);
 
+        start = System.nanoTime();
         // 2. Check whether instance fits into closestKernel
         double radius = 0.0;
         if (closestKernel != null) {
-            if (closestKernel.getWeight() == 1) {
+            if (closestKernel.getN() == 1) {
                 // Special case: estimate radius by determining the distance to the next closest cluster
                 radius = Double.MAX_VALUE;
                 double[] center = closestKernel.getCenter();
-                for (LabeledClustreamKernel kernel : kernels) {
+                for (ClustreamKernel kernel : kernels) {
                     if (kernel == closestKernel) continue;
-                    double distance = distance(kernel.getCenter(), center);
+                    double distance = Clusterer.distance(kernel.getCenter(), center);
                     radius = Math.min(distance, radius);
                 }
-            } else {
-                radius = closestKernel.getRadius();
-            }
-        }
+            } else { radius = closestKernel.getRadius(); }
+            end = System.nanoTime();
+            time_measures.put("Check fit kernel", end - start);
 
-        if (closestKernel != null) {
             if (minDistance < radius) {
                 // Date fits, put into kernel and be happy
                 closestKernel.insert(instance, timestamp);
-                updatedCluster = closestKernel;
+                numUpdated++;
                 return;
             }
         }
 
-        // 3. Date does not fit, we need to free some space to insert a new kernel
+        // 3. Date does not fit, we need to free
+        // some space to insert a new kernel
         long threshold = timestamp - timeWindow; // Kernels before this can be forgotten
 
-        // 3.1 Try to forget old kernels (i.e. we also forget the label count attached to that kernel)
-        for (int i = 0; i < kernels.length; i++) {
-            if (kernels[i].getRelevanceStamp() < threshold) {
-                kernels[i] = new LabeledClustreamKernel(instance, dim, timestamp, t, m);
+        start = System.nanoTime();
+        // 3.1 Try to forget old kernels
+        for ( int i = 0; i < kernels.length; i++ ) {
+            if ( kernels[i].getRelevanceStamp() < threshold ) {
+                kernels[i] = new ClustreamKernel( instance, dim, timestamp, t, m );
+                kernels[i].setDecayFactor(lambda);
+                numDeleted++;
+                numAdded++;
+                end = System.nanoTime();
+                time_measures.put("Forgetting kernels", end - start);
                 return;
             }
         }
+        end = System.nanoTime();
+        time_measures.put("Forgetting kernels", end - start);
 
+        start = System.nanoTime();
         // 3.2 Merge closest two kernels
         int closestA = 0;
         int closestB = 0;
         minDistance = Double.MAX_VALUE;
-        for (int i = 0; i < kernels.length; i++) {
+        for ( int i = 0; i < kernels.length; i++ ) {
             double[] centerA = kernels[i].getCenter();
-            for (int j = i + 1; j < kernels.length; j++) {
-                double dist = distance(centerA, kernels[j].getCenter());
-                if (dist < minDistance) {
+            for ( int j = i + 1; j < kernels.length; j++ ) {
+                double dist = Clusterer.distance( centerA, kernels[j].getCenter() );
+                if ( dist < minDistance ) {
                     minDistance = dist;
                     closestA = i;
                     closestB = j;
@@ -154,10 +191,289 @@ public class ClustreamSSL extends AbstractClusterer {
             }
         }
         assert (closestA != closestB);
+        end = System.nanoTime();
+        time_measures.put("Merging kernels", end - start);
 
-        kernels[closestA].add(kernels[closestB]);
-        kernels[closestB] = new LabeledClustreamKernel(instance, dim, timestamp, t, m);
-        this.updatedCluster = kernels[closestB];
+        kernels[closestA].add(kernels[closestB], timestamp);
+        kernels[closestB] = new ClustreamKernel( instance, dim, timestamp, t,  m );
+        kernels[closestB].setDecayFactor(lambda);
+        numUpdated++;
+        numAdded++;
+        numDeleted++;
+    }
+
+    @Override
+    public Clustering getMicroClusteringResult() {
+        if (!initialized) return new Clustering(new Cluster[0]);
+
+        ClustreamKernel[] result = new ClustreamKernel[kernels.length];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = new ClustreamKernel(kernels[i], t, m);
+            result[i].setDecayFactor(lambda);
+            double weight = kernels[i].getN() / Math.log(kernels[i].getLST()); // weight = N / log(LST)
+            result[i].setWeight(weight);
+        }
+
+        return new Clustering(result);
+    }
+
+    @Override
+    public Clustering getClusteringResult() {
+        if (!initialized) {
+            return new Clustering(new Cluster[0]);
+        }
+        return kMeans_rand(kOption.getValue(), getMicroClusteringResult());
+    }
+
+    public Clustering getClusteringResult(Clustering gtClustering) {
+        return kMeans_gta(kOption.getValue(), getMicroClusteringResult(), gtClustering);
+    }
+
+    public String getName() {
+        return "CluStreamWithKMeans " + timeWindow;
+    }
+
+    /**
+     * k-means of (micro)clusters, with ground-truth-aided initialization.
+     * (to produce best results)
+     *
+     * @param k k centroids for k-means
+     * @param clustering the clustering result
+     * @return (macro)clustering - CFClusters
+     */
+    public static Clustering kMeans_gta(int k, Clustering clustering, Clustering gtClustering) {
+
+        ArrayList<CFCluster> microclusters = new ArrayList<CFCluster>();
+        for (int i = 0; i < clustering.size(); i++) {
+            if (clustering.get(i) instanceof CFCluster) {
+                microclusters.add((CFCluster)clustering.get(i));
+            } else {
+                System.out.println("Unsupported Cluster Type:" + clustering.get(i).getClass() + ". Cluster needs to extend moa.cluster.CFCluster");
+            }
+        }
+
+        int n = microclusters.size();
+        assert (k <= n);
+
+        /* k-means */
+        Random random = new Random(0);
+        Cluster[] centers = new Cluster[k];
+        int K = gtClustering.size();
+
+        for (int i = 0; i < k; i++) {
+            if (i < K) {	// GT-aided
+                centers[i] = new SphereCluster(gtClustering.get(i).getCenter(), 0);
+            } else {		// Randomized
+                int rid = random.nextInt(n);
+                centers[i] = new SphereCluster(microclusters.get(rid).getCenter(), 0);
+            }
+        }
+
+        return cleanUpKMeans(kMeans(k, centers, microclusters), microclusters);
+    }
+
+    /**
+     * k-means of (micro)clusters, with randomized initialization.
+     *
+     * @param k k centroids
+     * @param clustering clustering result
+     * @return (macro)clustering - CFClusters
+     */
+    public static Clustering kMeans_rand(int k, Clustering clustering) {
+
+        ArrayList<CFCluster> microclusters = new ArrayList<CFCluster>();
+        for (int i = 0; i < clustering.size(); i++) {
+            if (clustering.get(i) instanceof CFCluster) {
+                microclusters.add((CFCluster)clustering.get(i));
+            } else {
+                System.out.println("Unsupported Cluster Type:" + clustering.get(i).getClass()
+                        + ". Cluster needs to extend moa.cluster.CFCluster");
+            }
+        }
+
+        int n = microclusters.size();
+        assert (k <= n);
+
+        /* k-means */
+        Random random = new Random(0);
+        Cluster[] centers = new Cluster[k];
+
+        for (int i = 0; i < k; i++) {
+            int rid = random.nextInt(n);
+            centers[i] = new SphereCluster(microclusters.get(rid).getCenter(), 0);
+        }
+
+        return cleanUpKMeans(kMeans(k, centers, microclusters), microclusters);
+    }
+
+    /**
+     * (The Actual Algorithm) k-means of (micro)clusters, with specified initialization points.
+     *
+     * @param k
+     * @param centers - initial centers
+     * @param data
+     * @return (macro)clustering - SphereClusters
+     */
+    protected static Clustering kMeans(int k, Cluster[] centers, List<? extends Cluster> data) {
+        assert (centers.length == k);
+        assert (k > 0);
+
+        int dimensions = centers[0].getCenter().length;
+
+        ArrayList<ArrayList<Cluster>> clustering = new ArrayList<ArrayList<Cluster>>();
+        for (int i = 0; i < k; i++) {
+            clustering.add(new ArrayList<Cluster>());
+        }
+
+        while (true) {
+            // Assign points to clusters
+            for (Cluster point : data) {
+                double minDistance = Clusterer.distance(point.getCenter(), centers[0].getCenter());
+                int closestCluster = 0;
+                for (int i = 1; i < k; i++) {
+                    double distance = Clusterer.distance(point.getCenter(), centers[i].getCenter());
+                    if (distance < minDistance) {
+                        closestCluster = i;
+                        minDistance = distance;
+                    }
+                }
+
+                clustering.get(closestCluster).add(point);
+            }
+
+            // Calculate new centers and clear clustering lists
+            SphereCluster[] newCenters = new SphereCluster[centers.length];
+            for (int i = 0; i < k; i++) {
+                newCenters[i] = calculateCenter(clustering.get(i), dimensions);
+                clustering.get(i).clear();
+            }
+
+            // Convergence check
+            boolean converged = true;
+            for (int i = 0; i < k; i++) {
+                if (!Arrays.equals(centers[i].getCenter(), newCenters[i].getCenter())) {
+                    converged = false;
+                    break;
+                }
+            }
+
+            if (converged) {
+                break;
+            } else {
+                centers = newCenters;
+            }
+        }
+
+        return new Clustering(centers);
+    }
+
+    /**
+     * Rearrange the k-means result into a set of CFClusters, cleaning up the redundancies.
+     *
+     * @param kMeansResult
+     * @param microclusters
+     * @return
+     */
+    protected static Clustering cleanUpKMeans(Clustering kMeansResult, ArrayList<CFCluster> microclusters) {
+        /* Convert k-means result to CFClusters */
+        int k = kMeansResult.size();
+        CFCluster[] converted = new CFCluster[k];
+
+        for (CFCluster mc : microclusters) {
+            // Find closest kMeans cluster
+            double minDistance = Double.MAX_VALUE;
+            int closestCluster = 0;
+            for (int i = 0; i < k; i++) {
+                double distance = Clusterer.distance(kMeansResult.get(i).getCenter(), mc.getCenter());
+                if (distance < minDistance) {
+                    closestCluster = i;
+                    minDistance = distance;
+                }
+            }
+
+            // Add to cluster
+            if ( converted[closestCluster] == null ) {
+                converted[closestCluster] = (CFCluster)mc.copy();
+            } else {
+                converted[closestCluster].add(mc);
+            }
+        }
+
+        // Clean up
+        int count = 0;
+        for (int i = 0; i < converted.length; i++) {
+            if (converted[i] != null)
+                count++;
+        }
+
+        CFCluster[] cleaned = new CFCluster[count];
+        count = 0;
+        for (int i = 0; i < converted.length; i++) {
+            if (converted[i] != null)
+                cleaned[count++] = converted[i];
+        }
+
+        return new Clustering(cleaned);
+    }
+
+
+
+    /**
+     * k-means helper: Calculate a wrapping cluster of assigned points[microclusters].
+     *
+     * @param assigned
+     * @param dimensions
+     * @return SphereCluster (with center and radius)
+     */
+    private static SphereCluster calculateCenter(ArrayList<Cluster> assigned, int dimensions) {
+        double[] result = new double[dimensions];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = 0.0;
+        }
+
+        if (assigned.size() == 0) {
+            return new SphereCluster(result, 0.0);
+        }
+
+        for (Cluster point : assigned) {
+            double[] center = point.getCenter();
+            for (int i = 0; i < result.length; i++) {
+                result[i] += center[i];
+            }
+        }
+
+        // Normalize
+        for (int i = 0; i < result.length; i++) {
+            result[i] /= assigned.size();
+        }
+
+        // Calculate radius: biggest wrapping distance from center
+        double radius = 0.0;
+        for (Cluster point : assigned) {
+            double dist = Clusterer.distance(result, point.getCenter());
+            if (dist > radius) {
+                radius = dist;
+            }
+        }
+        SphereCluster sc = new SphereCluster(result, radius);
+        sc.setWeight(assigned.size());
+        return sc;
+    }
+
+
+    /** Miscellaneous **/
+
+    @Override
+    public boolean implementsMicroClusterer() {
+        return true;
+    }
+
+    public boolean isRandomizable() {
+        return false;
+    }
+
+    public double[] getVotesForInstance(Instance inst) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -167,120 +483,23 @@ public class ClustreamSSL extends AbstractClusterer {
 
     @Override
     public void getModelDescription(StringBuilder out, int indent) {
-
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public boolean isRandomizable() {
-        return false;
-    }
-
-    @Override
-    public double[] getVotesForInstance(Instance inst) {
-        return new double[0];
-    }
-
-    @Override
-        public Clustering getClusteringResult() {
-        return null;
-    }
-
-    @Override
-    public Clustering getMicroClusteringResult() {
-        if (!initialized) {
-            return new Clustering(new Cluster[0]);
-        }
-
-//        LabeledClustreamKernel[] res = new LabeledClustreamKernel[kernels.length];
-//        for ( int i = 0; i < res.length; i++ ) {
-//            res[i] = new LabeledClustreamKernel(kernels[i], t, m);
-//        }
-
-        return new Clustering(this.kernels);
-    }
-
-    /**
-     * Computes the Euclidean distance between two instance points.
-     * @param pointA point A
-     * @param pointB point B
-     * @return the Euclidean distance between them
-     */
-    public static double distance(double[] pointA, double [] pointB) {
-        double distance = 0.0;
-        for (int i = 0; i < pointA.length; i++) {
-            // sometimes, the value of the missing class is NaN & the final distance is NaN (which we don't want)
-            if (!Double.isNaN(pointA[i]) && !Double.isNaN(pointB[i])) {
-                double d = pointA[i] - pointB[i];
-                distance += d * d;
+    public Cluster getNearestCluster(Instance X) {
+        // use Euclidean distance for now
+        double minDist = Double.MAX_VALUE;
+        double distance;
+        Cluster result = null;
+        for (ClustreamKernel kernel : kernels) {
+            if (kernel == null) continue;
+            distance = Clusterer.distance(kernel.getCenter(), X.toDoubleArray());
+            if (distance < minDist) {
+                minDist = distance;
+                result = kernel;
             }
         }
-        return Math.sqrt(distance);
-    }
-
-    /**
-     * Runs kMeans
-     * @param k number of clusters
-     * @param centers the centers
-     * @param data the clusters
-     * @return a clustering
-     */
-    private static Clustering kMeans(int k, Cluster[] centers, List<? extends Cluster> data) {
-        assert (centers.length == k);
-        assert (k > 0);
-
-        int dimensions = centers[0].getCenter().length;
-
-        ArrayList<ArrayList<Cluster>> clustering = new ArrayList<>();
-        for (int i = 0; i < k; i++) clustering.add(new ArrayList<>());
-
-        int repetitions = 100;
-        while (repetitions-- >= 0) {
-            // Assign points to clusters
-            for (Cluster point : data) {
-                double minDistance = distance(point.getCenter(), centers[0].getCenter());
-                int closestCluster = 0;
-                for (int i = 1; i < k; i++) {
-                    double distance = distance(point.getCenter(), centers[i].getCenter());
-                    if ( distance < minDistance ) {
-                        closestCluster = i;
-                        minDistance = distance;
-                    }
-                }
-                clustering.get( closestCluster ).add( point );
-            }
-
-            // Calculate new centers and clear clustering lists
-            SphereCluster[] newCenters = new SphereCluster[centers.length];
-            for (int i = 0; i < k; i++) {
-                newCenters[i] = calculateCenter(clustering.get(i), dimensions);
-                clustering.get(i).clear();
-            }
-            centers = newCenters;
-        }
-
-        return new Clustering(centers);
-    }
-
-    private static SphereCluster calculateCenter(ArrayList<Cluster> cluster, int dimensions) {
-        double[] res = new double[dimensions];
-        for (int i = 0; i < res.length; i++) res[i] = 0.0;
-        if (cluster.size() == 0) return new SphereCluster(res, 0.0);
-        for (Cluster point : cluster) {
-            double [] center = point.getCenter();
-            for (int i = 0; i < res.length; i++) res[i] += center[i];
-        }
-
-        // Normalize
-        for (int i = 0; i < res.length; i++) res[i] /= cluster.size();
-
-        // Calculate radius
-        double radius = 0.0;
-        for (Cluster point : cluster) {
-            double dist = distance(res, point.getCenter());
-            if (dist > radius) radius = dist;
-        }
-        SphereCluster sc = new SphereCluster(res, radius);
-        sc.setWeight(cluster.size());
-        return sc;
+        return result;
     }
 }

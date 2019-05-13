@@ -20,7 +20,6 @@
 
 package moa.cluster;
 import java.util.Arrays;
-import java.util.Map;
 
 import com.yahoo.labs.samoa.instances.Instance;
 
@@ -78,13 +77,11 @@ public abstract class CFCluster extends SphereCluster {
 	 * @param dimensions The number of dimensions of the points that can be in
 	 * this kernel.
 	 */
-	public CFCluster(Instance instance, int dimensions) {
+	public CFCluster(Instance instance, int dimensions, long timestamp) {
 		this(instance.toDoubleArray(), dimensions);
 
-		// update the label count
-		if (!instance.classIsMasked() && !instance.classIsMissing()) {
-			super.incrementLabelCount(instance.classValue(), 1);
-		}
+		// update the weight in label feature
+		this.updateLabelWeight(instance, 1, timestamp);
 	}
 
 	protected CFCluster(int dimensions) {
@@ -96,7 +93,7 @@ public abstract class CFCluster extends SphereCluster {
 		Arrays.fill(this.SS, 0.0);
 	}
 
-	public CFCluster(double [] center, int dimensions) {
+	public CFCluster(double[] center, int dimensions) {
 		super();
 		this.N = 1;
 		this.LS = center;
@@ -113,18 +110,21 @@ public abstract class CFCluster extends SphereCluster {
 		this.SS = Arrays.copyOf(cluster.SS, cluster.SS.length);
 
 		// copy the label count
-		this.labelCount = cluster.getLabelCountCopy();
+		this.labelFeature = cluster.getLabelFeatureCopy();
 	}
 
 	public void add(CFCluster cluster) {
 		this.N += cluster.N;
 		addVectors( this.LS, cluster.LS );
 		addVectors( this.SS, cluster.SS );
+		accumulateWeight(cluster); // accumulate the label weight (cannot decay without timestamp)
+	}
 
-		// accumulate the label count
-		for (Map.Entry<Double, Integer> entry : cluster.getLabelCount().entrySet()) {
-			super.incrementLabelCount(entry.getKey(), entry.getValue());
-		}
+	public void add(CFCluster cluster, long timestamp) {
+		this.N += cluster.N;
+		addVectors( this.LS, cluster.LS );
+		addVectors( this.SS, cluster.SS );
+		accumulateWeight(cluster, timestamp);
 	}
 
 	public abstract CFCluster getCF();
@@ -160,7 +160,7 @@ public abstract class CFCluster extends SphereCluster {
 	  */
 	 @Override
 	 public double getWeight() {
-		 return N;
+		 return super.getWeight();
 	 }
 
 	 public void setN(double N){

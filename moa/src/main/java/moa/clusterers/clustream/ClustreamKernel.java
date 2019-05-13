@@ -20,8 +20,7 @@
 package moa.clusterers.clustream;
 
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.Random;
+
 import moa.cluster.CFCluster;
 import com.yahoo.labs.samoa.instances.Instance;
 
@@ -39,19 +38,14 @@ public class ClustreamKernel extends CFCluster {
 
 
     public ClustreamKernel(Instance instance, int dimensions, long timestamp , double t, int m) {
-        super(instance, dimensions);
+        super(instance, dimensions, timestamp);
         this.t = t;
         this.m = m;
         this.LST = timestamp;
-		this.SST = timestamp*timestamp;
-
-		// update the label count
-        if (!instance.classIsMissing() && !instance.classIsMissing()) {
-            super.incrementLabelCount(instance.classValue(), 1);
-        }
+		this.SST = timestamp * timestamp;
     }
 
-    public ClustreamKernel(ClustreamKernel cluster, double t, int m ) {
+    public ClustreamKernel(ClustreamKernel cluster, double t, int m) {
         super(cluster);
         this.t = t;
         this.m = m;
@@ -59,7 +53,7 @@ public class ClustreamKernel extends CFCluster {
         this.SST = cluster.SST;
 
         // copy the label count
-        this.labelCount = cluster.getLabelCountCopy();
+        this.labelFeature = cluster.getLabelFeatureCopy();
     }
 
     public void insert( Instance instance, long timestamp ) {
@@ -73,13 +67,11 @@ public class ClustreamKernel extends CFCluster {
 		}
 
         // update the label count
-        if (!instance.classIsMissing() && !instance.classIsMissing()) {
-            super.incrementLabelCount(instance.classValue(), 1);
-        }
+        this.updateLabelWeight(instance, 1, timestamp);
     }
 
     @Override
-    public void add( CFCluster other2 ) {
+    public void add(CFCluster other2, long timestamp) {
         ClustreamKernel other = (ClustreamKernel) other2;
 		assert( other.LS.length == this.LS.length );
 		this.N += other.N;
@@ -92,9 +84,7 @@ public class ClustreamKernel extends CFCluster {
 		}
 
 		// accumulate the count
-        for (Map.Entry<Double, Integer> entry : other2.getLabelCount().entrySet()) {
-            super.incrementLabelCount(entry.getKey(), entry.getValue());
-        }
+        this.accumulateWeight(other2, timestamp);
     }
 
     public double getRelevanceStamp() {
@@ -116,6 +106,8 @@ public class ClustreamKernel extends CFCluster {
 		assert( z >= 0 && z <= 1 );
 		return Math.sqrt( 2 ) * inverseError( 2*z - 1 );
     }
+
+    public double getLST() { return this.LST; }
 
     @Override
     public double getRadius() {

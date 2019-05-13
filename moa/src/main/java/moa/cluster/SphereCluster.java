@@ -43,7 +43,7 @@ public class SphereCluster extends Cluster {
 
 
 	public SphereCluster(double[] center, double radius) {
-		this(center, radius,1.0 );
+		this(center, radius,1.0);
 	}
 
 	public SphereCluster() {
@@ -55,7 +55,6 @@ public class SphereCluster extends Cluster {
 		this.center = center;
 		this.radius = radius;
 		this.weight = weightedSize;
-		this.labelCount = new HashMap<>();
 	}
 
 	public SphereCluster(int dimensions, double radius, Random random) {
@@ -72,7 +71,7 @@ public class SphereCluster extends Cluster {
 	}
 
 
-	public SphereCluster(List<?extends Instance> instances, int dimension){
+	public SphereCluster(List<?extends Instance> instances, int dimension) {
 		this();
 		if(instances == null || instances.size() <= 0)
 			return;

@@ -38,11 +38,13 @@ public class Clustering extends AbstractMOAObject{
 
     private AutoExpandVector<Cluster> clusters;
 
+    private double labelDecayFactor;
+
     public Clustering() {
         this.clusters = new AutoExpandVector<Cluster>();
     }
 
-    public Clustering( Cluster[] clusters ) {
+    public Clustering(Cluster[] clusters) {
         this.clusters = new AutoExpandVector<Cluster>();
         for (int i = 0; i < clusters.length; i++) {
             this.clusters.add(clusters[i]);
@@ -76,7 +78,7 @@ public class Clustering extends AbstractMOAObject{
         this.clusters = new AutoExpandVector<Cluster>();
         for (int i = 0; i < numClasses; i++) {
             if(sorted_points[i].size()>0){
-                SphereCluster s = new SphereCluster(sorted_points[i],dim);
+                SphereCluster s = new SphereCluster(sorted_points[i], dim);
                 s.setId(sorted_points[i].get(0).classValue());
                 s.setGroundTruth(sorted_points[i].get(0).classValue());
                 clusters.add(s);
@@ -117,11 +119,11 @@ public class Clustering extends AbstractMOAObject{
                     pointInCluster.remove(0);
                 }
                 if(micro_points.size() > 0){
-                    SphereCluster s = new SphereCluster(micro_points,dim);
+                    SphereCluster s = new SphereCluster(micro_points, dim);
                     for (int c = 0; c < microByClass.size(); c++) {
                         if(((SphereCluster)microByClass.get(c)).overlapRadiusDegree(s) > overlapThreshold ){
                             micro_points.addAll(pointInMicroClusters.get(c));
-                            s = new SphereCluster(micro_points,dim);
+                            s = new SphereCluster(micro_points, dim);
                             pointInMicroClusters.remove(c);
                             microByClass.remove(c);
                             //System.out.println("Removing redundant cluster based on radius overlap"+c);
@@ -150,7 +152,7 @@ public class Clustering extends AbstractMOAObject{
 //                        System.out.println("Overlap C"+(clustering.size()+c)+" ->C"+(clustering.size()+c1)+": "+overlap);
                         if(overlap > overlapThreshold){
                             pointInMicroClusters.get(c).addAll(pointInMicroClusters.get(c1));
-                            SphereCluster s = new SphereCluster(pointInMicroClusters.get(c),dim);
+                            SphereCluster s = new SphereCluster(pointInMicroClusters.get(c), dim);
                             microByClass.set(c, s);
                             pointInMicroClusters.remove(c1);
                             microByClass.remove(c1);
@@ -263,8 +265,6 @@ public class Clustering extends AbstractMOAObject{
         sb.append("Clustering Object");
     }
 
-
-
     public double getMaxInclusionProbability(Instance point) {
         double maxInclusion = 0.0;
         for (int i = 0; i < clusters.size(); i++) {
@@ -273,9 +273,4 @@ public class Clustering extends AbstractMOAObject{
         }
         return maxInclusion;
     }
-
-
-
-
-
 }

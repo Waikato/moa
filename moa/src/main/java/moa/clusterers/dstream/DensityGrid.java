@@ -110,7 +110,8 @@ public class DensityGrid extends CFCluster
 		this.isVisited = false;
 
 		// copy the label count from the given grid
-		this.labelCount = dg.getLabelCountCopy();
+		this.labelFeature = dg.getLabelFeatureCopy();
+//		this.labelCount = dg.getLabelCountCopy();
 	}
 	
 	/**

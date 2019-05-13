@@ -50,7 +50,8 @@ public class NonConvexCluster extends CFCluster implements IDenseMacroCluster {
 		}
 
 		// copy the label count also
-		this.labelCount = cluster.getLabelCountCopy();
+		this.labelFeature = cluster.getLabelFeatureCopy();
+//		this.labelCount = cluster.getLabelCountCopy();
 	}
 
 	@Override
