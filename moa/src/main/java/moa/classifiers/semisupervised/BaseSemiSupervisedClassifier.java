@@ -105,15 +105,9 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         double[] votes = new double[0];
         if (k == 1) {
             Cluster C = this.findClosestCluster(inst);
-            if (C != null) {
-                votes = C.getLabelVotes();
-                this.notNullCTimes++;
-            } else {
-                nullCTimes++;
-            }
+            if (C != null) votes = C.getLabelVotes();
         } else {
-            Cluster[] kC = this.findKNearestClusters(inst, this.k);
-            votes = getVotesFromKClusters(kC);
+            votes = getVotesFromKClusters(this.findKNearestClusters(inst, this.k));
         }
         end = System.nanoTime();
         times.put("Prediction", end - start);
@@ -171,10 +165,14 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
             if (k == 1) {
                 Cluster C = this.findClosestCluster(instPseudoLabel);
                 pseudoLabel = (C != null ? C.getMajorityLabel() : 0.0);
+                instPseudoLabel.setWeight(clusterer.getConfidenceLevel(inst, C));
             } else {
                 Cluster[] kC = this.findKNearestClusters(instPseudoLabel, this.k);
-                double[] votes = getVotesFromKClusters(kC);
-                pseudoLabel = Utils.maxIndex(votes);
+                pseudoLabel = Utils.maxIndex(getVotesFromKClusters(kC));
+                // get the average confidence level from k nearest clusters
+                double confidence = 0;
+                for (Cluster C : kC) { confidence += (clusterer.getConfidenceLevel(inst, C) / (double) k); }
+                inst.setWeight(confidence);
             }
             instPseudoLabel.setClassValue(pseudoLabel);
             this.clusterer.trainOnInstance(instPseudoLabel);
@@ -224,31 +222,6 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
      */
     private Cluster findClosestCluster(Instance instance) {
         return clusterer.getNearestCluster(instance);
-        //return findClosestClusterByEuclidean(instance);
-        //return findClosestClusterByInclusionProbab(instance);
-    }
-
-    /**
-     * Finds the nearest cluster using Euclidean distance
-     * between that instance and a cluster's center.
-     * This may not work so well in case of non-convex clusters.
-     * @param instance the given instance
-     * @return the cluster whose center is nearest to the instance,
-     * <code>null</code> otherwise
-     */
-    private Cluster findClosestClusterByEuclidean(Instance instance) {
-        Cluster C = null;
-        double minDistance = Double.MAX_VALUE;
-        Clustering clustering = this.getClusteringResult();
-        for (Cluster cluster : clustering.getClustering()) {
-            double distance = Clusterer.distance(cluster.getCenter(), instance.toDoubleArray());
-            if (distance < minDistance) {
-                minDistance = distance;
-                C = cluster;
-            }
-        }
-
-        return C;
     }
 
     @Override
@@ -280,7 +253,6 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
             ((WithKmeans) clusterer).numAdded = 0;
             ((WithKmeans) clusterer).numDeleted = 0;
             ((WithKmeans) clusterer).numUpdated = 0;
-
             // time measurement
             for (Map.Entry<String, Long> entry : ((WithKmeans) clusterer).time_measures.entrySet()) {
                 measurements.add(new Measurement(entry.getKey(), entry.getValue()));
@@ -304,10 +276,6 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
 
         Measurement[] result = new Measurement[measurements.size()];
         return measurements.toArray(result);
-    }
-
-    private double sigmoid(double d) {
-        return 1 / (1 + Math.exp(-d));
     }
 
     @Override

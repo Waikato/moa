@@ -327,4 +327,9 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 		// by default it's null; concrete behavior should be overriden in subclasses
 		return null;
 	}
+
+	@Override
+	public double getConfidenceLevel(Instance X, Cluster C) {
+		return 0;
+	}
 }

@@ -2,6 +2,7 @@ package moa.clusterers.semisupervised;
 
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.cluster.CFCluster;
 import moa.cluster.Cluster;
@@ -9,8 +10,10 @@ import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.clusterers.AbstractClusterer;
 import moa.clusterers.Clusterer;
+import moa.clusterers.clustream.Clustream;
 import moa.clusterers.clustream.ClustreamKernel;
 import moa.core.Measurement;
+import moa.core.Utils;
 
 import java.util.*;
 
@@ -97,7 +100,7 @@ public class ClustreamSSL extends AbstractClusterer {
                     // do this to keep the instance header in order to update the label count
                     double[] data = buffer.get(i).getCenter();
                     Instance x = instance.copy();
-                    x.setWeight(1.0);
+                    x.setWeight(instance.weight());
                     for (int j = 0; j < data.length; j++) x.setValue(j, data[j]);
                     kernels[i] = new ClustreamKernel(x, dim, timestamp, t, m);
                     kernels[i].setDecayFactor(lambda);
@@ -501,5 +504,31 @@ public class ClustreamSSL extends AbstractClusterer {
             }
         }
         return result;
+    }
+
+    @Override
+    public double getConfidenceLevel(Instance X, Cluster C) {
+        if (!(C instanceof ClustreamKernel)) return 0; // force the type to be ClustreamKernel
+
+        // confidence level = sigmoid(R - D)
+        double distance = Clusterer.distance(X.toDoubleArray(), C.getCenter());
+        double radius = 0.0;
+        ClustreamKernel mc = (ClustreamKernel) C;
+        if (mc.getN() == 1) {
+            double[] center = C.getCenter();
+            radius = Double.MAX_VALUE;
+            // find the nearest cluster from C's center
+            for (ClustreamKernel kernel : this.kernels) {
+                if (kernel == C) continue;
+                double d = Clusterer.distance(kernel.getCenter(), center);
+                if (d < radius) {
+                    radius = d;
+                }
+            }
+        } else {
+            radius = ((ClustreamKernel) C).getRadius();
+        }
+        //double confidence = 1 / (1 + distance / radius); // spread out more evenly but it shouldn't reach 1.0
+        return Utils.sigmoid(radius - distance);
     }
 }

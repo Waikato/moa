@@ -82,6 +82,13 @@ public interface Clusterer extends MOAObject, OptionHandler, AWTRenderable {
 	public Cluster getNearestCluster(Instance X);
 
 	/**
+	 * Returns the confidence that the point X falls into the nearest cluster
+	 * @param X an instance
+	 * @return the confidence level (0.0 to 1.0)
+	 */
+	public double getConfidenceLevel(Instance X, Cluster C);
+
+	/**
 	 * Computes the euclidean distance between two points.
 	 * @param p1 point 1
 	 * @param p2 point 2

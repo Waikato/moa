@@ -15,7 +15,7 @@ public class MicroClusterSSL extends MicroCluster {
 
     public MicroClusterSSL(Instance instance, int dimensions, long timestamp, double lambda, Timestamp currentTimestamp) {
         this(instance.toDoubleArray(), dimensions, timestamp, lambda, currentTimestamp);
-        updateLabelWeight(instance, 1, currentTimestamp.getTimestamp());
+        updateLabelWeight(instance, instance.weight(), currentTimestamp.getTimestamp());
 //        if (!instance.classIsMissing() && !instance.classIsMasked()) {
 //            updateLabelWeight(instance.classValue(), 1);
 //        }
@@ -29,10 +29,7 @@ public class MicroClusterSSL extends MicroCluster {
      */
     public void insert(Instance instance, long timestamp) {
         super.insert(instance, timestamp);
-        updateLabelWeight(instance, 1, timestamp);
-//        if (!instance.classIsMasked() && !instance.classIsMissing()) {
-//            this.updateLabelWeight(instance.classValue(), 1);
-//        }
+        updateLabelWeight(instance, instance.weight(), timestamp);
     }
 
     /**

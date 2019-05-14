@@ -41,7 +41,7 @@ public class MicroCluster extends CFCluster {
         this(instance.toDoubleArray(), dimensions, timestamp, lambda, currentTimestamp);
 
         // update the label count
-        super.updateLabelWeight(instance, 1, timestamp);
+        super.updateLabelWeight(instance, instance.weight(), timestamp);
     }
 
     public void insert(Instance instance, long timestamp) {
@@ -56,7 +56,7 @@ public class MicroCluster extends CFCluster {
         }
 
         // update the label count
-        super.updateLabelWeight(instance, 1, timestamp);
+        super.updateLabelWeight(instance, instance.weight(), timestamp);
     }
 
     public long getLastEditTimestamp() {

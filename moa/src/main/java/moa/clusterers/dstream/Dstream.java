@@ -321,7 +321,7 @@ public class Dstream extends AbstractClusterer {
         dg = new DensityGrid(g);
 
         // update the label count (if X is labeled)
-        dg.updateLabelWeight(inst, 1, getCurrTime());
+        dg.updateLabelWeight(inst, inst.weight(), getCurrTime());
 
 //        if (!inst.classIsMasked() && !inst.classIsMissing())
 //            dg.updateLabelWeight(inst.classValue(), 1);

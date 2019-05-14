@@ -43,6 +43,7 @@ public class ClustreamKernel extends CFCluster {
         this.m = m;
         this.LST = timestamp;
 		this.SST = timestamp * timestamp;
+		this.setWeight(1);
     }
 
     public ClustreamKernel(ClustreamKernel cluster, double t, int m) {
@@ -51,6 +52,7 @@ public class ClustreamKernel extends CFCluster {
         this.m = m;
         this.LST = cluster.LST;
         this.SST = cluster.SST;
+        this.setWeight(1);
 
         // copy the label count
         this.labelFeature = cluster.getLabelFeatureCopy();
@@ -67,7 +69,7 @@ public class ClustreamKernel extends CFCluster {
 		}
 
         // update the label count
-        this.updateLabelWeight(instance, 1, timestamp);
+        this.updateLabelWeight(instance, instance.weight(), timestamp);
     }
 
     @Override
@@ -186,6 +188,8 @@ public class ClustreamKernel extends CFCluster {
             double ls = this.LS[i];
             double ss = this.SS[i];
 
+            // TODO May have negative value!!!
+            // https://www.johndcook.com/blog/standard_deviation/
             double lsDivN = ls / this.getWeight();
             double lsDivNSquared = lsDivN * lsDivN;
             double ssDivN = ss / this.getWeight();
@@ -196,9 +200,11 @@ public class ClustreamKernel extends CFCluster {
             if (res[i] <= 0.0) {
                 if (res[i] > -EPSILON) {
                     res[i] = MIN_VARIANCE;
+                } else {
+                    res[i] = 0.0;
                 }
             }
-            else{
+            else {
                 
             }
         }
