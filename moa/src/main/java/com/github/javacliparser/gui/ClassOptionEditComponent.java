@@ -53,6 +53,13 @@ public class ClassOptionEditComponent extends JPanel implements
 
     protected JButton editButton = new JButton("Edit");
 
+    /**
+     * Flag that says the text field is in the middle of an update operation.
+     * This is to prevent two change notifications from going out when the
+     * update is implemented as a remove followed by an insert.
+     */
+    protected boolean midUpdate = false;
+
     /** listeners that listen to changes to the chosen option. */
     protected HashSet<ChangeListener> changeListeners = new HashSet<ChangeListener>();
 
@@ -64,7 +71,8 @@ public class ClassOptionEditComponent extends JPanel implements
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                notifyChangeListeners();
+                if (!midUpdate)
+                    notifyChangeListeners();
             }
 
             @Override
@@ -102,7 +110,9 @@ public class ClassOptionEditComponent extends JPanel implements
 
     @Override
     public void setEditState(String cliString) {
+        if (cliString.length() > 0) midUpdate = true;
         this.textField.setText(cliString);
+        midUpdate = false;
     }
 
     public void editObject() {

@@ -110,8 +110,8 @@ public class ColorArray {
 	private static ArrayList<ColorObject> getColors() throws IOException {
 
 		ArrayList<ColorObject> colorObjects = new ArrayList<>();
-		ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-		InputStream inputStream = contextClassLoader.getResourceAsStream("colors.csv");
+		ClassLoader classLoader = ColorArray.class.getClassLoader();
+		InputStream inputStream = classLoader.getResourceAsStream("colors.csv");
 		InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
 		BufferedReader reader = new BufferedReader(streamReader);
 		for (String line; (line = reader.readLine()) != null;) {
