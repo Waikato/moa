@@ -916,10 +916,10 @@ public class TaskManagerTabPanel extends JPanel {
                 String task = " -l ";
                 if (alg.split(" ") != null) {
                     task += "(" + alg + ") -s (" + stream + ")" + " -d (" + dir + File.separator
-                            + streamFile.split(" ")[0] + File.separator + algFile + ".txt" + ")";
+                            + streamFile + File.separator + algFile + ".txt" + ")";
                 } else {
                     task += alg + " -s (" + stream + ")" + " -d (" + dir + File.separator
-                            + streamFile.split(" ")[0] + File.separator + algFile + ".txt" + ")";
+                            + streamFile + File.separator + algFile + ".txt" + ")";
                 }
 //                String task = FilenameUtils.separatorsToSystem(" -l (" + alg + ") -s (" + stream + ") " + " -d " + "(" + dir + "\\\\"
 //                        + streamFile.split(" ")[0] + "\\\\" + algFile + ".txt" + ")");
