@@ -913,16 +913,17 @@ public class TaskManagerTabPanel extends JPanel {
                     f = new File(sfile);
                     f.mkdir();
                 }
+
                 String task = " -l ";
+
                 if (alg.split(" ") != null) {
-                    task += "(" + alg + ") -s (" + stream + ")" + " -d (" + dir + File.separator
-                            + streamFile + File.separator + algFile + ".txt" + ")";
+                    task += "(" + alg + ")";
                 } else {
-                    task += alg + " -s (" + stream + ")" + " -d (" + dir + File.separator
-                            + streamFile + File.separator + algFile + ".txt" + ")";
+                    task += alg;
                 }
-//                String task = FilenameUtils.separatorsToSystem(" -l (" + alg + ") -s (" + stream + ") " + " -d " + "(" + dir + "\\\\"
-//                        + streamFile.split(" ")[0] + "\\\\" + algFile + ".txt" + ")");
+
+                task += " -s (" + stream + ")" + " -d (" + dir + File.separator
+                        + streamFile + File.separator + algFile + ".txt" + ")";
                 auxTask.getOptions().setViaCLIString(task);
 
                 try {
