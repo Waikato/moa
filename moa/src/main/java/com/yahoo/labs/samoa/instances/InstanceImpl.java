@@ -16,6 +16,7 @@
 package com.yahoo.labs.samoa.instances;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * The Class InstanceImpl.
@@ -103,6 +104,14 @@ public class InstanceImpl implements MultiLabelInstance {
         this.instanceData = new DenseInstanceData(new double[numAttributes]); //JD
         this.instanceOriginal = new DenseInstanceData(new double[numAttributes]); // make a copy
         this.weight = 1;
+    }
+
+    public InstanceImpl(double weight, double[] values, List<Integer> masked, InstancesHeader header) {
+        this.weight = weight;
+        this.instanceData = new DenseInstanceData(values.clone());
+        this.instanceOriginal = new DenseInstanceData(values.clone());
+        this.instanceHeader = header;
+        masked.forEach(this::setMasked);
     }
 
     /**
@@ -529,6 +538,8 @@ public class InstanceImpl implements MultiLabelInstance {
 
     @Override
     public boolean isMasked(int attributeIndex) {
+        boolean a = Double.isNaN(this.instanceData.value(attributeIndex));
+        boolean b = !Double.isNaN(this.instanceOriginal.value(attributeIndex));
         return (Double.isNaN(this.instanceData.value(attributeIndex)) &&
                 !Double.isNaN(this.instanceOriginal.value(attributeIndex)));
     }
@@ -562,4 +573,7 @@ public class InstanceImpl implements MultiLabelInstance {
     public void normalize() {
         this.instanceData.normalize();
     }
+
+    @Override
+    public InstancesHeader getHeader() { return this.instanceHeader; }
 }

@@ -319,6 +319,8 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 
 	protected double labelDecayFactor;
 
+	protected boolean excludeLabel;
+
 	@Override
 	public Cluster getUpdatedCluster() { return updatedCluster; }
 
@@ -332,4 +334,7 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 	public double getConfidenceLevel(Instance X, Cluster C) {
 		return 0;
 	}
+
+	@Override
+	public void setExcludeLabel(boolean excludeLabel) { this.excludeLabel = excludeLabel; }
 }

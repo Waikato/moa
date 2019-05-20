@@ -2,6 +2,7 @@ package moa.classifiers.semisupervised;
 
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.SemiSupervisedLearner;
@@ -48,6 +49,12 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     /** Decides whether to normalize the data or not */
     public FlagOption normalizeOption = new FlagOption("normalize", 'n', "Normalize the data");
 
+    public FlagOption excludeLabelOption = new FlagOption("excludeLabel", 'e',
+            "Excludes the label when computing the distance");
+
+    public FlagOption useNotNormalizedOption = new FlagOption("useNorNormData", 'f',
+            "Use the data to train even if it's not normalized");
+
     /** Does clustering and holds the micro-clusters for classification */
     private Clusterer clusterer;
 
@@ -60,6 +67,12 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     /** Number of nearest clusters used to issue prediction */
     private int k;
 
+    private double[] ls;
+    private double[] ss;
+    private double[] m2;
+    private double[] s2;
+    private int N;
+
     ////////////////////////
     // just some measures //
     ////////////////////////
@@ -68,6 +81,8 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     private int[] predictionCount;
     private Map<String, Long> times = new HashMap<>();
     private long start = 0, end = 0;
+    private int notNormalized = 0;
+    private boolean useNotNormalized;
     ////////////////////////
     // just some measures //
     ////////////////////////
@@ -81,9 +96,11 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         this.clusterer = (AbstractClusterer) getPreparedClassOption(this.clustererOption);
         this.clusterer.prepareForUse();
+        this.clusterer.setExcludeLabel(this.excludeLabelOption.isSet());
         this.usePseudoLabel = usePseudoLabelOption.isSet();
         this.k = kNearestClusterOption.getValue();
         this.doNormalization = normalizeOption.isSet();
+        this.useNotNormalized = useNotNormalizedOption.isSet();
         super.prepareForUseImpl(monitor, repository);
     }
 
@@ -98,22 +115,22 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         Objects.requireNonNull(this.clusterer, "Clusterer must not be null!");
 
         // normalize the instance
-        if (doNormalization) inst.normalize();
+        Instance X = (doNormalization ? normalize(inst) : inst);
 
         start = System.nanoTime();
         // get the votes
         double[] votes = new double[0];
         if (k == 1) {
-            Cluster C = this.findClosestCluster(inst);
+            Cluster C = this.findClosestCluster(X);
             if (C != null) votes = C.getLabelVotes();
         } else {
-            votes = getVotesFromKClusters(this.findKNearestClusters(inst, this.k));
+            votes = getVotesFromKClusters(this.findKNearestClusters(X, this.k));
         }
         end = System.nanoTime();
         times.put("Prediction", end - start);
 
         // collect some measurement
-        if (this.predictionCount == null) this.predictionCount = new int[inst.dataset().numClasses()];
+        if (this.predictionCount == null) this.predictionCount = new int[X.dataset().numClasses()];
         int predictedClass = Utils.maxIndex(votes);
         predictionCount[predictedClass]++;
 
@@ -137,17 +154,83 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         // just clean up everything
         this.clusterer.resetLearning();
     }
+    
+    private void accumulateSum(Instance inst) {
+        this.N++;
+        double[] values = inst.toDoubleArray();
+        if (ls == null) ls = new double[inst.numAttributes()];
+        if (ss == null) ss = new double[inst.numAttributes()];
+        if (m2 == null) m2 = inst.toDoubleArray();
+        if (s2 == null) s2 = new double[inst.numAttributes()];
+        for (int i = 0; i < values.length; i++) {
+            ls[i] += values[i];
+            ss[i] += (values[i] * values[i]);
+            if (this.N == 1) {
+                m2[i] = values[i];
+                s2[i] = 0;
+            } else {
+                double tmp = m2[i];
+                m2[i] += (values[i] - m2[i]) / N;
+                s2[i] += (values[i] - tmp) * (values[i] - m2[i]);
+            }
+        }
+    }
+
+    private double[] getMean() {
+        if (ls == null || N == 0) return new double[0];
+        double[] mean = new double[ls.length];
+        for (int i = 0; i < ls.length; i++) {
+            mean[i] = ls[i] / N;
+        }
+        return mean;
+    }
+
+    private double[] getMean2() {
+        return (this.N > 0 ? m2 : new double[0]);
+    }
+
+
+    private double[] getVariance() {
+        if (ss == null || ls == null || N == 0) return new double[0];
+        double[] var = new double[ss.length];
+        for (int i = 0; i < ss.length; i++) {
+            var[i] = (ss[i] - (ls[i] * ls[i]) / N) / (N == 1 ? 1 : (N - 1));
+            if (var[i] < 0) var[i] = Double.MIN_VALUE; // set to a very small value
+        }
+        return var;
+    }
+
+    private double[] getVariance2() {
+        if (this.N < 1) return new double[0];
+        if (this.N == 1) return new double[s2.length];
+        double[] var = new double[s2.length];
+        for (int i = 0; i < s2.length; i++) {
+            var[i] = s2[i] / (N - 1);
+        }
+        return var;
+    }
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
         Objects.requireNonNull(this.clusterer, "Clusterer must not be null!");
 
+        // accumulate the mean and variance of each dimension
+        // accumulateSum(inst);
+        
+        // quick check: if the data is normalize [0.0, 1.0]
+        if (!isNormalized(inst)) {
+            //System.out.println("Instance is not normalized!!!");
+            //System.out.println(inst);
+            notNormalized++;
+            if (!useNotNormalized) return;
+        }
+
         // normalize the data
-        if (doNormalization) inst.normalize();
+        Instance X = (doNormalization ? normalize(inst) : inst);
 
         start = System.nanoTime();
-        if (this.usePseudoLabel) this.trainOnInstanceWithPseudoLabel(inst);
-        else this.trainOnInstanceNoPseudoLabel(inst);
+        if (this.usePseudoLabel) this.trainOnInstanceWithPseudoLabel(X);
+        else this.trainOnInstanceNoPseudoLabel(X);
         end = System.nanoTime();
         times.put("Training", end - start);
     }
@@ -267,12 +350,25 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
             ((Dstream) clusterer).countPruning = 0;
             ((Dstream) clusterer).timePruning = 0;
         } else if (clusterer instanceof ClustreamSSL) {
-            
+            measurements.add(new Measurement("m_added", ((ClustreamSSL) clusterer).numAdded));
+            measurements.add(new Measurement("m_deleted", ((ClustreamSSL) clusterer).numDeleted));
+            measurements.add(new Measurement("m_updated", ((ClustreamSSL) clusterer).numUpdated));
+            ((ClustreamSSL) clusterer).numAdded = 0;
+            ((ClustreamSSL) clusterer).numDeleted = 0;
+            ((ClustreamSSL) clusterer).numUpdated = 0;
+            // time measurement
+            for (Map.Entry<String, Long> entry : ((ClustreamSSL) clusterer).time_measures.entrySet()) {
+                measurements.add(new Measurement(entry.getKey(), entry.getValue()));
+            }
+            for (Map.Entry<String, Long> entry : times.entrySet()) {
+                measurements.add(new Measurement(entry.getKey(), entry.getValue()));
+            }
         }
 
         // side information
         // measurements.add(new Measurement("null times", this.nullCTimes));
         // measurements.add(new Measurement("not null times", this.notNullCTimes));
+        measurements.add(new Measurement("not normalized", notNormalized));
 
         Measurement[] result = new Measurement[measurements.size()];
         return measurements.toArray(result);
@@ -286,5 +382,26 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     @Override
     public boolean isRandomizable() {
         return false;
+    }
+
+    private boolean isNormalized(Instance X) {
+        double[] values = X.toDoubleArray();
+        for (int i = 0; i < values.length; i++) {
+            if (i != X.classIndex() && X.attribute(i).isNumeric() && Math.abs(values[i]) > 1) return false;
+        }
+        return true;
+    }
+
+    private Instance normalize(Instance X) {
+        if (ls == null || ss == null) return X;
+        double[] values = X.toDoubleArray();
+        double[] result = new double[values.length];
+        double[] mean = getMean2();
+        double[] variance = getVariance2();
+        for (int i = 0; i < values.length; i++) {
+            if (i == X.classIndex()) continue;
+            result[i] = (values[i] - mean[i]) / Math.sqrt(variance[i]);
+        }
+        return new DenseInstance(X.weight(), result, X.getHeader());
     }
 }

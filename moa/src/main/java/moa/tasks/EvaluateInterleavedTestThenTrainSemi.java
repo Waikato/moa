@@ -95,7 +95,7 @@ public class EvaluateInterleavedTestThenTrainSemi extends SemiSupervisedMainTask
             learner.setRandomSeed(this.randomSeedOption.getValue());
             learner.resetLearning();
         }
-        ExampleStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
+        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
 
         LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         learner.setModelContext(stream.getHeader());

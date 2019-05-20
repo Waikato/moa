@@ -81,16 +81,24 @@ public class RemoveDiscreteAttributeFilter extends AbstractStreamFilter {
         }
 
         //Create a new instance
+        List<Integer> masked = new ArrayList<>();
         double[] vals = new double[getHeader().numAttributes()];
         for (int i = 0; i < numericAttributes.size(); i++) {
-                vals[i] = inst.value(numericAttributes.get(i));
+            //vals[i] = inst.value(numericAttributes.get(i));
+//            if (inst.classIndex() != numericAttributes.get(i) && inst.getMaskedValue(numericAttributes.get(i)) >= 1.0) {
+//                double d = inst.getMaskedValue(numericAttributes.get(i));
+//                System.out.println("DUH!");
+//            }
+            vals[i] = inst.getMaskedValue(numericAttributes.get(i));
+            if (inst.isMasked(numericAttributes.get(i))) masked.add(i);
         }
 
         Instance instance = null;
         if (inst instanceof SparseInstance) {
             instance = new SparseInstance(inst.weight(), vals);
         } else {
-            instance = new DenseInstance(inst.weight(), vals);
+            //instance = new DenseInstance(inst.weight(), vals, this.streamHeader);
+            instance = new DenseInstance(inst.weight(), vals, masked, streamHeader);
         }
 
 

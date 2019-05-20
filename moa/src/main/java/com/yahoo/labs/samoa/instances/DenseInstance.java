@@ -15,6 +15,8 @@
  */
 package com.yahoo.labs.samoa.instances;
 
+import java.util.List;
+
 /**
  * The Class DenseInstance.
  */
@@ -28,6 +30,11 @@ public class DenseInstance extends InstanceImpl {
      */
     public DenseInstance(double weight, double[] res) {
         super(weight, res);
+    }
+
+    public DenseInstance(double weight, double[] res, InstancesHeader header) {
+        this(weight, res);
+        this.instanceHeader = header;
     }
 
     /**
@@ -55,5 +62,9 @@ public class DenseInstance extends InstanceImpl {
      */
     public DenseInstance(double numberAttributes) {
         super((int) numberAttributes);
+    }
+
+    public DenseInstance(double weight, double[] values, List<Integer> masked, InstancesHeader header) {
+        super(weight, values, masked, header);
     }
 }

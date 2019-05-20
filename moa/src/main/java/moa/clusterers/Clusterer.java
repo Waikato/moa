@@ -28,6 +28,8 @@ import moa.gui.AWTRenderable;
 import moa.options.OptionHandler;
 import com.yahoo.labs.samoa.instances.Instance;
 
+import java.util.List;
+
 public interface Clusterer extends MOAObject, OptionHandler, AWTRenderable {
 
 	public void setModelContext(InstancesHeader ih);
@@ -92,8 +94,21 @@ public interface Clusterer extends MOAObject, OptionHandler, AWTRenderable {
 	 * Computes the euclidean distance between two points.
 	 * @param p1 point 1
 	 * @param p2 point 2
+	 * @param excludes list of attributes that are excluded from the computation
 	 * @return the euclidean distance
 	 */
+	public static double distance(double[] p1, double[] p2, List<Integer> excludes) {
+		double distance = 0.0;
+		for (int i = 0; i < p1.length; i++) {
+			// sometimes, the value of the missing class is NaN & the final distance is NaN (which we don't want)
+			if (!Double.isNaN(p1[i]) && !Double.isNaN(p2[i]) && (excludes == null || !excludes.contains(i))) {
+				double d = p1[i] - p2[i];
+				distance += d * d;
+			}
+		}
+		return Math.sqrt(distance);
+	}
+
 	public static double distance(double[] p1, double[] p2) {
 		double distance = 0.0;
 		for (int i = 0; i < p1.length; i++) {
@@ -105,4 +120,6 @@ public interface Clusterer extends MOAObject, OptionHandler, AWTRenderable {
 		}
 		return Math.sqrt(distance);
 	}
+
+	public void setExcludeLabel(boolean excludeLabel);
 }

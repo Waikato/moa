@@ -49,7 +49,7 @@ public interface Instance extends Serializable {
     /**
      * Index of an Attribute.
      *
-     * @param Attribute, the attribute to be found.
+     * @param attribute, the attribute to be found.
      * @return the index of an attribute
      */
     public int indexOfAttribute(Attribute attribute);
@@ -397,4 +397,7 @@ public interface Instance extends Serializable {
 
     /** Normalizes the data */
     public void normalize();
+
+    /** Gets the header of this instance */
+    public InstancesHeader getHeader();
 }
