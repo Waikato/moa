@@ -67,6 +67,9 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
     /** Number of nearest clusters used to issue prediction */
     private int k;
 
+    /** A really small value for misc need */
+    private final double SMALL_VALUE = 1E-7;
+
     private double[] ls;
     private double[] ss;
     private double[] m2;
@@ -121,7 +124,7 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         // get the votes
         double[] votes = new double[0];
         if (k == 1) {
-            Cluster C = this.findClosestCluster(X);
+            Cluster C = this.findClosestCluster(X, false);
             if (C != null) votes = C.getLabelVotes();
         } else {
             votes = getVotesFromKClusters(this.findKNearestClusters(X, this.k));
@@ -219,8 +222,6 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
         
         // quick check: if the data is normalize [0.0, 1.0]
         if (!isNormalized(inst)) {
-            //System.out.println("Instance is not normalized!!!");
-            //System.out.println(inst);
             notNormalized++;
             if (!useNotNormalized) return;
         }
@@ -246,16 +247,13 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
             Instance instPseudoLabel = inst.copy();
             double pseudoLabel;
             if (k == 1) {
-                Cluster C = this.findClosestCluster(instPseudoLabel);
+                Cluster C = this.findClosestCluster(instPseudoLabel, false);
                 pseudoLabel = (C != null ? C.getMajorityLabel() : 0.0);
-                instPseudoLabel.setWeight(clusterer.getConfidenceLevel(inst, C));
+                instPseudoLabel.setWeight(SMALL_VALUE);
             } else {
                 Cluster[] kC = this.findKNearestClusters(instPseudoLabel, this.k);
                 pseudoLabel = Utils.maxIndex(getVotesFromKClusters(kC));
-                // get the average confidence level from k nearest clusters
-                double confidence = 0;
-                for (Cluster C : kC) { confidence += (clusterer.getConfidenceLevel(inst, C) / (double) k); }
-                inst.setWeight(confidence);
+                inst.setWeight(SMALL_VALUE);
             }
             instPseudoLabel.setClassValue(pseudoLabel);
             this.clusterer.trainOnInstance(instPseudoLabel);
@@ -303,8 +301,8 @@ public class BaseSemiSupervisedClassifier extends AbstractClassifier
      * @param instance an instance point
      * @return the nearest cluster if any found, <code>null</code> otherwise
      */
-    private Cluster findClosestCluster(Instance instance) {
-        return clusterer.getNearestCluster(instance);
+    private Cluster findClosestCluster(Instance instance, boolean includeClass) {
+            return clusterer.getNearestCluster(instance, includeClass);
     }
 
     @Override

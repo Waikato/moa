@@ -103,7 +103,6 @@ public class ClustreamSSL extends AbstractClusterer {
                     // do this to keep the instance header in order to update the label count
                     double[] data = buffer.get(i).getCenter();
                     Instance x = instance.copy();
-                    x.setWeight(instance.weight());
                     for (int j = 0; j < data.length; j++) x.setValue(j, data[j]);
                     kernels[i] = new ClustreamKernel(x, dim, timestamp, t, m);
                     kernels[i].setDecayFactor(lambda);
@@ -160,8 +159,7 @@ public class ClustreamSSL extends AbstractClusterer {
             }
         }
 
-        // 3. Date does not fit, we need to free
-        // some space to insert a new kernel
+        // 3. Date does not fit, we need to free some space to insert a new kernel
         long threshold = timestamp - timeWindow; // Kernels before this can be forgotten
 
         start = System.nanoTime();
@@ -201,7 +199,7 @@ public class ClustreamSSL extends AbstractClusterer {
         time_measures.put("Merging kernels", end - start);
 
         kernels[closestA].add(kernels[closestB], timestamp);
-        kernels[closestB] = new ClustreamKernel( instance, dim, timestamp, t,  m );
+        kernels[closestB] = new ClustreamKernel(instance, dim, timestamp, t, m);
         kernels[closestB].setDecayFactor(lambda);
         numUpdated++;
         numAdded++;
@@ -493,14 +491,19 @@ public class ClustreamSSL extends AbstractClusterer {
     }
 
     @Override
-    public Cluster getNearestCluster(Instance X) {
+    public Cluster getNearestCluster(Instance X, boolean includeClass) {
         // use Euclidean distance for now
         double minDist = Double.MAX_VALUE;
         double distance;
         Cluster result = null;
+
+        // exclude the class when finding the nearest cluster or not
+        List<Integer> excluded = new ArrayList<>();
+        if (!includeClass) excluded.add(X.classIndex());
+
         for (ClustreamKernel kernel : kernels) {
             if (kernel == null) continue;
-            distance = Clusterer.distance(kernel.getCenter(), X.toDoubleArray(), getExcludedAttributes(X));
+            distance = Clusterer.distance(kernel.getCenter(), X.toDoubleArray(), excluded);
             if (distance < minDist) {
                 minDist = distance;
                 result = kernel;
@@ -534,12 +537,5 @@ public class ClustreamSSL extends AbstractClusterer {
         }
         //double confidence = 1 / (1 + distance / radius); // spread out more evenly but it shouldn't reach 1.0
         return Utils.sigmoid(radius - distance);
-    }
-
-    private List<Integer> getExcludedAttributes(Instance X) {
-        if (!this.excludeLabel) return null;
-        List<Integer> excludes = new ArrayList<>();
-        excludes.add(X.classIndex());
-        return excludes;
     }
 }

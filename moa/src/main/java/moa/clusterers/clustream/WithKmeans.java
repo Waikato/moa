@@ -519,14 +519,19 @@ public class WithKmeans extends AbstractClusterer {
     }
 
     @Override
-    public Cluster getNearestCluster(Instance X) {
+    public Cluster getNearestCluster(Instance X, boolean includeClass) {
         // use Euclidean distance for now
         double minDist = Double.MAX_VALUE;
         double distance;
         Cluster result = null;
+
+        // exclude the class when finding the nearest cluster or not
+        List<Integer> excluded = new ArrayList<>();
+        if (!includeClass) excluded.add(X.classIndex());
+
         for (ClustreamKernel kernel : kernels) {
             if (kernel == null) continue;
-            distance = Clusterer.distance(kernel.getCenter(), X.toDoubleArray());
+            distance = Clusterer.distance(kernel.getCenter(), X.toDoubleArray(), excluded);
             if (distance < minDist) {
                 minDist = distance;
                 result = kernel;

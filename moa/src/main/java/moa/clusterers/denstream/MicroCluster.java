@@ -40,7 +40,7 @@ public class MicroCluster extends CFCluster {
     public MicroCluster(Instance instance, int dimensions, long timestamp, double lambda, Timestamp currentTimestamp) {
         this(instance.toDoubleArray(), dimensions, timestamp, lambda, currentTimestamp);
 
-        // update the label count
+        // update the label feature
         super.updateLabelWeight(instance, instance.weight(), timestamp);
     }
 
@@ -55,7 +55,7 @@ public class MicroCluster extends CFCluster {
             SS[i] += instance.value(i) * instance.value(i);
         }
 
-        // update the label count
+        // update the label feature
         super.updateLabelWeight(instance, instance.weight(), timestamp);
     }
 
@@ -143,10 +143,8 @@ public class MicroCluster extends CFCluster {
         copy.LS = this.LS.clone();
         copy.lastEditT = this.lastEditT;
 
-        // copy the label count
+        // copy the label feature
         copy.labelFeature = this.getLabelFeatureCopy();
-
-//        copy.labelCount = super.getLabelCountCopy();
 
         return copy;
     }

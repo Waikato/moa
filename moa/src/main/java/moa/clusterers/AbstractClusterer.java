@@ -19,6 +19,7 @@
  */
 package moa.clusterers;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -325,7 +326,7 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 	public Cluster getUpdatedCluster() { return updatedCluster; }
 
 	@Override
-	public Cluster getNearestCluster(Instance X) {
+	public Cluster getNearestCluster(Instance X, boolean includeClass) {
 		// by default it's null; concrete behavior should be overriden in subclasses
 		return null;
 	}
@@ -337,4 +338,12 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 
 	@Override
 	public void setExcludeLabel(boolean excludeLabel) { this.excludeLabel = excludeLabel; }
+
+	@Override
+	public List<Integer> getExcludedAttributes(Instance X) {
+		if (!this.excludeLabel) return null;
+		List<Integer> excludes = new ArrayList<>();
+		excludes.add(X.classIndex());
+		return excludes;
+	}
 }

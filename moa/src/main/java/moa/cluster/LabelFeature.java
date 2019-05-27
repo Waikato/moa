@@ -69,7 +69,7 @@ public class LabelFeature {
      * @param timestamp the timestamp at which this label feature is updated
      */
     public void increment(double label, double value, long timestamp) {
-        update(timestamp);
+        //update(timestamp);
         double oldValue = this.counts.getValue((int) label);
         counts.setValue((int) label, oldValue + value);
         lastEdit = timestamp;
@@ -85,7 +85,6 @@ public class LabelFeature {
         // for each count, update: w = w * 2 ^ (-lambda * (T - lastEdit))
         for (int i = 0; i < values.length; i++) {
             values[i] = values[i] * Math.pow(2, -lambda * (timestamp - lastEdit));
-//            System.out.println("Lambda = " + lambda + ", " + before + " ----> " + after);
         }
     }
 
@@ -132,7 +131,7 @@ public class LabelFeature {
      * @param timestamp the timestamp at which the update is invoked
      */
     public void accumulate(LabelFeature lf, long timestamp) {
-        update(timestamp);
+        //update(timestamp);
         this.accumulate(lf);
     }
 
@@ -147,4 +146,15 @@ public class LabelFeature {
      * @return the decay factor
      */
     public double getDecayFactor() { return this.lambda; }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (double v : counts.getArrayRef()) {
+            sb.append(v);
+            sb.append(" ");
+        }
+        sb.append("\n");
+        return sb.toString();
+    }
 }

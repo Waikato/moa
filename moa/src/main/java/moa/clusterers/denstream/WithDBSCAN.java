@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
+import moa.clusterers.Clusterer;
 import moa.clusterers.macro.dbscan.DBScan;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
@@ -302,7 +303,7 @@ public class WithDBSCAN extends AbstractClusterer {
 		for (int p = 0; p < points.size(); p++) {
 			DenPoint npoint = points.get(p);
 			if (!npoint.covered) {
-				double dist = distance(point.toDoubleArray(), points.get(p).toDoubleArray());
+				double dist = Clusterer.distance(point.toDoubleArray(), points.get(p).toDoubleArray(), getExcludedAttributes(point));
 				if (dist < eps) {
 					neighbourIDs.add(p);
 				}
@@ -325,7 +326,8 @@ public class WithDBSCAN extends AbstractClusterer {
 			if (min == null) {
 				min = x;
 			}
-			double dist = distance(p.toDoubleArray(), x.getCenter());
+			//double dist = distance(p.toDoubleArray(), x.getCenter());
+			double dist = Clusterer.distance(p.toDoubleArray(), x.getCenter(), getExcludedAttributes(p));
 			dist -= x.getRadius(timestamp); // TODO why do we subtract x.radius from the distance?
 			if (dist < minDist) {
 				minDist = dist;
@@ -333,21 +335,6 @@ public class WithDBSCAN extends AbstractClusterer {
 			}
 		}
 		return min;
-	}
-
-	/**
-	 * Computes the Euclidean distance between two points
-	 * @param pointA point A
-	 * @param pointB point B
-	 * @return the Euclidean distance between two points
-	 */
-	private double distance(double[] pointA, double[] pointB) {
-		double distance = 0.0;
-		for (int i = 0; i < pointA.length; i++) {
-			double d = pointA[i] - pointB[i];
-			distance += d * d;
-		}
-		return Math.sqrt(distance);
 	}
 
 	/**
@@ -395,8 +382,13 @@ public class WithDBSCAN extends AbstractClusterer {
 	}
 
 	@Override
-	public Cluster getNearestCluster(Instance X) {
-		DenPoint point = new DenPoint(X, this.timestamp);
+	public Cluster getNearestCluster(Instance X, boolean includeClass) {
+		// if not including class, mask it
+		Instance copy = X.copy();
+		if (!includeClass) copy.setMasked(X.classIndex());
+
+		// create a den point to find the nearest cluster
+		DenPoint point = new DenPoint(copy, this.timestamp);
 		return this.nearestCluster(point, this.p_micro_cluster);
 	}
 	

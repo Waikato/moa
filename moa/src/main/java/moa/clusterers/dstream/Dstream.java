@@ -204,6 +204,11 @@ public class Dstream extends AbstractClusterer {
         return new Clustering(result);
     }
 
+    @Override
+    public Cluster getNearestCluster(Instance X, boolean includeClass) {
+        return null;
+    }
+
     /**
      * @see moa.clusterers.AbstractClusterer#resetLearningImpl()
      */

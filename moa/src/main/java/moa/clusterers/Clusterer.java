@@ -28,6 +28,7 @@ import moa.gui.AWTRenderable;
 import moa.options.OptionHandler;
 import com.yahoo.labs.samoa.instances.Instance;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface Clusterer extends MOAObject, OptionHandler, AWTRenderable {
@@ -81,7 +82,7 @@ public interface Clusterer extends MOAObject, OptionHandler, AWTRenderable {
 	 * distance measures to find the nearest cluster
 	 * @return
 	 */
-	public Cluster getNearestCluster(Instance X);
+	public Cluster getNearestCluster(Instance X, boolean includeClass);
 
 	/**
 	 * Returns the confidence that the point X falls into the nearest cluster
@@ -122,4 +123,6 @@ public interface Clusterer extends MOAObject, OptionHandler, AWTRenderable {
 	}
 
 	public void setExcludeLabel(boolean excludeLabel);
+
+	public List<Integer> getExcludedAttributes(Instance X);
 }
