@@ -22,6 +22,7 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
+import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.AbstractMOAObject;
 import moa.capabilities.CapabilitiesHandler;
@@ -199,18 +200,44 @@ public class AdaptiveRandomForestDCS extends AbstractClassifier implements Multi
 
     @Override
     public double[] getVotesForInstance(Instance instance) {
+        Instance testInstance = instance.copy();
+        if(this.ensemble == null)
+            initEnsemble(testInstance);
+        DoubleVector combinedVote = new DoubleVector();
+
 
         if (votingMethodOption.getChosenLabel().equals("ORACLE")) {
             // ORACLE
-            // first commit
+//            System.out.println(testInstance.classValue());
+//            System.out.println(" ");
+//            System.out.println(testInstance.classAttribute().getAttributeValues());
+            int actualClass = (int) testInstance.classValue();
+            for(int i = 0 ; i < this.ensemble.length ; ++i) {
+                HoeffdingTreeDCS.Vote votes = this.ensemble[i].getVotesForInstance(testInstance);
+                DoubleVector voteVector = new DoubleVector(votes.getVotes());
+                voteVector.normalize();
+
+                int predictedClass = voteVector.maxIndex();
+                if (predictedClass == actualClass){
+                    for(int j = 0 ; j < voteVector.numValues(); ++j) {
+                        if (j == predictedClass) {
+                            combinedVote.addValues(voteVector);
+                            combinedVote.setValue(j, 1);
+                        }else{
+                            combinedVote.setValue(j, 0);
+                        }
+                    }
+                    return combinedVote.getArrayRef();
+                    }
+                }
+
+
+
         }else{
             // tree depth
         }
 
-        Instance testInstance = instance.copy();
-        if(this.ensemble == null) 
-            initEnsemble(testInstance);
-        DoubleVector combinedVote = new DoubleVector();
+
 
         for(int i = 0 ; i < this.ensemble.length ; ++i) {
             HoeffdingTreeDCS.Vote votes = this.ensemble[i].getVotesForInstance(testInstance);
