@@ -203,57 +203,47 @@ public class AdaptiveRandomForestDCS extends AbstractClassifier implements Multi
         Instance testInstance = instance.copy();
         if(this.ensemble == null)
             initEnsemble(testInstance);
-        DoubleVector combinedVote = new DoubleVector();
+
+        double[] resultVector;
 
 
         if (votingMethodOption.getChosenLabel().equals("ORACLE")) {
             // ORACLE
-//            System.out.println(testInstance.classValue());
-//            System.out.println(" ");
-//            System.out.println(testInstance.classAttribute().getAttributeValues());
-            int actualClass = (int) testInstance.classValue();
-            for(int i = 0 ; i < this.ensemble.length ; ++i) {
-                HoeffdingTreeDCS.Vote votes = this.ensemble[i].getVotesForInstance(testInstance);
-                DoubleVector voteVector = new DoubleVector(votes.getVotes());
-                voteVector.normalize();
-
-                int predictedClass = voteVector.maxIndex();
-                if (predictedClass == actualClass){
-                    for(int j = 0 ; j < voteVector.numValues(); ++j) {
-                        if (j == predictedClass) {
-                            combinedVote.addValues(voteVector);
-                            combinedVote.setValue(j, 1);
-                        }else{
-                            combinedVote.setValue(j, 0);
-                        }
-                    }
-                    return combinedVote.getArrayRef();
-                    }
-                }
-
-
+           resultVector = getVotesForInstaceOracle(testInstance);
 
         }else{
             // tree depth
+            // só pra não bugar, remover esse comentario
+            resultVector = new double[testInstance.numValues()];
         }
+        return resultVector;
 
+    }
 
+    private double[] getVotesForInstaceOracle(Instance testInstance){
+        // Create array with n_classes zeros
+        double[] resultVector = new double[testInstance.numValues()];
+        // Get the real class of the instance
+        int actualClass = (int) testInstance.classValue();
 
+        // Iterate through whole ensemble
         for(int i = 0 ; i < this.ensemble.length ; ++i) {
+            // Get votes for one of the trees
             HoeffdingTreeDCS.Vote votes = this.ensemble[i].getVotesForInstance(testInstance);
             DoubleVector voteVector = new DoubleVector(votes.getVotes());
-            if (voteVector.sumOfValues() > 0.0) {
-                voteVector.normalize();
-                double acc = this.ensemble[i].evaluator.getPerformanceMeasurements()[1].getValue();
-                if(! this.disableWeightedVote.isSet() && acc > 0.0) {                        
-                    for(int v = 0 ; v < voteVector.numValues() ; ++v) {
-                        voteVector.setValue(v, voteVector.getValue(v) * acc);
-                    }
-                }
-                combinedVote.addValues(voteVector);
+
+            // Get the predicted class for the instance in this tree
+            int predictedClass = voteVector.maxIndex();
+
+            // If any tree of the ensemble correctly predicts, the array of the votes is returned
+            // with 1 in the correct class position
+            // Else, an array of zeros is returned
+            if (predictedClass == actualClass){
+                resultVector[predictedClass] = 1;
+                return resultVector;
             }
         }
-        return combinedVote.getArrayRef();
+        return resultVector;
     }
 
     @Override
