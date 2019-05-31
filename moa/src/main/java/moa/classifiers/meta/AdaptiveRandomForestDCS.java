@@ -22,6 +22,7 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
+import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.AbstractMOAObject;
 import moa.capabilities.CapabilitiesHandler;
@@ -199,33 +200,50 @@ public class AdaptiveRandomForestDCS extends AbstractClassifier implements Multi
 
     @Override
     public double[] getVotesForInstance(Instance instance) {
+        Instance testInstance = instance.copy();
+        if(this.ensemble == null)
+            initEnsemble(testInstance);
+
+        double[] resultVector;
+
 
         if (votingMethodOption.getChosenLabel().equals("ORACLE")) {
             // ORACLE
+           resultVector = getVotesForInstaceOracle(testInstance);
+
         }else{
             // tree depth
+            // só pra não bugar, remover esse comentario
+            resultVector = new double[testInstance.numValues()];
         }
+        return resultVector;
 
-        Instance testInstance = instance.copy();
-        if(this.ensemble == null) 
-            initEnsemble(testInstance);
-        DoubleVector combinedVote = new DoubleVector();
+    }
 
+    private double[] getVotesForInstaceOracle(Instance testInstance){
+        // Create array with n_classes zeros
+        double[] resultVector = new double[testInstance.numValues()];
+        // Get the real class of the instance
+        int actualClass = (int) testInstance.classValue();
+
+        // Iterate through whole ensemble
         for(int i = 0 ; i < this.ensemble.length ; ++i) {
+            // Get votes for one of the trees
             HoeffdingTreeDCS.Vote votes = this.ensemble[i].getVotesForInstance(testInstance);
             DoubleVector voteVector = new DoubleVector(votes.getVotes());
-            if (voteVector.sumOfValues() > 0.0) {
-                voteVector.normalize();
-                double acc = this.ensemble[i].evaluator.getPerformanceMeasurements()[1].getValue();
-                if(! this.disableWeightedVote.isSet() && acc > 0.0) {                        
-                    for(int v = 0 ; v < voteVector.numValues() ; ++v) {
-                        voteVector.setValue(v, voteVector.getValue(v) * acc);
-                    }
-                }
-                combinedVote.addValues(voteVector);
+
+            // Get the predicted class for the instance in this tree
+            int predictedClass = voteVector.maxIndex();
+
+            // If any tree of the ensemble correctly predicts, the array of the votes is returned
+            // with 1 in the correct class position
+            // Else, an array of zeros is returned
+            if (predictedClass == actualClass){
+                resultVector[predictedClass] = 1;
+                return resultVector;
             }
         }
-        return combinedVote.getArrayRef();
+        return resultVector;
     }
 
     @Override
