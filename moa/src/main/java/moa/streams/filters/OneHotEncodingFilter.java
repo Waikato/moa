@@ -1,5 +1,6 @@
 package moa.streams.filters;
 
+import com.github.javacliparser.FlagOption;
 import com.yahoo.labs.samoa.instances.*;
 import moa.core.DoubleVector;
 import moa.core.FastVector;
@@ -19,13 +20,19 @@ public class OneHotEncodingFilter extends AbstractStreamFilter {
         return "One-hot encode categorical attributes";
     }
 
+    public FlagOption removeOtherAttributesOption = new FlagOption("removeOtherAttributes", 'r',
+            "Check to remove all other numerical attributes and only keep one-hot encoded ones.");
+
     private static final long serialVersionUID = 1L;
 
     protected InstancesHeader streamHeader;
 
+    private boolean removeOtherAttr;
+
     @Override
     protected void restartImpl() {
         this.streamHeader = null;
+        this.removeOtherAttr = removeOtherAttributesOption.isSet();
     }
 
     @Override
@@ -55,6 +62,7 @@ public class OneHotEncodingFilter extends AbstractStreamFilter {
                     j++;
                 }
             } else {
+                if (inst.attribute(i).isNumeric() && removeOtherAttr) continue;
                 attributes.addElement(inst.attribute(i));
                 values.setValue(j, value);
                 j++;

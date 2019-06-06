@@ -31,6 +31,7 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.InstanceImpl;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 
 /**
@@ -49,7 +50,7 @@ public class WriteStreamToARFFFile extends AuxiliarMainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to write.", InstanceStream.class,
+            "Stream to write.", ExampleStream.class,
             "generators.RandomTreeGenerator");
 
     public FileOption arffFileOption = new FileOption("arffFile", 'f',
@@ -64,7 +65,7 @@ public class WriteStreamToARFFFile extends AuxiliarMainTask {
 
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
+        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
         File destFile = this.arffFileOption.getFile();
         if (destFile != null) {
             try {
