@@ -75,10 +75,11 @@
 * update the *parent version* in `release.xml` to the just released version,
   i.e., `yyyy.mm.0` (without the `-SNAPSHOT` suffix, check correct patch level)
 
-* execute the following command (top-level directory)
+* execute the following commands (top-level directory)
 
     ```
-    mvn -f release.xml clean package
+    mvn clean install -DskipTests=true latex:latex
+    mvn -f release.xml prepare-package deb:package install
     ```
     
 ### Weka Package    

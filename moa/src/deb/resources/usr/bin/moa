@@ -20,9 +20,7 @@
 
 #   Copyright (C) 2011-2019 University of Waikato, Hamilton, NZ
 
-BASEDIR=`dirname $0`/..
-BASEDIR=`(cd "$BASEDIR"; pwd)`
-REPO=$BASEDIR/lib
+REPO=/usr/lib/moa
 CLASSPATH=$REPO/*
 
 JCMD=java
