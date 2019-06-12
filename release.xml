@@ -123,10 +123,10 @@
       <plugin>
         <groupId>com.github.fracpete</groupId>
         <artifactId>debian-maven-plugin</artifactId>
-        <version>1.0.12</version>
+        <version>1.0.15</version>
         <configuration>
           <packageName>moa</packageName>
-          <packageTitle>MOA - Machine Learning for Streams</packageTitle>
+          <packageTitle>MOA - Massive Online Analysis</packageTitle>
           <packageVersion>${project.version}</packageVersion>
           <projectUrl>${project.url}</projectUrl>
           <packageDescription>${project.description}</packageDescription>
@@ -139,6 +139,9 @@
             <param>.*bin.*</param>
             <param>.*javadoc.*</param>
           </excludeArtifactsRegExp>
+          <fileFiltering>
+            <enabled>true</enabled>
+          </fileFiltering>
           <useDefaultCopyResources>false</useDefaultCopyResources>
           <copyResources>
             <copyResource>

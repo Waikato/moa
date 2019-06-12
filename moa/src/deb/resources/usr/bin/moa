@@ -20,7 +20,7 @@
 
 #   Copyright (C) 2011-2019 University of Waikato, Hamilton, NZ
 
-REPO=/usr/lib/moa
+REPO=/usr/lib/${packageName}
 CLASSPATH=$REPO/*
 
 JCMD=java
@@ -39,7 +39,7 @@ for ARG in "$@"
 do
   if [ "$ARG" = "-h" ] || [ "$ARG" = "-help" ] || [ "$ARG" = "--help" ]
   then
-  	echo "Start script for MOA: Massive Online Analysis"
+  	echo "Start script for ${packageTitle}"
   	echo ""
   	echo "-h/-help/--help"
   	echo "    prints this help"
