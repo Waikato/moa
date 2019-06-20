@@ -897,6 +897,7 @@ public class TaskManagerTabPanel extends JPanel {
         
         String algNames = "";
         String streamNames = "";
+        
         for (int i = 0; i < jTableAlgorithms.getModel().getRowCount(); i++) {
             String alg = jTableAlgorithms.getModel().getValueAt(i, 0).toString();
             String algFile = jTableAlgorithms.getModel().getValueAt(i, 1).toString();
