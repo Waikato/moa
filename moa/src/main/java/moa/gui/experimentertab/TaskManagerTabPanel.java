@@ -1032,8 +1032,7 @@ public class TaskManagerTabPanel extends JPanel {
                         task += alg + " -s (" + stream + ")" + " -d (" + dir + File.separator
                                 + streamFile + File.separator + algFile + ".txt" + ")";
                     }
-//                String task = FilenameUtils.separatorsToSystem(" -l (" + alg + ") -s (" + stream + ") " + " -d " + "(" + dir + "\\\\"
-//                        + streamFile.split(" ")[0] + "\\\\" + algFile + ".txt" + ")");
+
                     auxTask.getOptions().setViaCLIString(task);
 
                     try {
