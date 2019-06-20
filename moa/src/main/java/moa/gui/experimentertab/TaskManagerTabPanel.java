@@ -884,7 +884,7 @@ public class TaskManagerTabPanel extends JPanel {
                     + "previous experiment results. Do you want to continue?", "Warning",
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, cancel);
             if (resp == JOptionPane.OK_OPTION) {
-                ReadFile.deleteDrectory(f);
+                ReadFile.deleteDirectory(f);
                 
 
             } else {
