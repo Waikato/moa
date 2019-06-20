@@ -304,11 +304,11 @@ public class ReadFile {
      *
      * @param directory
      */
-    public static void deleteDrectory(File directory) {
+    public static void deleteDirectory(File directory) {
         File[] files = directory.listFiles();
         for (File file : files) {
             if (file.isDirectory()) {
-                deleteDrectory(file);
+                deleteDirectory(file);
             }
             file.delete();
         }
