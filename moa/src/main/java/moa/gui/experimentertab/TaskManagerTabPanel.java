@@ -998,7 +998,7 @@ public class TaskManagerTabPanel extends JPanel {
 
             File f = new File(dir);
             if (f.exists()) {
-                ReadFile.deleteDrectory(f);
+                ReadFile.deleteDirectory(f);
             }
             f.mkdir();
 
