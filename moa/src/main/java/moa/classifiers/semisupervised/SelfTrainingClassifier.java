@@ -2,12 +2,12 @@ package moa.classifiers.semisupervised;
 
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.SemiSupervisedLearner;
 import moa.clusterers.Clusterer;
-import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.Utils;
@@ -16,7 +16,6 @@ import moa.tasks.TaskMonitor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -47,6 +46,11 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
             "Threshold to evaluate the confidence of a prediction",
             0.7, Double.MIN_VALUE, Double.MAX_VALUE);
 
+    public MultiChoiceOption confidenceOption = new MultiChoiceOption("confidenceComputation",
+            's', "Choose the method to estimate the prediction uncertainty",
+            new String[]{ "DistanceMeasure", "FromLearner" },
+            new String[]{ "Confidence score from pair-wise distance with the ground truth",
+              "Confidence score estimated by the learner itself" }, 1);
 
     /* -------------------
      * Attributes
@@ -81,7 +85,8 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
     private int mostConfidentSize;
     private int Lsize;
     private int Usize;
-    private double[] confidenceScore;
+    private double[] confidenceScoreDist;
+    private List<Double> confidenceScoreProbab;
     /***** Measurement only *****/
 
     @Override
@@ -93,6 +98,7 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
         this.batchSize = batchSizeOption.getValue();
         this.warmStartSize = warmStartSizeOption.getValue();
         this.threshold = thresholdOption.getValue();
+        confidenceScoreProbab = new ArrayList<>();
         allocateBatch();
         super.prepareForUseImpl(monitor, repository);
     }
@@ -105,6 +111,7 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
     @Override
     public void resetLearningImpl() {
         this.learner.resetLearning();
+        confidenceScoreProbab = new ArrayList<>();
         allocateBatch();
     }
 
@@ -138,7 +145,10 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
         /* if batch B is full, launch the self-training process */
         if (isBatchFull()) {
             predictOnBatch(U, Uhat);
-            getMostConfident(Uhat, mostConfident);
+            // chose the method to estimate prediction uncertainty
+            if (confidenceOption.getChosenIndex() == 0) getMostConfident(Uhat, mostConfident);
+            else getMostConfidentFromLearner(Uhat, mostConfident);
+            // train from the most confident examples
             mostConfident.forEach(x -> learner.trainOnInstance(x));
             mostConfidentSize = mostConfident.size();
             Lsize = L.size();
@@ -157,6 +167,16 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
             Instance copy = instance.copy(); // use copy because we do not want to modify the original data
             copy.setClassValue(Utils.maxIndex(learner.getVotesForInstance(copy)));
             result.add(copy);
+        }
+    }
+
+    private void getMostConfidentFromLearner(List<Instance> batch, List<Instance> result) {
+        for (Instance instance : batch) {
+            double[] votes = learner.getVotesForInstance(instance);
+            confidenceScoreProbab.add(votes[Utils.maxIndex(votes)]);
+            if (votes[Utils.maxIndex(votes)] > threshold) {
+                result.add(instance);
+            }
         }
     }
 
@@ -200,7 +220,7 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
             }
         }
 
-        confidenceScore = confidences.clone();
+        confidenceScoreDist = confidences.clone();
     }
 
     /**
@@ -240,7 +260,11 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
         measures.add(new Measurement("U size", Usize));
 
         double avgConfScore = 0;
-        for (double v : confidenceScore) avgConfScore += v / confidenceScore.length;
+        if (confidenceOption.getChosenIndex() == 0) {
+            for (double v : confidenceScoreDist) avgConfScore += v / confidenceScoreDist.length;
+        } else {
+            for (Double v : confidenceScoreProbab) avgConfScore += v / confidenceScoreProbab.size();
+        }
         measures.add(new Measurement("avg confidence", avgConfScore));
 
         Measurement[] result = new Measurement[measures.size()];

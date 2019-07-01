@@ -133,18 +133,38 @@ public class NaiveBayes extends AbstractClassifier  implements MultiClassClassif
             AutoExpandVector<AttributeClassObserver> attributeObservers) {
         double[] votes = new double[observedClassDistribution.numValues()];
         double observedClassSum = observedClassDistribution.sumOfValues();
+
+        // compute the normalization term in advance
+        // Z = P(x) = sum of (class_k * product of (x_i | class_k))
+        double normalization = 0;
+        for (int classIndex = 0; classIndex < votes.length; classIndex++) { // for each class y_k
+            double p_yk = observedClassDistribution.getValue(classIndex) / observedClassSum;
+            double p_xy = 1;
+            for (int attIndex = 0; attIndex < inst.numAttributes(); attIndex++) { // for every attribute i of x
+                int instAttIndex = modelAttIndexToInstanceAttIndex(attIndex, inst);
+                AttributeClassObserver obs = attributeObservers.get(attIndex);
+                if ((obs != null) && !inst.isMissing(instAttIndex)) {
+                    p_xy *= obs.probabilityOfAttributeValueGivenClass(inst.value(instAttIndex), classIndex);
+                }
+            }
+            normalization += p_yk * p_xy;
+        }
+
+        if (normalization == 0) normalization = 1; // i.e. do no normalization at all
+
         for (int classIndex = 0; classIndex < votes.length; classIndex++) {
-            votes[classIndex] = observedClassDistribution.getValue(classIndex)
-                    / observedClassSum;
+            votes[classIndex] = observedClassDistribution.getValue(classIndex) / observedClassSum;
             for (int attIndex = 0; attIndex < inst.numAttributes() - 1; attIndex++) {
-                int instAttIndex = modelAttIndexToInstanceAttIndex(attIndex,
-                        inst);
+                int instAttIndex = modelAttIndexToInstanceAttIndex(attIndex, inst);
                 AttributeClassObserver obs = attributeObservers.get(attIndex);
                 if ((obs != null) && !inst.isMissing(instAttIndex)) {
                     votes[classIndex] *= obs.probabilityOfAttributeValueGivenClass(inst.value(instAttIndex), classIndex);
                 }
             }
+            // TODO: normalization
+            votes[classIndex] /= normalization;
         }
+
         // TODO: need logic to prevent underflow?
         return votes;
     }

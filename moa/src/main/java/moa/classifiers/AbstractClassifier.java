@@ -433,4 +433,9 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
             Instances insts) {
         return insts.classIndex() > index ? index : index + 1;
     }
+
+    @Override
+    public double getConfidenceForPrediction(Instance inst, double label) {
+        return 0;
+    }
 }

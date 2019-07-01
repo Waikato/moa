@@ -42,7 +42,7 @@ public class EvaluateInterleavedTestThenTrainSemi extends SemiSupervisedMainTask
 
     public ClassOption sslLearnerOption = new ClassOption("semiLeaner", 'l',
             "A semi-supervised learner to train.", SemiSupervisedLearner.class,
-            "moa.classifiers.semisupervised.BaseSemiSupervisedClassifier");
+            "moa.classifiers.semisupervised.ClusterAndLabelClassifier");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,

@@ -921,4 +921,10 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
         }
         return ret;
     }
+
+    @Override
+    public double getConfidenceForPrediction(Instance inst, double label) {
+        double[] votes = this.getVotesForInstance(inst);
+        return votes[(int)label];
+    }
 }

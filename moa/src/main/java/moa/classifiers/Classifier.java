@@ -98,4 +98,6 @@ public interface Classifier extends Learner<Example<Instance>> {
     //public InstancesHeader getModelContext();
     
     public Prediction getPredictionForInstance(Instance inst);
+
+    public double getConfidenceForPrediction(Instance inst, double label);
 }

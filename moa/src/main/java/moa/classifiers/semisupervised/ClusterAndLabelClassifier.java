@@ -28,7 +28,7 @@ import java.util.*;
  * The idea is to group the incoming data into micro-clusters, each of which
  * is assigned a label. The micro-clusters will then be used for classification of unlabelled data.
  */
-public class BaseSemiSupervisedClassifier extends AbstractClassifier
+public class ClusterAndLabelClassifier extends AbstractClassifier
         implements SemiSupervisedLearner {
 
     private static final long serialVersionUID = 1L;
