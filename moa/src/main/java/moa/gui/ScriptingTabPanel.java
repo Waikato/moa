@@ -15,7 +15,7 @@
 
 /*
  * ScriptingTabPanel.java
- * Copyright (C) 2018 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2018-2019 University of Waikato, Hamilton, NZ
  */
 
 package moa.gui;
@@ -23,6 +23,7 @@ package moa.gui;
 import com.github.fracpete.jshell.JShellPanel;
 
 import java.awt.BorderLayout;
+import java.util.Arrays;
 
 /**
  * Tab for performing scripting via jshell. Requires Java 9.
@@ -45,7 +46,31 @@ public class ScriptingTabPanel
         setLayout(new BorderLayout());
 
         m_PanelJShell = new JShellPanel();
+        String sizeOfAg = locateSizeOfAg();
+        if (sizeOfAg != null)
+            m_PanelJShell.setRemoteRuntimeFlags(Arrays.asList("-javaagent:" + sizeOfAg));
         add(m_PanelJShell, BorderLayout.CENTER);
+    }
+
+    /**
+     * Locates the sizeofag jar in the classpath.
+     *
+     * @return the jar, null if not found
+     */
+    protected String locateSizeOfAg() {
+        String      result;
+        String[]      cp;
+
+        result = null;
+        cp     = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
+        for (String part: cp) {
+            if (part.toLowerCase().contains("sizeofag")) {
+                result = part;
+                break;
+            }
+        }
+
+        return result;
     }
 
     /**
