@@ -203,74 +203,71 @@ challenging setting.
 
 \chapter{Installation}
 
-The following manual is based on a Unix/Linux system with Java 6 SDK or greater installed. 
-Other operating systems such as Microsoft Windows will be similar but may need adjustments to suit.
+The following manual is based on a Unix/Linux system with Java 8 SDK or greater installed.
+Other operating systems such as Microsoft Windows will be similar but may need adjustments
+to suit (like using backslashes instead of forward slashes).
 
-MOA needs the following files:
-
-\begin{itemize}
-\item \texttt{moa.jar}
-\item \texttt{sizeofag.jar}
-\end{itemize}
-They are available from
-\begin{itemize}
-\item \texttt{http://sourceforge.net/projects/moa-datastream/}
-\item \texttt{http://www.jroller.com/resources/m/maxim/sizeofag.jar}
-\end{itemize}
-These files are needed to run the MOA software from the command line:
+\noindent You can download MOA releases from Sourceforge.net:
 \begin{verbatim}
-java -Xmx4G -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
-  LearnModel -l DecisionStump \
-  -s generators.WaveformGenerator \
-  -m 1000000 -O model1.moa
-\end{verbatim}
- and the graphical interface:
-\begin{verbatim}
-java -Xmx4G -cp moa.jar -javaagent:sizeofag.jar moa.gui.GUI
+https://sourceforge.net/projects/moa-datastream/files/MOA/
 \end{verbatim}
 
-\texttt{Xmx4G} increases the maximum heap size to 4GB for your java engine, as
-the default setting of 16 to 64MB may be too small. 
-
-
-\section{WEKA}
-\label{sec:InstWeka}
-
-It is possible to use the classifiers available in WEKA 3.7. The file \texttt{weka.jar} is available from
+\noindent Or you can download nightly builds (with the latest bugfixes) from here:
 \begin{verbatim}
-http://sourceforge.net/projects/weka/files/weka-3-7/
+https://adams.cms.waikato.ac.nz/snapshots/moa/
 \end{verbatim}
 
-This file is needed to run the MOA software with WEKA from the command line:
-\begin{verbatim}
-java -Xmx4G -cp moa.jar:weka.jar -javaagent:sizeofag.jar 
-  moa.DoTask "LearnModel \
-  -l (WekaClassifier -l weka.classifiers.trees.J48) \ 
-  -s generators.WaveformGenerator -m 1000000 -O model1.moa"
-\end{verbatim}
-and the graphical interface:
-\begin{verbatim}
-java -Xmx4G -cp moa.jar:weka.jar -javaagent:sizeofag.jar \
-    moa.gui.GUI
-\end{verbatim}
-or, using Microsoft Windows:
-\begin{verbatim}
-java -Xmx4G -cp moa.jar;weka.jar -javaagent:sizeofag.jar
-  moa.DoTask "LearnModel 
-  -l (WekaClassifier -l weka.classifiers.trees.J48)                  
-  -s generators.WaveformGenerator -m 1000000 -O model1.moa"
+Assuming that you downloaded a ZIP file and decompressed it, you can start up
+the MOA user interface using the provided scripts in the \verb|bin| directory.
 
-java -Xmx4G -cp moa.jar;weka.jar -javaagent:sizeofag.jar 
-    moa.gui.GUI
-\end{verbatim}
+Alternatively, you can also the command-line directly to start the MOA user
+interface or start up tasks:
 
+You can evaluate a MOA learner like this (command-line copied from the user
+interface and the parentheses escaped with backslashes):
+{\scriptsize
+\begin{verbatim}
+java -Xmx4G -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
+  EvaluateModel -m \
+  \(LearnModel -l \(meta.WEKAClassifier -l \
+  \(weka.classifiers.bayes.BayesNet -D -Q \
+  weka.classifiers.bayes.net.search.local.K2 -- \
+  -P 1 -S BAYES -E weka.classifiers.bayes.net.estimate.SimpleEstimator \
+  -- -A 0.5\)\)\)
+\end{verbatim}}
+\noindent The user interface can be started like this:
+{\scriptsize
+\begin{verbatim}
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.gui.GUI
+\end{verbatim}}
+
+\texttt{-Xmx4g} increases the maximum heap size to 4GB for your Java Virtual Machine, as
+the default setting may be too small.
+
+\section{Look'n'Feel}
+The Look'n'Feel of MOA is determined by the properties defined in the \verb|GUI.props|
+file:
+{\scriptsize
+\begin{verbatim}
+https://github.com/Waikato/moa/blob/master/moa/src/main/resources/moa/gui/GUI.props
+\end{verbatim}}
+You can override the default values by placing a \verb|GUI.props| file in your
+home directory and then change the values there.
+
+In case you are experiencing problems in the user interface, try setting the
+following values:
+{\scriptsize
+\begin{verbatim}
+LookAndFeel=crossplatform
+JideLookAndFeel=0
+\end{verbatim}}
 
 \chapter{Using MOA}
 \section{Using the GUI}
 A graphical user interface for configuring and running tasks is available with the command:
 
 \begin{verbatim}
-java -Xmx4G -cp moa.jar -javaagent:sizeofag.jar moa.gui.GUI
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.gui.GUI
 \end{verbatim}
 
 There are two main tabs: one for classification and one for clustering.
@@ -404,7 +401,7 @@ The first example will command MOA to train the \verb+HoeffdingTree+ classifier 
 specified  \verb+generators.WaveformGenerator+, which is a data stream generator that produces a three-class learning problem of identifying three types of waveform. The \verb+-m+ option specifies the maximum number of examples to train the learner with, in this case one million examples. The \verb+-O+ option specifies a file to output the resulting model to:
 
 \begin{footnotesize}\begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
   LearnModel -l trees.HoeffdingTree \
   -s generators.WaveformGenerator -m 1000000 -O model1.moa
 \end{verbatim}\end{footnotesize}
@@ -414,7 +411,7 @@ This will create a file named \verb+model1.moa+ that contains the decision stump
 The next example will evaluate the model to see how accurate it is on a set of examples that are generated using a different random seed. The \verb+EvaluateModel+ task is given the parameters needed to load the model produced in the previous step, generate a new waveform stream with a random seed of 2, and test on one million examples:
 
 \begin{footnotesize}\begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
   "EvaluateModel -m file:model1.moa \
   -s (generators.WaveformGenerator -i 2) -i 1000000"
 \end{verbatim}\end{footnotesize}
@@ -432,7 +429,7 @@ Kappa Statistic (percent) = 76.711
 Note the the above two steps can be achieved by rolling them into one, avoiding the need to create an external file, as follows:
 
 \begin{footnotesize}\begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
   "EvaluateModel -m (LearnModel -l trees.HoeffdingTree \
   -s generators.WaveformGenerator -m 1000000) \
   -s (generators.WaveformGenerator -i 2) -i 1000000"
@@ -442,7 +439,7 @@ The task \verb+EvaluatePeriodicHeldOutTest+ will train a model while taking snap
 The following command creates a {\em comma separated values} file, training the \verb+HoeffdingTree+ classifier on the \verb+WaveformGenerator+ data, using the first 100 thousand examples for testing, training on a total of 100 million examples, and testing every one million examples:
 
 \begin{footnotesize}\begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
   "EvaluatePeriodicHeldOutTest -l trees.HoeffdingTree \
   -s generators.WaveformGenerator \
   -n 100000 -i 100000000 -f 1000000" > dsresult.csv
@@ -451,7 +448,7 @@ java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
   For the purposes of comparison, a bagging learner using ten decisions trees can be trained on
 the same problem:
 \begin{footnotesize}\begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
   "EvaluatePeriodicHeldOutTest -l (OzaBag -l trees.HoeffdingTree -s 10)\
   -s generators.WaveformGenerator \
   -n 100000 -i 100000000 -f 1000000" > htresult.csv
@@ -473,7 +470,7 @@ HoeffdingTree classifier on the WaveformGenerator data, training and testing on 
 examples, and testing every one million examples, is the following:
 
 \begin{footnotesize}\begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
   "EvaluateInterleavedTestThenTrain -l trees.HoeffdingTree \
   -s generators.WaveformGenerator \
   -i 100000000 -f 1000000" > htresult.csv
@@ -489,14 +486,14 @@ First, we will execute the
 The following commands create {\em comma separated values} files, training the \verb+DecisionStump+ and the \verb+HoeffdingTree+ classifier on the \verb+WaveformGenerator+ data, using the first 100 thousand examples for testing, training on a total of 100 million examples, and testing every one million examples:
 
 \begin{footnotesize}\begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
   "EvaluatePeriodicHeldOutTest -l trees.DecisionStump \
   -s generators.WaveformGenerator \
   -n 100000 -i 100000000 -f 1000000" > dsresult.csv
 \end{verbatim}\end{footnotesize}
 
 \begin{footnotesize}\begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
   "EvaluatePeriodicHeldOutTest -l trees.HoeffdingTree \
   -s generators.WaveformGenerator \
   -n 100000 -i 100000000 -f 1000000" > htresult.csv
@@ -866,7 +863,7 @@ The main Tasks in MOA are the following:
 Outputs a stream to an ARFF file. 
 Example:
 \begin{footnotesize}\begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
   "WriteStreamToARFFFile -s generators.WaveformGenerator \
   -f Wave.arff -m 100000" 
 \end{verbatim}\end{footnotesize}
@@ -882,7 +879,7 @@ Parameters:
 Measures the speed of a stream. Example:
 
 \begin{footnotesize}\begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
   "MeasureStreamSpeed -s generators.WaveformGenerator \
   -g 100000" 
 \end{verbatim}\end{footnotesize}
@@ -898,7 +895,7 @@ Parameters:
 Learns a model from a stream.
 Example:
 \begin{footnotesize}\begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
   LearnModel -l trees.HoeffdingTree \
   -s generators.WaveformGenerator -m 1000000 -O model1.moa
 \end{verbatim}\end{footnotesize}
@@ -918,7 +915,7 @@ Parameters:
 Evaluates a static model on a stream.
 Example:
 \begin{footnotesize}\begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
   "EvaluateModel -m (LearnModel -l trees.HoeffdingTree \
   -s generators.WaveformGenerator -m 1000000) \
   -s (generators.WaveformGenerator -i 2) -i 1000000"
@@ -938,7 +935,7 @@ Parameters:
 Evaluates a classifier on a stream by periodically testing on a heldout set.
 Example:
 \begin{footnotesize}\begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
   "EvaluatePeriodicHeldOutTest -l trees.HoeffdingTree \
   -s generators.WaveformGenerator \
   -n 100000 -i 100000000 -f 1000000" > htresult.csv
@@ -962,7 +959,7 @@ Parameters:
 Evaluates a classifier on a stream by testing then training with each example in sequence.
 Example:
 \begin{footnotesize}\begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
   "EvaluateInterleavedTestThenTrain -l trees.HoeffdingTree \
   -s generators.WaveformGenerator \
   -i 100000000 -f 1000000" > htresult.csv
@@ -1007,14 +1004,14 @@ $n_i = 1$ since the loss $L_i$ is computed for every single example.
 
 Examples:
 \begin{footnotesize}\begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
   "EvaluatePrequential -l trees.HoeffdingTree \
   -e (WindowClassificationPerformanceEvaluator -w 10000) \
   -s generators.WaveformGenerator \
   -i 100000000 -f 1000000" > htresult.csv
 \end{verbatim}
 \begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -Xmx4g -cp "lib/*" -javaagent:lib/sizeofag-1.0.4.jar moa.DoTask \
   "EvaluatePrequential -l trees.HoeffdingTree \
   -e (FadingFactorClassificationPerformanceEvaluator -a .975) \
   -s generators.WaveformGenerator \
