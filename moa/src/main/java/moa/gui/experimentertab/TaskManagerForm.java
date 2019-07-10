@@ -5,9 +5,10 @@
  */
 package moa.gui.experimentertab;
 
+import moa.gui.LookAndFeel;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
 
 /**
  *
@@ -43,7 +44,7 @@ private static void createAndShowGUI() {
      */
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            LookAndFeel.install();
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
 
                 @Override

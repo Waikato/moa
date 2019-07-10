@@ -19,6 +19,22 @@
  */
 package moa.gui.experimentertab;
 
+import moa.gui.LookAndFeel;
+import nz.ac.waikato.cms.gui.core.BaseDirectoryChooser;
+import org.apache.commons.io.FilenameUtils;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -31,22 +47,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.table.DefaultTableModel;
+
 import static moa.gui.experimentertab.ReadFile.readCSV;
-import nz.ac.waikato.cms.gui.core.BaseDirectoryChooser;
-import org.apache.commons.io.FilenameUtils;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 
 /**
  * Generate figures plotting the performance measurements of various learning
@@ -1247,7 +1249,7 @@ public class PlotTab extends javax.swing.JPanel {
      */
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            LookAndFeel.install();
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
 
                 @Override

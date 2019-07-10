@@ -19,22 +19,12 @@
  */
 package com.github.javacliparser.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.github.javacliparser.Option;
+import com.github.javacliparser.Options;
+import moa.classifiers.trees.HoeffdingTree;
+import moa.gui.GUIUtils;
+import moa.gui.LookAndFeel;
+import moa.options.OptionHandler;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -46,19 +36,24 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.UIManager;
-
-import moa.classifiers.trees.HoeffdingTree;
-import com.github.javacliparser.Option;
-import moa.options.OptionHandler;
-import com.github.javacliparser.Options;
-import moa.gui.GUIUtils;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.lang.reflect.Constructor;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This panel displays an options configuration.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $
  */
 public class OptionsConfigurationPanel extends JPanel {
 
@@ -254,7 +249,7 @@ public class OptionsConfigurationPanel extends JPanel {
 
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            LookAndFeel.install();
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
 
                 @Override

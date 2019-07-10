@@ -40,7 +40,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -69,7 +68,6 @@ import java.util.prefs.Preferences;
  * This panel displays the running tasks.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $
  */
 public class RegressionTaskManagerPanel extends JPanel {
 
@@ -506,7 +504,7 @@ public class RegressionTaskManagerPanel extends JPanel {
 
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            LookAndFeel.install();
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
 
                 @Override

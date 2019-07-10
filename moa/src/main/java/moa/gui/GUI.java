@@ -25,7 +25,6 @@ import moa.core.WekaUtils;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
 import java.awt.BorderLayout;
 
 /**
@@ -34,7 +33,6 @@ import java.awt.BorderLayout;
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @author FracPete (fracpete at waikato dot ac dot nz)
- * @version $Revision: 7 $
  */
 public class GUI extends JPanel {
 
@@ -83,16 +81,7 @@ public class GUI extends JPanel {
                     // Create and set up the window.
                     JFrame frame = new JFrame("MOA Graphical User Interface");
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    
-                    try {
-                        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                    } catch (Exception e) {
-                        try {
-                            javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-                        } catch (Exception ex) {
-                        }
-                    
-                    }
+                    LookAndFeel.install();
 
                     GUI gui = new GUI();
                     frame.getContentPane().setLayout(new BorderLayout());

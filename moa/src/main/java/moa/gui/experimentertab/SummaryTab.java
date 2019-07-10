@@ -19,11 +19,10 @@
  */
 package moa.gui.experimentertab;
 
-import java.awt.BorderLayout;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import moa.gui.LookAndFeel;
+import nz.ac.waikato.cms.gui.core.BaseDirectoryChooser;
+import org.apache.commons.io.FilenameUtils;
+
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -31,11 +30,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-import nz.ac.waikato.cms.gui.core.BaseDirectoryChooser;
-import org.apache.commons.io.FilenameUtils;
+import java.awt.BorderLayout;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Summarize the performance measurements of different learning algorithms over
@@ -581,7 +582,7 @@ public class SummaryTab extends JPanel {
      */
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            LookAndFeel.install();
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
 
                 @Override

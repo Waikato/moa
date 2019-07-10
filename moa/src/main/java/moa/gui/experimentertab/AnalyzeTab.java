@@ -19,6 +19,20 @@
  */
 package moa.gui.experimentertab;
 
+import moa.gui.LookAndFeel;
+import moa.gui.experimentertab.statisticaltests.PValuePerTwoAlgorithm;
+import moa.gui.experimentertab.statisticaltests.RankPerAlgorithm;
+import moa.gui.experimentertab.statisticaltests.StatisticalTest;
+import nz.ac.waikato.cms.gui.core.BaseDirectoryChooser;
+import org.apache.commons.io.FilenameUtils;
+
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -27,19 +41,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.UIManager;
-import javax.swing.table.DefaultTableModel;
-import moa.gui.experimentertab.statisticaltests.PValuePerTwoAlgorithm;
-import moa.gui.experimentertab.statisticaltests.RankPerAlgorithm;
-import moa.gui.experimentertab.statisticaltests.StatisticalTest;
-import nz.ac.waikato.cms.gui.core.BaseDirectoryChooser;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * In this class are compared online learning algorithms on multiple datasets by
@@ -589,7 +590,7 @@ public class AnalyzeTab extends javax.swing.JPanel {
      */
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            LookAndFeel.install();
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
 
                 @Override

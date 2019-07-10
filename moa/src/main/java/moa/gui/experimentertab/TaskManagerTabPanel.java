@@ -21,6 +21,42 @@
  */
 package moa.gui.experimentertab;
 
+import moa.classifiers.Classifier;
+import moa.core.Globals;
+import moa.core.StringUtils;
+import moa.gui.ClassOptionSelectionPanel;
+import moa.gui.LookAndFeel;
+import moa.gui.experimentertab.tasks.ExperimenterTask;
+import moa.learners.ChangeDetectorLearner;
+import moa.learners.Learner;
+import moa.options.AbstractOptionHandler;
+import moa.options.ClassOption;
+import moa.options.OptionHandler;
+import moa.streams.ArffFileStream;
+import moa.streams.InstanceStream;
+import moa.streams.generators.AgrawalGenerator;
+import moa.streams.generators.cd.ConceptDriftGenerator;
+import moa.streams.generators.cd.GradualChangeGenerator;
+import moa.tasks.MainTask;
+import nz.ac.waikato.cms.gui.core.BaseDirectoryChooser;
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
+import org.apache.commons.io.FilenameUtils;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -28,49 +64,14 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.DefaultListModel;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JTable;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import moa.classifiers.Classifier;
-import moa.core.StringUtils;
-import moa.gui.ClassOptionSelectionPanel;
-import moa.gui.experimentertab.tasks.ExperimenterTask;
-import moa.options.AbstractOptionHandler;
-import moa.options.ClassOption;
-import moa.options.OptionHandler;
-import moa.streams.ArffFileStream;
-import moa.streams.generators.AgrawalGenerator;
-import moa.tasks.MainTask;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Scanner;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import moa.core.Globals;
-import moa.learners.ChangeDetectorLearner;
-import moa.learners.Learner;
-import moa.streams.InstanceStream;
-import moa.streams.generators.cd.ConceptDriftGenerator;
-import moa.streams.generators.cd.GradualChangeGenerator;
-import nz.ac.waikato.cms.gui.core.BaseDirectoryChooser;
-import nz.ac.waikato.cms.gui.core.BaseFileChooser;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * Run online learning algorithms over multiple datasets and save the
@@ -1344,7 +1345,7 @@ public class TaskManagerTabPanel extends JPanel {
      */
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            LookAndFeel.install();
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
 
                 @Override
