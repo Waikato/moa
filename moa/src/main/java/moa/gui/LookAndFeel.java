@@ -23,6 +23,8 @@ package moa.gui;
 import com.jidesoft.plaf.LookAndFeelFactory;
 
 import javax.swing.UIManager;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages setting the look and feel.
@@ -52,16 +54,25 @@ public class LookAndFeel {
     /** for using the cross-platform LnF (= metal). */
     public static final String VALUE_CROSSPLATFORM = "crossplatform";
 
-    /**
-     * Installs the look and feel.
-     */
-    public static void install() {
-        String lnf = GUIDefaults.get(KEY_LOOKANDFEEL, "").trim();
-        boolean success = true;
+    /** for logging output. */
+    protected static Logger LOGGER;
+    static {
+        LOGGER = Logger.getLogger(LookAndFeel.class.getName());
+        LOGGER.setLevel(Level.INFO);
+    }
 
+
+    /**
+     * Attempts to install the specified Java Look'n'Feel.
+     *
+     * @param lnf the look'n'feel classname
+     * @return true if successfully installed
+     */
+    protected static boolean installJavaLookAndFeel(String lnf) {
+        boolean result = true;
         switch (lnf) {
             case "":
-                System.err.println("Using built-in strategy for setting Look'n'Feel...");
+                LOGGER.info("Using built-in strategy for setting Look'n'Feel...");
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 }
@@ -70,78 +81,146 @@ public class LookAndFeel {
                         UIManager.setLookAndFeel(WINDOWS_LNF);
                     }
                     catch (Throwable th) {
-                        success = false;
+                        result = false;
                     }
                 }
                 break;
 
             case VALUE_SYSTEM:
-                System.err.println("Using system Look'n'Feel...");
+                LOGGER.info("Using system Look'n'Feel...");
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 }
                 catch (Throwable t) {
-                    success = false;
+                    result = false;
                 }
                 break;
 
             case VALUE_CROSSPLATFORM:
-                System.err.println("Using cross-platform Look'n'Feel...");
+                LOGGER.info("Using cross-platform Look'n'Feel...");
                 try {
                     UIManager.setLookAndFeel(CROSSPLATFORM_LNF);
                 }
                 catch (Throwable t) {
-                    success = false;
+                    result = false;
                 }
                 break;
 
             default:
-                System.err.println("Using custom Look'n'Feel class: " + lnf);
+                LOGGER.info("Using Look'n'Feel class: " + lnf);
                 try {
                     UIManager.setLookAndFeel(lnf);
                 }
                 catch (Throwable t) {
-                    System.err.println("Failed to instantiate Look'n'Feel class: " + lnf);
-                    success = false;
+                    LOGGER.severe("Failed to instantiate Look'n'Feel class: " + lnf);
+                    result = false;
                 }
                 break;
         }
+        return result;
+    }
 
-        // fall back on metal LnF
-        if (!success) {
-            System.err.println("Falling back on cross-platform Look'n'Feel...");
-            try {
-                UIManager.setLookAndFeel(CROSSPLATFORM_LNF);
-            }
-            catch (Throwable t) {
-                System.err.println("Failed to set cross-platform Look'n'Feel (" + CROSSPLATFORM_LNF + "), which should always succeed!");
-                // ignored
-            }
+    /**
+     * Attempts to install the specified Look'n'Feel, but falls back on
+     * cross-platform look if it fails.
+     *
+     * @param lnf the look'n'feel classname
+     * @return true if successful
+     */
+    protected static boolean attemptInstallJavaLookAndFeel(String lnf) {
+        boolean result;
+        result = installJavaLookAndFeel(lnf);
+        if (!result) {
+            LOGGER.info("Falling back on cross-platform Look'n'Feel...");
+            result = installJavaLookAndFeel(CROSSPLATFORM_LNF);
+            if (!result)
+                LOGGER.severe("Failed to set cross-platform Look'n'Feel (" + CROSSPLATFORM_LNF + "), which should always succeed!");
         }
+        return result;
+    }
 
-        // configuring JIDE
-        lnf = GUIDefaults.get(KEY_JIDELOOKANDFEEL, "").trim();
-        if (lnf.isEmpty()) {
-            System.err.println("Using built-in strategy for setting JIDE Look'n'Feel...");
-            try {
+    /**
+     * Attempts to install the specified JIDE style.
+     *
+     * @param style the style to install, uses default strategy if -1
+     * @return true if successful
+     * @see LookAndFeelFactory
+     */
+    protected static boolean installJideLookAndFeel(int style) {
+        boolean result = true;
+
+        try {
+            if (style == -1) {
+                LOGGER.info("Using built-in strategy for setting JIDE Look'n'Feel...");
                 LookAndFeelFactory.installJideExtension();
             }
-            catch (Throwable t) {
-                System.err.println("Failed to install JIDE Look'n'Feel based on built-in strategy, attempting to use style: " + LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU);
-                LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU);
+            else {
+                LOGGER.info("Using JIDE Look'n'Feel style: " + style);
+                LookAndFeelFactory.installJideExtension(style);
             }
+        }
+        catch (Throwable t) {
+            result = false;
+            if (style == -1)
+                LOGGER.severe("Failed to install JIDE Look'n'Feel based on built-in strategy: " + t);
+            else
+                LOGGER.severe("Failed to install JIDE Look'n'Feel based on built-in strategy: " + t);
+        }
+
+        return result;
+    }
+
+    /**
+     * Attempts to install the specifoed JIDE style, but falls back on
+     * cross-platform Java Look'n'Feel and JIDE style {@link LookAndFeelFactory#VSNET_STYLE_WITHOUT_MENU}
+     * if it fails.
+     *
+     * @param style the style to install, uses default strategy if -1
+     * @return true if successful
+     * @see LookAndFeelFactory
+     */
+    protected static boolean attemptInstallJideLookAndFeel(int style) {
+        boolean result;
+        result = installJideLookAndFeel(style);
+        if (!result) {
+            LOGGER.info("Falling back on cross-platform Look'n'Feel and JIDE style " + LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU + "...");
+            result = installJavaLookAndFeel(CROSSPLATFORM_LNF)
+                && installJideLookAndFeel(LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU);
+            if (!result)
+                LOGGER.severe("Failed to set cross-platform Look'n'Feel (" + CROSSPLATFORM_LNF + ") and JIDE style " + LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU + ", which should always succeed!");
+        }
+        return result;
+    }
+
+    /**
+     * Installs the look and feel.
+     */
+    public static void install() {
+        String lnf;
+        int style;
+        boolean success;
+
+        // Java
+        lnf     = GUIDefaults.get(KEY_LOOKANDFEEL, "").trim();
+        success = attemptInstallJavaLookAndFeel(lnf);
+        LOGGER.info("Setting Java Look'n'Feel: " + success);
+
+        // JIDE
+        lnf = GUIDefaults.get(KEY_JIDELOOKANDFEEL, "").trim();
+        if (lnf.isEmpty()) {
+            success = attemptInstallJideLookAndFeel(-1);
         }
         else {
             try {
-                int style = Integer.parseInt(lnf);
-                System.err.println("Using JIDE Look'n'Feel style: " + style);
-                LookAndFeelFactory.installJideExtension(style);
+                style   = Integer.parseInt(lnf);
+                success = attemptInstallJideLookAndFeel(style);
             }
             catch (Throwable t) {
-                System.err.println("JIDE Look'n'Feel must be an integer, found: " + lnf);
-                System.err.println("Attempting to use JIDE Look'n'Feel style: " + LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU);
-                LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU);
+                LOGGER.severe("JIDE Look'n'Feel must be an integer, found: " + lnf);
+                LOGGER.info("Falling back on JIDE Look'n'Feel style: " + LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU);
+                success = attemptInstallJideLookAndFeel(LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU);
             }
         }
+        LOGGER.info("Setting JIDE style: " + success);
     }
 }
