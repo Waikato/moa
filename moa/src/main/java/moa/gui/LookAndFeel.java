@@ -123,7 +123,13 @@ public class LookAndFeel {
         lnf = GUIDefaults.get(KEY_JIDELOOKANDFEEL, "").trim();
         if (lnf.isEmpty()) {
             System.err.println("Using built-in strategy for setting JIDE Look'n'Feel...");
-            LookAndFeelFactory.installJideExtension();
+            try {
+                LookAndFeelFactory.installJideExtension();
+            }
+            catch (Exception e) {
+                System.err.println("Failed to install JIDE Look'n'Feel based on built-in strategy, attempting to use style: " + LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU);
+                LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU);
+            }
         }
         else {
             try {
@@ -133,8 +139,8 @@ public class LookAndFeel {
             }
             catch (Exception e) {
                 System.err.println("JIDE Look'n'Feel must be an integer, found: " + lnf);
-                System.err.println("Using built-in strategy for setting JIDE Look'n'Feel...");
-                LookAndFeelFactory.installJideExtension();
+                System.err.println("Attempting to use JIDE Look'n'Feel style: " + LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU);
+                LookAndFeelFactory.installJideExtension(LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU);
             }
         }
     }
