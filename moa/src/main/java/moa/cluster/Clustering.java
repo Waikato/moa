@@ -25,14 +25,15 @@
 
 package moa.cluster;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import com.yahoo.labs.samoa.instances.Attribute;
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.AbstractMOAObject;
 import moa.core.AutoExpandVector;
 import moa.gui.visualization.DataPoint;
-import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.Instance;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class Clustering extends AbstractMOAObject{
 
@@ -57,8 +58,10 @@ public class Clustering extends AbstractMOAObject{
         int noiseLabel;
         
         Attribute classLabel = points.get(0).dataset().classAttribute();
+        if (!classLabel.isNominal())
+            throw new IllegalStateException("Class attribute '" + classLabel.name() + "' is not nominal!");
         int lastLabelIndex = classLabel.numValues() - 1;
-        if (classLabel.value(lastLabelIndex) == "noise") {
+        if (classLabel.value(lastLabelIndex).equals("noise")) {
         	noiseLabel = lastLabelIndex;
         } else {
         	noiseLabel = -1;
