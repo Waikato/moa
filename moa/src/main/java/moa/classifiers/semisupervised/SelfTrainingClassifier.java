@@ -34,17 +34,29 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
             "Any learner to be self-trained", AbstractClassifier.class,
             "moa.classifiers.trees.HoeffdingTree");
 
-    public IntOption warmStartSizeOption = new IntOption("warmStart", 'w',
-            "Number of LABELED instances to initialize the self-training process",
-            1000, 0, Integer.MAX_VALUE);
-
     public IntOption batchSizeOption = new IntOption("batchSize", 'b',
             "Size of one batch to self-train",
             1000, 1, Integer.MAX_VALUE);
 
+    public MultiChoiceOption thresholdChoiceOption = new MultiChoiceOption("thresholdValue", 't',
+            "Ways to define the confidence threshold",
+            new String[] { "Fixed", "AdaptiveWindowing", "AdaptiveVariance" },
+            new String[] {
+                    "The threshold is input once and remains unchanged",
+                    "The threshold is updated every h-interval of time",
+                    "The threshold is updated if the confidence score drifts off from the average"
+            }, 0);
+
     public FloatOption thresholdOption = new FloatOption("confidenceThreshold", 'c',
             "Threshold to evaluate the confidence of a prediction",
-            0.7, Double.MIN_VALUE, Double.MAX_VALUE);
+            0.7, 0.0, Double.MAX_VALUE);
+
+    public IntOption horizonOption = new IntOption("horizon", 'h',
+            "The interval of time to update the threshold", 1000);
+
+    public FloatOption ratioThresholdOption = new FloatOption("ratioThreshold", 'r',
+            "How large should the threshold be wrt to the average confidence score",
+            0.8, 0.0, Double.MAX_VALUE);
 
     public MultiChoiceOption confidenceOption = new MultiChoiceOption("confidenceComputation",
             's', "Choose the method to estimate the prediction uncertainty",
@@ -62,9 +74,6 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
     /** The size of one batch */
     private int batchSize;
 
-    /** The number of labeled instances to start the training*/
-    private int warmStartSize;
-
     /** The confidence threshold to decide which predictions to include in the next training batch */
     private double threshold;
 
@@ -80,6 +89,13 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
     /** Contains the most confident prediction */
     private List<Instance> mostConfident;
 
+    private int horizon;
+    private int t;
+    private double ratio;
+    private double LS;
+    private double SS;
+    private double N;
+    private double lastConfidenceScore;
 
     /***** Measurement only *****/
     private int mostConfidentSize;
@@ -96,9 +112,11 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
     public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         this.learner = (Classifier) getPreparedClassOption(learnerOption);
         this.batchSize = batchSizeOption.getValue();
-        this.warmStartSize = warmStartSizeOption.getValue();
         this.threshold = thresholdOption.getValue();
-        confidenceScoreProbab = new ArrayList<>();
+        this.confidenceScoreProbab = new ArrayList<>();
+        this.ratio = ratioThresholdOption.getValue();
+        this.horizon = horizonOption.getValue();
+        LS = SS = N = t = 0;
         allocateBatch();
         super.prepareForUseImpl(monitor, repository);
     }
@@ -112,6 +130,7 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
     public void resetLearningImpl() {
         this.learner.resetLearning();
         confidenceScoreProbab = new ArrayList<>();
+        lastConfidenceScore = LS = SS = N = t = 0;
         allocateBatch();
     }
 
@@ -119,9 +138,6 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
     public void trainOnInstanceImpl(Instance inst) {
 
         /* SELF-TRAINING:
-         *
-         * if warm start:
-         *    doWarmStart()
          *
          * B.add(X)
          * if X is labeled:
@@ -134,6 +150,8 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
          *    B.clear()
          *    B.add(U_best)
          */
+        updateThreshold();
+        t++;
 
         if (inst.classIsMasked() || inst.classIsMissing()) {
             U.add(inst);
@@ -146,7 +164,7 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
         if (isBatchFull()) {
             predictOnBatch(U, Uhat);
             // chose the method to estimate prediction uncertainty
-            if (confidenceOption.getChosenIndex() == 0) getMostConfident(Uhat, mostConfident);
+            if (confidenceOption.getChosenIndex() == 0) getMostConfidentDistanceBased(Uhat, mostConfident);
             else getMostConfidentFromLearner(Uhat, mostConfident);
             // train from the most confident examples
             mostConfident.forEach(x -> learner.trainOnInstance(x));
@@ -155,6 +173,42 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
             Usize = U.size();
             cleanBatch();
         }
+    }
+
+    private void updateThreshold() {
+        if (thresholdChoiceOption.getChosenIndex() == 1) updateThresholdWindowing();
+        if (thresholdChoiceOption.getChosenIndex() == 2) updateThresholdVariance();
+    }
+
+    private void updateThresholdWindowing() {
+        if (t % horizon == 0) {
+            if (N == 0 || LS == 0 || SS == 0) return;
+            threshold = (LS / N) * ratio;
+            // threshold = (threshold <= 1.0 ? threshold : 1.0);
+            // N = LS = SS = 0; // to reset or not?
+            t = 0;
+        }
+    }
+
+    private void updateThresholdVariance() {
+        // TODO update right when it detects a drift, or to wait until H drifts have happened?
+        if (N == 0 || LS == 0 || SS == 0) return;
+        double variance = (SS - LS * LS / N) / (N - 1);
+        double mean = LS / N;
+        double zscore = (lastConfidenceScore - mean) / variance;
+        if (Math.abs(zscore) > 1.0) {
+            threshold = mean * ratio;
+            // threshold = (threshold <= 1.0 ? threshold : 1.0);
+        }
+    }
+
+    /**
+     * Gets the prediction from an instance (a shortcut to pass getVotesForInstance)
+     * @param inst the instance
+     * @return the most likely prediction (the label with the highest probability in <code>getVotesForInstance</code>)
+     */
+    private double getPrediction(Instance inst) {
+        return Utils.maxIndex(this.getVotesForInstance(inst));
     }
 
     /**
@@ -174,7 +228,7 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
         for (Instance instance : batch) {
             double[] votes = learner.getVotesForInstance(instance);
             confidenceScoreProbab.add(votes[Utils.maxIndex(votes)]);
-            if (votes[Utils.maxIndex(votes)] > threshold) {
+            if (votes[Utils.maxIndex(votes)] >= threshold) {
                 result.add(instance);
             }
         }
@@ -185,7 +239,7 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
      * @param batch the batch containing the predictions
      * @param result the result containing the most confident prediction from the given batch
      */
-    private void getMostConfident(List<Instance> batch, List<Instance> result) {
+    private void getMostConfidentDistanceBased(List<Instance> batch, List<Instance> result) {
         /*
          * Use distance measure to estimate the confidence of a prediction
          *
@@ -202,20 +256,24 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
             conf = 0;
             for (Instance XL : this.L) {
                 if (XL.classValue() == X.classValue()) {
-                    conf += Clusterer.distance(XL.toDoubleArray(), X.toDoubleArray());
+                    conf += Clusterer.distance(XL.toDoubleArray(), X.toDoubleArray()) / this.L.size();
                 }
             }
-            confidences[i++] = conf / this.L.size();
+            conf = (1.0 / conf > 1.0 ? 1.0 : 1 / conf); // reverse so the distance becomes the confidence
+            confidences[i++] = conf;
+            // accumulate the statistics
+            LS += conf;
+            SS += conf * conf;
+            N++;
         }
 
-        /*
-         * The confidences are computed using the distance measures,
+        for (double confidence : confidences) lastConfidenceScore += confidence / confidences.length;
+
+        /* The confidences are computed using the distance measures,
          * so naturally, the lower the score, the more certain the prediction is.
-         *
-         * Here we simply retrieve the instances whose confidence score are below a threshold
-         */
+         * Here we simply retrieve the instances whose confidence score are below a threshold */
         for (int j = 0; j < confidences.length; j++) {
-            if (confidences[j] <= threshold) {
+            if (confidences[j] >= threshold) {
                 result.add(batch.get(j));
             }
         }

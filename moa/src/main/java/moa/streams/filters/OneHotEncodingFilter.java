@@ -20,8 +20,11 @@ public class OneHotEncodingFilter extends AbstractStreamFilter {
         return "One-hot encode categorical attributes";
     }
 
-    public FlagOption removeOtherAttributesOption = new FlagOption("removeOtherAttributes", 'r',
+    public FlagOption removeOtherAttributesOption = new FlagOption("removeNumericalAttributes", 'r',
             "Check to remove all other numerical attributes and only keep one-hot encoded ones.");
+
+    public FlagOption notEncodeOption = new FlagOption("notEncodeCategorical", 'n',
+            "Check to not apply one-hot encoded categorical attributes");
 
     private static final long serialVersionUID = 1L;
 
@@ -29,10 +32,13 @@ public class OneHotEncodingFilter extends AbstractStreamFilter {
 
     private boolean removeOtherAttr;
 
+    private boolean notEncode;
+
     @Override
     protected void restartImpl() {
         this.streamHeader = null;
         this.removeOtherAttr = removeOtherAttributesOption.isSet();
+        this.notEncode = notEncodeOption.isSet();
     }
 
     @Override
@@ -51,17 +57,24 @@ public class OneHotEncodingFilter extends AbstractStreamFilter {
         for (int i = 0; i < inst.numAttributes(); i++) {
             // TODO includes the class label or not??
             double value = inst.getMaskedValue(i);
-            if (inst.isMasked(i)) masked.add(j);
 
             if (inst.attribute(i).isNominal() && i != inst.classIndex() && inst.attribute(i).numValues() > 2) {
-                int V = inst.attribute(i).numValues();
-                for (int k = 0; k < V; k++) {
-                    attributes.addElement(new Attribute(inst.attribute(i).name() + "_" + k, onehot));
-                    if (k == value) values.setValue(j, 1);
-                    else values.setValue(j, 0);
-                    j++;
+                if (notEncode) {
+                    if (inst.isMasked(i)) masked.add(i);
+                    values.setValue(i, value);
+                    attributes.addElement(new Attribute(inst.attribute(i).name(), inst.attribute(i).getAttributeValues()));
+                } else {
+                    if (inst.isMasked(i)) masked.add(j);
+                    int V = inst.attribute(i).numValues();
+                    for (int k = 0; k < V; k++) {
+                        attributes.addElement(new Attribute(inst.attribute(i).name() + "_" + k, onehot));
+                        if (k == value) values.setValue(j, 1);
+                        else values.setValue(j, 0);
+                        j++;
+                    }
                 }
             } else {
+                if (inst.isMasked(i)) masked.add(j);
                 if (inst.attribute(i).isNumeric() && removeOtherAttr) continue;
                 attributes.addElement(inst.attribute(i));
                 values.setValue(j, value);

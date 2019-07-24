@@ -2,12 +2,14 @@ package moa.cluster;
 
 import moa.core.DoubleVector;
 
+import java.io.Serializable;
+
 /**
  * Label feature: keeps the weight of each label stored in a cluster.
  * The weight can be simply viewed as the count of a label in a cluster,
  * which is decayed over time by a factor from 0.0 to 1.0
  */
-public class LabelFeature {
+public class LabelFeature implements Serializable {
 
     /** The vector keeping the weight of each label */
     private DoubleVector counts;
