@@ -40,7 +40,7 @@ public class ClustreamSSL extends AbstractClusterer {
             "k of macro k-means (number of clusters)", 5);
 
     public FloatOption decayFactorOption = new FloatOption("labelDecay", 'l',
-            "Controls the decaying of old labels", 0.25, 0.0, 1.0);
+            "Controls the decaying of old labels", 0.0, 0.0, 1.0);
 
     private int timeWindow;
     private long timestamp = -1;
@@ -154,6 +154,7 @@ public class ClustreamSSL extends AbstractClusterer {
             if (minDistance < radius) {
                 // Date fits, put into kernel and be happy
                 closestKernel.insert(instance, timestamp);
+                updatedCluster = closestKernel;
                 numUpdated++;
                 return;
             }
@@ -167,6 +168,7 @@ public class ClustreamSSL extends AbstractClusterer {
         for ( int i = 0; i < kernels.length; i++ ) {
             if ( kernels[i].getRelevanceStamp() < threshold ) {
                 kernels[i] = new ClustreamKernel( instance, dim, timestamp, t, m );
+                updatedCluster = closestKernel;
                 kernels[i].setDecayFactor(lambda);
                 numDeleted++;
                 numAdded++;
@@ -200,6 +202,7 @@ public class ClustreamSSL extends AbstractClusterer {
 
         kernels[closestA].add(kernels[closestB], timestamp);
         kernels[closestB] = new ClustreamKernel(instance, dim, timestamp, t, m);
+        updatedCluster = kernels[closestB];
         kernels[closestB].setDecayFactor(lambda);
         numUpdated++;
         numAdded++;

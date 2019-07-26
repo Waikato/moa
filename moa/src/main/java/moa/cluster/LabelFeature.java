@@ -149,6 +149,10 @@ public class LabelFeature implements Serializable {
      */
     public double getDecayFactor() { return this.lambda; }
 
+    public DoubleVector getData() {
+        return counts;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

@@ -28,6 +28,11 @@ import java.util.Map;
 import java.util.Random;
 import moa.AbstractMOAObject;
 import com.yahoo.labs.samoa.instances.Instance;
+import moa.classifiers.Classifier;
+import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
+import moa.classifiers.core.attributeclassobservers.GaussianNumericAttributeClassObserver;
+import moa.classifiers.core.attributeclassobservers.NominalAttributeClassObserver;
+import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 
 public abstract class Cluster extends AbstractMOAObject {
@@ -185,17 +190,57 @@ public abstract class Cluster extends AbstractMOAObject {
     /** Keeps track of the count of the class labels */
     protected LabelFeature labelFeature;
 
+    /** Observe the distribution of attribute values per class (one observer per attribute) */
+    private AutoExpandVector<AttributeClassObserver> attrObservers = new AutoExpandVector<>();
+
+    /** The base learner to train on labeled points in this cluster*/
+    protected Classifier learner;
+
+    protected int numLabeledPoints;
+    protected int numUnlabeledPoints;
+
+    public Classifier getLearner() { return this.learner; }
+    public void setLearner(Classifier learner) {
+        this.learner = learner;
+    }
+    public int getNumLabeledPoints() { return this.numLabeledPoints; }
+    public int getNumUnlabeledPoints() { return this.numUnlabeledPoints; }
+
     /**
      * Increments the count of a label in this cluster.
      * If the label is not yet seen in the cluster, its count will be initialized
      *
-     * @param X the instance
+     * @param inst the instance, may have label or not
      * @param amount the amount to increment
      */
-    public void updateLabelWeight(Instance X, double amount, long timestamp) {
-        if (!X.classIsMissing() && !X.classIsMasked()) {
-            this.labelFeature.increment(X.classValue(), amount, timestamp);
+    public void updateLabelWeight(Instance inst, double amount, long timestamp) {
+        if (!inst.classIsMissing() && !inst.classIsMasked()) {
+            // update the label's weight
+            this.labelFeature.increment(inst.classValue(), amount, timestamp);
+            // update the observer
+            for (int i = 0; i < inst.numAttributes(); i++) {
+                AttributeClassObserver obs = attrObservers.get(i);
+                // initialize the observer if needed
+                if (obs == null) {
+                    obs = inst.attribute(i).isNominal() ?
+                            new NominalAttributeClassObserver() : new GaussianNumericAttributeClassObserver();
+                    this.attrObservers.set(i, obs);
+                }
+                // update the observer
+                obs.observeAttributeClass(inst.value(i), (int)inst.classValue(), inst.weight());
+            }
+            numLabeledPoints++;
+        } else {
+            numUnlabeledPoints++;
         }
+    }
+
+    /**
+     * Returns the attribute per class observer
+     * @return the observer
+     */
+    public AutoExpandVector<AttributeClassObserver> getAttributeObservers() {
+        return this.attrObservers;
     }
 
     /**
