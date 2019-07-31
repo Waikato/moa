@@ -91,6 +91,12 @@
       </dependency>
 
       <dependency>
+        <groupId>com.github.waikato</groupId>
+        <artifactId>fcms-widgets</artifactId>
+        <version>0.0.17</version>
+      </dependency>
+
+      <dependency>
         <groupId>net.sf.meka</groupId>
         <artifactId>meka</artifactId>
         <version>1.9.2</version>

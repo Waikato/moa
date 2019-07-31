@@ -20,12 +20,22 @@
  */
 package moa.gui;
 
+import com.jidesoft.swing.JideButton;
+import com.jidesoft.swing.JideSplitButton;
 import moa.DoTask;
 import moa.core.WekaUtils;
+import nz.ac.waikato.cms.gui.core.GUIHelper;
+import nz.ac.waikato.cms.gui.core.MultiPagePane;
 
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The main class for the MOA gui. Lets the user configure
@@ -38,7 +48,7 @@ public class GUI extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
-    private javax.swing.JTabbedPane panel;
+    private MultiPagePane pagePane;
 
     public GUI() {
         initGUI();
@@ -48,8 +58,19 @@ public class GUI extends JPanel {
         setLayout(new BorderLayout());
 
         // Create and set up tabs
-        panel = new javax.swing.JTabbedPane();
-        add(panel, BorderLayout.CENTER);
+        pagePane = new MultiPagePane();
+        pagePane.setMaxPageCloseUndo(GUIDefaults.getMaxTabUndo());
+        add(pagePane, BorderLayout.CENTER);
+
+        // sub-menu for adding tabs via action button
+        JideSplitButton buttonAdd = new JideSplitButton(GUIHelper.getIcon("add.gif"));
+        buttonAdd.setButtonStyle(JideButton.TOOLBOX_STYLE);
+        buttonAdd.setFont(getFont().deriveFont(Font.PLAIN));
+        buttonAdd.setAlwaysDropdown(false);
+        pagePane.getButtonPanel().add(buttonAdd);
+
+        // the default tabs
+        Set<String> defaultTabs = new HashSet<>(Arrays.asList(GUIDefaults.getDefaultTabs()));
 
         // initialize additional panels
         String[] tabs = GUIDefaults.getTabs();
@@ -57,15 +78,29 @@ public class GUI extends JPanel {
             try {
                 // determine classname
                 String[] optionsStr = tabs[i].split(":");
-                String classname = optionsStr[0];
+                final String classname = optionsStr[0];
                 // setup panel
                 AbstractTabPanel tabPanel = (AbstractTabPanel) Class.forName(classname).newInstance();
-                panel.addTab(tabPanel.getTabTitle(), null, (JPanel) tabPanel, tabPanel.getDescription());
+                if ((defaultTabs.size() == 0) || defaultTabs.contains(classname))
+                    pagePane.addPage(tabPanel.getTabTitle(), tabPanel);
+
+                // add tab
+                JMenuItem menuitem = new JMenuItem(tabPanel.getTabTitle());
+                menuitem.addActionListener((ActionEvent e) -> {
+                    try {
+                        AbstractTabPanel tab = (AbstractTabPanel) Class.forName(classname).newInstance();
+                        pagePane.addPage(tab.getTabTitle(), tab);
+                    }
+                    catch (Exception ex) {
+                        // ignored
+                    }
+                });
+                buttonAdd.add(menuitem);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
+        pagePane.setSelectedIndex(0);
     }
 
     public static void main(String[] args) {
@@ -89,6 +124,7 @@ public class GUI extends JPanel {
 
                     // Display the window.
                     frame.setSize(GUIDefaults.getFrameWidth(), GUIDefaults.getFrameHeight());
+                    frame.setLocationRelativeTo(null);
                     frame.setVisible(true);
                 }
             });

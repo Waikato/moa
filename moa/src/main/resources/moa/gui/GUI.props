@@ -18,6 +18,18 @@ Tabs=\
   moa.gui.AuxiliarTabPanel,\
   moa.gui.experimentertab.ExperimenterTabPanel
 
+# The default tabs to display (empty list displays all)
+# comma-separated list of classnames, like "Tabs"
+# This shows only the classification/regression tabs on startup
+#DefaultTabs=\
+#  moa.gui.ClassificationTabPanel,\
+#  moa.gui.RegressionTabPanel
+DefaultTabs=
+
+# The maximum number of undo steps for closing tabs/pages
+# (0 turns undo off)
+MaxTabUndo=10
+
 # the default frame width
 FrameWidth=1200
 
