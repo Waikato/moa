@@ -29,7 +29,9 @@ import moa.tasks.ConceptDriftMainTask;
 import moa.tasks.FailedTaskReport;
 import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 import nz.ac.waikato.cms.gui.core.DetachablePanel;
+import nz.ac.waikato.cms.gui.core.ExtensionFileFilter;
 import nz.ac.waikato.cms.gui.core.GUIHelper;
+import weka.gui.visualize.PNGWriter;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -201,6 +203,7 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         buttonZoomInY = new javax.swing.JButton();
         buttonZoomOutY = new javax.swing.JButton();
         buttonDetach = new javax.swing.JButton();
+        buttonSaveAs = new javax.swing.JButton();
         labelEvents = new javax.swing.JLabel();
         graphScrollPanel = new javax.swing.JScrollPane();
         graphCanvas = new moa.gui.visualization.GraphCanvas();
@@ -248,7 +251,8 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
         graphPanelControlTop.setLayout(new java.awt.GridBagLayout());
 
-        buttonZoomInY.setText("Zoom in Y");
+        buttonZoomInY.setIcon(GUIHelper.getIcon("zoom_in.png"));
+        buttonZoomInY.setText("Y");
         buttonZoomInY.addActionListener(new java.awt.event.ActionListener() {
 
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -259,7 +263,8 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
         graphPanelControlTop.add(buttonZoomInY, gridBagConstraints);
 
-        buttonZoomOutY.setText("Zoom out Y");
+        buttonZoomOutY.setIcon(GUIHelper.getIcon("zoom_out.png"));
+        buttonZoomOutY.setText("Y");
         buttonZoomOutY.addActionListener(new java.awt.event.ActionListener() {
 
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -285,8 +290,6 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         gridBagConstraints.weightx = 1.0;
         graphPanel.add(graphPanelControlTop, gridBagConstraints);
 
-        graphCanvas.setPreferredSize(new java.awt.Dimension(500, 111));
-
         javax.swing.GroupLayout graphCanvasLayout = new javax.swing.GroupLayout(graphCanvas);
         graphCanvas.setLayout(graphCanvasLayout);
         graphCanvasLayout.setHorizontalGroup(
@@ -306,7 +309,8 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         graphPanel.add(graphScrollPanel, gridBagConstraints);
 
-        buttonZoomInX.setText("Zoom in X");
+        buttonZoomInX.setIcon(GUIHelper.getIcon("zoom_in.png"));
+        buttonZoomInX.setText("X");
         buttonZoomInX.addActionListener(new java.awt.event.ActionListener() {
 
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -315,7 +319,8 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         });
         graphPanelControlBottom.add(buttonZoomInX);
 
-        buttonZoomOutX.setText("Zoom out X");
+        buttonZoomOutX.setIcon(GUIHelper.getIcon("zoom_out.png"));
+        buttonZoomOutX.setText("X");
         buttonZoomOutX.addActionListener(new java.awt.event.ActionListener() {
 
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -340,6 +345,33 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
         graphPanelControlBottom.add(buttonDetach, gridBagConstraints);
+
+        buttonSaveAs.setIcon(GUIHelper.getIcon("save.gif"));
+        buttonSaveAs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                if (fileChooserGraph == null) {
+                    fileChooserGraph = new BaseFileChooser();
+                    fileChooserGraph.setAcceptAllFileFilterUsed(false);
+                    ExtensionFileFilter filter = new ExtensionFileFilter("PNG image", "png");
+                    fileChooserGraph.addChoosableFileFilter(filter);
+                }
+                int retVal = fileChooserGraph.showSaveDialog(getParent());
+                if (retVal != BaseFileChooser.APPROVE_OPTION)
+                    return;
+                File png = fileChooserGraph.getSelectedFile();
+                PNGWriter writer = new PNGWriter(graphCanvas);
+                writer.setFile(png);
+                try {
+                    writer.toOutput();
+                }
+                catch (Exception e) {
+                    GUIHelper.showErrorMessage(getParent(), "Failed to save graph to: " + png, e);
+                }
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
+        graphPanelControlBottom.add(buttonSaveAs, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -645,6 +677,8 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
     private javax.swing.JButton buttonDetach;
 
+    private javax.swing.JButton buttonSaveAs;
+
     private DetachablePanel detachablePanel;
 
     private javax.swing.JCheckBox checkboxDrawClustering;
@@ -662,6 +696,8 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
     private javax.swing.JComboBox comboY;
 
     private moa.gui.visualization.GraphCanvas graphCanvas;
+
+    private BaseFileChooser fileChooserGraph;
 
     private javax.swing.JPanel graphPanel;
 
