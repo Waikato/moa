@@ -135,6 +135,7 @@
           <excludeArtifactsRegExp>
             <param>.*-osx-x86.*</param>
             <param>.*-win-x86.*</param>
+            <param>.*-win-i686.*</param>
             <param>.*-armhf.*</param>
             <param>.*bin.*</param>
             <param>.*javadoc.*</param>
