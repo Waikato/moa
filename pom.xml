@@ -170,6 +170,7 @@
   </profiles>
 
   <properties>
+    <kafka.version>2.3.0</kafka.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
@@ -177,6 +178,7 @@
   <modules>
     <module>moa</module>
     <module>weka-package</module>
+    <module>moa-kafka</module>
   </modules>
 
   <build>
