@@ -54,182 +54,179 @@ import moa.core.Utils;
  * <!-- technical-bibtex-end -->
  *
  */
-public class AdaGrad extends SGD{
+public class AdaGrad extends SGD {
 
-    /** For serialization */
-    private static final long serialVersionUID = -3732968666673530291L;
+	/** For serialization */
+	private static final long serialVersionUID = -3732968666673530291L;
 
-    @Override
-    public String getPurposeString() {
-        return "An online optimiser for learning various linear models (binary class SVM, binary class logistic regression and linear regression).";
-    }
- 
-    /** The epsilon value */
-    protected double m_epsilon = 1e-8;
+	@Override
+	public String getPurposeString() {
+		return "An online optimiser for learning various linear models (binary class SVM, binary class logistic regression and linear regression).";
+	}
 
-    public FloatOption epsilonOption = new FloatOption("epsilon",
-            'p', "epsilon parameter.",
-            1e-8, 0.00, 1);
+	/** The epsilon value */
+	protected double m_epsilon = 1e-8;
 
-    /** Stores the weights (+ bias in the last element) */
-    protected DoubleVector m_gradients;
-    protected DoubleVector m_velocity;
-    protected double m_biasVelocity;
+	public FloatOption epsilonOption = new FloatOption("epsilon",
+			'p', "epsilon parameter.",
+			1e-8, 0.00, 1);
 
-    /**
-     * Set the epsilon value.
-     *
-     * @param eps the epsilon value to use.
-     */
-    public void setEpsilon(double eps) {
-        m_epsilon = eps;
-    }
+	/** Stores the weights (+ bias in the last element) */
+	protected DoubleVector m_gradients;
+	protected DoubleVector m_velocity;
+	protected double m_biasVelocity;
 
-    /**
-     * Get the epsilon value.
-     *
-     * @return the epsilon value
-     */
-    public double getEpsilon() {
-        return m_epsilon;
-    }
+	/**
+	 * Set the epsilon value.
+	 *
+	 * @param eps the epsilon value to use.
+	 */
+	public void setEpsilon(double eps) {
+		m_epsilon = eps;
+	}
 
-    @Override
-    public void resetLearningImpl() {
-        reset();
-        setLambda(this.lambdaRegularizationOption.getValue());
-        setLearningRate(this.learningRateOption.getValue());
-        setEpsilon(this.epsilonOption.getValue());
-        setLossFunction(this.lossFunctionOption.getChosenIndex());
-    }
+	/**
+	 * Get the epsilon value.
+	 *
+	 * @return the epsilon value
+	 */
+	public double getEpsilon() {
+		return m_epsilon;
+	}
 
-    /**
-     * Trains the classifier with the given instance.
-     *
-     * @param instance    the new training instance to include in the model
-     */
-    @Override
-    public void trainOnInstanceImpl(Instance instance) {
+	@Override
+	public void resetLearningImpl() {
+		reset();
+		setLambda(this.lambdaRegularizationOption.getValue());
+		setLearningRate(this.learningRateOption.getValue());
+		setEpsilon(this.epsilonOption.getValue());
+		setLossFunction(this.lossFunctionOption.getChosenIndex());
+	}
 
-        if (m_weights == null) {
-            m_weights = new DoubleVector();
-            m_gradients = new DoubleVector();
-            m_velocity = new DoubleVector();
+	/**
+	 * Trains the classifier with the given instance.
+	 *
+	 * @param instance    the new training instance to include in the model
+	 */
+	@Override
+	public void trainOnInstanceImpl(Instance instance) {
 
-            //Allocate the weights
-            m_weights.setValue(instance.numAttributes(), 0);
-        }
+		if (m_weights == null) {
+			m_weights = new DoubleVector();
+			m_gradients = new DoubleVector();
+			m_velocity = new DoubleVector();
 
-        if (instance.classIsMissing()) {
-            return;
-        }
-   
-        double z = dotProd(instance, m_weights, instance.classIndex()) + m_bias;
+			//Allocate the weights
+			m_weights.setValue(instance.numAttributes(), 0);
+		}
 
-        double y;
-        double yhat;
-        double dldz;
+		if (instance.classIsMissing()) {
+			return;
+		}
 
-        if (instance.classAttribute().isNominal()) {
-            y = (instance.classValue() == 0) ? 0 : 1;
-            
-            if (m_loss == LOGLOSS) {
-                yhat = 1.0 / (1.0 + Math.exp(-z));
-                dldz = (yhat - y) * (yhat * (1.0 - yhat));
-            }
-            else {
-                y = y * 2 - 1;
-                yhat = z > 0.0 ? 1.0 : -1.0;
-                
-                if(y * z < 1.0)
-                {
-                    dldz = -y;
-                }
-                else
-                {
-                    dldz = 0;
-                }
-            }
-        }
-        else {
-            y = instance.classValue();
-            yhat = z;
-            dldz = z - y;
-        }
+		double z = dotProd(instance, m_weights, instance.classIndex()) + m_bias;
+
+		double y;
+		double dldz;
+
+		if (instance.classAttribute().isNominal()) {
+			y = (instance.classValue() == 0) ? 0 : 1;
+
+			if (m_loss == LOGLOSS) {
+				double yhat = 1.0 / (1.0 + Math.exp(-z));
+				dldz = (yhat - y);
+			}
+			else {
+				y = y * 2 - 1;
+
+				if(y * z < 1.0)
+				{
+					dldz = -y;
+				}
+				else
+				{
+					dldz = 0;
+				}
+			}
+		}
+		else {
+			y = instance.classValue();
+			dldz = z - y;
+		}
 
 
-        for (int i = 0; i < m_weights.numValues(); i++) {
-            //L2 Weight decay
-            m_gradients.setValue(i, (m_lambda / m_t) * m_weights.getValue(i));
-        }
+		for (int i = 0; i < m_weights.numValues(); i++) {
+			//L2 Weight decay
+			m_gradients.setValue(i, (m_lambda / m_t) * m_weights.getValue(i));
+		}
 
-        int n = instance.numValues();
+		int n = instance.numValues();
 
-        for(int i = 0; i < n; i++)
-        {
-            //Loss function gradient (sans regularisation)
-            m_gradients.addToValue(instance.index(i), instance.valueSparse(i) * dldz);
-        }
+		for(int i = 0; i < n; i++)
+		{
+			//Loss function gradient (sans regularisation)
+			m_gradients.addToValue(instance.index(i), instance.valueSparse(i) * dldz);
+		}
 
-        //Weight update for the bias
-        double biasGradient = dldz;
-        m_biasVelocity += biasGradient * biasGradient;
-        m_bias -= (m_learningRate / (Math.sqrt(m_biasVelocity) + m_epsilon)) * biasGradient;
+		//Weight update for the bias
+		double biasGradient = dldz;
+		m_biasVelocity += biasGradient * biasGradient;
+		m_bias -= (m_learningRate / (Math.sqrt(m_biasVelocity) + m_epsilon)) * biasGradient;
 
-        for(int i = 0; i < m_weights.numValues(); i++) {
-            //Weight update
-            double g = m_gradients.getValue(i);
-            m_velocity.addToValue(i, g * g);
-            m_weights.addToValue(i, -(m_learningRate / (Math.sqrt(m_velocity.getValue(i)) + m_epsilon)) * g);
-        }
+		for(int i = 0; i < m_weights.numValues(); i++) {
+			//Weight update
+			double g = m_gradients.getValue(i);
+			m_velocity.addToValue(i, g * g);
+			m_weights.addToValue(i, -(m_learningRate / (Math.sqrt(m_velocity.getValue(i)) + m_epsilon)) * g);
+		}
 
-        m_t += 1.0;
-    }
+		m_t += 1.0;
+	}
 
-    /**
-     * Prints out the classifier.
-     *
-     * @return a description of the classifier as a string
-     */
-    public String toString() {
-        if (m_weights == null) {
-            return "AdaGrad: No model built yet.\n";
-        }
-        StringBuffer buff = new StringBuffer();
-        buff.append("Loss function: ");
-        if (m_loss == HINGE) {
-            buff.append("Hinge loss (SVM)\n\n");
-        } else if (m_loss == LOGLOSS) {
-            buff.append("Log loss (logistic regression)\n\n");
-        } else {
-            buff.append("Squared loss (linear regression)\n\n");
-        }
+	/**
+	 * Prints out the classifier.
+	 *
+	 * @return a description of the classifier as a string
+	 */
+	public String toString() {
+		if (m_weights == null) {
+			return "AdaGrad: No model built yet.\n";
+		}
+		StringBuffer buff = new StringBuffer();
+		buff.append("Loss function: ");
+		if (m_loss == HINGE) {
+			buff.append("Hinge loss (SVM)\n\n");
+		} else if (m_loss == LOGLOSS) {
+			buff.append("Log loss (logistic regression)\n\n");
+		} else {
+			buff.append("Squared loss (linear regression)\n\n");
+		}
 
-        // buff.append(m_data.classAttribute().name() + " = \n\n");
-        int printed = 0;
+		// buff.append(m_data.classAttribute().name() + " = \n\n");
+		int printed = 0;
 
-        for (int i = 0; i < m_weights.numValues(); i++) {
-            // if (i != m_data.classIndex()) {
-            if (printed > 0) {
-                buff.append(" + ");
-            } else {
-                buff.append("   ");
-            }
+		for (int i = 0; i < m_weights.numValues(); i++) {
+			// if (i != m_data.classIndex()) {
+			if (printed > 0) {
+				buff.append(" + ");
+			} else {
+				buff.append("   ");
+			}
 
-            buff.append(Utils.doubleToString(m_weights.getValue(i), 12, 4) + " "
-                    // + m_data.attribute(i).name()
-                    + "\n");
+			buff.append(Utils.doubleToString(m_weights.getValue(i), 12, 4) + " "
+					// + m_data.attribute(i).name()
+					+ "\n");
 
-            printed++;
-            //}
-        }
+			printed++;
+			//}
+		}
 
-        if (m_bias > 0) {
-            buff.append(" + " + Utils.doubleToString(m_bias, 12, 4));
-        } else {
-            buff.append(" - " + Utils.doubleToString(-m_bias, 12, 4));
-        }
+		if (m_bias > 0) {
+			buff.append(" + " + Utils.doubleToString(m_bias, 12, 4));
+		} else {
+			buff.append(" - " + Utils.doubleToString(-m_bias, 12, 4));
+		}
 
-        return buff.toString();
-    }
+		return buff.toString();
+	}
 }

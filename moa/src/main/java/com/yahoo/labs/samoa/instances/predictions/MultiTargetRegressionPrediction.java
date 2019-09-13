@@ -72,18 +72,28 @@ public class MultiTargetRegressionPrediction implements Prediction, Serializable
 	}
 
 	@Override
+	public double getPrediction(int outputAttributeIndex) {
+		return prediction.getValue(outputAttributeIndex);
+	}
+
+	@Override
 	public void setVotes(int outputAttributeIndex, double[] votes) {
 		throw new UnsupportedOperationException("This is a multi-target regression prediction. Each output attribute corresponds to a continuouos variable.");
 	}
 	
 	@Override
 	public void setVotes(double[] votes) {
-		setVotes(0, votes);
+		this.prediction = new DoubleVector(votes);
 	}
 
 	@Override
 	public void setVote(int outputAttributeIndex, int classIndex, double vote) {
 		throw new UnsupportedOperationException("This is a multi-target regression prediction. Each output attribute corresponds to a continuouos variable.");
+	}
+
+	@Override
+	public void setVote(int outputAttributeIndex, double vote) {
+		this.prediction.setValue(outputAttributeIndex, vote);
 	}
 	
 	@Override
@@ -128,11 +138,5 @@ public class MultiTargetRegressionPrediction implements Prediction, Serializable
 		else
 			return "?";
 	}
-
-	@Override
-	public double getPrediction(int outputAttributeIndex) {
-		return prediction.getValue(outputAttributeIndex);
-	}
-
 
 }

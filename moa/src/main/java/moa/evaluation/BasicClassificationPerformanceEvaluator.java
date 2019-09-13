@@ -21,7 +21,9 @@
 package moa.evaluation;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
+import com.github.javacliparser.FlagOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
@@ -37,10 +39,15 @@ import moa.tasks.TaskMonitor;
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
- * @version $Revision: 7 $
+ * 
+ * Updates in September 15th 2017 to include precision, recall and F1 scores.
+ * @author Jean Karax (karaxjr@gmail.com)
+ * @author Jean Paul Barddal (jean.barddal@ppgia.pucpr.br)
+ * @author Wilson Sasaki Jr (sasaki.wilson.jr@gmail.com)
+ * @version $Revision: 8 $
  */
 public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandler
-        implements LearningPerformanceEvaluator<Example<Instance>> {
+        implements ClassificationPerformanceEvaluator {
 
     private static final long serialVersionUID = 1L;
 
@@ -49,6 +56,10 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
     protected Estimator[] columnKappa;
 
     protected Estimator[] rowKappa;
+
+    protected Estimator[] precision;
+
+    protected Estimator[] recall;
 
     protected int numClasses;
 
@@ -60,6 +71,21 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
 
     private double totalWeightObserved;
 
+    public FlagOption precisionRecallOutputOption = new FlagOption("precisionRecallOutput",
+            'o',
+            "Outputs average precision, recall and F1 scores.");
+    
+    public FlagOption precisionPerClassOption = new FlagOption("precisionPerClass",
+            'p',
+            "Report precision per class.");
+
+    public FlagOption recallPerClassOption = new FlagOption("recallPerClass",
+            'r',
+            "Report recall per class.");
+
+    public FlagOption f1PerClassOption = new FlagOption("f1PerClass", 'f',
+            "Report F1 per class.");
+
     @Override
     public void reset() {
         reset(this.numClasses);
@@ -69,9 +95,13 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
         this.numClasses = numClasses;
         this.rowKappa = new  Estimator[numClasses];
         this.columnKappa = new  Estimator[numClasses];
+        this.precision = new Estimator[numClasses];
+        this.recall = new Estimator[numClasses];
         for (int i = 0; i < this.numClasses; i++) {
             this.rowKappa[i] = newEstimator();
             this.columnKappa[i] = newEstimator();
+            this.precision[i] = newEstimator();
+            this.recall[i] = newEstimator();
         }
         this.weightCorrect = newEstimator();
         this.weightCorrectNoChangeClassifier = newEstimator();
@@ -96,6 +126,14 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
                 for (int i = 0; i < this.numClasses; i++) {
                     this.rowKappa[i].add(predictedClass == i ? weight: 0);
                     this.columnKappa[i].add(trueClass == i ? weight: 0);
+                    // for both precision and recall, NaN values are used to 'balance' the number
+                    // of instances seen across classes
+                    if (predictedClass == i) {
+                        precision[i].add(predictedClass == trueClass ? weight : 0.0);
+                    } else precision[i].add(Double.NaN);
+                    if (trueClass == i) {
+                        recall[i].add(predictedClass == trueClass ? weight : 0.0);
+                    } else recall[i].add(Double.NaN);
                 }
             }
             this.weightCorrectNoChangeClassifier.add(this.lastSeenClass == trueClass ? weight: 0);
@@ -118,18 +156,43 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
 
     @Override
     public Measurement[] getPerformanceMeasurements() {
-        return new Measurement[]{
-                new Measurement("classified instances",
-                    getTotalWeightObserved()),
-                new Measurement("classifications correct (percent)",
-                    getFractionCorrectlyClassified() * 100.0),
-                new Measurement("Kappa Statistic (percent)",
-                    getKappaStatistic() * 100.0),
-                new Measurement("Kappa Temporal Statistic (percent)",
-                    getKappaTemporalStatistic() * 100.0),
-                new Measurement("Kappa M Statistic (percent)",
-                        getKappaMStatistic() * 100.0)
-        };
+        ArrayList<Measurement> measurements = new ArrayList<Measurement>();
+        measurements.add(new Measurement("classified instances", this.getTotalWeightObserved()));
+        measurements.add(new Measurement("classifications correct (percent)", this.getFractionCorrectlyClassified() * 100.0));
+        measurements.add(new Measurement("Kappa Statistic (percent)", this.getKappaStatistic() * 100.0));
+        measurements.add(new Measurement("Kappa Temporal Statistic (percent)", this.getKappaTemporalStatistic() * 100.0));
+        measurements.add(new Measurement("Kappa M Statistic (percent)", this.getKappaMStatistic() * 100.0));
+        if (precisionRecallOutputOption.isSet()) 
+            measurements.add(new Measurement("F1 Score (percent)", 
+                    this.getF1Statistic() * 100.0));
+        if (f1PerClassOption.isSet()) {
+            for (int i = 0; i < this.numClasses; i++) {
+                measurements.add(new Measurement("F1 Score for class " + i + 
+                        " (percent)", 100.0 * this.getF1Statistic(i)));
+            }
+        }
+        if (precisionRecallOutputOption.isSet())
+            measurements.add(new Measurement("Precision (percent)", 
+                this.getPrecisionStatistic() * 100.0));               
+        if (precisionPerClassOption.isSet()) {
+            for (int i = 0; i < this.numClasses; i++) {
+                measurements.add(new Measurement("Precision for class " + i + 
+                        " (percent)", 100.0 * this.getPrecisionStatistic(i)));
+            }
+        }
+        if (precisionRecallOutputOption.isSet())
+            measurements.add(new Measurement("Recall (percent)", 
+                this.getRecallStatistic() * 100.0));
+        if (recallPerClassOption.isSet()) {
+            for (int i = 0; i < this.numClasses; i++) {
+                measurements.add(new Measurement("Recall for class " + i + 
+                        " (percent)", 100.0 * this.getRecallStatistic(i)));
+            }
+        }
+
+        Measurement[] result = new Measurement[measurements.size()];
+
+        return measurements.toArray(result);
 
     }
 
@@ -181,18 +244,49 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
         }
     }
 
+    public double getPrecisionStatistic() {
+        double total = 0;
+        for (Estimator ck : this.precision) {
+            total += ck.estimation();
+        }
+        return total / this.precision.length;
+    }
+
+    public double getPrecisionStatistic(int numClass) {
+        return this.precision[numClass].estimation();
+    }
+
+    public double getRecallStatistic() {
+        double total = 0;
+        for (Estimator ck : this.recall) {
+            total += ck.estimation();
+        }
+        return total / this.recall.length;
+    }
+
+    public double getRecallStatistic(int numClass) {
+        return this.recall[numClass].estimation();
+    }
+
+    public double getF1Statistic() {
+        return 2 * ((this.getPrecisionStatistic() * this.getRecallStatistic())
+                / (this.getPrecisionStatistic() + this.getRecallStatistic()));
+    }
+
+    public double getF1Statistic(int numClass) {
+        return 2 * ((this.getPrecisionStatistic(numClass) * this.getRecallStatistic(numClass))
+                / (this.getPrecisionStatistic(numClass) + this.getRecallStatistic(numClass)));
+    }
+
     @Override
     public void getDescription(StringBuilder sb, int indent) {
         Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
                 sb, indent);
     }
 
-
-
 	@Override
 	public void addResult(Example<Instance> testInst, Prediction prediction) {
-		// TODO Auto-generated method stub
-		
+		this.addResult(testInst, prediction.asDoubleArray());		
 	}
 
     @Override
@@ -215,8 +309,10 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
 
         @Override
         public void add(double value) {
+            if(!Double.isNaN(value)) {
             sum += value;
             len++;
+            }
         }
 
         @Override

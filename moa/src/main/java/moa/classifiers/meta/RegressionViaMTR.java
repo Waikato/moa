@@ -14,7 +14,7 @@ public class RegressionViaMTR extends AbstractRegressor implements Regressor {
 
 	public MultiTargetRegressor mtr;
 
-	public ClassOption regressorOption = new ClassOption("MTregessor", 'c', "Multi-target regressor to be used as a single target regressor.", MultiTargetRegressor.class, "moa.classifiers.mtr.ISOUPTree");
+	public ClassOption regressorOption = new ClassOption("MTRegessor", 'c', "Multi-target regressor to be used as a single target regressor.", MultiTargetRegressor.class, "moa.classifiers.mtr.trees.ISOUPTree");
 
 	@Override
 	public boolean isRandomizable() {

@@ -38,7 +38,7 @@ import moa.tasks.TaskMonitor;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class BinaryTreeNumericAttributeClassObserver extends AbstractOptionHandler
+public class BinaryTreeNumericAttributeClassObserver extends AbstractAttributeClassObserver
         implements NumericAttributeClassObserver {
 
     private static final long serialVersionUID = 1L;

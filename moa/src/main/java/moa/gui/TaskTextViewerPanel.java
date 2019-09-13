@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -45,7 +44,8 @@ import moa.evaluation.MeasureCollection;
 import moa.gui.PreviewPanel.TypePanel;
 import moa.gui.conceptdrift.CDTaskManagerPanel;
 import moa.streams.clustering.ClusterEvent;
-import moa.tasks.ConceptDriftMainTask;
+import moa.tasks.conceptdrift.ConceptDriftMainTask;
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
 /**
  * This panel displays text. Used to output the results of tasks.
@@ -115,11 +115,11 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         this.exportButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
+                BaseFileChooser fileChooser = new BaseFileChooser();
                 fileChooser.setAcceptAllFileFilterUsed(true);
                 fileChooser.addChoosableFileFilter(new FileExtensionFilter(
                         exportFileExtension));
-                if (fileChooser.showSaveDialog(TaskTextViewerPanel.this) == JFileChooser.APPROVE_OPTION) {
+                if (fileChooser.showSaveDialog(TaskTextViewerPanel.this) == BaseFileChooser.APPROVE_OPTION) {
                     File chosenFile = fileChooser.getSelectedFile();
                     String fileName = chosenFile.getPath();
                     if (!chosenFile.exists()

@@ -19,7 +19,6 @@
 package moa.classifiers.mlc.meta;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.predictions.MultiTargetRegressionPrediction;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
@@ -42,7 +41,7 @@ public class OzaBagMultiLabelClassification extends AbstractOzaBag<MultiLabelCla
     }
 
 	@Override
-	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		return this.getPredictionForInstance((Instance) inst);
 	}
 
@@ -57,7 +56,7 @@ public class OzaBagMultiLabelClassification extends AbstractOzaBag<MultiLabelCla
 	}
 
 	@Override
-	public void trainOnInstanceImpl(MultiLabelInstance inst) {
+	public void trainOnInstanceImpl(Instance inst) {
 		this.trainOnInstanceImpl((Instance) inst);
 		
 	}

@@ -25,7 +25,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -33,6 +32,7 @@ import com.github.javacliparser.FileOption;
 import com.github.javacliparser.Option;
 
 import moa.gui.FileExtensionFilter;
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
 /**
  * An OptionEditComponent that lets the user edit a file option.
@@ -83,7 +83,7 @@ public class FileOptionEditComponent extends JPanel implements
     }
 
     public void browseForFile() {
-        JFileChooser fileChooser = new JFileChooser();
+        BaseFileChooser fileChooser = new BaseFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(true);
         String extension = this.editedOption.getDefaultFileExtension();
         if (extension != null) {
@@ -92,7 +92,7 @@ public class FileOptionEditComponent extends JPanel implements
         }
         fileChooser.setSelectedFile(new File(this.textField.getText()));
         if (this.editedOption.isOutputFile()) {
-            if (fileChooser.showSaveDialog(this.browseButton) == JFileChooser.APPROVE_OPTION) {
+            if (fileChooser.showSaveDialog(this.browseButton) == BaseFileChooser.APPROVE_OPTION) {
                 File chosenFile = fileChooser.getSelectedFile();
                 String fileName = chosenFile.getPath();
                 if (!chosenFile.exists()) {
@@ -103,7 +103,7 @@ public class FileOptionEditComponent extends JPanel implements
                 this.textField.setText(fileName);
             }
         } else {
-            if (fileChooser.showOpenDialog(this.browseButton) == JFileChooser.APPROVE_OPTION) {
+            if (fileChooser.showOpenDialog(this.browseButton) == BaseFileChooser.APPROVE_OPTION) {
                 this.textField.setText(fileChooser.getSelectedFile().getPath());
             }
         }

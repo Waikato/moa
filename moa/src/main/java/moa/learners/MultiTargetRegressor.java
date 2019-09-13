@@ -19,7 +19,7 @@
  */
 package moa.learners;
 
-import com.yahoo.labs.samoa.instances.StructuredInstance;
+import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 /**
@@ -47,7 +47,7 @@ public interface MultiTargetRegressor extends InstanceLearner {
      *
      * @param inst the instance to be used for training
      */
-    public void trainOnInstanceImpl(StructuredInstance inst);
+    public void trainOnInstanceImpl(Instance inst);
 
     /**
      * Sets the reference to the header of the data stream. The header of the
@@ -69,7 +69,7 @@ public interface MultiTargetRegressor extends InstanceLearner {
      */
     //public InstancesHeader getModelContext();
     
-    public Prediction getPredictionForInstance(StructuredInstance inst);
+    public Prediction getPredictionForInstance(Instance inst);
 
-    public MultiTargetRegressor copy();
+    public InstanceLearner copy();
 }

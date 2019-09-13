@@ -34,6 +34,7 @@ import moa.gui.FileExtensionFilter;
 import moa.gui.visualization.GraphCanvas;
 import moa.gui.visualization.RunVisualizer;
 import moa.gui.visualization.StreamPanel;
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
 public class ClusteringVisualTab extends javax.swing.JPanel implements ActionListener{
 	private RunVisualizer visualizer = null;
@@ -610,11 +611,11 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonScreenshotMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonScreenshotMouseClicked
-        JFileChooser fileChooser = new JFileChooser();
+        BaseFileChooser fileChooser = new BaseFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(true);
         if(screenshotFilebase!=null)
             fileChooser.setSelectedFile(new File(screenshotFilebase));
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(this) == BaseFileChooser.APPROVE_OPTION) {
         	screenshotFilebase = fileChooser.getSelectedFile().getPath();
         	streamPanel0.screenshot(screenshotFilebase+"_"+label_processed_points_value.getText()+"_0", true, true);
             streamPanel1.screenshot(screenshotFilebase+"_"+label_processed_points_value.getText()+"_1", true, true);

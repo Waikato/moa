@@ -46,7 +46,12 @@ public class ADWINChangeDetector extends AbstractChangeDetector {
         if (this.adwin == null) {
             resetLearning();
         }
-        this.isChangeDetected = adwin.setInput(inputValue);
+        double ErrEstim = this.adwin.getEstimation();
+        if(adwin.setInput(inputValue)) {
+            if (this.adwin.getEstimation() > ErrEstim) {
+                this.isChangeDetected = true;
+            }
+        }
         this.isWarningZone = false;
         this.delay = 0.0;
         this.estimation = adwin.getEstimation();
@@ -55,6 +60,7 @@ public class ADWINChangeDetector extends AbstractChangeDetector {
     @Override
     public void resetLearning() {
         adwin = new ADWIN((double) this.deltaAdwinOption.getValue());
+        super.resetLearning();
     }
 
     @Override

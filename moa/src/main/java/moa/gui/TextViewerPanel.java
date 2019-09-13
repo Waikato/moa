@@ -32,10 +32,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
 /**
  * This panel displays text. Used to output the results of tasks.
@@ -71,11 +72,11 @@ public class TextViewerPanel extends JPanel {
         this.exportButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
+                BaseFileChooser fileChooser = new BaseFileChooser();
                 fileChooser.setAcceptAllFileFilterUsed(true);
                 fileChooser.addChoosableFileFilter(new FileExtensionFilter(
                         exportFileExtension));
-                if (fileChooser.showSaveDialog(TextViewerPanel.this) == JFileChooser.APPROVE_OPTION) {
+                if (fileChooser.showSaveDialog(TextViewerPanel.this) == BaseFileChooser.APPROVE_OPTION) {
                     File chosenFile = fileChooser.getSelectedFile();
                     String fileName = chosenFile.getPath();
                     if (!chosenFile.exists()

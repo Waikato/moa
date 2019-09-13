@@ -59,7 +59,7 @@ public class FileStream extends ClusteringStream{
 	private static final long serialVersionUID = 1L;
 
 
-    String defaultfile = "/Users/kokomo40/Dropbox/BT Kim/Datasets/KDDCUP99/KDDCup99.arff";
+    String defaultfile = "KDDCup99.arff";
 
 	public FileOption arffFileOption = new FileOption("arffFile", 'f',
 			"ARFF file to load.", defaultfile, "arff", false);
@@ -232,7 +232,6 @@ public class FileStream extends ClusteringStream{
 				Instance rawInstance = this.instances.instance(0);
 				
 				//remove dataset from instance so we can delete attributes
-				rawInstance.setDataset(null);
 				for (int i = removeAttributes.length-1; i >= 0 ; i--) {
 					rawInstance.deleteAttributeAt(removeAttributes[i]);	
 				}

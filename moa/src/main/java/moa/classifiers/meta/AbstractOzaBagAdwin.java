@@ -81,12 +81,12 @@ public abstract class AbstractOzaBagAdwin<MLTask extends InstanceLearner> extend
     public AbstractOzaBagAdwin(Class<MLTask> MLTask, String defaultCLIString) {
     	super(MLTask, defaultCLIString);
     }
-    
+
     @Override
     public String getPurposeString() {
         return "Bagging for evolving data streams using ADWIN.";
     }    
-
+    
     protected ADWIN[] ADError;
 
     @Override
@@ -99,7 +99,7 @@ public abstract class AbstractOzaBagAdwin<MLTask extends InstanceLearner> extend
     }
 
     public abstract double getAdwinError(Instance inst, int i);
-    
+
     @Override
     public void trainOnInstanceImpl(Instance inst) {
         boolean Change = false;

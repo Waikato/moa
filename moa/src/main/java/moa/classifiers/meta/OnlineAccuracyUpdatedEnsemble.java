@@ -48,7 +48,7 @@ public class OnlineAccuracyUpdatedEnsemble extends AbstractClassifier implements
 	 * Type of classifier to use as a component classifier.
 	 */
 	public ClassOption learnerOption = new ClassOption("learner", 'l', "Classifier to train.", Classifier.class, 
-			"trees.HoeffdingTree -e 2000000 -g 100 -c 0.01");
+			"moa.classifiers.trees.HoeffdingTree -e 2000000 -g 100 -c 0.01");
 
 	/**
 	 * Number of component classifiers.
@@ -124,7 +124,7 @@ public class OnlineAccuracyUpdatedEnsemble extends AbstractClassifier implements
 	@Override
 	public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 		this.windowSize = (int)this.windowSizeOption.getValue();
-		this.candidate = new ClassifierWithMemory(((Classifier) getPreparedClassOption(this.learnerOption)).copy(), this.windowSize);
+		this.candidate = new ClassifierWithMemory((Classifier) ((Classifier) getPreparedClassOption(this.learnerOption)).copy(), this.windowSize);
 		this.candidate.classifier.resetLearning();
 
 		super.prepareForUseImpl(monitor, repository);
@@ -138,7 +138,7 @@ public class OnlineAccuracyUpdatedEnsemble extends AbstractClassifier implements
 		this.processedInstances = 0;
 		this.ensemble = new ClassifierWithMemory[0];
 
-		this.candidate = new ClassifierWithMemory(((Classifier) getPreparedClassOption(this.learnerOption)).copy(), this.windowSize);
+		this.candidate = new ClassifierWithMemory((Classifier) ((Classifier) getPreparedClassOption(this.learnerOption)).copy(), this.windowSize);
 		this.candidate.classifier.resetLearning();
 	}
 
@@ -257,7 +257,7 @@ public class OnlineAccuracyUpdatedEnsemble extends AbstractClassifier implements
 			}
 		}
 
-    	this.candidate = new ClassifierWithMemory(((Classifier) getPreparedClassOption(this.learnerOption)).copy(), this.windowSize);
+    	this.candidate = new ClassifierWithMemory((Classifier) ((Classifier) getPreparedClassOption(this.learnerOption)).copy(), this.windowSize);
 		this.candidate.classifier.resetLearning();
 		
 		this.enforceMemoryLimit();

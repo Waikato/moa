@@ -583,7 +583,7 @@ public class FIMTDD extends AbstractRegressor implements Regressor {
 		protected double instancesSeen = 0;
 
 		public String getPurposeString() {
-			return "A perceptron regressor as specified by Ikonomovska et al. used for FIMTDD";
+			return "A perceptron regressor as specified by Ikonomovska et al. used for FIMT-DD";
 		}
 
 		public FIMTDDPerceptron(FIMTDDPerceptron original) {

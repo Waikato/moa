@@ -54,7 +54,7 @@ public interface Prediction {
      */
 	public double getVote(int outputAttributeIndex, int classIndex);
 	
-    /**
+	/**
      * Sets the votes for a given output attribute
      *
      */
@@ -72,6 +72,12 @@ public interface Prediction {
      */
 	public void setVote(int outputAttributeIndex, int classIndex, double vote);
 
+    /**
+     * Sets the vote for class of a given output attribute
+     *
+     */
+	public void setVote(int outputAttributeIndex, double vote);
+	
     /**
      * The votes for the first output attribute
      *

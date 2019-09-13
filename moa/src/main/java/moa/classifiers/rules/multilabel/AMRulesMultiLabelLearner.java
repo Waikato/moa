@@ -19,26 +19,17 @@
  */
 
 package moa.classifiers.rules.multilabel;
-/**
- * Adaptive Model Rules for MultiLabel problems(AMRulesML), the streaming rule learning algorithm.
- * 
- * @author  J. Duarte, J. Gama (jgama@fep.up.pt)
- * @version $Revision: 1$* 
- * 
- * This algorithm learn ordered and unordered rule set from data stream. 
- * Each rule  detect changes in the processing generating data and react to changes by pruning the rule set.
- * This algorithm also does the detection of anomalies.
- * 
- **/
 
-import java.util.Iterator;
+import java.util.ListIterator;
 
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.MultiLabelClassificationPrediction;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
+import moa.classifiers.AbstractInstanceLearner;
 import moa.classifiers.AbstractMultiTargetRegressor;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.mlc.core.attributeclassobservers.NominalStatisticsObserver;
@@ -46,26 +37,49 @@ import moa.classifiers.mlc.core.attributeclassobservers.NumericStatisticsObserve
 import moa.classifiers.mlc.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
 import moa.classifiers.rules.core.anomalydetection.OddsRatioScore;
+import moa.classifiers.rules.featureranking.FeatureRanking;
+import moa.classifiers.rules.featureranking.NoFeatureRanking;
+import moa.classifiers.rules.featureranking.messages.ChangeDetectedMessage;
 import moa.classifiers.rules.multilabel.core.MultiLabelRule;
 import moa.classifiers.rules.multilabel.core.MultiLabelRuleSet;
+import moa.classifiers.rules.multilabel.core.ObserverMOAObject;
 import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
+import moa.classifiers.rules.multilabel.functions.MultiLabelPerceptronClassification;
+import moa.classifiers.rules.multilabel.inputselectors.InputAttributesSelector;
+import moa.classifiers.rules.multilabel.inputselectors.SelectAllInputs;
+import moa.classifiers.rules.multilabel.instancetransformers.NoInstanceTransformation;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.classifiers.rules.multilabel.outputselectors.SelectAllOutputs;
+import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
+import moa.learners.InstanceLearner;
 import moa.learners.MultiLabelClassifier;
 import moa.learners.MultiTargetRegressor;
 import moa.options.ClassOption;
 
 
+/**
+ * Adaptive Model Rules for MultiLabel problems (AMRulesML), the streaming rule learning algorithm.
+ * 
+ * @author  J. Duarte, J. Gama (jgama@fep.up.pt)
+ * @version $Revision: 2$* 
+ * 
+ * This algorithm learns ordered and unordered rule set from data streams. 
+ * Each rule detect anomalies and react to changes by pruning the rule set.
+ * This algorithm also does the detection of anomalies.
+ * 
+ **/
+
 public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegressor implements MultiTargetRegressor {
 
 	private static final long serialVersionUID = 1L;
-	protected MultiLabelRuleSet ruleSet = new MultiLabelRuleSet();
+	protected MultiLabelRuleSet ruleSet;
 	protected MultiLabelRule defaultRule;
 	protected int ruleNumberID=1;
 	protected double[] statistics;
+	protected ObserverMOAObject observer;
 	//public static final double NORMAL_CONSTANT = Math.sqrt(2 * Math.PI);
 	public FloatOption splitConfidenceOption = new FloatOption(
 			"splitConfidence",
@@ -83,6 +97,9 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegres
 
 	public FlagOption unorderedRulesOption = new FlagOption("setUnorderedRulesOn", 'U',
 			"unorderedRules.");
+
+	public FlagOption dropOldRuleAfterExpansionOption = new FlagOption("dropOldRuleAfterExpansion", 'D',
+			"Drop old rule if it expanded (by default the rule is kept for the set of outputs not selected for expansion.)");
 
 	public ClassOption changeDetector = new ClassOption("changeDetector",
 			'H', "Change Detector.", 
@@ -118,12 +135,29 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegres
 			"Output Verbosity Control Level. 1 (Less) to 5 (More)",
 			1, 1, 5);
 	
+	
+	// TODO The followint two options are deprecated
 	public ClassOption outputSelectorOption = new ClassOption("outputSelector",
 			'O', "Output attributes selector", 
 			OutputAttributesSelector.class,
 			//"StdDevThreshold");
 			SelectAllOutputs.class.getName());
 
+	public ClassOption inputSelectorOption = new ClassOption("inputSelector",
+			'I', "Input attributes selector", 
+			InputAttributesSelector.class,
+			//"MeritThreshold");
+			SelectAllInputs.class.getName());
+//	public IntOption randomSeedOption = new IntOption("randomSeedOption",
+//			'r', "randomSeedOption", 
+//			1,Integer.MIN_VALUE, Integer.MAX_VALUE);
+	
+	public ClassOption featureRankingOption = new ClassOption("featureRanking",
+			'F', "Feature ranking algorithm.", 
+			FeatureRanking.class,
+			NoFeatureRanking.class.getName());
+
+	private int nAttributes=0;
 
 	protected double attributesPercentage;
 
@@ -137,6 +171,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegres
 
 	public AMRulesMultiLabelLearner() {
 		super();
+		super.randomSeedOption=this.randomSeedOption;
 		attributesPercentage=100;
 	}
 
@@ -148,14 +183,17 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegres
 
 	@Override
 	public Prediction getPredictionForInstance(Instance inst) {
-		/*MultiLabelVote vote=getVotes(inst);
-		if(vote!=null)	
-			return vote.getVote();
-		else
-			return null;*/
-		ErrorWeightedVoteMultiLabel vote = getVotes(inst);
-		if(vote!=null)	
-			return vote.getPrediction();
+		ErrorWeightedVoteMultiLabel vote=getVotes(inst);
+
+		Prediction pred=vote.getPrediction();
+		if(vote!=null) {
+			if ( getPreparedClassOption(this.learnerOption) instanceof MultiLabelPerceptronClassification ) {
+				for(int i=0; i<pred.size() ; i++){
+					pred.setVote(i,0, pred.getVote(i,0) < 0.5 ? 1:0  );
+				}
+			}
+			return pred;
+		}
 		else
 			return null;
 	}
@@ -164,52 +202,67 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegres
 	 * getVotes extension of the instance method getPredictionForInstance 
 	 * in moa.classifier.java
 	 * returns the prediction of the instance.
-	 * Called in WeightedRandomRules
 	 */
 	public ErrorWeightedVoteMultiLabel getVotes(Instance instance) {
 		ErrorWeightedVoteMultiLabel errorWeightedVote=newErrorWeightedVote();
 		//DoubleVector combinedVote = new DoubleVector();
-		debug("Test",3);    
-		int numberOfRulesCovering = 0;
 
 		VerboseToConsole(instance); // Verbose to console Dataset name.
 		for (MultiLabelRule rule : ruleSet) {
 			if (rule.isCovering(instance) == true){
-				numberOfRulesCovering++;
 				//DoubleVector vote = new DoubleVector(rule.getPrediction(instance));
-				Prediction vote = rule.getPredictionForInstance(instance);
+				Prediction vote=rule.getPredictionForInstance(instance);
 				if (vote!=null){ //should only happen for first instance
 					double [] errors= rule.getCurrentErrors();
+					if(errors==null) //if errors==null, rule has seen no predictions since expansion: return maximum error, since prediction is not reliable
+						errors=defaultRuleErrors(vote);
 					debug("Rule No"+ rule.getRuleNumberID() + " Vote: " + vote.toString() + " Error: " + errors + " Y: " + instance.classValue(),3); //predictionValueForThisRule);
 					errorWeightedVote.addVote(vote,errors);
 				}
-				//combinedVote.addValues(vote);
 				if (!this.unorderedRulesOption.isSet()) { // Ordered Rules Option. //TODO: Only break if all outputs have values assigned.Complete Prediction only with the missing values
 					break; // Only one rule cover the instance.
 				}
 			}
 		}
 
-		if (numberOfRulesCovering == 0) { //TODO: Change to "if all outputs have a value assigned. Complete Prediction only with the missing values
+		if(!errorWeightedVote.coversAllOutputs()) {
 			//combinedVote = new DoubleVector(defaultRule.getPrediction(instance));
-			Prediction vote=defaultRule.getPredictionForInstance(instance);
-			if (vote!=null){ //should only happen for first instance
-				double [] errors= defaultRule.getCurrentErrors();
-				errorWeightedVote.addVote(vote,errors);
-				debug("Default Rule Vote " + vote.toString() + "\n Error " + errors + "  Y: " + instance,3);
+			Prediction vote=errorWeightedVote.getPrediction();
+			if (vote==null){  //use default rule
+				vote = new MultiLabelClassificationPrediction(instance.numOutputAttributes());
+			}
+			Prediction defaultVote=defaultRule.getPredictionForInstance(instance);
+			if(defaultVote!=null){
+				double [] defaultErrors= defaultRule.getCurrentErrors();
+				if(defaultErrors==null)
+					defaultErrors=defaultRuleErrors(defaultVote);
+				double [] fixErrors=new double[vote.numOutputAttributes()];
+				Prediction fixVote= new MultiLabelClassificationPrediction(vote.numOutputAttributes());
+				for (int i=0; i<vote.numOutputAttributes(); i++){
+					if(!vote.hasVotesForAttribute(i)){
+						fixVote.setVote(i, defaultVote.getPrediction(i));
+						fixErrors[i]=defaultErrors[i];
+					}
+				}
+				errorWeightedVote.addVote(fixVote,fixErrors);
+				debug("Default Rule Vote " + defaultVote.toString() + "\n Error " + defaultErrors + "  Y: " + instance,3);
 			} 
 		} 	
 		errorWeightedVote.computeWeightedVote();
 		return errorWeightedVote;
-		/*Prediction weightedVote=errorWeightedVote.computeWeightedVote();
-		if(weightedVote!=null){
-			double weightedError=errorWeightedVote.getWeightedError();
-			debug("Weighted Rule - Vote: " + weightedVote.toString() + " Weighted Error: " + weightedError + " Y:" + instance.classValue(),3);
-			return new MultiLabelVote(weightedVote, weightedError);
 		}
-		else 
-			return new MultiLabelVote(null , Double.MAX_VALUE);*/
 
+	/*
+	 * Returns the estimate error for each output of a rule
+	 * Should be used when rule.getCurrentErrors() returns null
+	 */
+	protected double[] defaultRuleErrors(Prediction vote) {
+		double [] errors=new double[vote.numOutputAttributes()];
+		for(int i=0; i<vote.numOutputAttributes(); i++){
+			if(vote.hasVotesForAttribute(i))
+				errors[i]=Double.MAX_VALUE;
+		}
+		return errors;
 	}
 
 	@Override
@@ -217,15 +270,6 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegres
 		return true;
 	}
 
-
-
-	/**
-	 * Rule.Builder() to build an object with the parameters.
-	 * If you have an algorithm with many parameters, especially if some of them are optional, 
-	 * it can be beneficial to define an object that represents all of the parameters.
-	 * @return
-	 */
-	//abstract protected Rule newRule(int ID, RuleActiveLearningNode learningNode, double [] statistics); //Learning node and statistics can be null
 
 	/**
 	 * AMRules Algorithm.
@@ -235,6 +279,7 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegres
 	private double numChangesDetected; //Just for statistics 
 	private double numAnomaliesDetected; //Just for statistics 
 	private double numInstances; //Just for statistics
+	private FeatureRanking featureRanking;
 
 	@Override
 	public void trainOnInstanceImpl(Instance instance) {
@@ -261,11 +306,13 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegres
 					//Expand default rule and add it to the set of rules
 					//Reset the default rule
 		 */
+		if(nAttributes==0)
+			nAttributes=instance.numInputAttributes();
 		numInstances+=instance.weight();
 		debug("Train",3);
 		debug("Nº instance "+numInstances + " - " + instance.toString(),3);
 		boolean rulesCoveringInstance = false;
-		Iterator<MultiLabelRule> ruleIterator= this.ruleSet.iterator();
+		ListIterator<MultiLabelRule> ruleIterator= this.ruleSet.listIterator();
 		while (ruleIterator.hasNext()) { 
 			MultiLabelRule rule = ruleIterator.next();
 			if (rule.isCovering(instance) == true) {
@@ -274,14 +321,27 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegres
 					if (rule.updateChangeDetection(instance)) {
 						debug("I) Drift Detected. Exa. : " +  this.numInstances + " (" + rule.getWeightSeenSinceExpansion() +") Remove Rule: " +rule.getRuleNumberID(),1);
 						ruleIterator.remove();
+
+						//Rule expansion event
+						rule.notifyAll(new ChangeDetectedMessage());
+						
 						this.numChangesDetected+=instance.weight();  //Just for statistics 
 					} else {
 						rule.trainOnInstance(instance);
 						if (rule.getWeightSeenSinceExpansion()  % this.gracePeriodOption.getValue() == 0.0) {
 							if (rule.tryToExpand(this.splitConfidenceOption.getValue(), this.tieThresholdOption.getValue()) ) 
 							{
+
+								MultiLabelRule otherMultiLabelRule=rule.getNewRuleFromOtherOutputs(); //Need to be outside to make sure other rules are cleaned
+								if(!dropOldRuleAfterExpansionOption.isSet() && rule.hasNewRuleFromOtherOutputs()){
+									rule.clearOtherOutputs();
+									otherMultiLabelRule.setRuleNumberID(++ruleNumberID);
+									setRuleOptions(otherMultiLabelRule);
+									ruleIterator.add(otherMultiLabelRule);
+									if(observer!=null)
+										otherMultiLabelRule.addObserver(observer);
+								}
 								setRuleOptions(rule);
-								//rule.split();
 								debug("Rule Expanded:",2);
 								debug(rule.toString(),2);
 							}	
@@ -304,8 +364,6 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegres
 				debug("Nr. examples "+defaultRule.getWeightSeenSinceExpansion(), 4);
 
 				if (defaultRule.tryToExpand(this.splitConfidenceOption.getValue(), this.tieThresholdOption.getValue()) == true) {
-					//Rule newDefaultRule=newRule(defaultRule.getRuleNumberID(),defaultRule.getLearningNode(),defaultRule.getLearningNode().getStatisticsOtherBranchSplit()); //other branch
-					//defaultRule.split();
 					//create new default rule
 					MultiLabelRule newDefaultRule=defaultRule.getNewRuleFromOtherBranch();
 					newDefaultRule.setRuleNumberID(++ruleNumberID);
@@ -321,34 +379,12 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegres
 					debug("New default rule:", 3);	
 					debug(newDefaultRule.toString(),3);
 					defaultRule=newDefaultRule;
-
+					if(observer!=null)
+						defaultRule.addObserver(observer);
 				}
-
 			}
 		}
 	}
-
-
-
-	/**
-	 * Method to verify if the instance is an anomaly.
-	 * @param instance
-	 * @param rule
-	 * @return
-	 *//*
-	private boolean isAnomaly(Instance instance, Rule rule) {
-		//AMRUles is equipped with anomaly detection. If on, compute the anomaly value. 			
-		boolean isAnomaly = false;	
-		if (this.noAnomalyDetectionOption.isSet() == false){
-			if (rule.getInstancesSeen() >= this.anomalyNumInstThresholdOption.getValue()) {
-				isAnomaly = rule.isAnomaly(instance, 
-						this.univariateAnomalyprobabilityThresholdOption.getValue(),
-						this.multivariateAnomalyProbabilityThresholdOption.getValue(),
-						this.anomalyNumInstThresholdOption.getValue());
-			}
-		}
-		return isAnomaly;
-	}*/
 
 
 
@@ -357,10 +393,70 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegres
 	 */
 	@Override
 	protected Measurement[] getModelMeasurementsImpl() {
-		return new Measurement[]{
+		Measurement[] m=null;
+		Measurement[] mNoFeatureRanking=new Measurement[]{
 				new Measurement("anomaly detections", this.numAnomaliesDetected),
 				new Measurement("change detections", this.numChangesDetected), 
-				new Measurement("rules (number)", this.ruleSet.size()+1)}; 
+				new Measurement("rules (number)", this.ruleSet.size()+1),
+				new Measurement("Avg #inputs/rule", getAverageInputs()),
+				new Measurement("Avg #outputs/rule", getAverageOutputs())}; 
+		
+		if(featureRanking instanceof NoFeatureRanking){
+			m=mNoFeatureRanking;
+		}
+		else{
+			m=new Measurement[mNoFeatureRanking.length+this.nAttributes];
+			for(int i=0; i<mNoFeatureRanking.length; i++)
+				m[i]=mNoFeatureRanking[i];
+			DoubleVector rankings=this.featureRanking.getFeatureRankings();
+			for(int i=0; i<this.nAttributes; i++)
+				m[i+mNoFeatureRanking.length]=new Measurement("Attribute" + i, rankings.getValue(i));
+		}
+		return m;
+	}
+
+	protected double getAverageInputs() {
+		double avg=0;
+		int ct=0;
+		if(ruleSet.size()>0){
+			for (MultiLabelRule r : ruleSet){
+				int [] aux=r.getInputsCovered();
+				if(aux!=null){
+					avg+=aux.length;
+					ct++;
+				}
+			}
+		}
+		int [] aux=defaultRule.getInputsCovered();
+		if(aux!=null){
+			avg+=aux.length;
+			ct++;
+		}
+		if(ct>0)
+			avg/=ct;
+		return avg;
+	}
+
+	protected double getAverageOutputs() {
+		double avg=0;
+		int ct=0;
+		if(ruleSet.size()>0){
+			for (MultiLabelRule r : ruleSet){
+				int [] aux=r.getOutputsCovered();
+				if(aux!=null){
+					avg+=aux.length;
+					ct++;
+				}
+			}
+		}
+		int [] aux=defaultRule.getOutputsCovered();
+		if(aux!=null){
+			avg+=aux.length;
+			ct++;
+		}
+		if(ct>0)
+			avg/=ct;
+		return avg;
 	}
 
 	/**
@@ -380,11 +476,13 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegres
 		
 		StringUtils.appendIndented(out, indent, "Default rule :");
 		this.defaultRule.getDescription(out, indent);
+		StringUtils.appendNewline(out);
 		
 		StringUtils.appendIndented(out, indent, "Rules in ruleSet:");
 		StringUtils.appendNewline(out);
 		for (MultiLabelRule rule: ruleSet) {
 			rule.getDescription(out, indent);
+			StringUtils.appendNewline(out);
 		}
 	}
 
@@ -421,17 +519,22 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegres
 		}
 	}
 
-	//	abstract public RuleActiveLearningNode newRuleActiveLearningNode(Builder builder);
-
-	//	abstract public RuleActiveLearningNode newRuleActiveLearningNode(double[] initialClassObservations);
-
-
 
 	@Override
 	public void resetLearningImpl() {
 		defaultRule=newDefaultRule();
-		defaultRule.setLearner( ((MultiLabelClassifier) getPreparedClassOption(learnerOption)).copy());
+		this.classifierRandom.setSeed(this.randomSeed);
+		InstanceLearner l = (InstanceLearner) ((InstanceLearner)getPreparedClassOption(learnerOption)).copy();
+		l.setRandomSeed(this.randomSeed);
+		l.resetLearning();
+		defaultRule.setLearner(l);
+		defaultRule.setInstanceTransformer(new NoInstanceTransformation());
 		setRuleOptions(defaultRule);
+		ruleSet = new MultiLabelRuleSet();
+		ruleNumberID=1;
+		statistics=null;
+		this.featureRanking=(FeatureRanking) getPreparedClassOption(this.featureRankingOption);
+		setObserver(featureRanking);
 	}
 	
 
@@ -445,17 +548,25 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiTargetRegres
 		rule.setOutputAttributesSelector((OutputAttributesSelector)((OutputAttributesSelector)getPreparedClassOption(outputSelectorOption)).copy());
 		rule.setRandomGenerator(this.classifierRandom);
 		rule.setAttributesPercentage(this.attributesPercentage);
+		rule.setInputAttributesSelector((InputAttributesSelector)((InputAttributesSelector)getPreparedClassOption(inputSelectorOption)).copy());
 	}
 
 	abstract protected MultiLabelRule newDefaultRule();
 
-	abstract public ErrorWeightedVoteMultiLabel newErrorWeightedVote(); 
+	public ErrorWeightedVoteMultiLabel newErrorWeightedVote(){
+		return (ErrorWeightedVoteMultiLabel)((ErrorWeightedVoteMultiLabel) getPreparedClassOption(weightedVoteOption)).copy();
+	}
 
 
 
 	public void setRandomSeed(int randomSeed){
+		super.setRandomSeed(randomSeed);
 		this.classifierRandom.setSeed(randomSeed);
 	}
 
+	public void setObserver(ObserverMOAObject observer){
+		this.observer=observer;
+		this.defaultRule.addObserver(observer);
+	}
 
 }

@@ -12,12 +12,14 @@
   <fileSets>
     <fileSet>
       <directory>${project.basedir}/moa/src/main/scripts/</directory>
-      <outputDirectory>/bin</outputDirectory>
+      <outputDirectory>bin</outputDirectory>
+      <filtered>true</filtered>
+      <fileMode>0755</fileMode>
     </fileSet>
     
     <fileSet>
       <directory>${project.basedir}/moa/src/main/resources/</directory>
-      <outputDirectory>/license</outputDirectory>
+      <outputDirectory>license</outputDirectory>
       <includes>
         <include>LICENSE.txt</include>
       </includes>
@@ -25,7 +27,7 @@
 
     <fileSet>
       <directory>${project.basedir}/moa/target/generated-sources/license</directory>
-      <outputDirectory>/license</outputDirectory>
+      <outputDirectory>license</outputDirectory>
       <includes>
         <include>*.txt</include>
       </includes>
@@ -49,7 +51,7 @@
 
     <fileSet>
       <directory>${project.build.directory}/sources</directory>
-      <outputDirectory>/src</outputDirectory>
+      <outputDirectory>src</outputDirectory>
       <includes>
         <include>*.jar</include>
       </includes>
@@ -58,15 +60,53 @@
 
   <dependencySets>
     <dependencySet>
-      <outputDirectory>/lib</outputDirectory>
-      <useProjectArtifact>true</useProjectArtifact>
+      <outputDirectory>lib</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
+      <includes>
+        <include>nz.ac.waikato.cms.moa:*</include>
+      </includes>
       <excludes>
         <exclude>*:javadoc</exclude>
       </excludes>
     </dependencySet>
     <dependencySet>
-      <outputDirectory>/doc/apidocs</outputDirectory>
-      <useProjectArtifact>true</useProjectArtifact>
+      <outputDirectory>lib</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <excludes>
+        <exclude>nz.ac.waikato.cms.moa:*</exclude>
+        <exclude>*:javadoc</exclude>
+        <exclude>*:android-arm</exclude>
+        <exclude>*:android-x86</exclude>
+        <exclude>*:linux-x86</exclude>
+        <exclude>*:linux-x86_64</exclude>
+        <exclude>*:linux-ppc64le</exclude>
+        <exclude>*:macosx-x86_64</exclude>
+        <exclude>*:windows-x86</exclude>
+        <exclude>*:windows-x86_64</exclude>
+        <exclude>*:natives</exclude>
+        <exclude>*:linux-armhf</exclude>
+      </excludes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>lib</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <includes>
+        <include>*:linux-x86</include>
+        <include>*:netlib-native_ref-linux-i686:*</include>
+        <include>*:linux-x86_64</include>
+        <include>*:netlib-native_ref-linux-x86_64:*</include>
+        <include>*:windows-x86</include>
+        <include>*:netlib-native_ref-win-i686:*</include>
+        <include>*:windows-x86_64</include>
+        <include>*:netlib-native_ref-win-x86_64:*</include>
+        <include>*:macosx-x86_64</include>
+        <include>*:netlib-native_ref-osx-x86_64:*</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>doc/apidocs</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>nz.ac.waikato.cms.moa:moa:*:javadoc</include>
       </includes>

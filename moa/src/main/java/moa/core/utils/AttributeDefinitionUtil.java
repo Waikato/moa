@@ -10,7 +10,7 @@ public class AttributeDefinitionUtil {
 	public static String nonIgnoredDefinition = "0";
 	
 	public static String definitionSingle = "-?[0-9]+?";
-	public static String definitionPositiveRange = "-?[0-9]+?-[0-9]+?";
+	public static String definitionPositiveRange = "[0-9]+?-[0-9]+?";
 	public static String definitionArbitraryRange = "-?[0-9]+?~-?[0-9]+?";
 	
 	public static String getDefinitionTotal() {
@@ -34,14 +34,15 @@ public class AttributeDefinitionUtil {
 			if (start == end) {
 				System.err.println("[Warning] Strage attribute range definition '" + definition + "', start equals end");
 			}
-			Integer i = start;
-			if (start <= end)
+			if (start <= end) {
+				Integer i = start;
 				while(i <= end) {
 					if (!ignoredAttributes.contains(i - 1)) ret.add(i - 1);
 					i++;
 				}
+			}
 			else 
-				System.err.println("[Warning] Strage attribute range definition '" + definition + "', end smaller of start, ignoring...");
+				System.err.println("[Warning] Strage attribute range definition '" + definition + "', end smaller than start, ignoring...");
 		} else if (Pattern.matches(definitionPositiveRange, definition)) {
 			String[] split = definition.split("-");
 			int start = Integer.valueOf(split[0]);
@@ -82,7 +83,7 @@ public class AttributeDefinitionUtil {
     public static List<Integer> parseAttributeDefinition(String attributeDefinition, int numAttributes, List<Integer> ignoredAttributes) {
     	List<Integer> ret = new ArrayList<Integer>();
     	if (ignoredAttributes == null) ignoredAttributes = new ArrayList<Integer>();
-    	if (attributeDefinition != "") {
+    	if (!attributeDefinition.isEmpty()) {
 	    	String[] definitions = attributeDefinition.split("[,;]");
 	    	Pattern definitionsPattern = Pattern.compile(getDefinitionTotal());
 	    	for (int i = 0; i < definitions.length; i++) {
@@ -117,5 +118,18 @@ public class AttributeDefinitionUtil {
     	return ret;
     }
 	
+    public static List<Integer> remapAttributeDefitinion(List<Integer> attributeList, List<Integer> indexMap) {
+    	// Remaps the attribute list to only the included attributes, i.e., skip unincluded attributes
+    	
+    	// Example:
+    	// If input attributes = 1 - 11, output attributes = 14, 14 get remapped to 12
+
+    	List<Integer> ret = new ArrayList<Integer>();
+    	for (int i = 0; i < attributeList.size(); i++) {
+    		ret.add(indexMap.indexOf(attributeList.get(i)));
+    	}
+    	return ret;
+    		
+    }
 	
 }

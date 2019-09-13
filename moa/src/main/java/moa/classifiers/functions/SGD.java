@@ -40,6 +40,7 @@ import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.core.Utils;
 import moa.learners.Classifier;
+import moa.learners.Regressor;
 
 /**
 <!-- globalinfo-start -->
@@ -48,7 +49,7 @@ import moa.learners.Classifier;
 <!-- globalinfo-end -->
  *
  */
-public class SGD extends AbstractClassifier implements Classifier {
+public class SGD extends AbstractClassifier implements Classifier, Regressor {
 
     /** For serialization */
     private static final long serialVersionUID = -3732968666673530290L;
@@ -317,7 +318,7 @@ public class SGD extends AbstractClassifier implements Classifier {
                 result[1] = 1;
             }
         }
-        return  new ClassificationPrediction(result);
+        return new ClassificationPrediction(result);
     }
 
     @Override

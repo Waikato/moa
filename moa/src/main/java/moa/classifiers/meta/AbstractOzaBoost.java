@@ -63,19 +63,12 @@ public abstract class AbstractOzaBoost<MLTask extends InstanceLearner> extends A
     }
 
 	public AbstractOzaBoost(Class<MLTask> task, String defaultCLIString) {
+		super(task);
 		this.baseLearnerOption = new ClassOption("baseLearner", 'l', "Classifier to train.", task, defaultCLIString);
 	}
 	
-   
-    public ClassOption baseLearnerOption;
-
-    public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
-            "The number of models to boost.", 10, 1, Integer.MAX_VALUE);
-
     public FlagOption pureBoostOption = new FlagOption("pureBoost", 'p',
             "Boost with weights only; no poisson.");
-
-    protected ArrayList<MLTask> ensemble;
 
     protected double[] scms;
 
@@ -99,12 +92,11 @@ public abstract class AbstractOzaBoost<MLTask extends InstanceLearner> extends A
                 weightedInst.setWeight(inst.weight() * k);
                 this.ensemble.get(i).trainOnInstance(weightedInst);
             }
-            updateWeight(i, inst);
-
+            lambda_d = updateWeight(i, inst, lambda_d);
+            }
         }
-    }
     
-    public abstract void updateWeight(int i, Instance inst);
+    public abstract double updateWeight(int i, Instance inst, double lambda_d);
 
     protected double getEnsembleMemberWeight(int i) {
         double em = this.swms[i] / (this.scms[i] + this.swms[i]);
@@ -136,7 +128,7 @@ public abstract class AbstractOzaBoost<MLTask extends InstanceLearner> extends A
     public Prediction combinePredictions(Prediction[] prediction) {
 		throw new UnsupportedOperationException("This is a boosting ensemble and does not use unweighted combining of predictions.");
     }
-    
+
     public boolean isRandomizable() {
         return true;
     }

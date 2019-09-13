@@ -21,6 +21,10 @@ public abstract class AbstractEnsembleLearner<MLTask extends InstanceLearner> ex
     
     public ArrayList<MLTask> ensemble;
 
+    public AbstractEnsembleLearner(Class<MLTask> task) {
+    	super(task);
+    }
+    
     public long measureByteSize() {
     	long size = 0;
     	for (MLTask c : ensemble) 
@@ -32,13 +36,13 @@ public abstract class AbstractEnsembleLearner<MLTask extends InstanceLearner> ex
 	@Override
     public void resetLearningImpl() {
         this.ensemble = new ArrayList<>(this.ensembleSizeOption.getValue());
-        MLTask baseLearner = (MLTask) getPreparedClassOption(this.baseLearnerOption);
+        MLTask baseLearner = (MLTask) getPreparedClassOption(baseLearnerOption);
         for (int i = 0; i < this.ensembleSizeOption.getValue(); i++) {
         	MLTask learner = (MLTask) baseLearner.copy();
-        	learner.setRandomSeed(this.randomSeed + i + 1);
         	learner.prepareForUse();
             this.ensemble.add(learner);
         }
+        this.setRandomSeed(randomSeed);
     }
    
     public void setRandomSeed(int seed) {
@@ -81,8 +85,12 @@ public abstract class AbstractEnsembleLearner<MLTask extends InstanceLearner> ex
                     this.ensemble != null ? this.ensemble.size() : 0)};
     }
     
-    @SuppressWarnings("unchecked")
-	public MLTask[] getSubClassifiers() {
-        return (MLTask[]) this.ensemble.clone();
+    @Override
+	public MLTask[] getSublearners() {
+        MLTask[] out = ((MLTask[])java.lang.reflect.Array.newInstance(TaskClass, this.ensemble.size()));
+        for (int i = 0; i < this.ensemble.size(); i++) {
+        	out[i] = this.ensemble.get(i);
+        }
+        return out;
     }
 }

@@ -72,6 +72,12 @@ public class RegressionPrediction implements Prediction, Serializable {
 	public void setVote(int outputAttributeIndex, int classIndex, double vote) {
 		throw new UnsupportedOperationException("This is a single-target regression prediction.");
 	}
+
+
+	@Override
+	public void setVote(int outputAttributeIndex, double vote) {
+		throw new UnsupportedOperationException("This is a single-target regression prediction.");		
+	}
 	
 	@Override
 	public String toString(){
@@ -114,6 +120,4 @@ public class RegressionPrediction implements Prediction, Serializable {
 			throw new UnsupportedOperationException("This is a single-target regression prediction.");
 		return prediction;
 	}
-
-    
 }

@@ -141,6 +141,6 @@ public class BasicRegressionPerformanceEvaluator extends AbstractMOAObject
     @Override
     public void addResult(Example<Instance> example, Prediction prediction) {
     	if(prediction!=null)
-    		addResult(example,prediction.getVotes(0));
+    		addResult(example,prediction.asDoubleArray());
     }
 }

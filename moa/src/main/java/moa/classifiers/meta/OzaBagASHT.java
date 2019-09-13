@@ -123,16 +123,16 @@ public class OzaBagASHT extends AbstractClassifier implements Classifier {
         this.error = new double[this.ensembleSizeOption.getValue()];
         Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
         baseLearner.resetLearning();
-        int pow = this.firstClassifierSizeOption.getValue(); //EXTENSION TO ASHT
+        int pow = this.firstClassifierSizeOption.getValue();
         for (int i = 0; i < this.ensemble.length; i++) {
             this.ensemble[i] = (ASHoeffdingTree) baseLearner.copy();
             this.error[i] = 0.0;
-            ((ASHoeffdingTree) this.ensemble[i]).setMaxSize(pow); //EXTENSION TO ASHT
+            ((ASHoeffdingTree) this.ensemble[i]).setMaxSize(pow);
             if ((this.resetTreesOption != null)
                     && this.resetTreesOption.isSet()) {
                 ((ASHoeffdingTree) this.ensemble[i]).setResetTree();
             }
-            pow *= 2; //EXTENSION TO ASHT
+            pow *= 2;
         }
     }
 

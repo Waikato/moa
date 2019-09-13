@@ -26,6 +26,8 @@ import com.github.javacliparser.StringOption;
 import moa.MOAObject;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
+import moa.tasks.conceptdrift.ConceptDriftMainTask;
+import moa.tasks.conceptdrift.EvaluateConceptDrift;
 
 /**
  * Task for running several experiments modifying values of parameters.
@@ -44,7 +46,7 @@ public class RunStreamTasks extends ConceptDriftMainTask {
     private static final long serialVersionUID = 1L;
 
     public ClassOption taskOption = new ClassOption("task", 't',
-            "Task to do.", Task.class, "EvaluatePrequentialClassification -l active.ActiveClassifier -i 1000000 -d temp.txt");
+            "Task to do.", Task.class, "EvaluatePrequential -l active.ALUncertainty -i 1000000 -d temp.txt");
 
     public StringOption streamParameterOption = new StringOption("streamParameter", 'p',
             "Stream parameter to vary.", "b");

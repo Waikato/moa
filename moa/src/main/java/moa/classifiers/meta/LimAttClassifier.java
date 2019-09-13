@@ -202,7 +202,7 @@ public class LimAttClassifier extends AbstractClassifier implements Classifier {
     private static final long serialVersionUID = 1L;
 
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "trees.LimAttHoeffdingTree");
+            "Classifier to train.", Classifier.class, "moa.classifiers.trees.LimAttHoeffdingTree");
 
     public IntOption numAttributesOption = new IntOption("numAttributes", 'n',
             "The number of attributes to use per model.", 1, 1, Integer.MAX_VALUE);
@@ -265,7 +265,7 @@ public class LimAttClassifier extends AbstractClassifier implements Classifier {
             Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
             baseLearner.resetLearning();
             for (int i = 0; i < this.ensemble.length; i++) {
-                this.ensemble[i] = baseLearner.copy();
+                this.ensemble[i] = (Classifier) baseLearner.copy();
             }
             this.ADError = new ADWIN[this.ensemble.length];
             for (int i = 0; i < this.ensemble.length; i++) {
@@ -464,7 +464,7 @@ public class LimAttClassifier extends AbstractClassifier implements Classifier {
     }
 
     //Perceptron
-    public FloatOption learningRatioOption = new FloatOption("learningRatio", 'r', "Learning ratio", 1);
+    public FloatOption learningRatioOption = new FloatOption("learningRatio", 't', "Learning ratio", 1);
 
     public FloatOption penaltyFactorOption = new FloatOption("lambda", 'p', "Lambda", 0.0);
 

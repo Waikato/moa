@@ -25,7 +25,7 @@ import java.util.List;
 
 import moa.AbstractMOAObject;
 import moa.core.Measurement;
-import moa.learners.Learner;
+import moa.learners.MLTask;
 
 /**
  * Class that stores an array of evaluation measurements.
@@ -44,7 +44,7 @@ public class LearningEvaluation extends AbstractMOAObject {
     }
 
     public LearningEvaluation(Measurement[] evaluationMeasurements,
-            LearningPerformanceEvaluator cpe, Learner model) {
+            LearningPerformanceEvaluator cpe, MLTask model) {
         List<Measurement> measurementList = new LinkedList<Measurement>();
         if (evaluationMeasurements != null){
         measurementList.addAll(Arrays.asList(evaluationMeasurements));
@@ -55,7 +55,7 @@ public class LearningEvaluation extends AbstractMOAObject {
     }
 
     public LearningEvaluation(
-            LearningPerformanceEvaluator cpe, Learner model) {
+            LearningPerformanceEvaluator cpe, MLTask model) {
         this(null,cpe,model);
     }
 

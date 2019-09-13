@@ -75,7 +75,7 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Clas
     /**
      * Type of classifier to use as a component classifier.
      */
-    public ClassOption learnerOption = new ClassOption("learner", 'l', "Classifier to train.", Classifier.class, "trees.HoeffdingTree -l NB -e 1000 -g 100 -c 0.01");
+    public ClassOption learnerOption = new ClassOption("learner", 'l', "Classifier to train.", Classifier.class, "moa.classifiers.trees.HoeffdingTree -l NB -e 1000 -g 100 -c 0.01");
 
     /**
      * Number of component classifiers.
@@ -172,7 +172,7 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Clas
      */
     private void initVariables() {
         if (this.currentChunk == null) {
-            this.currentChunk = new InstancesHeader(this.getModelContext());
+            this.currentChunk = this.getModelContext().getEmptyHeader();
         }
 
         if (this.classDistributions == null) {
@@ -214,7 +214,7 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Clas
                 }
 
                 this.storedWeights[0][0] = candidateClassifierWeight;
-                this.storedLearners[(int) this.storedWeights[0][1]] = this.candidateClassifier.copy();
+                this.storedLearners[(int) this.storedWeights[0][1]] = (Classifier) this.candidateClassifier.copy();
             }
         }
 
@@ -260,7 +260,7 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Clas
             InstancesHeader train = randData.trainCV(numFolds, n, random);
             InstancesHeader test = randData.testCV(numFolds, n);
 
-            Classifier learner = candidate.copy();
+            Classifier learner = (Classifier) candidate.copy();
 
             for (int num = 0; num < train.numInstances(); num++) {
                 learner.trainOnInstance(train.instance(num));
@@ -420,7 +420,7 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Clas
                 newStoredWeights[i][0] = this.storedWeights[i][0];
                 newStoredWeights[i][1] = this.storedWeights[i][1];
             } else {
-                newStored[i] = addedClassifier = newClassifier.copy();
+                newStored[i] = addedClassifier = (Classifier) newClassifier.copy();
                 newStoredWeights[i][0] = newClassifiersWeight;
                 newStoredWeights[i][1] = i;
             }

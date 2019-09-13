@@ -221,7 +221,7 @@ public class Clustering extends AbstractMOAObject{
     }
 
     /**
-     * remove a cluster from the clustering
+     * get a cluster from the clustering
      */
     public Cluster get(int index){
         if(index < clusters.size()){

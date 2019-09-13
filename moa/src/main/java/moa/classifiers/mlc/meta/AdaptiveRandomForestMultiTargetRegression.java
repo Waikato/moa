@@ -18,39 +18,34 @@
  */
 package moa.classifiers.mlc.meta;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.predictions.MultiTargetRegressionPrediction;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
-import moa.classifiers.AbstractClassifier;
+import moa.AbstractMOAObject;
 import moa.classifiers.AbstractMultiTargetRegressor;
-import moa.classifiers.AbstractRegressor;
+import moa.classifiers.core.driftdetection.ChangeDetector;
+import moa.classifiers.mtr.trees.ISOUPTree;
+import moa.classifiers.mtr.trees.ISOUPTreeRF;
 // import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.InstanceExample;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
-import moa.options.ClassOption;
-
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.IntOption;
-import com.github.javacliparser.MultiChoiceOption;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.Callable;
-
 // import moa.classifiers.trees.ARFHoeffdingTree;
 import moa.evaluation.BasicClassificationPerformanceEvaluator;
 import moa.learners.MultiTargetRegressor;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import moa.AbstractMOAObject;
-import moa.classifiers.core.driftdetection.ChangeDetector;
-import moa.classifiers.mtr.trees.ISOUPTree;
-import moa.classifiers.mtr.trees.ISOUPTreeRF;
+import moa.options.ClassOption;
 
 
 /**

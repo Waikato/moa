@@ -54,7 +54,7 @@ public class Point {
 		for(int l=0;l<this.dimension;l++){
 			double nextNumber = inst.value(l) * inst.value(l);
 			this.coordinates[l] = inst.value(l);
-			this.squareSum += nextNumber* nextNumber;
+			this.squareSum += nextNumber*nextNumber;
 		}
 	}
 		
@@ -71,9 +71,16 @@ public class Point {
 		return res;
 	}
 	
-	public Cluster toCluster(){
+	public Cluster toCluster(double radius){
 		//Convert point to Cluster
-		return (new SphereCluster(this.coordinates, 1, this.weight)); //Radius =1?
+		double[] centre = new double[this.dimension];
+		
+		for (int i = 0 ; i < this.dimension ; i++)
+		{
+			centre[i] = this.coordinates[i]/this.weight;
+		}
+		
+		return (new SphereCluster(centre, radius, this.weight));
 		
 	}
 

@@ -50,7 +50,7 @@ public class OzaBoostAdwin extends AbstractClassifier implements Classifier {
     }
         
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
+            "Classifier to train.", Classifier.class, "moa.classifiers.trees.HoeffdingTree");
 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
             "The number of models to boost.", 10, 1, Integer.MAX_VALUE);
@@ -93,7 +93,7 @@ public class OzaBoostAdwin extends AbstractClassifier implements Classifier {
         Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
         baseLearner.resetLearning();
         for (int i = 0; i < this.ensemble.length; i++) {
-            this.ensemble[i] = baseLearner.copy();
+            this.ensemble[i] = (Classifier) baseLearner.copy();
         }
         this.scms = new double[this.ensemble.length];
         this.swms = new double[this.ensemble.length];

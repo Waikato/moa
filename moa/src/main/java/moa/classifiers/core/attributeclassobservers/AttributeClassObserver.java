@@ -69,4 +69,6 @@ public interface AttributeClassObserver extends OptionHandler {
 
     public void observeAttributeTarget(double attVal, double target);
     
+    public void observeAttributeValue(double attVal, double value, double weight);
+    
 }

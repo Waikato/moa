@@ -1,6 +1,6 @@
 package moa.learners;
 
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 public interface MultiLabelClassifier extends InstanceLearner {
@@ -22,7 +22,7 @@ public interface MultiLabelClassifier extends InstanceLearner {
      *
      * @param inst the instance to be used for training
      */
-    public void trainOnInstanceImpl(MultiLabelInstance inst);
+    public void trainOnInstanceImpl(Instance inst);
 
     /**
      * Sets the reference to the header of the data stream. The header of the
@@ -44,8 +44,8 @@ public interface MultiLabelClassifier extends InstanceLearner {
      */
     //public InstancesHeader getModelContext();
     
-    public Prediction getPredictionForInstance(MultiLabelInstance inst);
+    public Prediction getPredictionForInstance(Instance inst);
     
-    public MultiLabelClassifier copy();
+    public InstanceLearner copy();
 
 }

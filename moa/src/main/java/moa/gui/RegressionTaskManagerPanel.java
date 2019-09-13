@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -61,10 +60,11 @@ import javax.swing.table.TableCellRenderer;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
-import moa.tasks.EvaluatePrequentialRegression;
-import moa.tasks.RegressionMainTask;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
+import moa.tasks.regression.EvaluatePrequential;
+import moa.tasks.regression.RegressionMainTask;
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
 /**
  * This panel displays the running tasks.
@@ -185,7 +185,7 @@ public class RegressionTaskManagerPanel extends JPanel {
         }
     }
 
-    protected RegressionMainTask currentTask = new EvaluatePrequentialRegression();//LearnModel();
+    protected RegressionMainTask currentTask = new EvaluatePrequential();//LearnModel();
 
     protected List<TaskThread> taskList = new ArrayList<TaskThread>();
 
@@ -216,7 +216,7 @@ public class RegressionTaskManagerPanel extends JPanel {
     public RegressionTaskManagerPanel() {
         // Read current task preference
         prefs = Preferences.userRoot().node(this.getClass().getName());
-        currentTask = new EvaluatePrequentialRegression();
+        currentTask = new EvaluatePrequential();
         String taskText = this.currentTask.getCLICreationString(RegressionMainTask.class);
         String propertyValue = prefs.get(PREF_NAME, taskText);
         //this.taskDescField.setText(propertyValue);
@@ -464,11 +464,11 @@ public class RegressionTaskManagerPanel extends JPanel {
             tasksLog += ((OptionHandler) thread.getTask()).getCLICreationString(RegressionMainTask.class) + "\n";
         }
 
-        JFileChooser fileChooser = new JFileChooser();
+        BaseFileChooser fileChooser = new BaseFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(true);
         fileChooser.addChoosableFileFilter(new FileExtensionFilter(
                 exportFileExtension));
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(this) == BaseFileChooser.APPROVE_OPTION) {
             File chosenFile = fileChooser.getSelectedFile();
             String fileName = chosenFile.getPath();
             if (!chosenFile.exists()

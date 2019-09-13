@@ -113,7 +113,7 @@ public class ADACC extends DACC {
     public void trainOnInstanceImpl(Instance inst) {
 	
     	if (recentChunk == null)
-            recentChunk = new InstancesHeader(this.getModelContext());
+            recentChunk = this.getModelContext().getEmptyHeader();
     	
     	if (recentChunk.size() < this.tau_size)
     		recentChunk.add(inst);
@@ -137,12 +137,12 @@ public class ADACC extends DACC {
     	 
     	if (this.index >= this.theta_stab)
     		if (addedPermanent == 0){
-    			this.ensemble[this.ensemble.length-MAXPERMANENT+addedPermanent] = getBestAdaptiveClassifier().copy();
+    			this.ensemble[this.ensemble.length-MAXPERMANENT+addedPermanent] = (Classifier) getBestAdaptiveClassifier().copy();
     			addedPermanent++;
     		}
     		else{
     			
-    			Classifier candidate = getBestAdaptiveClassifier().copy();
+    			Classifier candidate = (Classifier) getBestAdaptiveClassifier().copy();
     			
     			boolean duplicate = false;
     			for (int j=0;j<Math.min(MAXPERMANENT,addedPermanent);j++){
@@ -256,7 +256,7 @@ public class ADACC extends DACC {
 	    //sort the weight values	
 		Arrays.sort(newEnsembleWeights,Collections.reverseOrder());
 	    			
-		return this.ensemble[newEnsembleWeights[0].index].copy();
+		return (Classifier) this.ensemble[newEnsembleWeights[0].index].copy();
     }
 
   

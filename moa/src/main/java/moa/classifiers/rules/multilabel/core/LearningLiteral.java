@@ -1,13 +1,12 @@
 package moa.classifiers.rules.multilabel.core;
 
-//import org.hamcrest.core.IsInstanceOf;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
+import com.yahoo.labs.samoa.instances.InstanceInformation;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.core.driftdetection.ChangeDetector;
@@ -18,9 +17,12 @@ import moa.classifiers.mlc.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.core.AttributeExpansionSuggestion;
 import moa.classifiers.rules.core.anomalydetection.AnomalyDetector;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
+import moa.classifiers.rules.multilabel.inputselectors.InputAttributesSelector;
+import moa.classifiers.rules.multilabel.instancetransformers.InstanceTransformer;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
+import moa.learners.InstanceLearner;
 import moa.learners.MultiLabelClassifier;
 import moa.options.AbstractOptionHandler;
 
@@ -38,7 +40,9 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 
 	protected int[] outputsToLearn;
 
-	protected MultiLabelClassifier learner;
+	protected int [] inputsToLearn;
+
+	protected InstanceLearner learner;
 
 	protected MultiLabelErrorMeasurer errorMeasurer;
 
@@ -58,13 +62,10 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	protected LearningLiteral expandedLearningLiteral;
 
 	protected LearningLiteral otherBranchLearningLiteral;
+	
+	protected LearningLiteral otherOutputsLearningLiteral;
 
 	protected AttributeExpansionSuggestion bestSuggestion;
-
-
-	//public ClassOption changeDetectorOption;
-
-	//public ClassOption anomalyDetectorOption;
 
 	protected NumericStatisticsObserver numericStatisticsObserver;
 	
@@ -72,11 +73,20 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 
 	protected OutputAttributesSelector outputSelector;
 
+	protected InputAttributesSelector inputSelector;
+	
+	protected InstanceInformation instanceInformation;
+
 	protected Random randomGenerator;
 	
     protected boolean [] attributesMask; //TODO: JD Use sparse representation?
     protected double attributesPercentage;
 
+	protected InstanceTransformer instanceTransformer;
+	
+	protected InstancesHeader instanceHeader;
+
+	double [] meritPerInput; //for feature
 
 	// Maintain statistics for input and output attributes for standard deviation computation?
 
@@ -91,10 +101,13 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	abstract public void trainOnInstance(Instance instance);
 
 	public Prediction getPredictionForInstance(Instance instance) {
-		if (learner!=null)
-			return learner.getPredictionForInstance(instance);
-		else
-			return null;
+		Prediction prediction=null;
+		if (learner!=null){ 
+			Instance transfInstance=this.instanceTransformer.sourceInstanceToTarget(instance);
+			Prediction targetPrediction=learner.getPredictionForInstance(transfInstance);
+			prediction=this.instanceTransformer.targetPredictionToSource(targetPrediction);
+		}
+		return prediction;
 	}
 
 
@@ -159,10 +172,10 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 	}
 
 	public double[] getErrors() {
+		double [] errors=null;
 		if(errorMeasurer!=null)
-			return errorMeasurer.getCurrentErrors();
-		else 
-			return null;
+			errors=errorMeasurer.getCurrentErrors();
+		return errors;
 	}
 
 	public void setSplitCriterion(MultiLabelSplitCriterion splitCriterion) {
@@ -190,9 +203,8 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 		this.numericStatisticsObserver=numericStatisticsObserver;
 	}
 
-	public void setLearner(MultiLabelClassifier learner) {
+	public void setLearner(InstanceLearner learner) {
 		this.learner=learner;
-
 	}
 
 	public void setErrorMeasurer(MultiLabelErrorMeasurer errorMeasurer) {
@@ -232,7 +244,7 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 		this.attributesPercentage=attributesPercentage;
 	}
 	
-	protected void initializeAttibutesMask(Instance inst) {
+	protected int initializeAttibutesMask(Instance inst) {
 		int numInputAttributes=inst.numInputAttributes();
 		int numAttributesSelected=(int)Math.round(numInputAttributes*attributesPercentage/100);
 		
@@ -240,15 +252,44 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 		ArrayList<Integer> indices = new ArrayList<Integer>(numInputAttributes);
 		for(int i=0; i<numInputAttributes; i++)
 				indices.add(i);
+		if(numInputAttributes!=numAttributesSelected)
 		Collections.shuffle(indices, this.randomGenerator);
 		
 		for (int i=0; i<numAttributesSelected;++i)
 			attributesMask[indices.get(i)]=true;
 		
+		return numAttributesSelected;
 	}
 	
+	public void setInputAttributesSelector(InputAttributesSelector inputSelector) {
+		this.inputSelector=inputSelector;
+	}
 	
+	abstract public String getStaticOutput(InstancesHeader instanceInformation);
 	
+	public int[] getInputsToLearn() {
+		return this.inputsToLearn;
+	}
 
+	public void setInstanceTransformer(InstanceTransformer instanceTransformer) {
+		this.instanceTransformer=instanceTransformer;
+		
+	}
+
+	public LearningLiteral getOtherOutputsLearningLiteral() {
+		return otherOutputsLearningLiteral;
+	}
+
+	public void setInstanceInformation(InstanceInformation instanceInformation) {
+		this.instanceInformation=instanceInformation;
+	}
+
+	public double [] getMeritInputAttributes(){
+		return meritPerInput;
+	}
+
+	public boolean[] getAttributeMask() {
+		return attributesMask;
+	}
 	//	abstract public void resetLearning();
 }

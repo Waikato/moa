@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -61,12 +60,12 @@ import javax.swing.table.TableCellRenderer;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
-import moa.tasks.AbstractEvaluatePrequential;
-import moa.tasks.ClassificationMainTask;
-import moa.tasks.EvaluatePrequentialClassification;
 import moa.tasks.MainTask;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
+import moa.tasks.classification.ClassificationMainTask;
+import moa.tasks.classification.EvaluatePrequential;
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
 /**
  * This panel displays the running tasks.
@@ -187,7 +186,7 @@ public class TaskManagerPanel extends JPanel {
         }
     }
 
-    protected ClassificationMainTask currentTask = new EvaluatePrequentialClassification();
+    protected MainTask currentTask;//LearnModel();
 
     protected List<TaskThread> taskList = new ArrayList<TaskThread>();
 
@@ -218,7 +217,7 @@ public class TaskManagerPanel extends JPanel {
     public TaskManagerPanel() {
         // Read current task preference
         prefs = Preferences.userRoot().node(this.getClass().getName());
-        currentTask = new EvaluatePrequentialClassification();
+        currentTask = new EvaluatePrequential();
         String taskText = this.currentTask.getCLICreationString(MainTask.class);
         String propertyValue = prefs.get(PREF_NAME, taskText);
         //this.taskDescField.setText(propertyValue);
@@ -315,8 +314,8 @@ public class TaskManagerPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 String newTaskString = ClassOptionSelectionPanel.showSelectClassDialog(TaskManagerPanel.this,
-                        "Configure task", MainTask.class,
-                        TaskManagerPanel.this.currentTask.getCLICreationString(MainTask.class),
+                        "Configure task", ClassificationMainTask.class,
+                        TaskManagerPanel.this.currentTask.getCLICreationString(ClassificationMainTask.class),
                         null);
                 setTaskString(newTaskString);
             }
@@ -379,9 +378,9 @@ public class TaskManagerPanel extends JPanel {
         
     public void setTaskString(String cliString, boolean storePreference) {    
         try {
-            this.currentTask = (ClassificationMainTask) ClassOption.cliStringToObject(
-                    cliString, MainTask.class, null);
-            String taskText = this.currentTask.getCLICreationString(MainTask.class);
+            this.currentTask = (MainTask) ClassOption.cliStringToObject(
+                    cliString, ClassificationMainTask.class, null);
+            String taskText = this.currentTask.getCLICreationString(ClassificationMainTask.class);
             this.taskDescField.setText(taskText);
             if (storePreference == true){
             //Save task text as a preference
@@ -466,11 +465,11 @@ public class TaskManagerPanel extends JPanel {
             tasksLog += ((OptionHandler) thread.getTask()).getCLICreationString(MainTask.class) + "\n";
         }
 
-        JFileChooser fileChooser = new JFileChooser();
+        BaseFileChooser fileChooser = new BaseFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(true);
         fileChooser.addChoosableFileFilter(new FileExtensionFilter(
                 exportFileExtension));
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(this) == BaseFileChooser.APPROVE_OPTION) {
             File chosenFile = fileChooser.getSelectedFile();
             String fileName = chosenFile.getPath();
             if (!chosenFile.exists()

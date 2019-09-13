@@ -461,7 +461,7 @@ public class MultilabelHoeffdingTree extends AbstractMultiLabelClassifier implem
             if (cl == null) {
                 this.classifier = (Classifier) getPreparedClassOption(ht.learnerOption);
             } else {
-                this.classifier = cl.copy();
+                this.classifier = (Classifier) cl.copy();
             }
         }
 	
@@ -518,14 +518,14 @@ public class MultilabelHoeffdingTree extends AbstractMultiLabelClassifier implem
             this.isInitialized = false;
             
             if (cl== null) {
-				this.classifier = ((Classifier) getPreparedClassOption(ht.learnerOption)).copy();
+				this.classifier = (Classifier) ((Classifier) getPreparedClassOption(ht.learnerOption)).copy();
 				this.classifier.resetLearning();
 
 				InstancesHeader raw_header = ht.getModelContext();
 				this.classifier.setModelContext(raw_header);
 			}
 			else{
-				this.classifier = cl.copy();
+				this.classifier = (Classifier) cl.copy();
 			}
 		}
 

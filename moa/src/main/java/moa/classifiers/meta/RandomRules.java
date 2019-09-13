@@ -65,17 +65,17 @@ public class RandomRules extends AbstractRegressor implements Regressor {
 	public FlagOption useBaggingOption = new FlagOption("useBagging", 'p',
 			"Use Bagging.");
 
-	protected Classifier[] ensemble;
+	protected Regressor[] ensemble;
 
 	protected boolean isRegression;
 
 	@Override
 	public void resetLearningImpl() {
-		this.ensemble = new Classifier[this.ensembleSizeOption.getValue()];
-		Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
+		this.ensemble = new Regressor[this.ensembleSizeOption.getValue()];
+		Regressor baseLearner = (Regressor) getPreparedClassOption(this.baseLearnerOption);
 		baseLearner.resetLearning();
 		for (int i = 0; i < this.ensemble.length; i++) {
-			this.ensemble[i] = baseLearner.copy();
+			this.ensemble[i] = (Regressor) baseLearner.copy();
 		}
 		this.isRegression = (baseLearner instanceof Regressor);
 	}
@@ -136,7 +136,7 @@ public class RandomRules extends AbstractRegressor implements Regressor {
 				this.ensemble != null ? this.ensemble.length : 0)};
 	}
 
-	public Classifier[] getSubClassifiers() {
+	public Regressor[] getSubClassifiers() {
 		return this.ensemble; //.clone();
 	}
 

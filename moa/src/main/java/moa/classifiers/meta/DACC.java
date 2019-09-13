@@ -126,7 +126,7 @@ public class DACC extends AbstractClassifier implements Classifier {
         this.ensembleWeights = new Pair[this.ensemble.length];
         
         for (int i = 0; i < this.ensemble.length; i++) {
-            this.ensemble[i] = learner.copy();
+            this.ensemble[i] = (Classifier) learner.copy();
             this.ensembleAges[i] = 0;
             this.ensembleWeights[i] = new Pair(0.0,i);
             this.ensembleWindows[i] = new int[(int)this.evaluationSizeOption.getValue()];

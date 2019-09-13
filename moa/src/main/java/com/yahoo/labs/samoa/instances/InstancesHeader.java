@@ -172,6 +172,10 @@ public class InstancesHeader implements Serializable {
 		this.instances = new ArrayList<Instance>(capacity);
 	}
 
+	public InstancesHeader getEmptyHeader() {
+		return new InstancesHeader(this, 0);
+	}
+	
 	//Information Instances
 	/**
 	 * Sets the relation name.
@@ -309,7 +313,10 @@ public class InstancesHeader implements Serializable {
 	 * @return the int
 	 */
 	public int numInstances() {
-		return this.instances.size();
+		if (this.instances != null)
+			return this.instances.size();
+		else
+			return 0;
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package moa.clusterers.streamkm;
 
+import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
@@ -13,6 +14,8 @@ import moa.core.Measurement;
  * @author Marcel R. Ackermann, Christiane Lammersen, Marcus Maertens, Christoph Raupach, 
 Christian Sohler, Kamil Swierkot
 
+Modified by Richard Hugh Moulton (24 Jul 2017)
+
 Citation: Marcel R. Ackermann, Christiane Lammersen, Marcus Märtens,
 Christoph Raupach, Christian Sohler, Kamil Swierkot: StreamKM++: A
 Clustering Algorithms for Data Streams. ALENEX 2010: 173-187
@@ -21,14 +24,17 @@ Clustering Algorithms for Data Streams. ALENEX 2010: 173-187
 public class StreamKM extends AbstractClusterer {
 
     public IntOption sizeCoresetOption = new IntOption("sizeCoreset",
-			's', "Size of the coreset.", 10000);
+			's', "Size of the coreset (m).", 10000);
 
     public IntOption numClustersOption = new IntOption(
 			"numClusters", 'k',
 			"Number of clusters to compute.", 5);
 			
-	public IntOption widthOption = new IntOption("width",
-			'w', "Size of Window for training learner.", 100000, 0, Integer.MAX_VALUE);
+	public IntOption lengthOption = new IntOption("length",
+			'l', "Length of the data stream (n).", 100000, 0, Integer.MAX_VALUE);
+
+	public FlagOption evaluateOption = new FlagOption("evaluateFinalOnly",
+			'e', "If true, only the final clustering is evaluated.");
 			
 	public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
 					"Seed for random behaviour of the classifier.", 1);	
@@ -54,7 +60,7 @@ public class StreamKM extends AbstractClusterer {
 		this.initialized = false;
 		this.coresetsize = sizeCoresetOption.getValue();
 		this.numberOfCentres = numClustersOption.getValue();
-		this.length = widthOption.getValue();
+		this.length = lengthOption.getValue();
 		this.centresStreamingCoreset = new Point[this.numberOfCentres];
 
 		//initalize random generator with seed
@@ -73,23 +79,33 @@ public class StreamKM extends AbstractClusterer {
 		manager.insertPoint(new Point(inst, this.numberInstances));     
         
         this.numberInstances++;
-		if (this.numberInstances % widthOption.getValue() == 0) {
+		if (this.numberInstances % lengthOption.getValue() == 0) {
 			
 			Point[] streamingCoreset = manager.getCoresetFromManager(dimension);
 			
 			//compute 5 clusterings of the coreset with kMeans++ and take the best
+			CoresetCostTriple triple;
 			double minCost = 0.0;
 			double curCost = 0.0;
 			
-			minCost = lloydPlusPlus(numberOfCentres, coresetsize, dimension, streamingCoreset, centresStreamingCoreset);
+			triple = lloydPlusPlus(numberOfCentres, coresetsize, dimension, streamingCoreset);
+			minCost = triple.getCoresetCost();
+			for (int j = 0 ; j < this.numberOfCentres ; j++)
+			{
+				centresStreamingCoreset[j] = triple.getCoresetCentres()[j].clone();
+			}
 			curCost = minCost;
 
 			for(int i = 1; i < 5; i++){
-				Point[] tmpCentresStreamingCoreset= new Point[0];
-				curCost = lloydPlusPlus(numberOfCentres, coresetsize, dimension, streamingCoreset, tmpCentresStreamingCoreset);
+				triple = lloydPlusPlus(numberOfCentres, coresetsize, dimension, streamingCoreset);
+				curCost = triple.getCoresetCost();
+
 				if(curCost < minCost) {
 					minCost = curCost;
-					centresStreamingCoreset = tmpCentresStreamingCoreset;
+					for (int j = 0 ; j < this.numberOfCentres ; j++)
+					{
+						centresStreamingCoreset[j] = triple.getCoresetCentres()[j].clone();
+					}
 				}
 		    }
 		}
@@ -121,9 +137,41 @@ public class StreamKM extends AbstractClusterer {
 		}
 		
 		Clustering clustering = new Clustering();
+
+		if (!evaluateOption.isSet())
+		{
+			Point[] streamingCoreset = manager.getCoresetFromManager(dimension);
+
+			//compute 5 clusterings of the coreset with kMeans++ and take the best
+			CoresetCostTriple triple;
+			double minCost = 0.0;
+			double curCost = 0.0;
+
+			triple = lloydPlusPlus(numberOfCentres, coresetsize, dimension, streamingCoreset);
+			minCost = triple.getCoresetCost();
+			for (int j = 0 ; j < this.numberOfCentres ; j++)
+			{
+				centresStreamingCoreset[j] = triple.getCoresetCentres()[j].clone();
+			}
+			curCost = minCost;
+
+			for(int i = 1; i < 5; i++){
+				triple = lloydPlusPlus(numberOfCentres, coresetsize, dimension, streamingCoreset);
+				curCost = triple.getCoresetCost();
+
+				if(curCost < minCost) {
+					minCost = curCost;
+					for (int j = 0 ; j < this.numberOfCentres ; j++)
+					{
+						centresStreamingCoreset[j] = triple.getCoresetCentres()[j].clone();
+					}
+				}
+			}
+
 		for ( int i = 0; i < centresStreamingCoreset.length; i++ ) {
 			if(centresStreamingCoreset[i] != null){
-				clustering.add(centresStreamingCoreset[i].toCluster());
+					clustering.add(centresStreamingCoreset[i].toCluster(triple.getRadii()[i]));
+				}
 			}
 		}
 		
@@ -131,10 +179,13 @@ public class StreamKM extends AbstractClusterer {
     }
 
     
-    public double lloydPlusPlus(int k, int n, int d, Point points[], Point centres[]){
+	public CoresetCostTriple lloydPlusPlus(int k, int n, int d, Point points[]){
 		//printf("starting kMeans++\n");
+		CoresetCostTriple triple;
+		double[] radii = new double[k];
 		//choose random centres
-		centres = chooseRandomCentres(k, n, d, points);
+		//choose random centres
+		Point[] centres = chooseRandomCentres(k, n, d, points);
 		double cost = targetFunctionValue(k, n, centres, points);
 		double newCost = cost;
 		
@@ -165,14 +216,35 @@ public class StreamKM extends AbstractClusterer {
 			for(i=0; i<k; i++){
 				for(int l=0; l<centres[i].dimension; l++){
 					centres[i].coordinates[l] = massCentres[i].coordinates[l];
+				}
 					centres[i].weight = numberOfPoints[i];
 				}
-			}
 			
 			//calculate costs
 			newCost = targetFunctionValue(k, n, centres, points);
 			//printf("old cost:%f, new cost:%f \n",cost,newCost);
 		} while (newCost < THRESHOLD * cost);
+
+		//compute radii
+		for (int i = 0 ; i < n ; i++)
+		{
+			int centre = points[i].determineClusterCentreKMeans(k,centres);
+			double radius = 0.0;
+			double distance;
+
+			for(int j = 0 ; j < points[i].dimension ; j++)
+			{
+				distance = Math.abs((centres[centre].coordinates[j]/centres[centre].weight) - (points[i].coordinates[j]/points[i].weight));
+				radius += Math.pow(distance, 2.0);
+			}
+
+			radii[centre] += radius*points[i].weight;	
+		}
+		for (int i = 0 ; i < k ; i++)
+		{
+			radii[i] = 2.0 * Math.sqrt(radii[i]/centres[i].weight);
+		}
+
 
 		/*printf("Centres: \n");
 		int i=0;
@@ -186,7 +258,9 @@ public class StreamKM extends AbstractClusterer {
 		}
 		printf("kMeans++ finished\n");
 		*/ 
-		return newCost; 
+		triple = new CoresetCostTriple(centres, radii, newCost);
+
+		return triple; 
 	}
 	
 	private Point[] chooseRandomCentres(int k, int n, int d, Point points[]){

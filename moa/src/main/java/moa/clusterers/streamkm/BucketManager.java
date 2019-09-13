@@ -5,6 +5,8 @@ package moa.clusterers.streamkm;
  *
  * @author Marcel R. Ackermann, Christiane Lammersen, Marcus Maertens, Christoph Raupach, 
 Christian Sohler, Kamil Swierkot
+
+Modified by Richard Hugh Moulton (24 Jul 2017)
  */
 public class BucketManager  {
 
@@ -128,10 +130,10 @@ public class BucketManager  {
 	Point[] getCoresetFromManager(int d){
 		Point[] coreset = new Point[d];
 		int i = 0;
-		if(this.buckets[this.numberOfBuckets-1].cursize == this.maxBucketsize){
-			coreset = this.buckets[this.numberOfBuckets-1].points;
+		//if(this.buckets[this.numberOfBuckets-1].cursize == this.maxBucketsize){
+			//coreset = this.buckets[this.numberOfBuckets-1].points;
 
-		} else {
+		//} else {
 			//find the first nonempty bucket
 			for(i=0; i < this.numberOfBuckets; i++){
 				if(this.buckets[i].cursize != 0){
@@ -151,7 +153,7 @@ public class BucketManager  {
 					coreset = this.buckets[j].spillover;			
 				}
 			}
-		}
+		//}
 		return coreset;
 	}
 }

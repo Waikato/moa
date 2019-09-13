@@ -165,7 +165,7 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
 		if(prediction==null)
 			votes = new double[0];
 		else
-			votes=prediction.getVotes();
+			votes= new double[] {prediction.asDouble()};
 		addResult(testInst, votes);
 		
 	}

@@ -59,5 +59,5 @@ public interface Classifier extends InstanceLearner {
      */
     //public void setModelContext(InstancesHeader ih);
     
-    public Classifier copy();
+    public InstanceLearner copy();
 }

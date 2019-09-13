@@ -171,7 +171,7 @@ public class RCD extends SingleClassifierDrift {
                                 this.classifier, this.currentChunk2);
                         if (cs == null) {
                             this.classifier = this.newclassifier;
-                            this.newclassifier = ((Classifier) getPreparedClassOption(this.baseLearnerOption))
+                            this.newclassifier = (Classifier) ((Classifier) getPreparedClassOption(this.baseLearnerOption))
                                     .copy();
                             this.classifiers
                                     .add(new ClassifierKS(

@@ -21,11 +21,9 @@ package moa.classifiers.rules;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import moa.classifiers.AbstractMultipleRegressorTestCase;
-import moa.classifiers.meta.RegressionViaMTR;
+import moa.classifiers.AbstractRegressorTestCase;
 import moa.learners.Regressor;
 import moa.options.ClassOption;
-import moa.options.OptionHandler;
 
 /**
  * Tests the AMRulesRegressor classifier.
@@ -34,7 +32,7 @@ import moa.options.OptionHandler;
  * @version $Revision$
  */
 public class AMRulesRegressorTest
-extends AbstractMultipleRegressorTestCase {
+extends AbstractRegressorTestCase {
 
 	/**
 	 * Constructs the test case. Called by subclasses.
@@ -55,9 +53,8 @@ extends AbstractMultipleRegressorTestCase {
 	protected Regressor[] getLearnerSetups() {
 		Regressor r = null;
 		try {
-			r = (Regressor) ClassOption.cliStringToObject("RegressionViaMTR -c (AMRulesRegressor)", Regressor.class, null);
+			r = (Regressor) ClassOption.cliStringToObject("moa.classifiers.meta.RegressionViaMTR -c (moa.classifiers.rules.multilabel.AMRulesMultiTargetRegressor)", Regressor.class, null);
 		} catch (Exception e) {
-			
 		}
 		return new Regressor[]{
 				r

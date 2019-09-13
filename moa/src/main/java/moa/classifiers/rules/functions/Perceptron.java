@@ -20,10 +20,10 @@
 package moa.classifiers.rules.functions;
 
 import java.util.LinkedList;
-import java.util.Random;
 
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 import com.yahoo.labs.samoa.instances.predictions.RegressionPrediction;
@@ -31,9 +31,10 @@ import com.yahoo.labs.samoa.instances.predictions.RegressionPrediction;
 import moa.classifiers.AbstractRegressor;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+import moa.learners.Classifier;
 import moa.learners.Regressor;
 
-public class Perceptron extends AbstractRegressor implements AMRulesRegressorFunction, Regressor {
+public class Perceptron extends AbstractRegressor implements AMRulesRegressorFunction, Regressor, Classifier {
 
 	private final double SD_THRESHOLD = 0.0000001; //THRESHOLD for normalizing attribute and target values
 
@@ -54,6 +55,9 @@ public class Perceptron extends AbstractRegressor implements AMRulesRegressorFun
 	public FloatOption fadingFactorOption = new FloatOption(
 			"fadingFactor", 'e', 
 			"Fading factor for the Perceptron accumulated error", 0.99, 0, 1);
+	
+//	public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
+//            "Seed for random behaviour of the classifier.", 1);
 
 	private double nError;
 	protected double fadingFactor;
@@ -86,6 +90,8 @@ public class Perceptron extends AbstractRegressor implements AMRulesRegressorFun
 
 	public Perceptron()
 	{
+		super();
+		super.randomSeedOption=randomSeedOption;
 		this.initialisePerceptron = true;
 	}
 
@@ -146,6 +152,7 @@ public class Perceptron extends AbstractRegressor implements AMRulesRegressorFun
 	}
 
 	public void reset(){
+		this.classifierRandom.setSeed(this.randomSeed);
 		this.nError=0.0;
 		this.accumulatedError = 0.0;
 		this.perceptronInstancesSeen = 0;	
@@ -180,8 +187,6 @@ public class Perceptron extends AbstractRegressor implements AMRulesRegressorFun
 				numericAttributesIndex[j++]=index;
 
 			this.fadingFactor=this.fadingFactorOption.getValue();
-			this.classifierRandom=new Random();
-			this.classifierRandom.setSeed(randomSeedOption.getValue()); 
 			this.initialisePerceptron = false; // not in resetLearningImpl() because it needs Instance!
 			this.weightAttribute = new double[numericAttributesIndex.length+1];
 			for (int i = 0; i < numericAttributesIndex.length+1; i++) {

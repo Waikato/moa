@@ -34,7 +34,7 @@ import moa.core.Measurement;
  * @version $Revision: 7 $
  */
 public class BasicMultiTargetPerformanceEvaluator extends AbstractMOAObject
-        implements MultiTargetPerformanceEvaluator, RegressionPerformanceEvaluator{
+        implements MultiTargetRegressionPerformanceEvaluator{
 
     private static final long serialVersionUID = 1L;
 

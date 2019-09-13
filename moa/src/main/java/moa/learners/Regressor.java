@@ -27,6 +27,6 @@ package moa.learners;
  */
 public interface Regressor extends InstanceLearner {
 
-    public Regressor copy();
+    public InstanceLearner copy();
 	
 }

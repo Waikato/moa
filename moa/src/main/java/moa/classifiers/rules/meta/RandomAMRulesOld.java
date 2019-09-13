@@ -77,8 +77,6 @@ public class RandomAMRulesOld extends AbstractMultiTargetRegressor implements Mu
 			"fadingErrorFactor", 'e', 
 			"Fading error factor for the accumulated error", 0.99, 0, 1);
 	
-	public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
-            "Seed for random behaviour of the classifier.", 1);
 	protected AbstractAMRules[] ensemble;
 	protected double[] sumError;
 	protected double[] nError;

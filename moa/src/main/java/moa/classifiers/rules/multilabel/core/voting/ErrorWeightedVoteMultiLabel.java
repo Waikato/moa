@@ -1,5 +1,5 @@
 /*
- *    UniformWeightedVote.java
+ *    ErrorWeightedVoteMultiLabel.java
  *    Copyright (C) 2014 University of Porto, Portugal
  *    @author A. Bifet, J. Duarte, J. Gama
  *
@@ -27,7 +27,7 @@ import moa.MOAObject;
 /**
  * ErrorWeightedVoteMultiLabel interface for weighted votes based on estimates of errors. 
  *
- * @author João Duarte (jmduarte@inescporto.pt)
+ * @author João Duarte (joaomaiaduarte@gmail.com)
  * @version $Revision: 1 $
  */
 public interface ErrorWeightedVoteMultiLabel {
@@ -89,6 +89,12 @@ public interface ErrorWeightedVoteMultiLabel {
 	 * @return      the number of votes
 	 */
 	public int getNumberVotes(int outputAttribute);
+	
+	/**
+	 * Check if vote has a value for each output
+	 * 
+	 */
+	public boolean coversAllOutputs();
 	
 	/**
 	 * Creates a copy of the object

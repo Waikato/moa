@@ -56,15 +56,15 @@ public class WeightedMajorityAlgorithm extends AbstractClassifier implements Cla
             'l',
             "The learners to combine.",
             new ClassOption("learner", ' ', "", Classifier.class,
-            "trees.HoeffdingTree"),
+            "moa.classifiers.trees.HoeffdingTree"),
             new Option[]{
                 new ClassOption("", ' ', "", Classifier.class,
-                "trees.HoeffdingTree -l MC"),
+                "moa.classifiers.trees.HoeffdingTree -l MC"),
                 new ClassOption("", ' ', "", Classifier.class,
-                "trees.HoeffdingTree -l NB"),
+                "moa.classifiers.trees.HoeffdingTree -l NB"),
                 new ClassOption("", ' ', "", Classifier.class,
-                "trees.HoeffdingTree -l NBAdaptive"),
-                new ClassOption("", ' ', "", Classifier.class, "bayes.NaiveBayes")},
+                "moa.classifiers.trees.HoeffdingTree -l NBAdaptive"),
+                new ClassOption("", ' ', "", Classifier.class, "moa.classifiers.bayes.NaiveBayes")},
             ',');
 
     public FloatOption betaOption = new FloatOption("beta", 'b',
@@ -178,6 +178,7 @@ public class WeightedMajorityAlgorithm extends AbstractClassifier implements Cla
         return false;
     }
 
+    @Override
     public Classifier[] getSubClassifiers() {
         return this.ensemble.clone();
     }

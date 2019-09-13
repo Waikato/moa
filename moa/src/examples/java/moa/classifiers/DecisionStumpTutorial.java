@@ -13,7 +13,7 @@ import moa.core.Measurement;
 import moa.options.ClassOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
-public class DecisionStumpTutorial extends AbstractClassifier {
+public class DecisionStumpTutorial extends AbstractClassifier implements MultiClassClassifier {
 
 	private static final long serialVersionUID = 1L;
 

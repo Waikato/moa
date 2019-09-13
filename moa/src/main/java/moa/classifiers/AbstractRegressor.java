@@ -6,4 +6,7 @@ public abstract class AbstractRegressor extends AbstractInstanceLearner<Regresso
 
 	private static final long serialVersionUID = 1L;
 
+	public AbstractRegressor() {
+		super(Regressor.class);
+	}
 }

@@ -63,7 +63,7 @@ public class HoeffdingTreeClassifLeaves extends HoeffdingTree {
             if (cl == null) {
                 this.classifier = (Classifier) getPreparedClassOption(ht.learnerOption);
             } else {
-                this.classifier = cl.copy();
+                this.classifier = (Classifier) cl.copy();
             }
         }
 	

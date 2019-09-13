@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 import moa.core.utils.AttributeDefinitionUtil;
 
 /**
- * The Class ArffLoader. Loads an Arff file with sparse or dense format.
+ * The ArffLoader class. Loads an arff file with sparse or dense format.
  */
 public class ArffLoader {
 
@@ -37,6 +37,18 @@ public class ArffLoader {
     protected InstanceInformation instanceInformation;
 
     protected InstancesHeader streamHeader;
+
+    /**
+     * Stores the indexes which are used. Values are positions read from the file,
+     * indexes correspond to Instance indexes.
+     */
+    protected List<Integer> attributeIndexes;
+    
+    /**
+     * List of loaded attributes. Only includes the attributes which are selected.
+     * Indexes are the same as Instance indexes.
+     */
+    protected List<Attribute> attributes;
 
     /**
      * The stream tokenizer.
@@ -67,7 +79,7 @@ public class ArffLoader {
     public ArffLoader(Reader reader, String outputDefinition, String inputDefinition) {
         BufferedReader br = new BufferedReader(reader);
 
-        //Init streamTokenizer
+        // Initialize streamTokenizer
         streamTokenizer = new StreamTokenizer(br);
         streamTokenizer.resetSyntax();
         streamTokenizer.whitespaceChars(0, ' ');
@@ -92,7 +104,7 @@ public class ArffLoader {
     public ArffLoader(Reader reader, String outputDefinition) {
         BufferedReader br = new BufferedReader(reader);
 
-        //Init streamTokenizer
+        //Initialize streamTokenizer
         streamTokenizer = new StreamTokenizer(br);
         streamTokenizer.resetSyntax();
         streamTokenizer.whitespaceChars(0, ' ');
@@ -107,6 +119,129 @@ public class ArffLoader {
 
         this.instanceInformation = this.getHeader(outputDefinition, AttributeDefinitionUtil.nonIgnoredDefinition);
     }
+
+    /**
+     * Returns the attribute at the index in the arff file
+     * 
+     * @param index arff file index
+     * @return corresponding attritbue
+     */
+    protected Attribute instanceAttribute(int index) {
+    	return this.attributes.get(instanceIndex(index));
+    }
+    
+    /**
+     * Remaps the arff file intex to the instance index
+     * 
+     * @param index arff file index
+     * @return instance index
+     */
+    protected int instanceIndex(int index) {
+    	return this.attributeIndexes.indexOf(index);
+    }
+    
+    /**
+     * Checks whether the arff file index has been selected
+     * 
+     * @param index arff file index
+     * @return
+     */
+    protected boolean isIndexSelected(int index) {
+    	return this.attributeIndexes.contains(index);
+    }
+
+    /**
+     * Creates the InstancesInformation from the arff header and selected input and output definitions
+     * 
+     * @param outputDefinition the selected output indexes
+     * @param inputDefinition the selected input indexes
+     * @return the InstancesInformation header
+     */
+    private InstanceInformation getHeader(String outputDefinition, String inputDefinition) {
+        String relation = "file stream";
+        List<Attribute> allAttributes = new ArrayList<Attribute>();//JD
+        int numAttributes = 0;
+        List<Integer> inputIndexes = new ArrayList<Integer>();
+        List<Integer> outputIndexes = new ArrayList<Integer>();
+        try {
+            streamTokenizer.nextToken();
+            while (streamTokenizer.ttype != StreamTokenizer.TT_EOF) {
+                //For each line
+                if (streamTokenizer.ttype == StreamTokenizer.TT_WORD && streamTokenizer.sval.startsWith("@") == true) {
+                    String token = streamTokenizer.sval.toUpperCase();
+                    if (token.startsWith("@RELATION")) {
+                        streamTokenizer.nextToken();
+                        relation = streamTokenizer.sval;
+                    } else if (token.startsWith("@ATTRIBUTE")) {
+                        streamTokenizer.nextToken();
+                        String name = streamTokenizer.sval;
+                        if (name == null) {
+                            name = Double.toString(streamTokenizer.nval);
+                        }
+                        streamTokenizer.nextToken();
+                        if (streamTokenizer.ttype == '{') {
+                            streamTokenizer.nextToken();
+                            List<String> attributeLabels = new ArrayList<String>();
+                            while (streamTokenizer.ttype != '}') {
+
+                                if (streamTokenizer.sval != null) {
+                                    attributeLabels.add(streamTokenizer.sval);
+                                } else {
+                                    attributeLabels.add(Double.toString(streamTokenizer.nval));
+                                }
+
+                                streamTokenizer.nextToken();
+                            }
+                            allAttributes.add(new Attribute(name, attributeLabels));
+                            numAttributes++;
+                            /* TODO Hierarchical loading */
+//                        } else if (streamTokenizer.sval != null && streamTokenizer.sval.toUpperCase() == "HIERARCHICAL") {
+//                        	streamTokenizer.nextToken();
+//                        	DAGStructure attributeStructure = new DAGStructure();
+//                        	if (streamTokenizer.ttype == '{') {
+//                        		while(streamTokenizer.ttype != '}') {
+//                        			streamTokenizer.nextToken();
+//                        			System.out.println(streamTokenizer.sval);
+//                        		}
+//                        		
+//                        	}
+//                        	
+                        } else {
+                            allAttributes.add(new Attribute(name));
+                            numAttributes++;
+                        }
+
+                    } else if (token.startsWith("@DATA")) {
+                        //System.out.print("END");
+                        streamTokenizer.nextToken();
+                        break;
+                    }
+                }
+                streamTokenizer.nextToken();
+            }
+            
+            outputIndexes = AttributeDefinitionUtil.parseAttributeDefinition(outputDefinition, numAttributes, null);
+            inputIndexes = AttributeDefinitionUtil.parseAttributeDefinition(inputDefinition, numAttributes, outputIndexes);
+
+            attributes = new ArrayList<Attribute>();
+            attributeIndexes = new ArrayList<Integer>();
+            
+            // Keep only used attributes
+            for (int i = 0; i < allAttributes.size(); i++)
+            	if (inputIndexes.contains(i) || outputIndexes.contains(i)) {
+            		attributes.add(allAttributes.get(i));
+            		attributeIndexes.add(i);
+            	}
+            
+            inputIndexes = AttributeDefinitionUtil.remapAttributeDefitinion(inputIndexes, attributeIndexes);		
+            outputIndexes = AttributeDefinitionUtil.remapAttributeDefitinion(outputIndexes, attributeIndexes);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(ArffLoader.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new InstanceInformation(relation, attributes, outputIndexes, inputIndexes);
+    }
+
     
     /**
      * Reads instance. It detects if it is dense or sparse.
@@ -123,7 +258,6 @@ public class ArffLoader {
         }
         if (streamTokenizer.ttype == '{') {
             return readInstanceSparse();
-            // return readDenseInstanceSparse();
         } else {
             return readInstanceDense();
         }
@@ -136,39 +270,37 @@ public class ArffLoader {
      * @return the instance
      */
     public Instance readInstanceDense() {
-        Instance instance = newDenseInstance(this.instanceInformation.numAttributes());
-        int numAttribute = 0;
+        Instance instance = newDenseInstance(this.instanceInformation.numInputAttributes() + this.instanceInformation.numOutputAttributes());
+        int numAttribute = 0; // Instance index
         try {
             while (numAttribute == 0 && streamTokenizer.ttype != StreamTokenizer.TT_EOF) {
                 //For each line
-                while (streamTokenizer.ttype != StreamTokenizer.TT_EOL
-                        && streamTokenizer.ttype != StreamTokenizer.TT_EOF) {
+            	int valueNum = 0; // File index
+                while (streamTokenizer.ttype != StreamTokenizer.TT_EOL && streamTokenizer.ttype != StreamTokenizer.TT_EOF) {
                     //For each item
-                    if (streamTokenizer.ttype == StreamTokenizer.TT_NUMBER) {
-                        //System.out.println(streamTokenizer.nval + "Num ");
-                        this.setValue(instance, numAttribute, streamTokenizer.nval, true);
-                        numAttribute++;
-
-                    } else if (streamTokenizer.sval != null && (streamTokenizer.ttype == StreamTokenizer.TT_WORD
-                            || streamTokenizer.ttype == 34)) {
-                        //System.out.println(streamTokenizer.sval + "Str");
-                        boolean isNumeric = this.instanceInformation.attribute(numAttribute).isNumeric();
-                        double value;
-                        if ("?".equals(streamTokenizer.sval)) {
-                            value = Double.NaN; //Utils.missingValue();
-                        } else if (isNumeric == true) {
-                            value = Double.valueOf(streamTokenizer.sval).doubleValue();
-                        } else {
-                            value = this.instanceInformation.attribute(numAttribute).indexOfValue(streamTokenizer.sval);
-                        }
-
-                        this.setValue(instance, numAttribute, value, isNumeric);
-                        numAttribute++;
+                	if (isIndexSelected(valueNum)) { // Check that the index is included in the selected indexes 
+	                    if (streamTokenizer.ttype == StreamTokenizer.TT_NUMBER) {
+	                        this.setValue(instance, numAttribute, streamTokenizer.nval, true);
+	                        numAttribute++;
+	
+	                    } else if (streamTokenizer.sval != null && (streamTokenizer.ttype == StreamTokenizer.TT_WORD || streamTokenizer.ttype == 34)) {
+	                        boolean isNumeric = this.instanceInformation.attribute(numAttribute).isNumeric();
+	                        double value;
+	                        if ("?".equals(streamTokenizer.sval)) {
+	                            value = Double.NaN;
+	                        } else if (isNumeric == true) {
+	                            value = Double.valueOf(streamTokenizer.sval).doubleValue();
+	                        } else {
+	                            value = this.instanceInformation.attribute(numAttribute).indexOfValue(streamTokenizer.sval);
+	                        }
+	                        this.setValue(instance, numAttribute, value, isNumeric);
+	                        numAttribute++;
+	                    }
                     }
+                	valueNum++;
                     streamTokenizer.nextToken();
                 }
                 streamTokenizer.nextToken();
-                //System.out.println("EOL");
             }
 
         } catch (IOException ex) {
@@ -177,36 +309,14 @@ public class ArffLoader {
         return (numAttribute > 0) ? instance : null;
     }
 
-    protected void setValue(Instance instance, int numAttribute, double value, boolean isNumber) {
-        double valueAttribute;
-
-        if (isNumber && this.instanceInformation.attribute(numAttribute).isNominal) {
-            valueAttribute = this.instanceInformation.attribute(numAttribute).indexOfValue(Double.toString(value));
-            //System.out.println(value +"/"+valueAttribute+" ");
-
-        } else {
-            valueAttribute = value;
-            //System.out.println(value +"/"+valueAttribute+" ");
-        }
-        if (this.instanceInformation.numOutputAttributes() == 1 && this.instanceInformation.classIndex() == numAttribute) {
-            setClassValue(instance, valueAttribute);
-            //System.out.println(value +"<"+this.instanceInformation.classIndex()+">");
-        } else {
-        	//if(numAttribute>this.instanceInformation.classIndex())
-            //	numAttribute--;
-            instance.setValue(numAttribute, valueAttribute);
-        }
-    }
-
     /**
-     * Reads a sparse instance.
+     * Reads a sparse instance from the file.
      *
      * @return the instance
      */
     private Instance readInstanceSparse() {
-        //Return a Sparse Instance
-        Instance instance = newSparseInstance(1.0); //, null); //(this.instanceInformation.numAttributes() + 1);
-        //System.out.println(this.instanceInformation.numAttributes());
+        //Return a sparse Instance
+        Instance instance = newSparseInstance(1.0);
         int numAttribute;
         ArrayList<Double> attributeValues = new ArrayList<Double>();
         List<Integer> indexValues = new ArrayList<Integer>();
@@ -222,20 +332,17 @@ public class ArffLoader {
                     } else {
                         numAttribute = Integer.parseInt(streamTokenizer.sval);
                     }
-                    streamTokenizer.nextToken();
+                    streamTokenizer.nextToken(); //The ':' char
 
                     if (streamTokenizer.ttype == StreamTokenizer.TT_NUMBER) {
-                        //System.out.print(streamTokenizer.nval + " ");
-                        this.setSparseValue(instance, indexValues, attributeValues, numAttribute, streamTokenizer.nval, true);
-                        //numAttribute++;
+                        if (isIndexSelected(numAttribute))
+                        	this.setSparseValue(instance, indexValues, attributeValues, instanceIndex(numAttribute), streamTokenizer.nval, true);
 
-                    } else if (streamTokenizer.sval != null && (streamTokenizer.ttype == StreamTokenizer.TT_WORD
-                            || streamTokenizer.ttype == 34)) {
-                        //System.out.print(streamTokenizer.sval + "-");
-                        if (this.auxAttributes.get(numAttribute).isNumeric()) {
-                            this.setSparseValue(instance, indexValues, attributeValues, numAttribute, Double.valueOf(streamTokenizer.sval).doubleValue(), true);
+                    } else if (streamTokenizer.sval != null && (streamTokenizer.ttype == StreamTokenizer.TT_WORD || streamTokenizer.ttype == 34)) {
+                        if (this.instanceAttribute(numAttribute).isNumeric()) {
+                            this.setSparseValue(instance, indexValues, attributeValues, instanceIndex(numAttribute), Double.valueOf(streamTokenizer.sval).doubleValue(), true);
                         } else {
-                            this.setSparseValue(instance, indexValues, attributeValues, numAttribute, this.instanceInformation.attribute(numAttribute).indexOfValue(streamTokenizer.sval), false);
+                            this.setSparseValue(instance, indexValues, attributeValues, instanceIndex(numAttribute), instanceAttribute(numAttribute).indexOfValue(streamTokenizer.sval), false);
                         }
                     }
                     streamTokenizer.nextToken();
@@ -243,9 +350,6 @@ public class ArffLoader {
                 streamTokenizer.nextToken(); //Remove the '}' char
             }
             streamTokenizer.nextToken();
-            //System.out.println("EOL");
-            //}
-
         } catch (IOException ex) {
             Logger.getLogger(ArffLoader.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -255,26 +359,9 @@ public class ArffLoader {
             arrayIndexValues[i] = indexValues.get(i).intValue();
             arrayAttributeValues[i] = attributeValues.get(i).doubleValue();
         }
-        instance.addSparseValues(arrayIndexValues, arrayAttributeValues, this.instanceInformation.numAttributes());
+        instance.addSparseValues(arrayIndexValues, arrayAttributeValues, this.instanceInformation.numInputAttributes() + this.instanceInformation.numOutputAttributes());
         return instance;
 
-    }
-
-    private void setSparseValue(Instance instance, List<Integer> indexValues, List<Double> attributeValues, int numAttribute, double value, boolean isNumber) {
-        double valueAttribute;
-        if (isNumber && this.instanceInformation.attribute(numAttribute).isNominal) {
-            valueAttribute = this.instanceInformation.attribute(numAttribute).indexOfValue(Double.toString(value));
-        } else {
-            valueAttribute = value;
-        }
-        //if (this.instanceInformation.classIndex() == numAttribute) {
-        //    setClassValue(instance, valueAttribute);
-        //} else {
-            //instance.setValue(numAttribute, valueAttribute);
-        indexValues.add(numAttribute);
-        attributeValues.add(valueAttribute);
-        //}
-        //System.out.println(numAttribute+":"+valueAttribute+","+this.instanceInformation.classIndex()+","+value);
     }
 
     /**
@@ -300,7 +387,7 @@ public class ArffLoader {
                         this.setValue(instance, numAttribute, streamTokenizer.nval, true);
                     } else if (streamTokenizer.sval != null && (streamTokenizer.ttype == StreamTokenizer.TT_WORD
                             || streamTokenizer.ttype == 34)) {
-                        if (this.auxAttributes.get(numAttribute).isNumeric()) {
+                        if (this.instanceAttribute(numAttribute).isNumeric()) {
                             this.setValue(instance, numAttribute, Double.valueOf(streamTokenizer.sval).doubleValue(), true);
                         } else {
                             this.setValue(instance, numAttribute, this.instanceInformation.attribute(numAttribute).indexOfValue(streamTokenizer.sval), false);
@@ -316,105 +403,62 @@ public class ArffLoader {
         }
         return instance;
     }
-    
-    protected List<Attribute> auxAttributes;
 
-    private InstanceInformation getHeader(String outputDefinition, String inputDefinition) {
-        String relation = "file stream";
-        auxAttributes = new ArrayList<Attribute>();//JD
-        int numAttributes = 0;
-        List<Integer> inputIndexes = new ArrayList<Integer>();
-        List<Integer> outputIndexes = new ArrayList<Integer>();
-        try {
-            streamTokenizer.nextToken();
-            while (streamTokenizer.ttype != StreamTokenizer.TT_EOF) {
-                //For each line
-                if (streamTokenizer.ttype == StreamTokenizer.TT_WORD && streamTokenizer.sval.startsWith("@") == true) {
-                    String token = streamTokenizer.sval.toUpperCase();
-                    if (token.startsWith("@RELATION")) {
-                        streamTokenizer.nextToken();
-                        relation = streamTokenizer.sval;
-                      //  System.out.println("RELATION " + relation);
-                    } else if (token.startsWith("@ATTRIBUTE")) {
-                        streamTokenizer.nextToken();
-                        String name = streamTokenizer.sval;
-                        if (name == null) {
-                            name = Double.toString(streamTokenizer.nval);
-                        }
-                        streamTokenizer.nextToken();
-                        if (streamTokenizer.ttype == '{') {
-                            streamTokenizer.nextToken();
-                            List<String> attributeLabels = new ArrayList<String>();
-                            while (streamTokenizer.ttype != '}') {
+    /**
+     * Sets the appropriate value of the instance
+     * 
+     * @param instance the instance for which the value is being set
+     * @param numAttribute the index of attribute for which the value is being set
+     * @param value the value
+     * @param isNumber whether the value is a number
+     */
+    protected void setValue(Instance instance, int numAttribute, double value, boolean isNumber) {
+        double valueAttribute;
 
-                                if (streamTokenizer.sval != null) {
-                                    attributeLabels.add(streamTokenizer.sval);
-                                } else {
-                                    attributeLabels.add(Double.toString(streamTokenizer.nval));
-                                }
-
-                                streamTokenizer.nextToken();
-                            }
-                            auxAttributes.add(new Attribute(name, attributeLabels));
-                            numAttributes++;
-                            /* TODO Hierarchical loading */
-//                        } else if (streamTokenizer.sval != null && streamTokenizer.sval.toUpperCase() == "HIERARCHICAL") {
-//                        	streamTokenizer.nextToken();
-//                        	DAGStructure attributeStructure = new DAGStructure();
-//                        	if (streamTokenizer.ttype == '{') {
-//                        		while(streamTokenizer.ttype != '}') {
-//                        			streamTokenizer.nextToken();
-//                        			System.out.println(streamTokenizer.sval);
-//                        		}
-//                        		
-//                        	}
-//                        	
-                        } else {
-
-                            auxAttributes.add(new Attribute(name));
-                            numAttributes++;
-                        }
-
-                    } else if (token.startsWith("@DATA")) {
-                        //System.out.print("END");
-                        streamTokenizer.nextToken();
-                        break;
-                    }
-                }
-                streamTokenizer.nextToken();
-            }
-            
-            outputIndexes = AttributeDefinitionUtil.parseAttributeDefinition(outputDefinition, numAttributes, null);
-            // TODO don't remove output attributes for online PCTs 
-            inputIndexes = AttributeDefinitionUtil.parseAttributeDefinition(inputDefinition, numAttributes, outputIndexes);
-
-        } catch (IOException ex) {
-            Logger.getLogger(ArffLoader.class.getName()).log(Level.SEVERE, null, ex);
+        // Correct the value for nominal attributes
+        if (isNumber && this.instanceInformation.attribute(numAttribute).isNominal()) {
+            valueAttribute = this.instanceInformation.attribute(numAttribute).indexOfValue(Double.toString(value));
+        } else {
+            valueAttribute = value;
         }
-        // this.range.setUpper(inputAttributes.size()+outputAttributes.size());
-        return new InstanceInformation(relation, auxAttributes, outputIndexes, inputIndexes);
+        
+        instance.setValue(numAttribute, valueAttribute);
+    }
+    
+    /** 
+     * Updates the list of indexes and values for the instance.
+     * No values are assigned in this method, they are all assigned at once, when the instance is done loading. 
+     * 
+     * @param instance the instance
+     * @param indexValues the assigned indexes
+     * @param attributeValues the assigned values
+     * @param numAttribute the index of the attribute which is being assigned
+     * @param value the value which is being assigned
+     * @param isNumber whether the value is a number
+     */
+    private void setSparseValue(Instance instance, List<Integer> indexValues, List<Double> attributeValues, int numAttribute, double value, boolean isNumber) {
+        double valueAttribute;
+        if (isNumber && this.instanceInformation.attribute(numAttribute).isNominal()) {
+            valueAttribute = this.instanceInformation.attribute(numAttribute).indexOfValue(Double.toString(value));
+        } else {
+            valueAttribute = value;
+        }
+        indexValues.add(numAttribute);
+        attributeValues.add(valueAttribute);
     }
 
     protected Instance newSparseInstance(double d, double[] res) {
         Instance inst = new SparseInstance(d, res); //is it dense?
-        //inst.setInstanceInformation(this.instanceInformation);
         return inst;
     }
     
     protected Instance newSparseInstance(double d) {
         Instance inst = new SparseInstance(d);
-        //inst.setInstanceInformation(this.instanceInformation);
         return inst;
     }
 
     protected Instance newDenseInstance(int numberAttributes) {
         Instance inst = new DenseInstance(numberAttributes);
-        //inst.setInstanceInformation(this.instanceInformation);
         return inst;
     }
-
-    private void setClassValue(Instance instance, double valueAttribute) {
-        instance.setValue(this.instanceInformation.classIndex(), valueAttribute);
-    }
-
 }

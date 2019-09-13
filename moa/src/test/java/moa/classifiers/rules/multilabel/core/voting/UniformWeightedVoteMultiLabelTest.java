@@ -8,6 +8,13 @@ import org.junit.Test;
 import com.yahoo.labs.samoa.instances.predictions.MultiLabelClassificationPrediction;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
+import moa.core.DoubleVector;
+
+/**
+ * Test UniformWeightedVoteMultiLabel
+ *
+ * @author João Duarte (joaomaiaduarte@gmail.com)
+ */
 public class UniformWeightedVoteMultiLabelTest {
 	
 	static UniformWeightedVoteMultiLabel weightedVote;
@@ -16,24 +23,24 @@ public class UniformWeightedVoteMultiLabelTest {
     @BeforeClass
     public static void runBefore() {
 		weightedVote = new UniformWeightedVoteMultiLabel();
-		Prediction pred= new MultiLabelClassificationPrediction(4);
-		pred.setVotes(0, new double[]{1});
-		pred.setVotes(1, new double[]{2});
-		pred.setVotes(2, new double[]{3});
-		pred.setVotes(3, new double[]{4});
+		Prediction pred= new MultiLabelClassificationPrediction(new double[] {1,2,3,4});
+//		pred.setVotes(0, new double[]{1});
+//		pred.setVotes(1, new double[]{2});
+//		pred.setVotes(2, new double[]{3});
+//		pred.setVotes(3, new double[]{4});
 		weightedVote.addVote(pred, new double[]{4,3,2,1});
 		
-		pred= new MultiLabelClassificationPrediction(4);
-		pred.setVotes(0, new double[]{1});
-		pred.setVotes(1, new double[]{2});
-		pred.setVotes(3, new double[]{4});
-		weightedVote.addVote(pred, new double[]{3,2,1,0});
+		pred= new MultiLabelClassificationPrediction(new double[] {1, 2, 0, 4});
+//		pred.setVotes(0, new double[]{1});
+//		pred.setVotes(1, new double[]{2});
+//		pred.setVotes(3, new double[]{4});
+		weightedVote.addVote(pred, new double[]{3,2,Double.MAX_VALUE,0});
 		
-		pred= new MultiLabelClassificationPrediction(4);
-		pred.setVotes(0, new double[]{4});
-		pred.setVotes(1, new double[]{2});
-		pred.setVotes(3, new double[]{1});
-		weightedVote.addVote(pred, new double[]{1,0,1,0});
+		pred= new MultiLabelClassificationPrediction(new double[] {4, 2, 0, 1});
+//		pred.setVotes(0, new double[]{4});
+//		pred.setVotes(1, new double[]{2});
+//		pred.setVotes(3, new double[]{1});
+		weightedVote.addVote(pred, new double[]{1,0,Double.MAX_VALUE,0});
 		weightedVote.computeWeightedVote(); 
      }
     

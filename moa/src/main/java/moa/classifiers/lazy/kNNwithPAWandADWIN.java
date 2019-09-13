@@ -70,7 +70,7 @@ public class kNNwithPAWandADWIN extends kNN implements Classifier {
         }
         // ADWIN
         if (this.window == null) {
-            this.window = new InstancesHeader(inst.dataset());
+            this.window = inst.dataset().getEmptyHeader();
         }
 
         if (this.timeStamp == null) {
@@ -98,7 +98,7 @@ public class kNNwithPAWandADWIN extends kNN implements Classifier {
         }
 
     }
-    
+
     @Override
     public void getModelDescription(StringBuilder out, int indent) {
     }

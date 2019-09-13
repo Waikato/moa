@@ -38,7 +38,7 @@ public class SimpleClusterTest extends TestCase {
 	void testClusterer(String clusterer) {
 		System.out.println("Processing: " + clusterer);
 		try {
-			doTask(new String[]{"EvaluateClustering -l " + clusterer});
+			doTask(new String[]{"moa.tasks.clustering.EvaluateClustering -l " + clusterer});
 		} catch (Exception e) {
 			assertTrue("Failed on clusterer " + clusterer + ": " + e.getMessage(), false);
 		}

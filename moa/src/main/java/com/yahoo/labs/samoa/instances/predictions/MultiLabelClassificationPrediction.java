@@ -67,9 +67,14 @@ public class MultiLabelClassificationPrediction implements Prediction, Serializa
 
 	@Override
 	public double getVote(int outputAttributeIndex, int classIndex) {
-		throw new UnsupportedOperationException("This is a multi-label classification prediction. Each output attribute corresponds to a label.");
+		if (classIndex != 0) {
+			throw new UnsupportedOperationException("This is a multi-label classification prediction. Each output attribute corresponds to a label.");
+		} else {
+			// Simulate multi-nominal output with 2 class variables on each target.
+			return getPrediction(outputAttributeIndex); 
+		}
 	}
-
+	
 	@Override
 	public void setVotes(int outputAttributeIndex, double[] votes) {
 		throw new UnsupportedOperationException("This is a multi-label classification prediction. Each output attribute corresponds to a label.");
@@ -77,12 +82,21 @@ public class MultiLabelClassificationPrediction implements Prediction, Serializa
 	
 	@Override
 	public void setVotes(double[] votes) {
-		setVotes(0, votes);
+		this.prediction = new DoubleVector(votes);
 	}
 
 	@Override
 	public void setVote(int outputAttributeIndex, int classIndex, double vote) {
-		throw new UnsupportedOperationException("This is a multi-label classification prediction. Each output attribute corresponds to a label.");
+		if (classIndex != 0) {
+			throw new UnsupportedOperationException("This is a multi-label classification prediction. Each output attribute corresponds to a label.");
+		} else {
+			// Simulate multi-nominal output with 2 class variables on each target.
+			setVote(outputAttributeIndex, vote); 
+		}
+	}
+
+	public void setVote(int outputAttributeIndex, double vote) {
+		this.prediction.setValue(outputAttributeIndex, vote); 
 	}
 	
 	@Override
@@ -101,7 +115,7 @@ public class MultiLabelClassificationPrediction implements Prediction, Serializa
 
 	@Override
 	public boolean hasVotesForAttribute(int outputAttributeIndex) {
-		throw new UnsupportedOperationException("This is a multi-label classification prediction. Each output attribute corresponds to a label.");
+		return prediction.getValue(outputAttributeIndex) != 0; 
 	}
 
     @Override

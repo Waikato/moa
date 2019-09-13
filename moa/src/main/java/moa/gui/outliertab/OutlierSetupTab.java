@@ -25,13 +25,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
-import javax.swing.JFileChooser;
-
 import moa.clusterers.outliers.MyBaseOutlierDetector;
 import moa.evaluation.MeasureCollection;
 import moa.gui.FileExtensionFilter;
 import moa.gui.TextViewerPanel;
 import moa.streams.clustering.ClusteringStream;
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
 public class OutlierSetupTab extends javax.swing.JPanel {
     private OutlierTabPanel outlierTab;
@@ -210,12 +209,12 @@ public class OutlierSetupTab extends javax.swing.JPanel {
 
     private void buttonImportSettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonImportSettingsActionPerformed
 
-        JFileChooser fileChooser = new JFileChooser();
+        BaseFileChooser fileChooser = new BaseFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(true);
         fileChooser.addChoosableFileFilter(new FileExtensionFilter("txt"));
         if(lastfile!=null)
             fileChooser.setSelectedFile(new File(lastfile));
-        if (fileChooser.showOpenDialog(this.buttonImportSettings) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showOpenDialog(this.buttonImportSettings) == BaseFileChooser.APPROVE_OPTION) {
             lastfile = fileChooser.getSelectedFile().getPath();
             loadOptionsFromFile(fileChooser.getSelectedFile().getPath());
         }

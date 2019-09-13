@@ -53,6 +53,8 @@ public abstract class AbstractInstanceLearner<MLTask extends InstanceLearner> ex
     /** Header of the instances of the data stream */
     protected InstancesHeader modelContext;
 
+	protected Class<MLTask> TaskClass;
+    
     /** Sum of the weights of the instances trained by this model */
     protected double trainingWeightSeenByModel = 0.0;
 
@@ -69,7 +71,9 @@ public abstract class AbstractInstanceLearner<MLTask extends InstanceLearner> ex
      * Creates an classifier and setups the random seed option
      * if the classifier is randomizable.
      */
-    public AbstractInstanceLearner() {
+    @SuppressWarnings("unchecked")
+	public AbstractInstanceLearner(Class<MLTask> task) {
+    	TaskClass = task;
         if (isRandomizable()) {
         	this.randomSeedOption = new IntOption("randomSeed", 'r', "Seed for random behaviour of the classifier.", 1);
         }
@@ -176,17 +180,17 @@ public abstract class AbstractInstanceLearner<MLTask extends InstanceLearner> ex
             measurementList.addAll(Arrays.asList(modelMeasurements));
         }
         // add average of sub-model measurements
-//        Learner[] subModels = getSublearners();
-//        if ((subModels != null) && (subModels.length > 0)) {
-//            List<Measurement[]> subMeasurements = new LinkedList<Measurement[]>();
-//            for (Learner subModel : subModels) {
-//                if (subModel != null) {
-//                    subMeasurements.add(subModel.getModelMeasurements());
-//                }
-//            }
-//            Measurement[] avgMeasurements = Measurement.averageMeasurements(subMeasurements.toArray(new Measurement[subMeasurements.size()][]));
-//            measurementList.addAll(Arrays.asList(avgMeasurements));
-//        }
+        InstanceLearner[] subModels = getSublearners();
+        if ((subModels != null) && (subModels.length > 0)) {
+            List<Measurement[]> subMeasurements = new LinkedList<Measurement[]>();
+            for (InstanceLearner subModel : subModels) {
+                if (subModel != null) {
+                    subMeasurements.add(subModel.getModelMeasurements());
+                }
+            }
+            Measurement[] avgMeasurements = Measurement.averageMeasurements(subMeasurements.toArray(new Measurement[subMeasurements.size()][]));
+            measurementList.addAll(Arrays.asList(avgMeasurements));
+        }
         return measurementList.toArray(new Measurement[measurementList.size()]);
     }
 
@@ -207,17 +211,19 @@ public abstract class AbstractInstanceLearner<MLTask extends InstanceLearner> ex
         }
     }
 
-//    @Override
-//    public Learner[] getSublearners() {
-//        return getSubClassifiers();
-//    }
-//    
-//    }
+    @Override
+    public InstanceLearner[] getSublearners() {
+        return getSubClassifiers();
+    }
+    
+    public MLTask[] getSubClassifiers() {
+    	return null;
+    }
     
     
-    @SuppressWarnings("unchecked")
-	public MLTask copy() {
-        return (MLTask) super.copy();
+    
+	public InstanceLearner copy() {
+        return (InstanceLearner) super.copy();
     }
 
    
@@ -380,10 +386,6 @@ public abstract class AbstractInstanceLearner<MLTask extends InstanceLearner> ex
     protected static int modelAttIndexToInstanceAttIndex(int index,
             InstancesHeader insts) {
         return insts.classIndex() > index ? index : index + 1;
-    }
-
-	public AbstractInstanceLearner<?> copyAbstract() {
-    	return (AbstractInstanceLearner<?>) super.copy();
     }
 
     public boolean correctlyClassifies(Instance inst) {

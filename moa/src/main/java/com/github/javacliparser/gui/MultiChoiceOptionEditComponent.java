@@ -30,7 +30,7 @@ import com.github.javacliparser.Option;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class MultiChoiceOptionEditComponent extends JComboBox implements
+public class MultiChoiceOptionEditComponent extends JComboBox<String> implements
         OptionEditComponent {
 
     private static final long serialVersionUID = 1L;

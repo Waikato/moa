@@ -1,3 +1,24 @@
+/*
+ *    MultiLabelRandomAMRules.java
+ *    Copyright (C) 2017 University of Porto, Portugal
+ *    @author J. Duarte, J. Gama
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ *
+ */
+
+
 package moa.classifiers.rules.multilabel.meta;
 
 import com.github.javacliparser.FlagOption;
@@ -8,11 +29,14 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractMultiTargetRegressor;
+import moa.classifiers.rules.featureranking.FeatureRanking;
+import moa.classifiers.rules.featureranking.NoFeatureRanking;
 import moa.classifiers.rules.multilabel.AMRulesMultiLabelLearner;
 import moa.classifiers.rules.multilabel.core.voting.ErrorWeightedVoteMultiLabel;
 import moa.classifiers.rules.multilabel.core.voting.UniformWeightedVoteMultiLabel;
 import moa.classifiers.rules.multilabel.errormeasurers.AbstractMultiTargetErrorMeasurer;
 import moa.classifiers.rules.multilabel.errormeasurers.MultiLabelErrorMeasurer;
+import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.learners.MultiTargetRegressor;
@@ -24,6 +48,7 @@ public class MultiLabelRandomAMRules extends AbstractMultiTargetRegressor implem
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private 		int nAttributes=0;
 
 	public IntOption VerbosityOption = new IntOption(
 			"verbosity",
@@ -54,8 +79,8 @@ public class MultiLabelRandomAMRules extends AbstractMultiTargetRegressor implem
 					"Overall","Covered"}, 0);
 
 
-	public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
-			"Seed for random behaviour of the classifier.", 1);
+//	public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
+//			"Seed for random behaviour of the classifier.", 1);
 	protected AMRulesMultiLabelLearner [] ensemble;
 
 	protected MultiLabelErrorMeasurer [] errorMeasurer;
@@ -66,8 +91,14 @@ public class MultiLabelRandomAMRules extends AbstractMultiTargetRegressor implem
 	/*protected double[] sumError;
 	protected double[] nError;*/
 
+	public ClassOption featureRankingOption = new ClassOption("featureRanking",
+			'F', "Feature ranking algorithm.", 
+			FeatureRanking.class,
+			NoFeatureRanking.class.getName());
 
 	protected boolean isRegression;
+	protected FeatureRanking featureRanking;
+	
 
 	@Override
 	public void resetLearningImpl() {
@@ -87,11 +118,19 @@ public class MultiLabelRandomAMRules extends AbstractMultiTargetRegressor implem
 			this.errorMeasurer[i]=(MultiLabelErrorMeasurer)measurer.copy();
 		}
 		this.isRegression = (baseLearner instanceof MultiTargetRegressor);
+                featureRanking=  (FeatureRanking) getPreparedClassOption(this.featureRankingOption);
 	}
 
 	public void trainOnInstanceImpl(Instance instance) {
+		if(featureRanking==null){
+			featureRanking=  (FeatureRanking) getPreparedClassOption(this.featureRankingOption);
 		for (int i = 0; i < this.ensemble.length; i++) {
-			Instance inst=instance.copy();
+				this.ensemble[i].setObserver(featureRanking);
+			}
+			nAttributes=instance.numInputAttributes();
+		}
+		for (int i = 0; i < this.ensemble.length; i++) {
+			Instance inst = instance.copy();
 			int k = 1;
 			if ( this.useBaggingOption.isSet()) {
 				k = MiscUtils.poisson(1.0, this.classifierRandom);
@@ -102,7 +141,7 @@ public class MultiLabelRandomAMRules extends AbstractMultiTargetRegressor implem
 				//estimate error
 				Prediction p=ensemble[i].getPredictionForInstance(inst);
 				if(p!=null)
-					errorMeasurer[i].addPrediction(p, instance);	
+					errorMeasurer[i].addPrediction(p, inst);	
 				//train learner
 				this.ensemble[i].trainOnInstance(inst);
 			}
@@ -146,12 +185,18 @@ public class MultiLabelRandomAMRules extends AbstractMultiTargetRegressor implem
 
 	@Override
 	protected Measurement[] getModelMeasurementsImpl() {
-		Measurement [] baseLearnerMeasurements=((AMRulesMultiLabelLearner) getPreparedClassOption(this.baseLearnerOption)).getModelMeasurements();
+		//Measurement [] baseLearnerMeasurements=((AMRulesMultiLabelLearner) getPreparedClassOption(this.baseLearnerOption)).getModelMeasurements();
+		Measurement [] baseLearnerMeasurements=ensemble[0].getModelMeasurements();
 		int nMeasurements=baseLearnerMeasurements.length;
-		Measurement [] m=new Measurement[nMeasurements+1];
 
-		for(int i=0; i<baseLearnerMeasurements.length; i++)
-			m[i+1]=baseLearnerMeasurements[i];
+		int numMeasurements;
+		if(featureRanking instanceof NoFeatureRanking)
+			numMeasurements=nMeasurements+1;
+		else
+			numMeasurements=nMeasurements+nAttributes+1;
+			
+		
+		Measurement [] m=new Measurement[numMeasurements];
 		
 		int ensembleSize=0;
 		if(this.ensemble !=null){	
@@ -159,14 +204,29 @@ public class MultiLabelRandomAMRules extends AbstractMultiTargetRegressor implem
 			for(int i=0; i<nMeasurements; i++){
 				double value=0;
 				for (int j=0; j<ensembleSize; ++j){
-					value+=ensemble[j].getModelMeasurements()[i].getValue();
+					Measurement [] measurements=ensemble[j].getModelMeasurements();
+					value+=measurements[i].getValue();
 				}
 				m[i+1]= new Measurement("Avg " + baseLearnerMeasurements[i].getName(), value/ensembleSize);
 			}
 		}
+		else{
+			for(int i=0; i<baseLearnerMeasurements.length; i++)
+				m[i+1]=baseLearnerMeasurements[i];
+		}
 	
 		m[0]=new Measurement("ensemble size", ensembleSize);
 		
+		//add feature importance is a method was selected
+		if(!(featureRanking instanceof NoFeatureRanking)){
+			DoubleVector rankings=this.featureRanking.getFeatureRankings();
+			for(int i=0; i<nAttributes;i++){
+				double importance=0;
+				if(rankings!=null)
+					importance=rankings.getValue(i);
+				m[i+nMeasurements+1]=new Measurement("Attribute" + i, importance);
+			}
+		}
 		return m;
 	}
 
@@ -180,7 +240,4 @@ public class MultiLabelRandomAMRules extends AbstractMultiTargetRegressor implem
 	public boolean isRandomizable() {
 		return true;
 	}
-
-
-
 	}

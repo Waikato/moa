@@ -48,7 +48,7 @@ import moa.tasks.TaskMonitor;
  * @version $Revision: 7 $
  */
 public class ConceptDriftStream extends AbstractOptionHandler implements
-        ExampleStream {
+        InstanceStream {
 
     @Override
     public String getPurposeString() {

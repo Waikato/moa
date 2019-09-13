@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -65,10 +64,11 @@ import moa.gui.GUIUtils;
 import moa.gui.PreviewPanel;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
-import moa.tasks.ConceptDriftMainTask;
-import moa.tasks.EvaluateConceptDrift;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
+import moa.tasks.conceptdrift.ConceptDriftMainTask;
+import moa.tasks.conceptdrift.EvaluateConceptDrift;
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
 
 /**
@@ -469,11 +469,11 @@ public class CDTaskManagerPanel extends JPanel {
             tasksLog += ((OptionHandler) thread.getTask()).getCLICreationString(ConceptDriftMainTask.class) + "\n";
         }
 
-        JFileChooser fileChooser = new JFileChooser();
+        BaseFileChooser fileChooser = new BaseFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(true);
         fileChooser.addChoosableFileFilter(new FileExtensionFilter(
                 exportFileExtension));
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(this) == BaseFileChooser.APPROVE_OPTION) {
             File chosenFile = fileChooser.getSelectedFile();
             String fileName = chosenFile.getPath();
             if (!chosenFile.exists()

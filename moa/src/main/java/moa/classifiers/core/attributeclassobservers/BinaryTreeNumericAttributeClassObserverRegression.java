@@ -38,7 +38,7 @@ import moa.tasks.TaskMonitor;
  * @author E. Almeida, J. Gama
  * @version $Revision: 2$
  */
-public class BinaryTreeNumericAttributeClassObserverRegression extends AbstractOptionHandler
+public class BinaryTreeNumericAttributeClassObserverRegression extends AbstractAttributeClassObserver
         implements NumericAttributeClassObserver {
 
     public static final long serialVersionUID = 1L;
@@ -88,7 +88,6 @@ public class BinaryTreeNumericAttributeClassObserverRegression extends AbstractO
                  this.greaterThan[1] = this.greaterThan[1] + (target*target);
                  this.greaterThan[2] = this.greaterThan[2] + 1;
                 if (this.right == null) {
-                	
                    this.right = new Node(val, target);
                 } else {
                    this.right.insertValue(val, target);

@@ -154,7 +154,7 @@ public class HoeffdingTree extends AbstractClassifier implements Classifier {
             't', "Threshold below which a split will be forced to break ties.",
             0.05, 0.0, 1.0);
 
-    public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
+public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
         "Only allow binary splits.");
 
     public FlagOption stopMemManagementOption = new FlagOption(
@@ -557,7 +557,6 @@ public class HoeffdingTree extends AbstractClassifier implements Classifier {
             }
             return new ClassificationPrediction(leafNode.getClassVotes(inst, this));
           } else {
-            int numClasses = inst.dataset().numClasses();
             return new ClassificationPrediction();
           }
     }

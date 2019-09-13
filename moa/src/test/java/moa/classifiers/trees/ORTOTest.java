@@ -21,7 +21,7 @@ package moa.classifiers.trees;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import moa.classifiers.AbstractMultipleRegressorTestCase;
+import moa.classifiers.AbstractRegressorTestCase;
 import moa.learners.Regressor;
 
 /**
@@ -31,7 +31,7 @@ import moa.learners.Regressor;
  * @version $Revision$
  */
 public class ORTOTest
-  extends AbstractMultipleRegressorTestCase {  
+  extends AbstractRegressorTestCase {  
 
   /**
    * Constructs the test case. Called by subclasses.

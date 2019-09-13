@@ -83,7 +83,7 @@ public class OnlineSmoothBoost extends AbstractClassifier implements Classifier 
         baseLearner.resetLearning();
         this.alpha = new double[this.ensemble.length];
         for (int i = 0; i < this.ensemble.length; i++) {
-            this.ensemble[i] = baseLearner.copy();
+            this.ensemble[i] = (Classifier) baseLearner.copy();
             this.alpha[i] = 1.0/ (double) this.ensemble.length;
         }
         this.gamma = this.gammaOption.getValue();

@@ -57,10 +57,10 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier implement
     }
     
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "bayes.NaiveBayes");
+            "Classifier to train.", Classifier.class, "moa.classifiers.bayes.NaiveBayes");
     
     public ClassOption driftDetectionMethodOption = new ClassOption("driftDetectionMethod", 'd',
-             "Drift detection method to use.", ChangeDetector.class, "DDM");
+             "Drift detection method to use.", ChangeDetector.class, "moa.classifiers.core.driftdetection.DDM");
 
     protected Classifier classifier;
 
@@ -73,13 +73,13 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier implement
 
     protected int ddmLevel;
 
-   /* public boolean isWarningDetected() {
-        return (this.ddmLevel == DriftDetectionMethod.DDM_WARNING_LEVEL);
+    public boolean isWarningDetected() {
+        return (this.ddmLevel == DDM_WARNING_LEVEL);
     }
 
     public boolean isChangeDetected() {
-        return (this.ddmLevel == DriftDetectionMethod.DDM_OUTCONTROL_LEVEL);
-    }*/
+        return (this.ddmLevel == DDM_OUTCONTROL_LEVEL);
+    }
 
     public static final int DDM_INCONTROL_LEVEL = 0;
 
@@ -89,8 +89,8 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier implement
     
     @Override
     public void resetLearningImpl() {
-        this.classifier = ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
-        this.newclassifier = this.classifier.copy();
+        this.classifier = (Classifier) ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
+        this.newclassifier = (Classifier) this.classifier.copy();
         this.classifier.resetLearning();
         this.newclassifier.resetLearning();
         this.driftDetectionMethod = ((ChangeDetector) getPreparedClassOption(this.driftDetectionMethodOption)).copy();
@@ -141,7 +141,7 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier implement
                 if (this.classifier instanceof WEKAClassifier) {
                     ((WEKAClassifier) this.classifier).buildClassifier();
                 }
-                this.newclassifier = ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
+                this.newclassifier = (Classifier) ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
                 this.newclassifier.resetLearning();
                 break;
 

@@ -105,7 +105,7 @@ public class MoaTestCase
    */
   @Override
   protected void setUp() throws Exception {
-    Class	cls;
+    Class cls;
 
     super.setUp();
     

@@ -20,7 +20,6 @@
 package moa.classifiers.mlc.meta;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.StructuredInstance;
 import com.yahoo.labs.samoa.instances.predictions.MultiTargetRegressionPrediction;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
@@ -43,7 +42,7 @@ public class OzaBagMultiTargetRegression extends AbstractOzaBag<MultiTargetRegre
     }
 
 	@Override
-	public Prediction getPredictionForInstance(StructuredInstance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		return this.getPredictionForInstance((Instance) inst);
 	}
 
@@ -58,7 +57,7 @@ public class OzaBagMultiTargetRegression extends AbstractOzaBag<MultiTargetRegre
 	}
 
 	@Override
-	public void trainOnInstanceImpl(StructuredInstance inst) {
+	public void trainOnInstanceImpl(Instance inst) {
 		this.trainOnInstanceImpl((Instance) inst);
 		
 	}

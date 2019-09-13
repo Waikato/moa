@@ -158,8 +158,33 @@ public class DenseInstanceData implements InstanceData {
     }
 
     @Override
+    public void insertAttributeAt(int index) {
+        if ((index< 0) || (index > numAttributes())) {
+                throw new IllegalArgumentException("Can't insert attribute: index out "
+                        + "of range");
+            }
+        double[] newValues = new double[attributeValues.length + 1];
+
+        System.arraycopy(attributeValues , 0, newValues, 0, index);
+        newValues[index] = Double.NaN; //Missing Value
+        System.arraycopy(attributeValues , index, newValues, index + 1,
+                attributeValues .length - index);
+        attributeValues  = newValues;
+
+    }
+
+    @Override
     public InstanceData copy() {
         return new DenseInstanceData(this.attributeValues.clone());
     }
-       
+     
+    @Override
+    public String toString() {
+    	StringBuilder out = new StringBuilder();
+    	for (int i = 0; i < attributeValues.length; i++) {
+    		out.append(attributeValues[i]);
+    		out.append(",");
+    	}
+    	return out.toString();
+    }
 }

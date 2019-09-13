@@ -86,9 +86,9 @@ public class PairedLearners extends AbstractClassifier implements Classifier {
         this.theta = (int) (this.w * this.thresholdOption.getValue());
         this.instances = new Instance[this.w];
 
-        this.stableLearner = ((Classifier) getPreparedClassOption(this.stableLearnerOption)).copy();
+        this.stableLearner = (Classifier) ((Classifier) getPreparedClassOption(this.stableLearnerOption)).copy();
         this.stableLearner.resetLearning();
-        this.reactiveLearner = ((Classifier) getPreparedClassOption(this.reactiveLearnerOption)).copy();
+        this.reactiveLearner = (Classifier) ((Classifier) getPreparedClassOption(this.reactiveLearnerOption)).copy();
         this.reactiveLearner.resetLearning();
     }
 
@@ -108,7 +108,7 @@ public class PairedLearners extends AbstractClassifier implements Classifier {
         }        
         if (this.theta < this.numberOfErrors) {
             this.changeDetected++;
-            this.stableLearner = this.reactiveLearner.copy();
+            this.stableLearner = (Classifier) this.reactiveLearner.copy();
             Arrays.fill(this.c, 0);   // Resets c
             this.numberOfErrors = 0;
         }

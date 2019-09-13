@@ -38,8 +38,12 @@ public class DoubleVector extends AbstractMOAObject {
     }
 
     public DoubleVector(double[] toCopy) {
-        this.array = new double[toCopy.length];
-        System.arraycopy(toCopy, 0, this.array, 0, toCopy.length);
+    	if (toCopy != null) {
+    		this.array = new double[toCopy.length];
+    		System.arraycopy(toCopy, 0, this.array, 0, toCopy.length);
+    	} else {
+    		this.array = new double[0];
+    	}
     }
 
     public DoubleVector(DoubleVector toCopy) {

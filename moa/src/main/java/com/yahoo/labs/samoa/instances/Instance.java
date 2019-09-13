@@ -52,7 +52,7 @@ public interface Instance extends Serializable {
     public Attribute attribute(int instAttIndex);
 
     
-    public int indexOf(Attribute attribute);
+     public int indexOf(Attribute attribute);
     
     /**
      * Index of an Attribute.

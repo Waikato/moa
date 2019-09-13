@@ -23,7 +23,8 @@ import com.github.javacliparser.IntOption;
 
 import moa.core.ObjectRepository;
 import moa.learners.Classifier;
-import moa.learners.Learner;
+import moa.learners.InstanceLearner;
+import moa.learners.MLTask;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
@@ -34,7 +35,7 @@ import moa.streams.InstanceStream;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public abstract class AbstractLearnModel<MLTask extends Learner> extends MainTask {
+public abstract class AbstractLearnModel<MLTask extends InstanceLearner> extends MainTask {
 
     @Override
     public String getPurposeString() {
@@ -62,10 +63,6 @@ public abstract class AbstractLearnModel<MLTask extends Learner> extends MainTas
             "How many instances between memory bound checks.", 100000, 0,
             Integer.MAX_VALUE);
 
-    public AbstractLearnModel(Class<MLTask> type, String defaultCLIString) {
-		this.learnerOption = new ClassOption("learner", 'l', "Learner to train.", type, defaultCLIString);
-	}
-    
     public AbstractLearnModel() {
     }
 

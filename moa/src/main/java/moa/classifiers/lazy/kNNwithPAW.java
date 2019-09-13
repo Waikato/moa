@@ -56,7 +56,7 @@ public class kNNwithPAW extends kNN {
             C = (int) inst.classValue();
         }
         if (this.window == null) {
-            this.window = new InstancesHeader(inst.dataset());
+            this.window = inst.dataset().getEmptyHeader();
         }
 
         for (int i = 0; i < this.window.size(); i++) {

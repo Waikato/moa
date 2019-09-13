@@ -30,7 +30,7 @@ import moa.core.Example;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public interface InstanceLearner extends Learner<Example<Instance>> {
+public interface InstanceLearner extends MLTask<Example<Instance>> {
 
 
         /**
@@ -50,6 +50,8 @@ public interface InstanceLearner extends Learner<Example<Instance>> {
      * probabilities of the test instance in each class
      */
 	public Prediction getPredictionForInstance(Instance testInst);
+	
+	public InstanceLearner[] getSublearners();
 }
 
 

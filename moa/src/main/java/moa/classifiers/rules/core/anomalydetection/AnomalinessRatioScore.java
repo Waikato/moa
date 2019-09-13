@@ -1,3 +1,22 @@
+/*
+ *    AnomalinessRatioScore.java
+ *    Copyright (C) 2017 University of Porto, Portugal
+ *    @author J. Duarte, J. Gama
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ *
+ *
+ */
 package moa.classifiers.rules.core.anomalydetection;
 
 import com.github.javacliparser.FloatOption;
@@ -10,6 +29,17 @@ import moa.core.AutoExpandVector;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
+
+/**
+ * Score for anomaly detection
+ *
+ * percentageAnomalousAttributesOption - Percentage of anomalous attributes.
+ * univariateAnomalyprobabilityThresholdOption - Univariate anomaly threshold value
+ * minNumberInstancesOption - The minimum number of instances required to perform anomaly detection
+ * probabilityFunctionOption - Probability function selection
+ */
+
+
 
 public class AnomalinessRatioScore extends AbstractAnomalyDetector {
 
@@ -49,6 +79,12 @@ public class AnomalinessRatioScore extends AbstractAnomalyDetector {
 	AutoExpandVector<double[]> sufficientStatistics;
 	private ProbabilityFunction probabilityFunction;
 
+        public double anomalyScore;
+
+        @Override 
+        public double getAnomalyScore(){
+            return anomalyScore;
+        }
 
 
 	@Override
@@ -89,6 +125,7 @@ public class AnomalinessRatioScore extends AbstractAnomalyDetector {
 			if(total>0)
 				anomaly=anomaly/total;
 			isAnomaly=(anomalousTotal/((double)total)>percentageAnomalous);
+                        anomalyScore=anomaly;
 		}
 		//update stats
 		if(!isAnomaly){

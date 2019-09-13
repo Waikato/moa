@@ -40,7 +40,7 @@ import moa.tasks.TaskMonitor;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class GreenwaldKhannaNumericAttributeClassObserver extends AbstractOptionHandler implements NumericAttributeClassObserver {
+public class GreenwaldKhannaNumericAttributeClassObserver extends AbstractAttributeClassObserver implements NumericAttributeClassObserver {
 
     private static final long serialVersionUID = 1L;
 

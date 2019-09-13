@@ -95,11 +95,12 @@ public class Measurement extends AbstractMOAObject {
             String mName = measurementNames.get(i);
             GaussianEstimator mEstimator = estimators[i];
             if (mEstimator.getTotalWeightObserved() > 1.0) {
-                averagedMeasurements.add(new Measurement("[avg] " + mName,
-                        mEstimator.getMean()));
-                averagedMeasurements.add(new Measurement("[err] " + mName,
-                        mEstimator.getStdDev()
-                        / Math.sqrt(mEstimator.getTotalWeightObserved())));
+                averagedMeasurements.add(new Measurement("[avg] " + mName, mEstimator.getMean()));
+                averagedMeasurements.add(new Measurement("[err] " + mName, mEstimator.getStdDev()));
+            }
+            else {
+                averagedMeasurements.add(new Measurement("[avg] " + mName, 0.0));
+                averagedMeasurements.add(new Measurement("[err] " + mName, 0.0));
             }
         }
         return averagedMeasurements.toArray(new Measurement[averagedMeasurements.size()]);

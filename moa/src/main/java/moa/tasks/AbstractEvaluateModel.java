@@ -33,11 +33,9 @@ import moa.core.ObjectRepository;
 import moa.core.Utils;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
-import moa.learners.Classifier;
-import moa.learners.Learner;
+import moa.learners.InstanceLearner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
-import moa.streams.InstanceStream;
 
 /**
  * Task for evaluating a static model on a stream.
@@ -45,11 +43,11 @@ import moa.streams.InstanceStream;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public abstract class AbstractEvaluateModel<MLTask extends Learner> extends MainTask {
+public abstract class AbstractEvaluateModel<MLTask extends InstanceLearner> extends MainTask {
 
     @Override
     public String getPurposeString() {
-        return "Evaluates a static regression model on a stream.";
+        return "Evaluates a static model on a stream.";
     }
 
     private static final long serialVersionUID = 1L;
@@ -71,10 +69,6 @@ public abstract class AbstractEvaluateModel<MLTask extends Learner> extends Main
 
     public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
             "File to append output predictions to.", null, "pred", true);
-
-    public AbstractEvaluateModel(Class<MLTask> type, String defaultCLIString) {
-		this.modelOption = new ClassOption("model", 'm', "Learner to evaluate.", type, defaultCLIString);
-	}
 
     @Override
     public Class<?> getTaskResultType() {

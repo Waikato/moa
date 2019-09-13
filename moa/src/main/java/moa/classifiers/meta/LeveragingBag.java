@@ -46,7 +46,7 @@ import moa.options.ClassOption;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class LeveragingBag extends AbstractClassifier implements Classifier {
+public class LeveragingBag extends AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -56,7 +56,7 @@ public class LeveragingBag extends AbstractClassifier implements Classifier {
     }
 
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
+            "Classifier to train.", Classifier.class, "moa.classifiers.trees.HoeffdingTree");
 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
             "The number of models in the bag.", 10, 1, Integer.MAX_VALUE);
@@ -97,7 +97,7 @@ public class LeveragingBag extends AbstractClassifier implements Classifier {
         Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
         baseLearner.resetLearning();
         for (int i = 0; i < this.ensemble.length; i++) {
-            this.ensemble[i] = baseLearner.copy();
+            this.ensemble[i] = (Classifier) baseLearner.copy();
         }
         this.ADError = new ADWIN[this.ensemble.length];
         for (int i = 0; i < this.ensemble.length; i++) {

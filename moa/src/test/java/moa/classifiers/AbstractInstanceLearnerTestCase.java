@@ -45,8 +45,7 @@ import weka.core.MOAUtils;
  * @author  fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public abstract class AbstractInstanceLearnerTestCase<MLTask extends InstanceLearner>
-extends MoaTestCase {
+public abstract class AbstractInstanceLearnerTestCase<MLTask extends InstanceLearner> extends MoaTestCase {
 
 	/**
 	 * Container for the data collected from a classifier at a specified
@@ -169,7 +168,6 @@ extends MoaTestCase {
 		result = new InspectionData[inspectionPoints.length];
 
 		scheme.prepareForUse();
-		scheme.setModelContext(data);
 
 		point = 0;
 		for (i = 0; i < data.numInstances(); i++) {
@@ -177,7 +175,7 @@ extends MoaTestCase {
 			if (i > 0) {
 				votes = scheme.getPredictionForInstance(inst);
 
-				evaluator.addResult((Example<Instance>)new InstanceExample(inst), votes);
+				evaluator.addResult((Example<Instance>)new InstanceExample(inst), votes.asDoubleArray());
 
 				if (point < inspectionPoints.length) {
 					if (i == inspectionPoints[point] - 1) {
@@ -323,7 +321,7 @@ extends MoaTestCase {
 
 			current = this.copySetup(setups[i]);
 			current.prepareForUse();
-			current.setModelContext(new InstancesHeader(data));
+			current.setModelContext(data.getEmptyHeader());
 			assertNotNull("Failed to create copy of algorithm: " + MOAUtils.toCommandLine(setups[i]), current);
 
 			processed = inspect(data, points[i], evals[i], current);

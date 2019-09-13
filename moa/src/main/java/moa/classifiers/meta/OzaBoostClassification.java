@@ -16,15 +16,15 @@ public class OzaBoostClassification extends AbstractOzaBoost<Classifier> impleme
 	}
 
 	@Override
-	public void updateWeight(int i, Instance inst) {
-		double lambda_d = 1.0;
+	public double updateWeight(int i, Instance inst, double lambda_d) {
 		if (this.ensemble.get(i).correctlyClassifies(inst)) {
 			this.scms[i] += lambda_d;
 			lambda_d *= this.trainingWeightSeenByModel / (2 * this.scms[i]);
 		} else {
 			this.swms[i] += lambda_d;
 			lambda_d *= this.trainingWeightSeenByModel / (2 * this.swms[i]);
-		}		
+		}
+		return lambda_d;
 	}
 
 	@Override

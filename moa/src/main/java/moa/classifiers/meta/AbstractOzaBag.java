@@ -19,6 +19,7 @@
  */
 package moa.classifiers.meta;
 
+import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.AbstractEnsembleLearner;
@@ -49,9 +50,11 @@ import moa.options.ClassOption;
  */
 public abstract class AbstractOzaBag<MLTask extends InstanceLearner> extends AbstractEnsembleLearner<MLTask> {
 
-
-	public AbstractOzaBag(Class<MLTask> MLTask, String defaultCLIString) {
-		this.baseLearnerOption = new ClassOption("baseLearner", 'l', "Classifier to train.", MLTask, defaultCLIString);
+	public FloatOption lambdaOption = new FloatOption("lambda", 'u', "Lambda parameter of Poisson distribution", 1);
+	
+	public AbstractOzaBag(Class<MLTask> task, String defaultCLIString) {
+		super(task);
+		this.baseLearnerOption = new ClassOption("baseLearner", 'l', "Classifier to train.", task, defaultCLIString);
 	}
 
 	@Override
@@ -68,7 +71,7 @@ public abstract class AbstractOzaBag<MLTask extends InstanceLearner> extends Abs
 
 	public void trainOnInstanceImpl(Instance inst) {
 		for (int i = 0; i < this.ensemble.size(); i++) {
-			int k = MiscUtils.poisson(1.0, this.classifierRandom);
+			int k = MiscUtils.poisson(lambdaOption.getValue(), this.classifierRandom);
 			if (k > 0) {
 				Instance weightedInst = (Instance) inst.copy();
 				weightedInst.setWeight(inst.weight() * k);

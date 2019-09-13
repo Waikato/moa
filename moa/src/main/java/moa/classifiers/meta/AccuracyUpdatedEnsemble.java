@@ -47,7 +47,7 @@ public class AccuracyUpdatedEnsemble extends AbstractClassifier implements Class
 	 * Type of classifier to use as a component classifier.
 	 */
 	public ClassOption learnerOption = new ClassOption("learner", 'l', "Classifier to train.", Classifier.class, 
-			"trees.HoeffdingTree -e 2000000 -g 100 -c 0.01");
+			"moa.classifiers.trees.HoeffdingTree -e 2000000 -g 100 -c 0.01");
 
 	/**
 	 * Number of component classifiers.
@@ -195,7 +195,7 @@ public class AccuracyUpdatedEnsemble extends AbstractClassifier implements Class
 
 			if (this.weights[poorestClassifier][0] < candidateClassifierWeight) {
 				this.weights[poorestClassifier][0] = candidateClassifierWeight;
-				addedClassifier = this.candidate.copy();
+				addedClassifier = (Classifier) this.candidate.copy();
 				this.learners[(int) this.weights[poorestClassifier][1]] = addedClassifier;
 			}
 		}
@@ -318,7 +318,7 @@ public class AccuracyUpdatedEnsemble extends AbstractClassifier implements Class
 				newStoredWeights[i][0] = this.weights[i][0];
 				newStoredWeights[i][1] = this.weights[i][1];
 			} else {
-				newStored[i] = addedClassifier = newClassifier.copy();
+				newStored[i] = addedClassifier = (Classifier) newClassifier.copy();
 				newStoredWeights[i][0] = newClassifiersWeight;
 				newStoredWeights[i][1] = i;
 			}
@@ -350,7 +350,7 @@ public class AccuracyUpdatedEnsemble extends AbstractClassifier implements Class
 	 */
 	private void initVariables() {
 		if (this.currentChunk == null) {
-			this.currentChunk = new InstancesHeader(this.getModelContext());
+			this.currentChunk = this.getModelContext().getEmptyHeader();
 		}
 
 		if (this.classDistributions == null) {

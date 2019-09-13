@@ -91,9 +91,6 @@ public class ClassOption extends AbstractClassOption {
 
     public static Object cliStringToObject(String cliString,
             Class<?> requiredType, Option[] externalOptions) throws Exception {
-        if (cliString.startsWith(FILE_PREFIX_STRING)) {
-            return new File(cliString.substring(FILE_PREFIX_STRING.length()));
-        }
         if (cliString.startsWith(INMEM_PREFIX_STRING)) {
             return cliString.substring(INMEM_PREFIX_STRING.length());
         }

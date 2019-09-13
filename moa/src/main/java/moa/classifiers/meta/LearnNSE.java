@@ -112,7 +112,7 @@ public class LearnNSE extends AbstractClassifier implements Classifier {
         this.index++;
         // Store instance in the buffer
         if (this.buffer == null) {
-            this.buffer = new InstancesHeader(inst.dataset());
+            this.buffer = inst.dataset().getEmptyHeader();
         }
         this.buffer.add(inst);
 
@@ -236,7 +236,7 @@ public class LearnNSE extends AbstractClassifier implements Classifier {
                 this.bkts.remove(errorIndex - 1);
                 this.wkts.remove(errorIndex - 1);
             }
-            this.buffer = new InstancesHeader(this.getModelContext());
+            this.buffer = this.getModelContext().getEmptyHeader();
         }
     }
 

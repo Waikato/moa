@@ -73,7 +73,7 @@ public class GUI extends JPanel {
 
     public static void main(String[] args) {
         try {
-            if (DoTask.isJavaVersionOK() == false || WekaUtils.isWekaVersionOK() == false) {
+            if (!DoTask.isJavaVersionOK() || !WekaUtils.isWekaVersionOK()) {
                 return;
             }
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -100,7 +100,7 @@ public class GUI extends JPanel {
                     frame.getContentPane().add(gui);
 
                     // Display the window.
-                    frame.pack();
+                    frame.setSize(GUIDefaults.getFrameWidth(), GUIDefaults.getFrameHeight());
                     frame.setVisible(true);
                 }
             });

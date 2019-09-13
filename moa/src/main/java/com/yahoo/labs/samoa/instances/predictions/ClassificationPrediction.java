@@ -24,7 +24,7 @@ public class ClassificationPrediction implements Prediction, Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
-	protected double[] prediction;
+	protected double[] prediction = new double[0];
 
 	protected Attribute classAttribute;
 	
@@ -64,6 +64,7 @@ public class ClassificationPrediction implements Prediction, Serializable {
 		throw new UnsupportedOperationException("This is a single-target classification prediction.");
 	}
 
+	
 	@Override
 	public void setVotes(int outputAttributeIndex, double[] votes) {
 		throw new UnsupportedOperationException("This is a single-target classification prediction.");
@@ -76,6 +77,12 @@ public class ClassificationPrediction implements Prediction, Serializable {
 
 	@Override
 	public void setVote(int outputAttributeIndex, int classIndex, double vote) {
+		throw new UnsupportedOperationException("This is a single-target classification prediction.");
+	}
+	
+
+	@Override
+	public void setVote(int outputAttributeIndex, double vote) {
 		throw new UnsupportedOperationException("This is a single-target classification prediction.");
 	}
 	
@@ -128,5 +135,5 @@ public class ClassificationPrediction implements Prediction, Serializable {
 	public double getPrediction(int outputAttributeIndex) {
 		throw new UnsupportedOperationException("This is a single-target classification prediction.");
 	}
-    
+
 }

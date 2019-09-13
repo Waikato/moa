@@ -157,7 +157,7 @@ public class HoeffdingAdaptiveTreeClassifLeaves extends HoeffdingAdaptiveTree {
 	    if (cl == null) {
 		this.classifier = (Classifier) getPreparedClassOption(ht.leaveLearnerOption);
 	    } else {
-		this.classifier = cl.copy();
+		this.classifier = (Classifier) cl.copy();
 	    }
 	}
 

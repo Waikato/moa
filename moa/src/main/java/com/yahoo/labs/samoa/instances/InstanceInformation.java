@@ -27,188 +27,205 @@ import java.util.List;
 public class InstanceInformation implements Serializable {
 
 	/**
-     * The dataset's name.
-     */
-    protected String relationName;
+	 * The dataset's name.
+	 */
+	protected String relationName;
 
-    protected AttributesInformation attributesInformation;
-    
-    protected List<Integer> outputIndexes;
-    protected List<Integer> inputIndexes;
-    
-    
-    /**
-     * Instantiates a new instance information.
-     *
-     * @param chunk the chunk
-     */
-    public InstanceInformation(InstanceInformation chunk) {
-        this.relationName = chunk.relationName;
-        this.outputIndexes = chunk.outputIndexes;
-        this.inputIndexes = chunk.inputIndexes;
-        this.attributesInformation = chunk.attributesInformation;
-    }
+	protected AttributesInformation attributesInformation;
 
-    /**
-     * Instantiates a new instance information.
-     *
-     * @param st the st
-     * @param v the v
-     */
-    public InstanceInformation(String st, List<Attribute> attributes, List<Integer> outputIndexes, List<Integer> inputIndexes) {
-        this.relationName = st;
-        this.outputIndexes = outputIndexes;
-        this.inputIndexes = inputIndexes;
-        this.attributesInformation = new AttributesInformation(attributes);
-    }
-    
-    public InstanceInformation(String st, List<Attribute> input) {
-        this.relationName = st;
-        this.outputIndexes = new ArrayList<Integer>();
-        this.inputIndexes = new ArrayList<Integer>();
-        this.attributesInformation = new AttributesInformation(input);
-    }
+	protected List<Integer> outputIndexes;
+	protected List<Integer> inputIndexes;
 
-    /**
-     * Instantiates a new instance information.
-     */
-    public InstanceInformation() {
-        this.relationName = null;
-        this.inputIndexes = null;
-        this.outputIndexes = null;
-        this.attributesInformation = null;
-    }
-    
-    /**
-     * Returns the input attribute.
-     * 
-     * @param w the input attribute index (indexes only input attributes)
-     * @return the input attribute.
-     */
-    public Attribute inputAttribute(int w) {
-        return this.attributesInformation.attribute(inputAttributeIndex(w));
-    }
+	/**
+	 * Instantiates a new instance information.
+	 *
+	 * @param chunk the chunk
+	 */
+	public InstanceInformation(InstanceInformation chunk) {
+		this.relationName = chunk.relationName;
+		this.outputIndexes = chunk.outputIndexes;
+		this.inputIndexes = chunk.inputIndexes;
+		this.attributesInformation = chunk.attributesInformation;
+	}
 
-    /**
-     * Returns the output attribute.
-     * 
-     * @param w the output attribute index (indexes only output attributes)
-     * @return the output attribute.
-     */
-    public Attribute outputAttribute(int w) {
-        return this.attributesInformation.attribute(outputAttributeIndex(w));
-    }
+	/**
+	 * Instantiates a new instance information.
+	 *
+	 * @param st the st
+	 * @param v the v
+	 */
+	public InstanceInformation(String st, List<Attribute> attributes, List<Integer> outputIndexes, List<Integer> inputIndexes) {
+		this.relationName = st;
+		this.outputIndexes = outputIndexes;
+		this.inputIndexes = inputIndexes;
+		this.attributesInformation = new AttributesInformation(attributes);
+	}
 
-    //Information Instances
-    /* (non-Javadoc)
-     * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#setRelationName(java.lang.String)
-     */
-    public void setRelationName(String string) {
-        this.relationName = string;
-    }
+	/**
+	 * Instantiates a new instance information.
+	 *
+	 * @param st the st
+	 * @param input the inputs
+	 */
+	public InstanceInformation(String st, List<Attribute> input) {
+		this.relationName = st;
+		this.outputIndexes = new ArrayList<Integer>();
+		this.inputIndexes = new ArrayList<Integer>();
+		this.attributesInformation = new AttributesInformation(input);
+	}
 
-    /* (non-Javadoc)
-     * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#getRelationName()
-     */
-    public String getRelationName() {
-        return this.relationName;
-    }
+	/**
+	 * Instantiates a new instance information.
+	 */
+	public InstanceInformation() {
+		this.relationName = null;
+		this.inputIndexes = null;
+		this.outputIndexes = null;
+		this.attributesInformation = null;
+	}
 
-    /* (non-Javadoc)
-     * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#classIndex()
-     */
-    public int classIndex() {
-    	if (this.outputIndexes.size() > 1)
-    		throw new UnsupportedOperationException("This instance has multiple output attributes.");
-        return this.outputIndexes.get(0);
-    }
+	/**
+	 * Returns the input attribute.
+	 * 
+	 * @param w the input attribute index (indexes only input attributes)
+	 * @return the input attribute.
+	 */
+	public Attribute inputAttribute(int w) {
+		return this.attributesInformation.attribute(inputAttributeIndex(w));
+	}
 
-    public void setClassIndex(int index) {
-    	this.outputIndexes = new ArrayList<Integer>();
-    	this.outputIndexes.add(index);
-    }
-    
+	/**
+	 * Returns the output attribute.
+	 * 
+	 * @param w the output attribute index (indexes only output attributes)
+	 * @return the output attribute.
+	 */
+	public Attribute outputAttribute(int w) {
+		return this.attributesInformation.attribute(outputAttributeIndex(w));
+	}
 
-    /* (non-Javadoc)
-     * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#classAttribute()
-     */
-    public Attribute classAttribute() {
-        return this.attribute(this.classIndex());
-    }
+	//Information Instances
+	/* (non-Javadoc)
+	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#setRelationName(java.lang.String)
+	 */
+	public void setRelationName(String string) {
+		this.relationName = string;
+	}
 
-    /* (non-Javadoc)
-     * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#numAttributes()
-     */
-    public int numAttributes() {
-        return this.attributesInformation.numAttributes();
-    }
+	/* (non-Javadoc)
+	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#getRelationName()
+	 */
+	public String getRelationName() {
+		return this.relationName;
+	}
 
-    /* (non-Javadoc)
-     * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#attribute(int)
-     */
-    public Attribute attribute(int w) {
-        return this.attributesInformation.attribute(w);
-    }
+	/* (non-Javadoc)
+	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#classIndex()
+	 */
+	public int classIndex() {
+		if (this.outputIndexes.size() > 1)
+			throw new UnsupportedOperationException("This instance has multiple output attributes.");
+		return this.outputIndexes.get(0);
+	}
 
-    /* (non-Javadoc)
-     * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#numClasses()
-     */
-    public int numClasses() {
-        return this.attributesInformation.attribute(classIndex()).numValues();
-    }
+	public void setClassIndex(int index) {
+		this.outputIndexes = new ArrayList<Integer>();
+		this.outputIndexes.add(index);
+	}
 
-    /* (non-Javadoc)
-     * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#deleteAttributeAt(java.lang.Integer)
-     */
-    public void deleteAttributeAt(Integer integer) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
+	/* (non-Javadoc)
+	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#classAttribute()
+	 */
+	public Attribute classAttribute() {
+		if (this.outputIndexes.size() > 1)
+			throw new UnsupportedOperationException("This instance has multiple output attributes.");
+		return this.attribute(this.classIndex());
+	}
 
-    /* (non-Javadoc)
-     * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#insertAttributeAt(com.yahoo.labs.samoa.instances.Attribute, int)
-     */
-    public void insertAttributeAt(Attribute attribute, int i) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
+	/* (non-Javadoc)
+	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#numAttributes()
+	 */
+	public int numAttributes() {
+		return this.numInputAttributes();
+	}
 
-    public void setAttributes(List<Attribute> v) {
-    	if(this.attributesInformation == null)
-    		this.attributesInformation= new AttributesInformation();
-        this.attributesInformation.setAttributes(v);
-    }
+	/* (non-Javadoc)
+	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#attribute(int)
+	 */
+	public Attribute attribute(int w) {
+		return this.attributesInformation.attribute(w);
+	}
 
-    public int inputAttributeIndex(int index) {
-    	// Returns actual instance attribute index!
-        return inputIndexes.get(index);
-    }
+	/* (non-Javadoc)
+	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#numClasses()
+	 */
+	public int numClasses() {
+		return this.attributesInformation.attribute(classIndex()).numValues();
+	}
 
-    public int outputAttributeIndex(int index) {
-    	// Returns actual instance attribute index!
-    	return outputIndexes.get(index);    
-    }
+	/* (non-Javadoc)
+	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#deleteAttributeAt(java.lang.Integer)
+	 */
+	public void deleteAttributeAt(int index) {
+		this.attributesInformation.deleteAttributeAt(index);
+		
+		for (int j = 0; j < outputIndexes.size(); j++) {
+			if (j > index) {
+				outputIndexes.set(j, outputIndexes.get(j) - 1);
+			}
+		}
+	}
 
-    public int numInputAttributes() {
-        return inputIndexes.size();
-    }
+	/* (non-Javadoc)
+	 * @see com.yahoo.labs.samoa.instances.InstanceInformationInterface#insertAttributeAt(com.yahoo.labs.samoa.instances.Attribute, int)
+	 */
+	public void insertAttributeAt(Attribute attribute, int index) {
+		this.attributesInformation.insertAttributeAt(attribute,index) ;
 
-    public int numOutputAttributes() {
-    	return outputIndexes.size();
-    }
-    
-    /**
-     * Sets the output attribute indexes, i.e., the targets. 
-     * 
-     * @param outputIndexes
-     */
+		for (int j = 0; j < outputIndexes.size(); j++) {
+			if (j >= index) {
+				outputIndexes.set(j, outputIndexes.get(j) + 1);
+			}
+		}
+	}
+
+	public void setAttributes(List<Attribute> v) {
+		if(this.attributesInformation==null)
+			this.attributesInformation= new AttributesInformation();
+		this.attributesInformation.setAttributes(v);
+	}
+
+	public int inputAttributeIndex(int index) {
+		return inputIndexes.get(index);
+	}
+
+	public int outputAttributeIndex(int index) {
+		// Returns actual instance attribute index!
+		return outputIndexes.get(index);    
+	}
+
+	public int numInputAttributes() {
+		return inputIndexes.size();
+	}
+
+	public int numOutputAttributes() {
+		return outputIndexes.size();
+	}
+
+	/**
+	 * Sets the output attribute indexes, i.e., the targets. 
+	 * 
+	 * @param outputIndexes
+	 */
 	public void setOutputIndexes(List<Integer> outputIndexes) {
 		this.outputIndexes = outputIndexes;
 	}
-	
+
 	/**
-     * Sets the input attribute indexes. 
-     * 
-     * @param inputIndexes
-     */
+	 * Sets the input attribute indexes. 
+	 * 
+	 * @param inputIndexes
+	 */
 	public void setInputIndexes(List<Integer> inputIndexes) {
 		this.inputIndexes = inputIndexes;
 	}

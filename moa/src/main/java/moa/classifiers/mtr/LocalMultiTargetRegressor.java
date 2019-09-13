@@ -119,7 +119,7 @@ public class LocalMultiTargetRegressor extends AbstractMultiTargetRegressor impl
 	public void initializeClassifiers() {
 		regressors = new ArrayList<Regressor>();
 		for (int i = 0; i < getModelContext().numOutputAttributes(); i++) {
-			Regressor learner = ((Regressor) getPreparedClassOption(this.regressorOption)).copy();
+			Regressor learner = (Regressor) ((Regressor) getPreparedClassOption(this.regressorOption)).copy();
 			regressors.add(learner);
 			learner.resetLearning();
 			((AbstractRegressor) learner).classifierRandom = this.classifierRandom;

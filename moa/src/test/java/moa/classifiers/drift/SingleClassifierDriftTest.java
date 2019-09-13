@@ -22,7 +22,7 @@ package moa.classifiers.drift;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import moa.classifiers.AbstractMultipleClassifierTestCase;
+import moa.classifiers.AbstractClassifierTestCase;
 import moa.learners.Classifier;
 
 /**
@@ -32,7 +32,7 @@ import moa.learners.Classifier;
  * @version $Revision$
  */
 public class SingleClassifierDriftTest
-  extends AbstractMultipleClassifierTestCase {
+  extends AbstractClassifierTestCase {
 
   /**
    * Constructs the test case. Called by subclasses.

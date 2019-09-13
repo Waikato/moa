@@ -32,9 +32,11 @@ import com.yahoo.labs.samoa.instances.predictions.RegressionPrediction;
 import moa.classifiers.AbstractRegressor;
 import moa.core.Measurement;
 import moa.core.StringUtils;
+import moa.learners.Classifier;
+import moa.learners.Regressor;
 
 
-public class TargetMean extends AbstractRegressor implements AMRulesRegressorFunction {
+public class TargetMean extends AbstractRegressor implements Classifier, Regressor, AMRulesRegressorFunction {
 
 	/**
 	 * 
@@ -44,13 +46,13 @@ public class TargetMean extends AbstractRegressor implements AMRulesRegressorFun
 	protected double errorSum;
 	protected double nError;
 	private double fadingErrorFactor;
-
+	
 	private static final long serialVersionUID = 7152547322803559115L;
 
 	public FloatOption fadingErrorFactorOption = new FloatOption(
 			"fadingErrorFactor", 'e', 
 			"Fading error factor for the TargetMean accumulated error", 0.99, 0, 1);
-
+	
 	@Override
 	public boolean isRandomizable() {
 		return false;
@@ -59,7 +61,7 @@ public class TargetMean extends AbstractRegressor implements AMRulesRegressorFun
 	@Override
 	public Prediction getPredictionForInstance(Instance inst) {
 		double currentMean = 0;
-		if (n > 0)
+		if (n>0)
 			currentMean = sum / n;
 		return new RegressionPrediction(currentMean);
 	}
@@ -95,7 +97,7 @@ public class TargetMean extends AbstractRegressor implements AMRulesRegressorFun
 	public void getModelDescription(StringBuilder out, int indent) {
 		StringUtils.appendIndented(out, indent, "Current Mean: " + this.sum/this.n);
 		StringUtils.appendNewline(out);	
-
+		
 	}
 	/* JD
 	 * Resets the learner but initializes with a starting point 
@@ -105,7 +107,7 @@ public class TargetMean extends AbstractRegressor implements AMRulesRegressorFun
 		this.n=numberOfInstances;
 		this.resetError();
 	}
-
+	
 	/* JD
 	 * Resets the learner but initializes with a starting point 
 	 * */
@@ -135,7 +137,7 @@ public class TargetMean extends AbstractRegressor implements AMRulesRegressorFun
 		this.errorSum=0;
 		this.nError=0;
 	}
-
+	
 
 
 }

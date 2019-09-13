@@ -88,7 +88,7 @@ public class kNN extends AbstractClassifier implements Classifier {
 		if (inst.classValue() > C)
 			C = (int)inst.classValue();
 		if (this.window == null) {
-			this.window = new InstancesHeader(inst.dataset());
+			this.window = inst.dataset().getEmptyHeader();
 		}
 		if (this.limitOption.getValue() <= this.window.numInstances()) {
 			this.window.delete(0);

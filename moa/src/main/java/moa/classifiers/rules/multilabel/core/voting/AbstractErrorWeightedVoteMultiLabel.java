@@ -1,5 +1,5 @@
 /*
- *    UniformWeightedVote.java
+ *    AbstractErrorWeightedVoteMolutLabel.java
  *    Copyright (C) 2014 University of Porto, Portugal
  *    @author A. Bifet, J. Duarte, J. Gama
  *
@@ -20,7 +20,7 @@
 
 package moa.classifiers.rules.multilabel.core.voting;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
@@ -47,8 +47,8 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 
 	public AbstractErrorWeightedVoteMultiLabel() {
 		super();
-		votes = new ArrayList<Prediction>();
-		errors = new ArrayList<double[]>();
+		votes = new LinkedList<Prediction>();
+		errors = new LinkedList<double[]>();
 	}
 
 
@@ -59,9 +59,8 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 			outputAttributesCount=new int[numOutputs];
 
 		for(int i=0; i<numOutputs; i++)
-			if(vote.hasVotesForAttribute(i))
+			if (vote.getVotes()[i] != 0)
 				outputAttributesCount[i]++;
-
 		votes.add(vote);
 		errors.add(error);
 	}
@@ -138,6 +137,18 @@ public abstract class AbstractErrorWeightedVoteMultiLabel extends AbstractMOAObj
 		if (this.weightedVote==null)
 			weightedVote=computeWeightedVote();
 		return weightedVote;
+	}
+	
+	public boolean coversAllOutputs(){
+		int i=0;
+		boolean flag=false;
+		
+		if(outputAttributesCount!=null){
+			while( i<outputAttributesCount.length && outputAttributesCount[i]>0)
+				i++;
+			flag=i==outputAttributesCount.length;
+		}
+		return flag;
 	}
 	
 }

@@ -6,12 +6,12 @@ import com.yahoo.labs.samoa.instances.predictions.RegressionPrediction;
 
 import moa.learners.Regressor;
 
-public class OzaBagAdwinRegression extends AbstractOzaBagAdwin<Regressor> {
+public class OzaBagAdwinRegression extends AbstractOzaBagAdwin<Regressor> implements Regressor {
 
 	private static final long serialVersionUID = 1L;
 
 	public OzaBagAdwinRegression() {
-		super(Regressor.class, "classifiers.trees.FIMTD");
+		super(Regressor.class, "moa.classifiers.trees.FIMTDD");
 	}
 
 	public double getAdwinError(Instance inst, int i) {

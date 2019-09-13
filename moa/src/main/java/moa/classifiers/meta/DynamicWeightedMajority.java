@@ -58,7 +58,7 @@ import weka.core.Utils;
 public class DynamicWeightedMajority extends AbstractClassifier implements Classifier {
 
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Base classifiers to train.", Classifier.class, "bayes.NaiveBayes");
+            "Base classifiers to train.", Classifier.class, "moa.classifiers.bayes.NaiveBayes");
 
     public IntOption periodOption = new IntOption("period", 'p',
             "Period between expert removal, creation, and weight update.", 50,
@@ -81,7 +81,7 @@ public class DynamicWeightedMajority extends AbstractClassifier implements Class
     @Override
     public void resetLearningImpl() {
         this.experts = new ArrayList<>(50);
-        Classifier classifier = ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
+        Classifier classifier = (Classifier) ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
         classifier.resetLearning();
         this.experts.add(classifier);
         this.weights = new ArrayList<>(50);
@@ -141,7 +141,7 @@ public class DynamicWeightedMajority extends AbstractClassifier implements Class
                 if (experts.size() == this.maxExpertsOption.getValue()) {
                     removeWeakestExpert(weakestExpertIndex);
                 }
-                Classifier classifier = ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
+                Classifier classifier = (Classifier) ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
                 classifier.resetLearning();
                 this.experts.add(classifier);
                 this.weights.add(1.0);

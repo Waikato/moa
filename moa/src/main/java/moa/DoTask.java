@@ -29,9 +29,11 @@ import moa.core.StringUtils;
 import moa.core.TimingUtils;
 import moa.core.WekaUtils;
 import moa.options.ClassOption;
+import moa.tasks.AbstractTask;
 import moa.tasks.FailedTaskReport;
-import moa.tasks.Task;
+import moa.tasks.MainTask;
 import moa.tasks.TaskThread;
+import moa.tasks.meta.MetaMainTask;
 import weka.core.Version;
 
 /**
@@ -56,16 +58,40 @@ public class DoTask {
      */
     public static boolean isJavaVersionOK() {
         boolean isJavaVersionOK = true;
-        String version = System.getProperty("java.version");
-        char minor = version.charAt(2);
-        char point = version.charAt(4);
-        if (minor < '6' || point < '0') {
+        String versionStr = System.getProperty("java.version");
+        String[] parts;
+        double version;
+        if (versionStr.contains(".")) {
+          parts = versionStr.split("\\.");
+	}
+	else {
+          parts = new String[]{versionStr};
+	}
+	if (parts.length == 1) {
+          try {
+            version = Double.parseDouble(parts[0]);
+	  }
+	  catch (Exception e) {
+            System.err.println("Unparsable Java version: " + versionStr);
+            return false;
+	  }
+	}
+	else {
+          try {
+            version = Double.parseDouble(parts[0]) + Double.parseDouble(parts[1]) / 10;
+	  }
+	  catch (Exception e) {
+            System.err.println("Unparsable Java version: " + versionStr);
+            return false;
+	  }
+	}
+        if (version < 1.8) {
             isJavaVersionOK = false;
             System.err.println();
             System.err.println(Globals.getWorkbenchInfoString());
             System.err.println();
-            System.err.print("JDK 1.6.0 or higher is required to run MOA. ");
-            System.err.println("JDK version " + version + " found");
+            System.err.print("Java 8 or higher is required to run MOA. ");
+            System.err.println("Java version " + versionStr + " found");
         }
         return isJavaVersionOK;
     }
@@ -80,11 +106,11 @@ public class DoTask {
      */
     public static boolean isWekaVersionOK() {
         Version version = new Version();
-        if (version.isOlder("3.7.1")) {
+        if (version.isOlder("3.9.2")) {
             System.err.println();
             System.err.println(Globals.getWorkbenchInfoString());
             System.err.println();
-            System.err.print("Weka 3.7.1 or higher is required to run MOA. ");
+            System.err.print("Weka 3.9.2 or higher is required to run MOA. ");
             System.err.println("Weka version " + Version.VERSION + " found");
             return false;
         } else {
@@ -130,7 +156,17 @@ public class DoTask {
                     cliString.append(" ").append(args[i]);
                 }
                 // parse options
-                Task task = (Task) ClassOption.cliStringToObject(cliString.toString(), Task.class, extraOptions);
+                AbstractTask task;
+                try {
+                	task = (AbstractTask) ClassOption.cliStringToObject(
+                			cliString.toString(), MainTask.class, extraOptions);
+                } catch(Exception e) {
+                	// regular task could not be found, maybe it is a meta task
+            		task = (AbstractTask) ClassOption.cliStringToObject(
+            				cliString.toString(), MetaMainTask.class, extraOptions);
+                }
+                task.prepareForUse();
+                
                 Object result = null;
                 if (suppressStatusOutputOption.isSet()) {
                     result = task.doTask();

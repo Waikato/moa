@@ -19,8 +19,6 @@
  */
 package com.github.javacliparser.gui;
 
-import javax.swing.JTextField;
-
 import com.github.javacliparser.Option;
 
 /**
@@ -29,30 +27,12 @@ import com.github.javacliparser.Option;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class ListOptionEditComponent extends JTextField implements
-        OptionEditComponent {
-
-    protected StringOptionEditComponent component;
+public class ListOptionEditComponent extends StringOptionEditComponent {
 
     private static final long serialVersionUID = 1L;
 
     public ListOptionEditComponent(Option option) {
-        component = new StringOptionEditComponent(option);
-    }
-
-    @Override
-    public Option getEditedOption() {
-        return component.getEditedOption();
-    }
-
-    @Override
-    public void setEditState(String cliString) {
-        component.setText(cliString);
-    }
-
-    @Override
-    public void applyState() {
-        getEditedOption().setValueViaCLIString(getText().length() > 0 ? getText() : null);
+    	super(option);
     }
 }
 

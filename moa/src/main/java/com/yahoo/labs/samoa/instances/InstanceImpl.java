@@ -26,7 +26,7 @@ public class InstanceImpl implements StructuredInstance {
 
 	private static final long serialVersionUID = 1L;
 
-	/**
+    /**
      * The weight.
      */
     protected double weight;
@@ -120,14 +120,13 @@ public class InstanceImpl implements StructuredInstance {
     /**
      * Attribute.
      *
-     * @param instAttIndex the inst att index
+     * @param index the attribute index
      * @return the attribute
      */
-    public Attribute attribute(int instAttIndex) {
-        return this.instanceHeader.attribute(instAttIndex);
+    public Attribute attribute(int index) {
+        return this.instanceHeader.attribute(index);
     }
-    
-    
+
     public int indexOf(Attribute attribute) {
     	return instanceHeader.instanceInformation.attributesInformation.indexOfAttribute(attribute);
     }
@@ -139,7 +138,6 @@ public class InstanceImpl implements StructuredInstance {
      */
     @Override
     public void deleteAttributeAt(int i) {
-        //throw new UnsupportedOperationException("Not yet implemented");
         this.instanceData.deleteAttributeAt(i);
     }
 
@@ -148,8 +146,9 @@ public class InstanceImpl implements StructuredInstance {
      *
      * @param i the i
      */
+    @Override
     public void insertAttributeAt(int i) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    	this.instanceData.insertAttributeAt(i);
     }
 
     /**
@@ -164,11 +163,11 @@ public class InstanceImpl implements StructuredInstance {
     /**
      * Value.
      *
-     * @param instAttIndex the inst att index
+     * @param index the attribute index
      * @return the double
      */
-    public double value(int instAttIndex) {
-        return this.instanceData.value(instAttIndex);
+    public double value(int index) {
+        return this.instanceData.value(index);
     }
 
     /**
@@ -200,13 +199,12 @@ public class InstanceImpl implements StructuredInstance {
     public boolean isOutputMissing(int index) {
         return this.instanceData.isMissing(this.instanceHeader.getOutputInstanceIndex(index));
     }
-    
+
     /**
      * Num values.
      *
      * @return the int
      */
-
     public int numValues() {
         return this.instanceData.numValues();
     }
@@ -237,7 +235,6 @@ public class InstanceImpl implements StructuredInstance {
      * @param p the p
      * @return true, if is missing sparse
      */
-
     public boolean isMissingSparse(int p) {
         return this.instanceData.isMissingSparse(p);
     }
@@ -301,8 +298,8 @@ public class InstanceImpl implements StructuredInstance {
      */
     @Override
     public int classIndex() {
-        int classIndex = instanceHeader.classIndex();
-        return classIndex != Integer.MAX_VALUE ? classIndex : 0;
+        return this.instanceHeader.classIndex();
+
     }
 
     /**
@@ -386,7 +383,7 @@ public class InstanceImpl implements StructuredInstance {
      */
     @Override
     public void setDataset(InstancesHeader dataset) {
-        this.instanceHeader = new InstancesHeader(dataset);
+   		this.instanceHeader = dataset;
     }
 
     /**
@@ -407,17 +404,17 @@ public class InstanceImpl implements StructuredInstance {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        for (int attIndex = 0; attIndex < this.numAttributes(); attIndex++) {
-            if (!this.isMissing(attIndex)) {
-                if (this.attribute(attIndex).isNominal()) {
-                    int valueIndex = (int) this.value(attIndex);
-                    String stringValue = this.attribute(attIndex).value(valueIndex);
+        for (int index = 0; index < this.numInputAttributes() + this.numOutputAttributes(); index++) {
+            if (!this.isMissing(index)) {
+                if (this.attribute(index).isNominal()) {
+                    int valueIndex = (int) this.value(index);
+                    String stringValue = this.attribute(index).value(valueIndex);
                     str.append(stringValue).append(",");
-                } else if (this.attribute(attIndex).isNumeric()) {
-                    str.append(this.value(attIndex)).append(",");
-                } else if (this.attribute(attIndex).isDate()) {
+                } else if (this.attribute(index).isNumeric()) {
+                    str.append(this.value(index)).append(",");
+                } else if (this.attribute(index).isDate()) {
                     SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                    str.append(dateFormatter.format(this.value(attIndex))).append(",");
+                    str.append(dateFormatter.format(this.value(index))).append(",");
                 }
             } else {
                 str.append("?,");
@@ -471,7 +468,7 @@ public class InstanceImpl implements StructuredInstance {
         InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
         return this.instanceData.value(instanceInformation.outputAttributeIndex(attributeIndex));
     }
-    
+
     @Override
     public void setMissing(int instAttIndex) {
         this.setValue(instAttIndex, Double.NaN);

@@ -31,13 +31,13 @@ import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
 import javax.swing.ToolTipManager;
 
 import moa.gui.FileExtensionFilter;
 import moa.gui.visualization.GraphCanvas;
 import moa.gui.visualization.RunOutlierVisualizer;
 import moa.gui.visualization.StreamOutlierPanel;
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
 public class OutlierVisualTab extends javax.swing.JPanel implements ActionListener, ComponentListener{
     private RunOutlierVisualizer visualizer = null;
@@ -694,11 +694,11 @@ public class OutlierVisualTab extends javax.swing.JPanel implements ActionListen
     }//GEN-LAST:event_buttonScreenshotMouseClicked
 
     private void buttonScreenshotMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonScreenshotMouseClicked
-        JFileChooser fileChooser = new JFileChooser();
+        BaseFileChooser fileChooser = new BaseFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(true);
         if(screenshotFilebase!=null)
             fileChooser.setSelectedFile(new File(screenshotFilebase));
-        if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(this) == BaseFileChooser.APPROVE_OPTION) {
         	screenshotFilebase = fileChooser.getSelectedFile().getPath();
         	streamPanel0.screenshot(screenshotFilebase+"_"+label_processed_points_value.getText()+"_0", true, true);
         }
@@ -855,12 +855,12 @@ public class OutlierVisualTab extends javax.swing.JPanel implements ActionListen
         if (visualizer == null) return;
         if(e.getSource() instanceof JButton){
             if(e.getActionCommand().equals("csv export")){
-                JFileChooser fileChooser = new JFileChooser();
+                BaseFileChooser fileChooser = new BaseFileChooser();
                 fileChooser.setAcceptAllFileFilterUsed(true);
                 fileChooser.addChoosableFileFilter(new FileExtensionFilter("csv"));
                 if(exportFile!=null)
                     fileChooser.setSelectedFile(new File(exportFile));
-                if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                if (fileChooser.showSaveDialog(this) == BaseFileChooser.APPROVE_OPTION) {
                     exportFile = fileChooser.getSelectedFile().getPath();
                     visualizer.exportCSV(exportFile);
                 }

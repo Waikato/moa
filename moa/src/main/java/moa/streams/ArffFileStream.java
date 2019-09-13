@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.StringOption;
@@ -34,6 +35,7 @@ import moa.core.InputStreamProgressMonitor;
 import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
+import moa.streams.clustering.ClusterEvent;
 import moa.tasks.TaskMonitor;
 
 /**
@@ -62,7 +64,7 @@ public class ArffFileStream extends AbstractOptionHandler implements InstanceStr
 
     public StringOption outputIndexesOption = new StringOption(
     		"outputIndexes",
-    		'c',
+            'c',
     		"Indices of output (class) attributes. Can be provided in a comma or semicolon separated list of single values or ranges.",
     		"-1");
 
@@ -110,7 +112,8 @@ public class ArffFileStream extends AbstractOptionHandler implements InstanceStr
     }
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
+    public void prepareForUseImpl(TaskMonitor monitor,
+            ObjectRepository repository) {
         restart();
     }
 
@@ -186,5 +189,12 @@ public class ArffFileStream extends AbstractOptionHandler implements InstanceStr
     @Override
     public void getDescription(StringBuilder sb, int indent) {
         // TODO Auto-generated method stub
+    }
+
+    protected ArrayList<ClusterEvent> clusterEvents;
+
+    public ArrayList<ClusterEvent> getEventsList() {
+        //This is used only in the CD Tab
+        return this.clusterEvents;
     }
 }

@@ -20,121 +20,98 @@
 package moa.core;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.util.Set;
+
+import nz.ac.waikato.cms.locator.ClassCache;
+import nz.ac.waikato.cms.locator.FixedClassListTraversal;
 
 /**
  * Class for discovering classes via reflection in the java class path.
+ * <br>
+ * If analyzing of classpath fails, it falls back on reading class names
+ * from file list {@link #CLASS_LIST} as resource stream.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $
  */
 public class AutoClassDiscovery {
 
     protected static final Map<String, String[]> cachedClassNames = new HashMap<String, String[]>();
 
-    public static String[] findClassNames(String packageNameToSearch) {
-        String[] cached = cachedClassNames.get(packageNameToSearch);
-        if (cached == null) {
-            HashSet<String> classNames = new HashSet<String>();
-            /*StringTokenizer pathTokens = new StringTokenizer(System
-            .getProperty("java.class.path"), File.pathSeparator);*/
-            String packageDirName = packageNameToSearch.replace('.',
-                    File.separatorChar);
-            String packageJarName = packageNameToSearch.length() > 0 ? (packageNameToSearch.replace('.', '/') + "/")
-                    : "";
-            String part = "";
+    protected static ClassCache m_Cache;
 
+    public final static String CLASS_LIST = "moa.classes";
 
-            AutoClassDiscovery adc = new AutoClassDiscovery();
-            URLClassLoader sysLoader = (URLClassLoader) adc.getClass().getClassLoader();
-            URL[] cl_urls = sysLoader.getURLs();
+    /**
+     * Initializes the class cache
+     */
+    protected static synchronized void initCache() {
+        if (m_Cache == null) {
+            m_Cache = new ClassCache();
 
-            for (int i = 0; i < cl_urls.length; i++) {
-                part = cl_urls[i].toString();
-                if (part.startsWith("file:")) {
-                    part = part.replace(" ", "%20");
+            // try loading fixed list of classes
+            if (m_Cache.isEmpty()) {
+                InputStream inputStream = null;
                     try {
-                        File temp = new File(new java.net.URI(part));
-                        part = temp.getAbsolutePath();
-                    } catch (URISyntaxException e) {
+                    inputStream = m_Cache.getClass().getResourceAsStream(CLASS_LIST);
+                    m_Cache = new ClassCache(new FixedClassListTraversal(inputStream));
+                }
+                catch (Exception e) {
+                    System.err.println("Failed to initialize class cache from fixed list (" + CLASS_LIST + ")!");
                         e.printStackTrace();
                     }
+                finally {
+                    if (inputStream != null) {
+                        try {
+                            inputStream.close();
                 }
+                        catch (Exception e) {
 
-                // find classes
-                ArrayList<File> files = new ArrayList<File>();
-                File dir = new File(part);
-                if (dir.isDirectory()) {
-                    File root = new File(dir.toString() + File.separatorChar + packageDirName);
-                    String[] names = findClassesInDirectoryRecursive(root, "");
-                    classNames.addAll(Arrays.asList(names));
-                } else {
-                    try {
-                        JarFile jar = new JarFile(part);
-                        Enumeration<JarEntry> jarEntries = jar.entries();
-                        while (jarEntries.hasMoreElements()) {
-                            String jarEntry = jarEntries.nextElement().getName();
-                            if (jarEntry.startsWith(packageJarName)) {
-                                String relativeName = jarEntry.substring(packageJarName.length());
-                                if (relativeName.endsWith(".class")) {
-                                    relativeName = relativeName.replace('/',
-                                            '.');
-                                    classNames.add(relativeName.substring(0,
-                                            relativeName.length()
-                                            - ".class".length()));
                                 }
                             }
                         }
-                    } catch (IOException ignored) {
-                        // ignore unreadable files
                     }
                 }
             }
 
-            /*while (pathTokens.hasMoreElements()) {
-            String pathToSearch = pathTokens.nextElement().toString();
-            if (pathToSearch.endsWith(".jar")) {
-            try {
-            JarFile jar = new JarFile(pathToSearch);
-            Enumeration<JarEntry> jarEntries = jar.entries();
-            while (jarEntries.hasMoreElements()) {
-            String jarEntry = jarEntries.nextElement()
-            .getName();
-            if (jarEntry.startsWith(packageJarName)) {
-            String relativeName = jarEntry
-            .substring(packageJarName.length());
-            if (relativeName.endsWith(".class")) {
-            relativeName = relativeName.replace('/',
-            '.');
-            classNames.add(relativeName.substring(0,
-            relativeName.length()
-            - ".class".length()));
+    /**
+     * Returns all class names stored in the cache.
+     * @return the class names
+     */
+    public static List<String> getAllClassNames() {
+        List<String> result = new ArrayList<>();
+        Iterator<String> pkgs = m_Cache.packages();
+        while (pkgs.hasNext()) {
+            String pkg = pkgs.next();
+            if (pkg.startsWith("moa")) {
+                Set<String> classnames = m_Cache.getClassnames(pkg);
+                result.addAll(classnames);
             }
             }
+        return result;
             }
-            } catch (IOException ignored) {
             // ignore unreadable files
+    public static synchronized String[] findClassNames(String packageNameToSearch) {
+        String[] cached = cachedClassNames.get(packageNameToSearch);
+        if (cached == null) {
+            HashSet<String> classNames = new HashSet<String>();
+
+            initCache();
+            Iterator<String> iter = m_Cache.packages();
+            while (iter.hasNext()) {
+                String pkg = iter.next();
+                if (pkg.equals(packageNameToSearch) || pkg.startsWith(packageNameToSearch + "."))
+                    classNames.addAll(m_Cache.getClassnames(pkg));
             }
-            } else {
-            File root = new File(pathToSearch + File.separatorChar
-            + packageDirName);
-            String[] names = findClassesInDirectoryRecursive(root, "");
-            for (String name : names) {
-            classNames.add(name);
-            }
-            }
-            } */
             cached = classNames.toArray(new String[classNames.size()]);
             Arrays.sort(cached);
             cachedClassNames.put(packageNameToSearch, cached);
@@ -142,41 +119,14 @@ public class AutoClassDiscovery {
         return cached;
     }
 
-    protected static String[] findClassesInDirectoryRecursive(File root,
-            String packagePath) {
-        HashSet<String> classNames = new HashSet<String>();
-        if (root.isDirectory()) {
-            String[] list = root.list();
-            for (String string : list) {
-                if (string.endsWith(".class")) {
-                    classNames.add(packagePath
-                            + string.substring(0, string.length()
-                            - ".class".length()));
-                } else {
-                    File testDir = new File(root.getPath() + File.separatorChar
-                            + string);
-                    if (testDir.isDirectory()) {
-                        String[] names = findClassesInDirectoryRecursive(
-                                testDir, packagePath + string + ".");
-                        classNames.addAll(Arrays.asList(names));
-                    }
-                }
-            }
-        }
-        return classNames.toArray(new String[classNames.size()]);
-    }
-
     public static Class[] findClassesOfType(String packageNameToSearch,
             Class<?> typeDesired) {
-        ArrayList<Class<?>> classesFound = new ArrayList<Class<?>>();
+        ArrayList<Class<?>> classesFound = new ArrayList<>();
         String[] classNames = findClassNames(packageNameToSearch);
         for (String className : classNames) {
-            String fullName = packageNameToSearch.length() > 0 ? (packageNameToSearch
-                    + "." + className)
-                    : className;
-            if (isPublicConcreteClassOfType(fullName, typeDesired)) {
+            if (isPublicConcreteClassOfType(className, typeDesired)) {
                 try {
-                    classesFound.add(Class.forName(fullName));
+                    classesFound.add(Class.forName(className));
                 } catch (Exception ignored) {
                     // ignore classes that we cannot instantiate
                 }
@@ -206,5 +156,26 @@ public class AutoClassDiscovery {
         } catch (Exception ignored) {
             return false;
         }
+    }
+
+    /**
+     * Outputs all class names below "moa" either to stdout or to the
+     * file provided as first argument.
+     *
+     * @param args optional file for storing the classnames
+     * @throws Exception if writing to file fails
+     */
+    public static void main(String[] args) throws Exception {
+        initCache();
+        List<String> allClassnames = getAllClassNames();
+        PrintStream out = System.out;
+        if (args.length > 0)
+            out = new PrintStream(new File(args[0]));
+        Collections.sort(allClassnames);
+        for (String clsname: allClassnames)
+            out.println(clsname);
+        out.flush();
+        if (args.length > 0)
+            out.close();
     }
 }
