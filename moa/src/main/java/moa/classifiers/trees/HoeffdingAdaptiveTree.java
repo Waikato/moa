@@ -23,16 +23,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
-import com.yahoo.labs.samoa.instances.predictions.Prediction;
-
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.bayes.NaiveBayes;
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.core.DoubleVector;
 import moa.core.MiscUtils;
 import moa.core.Utils;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 /**
  * Hoeffding Adaptive Tree for evolving data streams.
@@ -508,5 +509,13 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
             return new ClassificationPrediction(result.getArrayRef());
         }
         return new ClassificationPrediction();
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == HoeffdingAdaptiveTree.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

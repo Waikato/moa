@@ -19,10 +19,17 @@
  */
 package moa.classifiers.meta;
 
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
+import moa.classifiers.core.driftdetection.ADWIN;
+import moa.classifiers.AbstractClassifier;
 import com.yahoo.labs.samoa.instances.Instance;
 
-import moa.classifiers.core.driftdetection.ADWIN;
+import moa.core.DoubleVector;
+import moa.core.Measurement;
 import moa.core.MiscUtils;
+import moa.learners.Classifier;
 import moa.learners.InstanceLearner;
 
 /**
@@ -74,7 +81,7 @@ import moa.learners.InstanceLearner;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public abstract class AbstractOzaBagAdwin<MLTask extends InstanceLearner> extends AbstractOzaBag<MLTask> {
+public abstract class AbstractOzaBagAdwin<MLTask extends InstanceLearner> extends AbstractOzaBag<MLTask> implements CapabilitiesHandler {
 
     private static final long serialVersionUID = 1L;
 
@@ -133,5 +140,29 @@ public abstract class AbstractOzaBagAdwin<MLTask extends InstanceLearner> extend
                 this.ADError[imax] = new ADWIN();
             }
         }
+    }
+
+    @Override
+    public boolean isRandomizable() {
+        return true;
+    }
+
+    @Override
+    public void getModelDescription(StringBuilder out, int indent) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    protected Measurement[] getModelMeasurementsImpl() {
+        return new Measurement[]{new Measurement("ensemble size",
+                    this.ensemble != null ? this.ensemble.size() : 0)};
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == OzaBagAdwin.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

@@ -74,7 +74,6 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
         int sumOnesTrue=0;
         int sumOnesPred=0;
 
-
 		Instance x = (Instance) example.getData();
 
         for (int j = 0; j < y.numOutputAttributes(); j++) {
@@ -125,15 +124,11 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
 
 			}
 
-            double tmp=0;
-
             //Accuracy by instance(Jaccard Index)
             if(sumReunion>0){
-                tmp=(double)sumInterse/sumReunion;
                 sumAccuracy2 += (double)sumInterse/sumReunion;
             }
             else{
-                tmp=1;
                 sumAccuracy2+=0.0;
             }
 
@@ -165,9 +160,9 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
 
         // gather measurements
         Measurement m[] = new Measurement[]{
-            new Measurement("Exact Match", sumAccuracy/sumExamples),
-			new Measurement("Hamming Score", sumHamming/sumExamples),
-                new Measurement("Accuracy", (double) sumAccuracy/sumExamples),
+                new Measurement("Exact Match", sumAccuracy/sumExamples),
+                new Measurement("Accuracy", (double) sumAccuracy2/sumExamples),
+                new Measurement("Hamming Score", sumHamming/sumExamples),
                 new Measurement("Precision",((double) sumPrecision)/sumExamples),
                 new Measurement("Recall",(double) sumRecall/sumExamples),
                 new Measurement("F-Measure", (double) sumFmeasure/sumExamples),

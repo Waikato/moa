@@ -19,20 +19,23 @@
  */
 package moa.streams;
 
-import java.util.Random;
-
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.core.FastVector;
+import com.yahoo.labs.samoa.instances.Instance;
+
+import java.util.Random;
 import moa.core.InstanceExample;
+
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 
 /**
@@ -54,7 +57,7 @@ import moa.tasks.TaskMonitor;
  * @version $Revision: 7 $
  */
 public class ConceptDriftRealStream extends AbstractOptionHandler implements
-        InstanceStream {
+        InstanceStream, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -206,5 +209,13 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
     @Override
     public void getDescription(StringBuilder sb, int indent) {
         // TODO Auto-generated method stub
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == ConceptDriftRealStream.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

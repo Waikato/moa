@@ -19,6 +19,9 @@
  */
 package moa.evaluation;
 
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
+
 import com.github.javacliparser.IntOption;
 
 /**
@@ -41,6 +44,14 @@ public class WindowClassificationPerformanceEvaluator extends BasicClassificatio
     @Override
     protected Estimator newEstimator() {
         return new WindowEstimator(this.widthOption.getValue());
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == WindowClassificationPerformanceEvaluator.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 
     public class WindowEstimator implements Estimator {

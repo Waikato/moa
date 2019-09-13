@@ -33,7 +33,7 @@ import moa.core.InstanceExample;
  * @version $Revision: 7 $
  */
 public class CachedInstancesStream extends AbstractMOAObject implements
-		InstanceStream {
+		MultiTargetInstanceStream {
 
 	private static final long serialVersionUID = 1L;
 

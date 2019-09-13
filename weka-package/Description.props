@@ -2,10 +2,10 @@
 PackageName=massiveOnlineAnalysis
 
 # Version (required)
-Version=2018.07.0
+Version=2019.05.0
 
 #Date
-Date=2018-07-01
+Date=2019-05-17
 
 # Title (required)
 Title=MOA (Massive On-line Analysis).
@@ -27,7 +27,7 @@ Description=Massive On-line Analysis is an environment for massive data mining. 
 Changes=
 
 # Package URL for obtaining the package archive (required)
-PackageURL=http://prdownloads.sourceforge.net/weka/massiveOnlineAnalysis-2018.07.0.zip?download
+PackageURL=http://prdownloads.sourceforge.net/weka/massiveOnlineAnalysis-2019.05.0.zip?download
 
 # URL for further information
 URL=http://moa.cs.waikato.ac.nz/

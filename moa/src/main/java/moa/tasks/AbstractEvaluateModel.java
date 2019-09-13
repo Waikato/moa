@@ -28,11 +28,16 @@ import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.core.Example;
+import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.Utils;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
+import moa.evaluation.preview.LearningCurve;
 import moa.learners.InstanceLearner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
@@ -43,7 +48,7 @@ import moa.streams.ExampleStream;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public abstract class AbstractEvaluateModel<MLTask extends InstanceLearner> extends MainTask {
+public abstract class AbstractEvaluateModel<MLTask extends InstanceLearner> extends MainTask implements CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -64,8 +69,13 @@ public abstract class AbstractEvaluateModel<MLTask extends InstanceLearner> exte
             "BasicClassificationPerformanceEvaluator");
 
     public IntOption maxInstancesOption = new IntOption("maxInstances", 'i',
-            "Maximum number of instances to test.", 1000000, 0,
+            "Maximum number of instances to test.", 100000000, 0,
             Integer.MAX_VALUE);
+    
+    public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
+            'f',
+            "How many instances between samples of the learning performance.",
+            100000, 0, Integer.MAX_VALUE);
 
     public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
             "File to append output predictions to.", null, "pred", true);
@@ -80,6 +90,7 @@ public abstract class AbstractEvaluateModel<MLTask extends InstanceLearner> exte
         MLTask model = (MLTask) getPreparedClassOption(this.modelOption);
         ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
         LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
+        LearningCurve learningCurve = new LearningCurve("learning evaluation instances");
         int maxInstances = this.maxInstancesOption.getValue();
         long instancesProcessed = 0;
         monitor.setCurrentActivity("Evaluating model...", -1.0);
@@ -115,6 +126,17 @@ public abstract class AbstractEvaluateModel<MLTask extends InstanceLearner> exte
             }
             evaluator.addResult(testInst, prediction);
             instancesProcessed++;
+
+            if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0
+                    || stream.hasMoreInstances() == false) {
+	            learningCurve.insertEntry(new LearningEvaluation(
+	                    new Measurement[]{
+	                        new Measurement(
+	                        "learning evaluation instances",
+	                        instancesProcessed)
+	                    },
+	                    evaluator, model));
+            }
             if (instancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
                 if (monitor.taskShouldAbort()) {
                     return null;
@@ -131,14 +153,21 @@ public abstract class AbstractEvaluateModel<MLTask extends InstanceLearner> exte
                         : (double) instancesProcessed
                         / (double) (instancesProcessed + estimatedRemainingInstances));
                 if (monitor.resultPreviewRequested()) {
-                    monitor.setLatestResultPreview(new LearningEvaluation(
-                            evaluator, model));
+                    monitor.setLatestResultPreview(learningCurve.copy());
                 }
             }
         }
         if (outputPredictionResultStream != null) {
             outputPredictionResultStream.close();
         }
-        return new LearningEvaluation(evaluator, model);
+        return learningCurve;
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == EvaluateModel.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

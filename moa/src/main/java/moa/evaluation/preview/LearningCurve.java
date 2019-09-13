@@ -22,7 +22,6 @@ package moa.evaluation.preview;
 import java.util.ArrayList;
 import java.util.List;
 
-import moa.AbstractMOAObject;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
@@ -34,7 +33,7 @@ import moa.evaluation.LearningEvaluation;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class LearningCurve extends AbstractMOAObject {
+public class LearningCurve extends Preview {
 
     private static final long serialVersionUID = 1L;
 
@@ -42,8 +41,15 @@ public class LearningCurve extends AbstractMOAObject {
 
     protected List<double[]> measurementValues = new ArrayList<double[]>();
 
+    Class<?> taskClass = null;
+    
     public LearningCurve(String orderingMeasurementName) {
         this.measurementNames.add(orderingMeasurementName);
+    }
+    
+    public LearningCurve(String orderingMeasurementName, Class<?> taskClass) {
+        this.measurementNames.add(orderingMeasurementName);
+        this.taskClass = taskClass;
     }
 
     public String getOrderingMeasurementName() {
@@ -148,4 +154,32 @@ public class LearningCurve extends AbstractMOAObject {
     public int getEntryMeasurementCount(int entryIdx) {
         return this.measurementValues.get(entryIdx).length;
     }
+
+	@Override
+	public Class<?> getTaskClass() {
+		return taskClass;
+	}
+
+	@Override
+	public double[] getEntryData(int entryIndex) {
+		// get the number of measurements
+		int numMeasurements = getMeasurementNameCount();
+
+		int numEntryMeasurements = getEntryMeasurementCount(entryIndex);
+		// preallocate the array to store all measurements
+		double[] data = new double[numMeasurements];
+		// get measuements from the learning curve
+		for(int measurementIdx = 0; measurementIdx < numMeasurements; ++measurementIdx)
+		{
+			if(measurementIdx < numEntryMeasurements)
+			{
+				data[measurementIdx] = getMeasurement(entryIndex, measurementIdx);	
+			}
+			else
+			{
+				data[measurementIdx] = Double.NaN;
+			}
+		}
+		return data;
+	}
 }

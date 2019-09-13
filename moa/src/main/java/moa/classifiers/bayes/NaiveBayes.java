@@ -23,6 +23,9 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.GaussianNumericAttributeClassObserver;
@@ -48,7 +51,7 @@ import moa.learners.Classifier;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class NaiveBayes extends AbstractClassifier implements Classifier {
+public class NaiveBayes extends AbstractClassifier  implements Classifier, CapabilitiesHandler {
 
     private static final long serialVersionUID = 1L;
 
@@ -183,5 +186,13 @@ public class NaiveBayes extends AbstractClassifier implements Classifier {
 
     public void manageMemory(int currentByteSize, int maxByteSize) {
         // TODO Auto-generated method stub
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == NaiveBayes.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

@@ -27,17 +27,20 @@
 
 package moa.gui.visualization;
 
-//import weka.gui.LookAndFeel;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
+import moa.gui.LookAndFeel;
+import weka.core.Memory;
+import weka.gui.explorer.Explorer;
+
+import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.JFrame;
-
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
+//import weka.gui.LookAndFeel;
 
 import weka.core.Memory;
 import weka.gui.explorer.Explorer;
@@ -51,9 +54,7 @@ public class WekaExplorer {
 
     public WekaExplorer(InstancesHeader instances) {
         //weka.core.logging.Logger.log(weka.core.logging.Logger.Level.INFO, "Logging started");
-        try {
-            javax.swing.UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-        } catch (Exception e) {}
+        LookAndFeel.install();
 
         try {
             // uncomment to disable the memory management:

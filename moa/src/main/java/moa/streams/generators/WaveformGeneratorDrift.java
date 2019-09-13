@@ -20,6 +20,10 @@
  */
 package moa.streams.generators;
 
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
+import moa.core.InstanceExample;
+
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
@@ -111,5 +115,13 @@ public class WaveformGeneratorDrift extends WaveformGenerator {
     @Override
     public void getDescription(StringBuilder sb, int indent) {
         // TODO Auto-generated method stub
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == WaveformGeneratorDrift.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

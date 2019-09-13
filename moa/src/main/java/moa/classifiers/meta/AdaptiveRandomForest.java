@@ -33,6 +33,9 @@ import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.AbstractMOAObject;
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.trees.ARFHoeffdingTree;
@@ -41,6 +44,7 @@ import moa.core.InstanceExample;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.evaluation.BasicClassificationPerformanceEvaluator;
+import moa.learners.Classifier;
 import moa.options.ClassOption;
 
 
@@ -79,7 +83,7 @@ import moa.options.ClassOption;
  * @author Heitor Murilo Gomes (heitor_murilo_gomes at yahoo dot com dot br)
  * @version $Revision: 1 $
  */
-public class AdaptiveRandomForest extends AbstractClassifier {
+public class AdaptiveRandomForest extends AbstractClassifier implements Classifier, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -290,6 +294,14 @@ public class AdaptiveRandomForest extends AbstractClassifier {
                 warningDetectionMethodOption,
                 false);
         }
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == AdaptiveRandomForest.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
     
     /**

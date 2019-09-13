@@ -22,6 +22,11 @@ package moa.classifiers.meta;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
+import moa.options.ClassOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
@@ -33,7 +38,6 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.learners.Classifier;
-import moa.options.ClassOption;
 
 /**
  * Leveraging Bagging for evolving data streams using ADWIN. Leveraging Bagging
@@ -46,7 +50,8 @@ import moa.options.ClassOption;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class LeveragingBag extends AbstractClassifier {
+public class LeveragingBag extends AbstractClassifier implements Classifier,
+                                                                 CapabilitiesHandler {
 
     private static final long serialVersionUID = 1L;
 
@@ -267,6 +272,14 @@ public class LeveragingBag extends AbstractClassifier {
 
     public Classifier[] getSubClassifiers() {
         return this.ensemble.clone();
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == LeveragingBag.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }
 

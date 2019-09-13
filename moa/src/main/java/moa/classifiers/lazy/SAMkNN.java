@@ -15,6 +15,7 @@
  *    
  */
 package moa.classifiers.lazy;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,18 +26,22 @@ import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.yahoo.labs.samoa.instances.InstanceImpl;
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
+import moa.classifiers.AbstractClassifier;
+import moa.core.Measurement;
+
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceImpl;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
-import moa.classifiers.AbstractClassifier;
 import moa.clusterers.kmeanspm.CoresetKMeans;
-import moa.core.Measurement;
 /**
  * Self Adjusting Memory (SAM) coupled with the k Nearest Neighbor classifier (kNN) .<p>
  *
@@ -62,8 +67,8 @@ import moa.core.Measurement;
  * month={Dec}
  * }"
  */
-public class SAMkNN extends AbstractClassifier {
-	private static final long serialVersionUID = 1L;
+public class SAMkNN extends AbstractClassifier implements CapabilitiesHandler {
+    private static final long serialVersionUID = 1L;
 
 	public IntOption kOption = new IntOption( "k", 'k', "The number of neighbors", 5, 1, Integer.MAX_VALUE);
 
@@ -626,4 +631,12 @@ public class SAMkNN extends AbstractClassifier {
 		else
 			return this.getMinErrorRateWindowSizeIncremental();
 	}
+
+  @Override
+  public ImmutableCapabilities defineImmutableCapabilities() {
+    if (this.getClass() == SAMkNN.class)
+      return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+    else
+      return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+  }
 }

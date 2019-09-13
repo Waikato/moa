@@ -21,6 +21,9 @@ package moa.tasks;
 
 import com.github.javacliparser.IntOption;
 
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.core.ObjectRepository;
 import moa.learners.Classifier;
 import moa.learners.InstanceLearner;
@@ -35,7 +38,7 @@ import moa.streams.InstanceStream;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public abstract class AbstractLearnModel<MLTask extends InstanceLearner> extends MainTask {
+public abstract class AbstractLearnModel<MLTask extends InstanceLearner> extends MainTask implements CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -121,5 +124,13 @@ public abstract class AbstractLearnModel<MLTask extends InstanceLearner> extends
         }
         learner.setModelContext(stream.getHeader());
         return learner;
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == LearnModel.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

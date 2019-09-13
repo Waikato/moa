@@ -20,9 +20,33 @@
  */
 package moa.gui;
 
+import moa.evaluation.MeasureCollection;
+import moa.evaluation.preview.Preview;
+import moa.gui.PreviewPanel.TypePanel;
+import moa.gui.conceptdrift.CDTaskManagerPanel;
+import moa.streams.clustering.ClusterEvent;
+import moa.tasks.FailedTaskReport;
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
+import nz.ac.waikato.cms.gui.core.DetachablePanel;
+import nz.ac.waikato.cms.gui.core.ExtensionFileFilter;
+import nz.ac.waikato.cms.gui.core.GUIHelper;
+import weka.gui.visualize.PNGWriter;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -59,9 +83,15 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
     public static String exportFileExtension = "txt";
 
-    protected JTextArea textArea;
+    private PreviewTableModel previewTableModel;
 
-    protected JScrollPane scrollPane;
+    private JTable previewTable;
+
+    private JTextArea previewText;
+
+    private JScrollPane scrollPaneTable;
+
+    private JScrollPane scrollPaneText;
 
     protected JButton exportButton;
 
@@ -71,9 +101,9 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
    //Added for stream events
     protected CDTaskManagerPanel taskManagerPanel;
-    
+
     protected TypePanel typePanel;
-    
+
     public void initVisualEvalPanel() {
         acc1[0] = getNewMeasureCollection();
         acc2[0] = getNewMeasureCollection();
@@ -82,35 +112,61 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         }
         clusteringVisualEvalPanel1 = new moa.gui.clustertab.ClusteringVisualEvalPanel();
         clusteringVisualEvalPanel1.setMeasures(acc1, acc2, this);
-        this.graphCanvas.setGraph(acc1[0], acc2[0], 0, 1000); 
+        this.graphCanvas.setGraph(acc1[0], acc2[0], 0, 1000);
         this.graphCanvas.forceAddEvents();
         clusteringVisualEvalPanel1.setMinimumSize(new java.awt.Dimension(280, 118));
         clusteringVisualEvalPanel1.setPreferredSize(new java.awt.Dimension(290, 115));
          panelEvalOutput.add(clusteringVisualEvalPanel1, gridBagConstraints);
     }
-        public TaskTextViewerPanel() {
-           this(TypePanel.CLASSIFICATION, null);
-        }
-        
-        public java.awt.GridBagConstraints gridBagConstraints;
-        
-        public TaskTextViewerPanel(PreviewPanel.TypePanel typePanel, CDTaskManagerPanel taskManagerPanel) { 
+
+    public TaskTextViewerPanel() {
+       this(TypePanel.CLASSIFICATION, null);
+    }
+
+    public java.awt.GridBagConstraints gridBagConstraints;
+
+    public TaskTextViewerPanel(PreviewPanel.TypePanel typePanel, CDTaskManagerPanel taskManagerPanel) {
         this.typePanel = typePanel;
         this.taskManagerPanel = taskManagerPanel;
-        jSplitPane1 = new javax.swing.JSplitPane();
         topWrapper = new javax.swing.JPanel();
 
-        this.textArea = new JTextArea();
-        this.textArea.setEditable(false);
-        this.textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        setLayout(new GridBagLayout());
+
+        // mainPane contains the two main components of the text viewer panel:
+        // top component: preview table panel
+        // bottom component: interactive graph panel
+        this.jSplitPane1 = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        this.jSplitPane1.setDividerLocation(200);
+
+        // topWrapper is the wrapper of the top component of mainPane
+        this.topWrapper = new JPanel();
+        this.topWrapper.setLayout(new BorderLayout());
+
+        // previewTable displays live results in table form
+        // (or in text form, if an error occurs)
+        this.previewTableModel = new PreviewTableModel();
+        this.previewTable = new JTable(this.previewTableModel);
+        this.previewTable.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        this.previewTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+        this.previewText = new JTextArea();
+        this.previewText.setEditable(false);
+        this.previewText.setFont(new Font("Monospaced", Font.PLAIN, 12));
+
+        // scrollPane enables scroll support for previewTable
+        this.scrollPaneTable = new JScrollPane(this.previewTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        this.scrollPaneText = new JScrollPane(this.previewText, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        this.scrollPaneText.setVisible(false);
+
+        this.topWrapper.add(this.scrollPaneTable, BorderLayout.CENTER);
+
         this.exportButton = new JButton("Export as .txt file...");
         this.exportButton.setEnabled(false);
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(1, 2));
         buttonPanel.add(this.exportButton);
-        topWrapper.setLayout(new BorderLayout());
-        this.scrollPane = new JScrollPane(this.textArea);
-        topWrapper.add(this.scrollPane, BorderLayout.CENTER);
         topWrapper.add(buttonPanel, BorderLayout.SOUTH);
         this.exportButton.addActionListener(new ActionListener() {
 
@@ -129,7 +185,16 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
                     try {
                         PrintWriter out = new PrintWriter(new BufferedWriter(
                                 new FileWriter(fileName)));
-                        out.write(TaskTextViewerPanel.this.textArea.getText());
+
+                        String text = "";
+
+                        if (scrollPaneTable.isVisible()) {
+                            text = previewTableModel.toString();
+                        } else {
+                            text = previewText.getText();
+                        }
+
+                        out.write(text);
                         out.close();
                     } catch (IOException ioe) {
                         GUIUtils.showExceptionDialog(
@@ -148,6 +213,8 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         graphPanelControlTop = new javax.swing.JPanel();
         buttonZoomInY = new javax.swing.JButton();
         buttonZoomOutY = new javax.swing.JButton();
+        buttonDetach = new javax.swing.JButton();
+        buttonSaveAs = new javax.swing.JButton();
         labelEvents = new javax.swing.JLabel();
         graphScrollPanel = new javax.swing.JScrollPane();
         graphCanvas = new moa.gui.visualization.GraphCanvas();
@@ -189,9 +256,14 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         graphPanel.setPreferredSize(new java.awt.Dimension(530, 115));
         graphPanel.setLayout(new java.awt.GridBagLayout());
 
+        detachablePanel = new DetachablePanel();
+        detachablePanel.setFrameTitle("Plot");
+        detachablePanel.getContentPanel().add(graphPanel);
+
         graphPanelControlTop.setLayout(new java.awt.GridBagLayout());
 
-        buttonZoomInY.setText("Zoom in Y");
+        buttonZoomInY.setIcon(GUIHelper.getIcon("zoom_in.png"));
+        buttonZoomInY.setText("Y");
         buttonZoomInY.addActionListener(new java.awt.event.ActionListener() {
 
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -202,7 +274,8 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
         graphPanelControlTop.add(buttonZoomInY, gridBagConstraints);
 
-        buttonZoomOutY.setText("Zoom out Y");
+        buttonZoomOutY.setIcon(GUIHelper.getIcon("zoom_out.png"));
+        buttonZoomOutY.setText("Y");
         buttonZoomOutY.addActionListener(new java.awt.event.ActionListener() {
 
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -228,8 +301,6 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         gridBagConstraints.weightx = 1.0;
         graphPanel.add(graphPanelControlTop, gridBagConstraints);
 
-        graphCanvas.setPreferredSize(new java.awt.Dimension(500, 111));
-
         javax.swing.GroupLayout graphCanvasLayout = new javax.swing.GroupLayout(graphCanvas);
         graphCanvas.setLayout(graphCanvasLayout);
         graphCanvasLayout.setHorizontalGroup(
@@ -249,7 +320,8 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 2, 2);
         graphPanel.add(graphScrollPanel, gridBagConstraints);
 
-        buttonZoomInX.setText("Zoom in X");
+        buttonZoomInX.setIcon(GUIHelper.getIcon("zoom_in.png"));
+        buttonZoomInX.setText("X");
         buttonZoomInX.addActionListener(new java.awt.event.ActionListener() {
 
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -258,7 +330,8 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         });
         graphPanelControlBottom.add(buttonZoomInX);
 
-        buttonZoomOutX.setText("Zoom out X");
+        buttonZoomOutX.setIcon(GUIHelper.getIcon("zoom_out.png"));
+        buttonZoomOutX.setText("X");
         buttonZoomOutX.addActionListener(new java.awt.event.ActionListener() {
 
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -266,6 +339,50 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
             }
         });
         graphPanelControlBottom.add(buttonZoomOutX);
+
+        buttonDetach.setIcon(GUIHelper.getIcon("maximize.png"));
+        buttonDetach.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                if (detachablePanel.isDetached()) {
+                    detachablePanel.reattach();
+                    buttonDetach.setIcon(GUIHelper.getIcon("maximize.png"));
+                }
+                else {
+                    detachablePanel.detach();
+                    buttonDetach.setIcon(GUIHelper.getIcon("minimize.png"));
+                }
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
+        graphPanelControlBottom.add(buttonDetach, gridBagConstraints);
+
+        buttonSaveAs.setIcon(GUIHelper.getIcon("save.gif"));
+        buttonSaveAs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                if (fileChooserGraph == null) {
+                    fileChooserGraph = new BaseFileChooser();
+                    fileChooserGraph.setAcceptAllFileFilterUsed(false);
+                    ExtensionFileFilter filter = new ExtensionFileFilter("PNG image", "png");
+                    fileChooserGraph.addChoosableFileFilter(filter);
+                }
+                int retVal = fileChooserGraph.showSaveDialog(getParent());
+                if (retVal != BaseFileChooser.APPROVE_OPTION)
+                    return;
+                File png = fileChooserGraph.getSelectedFile();
+                PNGWriter writer = new PNGWriter(graphCanvas);
+                writer.setFile(png);
+                try {
+                    writer.toOutput();
+                }
+                catch (Exception e) {
+                    GUIHelper.showErrorMessage(getParent(), "Failed to save graph to: " + png, e);
+                }
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
+        graphPanelControlBottom.add(buttonSaveAs, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -278,7 +395,7 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 2.0;
         gridBagConstraints.weighty = 1.0;
-        panelEvalOutput.add(graphPanel, gridBagConstraints);
+        panelEvalOutput.add(detachablePanel, gridBagConstraints);
 
         jSplitPane1.setRightComponent(panelEvalOutput);
 
@@ -296,12 +413,109 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
     }
 
-    public void setText(String newText) {
-        Point p = this.scrollPane.getViewport().getViewPosition();
-        this.textArea.setText(newText);
-        this.scrollPane.getViewport().setViewPosition(p);
-        this.exportButton.setEnabled(newText != null);
-        setGraph(newText);
+    /**
+     * Updates the preview table based on the information given by preview.
+     *
+     * @param preview
+     *            the new information used to update the table
+     */
+     public void setText(Preview preview) {
+         Point p = this.scrollPaneTable.getViewport().getViewPosition();
+
+         previewTableModel.setPreview(preview);
+         SwingUtilities.invokeLater(new Runnable() {
+             boolean structureChanged = previewTableModel.structureChanged();
+
+             public void run() {
+                 if (!scrollPaneTable.isVisible()) {
+                     topWrapper.remove(scrollPaneText);
+                     scrollPaneText.setVisible(false);
+                     topWrapper.add(scrollPaneTable, BorderLayout.CENTER);
+                     scrollPaneTable.setVisible(true);
+                     topWrapper.validate();
+                 }
+
+                 if (structureChanged) {
+                     previewTableModel.fireTableStructureChanged();
+                     rescaleTableColumns();
+                 } else {
+                     previewTableModel.fireTableDataChanged();
+                 }
+                 previewTable.repaint();
+             }
+         });
+
+         this.scrollPaneTable.getViewport().setViewPosition(p);
+         this.exportButton.setEnabled(preview != null);
+     }
+
+    public void setText(Object object) {
+        // Dynamic dispatch
+        if (object instanceof Preview) {
+            setText((Preview) object);
+            return;
+        } else if (object instanceof FailedTaskReport) {
+            setText((FailedTaskReport) object);
+            return;
+        }
+
+        Point p = this.scrollPaneText.getViewport().getViewPosition();
+
+        final String string = object == null ? null : object.toString();
+
+        SwingUtilities.invokeLater(
+            new Runnable(){
+                public void run(){
+                    if(!scrollPaneText.isVisible())
+                    {
+                        topWrapper.remove(scrollPaneTable);
+                        scrollPaneTable.setVisible(false);
+                        topWrapper.add(scrollPaneText, BorderLayout.CENTER);
+                        scrollPaneText.setVisible(true);
+                        topWrapper.validate();
+                    }
+                    previewText.setText(string);
+                    previewText.repaint();
+                }
+            }
+        );
+
+        this.scrollPaneText.getViewport().setViewPosition(p);
+        this.exportButton.setEnabled(object != null);
+    }
+
+    /**
+     * Displays the error message.
+     * @param failedTaskReport error message
+     */
+    public void setText(FailedTaskReport failedTaskReport) {
+        final String failedTaskReportString = failedTaskReport == null ?
+                "Failed Task Report is null" : failedTaskReport.toString();
+
+        setText(failedTaskReportString);
+    }
+
+    private void rescaleTableColumns() {
+        // iterate over all columns to resize them individually
+        TableColumnModel columnModel = previewTable.getColumnModel();
+        for (int columnIdx = 0; columnIdx < columnModel.getColumnCount(); ++columnIdx) {
+            // get the current column
+            TableColumn column = columnModel.getColumn(columnIdx);
+            // get the renderer for the column header to calculate the preferred
+            // with for the header
+            TableCellRenderer renderer = column.getHeaderRenderer();
+            // check if the renderer is null
+            if (renderer == null) {
+                // if it is null use the default renderer for header
+                renderer = previewTable.getTableHeader().getDefaultRenderer();
+            }
+            // create a cell to calculate its preferred size
+            Component comp = renderer.getTableCellRendererComponent(previewTable, column.getHeaderValue(), false, false,
+                    0, columnIdx);
+            int width = comp.getPreferredSize().width;
+            // set the maximum width which was calculated
+            column.setPreferredWidth(width);
+        }
     }
 
     protected MeasureCollection[] acc1 = new MeasureCollection[1];
@@ -402,7 +616,7 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
             } else {
                 this.acc2[0] = getNewMeasureCollection();
             }
-
+            scanner.close();
         } else {
             this.acc1[0] = getNewMeasureCollection();
             this.acc2[0] = getNewMeasureCollection();
@@ -472,6 +686,12 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
     private javax.swing.JButton buttonZoomOutY;
 
+    private javax.swing.JButton buttonDetach;
+
+    private javax.swing.JButton buttonSaveAs;
+
+    private DetachablePanel detachablePanel;
+
     private javax.swing.JCheckBox checkboxDrawClustering;
 
     private javax.swing.JCheckBox checkboxDrawGT;
@@ -487,6 +707,8 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
     private javax.swing.JComboBox comboY;
 
     private moa.gui.visualization.GraphCanvas graphCanvas;
+
+    private BaseFileChooser fileChooserGraph;
 
     private javax.swing.JPanel graphPanel;
 
@@ -532,7 +754,7 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        //reacte on graph selection and find out which measure was selected
+        // reacte on graph selection and find out which measure was selected
         int selected = Integer.parseInt(e.getActionCommand());
         int counter = selected;
         int m_select = 0;
@@ -554,7 +776,8 @@ public class TaskTextViewerPanel extends JPanel implements ActionListener {
                 break;
             }
         }
-        this.graphCanvas.setGraph(acc1[m_select], acc2[m_select], m_select_offset, this.graphCanvas.getProcessFrequency());
+        this.graphCanvas.setGraph(acc1[m_select], acc2[m_select], m_select_offset,
+                this.graphCanvas.getProcessFrequency());
         this.graphCanvas.forceAddEvents();
     }
 }

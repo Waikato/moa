@@ -32,4 +32,9 @@ public class InstanceExample implements Example<Instance> {
 		return new InstanceExample(instance.copy());
 	}
 
+	@Override
+  	public String toString() {
+  	  return this.instance.toString();
+	}
+
 } 

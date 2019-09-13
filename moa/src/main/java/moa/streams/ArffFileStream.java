@@ -31,11 +31,15 @@ import com.github.javacliparser.FileOption;
 import com.github.javacliparser.StringOption;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.core.InputStreamProgressMonitor;
 import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.streams.clustering.ClusterEvent;
+import moa.streams.generators.cd.ConceptDriftGenerator;
 import moa.tasks.TaskMonitor;
 
 /**
@@ -44,7 +48,7 @@ import moa.tasks.TaskMonitor;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class ArffFileStream extends AbstractOptionHandler implements InstanceStream, MultiTargetInstanceStream {
+public class ArffFileStream extends AbstractOptionHandler implements InstanceStream, ConceptDriftGenerator, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -196,5 +200,13 @@ public class ArffFileStream extends AbstractOptionHandler implements InstanceStr
     public ArrayList<ClusterEvent> getEventsList() {
         //This is used only in the CD Tab
         return this.clusterEvents;
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == ArffFileStream.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

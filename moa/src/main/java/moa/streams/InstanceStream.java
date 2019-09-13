@@ -19,9 +19,9 @@
  */
 package moa.streams;
 
+import moa.core.Example;
 import com.yahoo.labs.samoa.instances.Instance;
 
-import moa.core.Example;
 
 /**
  * Interface representing a data stream of instances. 
@@ -30,8 +30,5 @@ import moa.core.Example;
  * @version $Revision: 7 $ 
  */
 public interface InstanceStream extends ExampleStream<Example<Instance>> {
-
-
-
 
 }

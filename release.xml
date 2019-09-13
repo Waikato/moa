@@ -4,7 +4,7 @@
   <parent>
     <groupId>nz.ac.waikato.cms.moa</groupId>
     <artifactId>moa-pom</artifactId>
-    <version>2018.07.0-SNAPSHOT</version>  <!-- adjust -->
+    <version>2019.05.1-SNAPSHOT</version>  <!-- adjust -->
   </parent>
 
   <artifactId>moa-release</artifactId>
@@ -16,9 +16,7 @@
   provides a framework for data stream mining and includes tools for evaluation
   and a collection of machine learning algorithms. Related to the WEKA project,
   also written in Java, while scaling to more demanding problems.
-
   This Maven model file is for generating a release archive.
-
   See RELEASE.md for instructions on how to make a release.
   </description>
   <url>http://moa.cms.waikato.ac.nz/</url>
@@ -120,6 +118,57 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>com.github.fracpete</groupId>
+        <artifactId>debian-maven-plugin</artifactId>
+        <version>1.0.16</version>
+        <configuration>
+          <packageName>moa</packageName>
+          <packageTitle>MOA - Massive Online Analysis</packageTitle>
+          <packageVersion>${project.version}</packageVersion>
+          <projectUrl>${project.url}</projectUrl>
+          <packageDescription>${project.description}</packageDescription>
+          <createSymLinks>false</createSymLinks>
+          <createIncludeFiles>false</createIncludeFiles>
+          <excludeArtifactsRegExp>
+            <param>.*-osx-x86.*</param>
+            <param>.*-win-x86.*</param>
+            <param>.*-win-i686.*</param>
+            <param>.*-armhf.*</param>
+            <param>.*bin.*</param>
+            <param>.*javadoc.*</param>
+          </excludeArtifactsRegExp>
+          <fileFiltering>
+            <enabled>true</enabled>
+          </fileFiltering>
+          <useDefaultCopyResources>false</useDefaultCopyResources>
+          <copyResources>
+            <copyResource>
+              <source>moa/src/deb/resources</source>
+              <target>target/deb</target>
+            </copyResource>
+            <copyResource>
+              <source>moa/target/apidocs</source>
+              <target>target/deb/usr/share/doc/moa/apidocs</target>
+            </copyResource>
+            <copyResource>
+              <source>target/sources</source>
+              <target>target/deb/usr/lib/moa/src</target>
+              <include>.*\.jar</include>
+            </copyResource>
+            <copyResource>
+              <source>moa/target</source>
+              <target>target/deb/usr/share/doc/moa</target>
+              <include>.*\.pdf</include>
+            </copyResource>
+          </copyResources>
+          <useDefaultFixPermissions>true</useDefaultFixPermissions>
+          <packageDependencies>
+            <packageDependency>openjdk-11-jre</packageDependency>
+          </packageDependencies>
+        </configuration>
       </plugin>
 
       <plugin>

@@ -144,9 +144,9 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
      */
     private void setLatestPreview() {
 
-    	
-    	if(this.previewedThread != null && this.previewedThread.failed())
+    	if(this.previewedThread != null && this.previewedThread.isFailed())
     	{
+    		// failed task
     		FailedTaskReport failedTaskReport = (FailedTaskReport) this.previewedThread.getFinalResult();
     		this.textViewerPanel.setErrorText(failedTaskReport);
     		this.textViewerPanel.setGraph(null, null);
@@ -155,8 +155,7 @@ public class ALPreviewPanel extends JPanel implements ResultPreviewListener {
     	{
         	Preview preview = null;
     		if ((this.previewedThread != null) && this.previewedThread.isComplete()) {
-    			// cancelled, completed or failed task
-    			// TODO if the task is failed, the finalResult is a FailedTaskReport, which is not a Preview
+    			// cancelled or completed task
     			preview = (Preview) this.previewedThread.getFinalResult();
     			this.previewLabel.setText("Final result");
     			disableRefresh();

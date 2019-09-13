@@ -19,6 +19,11 @@
  */
 package moa.tasks.regression;
 
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
+import moa.streams.clustering.ClusterEvent;
+
 import moa.learners.Regressor;
 import moa.options.ClassOption;
 import moa.tasks.AbstractLearnModel;
@@ -29,7 +34,7 @@ import moa.tasks.AbstractLearnModel;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class LearnModel extends AbstractLearnModel<Regressor> implements RegressionMainTask {
+public class LearnModel extends AbstractLearnModel<Regressor> implements RegressionMainTask, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -40,6 +45,11 @@ public class LearnModel extends AbstractLearnModel<Regressor> implements Regress
 
     public LearnModel() {
 		this.learnerOption = new ClassOption("learner", 'l', "Learner to train.", Regressor.class, "moa.classifiers.trees.FIMTDD");
-	}
+    }
+    
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        // We are restricting tasks based on view mode
+        return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+    }
     
 }

@@ -16,7 +16,7 @@
 
 /*
  * GUIDefaults.java
- * Copyright (C) 2006 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2006-2019 University of Waikato, Hamilton, New Zealand
  */
 package moa.gui;
 
@@ -34,7 +34,6 @@ import moa.core.Utils;
  * the props file <code>moa/gui/GUI.props</code>.
  *
  * @author  FracPete (fracpete at waikato dot ac dot nz)
- * @version $Revision: 6103 $
  */
 public class GUIDefaults implements Serializable {
 
@@ -135,10 +134,47 @@ public class GUIDefaults implements Serializable {
         String tabs;
 
         // read and split on comma
-        tabs = get("Tabs", "moa.gui.ClassificationTabPanel,moa.gui.RegressionTabPanel,moa.gui.MultiLabelClassificationTabPanel,moa.gui.MultiRegressionTargetTabPanel,moa.gui.clustertab.ClusteringTabPanel,moa.gui.outliertab.OutlierTabPanel,moa.gui.ConceptDriftTabPanel,moa.gui.ALTabPanel,moa.gui.AuxiliarTabPanel");
+        tabs = get("Tabs", "moa.gui.ClassificationTabPanel,moa.gui.RegressionTabPanel,moa.gui.MultiLabelClassificationTabPanel,moa.gui.MultiRegressionTargetTabPanel,moa.gui.clustertab.ClusteringTabPanel,moa.gui.outliertab.OutlierTabPanel,moa.gui.ConceptDriftTabPanel,moa.gui.ALTabPanel,moa.gui.AuxiliarTabPanel,moa.gui.experimentertab.ExperimenterTabPanel");
         result = tabs.split(",");
 
         return result;
+    }
+
+    /**
+     * returns an array with the classnames of all default tabs to
+     * display as tabs in the GUI.
+     *
+     * @return		the classnames
+     */
+    public static String[] getDefaultTabs() {
+        String[] result;
+        String tabs;
+
+        // read and split on comma
+        tabs = get("DefaultTabs", "").trim();
+        if (tabs.isEmpty())
+            result = new String[0];
+        else
+            result = tabs.split(",");
+
+        return result;
+    }
+
+    /**
+     * Returns the maximum of undos for closing pages/tabs.
+     *
+     * @return      the maximum
+     */
+    public static int getMaxTabUndo() {
+        int defMaxUndo = 10;
+        String maxUndo = get("MaxTabUndo", "" + defMaxUndo);
+        try {
+            return Math.max(Integer.parseInt(maxUndo), 0);
+        }
+        catch (Exception e) {
+            System.err.println("Failed to parse 'MaxTabUndo': " + maxUndo);
+            return defMaxUndo;
+        }
     }
 
     /**

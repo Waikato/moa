@@ -28,8 +28,8 @@ import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.AbstractMultiLabelClassifier;
+
 import moa.classifiers.rules.AMRulesRegressor;
-import moa.core.DoubleVector;
 import moa.core.FastVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
@@ -37,6 +37,16 @@ import moa.learners.Classifier;
 import moa.learners.InstanceLearner;
 import moa.options.ClassOption;
 import moa.streams.InstanceStream;
+
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Attribute;
+import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+
+
+import java.util.Arrays;;
 
 /**
  * Binary relevance Multilabel Classifier
@@ -105,7 +115,7 @@ public class BasicMultiLabelLearner extends AbstractMultiLabelClassifier {
 		}
 		if (header[outputIndex] == null) {
 			//Create Header
-			FastVector attributes = new FastVector();
+			FastVector<Attribute> attributes = new FastVector<>();
 			for (int attributeIndex = 0; attributeIndex < inst.numInputAttributes(); attributeIndex++) {
 				attributes.addElement(inst.inputAttribute(attributeIndex));
 			}
@@ -177,14 +187,31 @@ public class BasicMultiLabelLearner extends AbstractMultiLabelClassifier {
 	@Override
 	public Prediction getPredictionForInstance(Instance instance) {
 		Prediction prediction=null;
-                double [] votes= new double[instance.numClasses()];
-                double vote;
+		
 		if (this.hasStarted){ 
 			prediction=new MultiLabelClassificationPrediction(ensemble.length);
-			DoubleVector combinedVote = new DoubleVector();
 			for (int i = 0; i < this.ensemble.length; i++) {
-                        vote= this.ensemble[i].getPredictionForInstance(transformInstance(instance,i)).asDoubleArray()[0];
-				prediction.setVote(i, 0, vote);
+				Instance inst = transformInstance(instance,i);
+				double[] votes = this.ensemble[i].getPredictionForInstance(transformInstance(instance,i)).asDoubleArray();
+				
+				if(inst.classAttribute().isNumeric()) {
+					prediction.setVote(i, 0, votes[0]);
+				}
+				else {
+					double[] dist = new double[votes.length];
+					double sum = 0;
+					
+					for(int l = 0; l < votes.length; l++) {
+						dist[l] = votes[l];
+						sum += votes[l];
+					}
+
+					for(int l = 0; l < votes.length; l++) {
+						dist[l] /= sum;
+					}
+
+					prediction.setVotes(i, dist);
+				}
 			}
 		}
 

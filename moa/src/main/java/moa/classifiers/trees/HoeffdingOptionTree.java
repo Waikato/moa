@@ -39,6 +39,9 @@ import com.yahoo.labs.samoa.instances.predictions.ClassificationPrediction;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
 import moa.AbstractMOAObject;
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.bayes.NaiveBayes;
 import moa.classifiers.core.AttributeSplitSuggestion;
@@ -98,7 +101,7 @@ import moa.options.ClassOption;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class HoeffdingOptionTree extends AbstractClassifier implements Classifier {
+public class HoeffdingOptionTree extends AbstractClassifier implements Classifier, CapabilitiesHandler {
 
     private static final long serialVersionUID = 1L;
 
@@ -1204,5 +1207,13 @@ public class HoeffdingOptionTree extends AbstractClassifier implements Classifie
             ret = new LearningNodeNBAdaptive(initialClassObservations);
         }
         return ret;
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == HoeffdingOptionTree.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

@@ -19,6 +19,23 @@
  */
 package com.github.javacliparser.gui;
 
+import com.github.javacliparser.Option;
+import com.github.javacliparser.Options;
+import moa.classifiers.trees.HoeffdingTree;
+import moa.gui.GUIUtils;
+import moa.gui.LookAndFeel;
+import moa.options.OptionHandler;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -33,30 +50,10 @@ import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.UIManager;
-
-import com.github.javacliparser.Option;
-import com.github.javacliparser.Options;
-
-import moa.classifiers.trees.HoeffdingTree;
-import moa.gui.GUIUtils;
-import moa.options.OptionHandler;
-
 /**
  * This panel displays an options configuration.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $
  */
 public class OptionsConfigurationPanel extends JPanel {
 
@@ -252,7 +249,7 @@ public class OptionsConfigurationPanel extends JPanel {
 
     public static void main(String[] args) {
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            LookAndFeel.install();
             javax.swing.SwingUtilities.invokeLater(new Runnable() {
 
                 @Override

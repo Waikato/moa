@@ -49,7 +49,7 @@ public interface InstanceLearner extends MLTask<Example<Instance>> {
      * @return an array containing the estimated membership
      * probabilities of the test instance in each class
      */
-	public Prediction getPredictionForInstance(Instance testInst);
+        public Prediction getPredictionForInstance(Instance testInst);
 	
 	public InstanceLearner[] getSublearners();
 }

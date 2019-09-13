@@ -24,13 +24,16 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import com.github.javacliparser.FlagOption;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.predictions.Prediction;
-
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.Utils;
+
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.predictions.Prediction;
+
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
@@ -46,8 +49,7 @@ import moa.tasks.TaskMonitor;
  * @author Wilson Sasaki Jr (sasaki.wilson.jr@gmail.com)
  * @version $Revision: 8 $
  */
-public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandler
-        implements ClassificationPerformanceEvaluator {
+public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandler implements ClassificationPerformanceEvaluator {
 
     private static final long serialVersionUID = 1L;
 
@@ -324,5 +326,14 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
 
     protected Estimator newEstimator() {
         return new BasicEstimator();
+    }
+
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == BasicClassificationPerformanceEvaluator.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

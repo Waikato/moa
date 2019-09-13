@@ -19,6 +19,9 @@
  */
 package moa.evaluation;
 
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
+
 import com.github.javacliparser.FloatOption;
 
 /**
@@ -37,6 +40,14 @@ public class FadingFactorClassificationPerformanceEvaluator extends BasicClassif
     @Override
     protected Estimator newEstimator() {
         return new FadingFactorEstimator(this.alphaOption.getValue());
+    }
+
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == FadingFactorClassificationPerformanceEvaluator.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 
     public class FadingFactorEstimator implements Estimator {

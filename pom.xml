@@ -4,7 +4,7 @@
   <groupId>nz.ac.waikato.cms.moa</groupId>
   <artifactId>moa-pom</artifactId>
   <packaging>pom</packaging>
-  <version>2018.07.0-SNAPSHOT</version>
+  <version>2019.05.1-SNAPSHOT</version>
 
   <name>MOA: meta-package</name>
   <description>
@@ -87,7 +87,13 @@
       <dependency>
         <groupId>com.github.fracpete</groupId>
         <artifactId>jshell-scripting</artifactId>
-        <version>0.0.1</version>
+        <version>0.1.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.github.waikato</groupId>
+        <artifactId>fcms-widgets</artifactId>
+        <version>0.0.17</version>
       </dependency>
 
       <dependency>
@@ -164,6 +170,7 @@
   </profiles>
 
   <properties>
+    <kafka.version>2.3.0</kafka.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
@@ -171,6 +178,7 @@
   <modules>
     <module>moa</module>
     <module>weka-package</module>
+    <module>moa-kafka</module>
   </modules>
 
   <build>
@@ -263,10 +271,11 @@
           </executions>
         </plugin>
 
+        <!-- generate documentation -->
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
+          <groupId>com.github.fracpete</groupId>
           <artifactId>latex-maven-plugin</artifactId>
-          <version>1.1</version>
+          <version>1.4.4</version>
           <executions>
             <execution>
               <phase>package</phase>
@@ -275,6 +284,9 @@
               </goals>
             </execution>
           </executions>
+          <configuration>
+            <forceBuild>true</forceBuild>
+          </configuration>
         </plugin>
 
         <plugin>
