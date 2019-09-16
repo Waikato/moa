@@ -15,36 +15,38 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
 import java.util.ArrayList;
+
 import moa.cluster.Clustering;
 import moa.gui.visualization.DataPoint;
 
 public class Accuracy extends MeasureCollection implements ClassificationMeasureCollection {
 
-    private boolean debug = false;
+	private boolean debug = false;
 
-    public Accuracy() {
-        super();
-    }
+	public Accuracy() {
+		super();
+	}
 
-    @Override
-    public String[] getNames() {
-        String[] names = {"Accuracy", "Kappa", "Kappa Temp", "Ram-Hours", "Time", "Memory"};
-        return names;
-    }
+	@Override
+	public String[] getNames() {
+		String[] names = { "Accuracy", "Kappa", "Kappa Temp", "Ram-Hours", "Time", "Memory" };
+		return names;
+	}
 
-    @Override
-    protected boolean[] getDefaultEnabled() {
-        boolean[] defaults = {true, true, true, true, true, true};
-        return defaults;
-    }
+	@Override
+	protected boolean[] getDefaultEnabled() {
+		boolean[] defaults = { true, true, true, true, true, true };
+		return defaults;
+	}
 
-    public void evaluateClustering(Clustering clustering, Clustering trueClsutering, ArrayList<DataPoint> points) {
+	@Override
+	public void evaluateClustering(Clustering clustering, Clustering trueClsutering, ArrayList<DataPoint> points) {
 
-    }
+	}
 
 }

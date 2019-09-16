@@ -11,8 +11,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.gui.visualization;
@@ -22,35 +22,35 @@ package moa.gui.visualization;
  * @author mits
  */
 class OutlierEvent implements Comparable<OutlierEvent> {
-    public DataPoint point;
-    public boolean outlier;
-    public Long timestamp;
+	public DataPoint point;
+	public boolean outlier;
+	public Long timestamp;
 
-    public OutlierEvent(DataPoint point, boolean outlier, Long timestamp) {
-        this.point = point;
-        this.outlier = outlier;
-        this.timestamp = timestamp;
-    }
-    
-    @Override
-    public int compareTo(OutlierEvent o) { 
-        if (this.timestamp > o.timestamp)
-            return 1;
-        else if (this.timestamp < o.timestamp)
-            return -1;
-        else {
-            if (this.point.timestamp > o.point.timestamp)
-                return 1;
-            else if (this.point.timestamp < o.point.timestamp)
-                return -1;
-        }
-            
-        return 0;
-    }
+	public OutlierEvent(DataPoint point, boolean outlier, Long timestamp) {
+		this.point = point;
+		this.outlier = outlier;
+		this.timestamp = timestamp;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        return ( (this.timestamp == ((OutlierEvent) o).timestamp) && 
-                 (this.point.timestamp == ((OutlierEvent) o).point.timestamp) );
-    }
+	@Override
+	public int compareTo(OutlierEvent o) {
+		if (this.timestamp > o.timestamp)
+			return 1;
+		else if (this.timestamp < o.timestamp)
+			return -1;
+		else {
+			if (this.point.timestamp > o.point.timestamp)
+				return 1;
+			else if (this.point.timestamp < o.point.timestamp)
+				return -1;
+		}
+
+		return 0;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return ((this.timestamp == ((OutlierEvent) o).timestamp)
+				&& (this.point.timestamp == ((OutlierEvent) o).point.timestamp));
+	}
 }

@@ -16,14 +16,15 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
-import moa.core.ObjectRepository;
-import moa.options.ClassOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.StringOption;
+
+import moa.core.ObjectRepository;
+import moa.options.ClassOption;
 
 /**
  * Task for running several experiments modifying values of parameters.
@@ -32,60 +33,60 @@ import com.github.javacliparser.StringOption;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class RunTasks extends AuxiliarMainTask {
+public class RunTasks extends MainTask {
 
-    @Override
-    public String getPurposeString() {
-        return "Runs several experiments modifying values of parameters.";
-    }
+	@Override
+	public String getPurposeString() {
+		return "Runs several experiments modifying values of parameters.";
+	}
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public ClassOption taskOption = new ClassOption("task", 't',
-            "Task to do.", Task.class, "EvaluatePrequential -l active.ALUncertainty -i 1000000 -d temp.txt");
+	public ClassOption taskOption = new ClassOption("task", 't', "Task to do.", Task.class,
+			"EvaluatePrequential -l active.ALUncertainty -i 1000000 -d temp.txt");
 
-    public StringOption classifierParameterOption = new StringOption("classifierParameter", 'p',
-            "Classifier parameter to vary.", "b");
+	public StringOption classifierParameterOption = new StringOption("classifierParameter", 'p',
+			"Classifier parameter to vary.", "b");
 
-    public FloatOption firstValueOption = new FloatOption("firstValue",
-            'f', "First value", 0.0);
+	public FloatOption firstValueOption = new FloatOption("firstValue", 'f', "First value", 0.0);
 
-    public FloatOption lastValueOption = new FloatOption("lastValue",
-            'l', "Last value", 1.0);
+	public FloatOption lastValueOption = new FloatOption("lastValue", 'l', "Last value", 1.0);
 
-    public FloatOption incrementValueOption = new FloatOption("incrementValue",
-            'i', "Increment value", 0.1);
+	public FloatOption incrementValueOption = new FloatOption("incrementValue", 'i', "Increment value", 0.1);
 
-    @Override
-    public Class<?> getTaskResultType() {
-        return this.task.getTaskResultType();
-    }
+	@Override
+	public Class<?> getTaskResultType() {
+		return this.task.getTaskResultType();
+	}
 
-    protected Task task;
+	protected Task task;
 
-    @Override
-    protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-        Object result = null;
+	@Override
+	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
+		Object result = null;
 
-        String commandString = this.taskOption.getValueAsCLIString();
-        //for each possible value of the parameter
-        for (double valueParameter = this.firstValueOption.getValue();
-                valueParameter <= this.lastValueOption.getValue();
-                valueParameter += this.incrementValueOption.getValue()) {
-            //Add parameter
-            this.task = (Task) getPreparedClassOption(this.taskOption);
-            if (this.task instanceof EvaluatePrequential) {
-                String classifier = ((EvaluatePrequential) this.task).learnerOption.getValueAsCLIString();
-                ((EvaluatePrequential) this.task).learnerOption.setValueViaCLIString(classifier + " -" + classifierParameterOption.getValue() + " " + valueParameter);
-            }
-            if (this.task instanceof EvaluateInterleavedTestThenTrain) {
-                String classifier = ((EvaluateInterleavedTestThenTrain) this.task).learnerOption.getValueAsCLIString();
-                ((EvaluateInterleavedTestThenTrain) this.task).learnerOption.setValueViaCLIString(classifier + " -" + classifierParameterOption.getValue() + " " + valueParameter);
-            }
-            //Run task
-            result = this.task.doTask(monitor, repository);
-            //System.out.println(((AbstractOptionHandler) this.task).getCLICreationString(Task.class));
-        }
-        return result;
-    }
+		String commandString = this.taskOption.getValueAsCLIString();
+		// for each possible value of the parameter
+		for (double valueParameter = this.firstValueOption.getValue(); valueParameter <= this.lastValueOption
+				.getValue(); valueParameter += this.incrementValueOption.getValue()) {
+			// Add parameter
+			this.task = (Task) getPreparedClassOption(this.taskOption);
+			if (this.task instanceof AbstractEvaluatePrequential) {
+				String classifier = ((AbstractEvaluatePrequential) this.task).learnerOption.getValueAsCLIString();
+				((AbstractEvaluatePrequential) this.task).learnerOption.setValueViaCLIString(
+						classifier + " -" + classifierParameterOption.getValue() + " " + valueParameter);
+			}
+			if (this.task instanceof AbstractEvaluateInterleavedTestThenTrain) {
+				String classifier = ((AbstractEvaluateInterleavedTestThenTrain) this.task).learnerOption
+						.getValueAsCLIString();
+				((AbstractEvaluateInterleavedTestThenTrain) this.task).learnerOption.setValueViaCLIString(
+						classifier + " -" + classifierParameterOption.getValue() + " " + valueParameter);
+			}
+			// Run task
+			result = this.task.doTask(monitor, repository);
+			// System.out.println(((AbstractOptionHandler)
+			// this.task).getCLICreationString(Task.class));
+		}
+		return result;
+	}
 }

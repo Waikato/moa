@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
@@ -26,8 +26,8 @@ import javax.swing.JPanel;
 
 /**
  * The old main class for the MOA gui, now the main class is <code>GUI</code>.
- * Lets the user configure
- * tasks, learners, streams, and perform data stream analysis.
+ * Lets the user configure tasks, learners, streams, and perform data stream
+ * analysis.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
@@ -69,6 +69,7 @@ public class TaskLauncher extends JPanel {
 	public static void main(String[] args) {
 		try {
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+				@Override
 				public void run() {
 					createAndShowGUI();
 				}

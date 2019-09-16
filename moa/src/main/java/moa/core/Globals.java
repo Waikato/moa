@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
@@ -27,26 +27,26 @@ package moa.core;
  */
 public class Globals {
 
-    public static final String workbenchTitle = "{M}assive {O}nline {A}nalysis";
+	public static final String workbenchTitle = "{M}assive {O}nline {A}nalysis";
 
-    public static final String versionString = " 19.05 May 2019";
+	public static final String versionString = " 19.05 May 2019";
 
-    public static final String copyrightNotice = "(C) 2007-2019 University of Waikato, Hamilton, New Zealand";
+	public static final String copyrightNotice = "(C) 2007-2019 University of Waikato, Hamilton, New Zealand";
 
-    public static final String webAddress = "http://moa.cms.waikato.ac.nz/";
+	public static final String webAddress = "http://moa.cms.waikato.ac.nz/";
 
-    public static String getWorkbenchInfoString() {
-        StringBuilder result = new StringBuilder();
-        result.append(workbenchTitle);
-        StringUtils.appendNewline(result);
-        result.append("Version: ");
-        result.append(versionString);
-        StringUtils.appendNewline(result);
-        result.append("Copyright: ");
-        result.append(copyrightNotice);
-        StringUtils.appendNewline(result);
-        result.append("Web: ");
-        result.append(webAddress);
-        return result.toString();
-    }
+	public static String getWorkbenchInfoString() {
+		StringBuilder result = new StringBuilder();
+		result.append(workbenchTitle);
+		StringUtils.appendNewline(result);
+		result.append("Version: ");
+		result.append(versionString);
+		StringUtils.appendNewline(result);
+		result.append("Copyright: ");
+		result.append(copyrightNotice);
+		StringUtils.appendNewline(result);
+		result.append("Web: ");
+		result.append(webAddress);
+		return result.toString();
+	}
 }

@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation.preview;
 
@@ -35,125 +35,123 @@ import moa.evaluation.LearningEvaluation;
  */
 public class LearningCurve extends Preview {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    protected List<String> measurementNames = new ArrayList<String>();
+	protected List<String> measurementNames = new ArrayList<>();
 
-    protected List<double[]> measurementValues = new ArrayList<double[]>();
+	protected List<double[]> measurementValues = new ArrayList<>();
 
-    Class<?> taskClass = null;
-    
-    public LearningCurve(String orderingMeasurementName) {
-        this.measurementNames.add(orderingMeasurementName);
-    }
-    
-    public LearningCurve(String orderingMeasurementName, Class<?> taskClass) {
-        this.measurementNames.add(orderingMeasurementName);
-        this.taskClass = taskClass;
-    }
+	Class<?> taskClass = null;
 
-    public String getOrderingMeasurementName() {
-        return this.measurementNames.get(0);
-    }
-    
-    public void setData(
-    		List<String> measurementNames, 
-    		List<double[]> measurementValues) 
-    {
-    	this.measurementNames.clear();
-    	this.measurementValues.clear();
-    	
-    	this.measurementNames.addAll(measurementNames);
-    	this.measurementValues.addAll(measurementValues);
-    }
+	public LearningCurve(String orderingMeasurementName) {
+		this.measurementNames.add(orderingMeasurementName);
+	}
 
-    public void insertEntry(LearningEvaluation learningEvaluation) {
-        Measurement[] measurements = learningEvaluation.getMeasurements();
-        Measurement orderMeasurement = Measurement.getMeasurementNamed(
-                getOrderingMeasurementName(), measurements);
-        if (orderMeasurement == null) {
-            throw new IllegalArgumentException();
-        }
-        DoubleVector entryVals = new DoubleVector();
-        for (Measurement measurement : measurements) {
-            entryVals.setValue(addMeasurementName(measurement.getName()),
-                    measurement.getValue());
-        }
-        double orderVal = orderMeasurement.getValue();
-        int index = 0;
-        while ((index < this.measurementValues.size())
-                && (orderVal > this.measurementValues.get(index)[0])) {
-            index++;
-        }
-        this.measurementValues.add(index, entryVals.getArrayRef());
-    }
+	public LearningCurve(String orderingMeasurementName, Class<?> taskClass) {
+		this.measurementNames.add(orderingMeasurementName);
+		this.taskClass = taskClass;
+	}
 
-    public int numEntries() {
-        return this.measurementValues.size();
-    }
+	public String getOrderingMeasurementName() {
+		return this.measurementNames.get(0);
+	}
 
-    protected int addMeasurementName(String name) {
-        int index = this.measurementNames.indexOf(name);
-        if (index < 0) {
-            index = this.measurementNames.size();
-            this.measurementNames.add(name);
-        }
-        return index;
-    }
+	public void setData(List<String> measurementNames, List<double[]> measurementValues) {
+		this.measurementNames.clear();
+		this.measurementValues.clear();
 
-    public String headerToString() {
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-        for (String name : this.measurementNames) {
-            if (!first) {
-                sb.append(',');
-            } else {
-                first = false;
-            }
-            sb.append(name);
-        }
-        return sb.toString();
-    }
+		this.measurementNames.addAll(measurementNames);
+		this.measurementValues.addAll(measurementValues);
+	}
 
-    public String entryToString(int entryIndex) {
-        StringBuilder sb = new StringBuilder();
-        double[] vals = this.measurementValues.get(entryIndex);
-        for (int i = 0; i < this.measurementNames.size(); i++) {
-            if (i > 0) {
-                sb.append(',');
-            }
-            if ((i >= vals.length) || Double.isNaN(vals[i])) {
-                sb.append('?');
-            } else {
-                sb.append(Double.toString(vals[i]));
-            }
-        }
-        return sb.toString();
-    }
+	public void insertEntry(LearningEvaluation learningEvaluation) {
+		Measurement[] measurements = learningEvaluation.getMeasurements();
+		Measurement orderMeasurement = Measurement.getMeasurementNamed(getOrderingMeasurementName(), measurements);
+		if (orderMeasurement == null) {
+			throw new IllegalArgumentException();
+		}
+		DoubleVector entryVals = new DoubleVector();
+		for (Measurement measurement : measurements) {
+			entryVals.setValue(addMeasurementName(measurement.getName()), measurement.getValue());
+		}
+		double orderVal = orderMeasurement.getValue();
+		int index = 0;
+		while ((index < this.measurementValues.size()) && (orderVal > this.measurementValues.get(index)[0])) {
+			index++;
+		}
+		this.measurementValues.add(index, entryVals.getArrayRef());
+	}
 
-    @Override
-    public void getDescription(StringBuilder sb, int indent) {
-        sb.append(headerToString());
-        for (int i = 0; i < numEntries(); i++) {
-            StringUtils.appendNewlineIndented(sb, indent, entryToString(i));
-        }
-    }
+	@Override
+	public int numEntries() {
+		return this.measurementValues.size();
+	}
 
-    public double getMeasurement(int entryIndex, int measurementIndex) {
-        return this.measurementValues.get(entryIndex)[measurementIndex];
-    }
+	protected int addMeasurementName(String name) {
+		int index = this.measurementNames.indexOf(name);
+		if (index < 0) {
+			index = this.measurementNames.size();
+			this.measurementNames.add(name);
+		}
+		return index;
+	}
 
-    public String getMeasurementName(int measurementIndex) {
-        return this.measurementNames.get(measurementIndex);
-    }
+	public String headerToString() {
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (String name : this.measurementNames) {
+			if (!first) {
+				sb.append(',');
+			} else {
+				first = false;
+			}
+			sb.append(name);
+		}
+		return sb.toString();
+	}
 
-    public int getMeasurementNameCount() {
-        return this.measurementNames.size();
-    }
+	@Override
+	public String entryToString(int entryIndex) {
+		StringBuilder sb = new StringBuilder();
+		double[] vals = this.measurementValues.get(entryIndex);
+		for (int i = 0; i < this.measurementNames.size(); i++) {
+			if (i > 0) {
+				sb.append(',');
+			}
+			if ((i >= vals.length) || Double.isNaN(vals[i])) {
+				sb.append('?');
+			} else {
+				sb.append(Double.toString(vals[i]));
+			}
+		}
+		return sb.toString();
+	}
 
-    public int getEntryMeasurementCount(int entryIdx) {
-        return this.measurementValues.get(entryIdx).length;
-    }
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {
+		sb.append(headerToString());
+		for (int i = 0; i < numEntries(); i++) {
+			StringUtils.appendNewlineIndented(sb, indent, entryToString(i));
+		}
+	}
+
+	public double getMeasurement(int entryIndex, int measurementIndex) {
+		return this.measurementValues.get(entryIndex)[measurementIndex];
+	}
+
+	@Override
+	public String getMeasurementName(int measurementIndex) {
+		return this.measurementNames.get(measurementIndex);
+	}
+
+	@Override
+	public int getMeasurementNameCount() {
+		return this.measurementNames.size();
+	}
+
+	public int getEntryMeasurementCount(int entryIdx) {
+		return this.measurementValues.get(entryIdx).length;
+	}
 
 	@Override
 	public Class<?> getTaskClass() {
@@ -169,14 +167,10 @@ public class LearningCurve extends Preview {
 		// preallocate the array to store all measurements
 		double[] data = new double[numMeasurements];
 		// get measuements from the learning curve
-		for(int measurementIdx = 0; measurementIdx < numMeasurements; ++measurementIdx)
-		{
-			if(measurementIdx < numEntryMeasurements)
-			{
-				data[measurementIdx] = getMeasurement(entryIndex, measurementIdx);	
-			}
-			else
-			{
+		for (int measurementIdx = 0; measurementIdx < numMeasurements; ++measurementIdx) {
+			if (measurementIdx < numEntryMeasurements) {
+				data[measurementIdx] = getMeasurement(entryIndex, measurementIdx);
+			} else {
 				data[measurementIdx] = Double.NaN;
 			}
 		}

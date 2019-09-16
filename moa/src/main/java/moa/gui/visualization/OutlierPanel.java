@@ -15,224 +15,229 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.gui.visualization;
 
-import java.awt.*;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.PointerInfo;
+import java.awt.RenderingHints;
+
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import moa.cluster.SphereCluster;
-import moa.clusterers.outliers.MyBaseOutlierDetector;
-import moa.clusterers.outliers.MyBaseOutlierDetector.Outlier;
+import moa.learners.clusterers.outliers.MyBaseOutlierDetector;
+import moa.learners.clusterers.outliers.MyBaseOutlierDetector.Outlier;
 
 public class OutlierPanel extends JPanel {
-    private boolean bAntiAlias = false;
-    
-    private MyBaseOutlierDetector myOutlierDetector;
-    private Outlier myOutlier;
-    private SphereCluster cluster;
-    
-    JDialog frameInfo = null;
+	private boolean bAntiAlias = false;
 
-    private double[] center;
-    private final static int DRAW_SIZE = 4;
-    protected double decay_rate;
+	private MyBaseOutlierDetector myOutlierDetector;
+	private Outlier myOutlier;
+	private SphereCluster cluster;
 
-    protected int x_dim = 0;
-    protected int y_dim = 1;
-    protected Color col;
-    protected Color default_color = Color.BLACK;
+	JDialog frameInfo = null;
 
-    protected StreamOutlierPanel streamPanel;
+	private double[] center;
+	private final static int DRAW_SIZE = 4;
+	protected double decay_rate;
 
-    protected int panel_size;
-    protected int window_size;
-    protected boolean highligted = false;
-    private double r;
+	protected int x_dim = 0;
+	protected int y_dim = 1;
+	protected Color col;
+	protected Color default_color = Color.BLACK;
 
-    /** Creates new form ObjectPanel */
+	protected StreamOutlierPanel streamPanel;
 
-    public OutlierPanel(MyBaseOutlierDetector myOutlierDetector, Outlier outlier, SphereCluster cluster, Color color, StreamOutlierPanel sp) {
-        this.myOutlierDetector = myOutlierDetector;
-        this.myOutlier = outlier;
-        this.cluster = cluster;
-        center = cluster.getCenter();
-        r = cluster.getRadius();
-        streamPanel = sp;
+	protected int panel_size;
+	protected int window_size;
+	protected boolean highligted = false;
+	private double r;
 
-        default_color = col = color;
+	/** Creates new form ObjectPanel */
 
-        setVisible(true);
-        setOpaque(false);
-        setSize(new Dimension(1,1));
-        setLocation(0,0);
+	public OutlierPanel(MyBaseOutlierDetector myOutlierDetector, Outlier outlier, SphereCluster cluster, Color color,
+			StreamOutlierPanel sp) {
+		this.myOutlierDetector = myOutlierDetector;
+		this.myOutlier = outlier;
+		this.cluster = cluster;
+		center = cluster.getCenter();
+		r = cluster.getRadius();
+		streamPanel = sp;
 
-        initComponents();
-    }
+		default_color = col = color;
 
-    public void setDirection(double[] direction){
-    }
+		setVisible(true);
+		setOpaque(false);
+		setSize(new Dimension(1, 1));
+		setLocation(0, 0);
 
-    public void updateLocation(){
-        x_dim = streamPanel.getActiveXDim();
-        y_dim = streamPanel.getActiveYDim();
+		initComponents();
+	}
 
-        if ((cluster != null) && (center == null)) {
-            getParent().remove(this);
-        } else {
-            //size of the parent
-            window_size = Math.min(streamPanel.getWidth(), streamPanel.getHeight());
-            
-            panel_size = DRAW_SIZE + 1;
+	public void setDirection(double[] direction) {
+	}
 
-            setSize(new Dimension(panel_size, panel_size));
-            
-            int x = (int) Math.round(center[x_dim] * window_size);
-            int y = (int) Math.round(center[y_dim] * window_size);
-            setLocation((int)(x - (panel_size / 2)), (int)(y - (panel_size / 2)));
-        }
-    }
+	public void updateLocation() {
+		x_dim = streamPanel.getActiveXDim();
+		y_dim = streamPanel.getActiveYDim();
 
-    public void updateTooltip(){
-        /*setToolTipText(cluster.getInfo());        
-        ToolTipManager.sharedInstance().registerComponent(this);
-        ToolTipManager.sharedInstance().setInitialDelay(0);*/
-    }
+		if ((cluster != null) && (center == null)) {
+			getParent().remove(this);
+		} else {
+			// size of the parent
+			window_size = Math.min(streamPanel.getWidth(), streamPanel.getHeight());
 
-    @Override
-    public boolean contains(int x, int y) {
-        //only react on the hull of the cluster
-        double dist = Math.sqrt(Math.pow(x-panel_size/2,2)+Math.pow(y-panel_size/2,2));
-        if(panel_size/2 - 5 < dist && dist < panel_size/2 + 5)
-            return true;
-        else
-            return false;
-    }
+			panel_size = DRAW_SIZE + 1;
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+			setSize(new Dimension(panel_size, panel_size));
 
-        addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                formMouseClicked(evt);
-            }
-        });
+			int x = (int) Math.round(center[x_dim] * window_size);
+			int y = (int) Math.round(center[y_dim] * window_size);
+			setLocation(x - (panel_size / 2), y - (panel_size / 2));
+		}
+	}
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 296, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 266, Short.MAX_VALUE)
-        );
-    }// </editor-fold>//GEN-END:initComponents
+	public void updateTooltip() {
+		/*
+		 * setToolTipText(cluster.getInfo());
+		 * ToolTipManager.sharedInstance().registerComponent(this);
+		 * ToolTipManager.sharedInstance().setInitialDelay(0);
+		 */
+	}
 
-    private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
-        streamPanel.setHighlightedOutlierPanel(this);
-        showInfo();
-        streamPanel.setHighlightedOutlierPanel(null);
-    }//GEN-LAST:event_formMouseClicked
+	@Override
+	public boolean contains(int x, int y) {
+		// only react on the hull of the cluster
+		double dist = Math.sqrt(Math.pow(x - panel_size / 2, 2) + Math.pow(y - panel_size / 2, 2));
+		if (panel_size / 2 - 5 < dist && dist < panel_size / 2 + 5)
+			return true;
+		else
+			return false;
+	}
 
-    public String getInfo() {
-        return myOutlierDetector.getObjectInfo(myOutlier.obj);
-    }
-    
-    private void showInfo() {        
-        String title = "Outlier information";
+	/**
+	 * This method is called from within the constructor to initialize the form.
+	 * WARNING: Do NOT modify this code. The content of this method is always
+	 * regenerated by the Form Editor.
+	 */
+	@SuppressWarnings("unchecked")
+	// <editor-fold defaultstate="collapsed" desc="Generated
+	// Code">//GEN-BEGIN:initComponents
+	private void initComponents() {
 
-        JLabel comp = new JLabel();
-        comp.setText(getInfo());
+		addMouseListener(new java.awt.event.MouseAdapter() {
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				formMouseClicked(evt);
+			}
+		});
 
-        JOptionPane pane = new JOptionPane(comp);
-        pane.setOptionType(JOptionPane.DEFAULT_OPTION);
-        pane.setMessageType(JOptionPane.PLAIN_MESSAGE);
-        
-        PointerInfo pointerInfo = MouseInfo.getPointerInfo();
-        Point mousePoint = pointerInfo.getLocation();
-        
-        JDialog dialog = pane.createDialog(this, title);        
-        dialog.setLocation(mousePoint);        
-        dialog.setVisible(true);
-    }
-    
-    @Override
-    protected void paintComponent(Graphics g) {
-        if (bAntiAlias) {            
-            Graphics2D g2d = (Graphics2D)g;
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                    RenderingHints.VALUE_ANTIALIAS_ON);
-        }
-        
-        updateLocation();
-        if (highligted){
-            g.setColor(Color.ORANGE);
-        }
-        else{
-            g.setColor(default_color);
-        }
-        
-        int drawSize = DRAW_SIZE;
-        int drawStart = 0;
-        
-        g.fillOval(drawStart, drawStart, drawSize, drawSize);
-        g.drawOval(drawStart, drawStart, drawSize, drawSize);
-    }
+		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+		this.setLayout(layout);
+		layout.setHorizontalGroup(
+				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 296, Short.MAX_VALUE));
+		layout.setVerticalGroup(
+				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 266, Short.MAX_VALUE));
+	}// </editor-fold>//GEN-END:initComponents
 
-    public void highlight(boolean enabled){
-        highligted = enabled;
-        repaint();
-    }
+	private void formMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_formMouseClicked
+		streamPanel.setHighlightedOutlierPanel(this);
+		showInfo();
+		streamPanel.setHighlightedOutlierPanel(null);
+	}// GEN-LAST:event_formMouseClicked
 
-    public boolean isValidCluster(){
-        return (center!=null);
-    }
+	public String getInfo() {
+		return myOutlierDetector.getObjectInfo(myOutlier.obj);
+	}
 
-    public int getClusterID(){
-        return (int)cluster.getId();
-    }
+	private void showInfo() {
+		String title = "Outlier information";
 
-    public int getClusterLabel(){
-        return (int)cluster.getGroundTruth();
-    }
+		JLabel comp = new JLabel();
+		comp.setText(getInfo());
 
-    public String getSVGString(int width){
-        StringBuffer out = new StringBuffer();
+		JOptionPane pane = new JOptionPane(comp);
+		pane.setOptionType(JOptionPane.DEFAULT_OPTION);
+		pane.setMessageType(JOptionPane.PLAIN_MESSAGE);
 
-        int x = (int)(center[x_dim]*window_size);
-        int y = (int)(center[y_dim]*window_size);
-        int radius = panel_size/2;
-        
-        out.append("<circle ");
-        out.append("cx='"+x+"' cy='"+y+"' r='"+radius+"'");
-        out.append(" stroke='green' stroke-width='1' fill='white' fill-opacity='0' />");
-        out.append("\n");
-        return out.toString();
-    }
+		PointerInfo pointerInfo = MouseInfo.getPointerInfo();
+		Point mousePoint = pointerInfo.getLocation();
 
-    public void drawOnCanvas(Graphics2D imageGraphics){
-        int x = (int)(center[x_dim]*window_size-(panel_size/2));
-        int y = (int)(center[y_dim]*window_size-(panel_size/2));
-        int radius = panel_size;
-        imageGraphics.drawOval(x, y, radius, radius);
-    }
+		JDialog dialog = pane.createDialog(this, title);
+		dialog.setLocation(mousePoint);
+		dialog.setVisible(true);
+	}
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // End of variables declaration//GEN-END:variables
+	@Override
+	protected void paintComponent(Graphics g) {
+		if (bAntiAlias) {
+			Graphics2D g2d = (Graphics2D) g;
+			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		}
+
+		updateLocation();
+		if (highligted) {
+			g.setColor(Color.ORANGE);
+		} else {
+			g.setColor(default_color);
+		}
+
+		int drawSize = DRAW_SIZE;
+		int drawStart = 0;
+
+		g.fillOval(drawStart, drawStart, drawSize, drawSize);
+		g.drawOval(drawStart, drawStart, drawSize, drawSize);
+	}
+
+	public void highlight(boolean enabled) {
+		highligted = enabled;
+		repaint();
+	}
+
+	public boolean isValidCluster() {
+		return (center != null);
+	}
+
+	public int getClusterID() {
+		return (int) cluster.getId();
+	}
+
+	public int getClusterLabel() {
+		return (int) cluster.getGroundTruth();
+	}
+
+	public String getSVGString(int width) {
+		StringBuffer out = new StringBuffer();
+
+		int x = (int) (center[x_dim] * window_size);
+		int y = (int) (center[y_dim] * window_size);
+		int radius = panel_size / 2;
+
+		out.append("<circle ");
+		out.append("cx='" + x + "' cy='" + y + "' r='" + radius + "'");
+		out.append(" stroke='green' stroke-width='1' fill='white' fill-opacity='0' />");
+		out.append("\n");
+		return out.toString();
+	}
+
+	public void drawOnCanvas(Graphics2D imageGraphics) {
+		int x = (int) (center[x_dim] * window_size - (panel_size / 2));
+		int y = (int) (center[y_dim] * window_size - (panel_size / 2));
+		int radius = panel_size;
+		imageGraphics.drawOval(x, y, radius, radius);
+	}
+
+	// Variables declaration - do not modify//GEN-BEGIN:variables
+	// End of variables declaration//GEN-END:variables
 }

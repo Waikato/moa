@@ -15,26 +15,25 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks.meta;
 
 import java.util.List;
 
 /**
- * This class provides a superclass for Active Learning tasks, which 
- * enables convenient searching for those tasks for example when showing 
- * a list of available Active Learning tasks.
- * Furthermore, it specifies the type of threads being used as
- * {@link ALTaskThread}.
- * 
+ * This class provides a superclass for Active Learning tasks, which enables
+ * convenient searching for those tasks for example when showing a list of
+ * available Active Learning tasks. Furthermore, it specifies the type of
+ * threads being used as {@link ALTaskThread}.
+ *
  * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  * @version $Revision: 1 $
  */
 public abstract class ALMainTask extends MetaMainTask {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
 	public abstract List<ALTaskThread> getSubtaskThreads();
 }

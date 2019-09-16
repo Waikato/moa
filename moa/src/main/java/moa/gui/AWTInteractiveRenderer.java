@@ -15,12 +15,12 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
 // not used?
 public interface AWTInteractiveRenderer extends AWTRenderer {
 
-    public void mouseClicked(int pixelX, int pixelY);
+	void mouseClicked(int pixelX, int pixelY);
 }

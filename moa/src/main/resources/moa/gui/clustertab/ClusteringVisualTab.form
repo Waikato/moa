@@ -81,7 +81,7 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                       <SubComponents>
-                        <Container class="moa.gui.visualization.StreamPanel" name="streamPanel1">
+                        <Container class=gui.visualization.StreamPanel" name="streamPanel1">
                           <Properties>
                             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                               <Dimension value="[400, 250]"/>
@@ -115,7 +115,7 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                       <SubComponents>
-                        <Container class="moa.gui.visualization.StreamPanel" name="streamPanel0">
+                        <Container class=gui.visualization.StreamPanel" name="streamPanel0">
                           <Properties>
                             <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                               <Dimension value="[400, 250]"/>
@@ -427,7 +427,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout"/>
           <SubComponents>
-            <Component class="moa.gui.clustertab.ClusteringVisualEvalPanel" name="clusteringVisualEvalPanel1">
+            <Component class=gui.clustertab.ClusteringVisualEvalPanel" name="clusteringVisualEvalPanel1">
               <Properties>
                 <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[280, 118]"/>
@@ -517,7 +517,7 @@
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
-                    <Container class="moa.gui.visualization.GraphCanvas" name="graphCanvas">
+                    <Container class=gui.visualization.GraphCanvas" name="graphCanvas">
                       <Properties>
                         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                           <Dimension value="[500, 111]"/>

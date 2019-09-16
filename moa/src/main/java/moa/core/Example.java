@@ -1,12 +1,12 @@
 package moa.core;
 
-public interface Example< T extends Object> {
+public interface Example<T extends Object> {
 
-	public T getData();
+	T getData();
 
-	public double weight();
-	
-	public void setWeight(double weight);
+	double weight();
 
-	public Example copy();
-} 
+	void setWeight(double weight);
+
+	Example copy();
+}

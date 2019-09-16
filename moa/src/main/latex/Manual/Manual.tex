@@ -685,7 +685,7 @@ This is the main function of the learning algorithm, called for every training e
 These functions assist the training algorithm. \\ \verb+newNominalClassObserver+ and \verb+newNumericClassObserver+ are responsible for creating new observer objects for nominal and numeric attributes, respectively. The \verb+findBestSplit()+ function will iterate through the possible stumps and return the one with the highest `merit' score.
 
 \begin{lstlisting}[caption={Predicting class of unknown examples},label=lst:test,firstnumber=68]
-	public double[] getVotesForInstance(Instance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		if (this.bestSplit != null) {
 			int branch = this.bestSplit.splitTest.branchForInstance(inst);
 			if (branch >= 0) {
@@ -769,7 +769,7 @@ public class DecisionStumpTutorial extends AbstractClassifier {
 		}
 	}
 
-	public double[] getVotesForInstance(Instance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		if (this.bestSplit != null) {
 			int branch = this.bestSplit.splitTest.branchForInstance(inst);
 			if (branch >= 0) {

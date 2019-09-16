@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.github.javacliparser.gui;
 
@@ -30,31 +30,30 @@ import com.github.javacliparser.Option;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class FlagOptionEditComponent extends JCheckBox implements
-        OptionEditComponent {
+public class FlagOptionEditComponent extends JCheckBox implements OptionEditComponent {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    protected FlagOption editedOption;
+	protected FlagOption editedOption;
 
-    public FlagOptionEditComponent(Option opt) {
-        FlagOption option = (FlagOption) opt;
-        this.editedOption = option;
-        setEditState(this.editedOption.getValueAsCLIString());
-    }
+	public FlagOptionEditComponent(Option opt) {
+		FlagOption option = (FlagOption) opt;
+		this.editedOption = option;
+		setEditState(this.editedOption.getValueAsCLIString());
+	}
 
-    @Override
-    public Option getEditedOption() {
-        return this.editedOption;
-    }
+	@Override
+	public Option getEditedOption() {
+		return this.editedOption;
+	}
 
-    @Override
-    public void setEditState(String cliString) {
-        setSelected(cliString != null);
-    }
+	@Override
+	public void setEditState(String cliString) {
+		setSelected(cliString != null);
+	}
 
-    @Override
-    public void applyState() {
-        this.editedOption.setValue(isSelected());
-    }
+	@Override
+	public void applyState() {
+		this.editedOption.setValue(isSelected());
+	}
 }

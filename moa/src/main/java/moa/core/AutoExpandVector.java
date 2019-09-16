@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
@@ -33,100 +33,100 @@ import moa.MOAObject;
  */
 public class AutoExpandVector<T> extends ArrayList<T> implements MOAObject {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public AutoExpandVector() {
-        super(0);
-    }
-    
-    public AutoExpandVector(int size) {
-        super(size);
-    }
+	public AutoExpandVector() {
+		super(0);
+	}
 
-    @Override
-    public void add(int pos, T obj) {
-        if (pos > size()) {
-            while (pos > size()) {
-                add(null);
-            }
-            trimToSize();
-        }
-        super.add(pos, obj);
-    }
+	public AutoExpandVector(int size) {
+		super(size);
+	}
 
-    @Override
-    public T get(int pos) {
-        return ((pos >= 0) && (pos < size())) ? super.get(pos) : null;
-    }
+	@Override
+	public void add(int pos, T obj) {
+		if (pos > size()) {
+			while (pos > size()) {
+				add(null);
+			}
+			trimToSize();
+		}
+		super.add(pos, obj);
+	}
 
-    @Override
-    public T set(int pos, T obj) {
-        if (pos >= size()) {
-            add(pos, obj);
-            return null;
-        }
-        return super.set(pos, obj);
-    }
+	@Override
+	public T get(int pos) {
+		return ((pos >= 0) && (pos < size())) ? super.get(pos) : null;
+	}
 
-    @Override
-    public boolean add(T arg0) {
-        boolean result = super.add(arg0);
-        trimToSize();
-        return result;
-    }
+	@Override
+	public T set(int pos, T obj) {
+		if (pos >= size()) {
+			add(pos, obj);
+			return null;
+		}
+		return super.set(pos, obj);
+	}
 
-    @Override
-    public boolean addAll(Collection<? extends T> arg0) {
-        boolean result = super.addAll(arg0);
-        trimToSize();
-        return result;
-    }
+	@Override
+	public boolean add(T arg0) {
+		boolean result = super.add(arg0);
+		trimToSize();
+		return result;
+	}
 
-    @Override
-    public boolean addAll(int arg0, Collection<? extends T> arg1) {
-        boolean result = super.addAll(arg0, arg1);
-        trimToSize();
-        return result;
-    }
+	@Override
+	public boolean addAll(Collection<? extends T> arg0) {
+		boolean result = super.addAll(arg0);
+		trimToSize();
+		return result;
+	}
 
-    @Override
-    public void clear() {
-        super.clear();
-        trimToSize();
-    }
+	@Override
+	public boolean addAll(int arg0, Collection<? extends T> arg1) {
+		boolean result = super.addAll(arg0, arg1);
+		trimToSize();
+		return result;
+	}
 
-    @Override
-    public T remove(int arg0) {
-        T result = super.remove(arg0);
-        trimToSize();
-        return result;
-    }
+	@Override
+	public void clear() {
+		super.clear();
+		trimToSize();
+	}
 
-    @Override
-    public boolean remove(Object arg0) {
-        boolean result = super.remove(arg0);
-        trimToSize();
-        return result;
-    }
+	@Override
+	public T remove(int arg0) {
+		T result = super.remove(arg0);
+		trimToSize();
+		return result;
+	}
 
-    @Override
-    protected void removeRange(int arg0, int arg1) {
-        super.removeRange(arg0, arg1);
-        trimToSize();
-    }
+	@Override
+	public boolean remove(Object arg0) {
+		boolean result = super.remove(arg0);
+		trimToSize();
+		return result;
+	}
 
-    @Override
-    public MOAObject copy() {
-        return AbstractMOAObject.copy(this);
-    }
+	@Override
+	protected void removeRange(int arg0, int arg1) {
+		super.removeRange(arg0, arg1);
+		trimToSize();
+	}
 
-    @Override
-    public int measureByteSize() {
-        return AbstractMOAObject.measureByteSize(this);
-    }
+	@Override
+	public MOAObject copy() {
+		return AbstractMOAObject.copy(this);
+	}
 
-    @Override
-    public void getDescription(StringBuilder sb, int indent) {
-        // TODO Auto-generated method stub
-    }
+	@Override
+	public long measureByteSize() {
+		return AbstractMOAObject.measureByteSize(this);
+	}
+
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {
+		// TODO Auto-generated method stub
+	}
 }

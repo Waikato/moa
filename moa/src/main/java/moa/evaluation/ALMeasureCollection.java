@@ -35,15 +35,14 @@ public class ALMeasureCollection extends MeasureCollection implements Classifica
 
 	private static final long serialVersionUID = 1L;
 
-    @Override
-    protected String[] getNames() {
-        return new String[]{"Accuracy", "Kappa", "Kappa Temp", "Ram-Hours",
-                    "Time", "Memory", "Label Acq. Rate"};
-    }
+	@Override
+	protected String[] getNames() {
+		return new String[] { "Accuracy", "Kappa", "Kappa Temp", "Ram-Hours", "Time", "Memory", "Label Acq. Rate" };
+	}
 
-    @Override
-    public void evaluateClustering(Clustering clustering, Clustering trueClsutering, ArrayList<DataPoint> points) {
+	@Override
+	public void evaluateClustering(Clustering clustering, Clustering trueClsutering, ArrayList<DataPoint> points) {
 
-    }
+	}
 
 }

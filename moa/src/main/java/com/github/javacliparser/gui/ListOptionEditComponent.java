@@ -1,5 +1,5 @@
 /*
- *    ListOptionEditComponent.java
+ *    StringOptionEditComponent.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  *
@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.github.javacliparser.gui;
 
@@ -29,10 +29,9 @@ import com.github.javacliparser.Option;
  */
 public class ListOptionEditComponent extends StringOptionEditComponent {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public ListOptionEditComponent(Option option) {
-    	super(option);
-    }
+	public ListOptionEditComponent(Option option) {
+		super(option);
+	}
 }
-

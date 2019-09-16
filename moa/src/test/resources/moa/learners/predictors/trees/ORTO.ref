@@ -1,0 +1,175 @@
+--> regression-out0.arff
+moa.learners.predictors.trees.ORTO
+
+Index
+  100
+Votes
+  0: 55948.38383838
+Measurements
+  classified instances: 99
+  mean absolute error: 35444.46456824
+  root mean squared error: 66201.40505691
+  relative mean absolute error: 1.01890362
+  relative root mean squared error: 1.01837638
+Model measurements
+  model training instances: 99
+  number of subtrees: 1
+  tree size (nodes): 1
+  tree size (leaves): 1
+  number of option nodes: 0
+
+Index
+  200
+Votes
+  0: 47263.67336683
+Measurements
+  classified instances: 199
+  mean absolute error: 32548.99927294
+  root mean squared error: 52948.02279012
+  relative mean absolute error: 1.0199549
+  relative root mean squared error: 1.01844209
+Model measurements
+  model training instances: 199
+  number of subtrees: 1
+  tree size (nodes): 1
+  tree size (leaves): 1
+  number of option nodes: 0
+
+Index
+  300
+Votes
+  0: 50165.31081926
+Measurements
+  classified instances: 299
+  mean absolute error: 29757.4652103
+  root mean squared error: 49902.64385916
+  relative mean absolute error: 0.96810993
+  relative root mean squared error: 0.99193805
+Model measurements
+  model training instances: 299
+  number of subtrees: 3
+  tree size (nodes): 7
+  tree size (leaves): 4
+  number of option nodes: 1
+
+Index
+  400
+Votes
+  0: 26441.69486804
+Measurements
+  classified instances: 399
+  mean absolute error: 29962.37722288
+  root mean squared error: 51717.68742573
+  relative mean absolute error: 0.92175223
+  relative root mean squared error: 0.96452597
+Model measurements
+  model training instances: 399
+  number of subtrees: 3
+  tree size (nodes): 7
+  tree size (leaves): 4
+  number of option nodes: 1
+
+Index
+  500
+Votes
+  0: 43125.10199734
+Measurements
+  classified instances: 499
+  mean absolute error: 28046.47075526
+  root mean squared error: 48268.98679495
+  relative mean absolute error: 0.88021496
+  relative root mean squared error: 0.94032897
+Model measurements
+  model training instances: 499
+  number of subtrees: 3
+  tree size (nodes): 7
+  tree size (leaves): 4
+  number of option nodes: 1
+
+Index
+  600
+Votes
+  0: 59698.92615607
+Measurements
+  classified instances: 599
+  mean absolute error: 27320.80724991
+  root mean squared error: 49814.17523692
+  relative mean absolute error: 0.86060667
+  relative root mean squared error: 0.95011739
+Model measurements
+  model training instances: 599
+  number of subtrees: 3
+  tree size (nodes): 7
+  tree size (leaves): 4
+  number of option nodes: 1
+
+Index
+  700
+Votes
+  0: 30792.87596752
+Measurements
+  classified instances: 699
+  mean absolute error: 25885.51112031
+  root mean squared error: 47107.56515411
+  relative mean absolute error: 0.8230942
+  relative root mean squared error: 0.92728628
+Model measurements
+  model training instances: 699
+  number of subtrees: 3
+  tree size (nodes): 7
+  tree size (leaves): 4
+  number of option nodes: 1
+
+Index
+  800
+Votes
+  0: 48714.81405032
+Measurements
+  classified instances: 799
+  mean absolute error: 25422.67903174
+  root mean squared error: 45860.77657975
+  relative mean absolute error: 0.80666677
+  relative root mean squared error: 0.9112707
+Model measurements
+  model training instances: 799
+  number of subtrees: 3
+  tree size (nodes): 7
+  tree size (leaves): 4
+  number of option nodes: 1
+
+Index
+  900
+Votes
+  0: 29363.67556588
+Measurements
+  classified instances: 899
+  mean absolute error: 24402.26274495
+  root mean squared error: 43837.24607999
+  relative mean absolute error: 0.78772279
+  relative root mean squared error: 0.89809665
+Model measurements
+  model training instances: 899
+  number of subtrees: 3
+  tree size (nodes): 7
+  tree size (leaves): 4
+  number of option nodes: 1
+
+Index
+  1000
+Votes
+  0: 28244.97616516
+Measurements
+  classified instances: 999
+  mean absolute error: 24008.85709789
+  root mean squared error: 42731.74610047
+  relative mean absolute error: 0.77296553
+  relative root mean squared error: 0.88013156
+Model measurements
+  model training instances: 999
+  number of subtrees: 3
+  tree size (nodes): 7
+  tree size (leaves): 4
+  number of option nodes: 1
+
+
+

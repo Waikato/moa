@@ -15,67 +15,66 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams;
 
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.AbstractMOAObject;
 import moa.core.InstanceExample;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.Instances;
 
 /**
- * Stream generator for representing a stream that is cached in memory.
- * This generator is used with the task <code>CacheShuffledStream</code> that
- * stores and shuffles examples in memory.
+ * Stream generator for representing a stream that is cached in memory. This
+ * generator is used with the task <code>CacheShuffledStream</code> that stores
+ * and shuffles examples in memory.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class CachedInstancesStream extends AbstractMOAObject implements
-		MultiTargetInstanceStream {
+public class CachedInstancesStream extends AbstractMOAObject implements MultiTargetInstanceStream {
 
 	private static final long serialVersionUID = 1L;
 
-	protected Instances toStream;
+	protected InstancesHeader toStream;
 
 	protected int streamPos;
 
-	public CachedInstancesStream(Instances toStream) {
+	public CachedInstancesStream(InstancesHeader toStream) {
 		this.toStream = toStream;
 	}
 
-    @Override
+	@Override
 	public InstancesHeader getHeader() {
 		return new InstancesHeader(this.toStream);
 	}
 
-    @Override
+	@Override
 	public long estimatedRemainingInstances() {
 		return this.toStream.numInstances() - this.streamPos;
 	}
 
-    @Override
+	@Override
 	public boolean hasMoreInstances() {
 		return this.streamPos < this.toStream.numInstances();
 	}
 
-    @Override
+	@Override
 	public InstanceExample nextInstance() {
 		return new InstanceExample(this.toStream.instance(this.streamPos++));
 	}
 
-    @Override
+	@Override
 	public boolean isRestartable() {
 		return true;
 	}
 
-    @Override
+	@Override
 	public void restart() {
 		this.streamPos = 0;
 	}
 
-    @Override
+	@Override
 	public void getDescription(StringBuilder sb, int indent) {
 		// TODO Auto-generated method stub
 

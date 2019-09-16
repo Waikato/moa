@@ -18,41 +18,10 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.active;
 
-import moa.evaluation.ALMeasureCollection;
-import moa.evaluation.MeasureCollection;
-import moa.evaluation.preview.MeanPreviewCollection;
-import moa.evaluation.preview.Preview;
-import moa.evaluation.preview.PreviewCollection;
-import moa.gui.FileExtensionFilter;
-import moa.gui.GUIUtils;
-import moa.gui.PreviewTableModel;
-import moa.gui.visualization.ParamGraphCanvas;
-import moa.gui.visualization.ProcessGraphCanvas;
-import moa.tasks.FailedTaskReport;
-import moa.tasks.meta.ALMultiParamTask;
-import moa.tasks.meta.ALPartitionEvaluationTask;
-import moa.tasks.meta.ALPrequentialEvaluationTask;
-import nz.ac.waikato.cms.gui.core.BaseFileChooser;
-
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -72,6 +41,40 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+
+import moa.evaluation.ALMeasureCollection;
+import moa.evaluation.MeasureCollection;
+import moa.evaluation.preview.MeanPreviewCollection;
+import moa.evaluation.preview.Preview;
+import moa.evaluation.preview.PreviewCollection;
+import moa.gui.FileExtensionFilter;
+import moa.gui.GUIUtils;
+import moa.gui.PreviewTableModel;
+import moa.gui.visualization.ParamGraphCanvas;
+import moa.gui.visualization.ProcessGraphCanvas;
+import moa.tasks.FailedTaskReport;
+import moa.tasks.meta.ALMultiParamTask;
+import moa.tasks.meta.ALPartitionEvaluationTask;
+import moa.tasks.meta.ALPrequentialEvaluationTask;
+import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
 /**
  * This panel displays text. Used to output the results of tasks. In contrast to
@@ -160,27 +163,23 @@ public class ALTaskTextViewerPanel extends JPanel {
 		this.topWrapper = new JPanel();
 		this.topWrapper.setLayout(new BorderLayout());
 
-		// previewTable displays live results in table form 
+		// previewTable displays live results in table form
 		// (or in text form, if an error occurs)
 		this.previewTableModel = new PreviewTableModel();
 		this.previewTable = new JTable(this.previewTableModel);
 		this.previewTable.setFont(new Font("Monospaced", Font.PLAIN, 12));
 		this.previewTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        this.errorTextField = new JTextArea();
-        this.errorTextField.setEditable(false);
-        this.errorTextField.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		this.errorTextField = new JTextArea();
+		this.errorTextField.setEditable(false);
+		this.errorTextField.setFont(new Font("Monospaced", Font.PLAIN, 12));
 
 		// scrollPane enables scroll support for previewTable
-		this.scrollPaneTable = new JScrollPane(this.previewTable, 
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
-		);
-		this.scrollPaneText = new JScrollPane(this.errorTextField, 
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
-		);
-        this.scrollPaneText.setVisible(false);
+		this.scrollPaneTable = new JScrollPane(this.previewTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		this.scrollPaneText = new JScrollPane(this.errorTextField, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		this.scrollPaneText.setVisible(false);
 
 		this.topWrapper.add(this.scrollPaneTable, BorderLayout.CENTER);
 
@@ -194,11 +193,12 @@ public class ALTaskTextViewerPanel extends JPanel {
 
 		this.exportButton.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				BaseFileChooser fileChooser = new BaseFileChooser();
 				fileChooser.setAcceptAllFileFilterUsed(true);
 				fileChooser.addChoosableFileFilter(new FileExtensionFilter(EXPORT_FILE_EXTENSION));
-				if (fileChooser.showSaveDialog(ALTaskTextViewerPanel.this) == BaseFileChooser.APPROVE_OPTION) {
+				if (fileChooser.showSaveDialog(ALTaskTextViewerPanel.this) == JFileChooser.APPROVE_OPTION) {
 					File chosenFile = fileChooser.getSelectedFile();
 					String fileName = chosenFile.getPath();
 					if (!chosenFile.exists() && !fileName.endsWith(EXPORT_FILE_EXTENSION)) {
@@ -209,12 +209,9 @@ public class ALTaskTextViewerPanel extends JPanel {
 
 						String text = "";
 
-						if(scrollPaneTable.isVisible())
-						{
+						if (scrollPaneTable.isVisible()) {
 							text = previewTableModel.toString();
-						}
-						else
-						{
+						} else {
 							text = errorTextField.getText();
 						}
 
@@ -234,30 +231,33 @@ public class ALTaskTextViewerPanel extends JPanel {
 
 		this.mainPane.setTopComponent(this.topWrapper);
 
-		// panelEvalOutput contains the bottom component of the mainPane. It consists of a left
-		// area showing several performance measures and an area on the right side with a live
+		// panelEvalOutput contains the bottom component of the mainPane. It consists of
+		// a left
+		// area showing several performance measures and an area on the right side with
+		// a live
 		// performance graph
 		this.panelEvalOutput = new JPanel();
 		this.panelEvalOutput.setLayout(new GridBagLayout());
 		this.panelEvalOutput.setBorder(BorderFactory.createTitledBorder("Evaluation"));
 
-		// init the measure overview. the dummy ALMeasureCollection[] is needed to properly init the measure names
-		this.measureOverview = new MeasureOverview(new ALMeasureCollection[]{new ALMeasureCollection()}, "", null);
-        this.measureOverview.setMinimumSize(new Dimension(280, 118));
-        this.measureOverview.setPreferredSize(new Dimension(290, 115));
-        this.measureOverview.setActionListener(new ActionListener() {
+		// init the measure overview. the dummy ALMeasureCollection[] is needed to
+		// properly init the measure names
+		this.measureOverview = new MeasureOverview(new ALMeasureCollection[] { new ALMeasureCollection() }, "", null);
+		this.measureOverview.setMinimumSize(new Dimension(280, 118));
+		this.measureOverview.setPreferredSize(new Dimension(290, 115));
+		this.measureOverview.setActionListener(new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selected = Integer.parseInt(e.getActionCommand());
-                graphCanvas.setMeasureSelected(selected);
-                graphCanvas.updateCanvas(true);
-                paramGraphCanvas.setMeasureSelected(selected);
-                paramGraphCanvas.updateCanvas(true);
-                budgetGraphCanvas.setMeasureSelected(selected);
-                budgetGraphCanvas.updateCanvas(true);
-            }
-        });
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int selected = Integer.parseInt(e.getActionCommand());
+				graphCanvas.setMeasureSelected(selected);
+				graphCanvas.updateCanvas(true);
+				paramGraphCanvas.setMeasureSelected(selected);
+				paramGraphCanvas.updateCanvas(true);
+				budgetGraphCanvas.setMeasureSelected(selected);
+				budgetGraphCanvas.updateCanvas(true);
+			}
+		});
 
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
@@ -268,31 +268,37 @@ public class ALTaskTextViewerPanel extends JPanel {
 
 		panelEvalOutput.add(measureOverview, gridBagConstraints);
 
-		// graphPanel is the right area of panelEvalOutput, showing a live preview of the
+		// graphPanel is the right area of panelEvalOutput, showing a live preview of
+		// the
 		// performance
 		graphPanel = new JPanel();
 		graphPanel.setLayout(new GridBagLayout());
 		graphPanel.setBorder(BorderFactory.createTitledBorder("Plot"));
 		graphPanel.setPreferredSize(new Dimension(530, 115));
 
-		// graphPanelControlLeft contains two buttons allowing to zoom the y-axis in and out
+		// graphPanelControlLeft contains two buttons allowing to zoom the y-axis in and
+		// out
 		graphPanelControlLeft = new JPanel();
 		graphPanelControlLeft.setLayout(new GridBagLayout());
 
 		buttonZoomInY = new JButton();
 		buttonZoomInY.setText("Zoom in Y");
 		buttonZoomInY.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				// update the currently open graph
-                int currentTab = graphPanelTabbedPane.getSelectedIndex();
-                switch (currentTab){
-                    case 0: graphCanvas.scaleYResolution(2); 
-                            break;
-                    case 1: paramGraphCanvas.scaleYResolution(2); 
-                            break;
-                    case 2: budgetGraphCanvas.scaleYResolution(2);
-                            break;
-                }
+				int currentTab = graphPanelTabbedPane.getSelectedIndex();
+				switch (currentTab) {
+				case 0:
+					graphCanvas.scaleYResolution(2);
+					break;
+				case 1:
+					paramGraphCanvas.scaleYResolution(2);
+					break;
+				case 2:
+					budgetGraphCanvas.scaleYResolution(2);
+					break;
+				}
 			}
 		});
 
@@ -303,17 +309,21 @@ public class ALTaskTextViewerPanel extends JPanel {
 		buttonZoomOutY = new JButton();
 		buttonZoomOutY.setText("Zoom out Y");
 		buttonZoomOutY.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				// update the currently open graph
 				int currentTab = graphPanelTabbedPane.getSelectedIndex();
-                switch (currentTab){
-                    case 0: graphCanvas.scaleYResolution(0.5); 
-                            break;
-                    case 1: paramGraphCanvas.scaleYResolution(0.5); 
-                            break;
-                    case 2: budgetGraphCanvas.scaleYResolution(0.5);
-                            break;
-                }
+				switch (currentTab) {
+				case 0:
+					graphCanvas.scaleYResolution(0.5);
+					break;
+				case 1:
+					paramGraphCanvas.scaleYResolution(0.5);
+					break;
+				case 2:
+					budgetGraphCanvas.scaleYResolution(0.5);
+					break;
+				}
 			}
 		});
 
@@ -351,10 +361,10 @@ public class ALTaskTextViewerPanel extends JPanel {
 
 		GroupLayout graphCanvasLayout = new GroupLayout(graphCanvas);
 		graphCanvas.setLayout(graphCanvasLayout);
-		graphCanvasLayout.setHorizontalGroup(graphCanvasLayout
-				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 515, Short.MAX_VALUE));
-		graphCanvasLayout.setVerticalGroup(graphCanvasLayout
-				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 128, Short.MAX_VALUE));
+		graphCanvasLayout.setHorizontalGroup(
+				graphCanvasLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 515, Short.MAX_VALUE));
+		graphCanvasLayout.setVerticalGroup(
+				graphCanvasLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 128, Short.MAX_VALUE));
 
 		graphScrollPanel.setViewportView(graphCanvas);
 		graphPanelTabbedPane.addTab("Processed Instances", graphScrollPanel);
@@ -378,22 +388,22 @@ public class ALTaskTextViewerPanel extends JPanel {
 		graphPanelTabbedPane.addTab("Varied Parameter", paramGraphScrollPanel);
 
 		// budgetGraphScrollPanel is a scroll wrapper for the live budget graph
-        budgetGraphScrollPanel = new JScrollPane();
+		budgetGraphScrollPanel = new JScrollPane();
 
 		// budgetGraphCanvas displays the live actually used budget graph
 		budgetGraphCanvas = new ParamGraphCanvas();
 		budgetGraphCanvas.setPreferredSize(new Dimension(500, 111));
-        budgetGraphCanvas.setGraph(null, null, null, null);
+		budgetGraphCanvas.setGraph(null, null, null, null);
 
-        GroupLayout budgetGraphCanvasLayout = new GroupLayout(budgetGraphCanvas);
-        budgetGraphCanvas.setLayout(budgetGraphCanvasLayout);
-        budgetGraphCanvasLayout.setHorizontalGroup(budgetGraphCanvasLayout
-                .createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 515, Short.MAX_VALUE));
-        budgetGraphCanvasLayout.setVerticalGroup(budgetGraphCanvasLayout
-                .createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 128, Short.MAX_VALUE));
+		GroupLayout budgetGraphCanvasLayout = new GroupLayout(budgetGraphCanvas);
+		budgetGraphCanvas.setLayout(budgetGraphCanvasLayout);
+		budgetGraphCanvasLayout.setHorizontalGroup(budgetGraphCanvasLayout
+				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 515, Short.MAX_VALUE));
+		budgetGraphCanvasLayout.setVerticalGroup(budgetGraphCanvasLayout
+				.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 128, Short.MAX_VALUE));
 
-        budgetGraphScrollPanel.setViewportView(budgetGraphCanvas);
-        graphPanelTabbedPane.addTab("Label Acq. Rate", budgetGraphScrollPanel);
+		budgetGraphScrollPanel.setViewportView(budgetGraphCanvas);
+		graphPanelTabbedPane.addTab("Label Acq. Rate", budgetGraphScrollPanel);
 
 		gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
@@ -405,24 +415,28 @@ public class ALTaskTextViewerPanel extends JPanel {
 		gridBagConstraints.insets = new Insets(2, 2, 2, 2);
 		graphPanel.add(graphPanelTabbedPane, gridBagConstraints);
 
-
-		// graphPanelControlRight contains two buttons allowing to zoom the x-axis in and out
+		// graphPanelControlRight contains two buttons allowing to zoom the x-axis in
+		// and out
 		graphPanelControlRight = new JPanel();
 
 		buttonZoomInX = new JButton();
 		buttonZoomInX.setText("Zoom in X");
 		buttonZoomInX.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				// update the currently open graph
 				int currentTab = graphPanelTabbedPane.getSelectedIndex();
-                switch (currentTab){
-                    case 0: graphCanvas.scaleXResolution(2); 
-                            break;
-                    case 1: paramGraphCanvas.scaleXResolution(2); 
-                            break;
-                    case 2: budgetGraphCanvas.scaleXResolution(2);
-                            break;
-                }
+				switch (currentTab) {
+				case 0:
+					graphCanvas.scaleXResolution(2);
+					break;
+				case 1:
+					paramGraphCanvas.scaleXResolution(2);
+					break;
+				case 2:
+					budgetGraphCanvas.scaleXResolution(2);
+					break;
+				}
 			}
 		});
 		graphPanelControlRight.add(buttonZoomInX);
@@ -430,17 +444,21 @@ public class ALTaskTextViewerPanel extends JPanel {
 		buttonZoomOutX = new JButton();
 		buttonZoomOutX.setText("Zoom out X");
 		buttonZoomOutX.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent evt) {
 				// update the currently open graph
 				int currentTab = graphPanelTabbedPane.getSelectedIndex();
-                switch (currentTab){
-                    case 0: graphCanvas.scaleXResolution(0.5); 
-                            break;
-                    case 1: paramGraphCanvas.scaleXResolution(0.5); 
-                            break;
-                    case 2: budgetGraphCanvas.scaleXResolution(0.5);
-                            break;
-                }
+				switch (currentTab) {
+				case 0:
+					graphCanvas.scaleXResolution(0.5);
+					break;
+				case 1:
+					paramGraphCanvas.scaleXResolution(0.5);
+					break;
+				case 2:
+					budgetGraphCanvas.scaleXResolution(0.5);
+					break;
+				}
 			}
 		});
 		graphPanelControlRight.add(buttonZoomOutX);
@@ -470,38 +488,35 @@ public class ALTaskTextViewerPanel extends JPanel {
 
 	/**
 	 * Updates the preview table based on the information given by preview.
+	 * 
 	 * @param preview the new information used to update the table
 	 */
 	public void setText(Preview preview) {
 		Point p = this.scrollPaneTable.getViewport().getViewPosition();
 
 		previewTableModel.setPreview(preview);
-		SwingUtilities.invokeLater(
-			new Runnable(){
-				boolean structureChanged = previewTableModel.structureChanged();
-				public void run(){
-					if(!scrollPaneTable.isVisible())
-					{
-						topWrapper.remove(scrollPaneText);
-						scrollPaneText.setVisible(false);
-						topWrapper.add(scrollPaneTable, BorderLayout.CENTER);
-						scrollPaneTable.setVisible(true);
-						topWrapper.validate();
-					}
+		SwingUtilities.invokeLater(new Runnable() {
+			boolean structureChanged = previewTableModel.structureChanged();
 
-					if(structureChanged)
-					{
-						previewTableModel.fireTableStructureChanged();
-						rescaleTableColumns();
-					}
-					else
-					{
-						previewTableModel.fireTableDataChanged();
-					}
-					previewTable.repaint();
+			@Override
+			public void run() {
+				if (!scrollPaneTable.isVisible()) {
+					topWrapper.remove(scrollPaneText);
+					scrollPaneText.setVisible(false);
+					topWrapper.add(scrollPaneTable, BorderLayout.CENTER);
+					scrollPaneTable.setVisible(true);
+					topWrapper.validate();
 				}
+
+				if (structureChanged) {
+					previewTableModel.fireTableStructureChanged();
+					rescaleTableColumns();
+				} else {
+					previewTableModel.fireTableDataChanged();
+				}
+				previewTable.repaint();
 			}
-		);
+		});
 
 		this.scrollPaneTable.getViewport().setViewPosition(p);
 		this.exportButton.setEnabled(preview != null);
@@ -509,53 +524,51 @@ public class ALTaskTextViewerPanel extends JPanel {
 
 	/**
 	 * Displays the error message.
+	 * 
 	 * @param failedTaskReport error message
 	 */
 	public void setErrorText(FailedTaskReport failedTaskReport) {
 		Point p = this.scrollPaneText.getViewport().getViewPosition();
-		
-		final String failedTaskReportString = failedTaskReport == null ? 
-				"Failed Task Report is null" : failedTaskReport.toString();
 
-		SwingUtilities.invokeLater(
-			new Runnable(){
-				public void run(){
-					if(!scrollPaneText.isVisible())
-					{
-						topWrapper.remove(scrollPaneTable);
-						scrollPaneTable.setVisible(false);
-						topWrapper.add(scrollPaneText, BorderLayout.CENTER);
-						scrollPaneText.setVisible(true);
-						topWrapper.validate();
-					}
-					errorTextField.setText(failedTaskReportString);
-					errorTextField.repaint();
+		final String failedTaskReportString = failedTaskReport == null ? "Failed Task Report is null"
+				: failedTaskReport.toString();
+
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				if (!scrollPaneText.isVisible()) {
+					topWrapper.remove(scrollPaneTable);
+					scrollPaneTable.setVisible(false);
+					topWrapper.add(scrollPaneText, BorderLayout.CENTER);
+					scrollPaneText.setVisible(true);
+					topWrapper.validate();
 				}
+				errorTextField.setText(failedTaskReportString);
+				errorTextField.repaint();
 			}
-		);
+		});
 
 		this.scrollPaneText.getViewport().setViewPosition(p);
 		this.exportButton.setEnabled(failedTaskReport != null);
 	}
 
-	private void rescaleTableColumns()
-	{
+	private void rescaleTableColumns() {
 		// iterate over all columns to resize them individually
 		TableColumnModel columnModel = previewTable.getColumnModel();
-		for(int columnIdx = 0; columnIdx < columnModel.getColumnCount(); ++columnIdx)
-		{
+		for (int columnIdx = 0; columnIdx < columnModel.getColumnCount(); ++columnIdx) {
 			// get the current column
 			TableColumn column = columnModel.getColumn(columnIdx);
-			// get the renderer for the column header to calculate the preferred with for the header
+			// get the renderer for the column header to calculate the preferred with for
+			// the header
 			TableCellRenderer renderer = column.getHeaderRenderer();
 			// check if the renderer is null
-			if(renderer == null)
-			{
+			if (renderer == null) {
 				// if it is null use the default renderer for header
 				renderer = previewTable.getTableHeader().getDefaultRenderer();
 			}
 			// create a cell to calculate its preferred size
-			Component comp = renderer.getTableCellRendererComponent(previewTable, column.getHeaderValue(), false, false, 0, columnIdx);
+			Component comp = renderer.getTableCellRendererComponent(previewTable, column.getHeaderValue(), false, false,
+					0, columnIdx);
 			int width = comp.getPreferredSize().width;
 			// set the maximum width which was calculated
 			column.setPreferredWidth(width);
@@ -564,14 +577,15 @@ public class ALTaskTextViewerPanel extends JPanel {
 
 	/**
 	 * Updates the graph based on the information given by the preview.
+	 * 
 	 * @param preview information used to update the graph
-	 * @param colors color coding used to connect the tasks with the graphs
+	 * @param colors  color coding used to connect the tasks with the graphs
 	 */
 	@SuppressWarnings("unchecked")
 	public void setGraph(Preview preview, Color[] colors) {
 		if (preview == null) {
 			// no preview received
-		    this.measureOverview.update(null, "", null);
+			this.measureOverview.update(null, "", null);
 			this.graphCanvas.setGraph(null, null, null, 1000, null);
 			this.paramGraphCanvas.setGraph(null, null, null, null);
 			this.budgetGraphCanvas.setGraph(null, null, null, null);
@@ -587,9 +601,9 @@ public class ALTaskTextViewerPanel extends JPanel {
 			// PreviewCollection
 			PreviewCollection<Preview> pc = (PreviewCollection<Preview>) preview;
 
-	         // get varied parameter name and values
+			// get varied parameter name and values
 			this.variedParamName = pc.getVariedParamName();
-            this.variedParamValues = pc.getVariedParamValues();
+			this.variedParamValues = pc.getVariedParamValues();
 
 			if (c == ALPartitionEvaluationTask.class) {
 				// calculate mean preview collection for each parameter value
@@ -603,42 +617,42 @@ public class ALTaskTextViewerPanel extends JPanel {
 			} else {
 				pp = readCollection(pc);
 				ppStd = null;
-			    this.graphCanvas.setStandardDeviationPainted(false);
-			    this.paramGraphCanvas.setStandardDeviationPainted(false);
+				this.graphCanvas.setStandardDeviationPainted(false);
+				this.paramGraphCanvas.setStandardDeviationPainted(false);
 			}
 
 			// enable param and budget graph
 			this.graphPanelTabbedPane.setEnabledAt(1, true);
-            this.graphPanelTabbedPane.setEnabledAt(2, true);
+			this.graphPanelTabbedPane.setEnabledAt(2, true);
 
-    	} else if (c == ALPrequentialEvaluationTask.class) {
-    		// read Preview (in this case, no special preview is required)
-    		pp = read(preview);
-    		ppStd = null;
+		} else if (c == ALPrequentialEvaluationTask.class) {
+			// read Preview (in this case, no special preview is required)
+			pp = read(preview);
+			ppStd = null;
 
-    		// reset varied param name and values
-    		this.variedParamName = "";
-    		this.variedParamValues = null;
+			// reset varied param name and values
+			this.variedParamName = "";
+			this.variedParamValues = null;
 
-   			// switch to Processed Instances tab
-    		this.graphPanelTabbedPane.setSelectedIndex(0);
+			// switch to Processed Instances tab
+			this.graphPanelTabbedPane.setSelectedIndex(0);
 
 			// disable param and budget view
 			this.graphPanelTabbedPane.setEnabledAt(1, false);
-            this.graphPanelTabbedPane.setEnabledAt(2, false);
+			this.graphPanelTabbedPane.setEnabledAt(2, false);
 
-            // disable painting standard deviation
-    		this.graphCanvas.setStandardDeviationPainted(false);
-            this.paramGraphCanvas.setStandardDeviationPainted(false);
+			// disable painting standard deviation
+			this.graphCanvas.setStandardDeviationPainted(false);
+			this.paramGraphCanvas.setStandardDeviationPainted(false);
 
-    	} else {
-    		// sth went wrong
-    	    this.measureOverview.update(null, "", null);
-    		this.graphCanvas.setGraph(null, null, null, 1000, null);
-    		this.paramGraphCanvas.setGraph(null, null, null, null);
-    		this.budgetGraphCanvas.setGraph(null, null, null, null);
+		} else {
+			// sth went wrong
+			this.measureOverview.update(null, "", null);
+			this.graphCanvas.setGraph(null, null, null, 1000, null);
+			this.paramGraphCanvas.setGraph(null, null, null, null);
+			this.budgetGraphCanvas.setGraph(null, null, null, null);
 			return;
-    	}
+		}
 
 		MeasureCollection[] measures = pp.getMeasureCollectionsArray();
 		MeasureCollection[] measuresStd = null;
@@ -677,28 +691,29 @@ public class ALTaskTextViewerPanel extends JPanel {
 	}
 
 	/**
-	 * Parses a PreviewCollection and return the resulting 
-	 * ParsedPreview object. If the PreviewCollection contains
-	 * PreviewCollections again, it recursively adds their results. If it
-	 * contains simple Previews, it adds their properties to the result.
+	 * Parses a PreviewCollection and return the resulting ParsedPreview object. If
+	 * the PreviewCollection contains PreviewCollections again, it recursively adds
+	 * their results. If it contains simple Previews, it adds their properties to
+	 * the result.
+	 * 
 	 * @param pc PreviewCollection
 	 * @return relevant information contained in the PreviewCollection
 	 */
-	public ParsedPreview readCollection(PreviewCollection<Preview> pc) {	
+	public ParsedPreview readCollection(PreviewCollection<Preview> pc) {
 		ParsedPreview pp = new ParsedPreview();
 		List<Preview> sps = pc.getPreviews();
 
 		if (sps.size() > 0 && sps.get(0) instanceof PreviewCollection) {
 			// members are PreviewCollections again
 			// NOTE: this assumes that all elements in sps are of the same type
-			for (Preview sp: sps) {
+			for (Preview sp : sps) {
 				@SuppressWarnings("unchecked")
 				ParsedPreview tmp = readCollection((PreviewCollection<Preview>) sp);
 				pp.add(tmp);
 			}
 		} else {
 			// members are simple previews
-			for (Preview sp: sps) {
+			for (Preview sp : sps) {
 				ParsedPreview tmp = read(sp);
 				pp.add(tmp);
 			}
@@ -708,8 +723,9 @@ public class ALTaskTextViewerPanel extends JPanel {
 	}
 
 	/**
-	 * ParsedPreview represents the parsing results of a preview,
-	 * namely the process frequencies and the measure collections.
+	 * ParsedPreview represents the parsing results of a preview, namely the process
+	 * frequencies and the measure collections.
+	 * 
 	 * @author Tim Sabsch (tim.sabsch@ovgu.de)
 	 * @version $Revision: 1 $
 	 */
@@ -718,8 +734,8 @@ public class ALTaskTextViewerPanel extends JPanel {
 		private List<MeasureCollection> measureCollections;
 
 		public ParsedPreview() {
-			this.processFrequencies = new ArrayList<Integer>();
-			this.measureCollections = new ArrayList<MeasureCollection>();
+			this.processFrequencies = new ArrayList<>();
+			this.measureCollections = new ArrayList<>();
 		}
 
 		public void add(ParsedPreview other) {
@@ -748,11 +764,12 @@ public class ALTaskTextViewerPanel extends JPanel {
 			int[] processFrequenciesArray = new int[this.processFrequencies.size()];
 			int i = 0;
 			for (Integer freq : this.processFrequencies) {
-				processFrequenciesArray[i] = freq.intValue();
+				processFrequenciesArray[i] = freq;
 				++i;
 			}
 			return processFrequenciesArray;
 		}
+
 		public MeasureCollection[] getMeasureCollectionsArray() {
 			return this.measureCollections.toArray(new MeasureCollection[this.measureCollections.size()]);
 		}
@@ -761,6 +778,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 	/**
 	 * Parses a preview with respect to the process frequency and several
 	 * measurements.
+	 * 
 	 * @param preview
 	 */
 	private ParsedPreview read(Preview p) {
@@ -786,7 +804,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 			case "classifications correct (percent)":
 			case "[avg] classifications correct (percent)":
 			case "[std] classifications correct (percent)":
-				accuracyColumn = i; 
+				accuracyColumn = i;
 				break;
 			case "Kappa Statistic (percent)":
 			case "[avg] Kappa Statistic (percent)":
@@ -826,7 +844,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 
 		// set entries
 		// TODO: obviously this should be changed into a dict
-		for (double[] entry: data) {
+		for (double[] entry : data) {
 			m.addValue(0, entry[accuracyColumn]);
 			m.addValue(1, entry[kappaColumn]);
 			m.addValue(2, entry[kappaTempColumn]);
@@ -834,7 +852,7 @@ public class ALTaskTextViewerPanel extends JPanel {
 			m.addValue(4, entry[timeColumn]);
 			m.addValue(5, entry[memoryColumn] / (1024 * 1024));
 			m.addValue(6, entry[budgetColumn]);
-    	}
+		}
 
 		// determine process frequency
 		int processFrequency = (int) data.get(0)[processFrequencyColumn];

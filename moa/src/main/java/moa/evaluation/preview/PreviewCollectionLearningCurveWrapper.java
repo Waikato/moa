@@ -15,13 +15,13 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation.preview;
 
 /**
- * Class used to wrap LearningCurve so that it can be used in 
- * conjunction with a PreviewCollection
+ * Class used to wrap LearningCurve so that it can be used in conjunction with a
+ * PreviewCollection
  *
  * @author Tuan Pham Minh (tuan.pham@ovgu.de)
  * @version $Revision: 1 $
@@ -29,17 +29,16 @@ package moa.evaluation.preview;
 public class PreviewCollectionLearningCurveWrapper extends Preview {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	// the learning curve which should be wrapped
 	LearningCurve learningCurveToBeWrapped;
 	Class<?> taskClass;
-	
-	public PreviewCollectionLearningCurveWrapper(LearningCurve learningCurveToBeWrapped, Class<?> taskClass)
-	{
-		this.learningCurveToBeWrapped = learningCurveToBeWrapped;	
+
+	public PreviewCollectionLearningCurveWrapper(LearningCurve learningCurveToBeWrapped, Class<?> taskClass) {
+		this.learningCurveToBeWrapped = learningCurveToBeWrapped;
 		this.taskClass = taskClass;
 	}
-	
+
 	@Override
 	public void getDescription(StringBuilder sb, int indent) {
 		learningCurveToBeWrapped.getDescription(sb, indent);
@@ -65,7 +64,7 @@ public class PreviewCollectionLearningCurveWrapper extends Preview {
 		return learningCurveToBeWrapped.entryToString(entryIndex);
 	}
 
-	public LearningCurve getLearningCurve( ) {
+	public LearningCurve getLearningCurve() {
 		return learningCurveToBeWrapped;
 	}
 
@@ -83,14 +82,10 @@ public class PreviewCollectionLearningCurveWrapper extends Preview {
 		// preallocate the array to store all measurements
 		double[] data = new double[numMeasurements];
 		// get measuements from the learning curve
-		for(int measurementIdx = 0; measurementIdx < numMeasurements; ++measurementIdx)
-		{
-			if(measurementIdx < numEntryMeasurements)
-			{
-				data[measurementIdx] = learningCurveToBeWrapped.getMeasurement(entryIndex, measurementIdx);	
-			}
-			else
-			{
+		for (int measurementIdx = 0; measurementIdx < numMeasurements; ++measurementIdx) {
+			if (measurementIdx < numEntryMeasurements) {
+				data[measurementIdx] = learningCurveToBeWrapped.getMeasurement(entryIndex, measurementIdx);
+			} else {
 				data[measurementIdx] = Double.NaN;
 			}
 		}

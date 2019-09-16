@@ -14,26 +14,30 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.recommender.predictor;
 
 import java.io.Serializable;
 import java.util.List;
+
 import moa.recommender.rc.data.RecommenderData;
 
 /**
- * Rating predicting algorithm. The core of any recommender system is its 
- * rating prediction algorithm. Its purpose is to estimate the rating
- * (a numeric score) that a certain user would give to a certain item,
- * based on previous ratings given of the user and the item.
- * 
+ * Rating predicting algorithm. The core of any recommender system is its rating
+ * prediction algorithm. Its purpose is to estimate the rating (a numeric score)
+ * that a certain user would give to a certain item, based on previous ratings
+ * given of the user and the item.
+ *
  */
 public interface RatingPredictor extends Serializable {
-	public double predictRating(int userID, int itemID);
-	public List<Double> predictRatings(int userID, List<Integer> itemIDS);
-	public RecommenderData getData();
-	public void train();
+	double predictRating(int userID, int itemID);
+
+	List<Double> predictRatings(int userID, List<Integer> itemIDS);
+
+	RecommenderData getData();
+
+	void train();
 }

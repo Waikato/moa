@@ -1,6 +1,6 @@
 /*
  *    Measure.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand 
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.experimentertab;
 
@@ -28,161 +28,171 @@ import moa.core.DoubleVector;
  */
 public class Measure {
 
-    private String name;
-    
-    private String fileName;
+	private String name;
 
-    private Double value;
+	private String fileName;
 
-    private DoubleVector values = new DoubleVector();
+	private Double value;
 
-    private Double std;
+	private DoubleVector values = new DoubleVector();
 
-    private boolean type;
+	private Double std;
 
-    private int index;
+	private boolean type;
 
-    /**
-     * Measure Constructor
-     * @param name
-     * @param type
-     * @param index
-     */
-    public Measure(String name,String filename, boolean type, int index) {
-        this.name = name;
-        this.fileName = filename;
-        this.type = type;
-        this.index = index;
-        this.value = 0.0;
-        this.std = 0.0;
-    }
-   
-    /**
-     *
-     * @return the name of measure
-     */
-    public String getName() {
-        return name;
-    }
+	private int index;
 
-    public String getFileName() {
-        return fileName;
-    }
-    
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-    
-    /**
-     * Sets the name of measure
-     * @param name
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+	/**
+	 * Measure Constructor
+	 * 
+	 * @param name
+	 * @param type
+	 * @param index
+	 */
+	public Measure(String name, String filename, boolean type, int index) {
+		this.name = name;
+		this.fileName = filename;
+		this.type = type;
+		this.index = index;
+		this.value = 0.0;
+		this.std = 0.0;
+	}
 
-    /**
-     *
-     * @return the value of measure
-     */
-    public Double getValue() {
-        return value;
-    }
+	/**
+	 *
+	 * @return the name of measure
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * Sets the value of measure
-     * @param value
-     */
-    public void setValue(Double value) {
-        this.value = value;
-    }
+	public String getFileName() {
+		return fileName;
+	}
 
-    /**
-     * Returns the standard deviation
-     * @return the standard deviation
-     */
-    public Double getStd() {
-        return std;
-    }
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 
-    /**
-     * Sets the standard deviation
-     * @param std
-     */
-    public void setStd(Double std) {
-        this.std = std;
-    }
+	/**
+	 * Sets the name of measure
+	 * 
+	 * @param name
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    /**
-     * Returns the type of measure
-     * @return the type of measure
-     */
-    public boolean isType() {
-        return type;
-    }
+	/**
+	 *
+	 * @return the value of measure
+	 */
+	public Double getValue() {
+		return value;
+	}
 
-    /**
-     * Sets the type of measure
-     * @param type
-     */
-    public void setType(boolean type) {
-        this.type = type;
-    }
+	/**
+	 * Sets the value of measure
+	 * 
+	 * @param value
+	 */
+	public void setValue(Double value) {
+		this.value = value;
+	}
 
-    /**
-     * Returns the index of measure
-     * @return the index of measure
-     */
-    public int getIndex() {
-        return index;
-    }
+	/**
+	 * Returns the standard deviation
+	 * 
+	 * @return the standard deviation
+	 */
+	public Double getStd() {
+		return std;
+	}
 
-    /**
-     * Sets the index of measure
-     * @param index
-     */
-    public void setIndex(int index) {
-        this.index = index;
-    }
+	/**
+	 * Sets the standard deviation
+	 * 
+	 * @param std
+	 */
+	public void setStd(Double std) {
+		this.std = std;
+	}
 
-    /**
-     *
-     * @return values
-     */
-    public DoubleVector getValues() {
-        return values;
-    }
+	/**
+	 * Returns the type of measure
+	 * 
+	 * @return the type of measure
+	 */
+	public boolean isType() {
+		return type;
+	}
 
-    /**
-     *
-     * @param values
-     */
-    public void setValues(DoubleVector values) {
-        this.values = (DoubleVector) values.copy();
-    }
+	/**
+	 * Sets the type of measure
+	 * 
+	 * @param type
+	 */
+	public void setType(boolean type) {
+		this.type = type;
+	}
 
-    /**
-     * Calculates the value of measure
-     * @param values
-     */
-    public void computeValue(DoubleVector values) {
-        if (this.isType()) {
-            setValues(values);
-            double sumDif = 0.0;
-            this.value = this.values.sumOfValues() / (double) values.numValues();
-            for (int i = 0; i < this.values.numValues(); i++) {
-                double dif = this.values.getValue(i) - this.value;
-                sumDif += Math.pow(dif, 2);
-            }
-            sumDif = sumDif / this.values.numValues();
-            this.std = Math.sqrt(sumDif);
-        }
+	/**
+	 * Returns the index of measure
+	 * 
+	 * @return the index of measure
+	 */
+	public int getIndex() {
+		return index;
+	}
 
-    }
+	/**
+	 * Sets the index of measure
+	 * 
+	 * @param index
+	 */
+	public void setIndex(int index) {
+		this.index = index;
+	}
 
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone(); 
-    }
+	/**
+	 *
+	 * @return values
+	 */
+	public DoubleVector getValues() {
+		return values;
+	}
+
+	/**
+	 *
+	 * @param values
+	 */
+	public void setValues(DoubleVector values) {
+		this.values = (DoubleVector) values.copy();
+	}
+
+	/**
+	 * Calculates the value of measure
+	 * 
+	 * @param values
+	 */
+	public void computeValue(DoubleVector values) {
+		if (this.isType()) {
+			setValues(values);
+			double sumDif = 0.0;
+			this.value = this.values.sumOfValues() / values.numValues();
+			for (int i = 0; i < this.values.numValues(); i++) {
+				double dif = this.values.getValue(i) - this.value;
+				sumDif += Math.pow(dif, 2);
+			}
+			sumDif = sumDif / this.values.numValues();
+			this.std = Math.sqrt(sumDif);
+		}
+
+	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return super.clone();
+	}
 
 }

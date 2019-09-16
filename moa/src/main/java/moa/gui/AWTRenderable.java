@@ -15,17 +15,17 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
 /**
- * Interface representing a component that is renderable 
+ * Interface representing a component that is renderable
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $ 
+ * @version $Revision: 7 $
  */
 public interface AWTRenderable {
 
-    public AWTRenderer getAWTRenderer();
+	AWTRenderer getAWTRenderer();
 }

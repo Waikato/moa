@@ -22,45 +22,44 @@ package moa.test;
 /**
  * A helper class specific to the moa project.
  *
- * @author  fracpete (fracpete at waikato dot ac dot nz)
+ * @author fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision: 4584 $
  * @param <I> the type of input data
  * @param <O> the type of output data
  */
-public class TestHelper<I, O>
-  extends AbstractTestHelper<I, O> {
+public class TestHelper<I, O> extends AbstractTestHelper<I, O> {
 
-  /**
-   * Initializes the helper class.
-   *
-   * @param owner	the owning test case
-   * @param dataDir	the data directory to use
-   */
-  public TestHelper(MoaTestCase owner, String dataDir) {
-    super(owner, dataDir);
-  }
+	/**
+	 * Initializes the helper class.
+	 *
+	 * @param owner   the owning test case
+	 * @param dataDir the data directory to use
+	 */
+	public TestHelper(MoaTestCase owner, String dataDir) {
+		super(owner, dataDir);
+	}
 
-  /**
-   * Dummy, does nothing.
-   *
-   * @param filename	the filename to load (without path)
-   * @return		always null
-   */
-  @Override
-  public I load(String filename) {
-    return null;
-  }
+	/**
+	 * Dummy, does nothing.
+	 *
+	 * @param filename the filename to load (without path)
+	 * @return always null
+	 */
+	@Override
+	public I load(String filename) {
+		return null;
+	}
 
-  /**
-   * Dummy, just write the string returned by the object's toString()
-   * method to the file.
-   *
-   * @param data	the data to save
-   * @param filename	the filename to save to (without path)
-   * @return		always true
-   */
-  @Override
-  public boolean save(O data, String filename) {
-    return FileUtils.writeToFile(new TmpFile(filename).getAbsolutePath(), data.toString(), false);
-  }
+	/**
+	 * Dummy, just write the string returned by the object's toString() method to
+	 * the file.
+	 *
+	 * @param data     the data to save
+	 * @param filename the filename to save to (without path)
+	 * @return always true
+	 */
+	@Override
+	public boolean save(O data, String filename) {
+		return FileUtils.writeToFile(new TmpFile(filename).getAbsolutePath(), data.toString(), false);
+	}
 }

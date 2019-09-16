@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
@@ -61,7 +61,7 @@ public class InputStreamProgressMonitor extends FilterInputStream {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.io.InputStream#read()
 	 */
 	@Override
@@ -75,7 +75,7 @@ public class InputStreamProgressMonitor extends FilterInputStream {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.io.InputStream#read(byte[])
 	 */
 	@Override
@@ -89,7 +89,7 @@ public class InputStreamProgressMonitor extends FilterInputStream {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.io.InputStream#read(byte[], int, int)
 	 */
 	@Override
@@ -103,7 +103,7 @@ public class InputStreamProgressMonitor extends FilterInputStream {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.io.InputStream#skip(long)
 	 */
 	@Override
@@ -117,7 +117,7 @@ public class InputStreamProgressMonitor extends FilterInputStream {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.io.FilterInputStream#reset()
 	 */
 	@Override

@@ -1,6 +1,7 @@
 # This props file contains default values for the MOA GUI.
 #
 # Author  FracPete (fracpete at waikato dot ac dot nz)
+# Version $Revision: 5714 $
 #
 # The tabs to display 
 #
@@ -8,8 +9,8 @@
 Tabs=\
   moa.gui.ClassificationTabPanel,\
   moa.gui.RegressionTabPanel,\
-  moa.gui.MultiLabelTabPanel,\
-  moa.gui.MultiTargetTabPanel,\
+  moa.gui.MultiLabelClassificationTabPanel,\
+  moa.gui.MultiTargetRegressionTabPanel,\
   moa.gui.clustertab.ClusteringTabPanel,\
   moa.gui.outliertab.OutlierTabPanel,\
   moa.gui.ConceptDriftTabPanel,\

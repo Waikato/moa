@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.recommender.data;
@@ -25,22 +25,22 @@ import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
 public class MemRecommenderData extends AbstractOptionHandler implements RecommenderData {
-    
-     moa.recommender.rc.data.impl.MemRecommenderData drm;
-    
-    @Override
-    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
-        drm = new moa.recommender.rc.data.impl.MemRecommenderData();
-    }
 
-    @Override
-    public void getDescription(StringBuilder sb, int indent) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+	moa.recommender.rc.data.impl.MemRecommenderData drm;
 
-    @Override
-    public moa.recommender.rc.data.RecommenderData getData() {
-        return drm;
-    }
-    
+	@Override
+	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
+		drm = new moa.recommender.rc.data.impl.MemRecommenderData();
+	}
+
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public moa.recommender.rc.data.RecommenderData getData() {
+		return drm;
+	}
+
 }

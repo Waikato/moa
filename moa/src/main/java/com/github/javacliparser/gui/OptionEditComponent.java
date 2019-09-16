@@ -15,37 +15,37 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.github.javacliparser.gui;
 
 import com.github.javacliparser.Option;
 
 /**
- * Interface representing a component to edit an option. 
+ * Interface representing a component to edit an option.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $ 
+ * @version $Revision: 7 $
  */
 public interface OptionEditComponent {
 
-    /**
-     * Gets the option of this component
-     *
-     * @return the option of this component
-     */
-    public Option getEditedOption();
+	/**
+	 * Gets the option of this component
+	 *
+	 * @return the option of this component
+	 */
+	Option getEditedOption();
 
-    /**
-     * Sets the state of the component
-     *
-     * @param cliString the state of the component
-     */
-    public void setEditState(String cliString);
+	/**
+	 * Sets the state of the component
+	 *
+	 * @param cliString the state of the component
+	 */
+	void setEditState(String cliString);
 
-    /**
-     * This method applies the state
-     *
-     */
-    public void applyState();
+	/**
+	 * This method applies the state
+	 *
+	 */
+	void applyState();
 }

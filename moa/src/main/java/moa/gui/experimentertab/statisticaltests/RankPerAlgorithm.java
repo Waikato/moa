@@ -1,6 +1,6 @@
 /*
  *    RankPerAlgorithm.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand 
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.experimentertab.statisticaltests;
 
@@ -26,29 +26,29 @@ package moa.gui.experimentertab.statisticaltests;
  */
 public class RankPerAlgorithm implements Comparable<RankPerAlgorithm> {
 
-    public String algName;
-    public double rank;
+	public String algName;
+	public double rank;
 
-    /**
-     * Constructor.
-     *
-     * @param algName
-     * @param rank
-     */
-    public RankPerAlgorithm(String algName, double rank) {
-        this.algName = algName;
-        this.rank = rank;
-    }
+	/**
+	 * Constructor.
+	 *
+	 * @param algName
+	 * @param rank
+	 */
+	public RankPerAlgorithm(String algName, double rank) {
+		this.algName = algName;
+		this.rank = rank;
+	}
 
-    @Override
-    public int compareTo(RankPerAlgorithm r) {
-        if (rank < r.rank) {
-            return -1;
-        }
-        if (rank > r.rank) {
-            return 1;
-        }
-        return 0;
-    }
+	@Override
+	public int compareTo(RankPerAlgorithm r) {
+		if (rank < r.rank) {
+			return -1;
+		}
+		if (rank > r.rank) {
+			return 1;
+		}
+		return 0;
+	}
 
 }

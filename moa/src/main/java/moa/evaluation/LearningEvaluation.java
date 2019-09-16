@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
@@ -24,10 +24,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import moa.AbstractMOAObject;
-import moa.classifiers.Classifier;
-import moa.clusterers.Clusterer;
-import moa.learners.Learner;
 import moa.core.Measurement;
+import moa.evaluation.evaluators.LearningPerformanceEvaluator;
+import moa.learners.MLTask;
 
 /**
  * Class that stores an array of evaluation measurements.
@@ -37,37 +36,34 @@ import moa.core.Measurement;
  */
 public class LearningEvaluation extends AbstractMOAObject {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    protected Measurement[] measurements;
+	protected Measurement[] measurements;
 
-    public LearningEvaluation(Measurement[] measurements) {
-        this.measurements = measurements.clone();
-    }
+	public LearningEvaluation(Measurement[] measurements) {
+		this.measurements = measurements.clone();
+	}
 
-    public LearningEvaluation(Measurement[] evaluationMeasurements,
-            LearningPerformanceEvaluator cpe, Learner model) {
-        List<Measurement> measurementList = new LinkedList<Measurement>();
-        if (evaluationMeasurements != null){
-        measurementList.addAll(Arrays.asList(evaluationMeasurements));
-        }
-        measurementList.addAll(Arrays.asList(cpe.getPerformanceMeasurements()));
-        measurementList.addAll(Arrays.asList(model.getModelMeasurements()));
-        this.measurements = measurementList.toArray(new Measurement[measurementList.size()]);
-    }
+	public LearningEvaluation(Measurement[] evaluationMeasurements, LearningPerformanceEvaluator cpe, MLTask model) {
+		List<Measurement> measurementList = new LinkedList<>();
+		if (evaluationMeasurements != null) {
+			measurementList.addAll(Arrays.asList(evaluationMeasurements));
+		}
+		measurementList.addAll(Arrays.asList(cpe.getPerformanceMeasurements()));
+		measurementList.addAll(Arrays.asList(model.getModelMeasurements()));
+		this.measurements = measurementList.toArray(new Measurement[measurementList.size()]);
+	}
 
-    public LearningEvaluation(
-            LearningPerformanceEvaluator cpe, Learner model) {
-        this(null,cpe,model);
-    }
+	public LearningEvaluation(LearningPerformanceEvaluator cpe, MLTask model) {
+		this(null, cpe, model);
+	}
 
+	public Measurement[] getMeasurements() {
+		return this.measurements.clone();
+	}
 
-    public Measurement[] getMeasurements() {
-        return this.measurements.clone();
-    }
-
-    @Override
-    public void getDescription(StringBuilder sb, int indent) {
-        Measurement.getMeasurementsDescription(this.measurements, sb, indent);
-    }
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {
+		Measurement.getMeasurementsDescription(this.measurements, sb, indent);
+	}
 }

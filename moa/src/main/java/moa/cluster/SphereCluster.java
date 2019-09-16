@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.cluster;
@@ -23,13 +23,14 @@ package moa.cluster;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * A simple implementation of the <code>Cluster</code> interface representing
- * spherical clusters. The inclusion probability is one inside the sphere and zero
- * everywhere else.
+ * spherical clusters. The inclusion probability is one inside the sphere and
+ * zero everywhere else.
  *
  */
 public class SphereCluster extends Cluster {
@@ -40,15 +41,14 @@ public class SphereCluster extends Cluster {
 	private double radius;
 	private double weight;
 
-
 	public SphereCluster(double[] center, double radius) {
-		this( center, radius, 1.0 );
+		this(center, radius, 1.0);
 	}
 
 	public SphereCluster() {
 	}
 
-	public SphereCluster( double[] center, double radius, double weightedSize) {
+	public SphereCluster(double[] center, double radius, double weightedSize) {
 		this();
 		this.center = center;
 		this.radius = radius;
@@ -68,10 +68,9 @@ public class SphereCluster extends Cluster {
 		this.weight = 0.0;
 	}
 
-
-	public SphereCluster(List<?extends Instance> instances, int dimension){
+	public SphereCluster(List<? extends Instance> instances, int dimension) {
 		this();
-		if(instances == null || instances.size() <= 0)
+		if (instances == null || instances.size() <= 0)
 			return;
 
 		weight = instances.size();
@@ -89,11 +88,10 @@ public class SphereCluster extends Cluster {
 		mb.clear();
 	}
 
-
 	/**
-	 * Checks whether two <code>SphereCluster</code> overlap based on radius
-	 * NOTE: overlapRadiusDegree only calculates the overlap based
-	 * on the centers and the radi, so not the real overlap
+	 * Checks whether two <code>SphereCluster</code> overlap based on radius NOTE:
+	 * overlapRadiusDegree only calculates the overlap based on the centers and the
+	 * radi, so not the real overlap
 	 *
 	 * TODO: should we do this by MC to get the real overlap???
 	 *
@@ -103,7 +101,6 @@ public class SphereCluster extends Cluster {
 
 	public double overlapRadiusDegree(SphereCluster other) {
 
-
 		double[] center0 = getCenter();
 		double radius0 = getRadius();
 
@@ -112,11 +109,10 @@ public class SphereCluster extends Cluster {
 
 		double radiusBig;
 		double radiusSmall;
-		if(radius0 < radius1){
+		if (radius0 < radius1) {
 			radiusBig = radius1;
 			radiusSmall = radius0;
-		}
-		else{
+		} else {
 			radiusBig = radius0;
 			radiusSmall = radius1;
 		}
@@ -128,14 +124,13 @@ public class SphereCluster extends Cluster {
 		}
 		dist = Math.sqrt(dist);
 
-		if(dist > radiusSmall + radiusBig)
+		if (dist > radiusSmall + radiusBig)
 			return 0;
-		if(dist + radiusSmall <= radiusBig){
-			//one lies within the other
+		if (dist + radiusSmall <= radiusBig) {
+			// one lies within the other
 			return 1;
-		}
-		else{
-			return (radiusSmall+radiusBig-dist)/(2*radiusSmall);
+		} else {
+			return (radiusSmall + radiusBig - dist) / (2 * radiusSmall);
 		}
 	}
 
@@ -147,14 +142,14 @@ public class SphereCluster extends Cluster {
 		double other_radius = cluster.getRadius();
 
 		for (int i = 0; i < center.length; i++) {
-			newcenter[i] = (center[i]*getWeight()+other_center[i]*other_weight)/(getWeight()+other_weight);
+			newcenter[i] = (center[i] * getWeight() + other_center[i] * other_weight) / (getWeight() + other_weight);
 		}
 
 		center = newcenter;
 		double r_0 = getRadius() + Math.abs(distance(center, newcenter));
 		double r_1 = other_radius + Math.abs(distance(other_center, newcenter));
 		radius = Math.max(r_0, r_1);
-		weight+= other_weight;
+		weight += other_weight;
 	}
 
 	public void merge(SphereCluster cluster) {
@@ -166,9 +161,9 @@ public class SphereCluster extends Cluster {
 		double w1 = cluster.getWeight();
 		double r1 = cluster.getRadius();
 
-		//vector
+		// vector
 		double[] v = new double[c0.length];
-		//center distance
+		// center distance
 		double d = 0;
 
 		for (int i = 0; i < c0.length; i++) {
@@ -177,32 +172,28 @@ public class SphereCluster extends Cluster {
 		}
 		d = Math.sqrt(d);
 
-
-
 		double r = 0;
 		double[] c = new double[c0.length];
 
-		//one lays within the others
-		if(d + r0 <= r1  || d + r1 <= r0){
-			if(d + r0 <= r1){
+		// one lays within the others
+		if (d + r0 <= r1 || d + r1 <= r0) {
+			if (d + r0 <= r1) {
 				r = r1;
 				c = c1;
-			}
-			else{
+			} else {
 				r = r0;
 				c = c0;
 			}
-		}
-		else{
-			r = (r0 + r1 + d)/2.0;
+		} else {
+			r = (r0 + r1 + d) / 2.0;
 			for (int i = 0; i < c.length; i++) {
-				c[i] = c1[i] - v[i]/d * (r1-r);
+				c[i] = c1[i] - v[i] / d * (r1 - r);
 			}
 		}
 
 		setCenter(c);
 		setRadius(r);
-		setWeight(w0+w1);
+		setWeight(w0 + w1);
 
 	}
 
@@ -221,7 +212,7 @@ public class SphereCluster extends Cluster {
 		return radius;
 	}
 
-	public void setRadius( double radius ) {
+	public void setRadius(double radius) {
 		this.radius = radius;
 	}
 
@@ -230,7 +221,7 @@ public class SphereCluster extends Cluster {
 		return weight;
 	}
 
-	public void setWeight( double weight ) {
+	public void setWeight(double weight) {
 		this.weight = weight;
 	}
 
@@ -244,7 +235,7 @@ public class SphereCluster extends Cluster {
 
 	public double getCenterDistance(Instance instance) {
 		double distance = 0.0;
-		//get the center through getCenter so subclass have a chance
+		// get the center through getCenter so subclass have a chance
 		double[] center = getCenter();
 		for (int i = 0; i < center.length; i++) {
 			double d = center[i] - instance.value(i);
@@ -258,12 +249,12 @@ public class SphereCluster extends Cluster {
 	}
 
 	/*
-	 * the minimal distance between the surface of two clusters.
-	 * is negative if the two clusters overlap
+	 * the minimal distance between the surface of two clusters. is negative if the
+	 * two clusters overlap
 	 */
 	public double getHullDistance(SphereCluster other) {
 		double distance = 0.0;
-		//get the center through getCenter so subclass have a chance
+		// get the center through getCenter so subclass have a chance
 		double[] center0 = getCenter();
 		double[] center1 = other.getCenter();
 		distance = distance(center0, center1);
@@ -275,29 +266,28 @@ public class SphereCluster extends Cluster {
 	/*
 	 */
 	/**
-	 * When a clusters looses points the new minimal bounding sphere can be
-	 * partly outside of the originating cluster. If a another cluster is
-	 * right next to the original cluster (without overlapping), the new
-	 * cluster can be overlapping with this second cluster. OverlapSave
-	 * will tell you if the current cluster can degenerate so much that it
-	 * overlaps with cluster 'other'
-	 * 
+	 * When a clusters looses points the new minimal bounding sphere can be partly
+	 * outside of the originating cluster. If a another cluster is right next to the
+	 * original cluster (without overlapping), the new cluster can be overlapping
+	 * with this second cluster. OverlapSave will tell you if the current cluster
+	 * can degenerate so much that it overlaps with cluster 'other'
+	 *
 	 * @param other the potentially overlapping cluster
 	 * @return true if cluster can potentially overlap
 	 */
-	public boolean overlapSave(SphereCluster other){
-		//use basic geometry to figure out the maximal degenerated cluster
-		//comes down to Max(radius *(sin alpha + cos alpha)) which is
-		double minDist = Math.sqrt(2)*(getRadius() + other.getRadius());
+	public boolean overlapSave(SphereCluster other) {
+		// use basic geometry to figure out the maximal degenerated cluster
+		// comes down to Max(radius *(sin alpha + cos alpha)) which is
+		double minDist = Math.sqrt(2) * (getRadius() + other.getRadius());
 		double diff = getCenterDistance(other) - minDist;
 
-		if(diff > 0)
+		if (diff > 0)
 			return true;
 		else
 			return false;
 	}
 
-	private double distance(double[] v1, double[] v2){
+	private double distance(double[] v1, double[] v2) {
 		double distance = 0.0;
 		double[] center = getCenter();
 		for (int i = 0; i < center.length; i++) {
@@ -307,15 +297,15 @@ public class SphereCluster extends Cluster {
 		return Math.sqrt(distance);
 	}
 
-	public double[] getDistanceVector(Instance instance){
+	public double[] getDistanceVector(Instance instance) {
 		return distanceVector(getCenter(), instance.toDoubleArray());
 	}
 
-	public double[] getDistanceVector(SphereCluster other){
+	public double[] getDistanceVector(SphereCluster other) {
 		return distanceVector(getCenter(), other.getCenter());
 	}
 
-	private double[] distanceVector(double[] v1, double[] v2){
+	private double[] distanceVector(double[] v1, double[] v2) {
 		double[] v = new double[v1.length];
 		for (int i = 0; i < v1.length; i++) {
 			v[i] = v2[i] - v1[i];
@@ -323,15 +313,16 @@ public class SphereCluster extends Cluster {
 		return v;
 	}
 
- 
 	/**
 	 * Samples this cluster by returning a point from inside it.
+	 * 
 	 * @param random a random number source
 	 * @return a point that lies inside this cluster
 	 */
+	@Override
 	public Instance sample(Random random) {
 		// Create sample in hypersphere coordinates
-		//get the center through getCenter so subclass have a chance
+		// get the center through getCenter so subclass have a chance
 		double[] center = getCenter();
 
 		final int dimensions = center.length;
@@ -341,10 +332,10 @@ public class SphereCluster extends Cluster {
 		final double length = random.nextDouble() * getRadius();
 
 		double lastValue = 1.0;
-		for (int i = 0; i < dimensions-1; i++) {
+		for (int i = 0; i < dimensions - 1; i++) {
 			double angle = random.nextDouble() * 2 * Math.PI;
-			sin[i] = lastValue * Math.sin( angle ); // Store cumulative values
-			cos[i] = Math.cos( angle );
+			sin[i] = lastValue * Math.sin(angle); // Store cumulative values
+			cos[i] = Math.cos(angle);
 			lastValue = sin[i];
 		}
 
@@ -352,15 +343,15 @@ public class SphereCluster extends Cluster {
 		double res[] = new double[dimensions];
 
 		// First value uses only cosines
-		res[0] = center[0] + length*cos[0];
+		res[0] = center[0] + length * cos[0];
 
 		// Loop through 'middle' coordinates which use cosines and sines
-		for (int i = 1; i < dimensions-1; i++) {
-			res[i] = center[i] + length*sin[i-1]*cos[i];
+		for (int i = 1; i < dimensions - 1; i++) {
+			res[i] = center[i] + length * sin[i - 1] * cos[i];
 		}
 
 		// Last value uses only sines
-		res[dimensions-1] = center[dimensions-1] + length*sin[dimensions-2];
+		res[dimensions - 1] = center[dimensions - 1] + length * sin[dimensions - 2];
 
 		return new DenseInstance(1.0, res);
 	}
@@ -371,6 +362,5 @@ public class SphereCluster extends Cluster {
 		infoTitle.add("Radius");
 		infoValue.add(Double.toString(getRadius()));
 	}
-
 
 }

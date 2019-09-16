@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.github.javacliparser.gui;
 
@@ -30,33 +30,32 @@ import com.github.javacliparser.Option;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class MultiChoiceOptionEditComponent extends JComboBox<String> implements
-        OptionEditComponent {
+public class MultiChoiceOptionEditComponent extends JComboBox<String> implements OptionEditComponent {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    protected MultiChoiceOption editedOption;
+	protected MultiChoiceOption editedOption;
 
-    public MultiChoiceOptionEditComponent(Option option) {
-        super(((MultiChoiceOption) option).getOptionLabels());
-        this.editedOption = (MultiChoiceOption) option;
-        setSelectedIndex(this.editedOption.getChosenIndex());
-    }
+	public MultiChoiceOptionEditComponent(Option option) {
+		super(((MultiChoiceOption) option).getOptionLabels());
+		this.editedOption = (MultiChoiceOption) option;
+		setSelectedIndex(this.editedOption.getChosenIndex());
+	}
 
-    @Override
-    public void applyState() {
-        this.editedOption.setChosenIndex(getSelectedIndex());
-    }
+	@Override
+	public void applyState() {
+		this.editedOption.setChosenIndex(getSelectedIndex());
+	}
 
-    @Override
-    public Option getEditedOption() {
-        return this.editedOption;
-    }
+	@Override
+	public Option getEditedOption() {
+		return this.editedOption;
+	}
 
-    @Override
-    public void setEditState(String cliString) {
-        MultiChoiceOption tempOpt = (MultiChoiceOption) this.editedOption.copy();
-        tempOpt.setValueViaCLIString(cliString);
-        setSelectedIndex(tempOpt.getChosenIndex());
-    }
+	@Override
+	public void setEditState(String cliString) {
+		MultiChoiceOption tempOpt = (MultiChoiceOption) this.editedOption.copy();
+		tempOpt.setValueViaCLIString(cliString);
+		setSelectedIndex(tempOpt.getChosenIndex());
+	}
 }

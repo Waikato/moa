@@ -6,16 +6,15 @@ public class InstanceExample implements Example<Instance> {
 
 	public Instance instance;
 
-  	public InstanceExample (Instance inst)
-   	{                             
-		this.instance = inst;    
-  	}  
+	public InstanceExample(Instance inst) {
+		this.instance = inst;
+	}
 
 	@Override
 	public Instance getData() {
 		return this.instance;
 	}
-	
+
 	@Override
 	public double weight() {
 		return this.instance.weight();
@@ -26,14 +25,15 @@ public class InstanceExample implements Example<Instance> {
 		this.instance.setWeight(w);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public Example copy() {
 		return new InstanceExample(instance.copy());
 	}
 
 	@Override
-  	public String toString() {
-  	  return this.instance.toString();
+	public String toString() {
+		return this.instance.toString();
 	}
 
-} 
+}

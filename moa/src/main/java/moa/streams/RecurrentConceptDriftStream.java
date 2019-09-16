@@ -16,98 +16,96 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams;
 
-import moa.core.Example;
 import java.util.Random;
-import moa.core.ObjectRepository;
-import moa.tasks.TaskMonitor;
-import com.yahoo.labs.samoa.instances.Instance;
+
 import com.github.javacliparser.IntOption;
 
-
+import moa.core.Example;
+import moa.core.ObjectRepository;
+import moa.tasks.TaskMonitor;
 
 /**
  * Stream generator that adds recurrent concept drifts to examples in a stream.
- *<br/><br/>
- * Example:
- *<br/><br/>
+ * <br/>
+ * <br/>
+ * Example: <br/>
+ * <br/>
  * <code>RecurrentConceptDriftStream -s (generators.AgrawalGenerator -f 7) <br/>
- *    -d (generators.AgrawalGenerator -f 2) -w 1000000 -p 900000</code>
- *<br/><br/>
+ *    -d (generators.AgrawalGenerator -f 2) -w 1000000 -p 900000</code> <br/>
+ * <br/>
  * s : Stream <br/>
  * d : Concept drift Stream<br/>
  * p : Central position of first concept drift change<br/>
  * w : Width of concept drift changes<br/>
- * x : Width of recurrence (number of instances during which new concept is used)
- * y : Number of stability period (number of instances between drifts)
- * z : Number of appearances of drift
+ * x : Width of recurrence (number of instances during which new concept is
+ * used) y : Number of stability period (number of instances between drifts) z :
+ * Number of appearances of drift
  *
  * @author Miguel Abad (miguel.abad.arranz at alumnos dot upm dot es)x
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 1 $
  */
 public class RecurrentConceptDriftStream extends ConceptDriftStream {
-@Override
-    public String getPurposeString() {
-        return "Adds Recurrent Concept Drift to examples in a stream.";
-    }
+	@Override
+	public String getPurposeString() {
+		return "Adds Recurrent Concept Drift to examples in a stream.";
+	}
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public IntOption widthRecurrenceOption = new IntOption("widthRecurrence", 'x', 
-            "Number of instances during which new concept is used", 100);
-    
-    public IntOption stabPeriodOption = new IntOption("stabPeriod", 'y', 
-            "Number of instances between drifts", 200);     
-    
-    public IntOption numRepOption = new IntOption("numRep", 'z', 
-            "Number of instances between drifts", 4); 
+	public IntOption widthRecurrenceOption = new IntOption("widthRecurrence", 'x',
+			"Number of instances during which new concept is used", 100);
 
-    @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+	public IntOption stabPeriodOption = new IntOption("stabPeriod", 'y', "Number of instances between drifts", 200);
 
-        this.inputStream = (InstanceStream) getPreparedClassOption(this.streamOption);
-        this.driftStream = (InstanceStream) getPreparedClassOption(this.driftstreamOption);
-        this.random = new Random(this.randomSeedOption.getValue());
-        numberInstanceStream = 0;
-        if (this.alphaOption.getValue() != 0.0) {
-            this.widthOption.setValue((int) (1 / Math.tan(this.alphaOption.getValue() * Math.PI / 180)));
-        }
-    }
+	public IntOption numRepOption = new IntOption("numRep", 'z', "Number of instances between drifts", 4);
 
-    @Override
-    public Example nextInstance() {
+	@Override
+	public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 
-        numberInstanceStream++;
-        double x = numberInstanceStream;
-        
-        double probabilityDrift = 0;
-           
-        int iPos = this.positionOption.getValue();
-        
-        //As long as the probabilistic function is recursive, it depends
-        //on the number of repetitions established in the options
-        for (int iNumRep = 0; iNumRep < this.numRepOption.getValue(); iNumRep++){
-            probabilityDrift += 1.0 / (1.0 + Math.exp(-4*(x-iPos)/this.widthOption.getValue())) - 
-                1.0 / (1.0 + Math.exp(-4*(x-(iPos + this.widthRecurrenceOption.getValue()))/this.widthOption.getValue()));
-            
-            iPos += this.widthRecurrenceOption.getValue() + this.stabPeriodOption.getValue();
-        }
-        
-        if (this.random.nextDouble() > probabilityDrift) {            
-            return this.inputStream.nextInstance();
-        } else {            
-            return this.driftStream.nextInstance();
-        }       
-    }
+		this.inputStream = (InstanceStream) getPreparedClassOption(this.streamOption);
+		this.driftStream = (InstanceStream) getPreparedClassOption(this.driftstreamOption);
+		this.random = new Random(this.randomSeedOption.getValue());
+		numberInstanceStream = 0;
+		if (this.alphaOption.getValue() != 0.0) {
+			this.widthOption.setValue((int) (1 / Math.tan(this.alphaOption.getValue() * Math.PI / 180)));
+		}
+	}
 
-    @Override
-    public void getDescription(StringBuilder sb, int indent) {
-        // TODO Auto-generated method stub
-    }
-    
+	@Override
+	public Example nextInstance() {
+
+		numberInstanceStream++;
+		double x = numberInstanceStream;
+
+		double probabilityDrift = 0;
+
+		int iPos = this.positionOption.getValue();
+
+		// As long as the probabilistic function is recursive, it depends
+		// on the number of repetitions established in the options
+		for (int iNumRep = 0; iNumRep < this.numRepOption.getValue(); iNumRep++) {
+			probabilityDrift += 1.0 / (1.0 + Math.exp(-4 * (x - iPos) / this.widthOption.getValue()))
+					- 1.0 / (1.0 + Math.exp(
+							-4 * (x - (iPos + this.widthRecurrenceOption.getValue())) / this.widthOption.getValue()));
+
+			iPos += this.widthRecurrenceOption.getValue() + this.stabPeriodOption.getValue();
+		}
+
+		if (this.random.nextDouble() > probabilityDrift) {
+			return this.inputStream.nextInstance();
+		} else {
+			return this.driftStream.nextInstance();
+		}
+	}
+
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {
+		// TODO Auto-generated method stub
+	}
+
 }

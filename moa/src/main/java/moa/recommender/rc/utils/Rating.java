@@ -14,20 +14,20 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.recommender.rc.utils;
 
 public class Rating {
-    public int userID;
-    public int itemID;
-    public double rating;
-    
-    public Rating(int userID, int itemID, double rating) {
-        this.userID = userID;
-        this.itemID = itemID;
-        this.rating = rating;
-    }
+	public int userID;
+	public int itemID;
+	public double rating;
+
+	public Rating(int userID, int itemID, double rating) {
+		this.userID = userID;
+		this.itemID = itemID;
+		this.rating = rating;
+	}
 }

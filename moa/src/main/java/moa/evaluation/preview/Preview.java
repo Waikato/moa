@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation.preview;
 
@@ -30,7 +30,7 @@ import moa.AbstractMOAObject;
  * @author Tuan Pham Minh (tuan.pham@ovgu.de)
  * @version $Revision: 1 $
  */
-public abstract class Preview extends AbstractMOAObject{
+public abstract class Preview extends AbstractMOAObject {
 	private static final long serialVersionUID = 1L;
 
 	// TODO add methods to return a 2D double array
@@ -45,7 +45,7 @@ public abstract class Preview extends AbstractMOAObject{
 	public abstract Class<?> getTaskClass();
 
 	public abstract double[] getEntryData(int entryIndex);
-	
+
 	public String[] getMeasurementNames() {
 		int numNames = getMeasurementNameCount();
 		String[] names = new String[numNames];
@@ -55,15 +55,14 @@ public abstract class Preview extends AbstractMOAObject{
 		return names;
 	}
 
-	public List<double[]> getData()
-	{
+	public List<double[]> getData() {
 		// create list to store all entries
 		List<double[]> data = new ArrayList<>();
 		// add all entries in the list above
-        for (int entryIdx = 0; entryIdx < numEntries(); entryIdx++) {
-            data.add(getEntryData(entryIdx));
-        }
-		
+		for (int entryIdx = 0; entryIdx < numEntries(); entryIdx++) {
+			data.add(getEntryData(entryIdx));
+		}
+
 		return data;
 	}
 }

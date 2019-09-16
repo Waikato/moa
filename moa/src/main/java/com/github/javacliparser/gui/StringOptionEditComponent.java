@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.github.javacliparser.gui;
 
@@ -29,30 +29,29 @@ import com.github.javacliparser.Option;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class StringOptionEditComponent extends JTextField implements
-        OptionEditComponent {
+public class StringOptionEditComponent extends JTextField implements OptionEditComponent {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    protected Option editedOption;
+	protected Option editedOption;
 
-    public StringOptionEditComponent(Option option) {
-        this.editedOption = option;
-        setEditState(this.editedOption.getValueAsCLIString());
-    }
+	public StringOptionEditComponent(Option option) {
+		this.editedOption = option;
+		setEditState(this.editedOption.getValueAsCLIString());
+	}
 
-    @Override
-    public Option getEditedOption() {
-        return this.editedOption;
-    }
+	@Override
+	public Option getEditedOption() {
+		return this.editedOption;
+	}
 
-    @Override
-    public void setEditState(String cliString) {
-        setText(cliString);
-    }
+	@Override
+	public void setEditState(String cliString) {
+		setText(cliString);
+	}
 
-    @Override
-    public void applyState() {
-        this.editedOption.setValueViaCLIString(getText().length() > 0 ? getText() : null);
-    }
+	@Override
+	public void applyState() {
+		this.editedOption.setValueViaCLIString(getText().length() > 0 ? getText() : null);
+	}
 }

@@ -13,10 +13,10 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
- 
+
 package moa.recommender.rc.utils;
 
 import java.util.HashMap;
@@ -25,68 +25,75 @@ import java.util.Map;
 import java.util.Set;
 
 public class SparseVector extends Vector {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1971022389328939125L;
-    private Map<Integer, Double> map;
-    
-    public SparseVector() {
-        this.map = new HashMap<Integer, Double>();
-    }
-    
-    public SparseVector(Map<Integer, Double> map) {
-        if (map == null) this.map = new HashMap<Integer, Double>();
-        else this.map = map;
-    }
-    
-    public int size() {
-        return map.size();
-    }
-    
-    public void set(int index, double val) {
-        map.put(index, val);
-    }
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1971022389328939125L;
+	private Map<Integer, Double> map;
 
-    public void remove(int index) {
-        map.remove(index);
-    }
-    
-    public Set<Integer> getIdxs() {
-        return map.keySet();
-    }
-    
-    public SparseVector copy() {
-        return new SparseVector(new HashMap<Integer, Double>(this.map));
-    }
+	public SparseVector() {
+		this.map = new HashMap<>();
+	}
 
-    @Override
-    public Double get(int index) {
-        return map.get(index);
-    }
-    
-    public class SparseVectorIterator implements Iterator<Pair<Integer, Double>> {
-        private Iterator<Integer> it = SparseVector.this.map.keySet().iterator();
-        
-        @Override
-        public boolean hasNext() {
-            return it.hasNext();
-        }
+	public SparseVector(Map<Integer, Double> map) {
+		if (map == null)
+			this.map = new HashMap<>();
+		else
+			this.map = map;
+	}
 
-        @Override
-        public Pair<Integer, Double> next() {
-            Integer idx = it.next();
-            return new Pair<Integer, Double>(idx, SparseVector.this.map.get(idx));
-        }
+	@Override
+	public int size() {
+		return map.size();
+	}
 
-        @Override
-        public void remove() {
-            it.remove();
-        }
-    }
+	@Override
+	public void set(int index, double val) {
+		map.put(index, val);
+	}
 
-    @Override
-    public Iterator<Pair<Integer, Double>> iterator() {
-        return new SparseVectorIterator();
-    }
+	@Override
+	public void remove(int index) {
+		map.remove(index);
+	}
+
+	@Override
+	public Set<Integer> getIdxs() {
+		return map.keySet();
+	}
+
+	@Override
+	public SparseVector copy() {
+		return new SparseVector(new HashMap<>(this.map));
+	}
+
+	@Override
+	public Double get(int index) {
+		return map.get(index);
+	}
+
+	public class SparseVectorIterator implements Iterator<Pair<Integer, Double>> {
+		private Iterator<Integer> it = SparseVector.this.map.keySet().iterator();
+
+		@Override
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+
+		@Override
+		public Pair<Integer, Double> next() {
+			Integer idx = it.next();
+			return new Pair<>(idx, SparseVector.this.map.get(idx));
+		}
+
+		@Override
+		public void remove() {
+			it.remove();
+		}
+	}
+
+	@Override
+	public Iterator<Pair<Integer, Double>> iterator() {
+		return new SparseVectorIterator();
+	}
 }

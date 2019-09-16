@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation.preview;
 
@@ -53,10 +53,9 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 	String variedParamName;
 	// values for the varied parameter (can be null)
 	double[] variedParamValues;
-	
-	public PreviewCollection(String orderingName, String indexName, Class<?> taskClass, 
-			String variedParamName, double[] variedParamValues) 
-	{
+
+	public PreviewCollection(String orderingName, String indexName, Class<?> taskClass, String variedParamName,
+			double[] variedParamValues) {
 		this.orderingName = orderingName;
 		this.indexName = indexName;
 		requiredMeasurementNames = new ArrayList<>();
@@ -68,7 +67,7 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 		this.variedParamName = variedParamName;
 		this.variedParamValues = variedParamValues;
 	}
-	
+
 	public PreviewCollection(String orderingName, String indexName, Class<?> taskClass) {
 		this(orderingName, indexName, taskClass, null, null);
 	}
@@ -82,7 +81,7 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 			measurementNames = new ArrayList<>();
 			measurementNames.add(orderingName);
 			measurementNames.add(indexName);
-			
+
 			for (int i = 0; i < preview.getMeasurementNameCount(); ++i) {
 				String name = preview.getMeasurementName(i);
 				measurementNames.add(name);
@@ -100,10 +99,8 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 			}
 
 			// check if the new preview has more entries than the last one
-			if (subPreviews.get(previewIndex) == null ||
-				(subPreviews.get(previewIndex) != null && 
-				 preview.numEntries() > subPreviews.get(previewIndex).numEntries())) 
-			{
+			if (subPreviews.get(previewIndex) == null || (subPreviews.get(previewIndex) != null
+					&& preview.numEntries() > subPreviews.get(previewIndex).numEntries())) {
 				// set the smallest number of entries
 				minEntryNum = preview.numEntries();
 				for (int i = 0; i < subPreviews.size(); ++i) {
@@ -118,6 +115,7 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 		}
 	}
 
+	@Override
 	public int numEntries() {
 		// use the minimal number of entries to guarantee that all previews have
 		// enough values
@@ -163,6 +161,7 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 		return sb.toString();
 	}
 
+	@Override
 	public void getDescription(StringBuilder sb, int indent) {
 		sb.append(headerToString());
 
@@ -222,19 +221,19 @@ public class PreviewCollection<CollectionElementType extends Preview> extends Pr
 
 		return entry;
 	}
-	
+
 	public String getOrderingName() {
 		return this.orderingName;
 	}
-	
+
 	public String getIndexName() {
 		return this.indexName;
 	}
-	
+
 	public String getVariedParamName() {
 		return this.variedParamName;
 	}
-	
+
 	public double[] getVariedParamValues() {
 		return this.variedParamValues;
 	}

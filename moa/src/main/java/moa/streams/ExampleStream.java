@@ -19,70 +19,69 @@
  */
 package moa.streams;
 
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.MOAObject;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.core.Example;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
- * Interface representing a data stream of examples. 
+ * Interface representing a data stream of examples.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $ 
+ * @version $Revision: 7 $
  */
-public interface ExampleStream<E extends Example> extends MOAObject,
-                                                          CapabilitiesHandler {
+public interface ExampleStream<E extends Example> extends MOAObject, CapabilitiesHandler {
 
-    /**
-     * Gets the header of this stream.
-     * This is useful to know attributes and classes.
-     * InstancesHeader is an extension of weka.Instances.
-     *
-     * @return the header of this stream
-     */
-    public InstancesHeader getHeader();
+	/**
+	 * Gets the header of this stream. This is useful to know attributes and
+	 * classes. InstancesHeader is an extension of weka.Instances.
+	 *
+	 * @return the header of this stream
+	 */
+	InstancesHeader getHeader();
 
-    /**
-     * Gets the estimated number of remaining instances in this stream
-     *
-     * @return the estimated number of instances to get from this stream
-     */
-    public long estimatedRemainingInstances();
+	/**
+	 * Gets the estimated number of remaining instances in this stream
+	 *
+	 * @return the estimated number of instances to get from this stream
+	 */
+	long estimatedRemainingInstances();
 
-    /**
-     * Gets whether this stream has more instances to output.
-     * This is useful when reading streams from files.
-     *
-     * @return true if this stream has more instances to output
-     */
-    public boolean hasMoreInstances();
+	/**
+	 * Gets whether this stream has more instances to output. This is useful when
+	 * reading streams from files.
+	 *
+	 * @return true if this stream has more instances to output
+	 */
+	boolean hasMoreInstances();
 
-    /**
-     * Gets the next example from this stream.
-     *
-     * @return the next example of this stream
-     */
-    public E nextInstance();
+	/**
+	 * Gets the next example from this stream.
+	 *
+	 * @return the next example of this stream
+	 */
+	E nextInstance();
 
-    /**
-     * Gets whether this stream can restart.
-     *
-     * @return true if this stream can restart
-     */
-    public boolean isRestartable();
+	/**
+	 * Gets whether this stream can restart.
+	 *
+	 * @return true if this stream can restart
+	 */
+	boolean isRestartable();
 
-    /**
-     * Restarts this stream. It must be similar to
-     * starting a new stream from scratch.
-     *
-     */
-    public void restart();
+	/**
+	 * Restarts this stream. It must be similar to starting a new stream from
+	 * scratch.
+	 *
+	 */
+	void restart();
 
-    default ImmutableCapabilities defineImmutableCapabilities() {
-        // We are restricting streams based on view mode
-        return new ImmutableCapabilities(Capability.VIEW_STANDARD);
-    }
+	@Override
+	default ImmutableCapabilities defineImmutableCapabilities() {
+		// We are restricting streams based on view mode
+		return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+	}
 }

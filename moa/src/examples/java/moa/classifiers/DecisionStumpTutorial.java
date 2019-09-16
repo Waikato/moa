@@ -71,7 +71,7 @@ public class DecisionStumpTutorial extends AbstractClassifier implements MultiCl
 		}
 	}
 
-	public double[] getVotesForInstance(Instance inst) {
+	public Prediction getPredictionForInstance(Instance inst) {
 		if (this.bestSplit != null) {
 			int branch = this.bestSplit.splitTest.branchForInstance(inst);
 			if (branch >= 0) {

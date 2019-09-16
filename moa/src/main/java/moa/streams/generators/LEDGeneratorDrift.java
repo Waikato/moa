@@ -15,93 +15,94 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.generators;
+
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.core.InstanceExample;
-import com.yahoo.labs.samoa.instances.DenseInstance;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
-import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 
 /**
- * Stream generator for the problem of predicting the digit displayed on a 7-segment LED display with drift.
+ * Stream generator for the problem of predicting the digit displayed on a
+ * 7-segment LED display with drift.
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
 public class LEDGeneratorDrift extends LEDGenerator {
 
-    @Override
-    public String getPurposeString() {
-        return "Generates a problem of predicting the digit displayed on a 7-segment LED display with drift.";
-    }
+	@Override
+	public String getPurposeString() {
+		return "Generates a problem of predicting the digit displayed on a 7-segment LED display with drift.";
+	}
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public IntOption numberAttributesDriftOption = new IntOption("numberAttributesDrift",
-            'd', "Number of attributes with drift.", 1, 0, 7);
+	public IntOption numberAttributesDriftOption = new IntOption("numberAttributesDrift", 'd',
+			"Number of attributes with drift.", 1, 0, 7);
 
-    protected int[] numberAttribute;
+	protected int[] numberAttribute;
 
-    @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
-        super.prepareForUseImpl(monitor, repository);
-        this.numberAttribute = new int[7 + NUM_IRRELEVANT_ATTRIBUTES];
-        for (int i = 0; i < 7 + NUM_IRRELEVANT_ATTRIBUTES; i++) {
-            this.numberAttribute[i] = i;
-        }
-        //Change atributes
-        if (!this.suppressIrrelevantAttributesOption.isSet() && this.numberAttributesDriftOption.getValue() > 0) {
-            int randomInt = 0;//this.instanceRandom.nextInt(7);
-            int offset = 0;//this.instanceRandom.nextInt(NUM_IRRELEVANT_ATTRIBUTES);
-            for (int i = 0; i < this.numberAttributesDriftOption.getValue(); i++) {
-                int value1 = (i + randomInt) % 7;
-                int value2 = 7 + ((i + offset) % (NUM_IRRELEVANT_ATTRIBUTES));
-                this.numberAttribute[value1] = value2;
-                this.numberAttribute[value2] = value1;
-            }
-        }
-    }
+	@Override
+	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
+		super.prepareForUseImpl(monitor, repository);
+		this.numberAttribute = new int[7 + NUM_IRRELEVANT_ATTRIBUTES];
+		for (int i = 0; i < 7 + NUM_IRRELEVANT_ATTRIBUTES; i++) {
+			this.numberAttribute[i] = i;
+		}
+		// Change atributes
+		if (!this.suppressIrrelevantAttributesOption.isSet() && this.numberAttributesDriftOption.getValue() > 0) {
+			int randomInt = 0;// this.instanceRandom.nextInt(7);
+			int offset = 0;// this.instanceRandom.nextInt(NUM_IRRELEVANT_ATTRIBUTES);
+			for (int i = 0; i < this.numberAttributesDriftOption.getValue(); i++) {
+				int value1 = (i + randomInt) % 7;
+				int value2 = 7 + ((i + offset) % (NUM_IRRELEVANT_ATTRIBUTES));
+				this.numberAttribute[value1] = value2;
+				this.numberAttribute[value2] = value1;
+			}
+		}
+	}
 
-    @Override
-    public InstanceExample nextInstance() {
-        InstancesHeader header = getHeader();
-        Instance inst = new DenseInstance(header.numAttributes());
-        inst.setDataset(header);
-        int selected = this.instanceRandom.nextInt(10);
-        for (int i = 0; i < 7; i++) {
-            if ((1 + (this.instanceRandom.nextInt(100))) <= this.noisePercentageOption.getValue()) {
-                inst.setValue(this.numberAttribute[i], originalInstances[selected][i] == 0 ? 1 : 0);
-            } else {
-                inst.setValue(this.numberAttribute[i], originalInstances[selected][i]);
-            }
-        }
-        if (!this.suppressIrrelevantAttributesOption.isSet()) {
-            for (int i = 0; i < NUM_IRRELEVANT_ATTRIBUTES; i++) {
-                inst.setValue(this.numberAttribute[i + 7], this.instanceRandom.nextInt(2));
-            }
-        }
-        inst.setClassValue(selected);
-        return new InstanceExample(inst);
-    }
+	@Override
+	public InstanceExample nextInstance() {
+		InstancesHeader header = getHeader();
+		Instance inst = new DenseInstance(header.numAttributes());
+		inst.setDataset(header);
+		int selected = this.instanceRandom.nextInt(10);
+		for (int i = 0; i < 7; i++) {
+			if ((1 + (this.instanceRandom.nextInt(100))) <= this.noisePercentageOption.getValue()) {
+				inst.setValue(this.numberAttribute[i], originalInstances[selected][i] == 0 ? 1 : 0);
+			} else {
+				inst.setValue(this.numberAttribute[i], originalInstances[selected][i]);
+			}
+		}
+		if (!this.suppressIrrelevantAttributesOption.isSet()) {
+			for (int i = 0; i < NUM_IRRELEVANT_ATTRIBUTES; i++) {
+				inst.setValue(this.numberAttribute[i + 7], this.instanceRandom.nextInt(2));
+			}
+		}
+		inst.setClassValue(selected);
+		return new InstanceExample(inst);
+	}
 
-    @Override
-    public void getDescription(StringBuilder sb, int indent) {
-        // TODO Auto-generated method stub
-    }
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {
+		// TODO Auto-generated method stub
+	}
 
-    @Override
-    public ImmutableCapabilities defineImmutableCapabilities() {
-        if (this.getClass() == LEDGeneratorDrift.class)
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
-    }
+	@Override
+	public ImmutableCapabilities defineImmutableCapabilities() {
+		if (this.getClass() == LEDGeneratorDrift.class)
+			return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+		else
+			return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+	}
 }
