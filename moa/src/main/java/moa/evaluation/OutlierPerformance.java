@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.evaluation;
@@ -25,26 +25,26 @@ import java.util.ArrayList;
 import moa.cluster.Clustering;
 import moa.gui.visualization.DataPoint;
 
+public class OutlierPerformance extends MeasureCollection {
+	@Override
+	protected String[] getNames() {
+		String[] names = { "time per object", "needed?###" };
+		return names;
+	}
 
-public class OutlierPerformance extends MeasureCollection{
-    @Override
-    protected String[] getNames() {
-        String[] names = {"time per object","needed?###"};
-        return names;
-    }
+	@Override
+	protected boolean[] getDefaultEnabled() {
+		boolean[] defaults = { false, false };
+		return defaults;
+	}
 
-    @Override
-    protected boolean[] getDefaultEnabled() {
-        boolean [] defaults = {false, false};
-        return defaults;
-    }
+	@Override
+	public void evaluateClustering(Clustering clustering, Clustering trueClustering, ArrayList<DataPoint> points)
+			throws Exception {
+		// nothing to do
+	}
 
-    @Override
-    public void evaluateClustering(Clustering clustering, Clustering trueClustering, ArrayList<DataPoint> points) throws Exception {
-        // nothing to do
-    }
-    
-    public void addTimePerObject(double time) {
-        addValue("time per object", time);
-    }
+	public void addTimePerObject(double time) {
+		addValue("time per object", time);
+	}
 }

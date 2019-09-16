@@ -33,8 +33,7 @@ import moa.options.ClassOption;
  * @version $Revision$
  * @see ClassOption
  */
-public class MOAClassOptionEditor
-  extends PropertyEditorSupport {
+public class MOAClassOptionEditor extends PropertyEditorSupport {
 
 	/** the custom editor. */
 	protected Component m_CustomEditor;
@@ -45,8 +44,9 @@ public class MOAClassOptionEditor
 	/**
 	 * Returns true since this editor is paintable.
 	 *
-	 * @return 		always true.
+	 * @return always true.
 	 */
+	@Override
 	public boolean isPaintable() {
 		return false;
 	}
@@ -54,8 +54,9 @@ public class MOAClassOptionEditor
 	/**
 	 * Returns true because we do support a custom editor.
 	 *
-	 * @return 		always true
+	 * @return always true
 	 */
+	@Override
 	public boolean supportsCustomEditor() {
 		return true;
 	}
@@ -74,15 +75,16 @@ public class MOAClassOptionEditor
 	/**
 	 * Creates the custom editor.
 	 *
-	 * @return		the editor
+	 * @return the editor
 	 */
 	protected Component createCustomEditor() {
-		JPanel			panel;
+		JPanel panel;
 
 		panel = new JPanel(new BorderLayout());
 		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		m_EditComponent = (ClassOptionEditComponent) getEditComponent((ClassOption) getValue());
 		m_EditComponent.addChangeListener(new ChangeListener() {
+			@Override
 			public void stateChanged(ChangeEvent e) {
 				m_EditComponent.applyState();
 				setValue(m_EditComponent.getEditedOption());
@@ -93,15 +95,16 @@ public class MOAClassOptionEditor
 		return panel;
 	}
 
-        public JComponent getEditComponent(Option option){
-             return OptionsConfigurationPanel.getEditComponent(option);
-        }
+	public JComponent getEditComponent(Option option) {
+		return OptionsConfigurationPanel.getEditComponent(option);
+	}
 
 	/**
 	 * Gets the custom editor component.
 	 *
-	 * @return 		the editor
+	 * @return the editor
 	 */
+	@Override
 	public Component getCustomEditor() {
 		if (m_CustomEditor == null)
 			m_CustomEditor = createCustomEditor();
@@ -109,20 +112,21 @@ public class MOAClassOptionEditor
 		return m_CustomEditor;
 	}
 
-  /**
-   * Paints a representation of the current Object.
-   *
-   * @param gfx 	the graphics context to use
-   * @param box 	the area we are allowed to paint into
-   */
-  public void paintValue(Graphics gfx, Rectangle box) {
-    FontMetrics 	fm;
-    int 					vpad;
-    String 				val;
+	/**
+	 * Paints a representation of the current Object.
+	 *
+	 * @param gfx the graphics context to use
+	 * @param box the area we are allowed to paint into
+	 */
+	@Override
+	public void paintValue(Graphics gfx, Rectangle box) {
+		FontMetrics fm;
+		int vpad;
+		String val;
 
-    fm   = gfx.getFontMetrics();
-    vpad = (box.height - fm.getHeight()) / 2 ;
-    val  = ((ClassOption) getValue()).getValueAsCLIString();
-    gfx.drawString(val, 2, fm.getHeight() + vpad);
-  }
+		fm = gfx.getFontMetrics();
+		vpad = (box.height - fm.getHeight()) / 2;
+		val = ((ClassOption) getValue()).getValueAsCLIString();
+		gfx.drawString(val, 2, fm.getHeight() + vpad);
+	}
 }

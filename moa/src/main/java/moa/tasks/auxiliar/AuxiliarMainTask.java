@@ -33,14 +33,16 @@ import moa.tasks.MainTask;
  */
 public abstract class AuxiliarMainTask extends MainTask {
 
-    protected ArrayList<ClusterEvent> events;
+	protected ArrayList<ClusterEvent> events;
 
-    protected void setEventsList(ArrayList<ClusterEvent> events) {
-        this.events = events;
-    }
-    
-    public ArrayList<ClusterEvent> getEventsList() {
-        return this.events;
-    }
-    
+	@Override
+	protected void setEventsList(ArrayList<ClusterEvent> events) {
+		this.events = events;
+	}
+
+	@Override
+	public ArrayList<ClusterEvent> getEventsList() {
+		return this.events;
+	}
+
 }

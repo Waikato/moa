@@ -15,11 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks.regression;
 
-import moa.learners.Regressor;
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
+import moa.learners.predictors.Regressor;
 import moa.options.ClassOption;
 import moa.tasks.AbstractEvaluateModel;
 
@@ -29,18 +32,25 @@ import moa.tasks.AbstractEvaluateModel;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class EvaluateModel extends AbstractEvaluateModel<Regressor> implements RegressionMainTask {
+public class EvaluateModel extends AbstractEvaluateModel<Regressor> implements RegressionMainTask, CapabilitiesHandler {
 
-    @Override
-    public String getPurposeString() {
-        return "Evaluates a static model on a stream.";
-    }
-
-    private static final long serialVersionUID = 1L;
-
-    public EvaluateModel() {
-    	this.modelOption = new ClassOption("model", 'm',
-                "Learner to evaluate.", Regressor.class, "moa.classifiers.trees.FIMTDD");
+	@Override
+	public String getPurposeString() {
+		return "Evaluates a static model on a stream.";
 	}
 
+	private static final long serialVersionUID = 1L;
+
+	public EvaluateModel() {
+		this.modelOption = new ClassOption("model", 'm', "Learner to evaluate.", Regressor.class,
+				"trees.FIMTDD");
+	}
+
+	@Override
+	public ImmutableCapabilities defineImmutableCapabilities() {
+		if (this.getClass() == EvaluateModel.class)
+			return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+		else
+			return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+	}
 }

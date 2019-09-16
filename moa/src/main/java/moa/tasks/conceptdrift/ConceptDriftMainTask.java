@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks.conceptdrift;
 
@@ -26,14 +26,16 @@ import moa.tasks.MainTask;
 
 public abstract class ConceptDriftMainTask extends MainTask {
 
-    protected ArrayList<ClusterEvent> events;
+	protected ArrayList<ClusterEvent> events;
 
-    protected void setEventsList(ArrayList<ClusterEvent> events) {
-        this.events = events;
-    }
-    
-    public ArrayList<ClusterEvent> getEventsList() {
-        return this.events;
-    }
-    
+	@Override
+	protected void setEventsList(ArrayList<ClusterEvent> events) {
+		this.events = events;
+	}
+
+	@Override
+	public ArrayList<ClusterEvent> getEventsList() {
+		return this.events;
+	}
+
 }

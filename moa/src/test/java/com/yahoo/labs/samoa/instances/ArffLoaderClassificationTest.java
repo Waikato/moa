@@ -30,7 +30,8 @@ public class ArffLoaderClassificationTest {
 			InputStream fileStream;
 			Reader reader;
 
-			fileStream = new FileInputStream(ClassLoader.getSystemResource("moa/classifiers/data/small_classification.arff").getPath());
+			fileStream = new FileInputStream(
+					ClassLoader.getSystemResource("moa/learners/predictors/data/small_classification.arff").getPath());
 			reader = new BufferedReader(new InputStreamReader(fileStream));
 			instancesHeader = new InstancesHeader(reader, "1");
 		} catch (IOException ioe) {

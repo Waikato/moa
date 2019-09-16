@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.github.javacliparser.gui;
 
@@ -29,10 +29,9 @@ import com.github.javacliparser.Option;
  */
 public class ListOptionEditComponent extends StringOptionEditComponent {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public ListOptionEditComponent(Option option) {
-    	super(option);
-    }
+	public ListOptionEditComponent(Option option) {
+		super(option);
+	}
 }
-

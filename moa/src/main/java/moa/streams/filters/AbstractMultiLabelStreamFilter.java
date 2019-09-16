@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.filters;
 
@@ -33,49 +33,48 @@ import moa.tasks.TaskMonitor;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public abstract class AbstractMultiLabelStreamFilter extends AbstractOptionHandler
-        implements MultiLabelStreamFilter {
+public abstract class AbstractMultiLabelStreamFilter extends AbstractOptionHandler implements MultiLabelStreamFilter {
 
-    /** The input stream to this filter. */
-    protected ExampleStream<Example<Instance>> inputStream;
+	/** The input stream to this filter. */
+	protected ExampleStream<Example<Instance>> inputStream;
 
-    @Override
-    public void setInputStream(ExampleStream<Example<Instance>> stream) {
-        this.inputStream = stream;
-        prepareForUse();
-    }
+	@Override
+	public void setInputStream(ExampleStream<Example<Instance>> stream) {
+		this.inputStream = stream;
+		prepareForUse();
+	}
 
-    @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
-        restartImpl();
-    }
+	@Override
+	public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
+		restartImpl();
+	}
 
-    @Override
-    public long estimatedRemainingInstances() {
-        return this.inputStream.estimatedRemainingInstances();
-    }
+	@Override
+	public long estimatedRemainingInstances() {
+		return this.inputStream.estimatedRemainingInstances();
+	}
 
-    @Override
-    public boolean hasMoreInstances() {
-        return this.inputStream.hasMoreInstances();
-    }
+	@Override
+	public boolean hasMoreInstances() {
+		return this.inputStream.hasMoreInstances();
+	}
 
-    @Override
-    public boolean isRestartable() {
-        return this.inputStream.isRestartable();
-    }
+	@Override
+	public boolean isRestartable() {
+		return this.inputStream.isRestartable();
+	}
 
-    @Override
-    public void restart() {
-        this.inputStream.restart();
-        restartImpl();
-    }
+	@Override
+	public void restart() {
+		this.inputStream.restart();
+		restartImpl();
+	}
 
-    /**
-     * Restarts this filter. All instances that extends from
-     * <code>AbstractStreamFilter</code> must implement <code>restartImpl</code>.
-     * <code>restart</code> uses <code>restartImpl</code> in <code>AbstractStreamFilter</code>.
-     */
-    protected abstract void restartImpl();
+	/**
+	 * Restarts this filter. All instances that extends from
+	 * <code>AbstractStreamFilter</code> must implement <code>restartImpl</code>.
+	 * <code>restart</code> uses <code>restartImpl</code> in
+	 * <code>AbstractStreamFilter</code>.
+	 */
+	protected abstract void restartImpl();
 }

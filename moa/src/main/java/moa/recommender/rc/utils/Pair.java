@@ -14,46 +14,48 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.recommender.rc.utils;
+
 import java.io.Serializable;
 
 public class Pair<T extends Comparable<T>, U extends Comparable<U>> implements Serializable, Comparable<Pair<T, U>> {
-    /**
-	 * 
+	/**
+	 *
 	 */
 	private static final long serialVersionUID = -1048781440947783998L;
 	private T first;
-    private U second;
-    
-    public Pair(T first, U second) {
-        this.first = first;
-        this.second = second;
-    }
+	private U second;
 
-    public T getFirst() {
-        return first;
-    }
-    
-    public U getSecond() {
-        return second;
-    }
-    
-    public void setSecond(U second) {
-        this.second = second;
-    }
-    
-    public void setFirst(T first) {
-        this.first = first;
-    }
-    
-    @Override
-    public int compareTo(Pair<T, U> o) {
-        int cmp = second.compareTo(o.second);
-        if (cmp == 0) return first.compareTo(o.first);
-        return cmp;
-    }
+	public Pair(T first, U second) {
+		this.first = first;
+		this.second = second;
+	}
+
+	public T getFirst() {
+		return first;
+	}
+
+	public U getSecond() {
+		return second;
+	}
+
+	public void setSecond(U second) {
+		this.second = second;
+	}
+
+	public void setFirst(T first) {
+		this.first = first;
+	}
+
+	@Override
+	public int compareTo(Pair<T, U> o) {
+		int cmp = second.compareTo(o.second);
+		if (cmp == 0)
+			return first.compareTo(o.first);
+		return cmp;
+	}
 }

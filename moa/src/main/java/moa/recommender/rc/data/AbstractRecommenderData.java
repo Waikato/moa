@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.recommender.rc.data;
@@ -26,85 +26,100 @@ import java.util.List;
 
 import moa.recommender.rc.utils.Updatable;
 
-
 public abstract class AbstractRecommenderData implements RecommenderData {
-    
-    
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -5409390358073330733L;
-    
-    protected ArrayList<Updatable> updatables;
-    protected boolean disableUpdates = false;
-    
-    public AbstractRecommenderData() {
-        this.updatables = new ArrayList<Updatable>();
-    }
-    
-    public void disableUpdates(boolean disable) {
-        this.disableUpdates = disable;
-    }
-    
-    public void addUser(int userID, List<Integer> ratedItems, List<Double> ratings) {
-        Iterator<Updatable> it = updatables.iterator();
-        while (it.hasNext()) {
-            Updatable u = it.next();
-            if (!disableUpdates)
-                u.updateNewUser(userID, ratedItems, ratings);
-        }
-    }
-    public void removeUser(int userID) {
-        Iterator<Updatable> it = updatables.iterator();
-        while (it.hasNext()) {
-            Updatable u = it.next();
-            if (!disableUpdates)
-                u.updateRemoveUser(userID);
-        }
-    }
-    public void addItem(int itemID, List<Integer> ratingUsers, List<Double> ratings) {
-        Iterator<Updatable> it = updatables.iterator();
-        while (it.hasNext()) {
-            Updatable u = it.next();
-            if (!disableUpdates)
-                u.updateNewItem(itemID, ratingUsers, ratings);
-        }
-    }
-    public void removeItem(int itemID) {
-        Iterator<Updatable> it = updatables.iterator();
-        while (it.hasNext()) {
-            Updatable u = it.next();
-            if (!disableUpdates)
-                u.updateRemoveItem(itemID);
-        }
-    }
-    public void setRating(int userID, int itemID, double rating) {
-        Iterator<Updatable> it = updatables.iterator();
-        while (it.hasNext()) {
-            Updatable u = it.next();
-            if (!disableUpdates) {
-                u.updateSetRating(userID, itemID, rating);
-            }
-                
-        }
-    }
-    public void removeRating(int userID, int itemID) {
-        Iterator<Updatable> it = updatables.iterator();
-        while (it.hasNext()) {
-            Updatable u = it.next();
-            if (!disableUpdates)
-                u.updateRemoveRating(userID, itemID);
-        }
-    }
 
-    public void attachUpdatable(Updatable obj) {
-        updatables.add(obj);
-    }
-    public void clear() {
-        updatables.clear();
-        disableUpdates = false;
-    }
-    public void close() {
-        
-    }
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5409390358073330733L;
+
+	protected ArrayList<Updatable> updatables;
+	protected boolean disableUpdates = false;
+
+	public AbstractRecommenderData() {
+		this.updatables = new ArrayList<>();
+	}
+
+	@Override
+	public void disableUpdates(boolean disable) {
+		this.disableUpdates = disable;
+	}
+
+	@Override
+	public void addUser(int userID, List<Integer> ratedItems, List<Double> ratings) {
+		Iterator<Updatable> it = updatables.iterator();
+		while (it.hasNext()) {
+			Updatable u = it.next();
+			if (!disableUpdates)
+				u.updateNewUser(userID, ratedItems, ratings);
+		}
+	}
+
+	@Override
+	public void removeUser(int userID) {
+		Iterator<Updatable> it = updatables.iterator();
+		while (it.hasNext()) {
+			Updatable u = it.next();
+			if (!disableUpdates)
+				u.updateRemoveUser(userID);
+		}
+	}
+
+	@Override
+	public void addItem(int itemID, List<Integer> ratingUsers, List<Double> ratings) {
+		Iterator<Updatable> it = updatables.iterator();
+		while (it.hasNext()) {
+			Updatable u = it.next();
+			if (!disableUpdates)
+				u.updateNewItem(itemID, ratingUsers, ratings);
+		}
+	}
+
+	@Override
+	public void removeItem(int itemID) {
+		Iterator<Updatable> it = updatables.iterator();
+		while (it.hasNext()) {
+			Updatable u = it.next();
+			if (!disableUpdates)
+				u.updateRemoveItem(itemID);
+		}
+	}
+
+	@Override
+	public void setRating(int userID, int itemID, double rating) {
+		Iterator<Updatable> it = updatables.iterator();
+		while (it.hasNext()) {
+			Updatable u = it.next();
+			if (!disableUpdates) {
+				u.updateSetRating(userID, itemID, rating);
+			}
+
+		}
+	}
+
+	@Override
+	public void removeRating(int userID, int itemID) {
+		Iterator<Updatable> it = updatables.iterator();
+		while (it.hasNext()) {
+			Updatable u = it.next();
+			if (!disableUpdates)
+				u.updateRemoveRating(userID, itemID);
+		}
+	}
+
+	@Override
+	public void attachUpdatable(Updatable obj) {
+		updatables.add(obj);
+	}
+
+	@Override
+	public void clear() {
+		updatables.clear();
+		disableUpdates = false;
+	}
+
+	@Override
+	public void close() {
+
+	}
 }

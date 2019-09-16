@@ -14,16 +14,17 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.cluster;
+
 import java.util.Arrays;
 
 import com.yahoo.labs.samoa.instances.Instance;
 
-/* micro cluster, as defined by Aggarwal et al, On Clustering Massive Data Streams: A Summarization Praradigm 
+/* micro cluster, as defined by Aggarwal et al, On Clustering Massive Data Streams: A Summarization Praradigm
  * in the book Data streams : models and algorithms, by Charu C Aggarwal
  *  @article{
 	title = {Data Streams: Models and Algorithms},
@@ -74,8 +75,9 @@ public abstract class CFCluster extends SphereCluster {
 
 	/**
 	 * Instantiates an empty kernel with the given dimensionality.
-	 * @param dimensions The number of dimensions of the points that can be in
-	 * this kernel.
+	 * 
+	 * @param dimensions The number of dimensions of the points that can be in this
+	 *                   kernel.
 	 */
 	public CFCluster(Instance instance, int dimensions) {
 		this(instance.toDoubleArray(), dimensions);
@@ -89,12 +91,12 @@ public abstract class CFCluster extends SphereCluster {
 		Arrays.fill(this.SS, 0.0);
 	}
 
-	public CFCluster(double [] center, int dimensions) {
+	public CFCluster(double[] center, int dimensions) {
 		this.N = 1;
 		this.LS = center;
 		this.SS = new double[dimensions];
 		for (int i = 0; i < SS.length; i++) {
-			SS[i]=Math.pow(center[i], 2);
+			SS[i] = Math.pow(center[i], 2);
 		}
 	}
 
@@ -104,10 +106,10 @@ public abstract class CFCluster extends SphereCluster {
 		this.SS = Arrays.copyOf(cluster.SS, cluster.SS.length);
 	}
 
-	public void add(CFCluster cluster ) {
+	public void add(CFCluster cluster) {
 		this.N += cluster.N;
-		addVectors( this.LS, cluster.LS );
-		addVectors( this.SS, cluster.SS );
+		addVectors(this.LS, cluster.LS);
+		addVectors(this.SS, cluster.SS);
 	}
 
 	public abstract CFCluster getCF();
@@ -115,59 +117,60 @@ public abstract class CFCluster extends SphereCluster {
 	/**
 	 * @return this kernels' center
 	 */
-	 @Override
-	 public double[] getCenter() {
-		 assert (this.N>0);
-		 double res[] = new double[this.LS.length];
-		 for ( int i = 0; i < res.length; i++ ) {
-			 res[i] = this.LS[i] / N;
-		 }
-		 return res;
-	 }
+	@Override
+	public double[] getCenter() {
+		assert (this.N > 0);
+		double res[] = new double[this.LS.length];
+		for (int i = 0; i < res.length; i++) {
+			res[i] = this.LS[i] / N;
+		}
+		return res;
+	}
 
+	@Override
+	public abstract double getInclusionProbability(Instance instance);
 
-	 @Override
-	 public abstract double getInclusionProbability(Instance instance);
+	/**
+	 * See interface <code>Cluster</code>
+	 * 
+	 * @return The radius of the cluster.
+	 */
+	@Override
+	public abstract double getRadius();
 
-	 /**
-	  * See interface <code>Cluster</code>
-	  * @return The radius of the cluster.
-	  */
-	 @Override
-	 public abstract double getRadius();
+	/**
+	 * See interface <code>Cluster</code>
+	 * 
+	 * @return The weight.
+	 * @see Cluster#getWeight()
+	 */
+	@Override
+	public double getWeight() {
+		return N;
+	}
 
-	 /**
-	  * See interface <code>Cluster</code>
-	  * @return The weight.
-	  * @see Cluster#getWeight() 
-	  */
-	 @Override
-	 public double getWeight() {
-		 return N;
-	 }
+	public void setN(double N) {
+		this.N = N;
+	}
 
-	 public void setN(double N){
-		 this.N = N;
-	 }
+	public double getN() {
+		return N;
+	}
 
-	 public double getN() {
-		 return N;
-	 }
+	/**
+	 * Adds the second array to the first array element by element. The arrays must
+	 * have the same length.
+	 * 
+	 * @param a1 Vector to which the second vector is added.
+	 * @param a2 Vector to be added. This vector does not change.
+	 */
+	public static void addVectors(double[] a1, double[] a2) {
+		assert (a1 != null);
+		assert (a2 != null);
+		assert (a1.length == a2.length) : "Adding two arrays of different " + "length";
 
-	 /**
-	  * Adds the second array to the first array element by element. The arrays
-	  * must have the same length.
-	  * @param a1 Vector to which the second vector is added.
-	  * @param a2 Vector to be added. This vector does not change.
-	  */
-	 public static void addVectors(double[] a1, double[] a2) {
-		 assert (a1 != null);
-		 assert (a2 != null);
-		 assert (a1.length == a2.length) : "Adding two arrays of different "
-			 + "length";
-
-		 for (int i = 0; i < a1.length; i++) {
-			 a1[i] += a2[i];
-		 }
-	 }
+		for (int i = 0; i < a1.length; i++) {
+			a1[i] += a2[i];
+		}
+	}
 }

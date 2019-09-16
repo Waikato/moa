@@ -43,8 +43,8 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 	/**
 	 * Initialises a ProcessGraphCanvas by calling the super constructor with a
 	 * ProcessGraphAxes as instance of AbstractGraphAxes and GraphMultiCurve as
-	 * instance of AbstractGraphPlot. Also sets the min_processfrequency to
-	 * initial value.
+	 * instance of AbstractGraphPlot. Also sets the min_processfrequency to initial
+	 * value.
 	 */
 	public ProcessGraphCanvas() {
 		super(new ProcessGraphAxes(), new GraphMultiCurve());
@@ -63,7 +63,7 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 
 	/**
 	 * Returns the list of registered process frequencies.
-	 * 
+	 *
 	 * @return list of registered process frequencies
 	 */
 	public int[] getProcessFrequencies() {
@@ -73,19 +73,15 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 	/**
 	 * Sets the graph containing multiple curves.
 	 *
-	 * @param measures
-	 *            information about the curves
-	 * @param measureStds
-	 * 			  standard deviation values for the measures
-	 * @param processFrequencies
-	 *            information about the process frequencies of the curves
-	 * @param min_processFrequency
-	 *            minimum process frequency
-	 * @param colors
-	 *            color encodings for the curves
+	 * @param measures             information about the curves
+	 * @param measureStds          standard deviation values for the measures
+	 * @param processFrequencies   information about the process frequencies of the
+	 *                             curves
+	 * @param min_processFrequency minimum process frequency
+	 * @param colors               color encodings for the curves
 	 */
-	public void setGraph(MeasureCollection[] measures, MeasureCollection[] measureStds, int[] processFrequencies, int min_processFrequency,
-			Color[] colors) {
+	public void setGraph(MeasureCollection[] measures, MeasureCollection[] measureStds, int[] processFrequencies,
+			int min_processFrequency, Color[] colors) {
 		this.measures = measures;
 		this.processFrequencies = processFrequencies;
 		this.min_processFrequency = min_processFrequency;
@@ -97,7 +93,7 @@ public class ProcessGraphCanvas extends AbstractGraphCanvas {
 
 	@Override
 	public double getMinXValue() {
-	    return 0;
+		return 0;
 	}
 
 	@Override

@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.filters;
 
@@ -39,67 +39,67 @@ import moa.streams.InstanceStream;
  */
 public class RemoveDiscreteAttributeFilter extends AbstractStreamFilter {
 
-    @Override
-    public String getPurposeString() {
-        return "Removes discrete attribute examples in a stream.";
-    }
-    private static final long serialVersionUID = 1L;
+	@Override
+	public String getPurposeString() {
+		return "Removes discrete attribute examples in a stream.";
+	}
 
-    protected InstancesHeader streamHeader;
+	private static final long serialVersionUID = 1L;
 
-    protected List<Integer> numericAttributes;
-    
-    @Override
-    protected void restartImpl() {
-        this.streamHeader = null;
-    }
+	protected InstancesHeader streamHeader;
 
-    @Override
-    public InstancesHeader getHeader() {
-        return streamHeader;
-    }
+	protected List<Integer> numericAttributes;
 
-    @Override
-    public InstanceExample nextInstance() {
-        Instance inst = (Instance) this.inputStream.nextInstance().getData();
+	@Override
+	protected void restartImpl() {
+		this.streamHeader = null;
+	}
 
-        if (streamHeader == null) {
-            //Create a new header
-            FastVector attributes = new FastVector();
-            numericAttributes = new ArrayList<Integer>();
-            for (int i = 0; i < inst.numAttributes(); i++) {
-                if (inst.attribute(i).isNumeric()) {
-                    numericAttributes.add(i);
-                    attributes.addElement(inst.attribute(i));
-                }
-            }
-            attributes.addElement(inst.classAttribute());
-            numericAttributes.add(inst.classIndex());
-            this.streamHeader = new InstancesHeader(new InstancesHeader(
-                    getCLICreationString(InstanceStream.class), attributes, 0));
-            this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
+	@Override
+	public InstancesHeader getHeader() {
+		return streamHeader;
+	}
 
-        }
+	@Override
+	public InstanceExample nextInstance() {
+		Instance inst = (Instance) this.inputStream.nextInstance().getData();
 
-        //Create a new instance
-        double[] vals = new double[getHeader().numAttributes()];
-        for (int i = 0; i < numericAttributes.size(); i++) {
-                vals[i] = inst.value(numericAttributes.get(i));
-        }
+		if (streamHeader == null) {
+			// Create a new header
+			FastVector attributes = new FastVector();
+			numericAttributes = new ArrayList<>();
+			for (int i = 0; i < inst.numAttributes(); i++) {
+				if (inst.attribute(i).isNumeric()) {
+					numericAttributes.add(i);
+					attributes.addElement(inst.attribute(i));
+				}
+			}
+			attributes.addElement(inst.classAttribute());
+			numericAttributes.add(inst.classIndex());
+			this.streamHeader = new InstancesHeader(
+					new InstancesHeader(getCLICreationString(InstanceStream.class), attributes, 0));
+			this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
 
-        Instance instance = null;
-        if (inst instanceof SparseInstance) {
-            instance = new SparseInstance(inst.weight(), vals);
-        } else {
-            instance = new DenseInstance(inst.weight(), vals);
-        }
+		}
 
+		// Create a new instance
+		double[] vals = new double[getHeader().numAttributes()];
+		for (int i = 0; i < numericAttributes.size(); i++) {
+			vals[i] = inst.value(numericAttributes.get(i));
+		}
 
-        return new InstanceExample(instance);
-    }
+		Instance instance = null;
+		if (inst instanceof SparseInstance) {
+			instance = new SparseInstance(inst.weight(), vals);
+		} else {
+			instance = new DenseInstance(inst.weight(), vals);
+		}
 
-    @Override
-    public void getDescription(StringBuilder sb, int indent) {
-        // TODO Auto-generated method stub
-    }
+		return new InstanceExample(instance);
+	}
+
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {
+		// TODO Auto-generated method stub
+	}
 }

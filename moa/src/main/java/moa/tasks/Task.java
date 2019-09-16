@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
@@ -23,38 +23,36 @@ import moa.MOAObject;
 import moa.core.ObjectRepository;
 
 /**
- * Interface representing a task. 
+ * Interface representing a task.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $ 
+ * @version $Revision: 7 $
  */
 public interface Task extends MOAObject {
 
-    /**
-     * Gets the result type of this task.
-     * Tasks can return LearningCurve, LearningEvaluation,
-     * Classifier, String, Instances..
-     *
-     * @return a class object of the result of this task
-     */
-    public Class<?> getTaskResultType();
+	/**
+	 * Gets the result type of this task. Tasks can return LearningCurve,
+	 * LearningEvaluation, Classifier, String, Instances..
+	 *
+	 * @return a class object of the result of this task
+	 */
+	Class<?> getTaskResultType();
 
-    /**
-     * This method performs this task,
-     * when TaskMonitor and ObjectRepository are no needed.
-     *
-     * @return an object with the result of this task
-     */
-    public Object doTask();
+	/**
+	 * This method performs this task, when TaskMonitor and ObjectRepository are no
+	 * needed.
+	 *
+	 * @return an object with the result of this task
+	 */
+	Object doTask();
 
-    /**
-     * This method performs this task.
-     * <code>AbstractTask</code> implements this method so all
-     * its extensions only need to implement <code>doTaskImpl</code>
-     *
-     * @param monitor the TaskMonitor to use
-     * @param repository  the ObjectRepository to use
-     * @return an object with the result of this task
-     */
-    public Object doTask(TaskMonitor monitor, ObjectRepository repository);
+	/**
+	 * This method performs this task. <code>AbstractTask</code> implements this
+	 * method so all its extensions only need to implement <code>doTaskImpl</code>
+	 *
+	 * @param monitor    the TaskMonitor to use
+	 * @param repository the ObjectRepository to use
+	 * @return an object with the result of this task
+	 */
+	Object doTask(TaskMonitor monitor, ObjectRepository repository);
 }

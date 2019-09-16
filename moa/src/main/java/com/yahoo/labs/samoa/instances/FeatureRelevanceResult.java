@@ -3,12 +3,12 @@ package com.yahoo.labs.samoa.instances;
 import java.util.List;
 
 public interface FeatureRelevanceResult {
-	public void addFeature(Attribute attr);
-	
-	public void setFeatureRelevance(Attribute attr, double relevance);
-	
-	public double getFeatureRelevance(Attribute attr);
-	
-	public List<Attribute> getFeatures();
+	void addFeature(Attribute attr);
+
+	void setFeatureRelevance(Attribute attr, double relevance);
+
+	double getFeatureRelevance(Attribute attr);
+
+	List<Attribute> getFeatures();
 
 }

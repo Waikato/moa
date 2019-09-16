@@ -15,12 +15,12 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.recommender.data;
 
 public interface RecommenderData {
-    
-    public moa.recommender.rc.data.RecommenderData getData();
-    
+
+	moa.recommender.rc.data.RecommenderData getData();
+
 }

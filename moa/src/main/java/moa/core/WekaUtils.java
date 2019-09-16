@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
@@ -29,32 +29,30 @@ import weka.core.Version;
  */
 public class WekaUtils {
 
- /**
-     * Checks if the Weka version is recent enough to run MOA.
-     * For example, if the Weka version is not recent, there may be problems
-     * due to the fact that <code>Instance</code> was a class before 3.7.1 and
-     * now is an interface.
-     *
-     * @return true if the Weka version is recent.
-     */
-    public static boolean isWekaVersionOK() {
-        try {
-            Class.forName("weka.core.Version");
-            Version version = new Version();
-            if (version.isOlder("3.7.1")) {
-                System.err.println();
-                System.err.println(Globals.getWorkbenchInfoString());
-                System.err.println();
-                System.err.print("Weka 3.7.1 or higher is required to run MOA. ");
-                System.err.println("Weka version " + Version.VERSION + " found");
-                return false;
-            } else {
-                return true;
-            }
-        } catch (ClassNotFoundException exception) {
-            // It is not available
-            return true;
-        }
-    }
+	/**
+	 * Checks if the Weka version is recent enough to run MOA. For example, if the
+	 * Weka version is not recent, there may be problems due to the fact that
+	 * <code>Instance</code> was a class before 3.7.1 and now is an interface.
+	 *
+	 * @return true if the Weka version is recent.
+	 */
+	public static boolean isWekaVersionOK() {
+		try {
+			Class.forName("weka.core.Version");
+			Version version = new Version();
+			if (version.isOlder("3.7.1")) {
+				System.err.println();
+				System.err.println(Globals.getWorkbenchInfoString());
+				System.err.println();
+				System.err.print("Weka 3.7.1 or higher is required to run MOA. ");
+				System.err.println("Weka version " + Version.VERSION + " found");
+				return false;
+			} else {
+				return true;
+			}
+		} catch (ClassNotFoundException exception) {
+			// It is not available
+			return true;
+		}
+	}
 }
-

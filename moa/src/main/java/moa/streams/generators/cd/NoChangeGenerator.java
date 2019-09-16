@@ -15,15 +15,15 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.generators.cd;
 
 public class NoChangeGenerator extends AbstractConceptDriftGenerator {
 
-    @Override
-    protected double nextValue() {
-        double res = .2;
-        return res;
-    }
+	@Override
+	protected double nextValue() {
+		double res = .2;
+		return res;
+	}
 }

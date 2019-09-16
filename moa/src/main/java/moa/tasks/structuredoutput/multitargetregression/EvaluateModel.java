@@ -15,11 +15,11 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks.structuredoutput.multitargetregression;
 
-import moa.learners.MultiTargetRegressor;
+import moa.learners.predictors.MultiTargetRegressor;
 import moa.options.ClassOption;
 import moa.tasks.AbstractEvaluateModel;
 
@@ -29,16 +29,17 @@ import moa.tasks.AbstractEvaluateModel;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class EvaluateModel extends AbstractEvaluateModel<MultiTargetRegressor> implements MultiTargetRegressionMainTask {
+public class EvaluateModel extends AbstractEvaluateModel<MultiTargetRegressor>
+		implements MultiTargetRegressionMainTask {
 
-    @Override
-    public String getPurposeString() {
-        return "Evaluates a static multi-target regression model on a stream.";
-    }
-    
-    public EvaluateModel() {
-    	this.modelOption = new ClassOption("model", 'm', 
-    			"Learner to evaluate.", MultiTargetRegressor.class, "moa.classifiers.mtr.trees.ISOUPTree");
+	@Override
+	public String getPurposeString() {
+		return "Evaluates a static multi-target regression model on a stream.";
+	}
+
+	public EvaluateModel() {
+		this.modelOption = new ClassOption("model", 'm', "Learner to evaluate.", MultiTargetRegressor.class,
+				"mtr.trees.ISOUPTree");
 	}
 
 	private static final long serialVersionUID = 1L;

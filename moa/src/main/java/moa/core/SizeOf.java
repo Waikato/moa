@@ -11,7 +11,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 
 /*
@@ -23,59 +23,61 @@ package moa.core;
 import sizeof.agent.SizeOfAgent;
 
 /**
- * Helper class for <a href="http://www.jroller.com/maxim/entry/again_about_determining_size_of" target="_blank">Maxim Zakharenkov's SizeOf agent</a>.
+ * Helper class for
+ * <a href="http://www.jroller.com/maxim/entry/again_about_determining_size_of"
+ * target="_blank">Maxim Zakharenkov's SizeOf agent</a>.
  *
- * @author  fracpete (fracpete at waikato dot ac dot nz)
+ * @author fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
 public class SizeOf {
 
-    /** whether the agent is present. */
-    protected static Boolean m_Present;
+	/** whether the agent is present. */
+	protected static Boolean m_Present;
 
-    /**
-     * Checks whether the agent is present.
-     *
-     * @return true if the agent is present, false otherwise
-     */
-    protected static synchronized boolean isPresent() {
-        if (m_Present == null) {
-            try {
-                SizeOfAgent.fullSizeOf(new Integer(1));
-                m_Present = true;
-            } catch (Throwable t) {
-                m_Present = false;
-            }
-        }
+	/**
+	 * Checks whether the agent is present.
+	 *
+	 * @return true if the agent is present, false otherwise
+	 */
+	protected static synchronized boolean isPresent() {
+		if (m_Present == null) {
+			try {
+				SizeOfAgent.fullSizeOf(new Integer(1));
+				m_Present = true;
+			} catch (Throwable t) {
+				m_Present = false;
+			}
+		}
 
-        return m_Present;
-    }
+		return m_Present;
+	}
 
-    /**
-     * Returns the size of the object.
-     *
-     * @param o	the object to get the size for
-     * @return the size of the object, or if the agent isn't present -1
-     */
-    public static long sizeOf(Object o) {
-        if (isPresent()) {
-            return SizeOfAgent.sizeOf(o);
-        } else {
-            return -1;
-        }
-    }
+	/**
+	 * Returns the size of the object.
+	 *
+	 * @param o the object to get the size for
+	 * @return the size of the object, or if the agent isn't present -1
+	 */
+	public static long sizeOf(Object o) {
+		if (isPresent()) {
+			return SizeOfAgent.sizeOf(o);
+		} else {
+			return -1;
+		}
+	}
 
-    /**
-     * Returns the full size of the object.
-     *
-     * @param o	the object to get the size for
-     * @return the size of the object, or if the agent isn't present -1
-     */
-    public static long fullSizeOf(Object o) {
-        if (isPresent()) {
-            return SizeOfAgent.fullSizeOf(o);
-        } else {
-            return -1;
-        }
-    }
+	/**
+	 * Returns the full size of the object.
+	 *
+	 * @param o the object to get the size for
+	 * @return the size of the object, or if the agent isn't present -1
+	 */
+	public static long fullSizeOf(Object o) {
+		if (isPresent()) {
+			return SizeOfAgent.fullSizeOf(o);
+		} else {
+			return -1;
+		}
+	}
 }

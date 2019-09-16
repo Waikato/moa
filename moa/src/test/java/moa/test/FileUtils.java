@@ -34,272 +34,270 @@ import java.util.List;
 
 /**
  * Basic file-handling stuff.
- * 
- * @author  fracpete (fracpete at waikato dot ac dot nz)
+ *
+ * @author fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
 public class FileUtils {
-  
-  /**
-   * Returns the content of the given file, null in case of an error.
-   *
-   * @param file	the file to load
-   * @return		the content/lines of the file
-   */
-  public static List<String> loadFromFile(File file) {
-    return loadFromFile(file, null);
-  }
 
-  /**
-   * Returns the content of the given file, null in case of an error.
-   *
-   * @param file	the file to load
-   * @param encoding	the encoding to use, null to use default
-   * @return		the content/lines of the file
-   */
-  public static List<String> loadFromFile(File file, String encoding) {
-    List<String>	result;
-    BufferedReader	reader;
-    String		line;
+	/**
+	 * Returns the content of the given file, null in case of an error.
+	 *
+	 * @param file the file to load
+	 * @return the content/lines of the file
+	 */
+	public static List<String> loadFromFile(File file) {
+		return loadFromFile(file, null);
+	}
 
-    result = new ArrayList<String>();
+	/**
+	 * Returns the content of the given file, null in case of an error.
+	 *
+	 * @param file     the file to load
+	 * @param encoding the encoding to use, null to use default
+	 * @return the content/lines of the file
+	 */
+	public static List<String> loadFromFile(File file, String encoding) {
+		List<String> result;
+		BufferedReader reader;
+		String line;
 
-    try {
-      if ((encoding != null) && (encoding.length() > 0))
-	reader = new BufferedReader(new InputStreamReader(new FileInputStream(file.getAbsolutePath()), encoding));
-      else
-	reader = new BufferedReader(new InputStreamReader(new FileInputStream(file.getAbsolutePath())));
-      while ((line = reader.readLine()) != null)
-        result.add(line);
-      reader.close();
-    }
-    catch (Exception e) {
-      result = null;
-      e.printStackTrace();
-    }
+		result = new ArrayList<>();
 
-    return result;
-  }
+		try {
+			if ((encoding != null) && (encoding.length() > 0))
+				reader = new BufferedReader(
+						new InputStreamReader(new FileInputStream(file.getAbsolutePath()), encoding));
+			else
+				reader = new BufferedReader(new InputStreamReader(new FileInputStream(file.getAbsolutePath())));
+			while ((line = reader.readLine()) != null)
+				result.add(line);
+			reader.close();
+		} catch (Exception e) {
+			result = null;
+			e.printStackTrace();
+		}
 
-  /**
-   * Saves the content to the given file.
-   *
-   * @param content	the content to save
-   * @param file	the file to save the content to
-   * @return		true if successfully saved
-   */
-  public static boolean saveToFile(String[] content, File file) {
-    List<String>	lines;
-    int			i;
+		return result;
+	}
 
-    lines = new ArrayList<String>();
-    for (i = 0; i < content.length; i++)
-      lines.add(content[i]);
+	/**
+	 * Saves the content to the given file.
+	 *
+	 * @param content the content to save
+	 * @param file    the file to save the content to
+	 * @return true if successfully saved
+	 */
+	public static boolean saveToFile(String[] content, File file) {
+		List<String> lines;
+		int i;
 
-    return FileUtils.saveToFile(lines, file);
-  }
+		lines = new ArrayList<>();
+		for (i = 0; i < content.length; i++)
+			lines.add(content[i]);
 
-  /**
-   * Saves the content to the given file.
-   *
-   * @param content	the content to save
-   * @param file	the file to save the content to
-   * @return		true if successfully saved
-   */
-  public static boolean saveToFile(List<String> content, File file) {
-    return saveToFile(content, file, null);
-  }
+		return FileUtils.saveToFile(lines, file);
+	}
 
-  /**
-   * Saves the content to the given file.
-   *
-   * @param content	the content to save
-   * @param file	the file to save the content to
-   * @param encoding	the encoding to use, null for default
-   * @return		true if successfully saved
-   */
-  public static boolean saveToFile(List<String> content, File file, String encoding) {
-    boolean		result;
-    BufferedWriter	writer;
-    int			i;
+	/**
+	 * Saves the content to the given file.
+	 *
+	 * @param content the content to save
+	 * @param file    the file to save the content to
+	 * @return true if successfully saved
+	 */
+	public static boolean saveToFile(List<String> content, File file) {
+		return saveToFile(content, file, null);
+	}
 
-    result = true;
-    
-    try {
-      if ((encoding != null) && (encoding.length() > 0))
-	writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file.getAbsolutePath()), encoding));
-      else
-	writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file.getAbsolutePath())));
-      for (i = 0; i < content.size(); i++) {
-        writer.write(content.get(i));
-        writer.newLine();
-      }
-      writer.flush();
-      writer.close();
-    }
-    catch (Exception e) {
-      result = false;
-      e.printStackTrace();
-    }
+	/**
+	 * Saves the content to the given file.
+	 *
+	 * @param content  the content to save
+	 * @param file     the file to save the content to
+	 * @param encoding the encoding to use, null for default
+	 * @return true if successfully saved
+	 */
+	public static boolean saveToFile(List<String> content, File file, String encoding) {
+		boolean result;
+		BufferedWriter writer;
+		int i;
 
-    return result;
-  }
+		result = true;
 
-  /**
-   * Writes the given object to the specified file. The object is always
-   * appended.
-   *
-   * @param filename	the file to write to
-   * @param obj		the object to write
-   * @return		true if writing was successful
-   */
-  public static boolean writeToFile(String filename, Object obj) {
-    return writeToFile(filename, obj, null);
-  }
+		try {
+			if ((encoding != null) && (encoding.length() > 0))
+				writer = new BufferedWriter(
+						new OutputStreamWriter(new FileOutputStream(file.getAbsolutePath()), encoding));
+			else
+				writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file.getAbsolutePath())));
+			for (i = 0; i < content.size(); i++) {
+				writer.write(content.get(i));
+				writer.newLine();
+			}
+			writer.flush();
+			writer.close();
+		} catch (Exception e) {
+			result = false;
+			e.printStackTrace();
+		}
 
-  /**
-   * Writes the given object to the specified file. The object is always
-   * appended.
-   *
-   * @param filename	the file to write to
-   * @param obj		the object to write
-   * @param encoding	the encoding to use, null for default
-   * @return		true if writing was successful
-   */
-  public static boolean writeToFile(String filename, Object obj, String encoding) {
-    return writeToFile(filename, obj, true, encoding);
-  }
+		return result;
+	}
 
-  /**
-   * Writes the given object to the specified file. The message is either
-   * appended or replaces the current content of the file.
-   *
-   * @param filename	the file to write to
-   * @param obj		the object to write
-   * @param append	whether to append the message or not
-   * @return		true if writing was successful
-   */
-  public static boolean writeToFile(String filename, Object obj, boolean append) {
-    return writeToFile(filename, obj, append, null);
-  }
+	/**
+	 * Writes the given object to the specified file. The object is always appended.
+	 *
+	 * @param filename the file to write to
+	 * @param obj      the object to write
+	 * @return true if writing was successful
+	 */
+	public static boolean writeToFile(String filename, Object obj) {
+		return writeToFile(filename, obj, null);
+	}
 
-  /**
-   * Writes the given object to the specified file. The message is either
-   * appended or replaces the current content of the file.
-   *
-   * @param filename	the file to write to
-   * @param obj		the object to write
-   * @param append	whether to append the message or not
-   * @param encoding	the encoding to use, null for default
-   * @return		true if writing was successful
-   */
-  public static boolean writeToFile(String filename, Object obj, boolean append, String encoding) {
-    boolean		result;
-    BufferedWriter	writer;
+	/**
+	 * Writes the given object to the specified file. The object is always appended.
+	 *
+	 * @param filename the file to write to
+	 * @param obj      the object to write
+	 * @param encoding the encoding to use, null for default
+	 * @return true if writing was successful
+	 */
+	public static boolean writeToFile(String filename, Object obj, String encoding) {
+		return writeToFile(filename, obj, true, encoding);
+	}
 
-    try {
-      if ((encoding != null) && (encoding.length() > 0))
-	writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename, append), encoding));
-      else
-	writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename, append)));
-      writer.write("" + obj);
-      writer.newLine();
-      writer.flush();
-      writer.close();
-      result = true;
-    }
-    catch (Exception e) {
-      result = false;
-    }
+	/**
+	 * Writes the given object to the specified file. The message is either appended
+	 * or replaces the current content of the file.
+	 *
+	 * @param filename the file to write to
+	 * @param obj      the object to write
+	 * @param append   whether to append the message or not
+	 * @return true if writing was successful
+	 */
+	public static boolean writeToFile(String filename, Object obj, boolean append) {
+		return writeToFile(filename, obj, append, null);
+	}
 
-    return result;
-  }
+	/**
+	 * Writes the given object to the specified file. The message is either appended
+	 * or replaces the current content of the file.
+	 *
+	 * @param filename the file to write to
+	 * @param obj      the object to write
+	 * @param append   whether to append the message or not
+	 * @param encoding the encoding to use, null for default
+	 * @return true if writing was successful
+	 */
+	public static boolean writeToFile(String filename, Object obj, boolean append, String encoding) {
+		boolean result;
+		BufferedWriter writer;
 
-  /**
-   * Copies the file/directory (recursively).
-   *
-   * @param sourceLocation	the source file/dir
-   * @param targetLocation	the target file/dir
-   * @return			if successfully copied
-   * @throws IOException	if copying fails
-   */
-  public static boolean copy(File sourceLocation, File targetLocation) throws IOException {
-    return copyOrMove(sourceLocation, targetLocation, false);
-  }
+		try {
+			if ((encoding != null) && (encoding.length() > 0))
+				writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename, append), encoding));
+			else
+				writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename, append)));
+			writer.write("" + obj);
+			writer.newLine();
+			writer.flush();
+			writer.close();
+			result = true;
+		} catch (Exception e) {
+			result = false;
+		}
 
-  /**
-   * Moves the file/directory (recursively).
-   *
-   * @param sourceLocation	the source file/dir
-   * @param targetLocation	the target file/dir
-   * @return			if successfully moved
-   * @throws IOException	if moving fails
-   */
-  public static boolean move(File sourceLocation, File targetLocation) throws IOException {
-    return copyOrMove(sourceLocation, targetLocation, true);
-  }
+		return result;
+	}
 
-  /**
-   * Copies or moves files and directories (recursively).
-   * If targetLocation does not exist, it will be created.
-   * <p/>
-   * Original code from <a href="http://www.java-tips.org/java-se-tips/java.io/how-to-copy-a-directory-from-one-location-to-another-loc.html" target="_blank">Java-Tips.org</a>.
-   *
-   * @param sourceLocation	the source file/dir
-   * @param targetLocation	the target file/dir
-   * @param move		if true then the source files/dirs get deleted
-   * 				as soon as copying finished
-   * @return			false if failed to delete when moving or failed to create target directory
-   * @throws IOException	if copying/moving fails
-   */
-  public static boolean copyOrMove(File sourceLocation, File targetLocation, boolean move) throws IOException {
-    String[] 		children;
-    int 		i;
-    InputStream 	in;
-    OutputStream 	out;
-    byte[] 		buf;
-    int 		len;
+	/**
+	 * Copies the file/directory (recursively).
+	 *
+	 * @param sourceLocation the source file/dir
+	 * @param targetLocation the target file/dir
+	 * @return if successfully copied
+	 * @throws IOException if copying fails
+	 */
+	public static boolean copy(File sourceLocation, File targetLocation) throws IOException {
+		return copyOrMove(sourceLocation, targetLocation, false);
+	}
 
-    if (sourceLocation.isDirectory()) {
-      if (!targetLocation.exists()) {
-	if (!targetLocation.mkdir())
-	  return false;
-      }
+	/**
+	 * Moves the file/directory (recursively).
+	 *
+	 * @param sourceLocation the source file/dir
+	 * @param targetLocation the target file/dir
+	 * @return if successfully moved
+	 * @throws IOException if moving fails
+	 */
+	public static boolean move(File sourceLocation, File targetLocation) throws IOException {
+		return copyOrMove(sourceLocation, targetLocation, true);
+	}
 
-      children = sourceLocation.list();
-      for (i = 0; i < children.length; i++) {
-        if (!copyOrMove(
-            new File(sourceLocation.getAbsoluteFile(), children[i]),
-            new File(targetLocation.getAbsoluteFile(), children[i]),
-            move))
-          return false;
-      }
+	/**
+	 * Copies or moves files and directories (recursively). If targetLocation does
+	 * not exist, it will be created.
+	 * <p/>
+	 * Original code from <a href=
+	 * "http://www.java-tips.org/java-se-tips/java.io/how-to-copy-a-directory-from-one-location-to-another-loc.html"
+	 * target="_blank">Java-Tips.org</a>.
+	 *
+	 * @param sourceLocation the source file/dir
+	 * @param targetLocation the target file/dir
+	 * @param move           if true then the source files/dirs get deleted as soon
+	 *                       as copying finished
+	 * @return false if failed to delete when moving or failed to create target
+	 *         directory
+	 * @throws IOException if copying/moving fails
+	 */
+	public static boolean copyOrMove(File sourceLocation, File targetLocation, boolean move) throws IOException {
+		String[] children;
+		int i;
+		InputStream in;
+		OutputStream out;
+		byte[] buf;
+		int len;
 
-      if (move)
-        return sourceLocation.delete();
-      else
-	return true;
-    }
-    else {
-      in = new FileInputStream(sourceLocation.getAbsoluteFile());
-      // do we need to append the filename?
-      if (targetLocation.isDirectory())
-        out = new FileOutputStream(targetLocation.getAbsolutePath() + File.separator + sourceLocation.getName());
-      else
-        out = new FileOutputStream(targetLocation.getAbsoluteFile());
+		if (sourceLocation.isDirectory()) {
+			if (!targetLocation.exists()) {
+				if (!targetLocation.mkdir())
+					return false;
+			}
 
-      // Copy the content from instream to outstream
-      buf = new byte[1024];
-      while ((len = in.read(buf)) > 0)
-        out.write(buf, 0, len);
+			children = sourceLocation.list();
+			for (i = 0; i < children.length; i++) {
+				if (!copyOrMove(new File(sourceLocation.getAbsoluteFile(), children[i]),
+						new File(targetLocation.getAbsoluteFile(), children[i]), move))
+					return false;
+			}
 
-      in.close();
-      out.close();
+			if (move)
+				return sourceLocation.delete();
+			else
+				return true;
+		} else {
+			in = new FileInputStream(sourceLocation.getAbsoluteFile());
+			// do we need to append the filename?
+			if (targetLocation.isDirectory())
+				out = new FileOutputStream(
+						targetLocation.getAbsolutePath() + File.separator + sourceLocation.getName());
+			else
+				out = new FileOutputStream(targetLocation.getAbsoluteFile());
 
-      if (move)
-        return sourceLocation.delete();
-      else
-	return true;
-    }
-  }
+			// Copy the content from instream to outstream
+			buf = new byte[1024];
+			while ((len = in.read(buf)) > 0)
+				out.write(buf, 0, len);
+
+			in.close();
+			out.close();
+
+			if (move)
+				return sourceLocation.delete();
+			else
+				return true;
+		}
+	}
 }

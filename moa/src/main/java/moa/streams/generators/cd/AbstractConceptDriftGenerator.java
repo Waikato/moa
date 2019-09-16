@@ -37,132 +37,140 @@ import moa.streams.InstanceStream;
 import moa.streams.clustering.ClusterEvent;
 import moa.tasks.TaskMonitor;
 
-public abstract class AbstractConceptDriftGenerator extends AbstractOptionHandler implements
-        ConceptDriftGenerator {
+public abstract class AbstractConceptDriftGenerator extends AbstractOptionHandler implements ConceptDriftGenerator {
 
-    @Override
-    public String getPurposeString() {
-        return "Generates a stream problem of predicting concept drift.";
-    }
-    protected ArrayList<ClusterEvent> clusterEvents;
+	@Override
+	public String getPurposeString() {
+		return "Generates a stream problem of predicting concept drift.";
+	}
 
-    public ArrayList<ClusterEvent> getEventsList() {
-        return this.clusterEvents;
-    }
-    private static final long serialVersionUID = 1L;
+	protected ArrayList<ClusterEvent> clusterEvents;
 
-    public IntOption instanceRandomSeedOption = new IntOption(
-            "instanceRandomSeed", 'i',
-            "Seed for random generation of instances.", 1);
+	@Override
+	public ArrayList<ClusterEvent> getEventsList() {
+		return this.clusterEvents;
+	}
 
-    public FlagOption notBinaryStreamOption = new FlagOption("notBinaryStream",
-            'b', "Don't convert to a binary stream of 0 and 1.");
+	private static final long serialVersionUID = 1L;
 
-    public IntOption numInstancesConceptOption = new IntOption("numInstancesConcept", 'p',
-            "The number of instances for each concept.", 500, 0, Integer.MAX_VALUE);
+	public IntOption instanceRandomSeedOption = new IntOption("instanceRandomSeed", 'i',
+			"Seed for random generation of instances.", 1);
 
-    protected InstancesHeader streamHeader;
+	public FlagOption notBinaryStreamOption = new FlagOption("notBinaryStream", 'b',
+			"Don't convert to a binary stream of 0 and 1.");
 
-    protected Random instanceRandom;
+	public IntOption numInstancesConceptOption = new IntOption("numInstancesConcept", 'p',
+			"The number of instances for each concept.", 500, 0, Integer.MAX_VALUE);
 
-    protected int period;
+	protected InstancesHeader streamHeader;
 
-    protected int numInstances;
+	protected Random instanceRandom;
 
-    protected boolean change;
+	protected int period;
 
-    @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+	protected int numInstances;
 
-        restart();
+	protected boolean change;
 
-        this.numInstances = 0;
-        this.period = numInstancesConceptOption.getValue();
-        // generate header
-        FastVector attributes = new FastVector();
+	@Override
+	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 
-        FastVector binaryLabels = new FastVector();
-        binaryLabels.addElement("0");
-        binaryLabels.addElement("1");
+		restart();
 
-        if (!this.notBinaryStreamOption.isSet()) {
+		this.numInstances = 0;
+		this.period = numInstancesConceptOption.getValue();
+		// generate header
+		FastVector attributes = new FastVector();
 
-            attributes.addElement(new Attribute("input", binaryLabels));
-        } else {
-            attributes.addElement(new Attribute("input"));
-        }
+		FastVector binaryLabels = new FastVector();
+		binaryLabels.addElement("0");
+		binaryLabels.addElement("1");
 
-        // Ground Truth
-        attributes.addElement(new Attribute("change", binaryLabels));
-        attributes.addElement(new Attribute("ground truth input"));
+		if (!this.notBinaryStreamOption.isSet()) {
 
-        this.streamHeader = new InstancesHeader(new InstancesHeader(
-                getCLICreationString(InstanceStream.class), attributes, 0));
-        this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
+			attributes.addElement(new Attribute("input", binaryLabels));
+		} else {
+			attributes.addElement(new Attribute("input"));
+		}
 
-        this.clusterEvents = new ArrayList<ClusterEvent>();
+		// Ground Truth
+		attributes.addElement(new Attribute("change", binaryLabels));
+		attributes.addElement(new Attribute("ground truth input"));
 
-        //this.clusterEvents.add(new ClusterEvent(this,100,"Change", "Drift"));
-        //this.clusterEvents.add(new ClusterEvent(this,200,"Change2", "Drift2"));
+		this.streamHeader = new InstancesHeader(
+				new InstancesHeader(getCLICreationString(InstanceStream.class), attributes, 0));
+		this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
 
-    }
+		this.clusterEvents = new ArrayList<>();
 
-    public long estimatedRemainingInstances() {
-        return -1;
-    }
+		// this.clusterEvents.add(new ClusterEvent(this,100,"Change", "Drift"));
+		// this.clusterEvents.add(new ClusterEvent(this,200,"Change2", "Drift2"));
 
-    public InstancesHeader getHeader() {
-        return this.streamHeader;
-    }
+	}
 
-    public boolean hasMoreInstances() {
-        return true;
-    }
+	@Override
+	public long estimatedRemainingInstances() {
+		return -1;
+	}
 
-    public boolean isRestartable() {
-        return true;
-    }
+	@Override
+	public InstancesHeader getHeader() {
+		return this.streamHeader;
+	}
 
-    protected abstract double nextValue();
+	@Override
+	public boolean hasMoreInstances() {
+		return true;
+	}
 
-    private int nextbinaryValue( double num) {
-        int res = 0;
-        if (this.instanceRandom.nextDouble() <= num) {
-            res = 1;
-        }
-        return res;
-    }
+	@Override
+	public boolean isRestartable() {
+		return true;
+	}
 
-    public boolean getChange() {
-        return this.change;
-    }
+	protected abstract double nextValue();
 
-    public InstanceExample nextInstance() {
-        this.numInstances++;
-        InstancesHeader header = getHeader();
-        Instance inst = new DenseInstance(header.numAttributes());
-        inst.setDataset(header);
-        double nextValue = this.nextValue();
-        if (this.notBinaryStreamOption.isSet()) {
-            inst.setValue(0,  nextValue);
-        } else {
-            inst.setValue(0, this.nextbinaryValue(nextValue));
-        }
-        //Ground truth
-        inst.setValue(1, this.getChange() ? 1 : 0);
-        if (this.getChange() == true) {
-            //this.clusterEvents.add(new ClusterEvent(this, this.numInstances, "Change", "Drift"));
-        }
-        inst.setValue(2,  nextValue);
-        return new InstanceExample(inst);
-    }
+	private int nextbinaryValue(double num) {
+		int res = 0;
+		if (this.instanceRandom.nextDouble() <= num) {
+			res = 1;
+		}
+		return res;
+	}
 
-    public void restart() {
-        this.instanceRandom = new Random(this.instanceRandomSeedOption.getValue());
-    }
+	public boolean getChange() {
+		return this.change;
+	}
 
-    public void getDescription(StringBuilder sb, int indent) {
-        // TODO Auto-generated method stub
-    }
+	@Override
+	public InstanceExample nextInstance() {
+		this.numInstances++;
+		InstancesHeader header = getHeader();
+		Instance inst = new DenseInstance(header.numAttributes());
+		inst.setDataset(header);
+		double nextValue = this.nextValue();
+		if (this.notBinaryStreamOption.isSet()) {
+			inst.setValue(0, nextValue);
+		} else {
+			inst.setValue(0, this.nextbinaryValue(nextValue));
+		}
+		// Ground truth
+		inst.setValue(1, this.getChange() ? 1 : 0);
+		if (this.getChange() == true) {
+			// this.clusterEvents.add(new ClusterEvent(this, this.numInstances, "Change",
+			// "Drift"));
+		}
+		inst.setValue(2, nextValue);
+		return new InstanceExample(inst);
+	}
+
+	@Override
+	public void restart() {
+		this.instanceRandom = new Random(this.instanceRandomSeedOption.getValue());
+	}
+
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {
+		// TODO Auto-generated method stub
+	}
 }

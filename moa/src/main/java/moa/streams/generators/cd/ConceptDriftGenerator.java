@@ -25,5 +25,5 @@ import moa.streams.InstanceStream;
 import moa.streams.clustering.ClusterEvent;
 
 public interface ConceptDriftGenerator extends InstanceStream {
-      public ArrayList<ClusterEvent> getEventsList();
+	ArrayList<ClusterEvent> getEventsList();
 }

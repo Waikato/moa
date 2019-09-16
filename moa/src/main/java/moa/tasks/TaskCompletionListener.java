@@ -15,24 +15,24 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
 /**
- * Interface representing a listener for the task in TaskThread to be completed. 
- * TaskThread fires that the task is completed
- * to all its listeners when it finishes to run its task.
+ * Interface representing a listener for the task in TaskThread to be completed.
+ * TaskThread fires that the task is completed to all its listeners when it
+ * finishes to run its task.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $ 
+ * @version $Revision: 7 $
  */
 public interface TaskCompletionListener {
 
-    /**
-     * The method to perform when the task finishes.
-     *
-     * @param task the TaskThead that this listener is listening
-     */
-    public void taskCompleted(TaskThread task);
+	/**
+	 * The method to perform when the task finishes.
+	 *
+	 * @param task the TaskThead that this listener is listening
+	 */
+	void taskCompleted(TaskThread task);
 }

@@ -22,11 +22,8 @@ package moa.capabilities;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.WeakHashMap;
 
 /**
@@ -36,103 +33,101 @@ import java.util.WeakHashMap;
  */
 public final class ImmutableCapabilities extends Capabilities {
 
-  /**
-   * Creates an immutable set of capabilities.
-   *
-   * @param capabilities  The final set of capabilities the object will contain.
-   */
-  public ImmutableCapabilities(Capability... capabilities) {
-    m_Capabilities.addAll(Arrays.asList(capabilities));
-  }
+	/**
+	 * Creates an immutable set of capabilities.
+	 *
+	 * @param capabilities The final set of capabilities the object will contain.
+	 */
+	public ImmutableCapabilities(Capability... capabilities) {
+		m_Capabilities.addAll(Arrays.asList(capabilities));
+	}
 
-  @Override
-  public final void addCapabilities(Capability... capabilities) {
-    throw new UnsupportedOperationException();
-  }
+	@Override
+	public void addCapabilities(Capability... capabilities) {
+		throw new UnsupportedOperationException();
+	}
 
-  @Override
-  public final void addCapabilities(Collection<Capability> capabilities) {
-    throw new UnsupportedOperationException();
-  }
+	@Override
+	public void addCapabilities(Collection<Capability> capabilities) {
+		throw new UnsupportedOperationException();
+	}
 
-  @Override
-  public void addCapabilities(Capabilities other) {
-    throw new UnsupportedOperationException();
-  }
+	@Override
+	public void addCapabilities(Capabilities other) {
+		throw new UnsupportedOperationException();
+	}
 
-  @Override
-  public final void addCapability(Capability capability) {
-    throw new UnsupportedOperationException();
-  }
+	@Override
+	public void addCapability(Capability capability) {
+		throw new UnsupportedOperationException();
+	}
 
-  /**
-   * Static class containing a lookup of immutable capabilities objects. This allows
-   * CapabilitiesHandlers that have identical sets of capabilities to share a single
-   * unique set, rather than having one each.
-   */
-  static class StaticLookup {
+	/**
+	 * Static class containing a lookup of immutable capabilities objects. This
+	 * allows CapabilitiesHandlers that have identical sets of capabilities to share
+	 * a single unique set, rather than having one each.
+	 */
+	static class StaticLookup {
 
-    /** The set of unique immutable capabilities objects. */
-    private static Map<ImmutableCapabilities, ImmutableCapabilities> m_UniqueSet = new HashMap<>();
+		/** The set of unique immutable capabilities objects. */
+		private static Map<ImmutableCapabilities, ImmutableCapabilities> m_UniqueSet = new HashMap<>();
 
-    /** The mapping from handlers to their canonical set of capabilities. */
-    private static Map<CapabilitiesHandler, ImmutableCapabilities> m_Lookup = new WeakHashMap<>();
+		/** The mapping from handlers to their canonical set of capabilities. */
+		private static Map<CapabilitiesHandler, ImmutableCapabilities> m_Lookup = new WeakHashMap<>();
 
-    /**
-     * Whether the given capabilities handler has defined an
-     * immutable set of capabilities.
-     *
-     * @param owner   The handler in question.
-     * @return        True if it has specified its capabilities,
-     *                false if not.
-     */
-    public static boolean isDefined(CapabilitiesHandler owner) {
-      // Can't check a null owner
-      if (owner == null)
-        throw new IllegalArgumentException("Null is not a valid capabilities handler.");
+		/**
+		 * Whether the given capabilities handler has defined an immutable set of
+		 * capabilities.
+		 *
+		 * @param owner The handler in question.
+		 * @return True if it has specified its capabilities, false if not.
+		 */
+		public static boolean isDefined(CapabilitiesHandler owner) {
+			// Can't check a null owner
+			if (owner == null)
+				throw new IllegalArgumentException("Null is not a valid capabilities handler.");
 
-      return m_Lookup.containsKey(owner);
-    }
+			return m_Lookup.containsKey(owner);
+		}
 
-    /**
-     * Defines the given handler as having the given immutable set of capabilities.
-     *
-     * @param owner         The handler.
-     * @param capabilities  The set of capabilities.
-     */
-    public static void define(CapabilitiesHandler owner,
-                              ImmutableCapabilities capabilities) {
-      // Can't redefine a handler's capabilities
-      if (isDefined(owner))
-        throw new IllegalArgumentException("Illegal attempt to redefine capabilities.");
+		/**
+		 * Defines the given handler as having the given immutable set of capabilities.
+		 *
+		 * @param owner        The handler.
+		 * @param capabilities The set of capabilities.
+		 */
+		public static void define(CapabilitiesHandler owner, ImmutableCapabilities capabilities) {
+			// Can't redefine a handler's capabilities
+			if (isDefined(owner))
+				throw new IllegalArgumentException("Illegal attempt to redefine capabilities.");
 
-      // If given null, interpret as the empty set
-      if (capabilities == null)
-        capabilities = new ImmutableCapabilities();
+			// If given null, interpret as the empty set
+			if (capabilities == null)
+				capabilities = new ImmutableCapabilities();
 
-      // Substitute the canonical object, or make canonical
-      if (m_UniqueSet.containsKey(capabilities))
-        capabilities = m_UniqueSet.get(capabilities);
-      else
-        m_UniqueSet.put(capabilities, capabilities);
+			// Substitute the canonical object, or make canonical
+			if (m_UniqueSet.containsKey(capabilities))
+				capabilities = m_UniqueSet.get(capabilities);
+			else
+				m_UniqueSet.put(capabilities, capabilities);
 
-      // Save the mapping from owner to capabilities
-      m_Lookup.put(owner, capabilities);
-    }
+			// Save the mapping from owner to capabilities
+			m_Lookup.put(owner, capabilities);
+		}
 
-    /**
-     * Get the stored capabilities of the given handler.
-     *
-     * @param owner   The capabilities handler.
-     * @return        The capabilities of that handler.
-     */
-    public static ImmutableCapabilities get(CapabilitiesHandler owner) {
-      // Owner must be defined before being accessed
-      if (!isDefined(owner))
-        throw new IllegalArgumentException("Illegal attempt to get capabilities for undefined owner.");
+		/**
+		 * Get the stored capabilities of the given handler.
+		 *
+		 * @param owner The capabilities handler.
+		 * @return The capabilities of that handler.
+		 */
+		public static ImmutableCapabilities get(CapabilitiesHandler owner) {
+			// Owner must be defined before being accessed
+			if (!isDefined(owner))
+				throw new IllegalArgumentException("Illegal attempt to get capabilities for undefined owner.");
 
-      return m_Lookup.get(owner);
-    }
-  }
+			return m_Lookup.get(owner);
+		}
+	}
 
 }

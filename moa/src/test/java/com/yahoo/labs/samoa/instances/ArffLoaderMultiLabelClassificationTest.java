@@ -30,7 +30,8 @@ public class ArffLoaderMultiLabelClassificationTest {
 			InputStream fileStream;
 			Reader reader;
 
-			fileStream = new FileInputStream(ClassLoader.getSystemResource("moa/classifiers/data/small_classification.arff").getPath());
+			fileStream = new FileInputStream(
+					ClassLoader.getSystemResource("moa/learners/predictors/data/small_classification.arff").getPath());
 			reader = new BufferedReader(new InputStreamReader(fileStream));
 			instancesHeader = new InstancesHeader(reader, "1,2");
 		} catch (IOException ioe) {
@@ -43,7 +44,7 @@ public class ArffLoaderMultiLabelClassificationTest {
 		// check number of attributes
 		assertEquals(4, instancesHeader.arff.instanceInformation.numInputAttributes());
 		assertEquals(2, instancesHeader.arff.instanceInformation.numOutputAttributes());
-		
+
 		// check attribute types for each position
 		assertTrue(instancesHeader.arff.instanceInformation.attribute(0).isNominal());
 		assertTrue(instancesHeader.arff.instanceInformation.attribute(1).isNominal());

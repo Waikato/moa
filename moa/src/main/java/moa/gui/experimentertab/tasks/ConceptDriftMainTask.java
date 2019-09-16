@@ -5,6 +5,7 @@
 package moa.gui.experimentertab.tasks;
 
 import java.util.ArrayList;
+
 import moa.streams.clustering.ClusterEvent;
 
 /**
@@ -13,14 +14,14 @@ import moa.streams.clustering.ClusterEvent;
  */
 public abstract class ConceptDriftMainTask extends ExperimenterTask {
 
-    protected ArrayList<ClusterEvent> events;
+	protected ArrayList<ClusterEvent> events;
 
-    protected void setEventsList(ArrayList<ClusterEvent> events) {
-        this.events = events;
-    }
-    
-    public ArrayList<ClusterEvent> getEventsList() {
-        return this.events;
-    }
-    
+	protected void setEventsList(ArrayList<ClusterEvent> events) {
+		this.events = events;
+	}
+
+	public ArrayList<ClusterEvent> getEventsList() {
+		return this.events;
+	}
+
 }

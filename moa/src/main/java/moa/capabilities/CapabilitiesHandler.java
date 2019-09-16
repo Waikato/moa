@@ -21,35 +21,35 @@
 package moa.capabilities;
 
 /**
- * Interface marking classes as being able to specify the capabilities
- * they can handle.
+ * Interface marking classes as being able to specify the capabilities they can
+ * handle.
  *
  * @author Corey Sterling (csterlin at waikato dot ac dot nz)
  */
 public interface CapabilitiesHandler {
 
-  /**
-   * Gets the capabilities of the object. Should be overridden if
-   * the object's capabilities can change.
-   *
-   * @return  The capabilities of the object.
-   */
-  default Capabilities getCapabilities() {
-    // On first access, register with the immutable capabilities lookup
-    if (!ImmutableCapabilities.StaticLookup.isDefined(this))
-      ImmutableCapabilities.StaticLookup.define(this, defineImmutableCapabilities());
+	/**
+	 * Gets the capabilities of the object. Should be overridden if the object's
+	 * capabilities can change.
+	 *
+	 * @return The capabilities of the object.
+	 */
+	default Capabilities getCapabilities() {
+		// On first access, register with the immutable capabilities lookup
+		if (!ImmutableCapabilities.StaticLookup.isDefined(this))
+			ImmutableCapabilities.StaticLookup.define(this, defineImmutableCapabilities());
 
-    // Get our capabilities from the lookup
-    return ImmutableCapabilities.StaticLookup.get(this);
-  }
+		// Get our capabilities from the lookup
+		return ImmutableCapabilities.StaticLookup.get(this);
+	}
 
-  /**
-   * Defines the set of capabilities the object has. Should be overridden
-   * if the object's capabilities do not change.
-   *
-   * @return  The capabilities of the object.
-   */
-  default ImmutableCapabilities defineImmutableCapabilities() {
-    return CapabilityRequirement.NON_HANDLER_CAPABILITIES;
-  }
+	/**
+	 * Defines the set of capabilities the object has. Should be overridden if the
+	 * object's capabilities do not change.
+	 *
+	 * @return The capabilities of the object.
+	 */
+	default ImmutableCapabilities defineImmutableCapabilities() {
+		return CapabilityRequirement.NON_HANDLER_CAPABILITIES;
+	}
 }

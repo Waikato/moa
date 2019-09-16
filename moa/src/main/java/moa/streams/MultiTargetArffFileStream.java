@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams;
 
@@ -25,11 +25,10 @@ package moa.streams;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class MultiTargetArffFileStream extends ArffFileStream implements
-        MultiTargetInstanceStream {
+public class MultiTargetArffFileStream extends ArffFileStream implements MultiTargetInstanceStream {
 
 	// deprecated
-	
+
 //    @Override
 //    public String getPurposeString() {
 //        return "A stream read from an ARFF file.";
@@ -125,10 +124,10 @@ public class MultiTargetArffFileStream extends ArffFileStream implements
 //            this.fileReader = new BufferedReader(new InputStreamReader(
 //                    this.fileProgressMonitor));
 //			// jesse -----
-//			/*int cs[] = this.outputAttributesOption.getRange(); 
+//			/*int cs[] = this.outputAttributesOption.getRange();
 //			if (cs.length == 1) {
 //				// single label
-//				int c = cs[0]; 
+//				int c = cs[0];
 //				this.instances = new Instances(this.fileReader, 1, c);
 //				if (c < 0) {
 //					this.instances.setClassIndex(this.instances.numAttributes() - 1);
@@ -137,7 +136,7 @@ public class MultiTargetArffFileStream extends ArffFileStream implements
 //				}
 //			}
 //			else {*/
-//				// multi-label since cs[] contains _multipe_ class indices, e.g., cs[] = {9,10,11} 
+//				// multi-label since cs[] contains _multipe_ class indices, e.g., cs[] = {9,10,11}
 //				// what to do here?
 //			this.instances = new Instances(this.fileReader, this.outputAttributesOption.getRange());
 //			//}

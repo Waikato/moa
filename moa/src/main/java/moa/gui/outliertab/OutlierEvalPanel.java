@@ -14,10 +14,10 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
- 
+
 package moa.gui.outliertab;
 
 import java.awt.GridBagConstraints;
@@ -33,127 +33,129 @@ import moa.evaluation.OutlierPerformance;
 
 public class OutlierEvalPanel extends javax.swing.JPanel {
 
-    Class<?>[] measure_classes = null;
+	Class<?>[] measure_classes = null;
 
-    ArrayList<JLabel> labels = null;
+	ArrayList<JLabel> labels = null;
 
-    ArrayList<JCheckBox> checkboxes = null;
+	ArrayList<JCheckBox> checkboxes = null;
 
-    /** Creates new form ClusteringEvalPanel */
-    public OutlierEvalPanel() {
-        initComponents();
-        measure_classes = findMeasureClasses();
-        labels = new ArrayList<JLabel>();
-        checkboxes = new ArrayList<JCheckBox>();
-        addComponents();
-    }
+	/** Creates new form ClusteringEvalPanel */
+	public OutlierEvalPanel() {
+		initComponents();
+		measure_classes = findMeasureClasses();
+		labels = new ArrayList<>();
+		checkboxes = new ArrayList<>();
+		addComponents();
+	}
 
-    private void addComponents() {
-        GridBagConstraints gb = new GridBagConstraints();
-        gb.insets = new java.awt.Insets(4, 7, 4, 7);
-        int counter = 0;
-        for (int i = 0; i < measure_classes.length; i++) {
-            try {
-                MeasureCollection m = (MeasureCollection) measure_classes[i].newInstance();
-                for (int j = 0; j < m.getNumMeasures(); j++) {
-                    String t = m.getName(j);
-                    JLabel l = new JLabel(m.getName(j));
-                    l.setPreferredSize(new java.awt.Dimension(100, 14));
-                    //labels[i].setToolTipText("");
-                    gb.gridx = 0;
-                    gb.gridy = counter;
-                    labels.add(l);
-                    contentPanel.add(l, gb);
+	private void addComponents() {
+		GridBagConstraints gb = new GridBagConstraints();
+		gb.insets = new java.awt.Insets(4, 7, 4, 7);
+		int counter = 0;
+		for (int i = 0; i < measure_classes.length; i++) {
+			try {
+				MeasureCollection m = (MeasureCollection) measure_classes[i].newInstance();
+				for (int j = 0; j < m.getNumMeasures(); j++) {
+					String t = m.getName(j);
+					JLabel l = new JLabel(m.getName(j));
+					l.setPreferredSize(new java.awt.Dimension(100, 14));
+					// labels[i].setToolTipText("");
+					gb.gridx = 0;
+					gb.gridy = counter;
+					labels.add(l);
+					contentPanel.add(l, gb);
 
-                    JCheckBox cb = new JCheckBox();
+					JCheckBox cb = new JCheckBox();
 
-                    if (m.isEnabled(j)) {
-                        cb.setSelected(true);
-                    } else {
-                        cb.setSelected(false);
-                    }
+					if (m.isEnabled(j)) {
+						cb.setSelected(true);
+					} else {
+						cb.setSelected(false);
+					}
 
-                    gb.gridx = 1;
-                    checkboxes.add(cb);
-                    contentPanel.add(cb, gb);
-                    counter++;
-                }
-            } catch (Exception ex) {
-                System.out.println("Couldn't create Instance for " + measure_classes[i].getName());
-            }
+					gb.gridx = 1;
+					checkboxes.add(cb);
+					contentPanel.add(cb, gb);
+					counter++;
+				}
+			} catch (Exception ex) {
+				System.out.println("Couldn't create Instance for " + measure_classes[i].getName());
+			}
 
-        }
-        JLabel dummy = new JLabel();
-        gb.gridx = 0;
-        gb.gridy++;
-        gb.gridwidth = 3;
-        gb.weightx = 1;
-        gb.weighty = 1;
-        add(dummy, gb);
+		}
+		JLabel dummy = new JLabel();
+		gb.gridx = 0;
+		gb.gridy++;
+		gb.gridwidth = 3;
+		gb.weightx = 1;
+		gb.weighty = 1;
+		add(dummy, gb);
 
-    }
+	}
 
-    private Class<?>[] findMeasureClasses() {
-        AutoExpandVector<Class<?>> finalClasses = new AutoExpandVector<Class<?>>();
-        Class<?>[] classesFound = AutoClassDiscovery.findClassesOfType("moa.evaluation",
-                OutlierPerformance.class);
-        for (Class<?> foundClass : classesFound) {
-            finalClasses.add(foundClass);
-        }
-        return finalClasses.toArray(new Class<?>[finalClasses.size()]);
-    }
+	private Class<?>[] findMeasureClasses() {
+		AutoExpandVector<Class<?>> finalClasses = new AutoExpandVector<>();
+		Class<?>[] classesFound = AutoClassDiscovery.findClassesOfType("moa.evaluation", OutlierPerformance.class);
+		for (Class<?> foundClass : classesFound) {
+			finalClasses.add(foundClass);
+		}
+		return finalClasses.toArray(new Class<?>[finalClasses.size()]);
+	}
 
-    public MeasureCollection[] getSelectedMeasures() {
-        ArrayList<MeasureCollection> measuresSelect = new ArrayList<MeasureCollection>();
-        for (int i = 0; i < measure_classes.length; i++) {
-            try {
-                MeasureCollection m = (MeasureCollection) measure_classes[i].newInstance();
-                measuresSelect.add(m);
-            } catch (Exception ex) {
-                System.out.println("Couldn't create Instance for " + measure_classes[i].getName());
-            }
-        }
+	public MeasureCollection[] getSelectedMeasures() {
+		ArrayList<MeasureCollection> measuresSelect = new ArrayList<>();
+		for (int i = 0; i < measure_classes.length; i++) {
+			try {
+				MeasureCollection m = (MeasureCollection) measure_classes[i].newInstance();
+				measuresSelect.add(m);
+			} catch (Exception ex) {
+				System.out.println("Couldn't create Instance for " + measure_classes[i].getName());
+			}
+		}
 
-        MeasureCollection[] measures = new MeasureCollection[measuresSelect.size()];
-        for (int i = 0; i < measures.length; i++) {
-            measures[i] = measuresSelect.get(i);
-        }
-        return measures;
-    }
+		MeasureCollection[] measures = new MeasureCollection[measuresSelect.size()];
+		for (int i = 0; i < measures.length; i++) {
+			measures[i] = measuresSelect.get(i);
+		}
+		return measures;
+	}
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
+	/**
+	 * This method is called from within the constructor to initialize the form.
+	 * WARNING: Do NOT modify this code. The content of this method is always
+	 * regenerated by the Form Editor.
+	 */
+	@SuppressWarnings("unchecked")
+	// <editor-fold defaultstate="collapsed" desc="Generated
+	// Code">//GEN-BEGIN:initComponents
+	private void initComponents() {
+		java.awt.GridBagConstraints gridBagConstraints;
 
-        scrollPane = new javax.swing.JScrollPane();
-        contentPanel = new javax.swing.JPanel();
+		scrollPane = new javax.swing.JScrollPane();
+		contentPanel = new javax.swing.JPanel();
 
-        setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Evaluation Measures", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
-        setLayout(new java.awt.GridBagLayout());
+		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Evaluation Measures",
+				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION,
+				new java.awt.Font("Tahoma", 1, 11))); // NOI18N
+		setLayout(new java.awt.GridBagLayout());
 
-        scrollPane.setBorder(null);
-        scrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setPreferredSize(new java.awt.Dimension(100, 225));
+		scrollPane.setBorder(null);
+		scrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setPreferredSize(new java.awt.Dimension(100, 225));
 
-        contentPanel.setLayout(new java.awt.GridBagLayout());
-        scrollPane.setViewportView(contentPanel);
+		contentPanel.setLayout(new java.awt.GridBagLayout());
+		scrollPane.setViewportView(contentPanel);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        add(scrollPane, gridBagConstraints);
-    }// </editor-fold>//GEN-END:initComponents
+		gridBagConstraints = new java.awt.GridBagConstraints();
+		gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+		gridBagConstraints.weightx = 1.0;
+		gridBagConstraints.weighty = 1.0;
+		add(scrollPane, gridBagConstraints);
+	}// </editor-fold>//GEN-END:initComponents
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel contentPanel;
-    private javax.swing.JScrollPane scrollPane;
-    // End of variables declaration//GEN-END:variables
+	// Variables declaration - do not modify//GEN-BEGIN:variables
+	private javax.swing.JPanel contentPanel;
+	private javax.swing.JScrollPane scrollPane;
+	// End of variables declaration//GEN-END:variables
 }

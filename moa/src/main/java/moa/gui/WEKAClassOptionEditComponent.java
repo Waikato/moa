@@ -16,7 +16,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
@@ -44,84 +44,82 @@ import weka.gui.PropertyDialog;
  * @author FracPete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class WEKAClassOptionEditComponent
-        extends JPanel
-        implements OptionEditComponent {
+public class WEKAClassOptionEditComponent extends JPanel implements OptionEditComponent {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    protected WEKAClassOption editedOption;
+	protected WEKAClassOption editedOption;
 
-    protected JTextField textField = new JTextField();
+	protected JTextField textField = new JTextField();
 
-    protected JButton editButton = new JButton("Edit");
+	protected JButton editButton = new JButton("Edit");
 
-    public WEKAClassOptionEditComponent(Option opt) {
-        WEKAClassOption option = (WEKAClassOption) opt;
-        this.editedOption = option;
-        this.textField.setEditable(false);
-        setLayout(new BorderLayout());
-        add(this.textField, BorderLayout.CENTER);
-        add(this.editButton, BorderLayout.EAST);
-        this.editButton.addActionListener(new ActionListener() {
+	public WEKAClassOptionEditComponent(Option opt) {
+		WEKAClassOption option = (WEKAClassOption) opt;
+		this.editedOption = option;
+		this.textField.setEditable(false);
+		setLayout(new BorderLayout());
+		add(this.textField, BorderLayout.CENTER);
+		add(this.editButton, BorderLayout.EAST);
+		this.editButton.addActionListener(new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                editObject();
-            }
-        });
-        setEditState(this.editedOption.getValueAsCLIString());
-    }
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				editObject();
+			}
+		});
+		setEditState(this.editedOption.getValueAsCLIString());
+	}
 
-    @Override
-    public void applyState() {
-        this.editedOption.setValueViaCLIString(this.textField.getText());
-    }
+	@Override
+	public void applyState() {
+		this.editedOption.setValueViaCLIString(this.textField.getText());
+	}
 
-    @Override
-    public Option getEditedOption() {
-        return this.editedOption;
-    }
+	@Override
+	public Option getEditedOption() {
+		return this.editedOption;
+	}
 
-    @Override
-    public void setEditState(String cliString) {
-        this.textField.setText(cliString);
-    }
+	@Override
+	public void setEditState(String cliString) {
+		this.textField.setText(cliString);
+	}
 
-    public void editObject() {
-        final GenericObjectEditor goe = new GenericObjectEditor(true);
-        goe.setClassType(editedOption.getRequiredType());
-        try {
-            String[] options = Utils.splitOptions(editedOption.getValueAsCLIString());
-            String classname = options[0];
-            options[0] = "";
-            Object obj = Class.forName(classname).newInstance();
-            if (obj instanceof weka.core.OptionHandler) {
-                ((weka.core.OptionHandler) obj).setOptions(options);
-            }
-            goe.setValue(obj);
-            ((GOEPanel) goe.getCustomEditor()).addOkListener(new ActionListener() {
+	public void editObject() {
+		final GenericObjectEditor goe = new GenericObjectEditor(true);
+		goe.setClassType(editedOption.getRequiredType());
+		try {
+			String[] options = Utils.splitOptions(editedOption.getValueAsCLIString());
+			String classname = options[0];
+			options[0] = "";
+			Object obj = Class.forName(classname).newInstance();
+			if (obj instanceof weka.core.OptionHandler) {
+				((weka.core.OptionHandler) obj).setOptions(options);
+			}
+			goe.setValue(obj);
+			((GOEPanel) goe.getCustomEditor()).addOkListener(new ActionListener() {
 
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Object obj = goe.getValue();
-                    String s = obj.getClass().getName();
-                    if (obj instanceof weka.core.OptionHandler) {
-                        s += " " + Utils.joinOptions(((weka.core.OptionHandler) obj).getOptions());
-                    }
-                    setEditState(s.trim());
-                }
-            });
-            PropertyDialog dialog;
-            if (PropertyDialog.getParentDialog(this) != null) {
-                dialog = new PropertyDialog(PropertyDialog.getParentDialog(this), goe);
-            } else {
-                dialog = new PropertyDialog(PropertyDialog.getParentFrame(this), goe);
-            }
-            dialog.setModal(true);
-            dialog.setVisible(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					Object obj = goe.getValue();
+					String s = obj.getClass().getName();
+					if (obj instanceof weka.core.OptionHandler) {
+						s += " " + Utils.joinOptions(((weka.core.OptionHandler) obj).getOptions());
+					}
+					setEditState(s.trim());
+				}
+			});
+			PropertyDialog dialog;
+			if (PropertyDialog.getParentDialog(this) != null) {
+				dialog = new PropertyDialog(PropertyDialog.getParentDialog(this), goe);
+			} else {
+				dialog = new PropertyDialog(PropertyDialog.getParentFrame(this), goe);
+			}
+			dialog.setModal(true);
+			dialog.setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

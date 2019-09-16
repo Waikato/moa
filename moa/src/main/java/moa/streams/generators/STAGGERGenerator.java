@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.generators;
 
@@ -25,13 +25,12 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
-import moa.capabilities.CapabilitiesHandler;
-import moa.capabilities.Capability;
-import moa.capabilities.ImmutableCapabilities;
-import moa.core.FastVector;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 
+import moa.capabilities.CapabilitiesHandler;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.core.FastVector;
 import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
@@ -42,10 +41,10 @@ import moa.tasks.TaskMonitor;
 /**
  * Stream generator for STAGGER Concept functions.
  *
- *  Generator described in the paper:<br/>
- *   Jeffrey C. Schlimmer and Richard H. Granger Jr.
- *    "Incremental Learning from Noisy Data",
- *     Machine Learning 1: 317-354 1986.<br/><br/>
+ * Generator described in the paper:<br/>
+ * Jeffrey C. Schlimmer and Richard H. Granger Jr. "Incremental Learning from
+ * Noisy Data", Machine Learning 1: 317-354 1986.<br/>
+ * <br/>
  *
  * Notes:<br/>
  * The built in functions are based on the paper (page 341).
@@ -53,171 +52,165 @@ import moa.tasks.TaskMonitor;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class STAGGERGenerator extends AbstractOptionHandler implements
-        InstanceStream, CapabilitiesHandler {
+public class STAGGERGenerator extends AbstractOptionHandler implements InstanceStream, CapabilitiesHandler {
 
-    @Override
-    public String getPurposeString() {
-        return "Generates STAGGER Concept functions.";
-    }
+	@Override
+	public String getPurposeString() {
+		return "Generates STAGGER Concept functions.";
+	}
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public IntOption instanceRandomSeedOption = new IntOption(
-            "instanceRandomSeed", 'i',
-            "Seed for random generation of instances.", 1);
+	public IntOption instanceRandomSeedOption = new IntOption("instanceRandomSeed", 'i',
+			"Seed for random generation of instances.", 1);
 
-    public IntOption functionOption = new IntOption("function", 'f',
-            "Classification function used, as defined in the original paper.",
-            1, 1, 3);
+	public IntOption functionOption = new IntOption("function", 'f',
+			"Classification function used, as defined in the original paper.", 1, 1, 3);
 
-    public FlagOption balanceClassesOption = new FlagOption("balanceClasses",
-            'b', "Balance the number of instances of each class.");
+	public FlagOption balanceClassesOption = new FlagOption("balanceClasses", 'b',
+			"Balance the number of instances of each class.");
 
-    protected interface ClassFunction {
+	protected interface ClassFunction {
 
-        public int determineClass(int size, int color, int shape);
-    }
+		int determineClass(int size, int color, int shape);
+	}
 
-    protected static ClassFunction[] classificationFunctions = {
-        // function 1
-        new ClassFunction() {
+	protected static ClassFunction[] classificationFunctions = {
+			// function 1
+			new ClassFunction() {
 
-    @Override
-    public int determineClass(int size, int color, int shape) {
-        return (size == 0 && color == 0) ? 1 : 0; //size==small && color==red
-    }
-},
-        // function 2
-        new ClassFunction() {
+				@Override
+				public int determineClass(int size, int color, int shape) {
+					return (size == 0 && color == 0) ? 1 : 0; // size==small && color==red
+				}
+			},
+			// function 2
+			new ClassFunction() {
 
-    @Override
-    public int determineClass(int size, int color, int shape) {
-        return (color == 2 || shape == 0) ? 1 : 0; //color==green || shape==circle
-    }
-},
-        // function 3
-        new ClassFunction() {
+				@Override
+				public int determineClass(int size, int color, int shape) {
+					return (color == 2 || shape == 0) ? 1 : 0; // color==green || shape==circle
+				}
+			},
+			// function 3
+			new ClassFunction() {
 
-    @Override
-    public int determineClass(int size, int color, int shape) {
-        return (size == 1 || size == 2) ? 1 : 0; // size==medium || size==large
-    }
-}
-    };
+				@Override
+				public int determineClass(int size, int color, int shape) {
+					return (size == 1 || size == 2) ? 1 : 0; // size==medium || size==large
+				}
+			} };
 
-    protected InstancesHeader streamHeader;
+	protected InstancesHeader streamHeader;
 
-    protected Random instanceRandom;
+	protected Random instanceRandom;
 
-    protected boolean nextClassShouldBeZero;
+	protected boolean nextClassShouldBeZero;
 
-    @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
-        // generate header
-        FastVector attributes = new FastVector();
+	@Override
+	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
+		// generate header
+		FastVector attributes = new FastVector();
 
-        FastVector sizeLabels = new FastVector();
-        sizeLabels.addElement("small");
-        sizeLabels.addElement("medium");
-        sizeLabels.addElement("large");
-        attributes.addElement(new Attribute("size", sizeLabels));
+		FastVector sizeLabels = new FastVector();
+		sizeLabels.addElement("small");
+		sizeLabels.addElement("medium");
+		sizeLabels.addElement("large");
+		attributes.addElement(new Attribute("size", sizeLabels));
 
-        FastVector colorLabels = new FastVector();
-        colorLabels.addElement("red");
-        colorLabels.addElement("blue");
-        colorLabels.addElement("green");
-        attributes.addElement(new Attribute("color", colorLabels));
+		FastVector colorLabels = new FastVector();
+		colorLabels.addElement("red");
+		colorLabels.addElement("blue");
+		colorLabels.addElement("green");
+		attributes.addElement(new Attribute("color", colorLabels));
 
-        FastVector shapeLabels = new FastVector();
-        shapeLabels.addElement("circle");
-        shapeLabels.addElement("square");
-        shapeLabels.addElement("triangle");
-        attributes.addElement(new Attribute("shape", shapeLabels));
+		FastVector shapeLabels = new FastVector();
+		shapeLabels.addElement("circle");
+		shapeLabels.addElement("square");
+		shapeLabels.addElement("triangle");
+		attributes.addElement(new Attribute("shape", shapeLabels));
 
-        FastVector classLabels = new FastVector();
-        classLabels.addElement("false");
-        classLabels.addElement("true");
-        attributes.addElement(new Attribute("class", classLabels));
-        this.streamHeader = new InstancesHeader(new InstancesHeader(
-                getCLICreationString(InstanceStream.class), attributes, 0));
-        this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
-        restart();
-    }
+		FastVector classLabels = new FastVector();
+		classLabels.addElement("false");
+		classLabels.addElement("true");
+		attributes.addElement(new Attribute("class", classLabels));
+		this.streamHeader = new InstancesHeader(
+				new InstancesHeader(getCLICreationString(InstanceStream.class), attributes, 0));
+		this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
+		restart();
+	}
 
-    @Override
-    public long estimatedRemainingInstances() {
-        return -1;
-    }
+	@Override
+	public long estimatedRemainingInstances() {
+		return -1;
+	}
 
-    @Override
-    public InstancesHeader getHeader() {
-        return this.streamHeader;
-    }
+	@Override
+	public InstancesHeader getHeader() {
+		return this.streamHeader;
+	}
 
-    @Override
-    public boolean hasMoreInstances() {
-        return true;
-    }
+	@Override
+	public boolean hasMoreInstances() {
+		return true;
+	}
 
-    @Override
-    public boolean isRestartable() {
-        return true;
-    }
+	@Override
+	public boolean isRestartable() {
+		return true;
+	}
 
-    @Override
-    public InstanceExample nextInstance() {
+	@Override
+	public InstanceExample nextInstance() {
 
-        int size = 0, color = 0, shape = 0, group = 0;
-        boolean desiredClassFound = false;
-        while (!desiredClassFound) {
-            // generate attributes
-            size = this.instanceRandom.nextInt(3);
-            color = this.instanceRandom.nextInt(3);
-            shape = this.instanceRandom.nextInt(3);
+		int size = 0, color = 0, shape = 0, group = 0;
+		boolean desiredClassFound = false;
+		while (!desiredClassFound) {
+			// generate attributes
+			size = this.instanceRandom.nextInt(3);
+			color = this.instanceRandom.nextInt(3);
+			shape = this.instanceRandom.nextInt(3);
 
-            // determine class
-            group = classificationFunctions[this.functionOption.getValue() - 1].determineClass(size, color, shape);
-            if (!this.balanceClassesOption.isSet()) {
-                desiredClassFound = true;
-            } else {
-                // balance the classes
-                if ((this.nextClassShouldBeZero && (group == 0))
-                        || (!this.nextClassShouldBeZero && (group == 1))) {
-                    desiredClassFound = true;
-                    this.nextClassShouldBeZero = !this.nextClassShouldBeZero;
-                } // else keep searching
-            }
-        }
+			// determine class
+			group = classificationFunctions[this.functionOption.getValue() - 1].determineClass(size, color, shape);
+			if (!this.balanceClassesOption.isSet()) {
+				desiredClassFound = true;
+			} else {
+				// balance the classes
+				if ((this.nextClassShouldBeZero && (group == 0)) || (!this.nextClassShouldBeZero && (group == 1))) {
+					desiredClassFound = true;
+					this.nextClassShouldBeZero = !this.nextClassShouldBeZero;
+				} // else keep searching
+			}
+		}
 
-        // construct instance
-        InstancesHeader header = getHeader();
-        Instance inst = new DenseInstance(header.numAttributes());
-        inst.setValue(0, size);
-        inst.setValue(1, color);
-        inst.setValue(2, shape);
-        inst.setDataset(header);
-        inst.setClassValue(group);
-        return new InstanceExample(inst);
-    }
+		// construct instance
+		InstancesHeader header = getHeader();
+		Instance inst = new DenseInstance(header.numAttributes());
+		inst.setValue(0, size);
+		inst.setValue(1, color);
+		inst.setValue(2, shape);
+		inst.setDataset(header);
+		inst.setClassValue(group);
+		return new InstanceExample(inst);
+	}
 
-    @Override
-    public void restart() {
-        this.instanceRandom = new Random(this.instanceRandomSeedOption.getValue());
-        this.nextClassShouldBeZero = false;
-    }
+	@Override
+	public void restart() {
+		this.instanceRandom = new Random(this.instanceRandomSeedOption.getValue());
+		this.nextClassShouldBeZero = false;
+	}
 
-    @Override
-    public void getDescription(StringBuilder sb, int indent) {
-        // TODO Auto-generated method stub
-    }
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {
+		// TODO Auto-generated method stub
+	}
 
-    @Override
-    public ImmutableCapabilities defineImmutableCapabilities() {
-        if (this.getClass() == STAGGERGenerator.class)
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
-    }
+	@Override
+	public ImmutableCapabilities defineImmutableCapabilities() {
+		if (this.getClass() == STAGGERGenerator.class)
+			return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+		else
+			return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+	}
 }

@@ -1,6 +1,6 @@
 /*
  *    AbstractTabPanel.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand 
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author FracPete (fracpete at waikato dot ac dot nz)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
@@ -27,17 +27,18 @@ package moa.gui;
  */
 public abstract class AbstractTabPanel extends javax.swing.JPanel {
 
-    /**
-     * Returns the string to display as title of the tab.
-     * 
-     * @return the string to display as title of the tab
-     */
-    public abstract String getTabTitle();
+	/**
+	 * Returns the string to display as title of the tab.
+	 * 
+	 * @return the string to display as title of the tab
+	 */
+	public abstract String getTabTitle();
 
-    /**
-     * Returns a short description (can be used as tool tip) of the tab, or contributor, etc.
-     *
-     * @return a short description of this tab panel.
-     */
-    public abstract String getDescription();
+	/**
+	 * Returns a short description (can be used as tool tip) of the tab, or
+	 * contributor, etc.
+	 *
+	 * @return a short description of this tab panel.
+	 */
+	public abstract String getDescription();
 }

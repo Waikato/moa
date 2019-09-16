@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.recommender.predictor;
@@ -28,50 +28,52 @@ import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 
 /**
- * A naive algorithm which combines the global mean of all the existing 
- * ratings, the mean rating of the user and the mean rating of the item 
- * to make a prediction.
- * 
+ * A naive algorithm which combines the global mean of all the existing ratings,
+ * the mean rating of the user and the mean rating of the item to make a
+ * prediction.
+ *
  */
 
-public class BaselinePredictor extends AbstractOptionHandler implements moa.recommender.predictor.RatingPredictor {   
-    protected moa.recommender.rc.predictor.impl.BaselinePredictor rp;
-    
-    public ClassOption dataOption = new ClassOption("data", 'd',
-            "Data", moa.recommender.data.RecommenderData.class, "moa.recommender.data.MemRecommenderData");
+public class BaselinePredictor extends AbstractOptionHandler implements moa.recommender.predictor.RatingPredictor {
+	protected moa.recommender.rc.predictor.impl.BaselinePredictor rp;
 
-    @Override
-    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
-        moa.recommender.data.RecommenderData data = (moa.recommender.data.RecommenderData) getPreparedClassOption(this.dataOption);
-        rp = new moa.recommender.rc.predictor.impl.BaselinePredictor(data.getData());
-    }
+	public ClassOption dataOption = new ClassOption("data", 'd', "Data", moa.recommender.data.RecommenderData.class,
+			"moa.recommender.data.MemRecommenderData");
 
-    @Override
-    public void getDescription(StringBuilder sb, int indent) {
-        sb.append(rp.toString());
-    }
+	@Override
+	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
+		moa.recommender.data.RecommenderData data = (moa.recommender.data.RecommenderData) getPreparedClassOption(
+				this.dataOption);
+		rp = new moa.recommender.rc.predictor.impl.BaselinePredictor(data.getData());
+	}
 
-    public double predictRating(Integer user, Integer item) {
-        return rp.predictRating(user,item);
-    }
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {
+		sb.append(rp.toString());
+	}
 
-    public moa.recommender.rc.data.RecommenderData getData() {
-        return rp.getData();
-    }
+	public double predictRating(Integer user, Integer item) {
+		return rp.predictRating(user, item);
+	}
 
-    @Override
-    public double predictRating(int userID, int itemID) {
-        return rp.predictRating(userID, itemID);
-    }
+	@Override
+	public moa.recommender.rc.data.RecommenderData getData() {
+		return rp.getData();
+	}
 
-    @Override
-    public List<Double> predictRatings(int userID, List<Integer> itemIDS) {
-        return rp.predictRatings(userID, itemIDS);
-    }
+	@Override
+	public double predictRating(int userID, int itemID) {
+		return rp.predictRating(userID, itemID);
+	}
 
-    @Override
-    public void train() {
-        rp.train();
-    }
+	@Override
+	public List<Double> predictRatings(int userID, List<Integer> itemIDS) {
+		return rp.predictRatings(userID, itemIDS);
+	}
+
+	@Override
+	public void train() {
+		rp.train();
+	}
 
 }

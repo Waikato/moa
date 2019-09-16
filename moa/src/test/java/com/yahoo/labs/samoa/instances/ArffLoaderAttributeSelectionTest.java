@@ -30,20 +30,21 @@ public class ArffLoaderAttributeSelectionTest {
 			InputStream fileStream;
 			Reader reader;
 
-			fileStream = new FileInputStream(ClassLoader.getSystemResource("moa/classifiers/data/small_regression.arff").getPath());
+			fileStream = new FileInputStream(
+					ClassLoader.getSystemResource("moa/learners/predictors/data/small_regression.arff").getPath());
 			reader = new BufferedReader(new InputStreamReader(fileStream));
 			instancesHeader = new InstancesHeader(reader, "4-5", "2,3,8");
 		} catch (IOException ioe) {
 			throw new RuntimeException("ArffFileStream restart failed.", ioe);
 		}
 	}
-	
+
 	@Test
 	public void testHeaderAttributeSelection() {
 		// check number of attributes
 		assertEquals(3, instancesHeader.arff.instanceInformation.numInputAttributes());
 		assertEquals(2, instancesHeader.arff.instanceInformation.numOutputAttributes());
-		
+
 		// check attribute types for each position
 		assertTrue(instancesHeader.arff.instanceInformation.attribute(0).isNumeric());
 		assertTrue(instancesHeader.arff.instanceInformation.attribute(1).isNominal());
@@ -57,8 +58,8 @@ public class ArffLoaderAttributeSelectionTest {
 		assertTrue(instancesHeader.arff.instanceInformation.attribute(2).name.equals("R1"));
 		assertTrue(instancesHeader.arff.instanceInformation.attribute(3).name.equals("R2"));
 		assertTrue(instancesHeader.arff.instanceInformation.attribute(4).name.equals("N2"));
-		
-		//check class index
+
+		// check class index
 	}
 
 	@Test
@@ -66,7 +67,7 @@ public class ArffLoaderAttributeSelectionTest {
 		// ---------------------- instance 1 ----------------------
 		Instance instance = instancesHeader.arff.readInstance();
 		instance.setDataset(instancesHeader);
-		
+
 		// check attributes
 		assertEquals(-2.3, instance.value(0), EPS);
 		assertEquals(2, instance.value(1), EPS);
@@ -98,7 +99,7 @@ public class ArffLoaderAttributeSelectionTest {
 		assertEquals(-2.2, instance.valueInputAttribute(0), EPS);
 		assertEquals(0, instance.valueInputAttribute(1), EPS);
 		assertEquals(0, instance.valueInputAttribute(2), EPS);
-		
+
 		// check output values
 		assertEquals(3, instance.valueOutputAttribute(0), EPS);
 		assertEquals(1, instance.valueOutputAttribute(1), EPS);

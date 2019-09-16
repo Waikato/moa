@@ -15,11 +15,13 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks.structuredoutput.multitargetregression;
 
-import moa.learners.MultiTargetRegressor;
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
+import moa.learners.predictors.MultiTargetRegressor;
 import moa.options.ClassOption;
 import moa.tasks.AbstractLearnModel;
 
@@ -31,15 +33,22 @@ import moa.tasks.AbstractLearnModel;
  */
 public class LearnModel extends AbstractLearnModel<MultiTargetRegressor> implements MultiTargetRegressionMainTask {
 
-    @Override
-    public String getPurposeString() {
-        return "Learns a multi-target regression model from a stream.";
-    }
-
-    private static final long serialVersionUID = 1L;
-
-    public LearnModel() {
-		this.learnerOption = new ClassOption("learner", 'l', "Learner to train.", MultiTargetRegressor.class, "moa.classifiers.mtr.trees.ISOUPTree");
+	@Override
+	public String getPurposeString() {
+		return "Learns a multi-target regression model from a stream.";
 	}
-    
+
+	private static final long serialVersionUID = 1L;
+
+	public LearnModel() {
+		this.learnerOption = new ClassOption("learner", 'l', "Learner to train.", MultiTargetRegressor.class,
+				"mtr.trees.ISOUPTree");
+	}
+	@Override
+	public ImmutableCapabilities defineImmutableCapabilities() {
+		if (this.getClass() == LearnModel.class)
+			return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+		else
+			return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+	}
 }

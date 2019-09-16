@@ -14,16 +14,20 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.recommender.dataset;
 
 public interface Dataset {
-    public boolean next();
-    public  int curUserID();
-    public int curItemID();
-    public double curRating();
-    public void reset();
+	boolean next();
+
+	int curUserID();
+
+	int curItemID();
+
+	double curRating();
+
+	void reset();
 }

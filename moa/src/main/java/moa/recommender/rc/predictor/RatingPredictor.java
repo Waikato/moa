@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.recommender.rc.predictor;
@@ -26,8 +26,11 @@ import java.util.List;
 import moa.recommender.rc.data.RecommenderData;
 
 public interface RatingPredictor extends Serializable {
-	public double predictRating(int userID, int itemID);
-	public List<Double> predictRatings(int userID, List<Integer> itemIDS);
-	public RecommenderData getData();
-	public void train();
+	double predictRating(int userID, int itemID);
+
+	List<Double> predictRatings(int userID, List<Integer> itemIDS);
+
+	RecommenderData getData();
+
+	void train();
 }

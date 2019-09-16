@@ -16,7 +16,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.options;
 
@@ -33,8 +33,8 @@ import moa.tasks.Task;
 import weka.core.Utils;
 
 /**
- * WEKA class option. This option is used to access options in WEKA.
- * For example, WEKAClassifier uses it to set the base learner.
+ * WEKA class option. This option is used to access options in WEKA. For
+ * example, WEKAClassifier uses it to set the base learner.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @author FracPete (fracpete at waikato dot ac dot nz)
@@ -44,39 +44,36 @@ public class WEKAClassOption extends AbstractClassOption {
 
 	private static final long serialVersionUID = 1L;
 
-	public WEKAClassOption(String name, char cliChar, String purpose,
-			Class<?> requiredType, String defaultCLIString) {
+	public WEKAClassOption(String name, char cliChar, String purpose, Class<?> requiredType, String defaultCLIString) {
 		super(name, cliChar, purpose, requiredType, defaultCLIString);
 	}
 
-	public WEKAClassOption(String name, char cliChar, String purpose,
-			Class<?> requiredType, String defaultCLIString, String nullString) {
+	public WEKAClassOption(String name, char cliChar, String purpose, Class<?> requiredType, String defaultCLIString,
+			String nullString) {
 		super(name, cliChar, purpose, requiredType, defaultCLIString, nullString);
 	}
 
-    @Override
+	@Override
 	public String getValueAsCLIString() {
 		if ((this.currentValue == null) && (this.nullString != null)) {
 			return this.nullString;
 		}
-		
+
 		String result = currentValue.getClass().getName();
 		if (currentValue instanceof weka.core.OptionHandler)
 			result += " " + Utils.joinOptions(((weka.core.OptionHandler) currentValue).getOptions());
 		result = result.trim();
-		
+
 		return result;
 	}
 
-    @Override
+	@Override
 	public void setValueViaCLIString(String s) {
-		if ((this.nullString != null)
-				&& ((s == null) || (s.length() == 0) || s
-						.equals(this.nullString))) {
+		if ((this.nullString != null) && ((s == null) || (s.length() == 0) || s.equals(this.nullString))) {
 			this.currentValue = null;
 		} else {
 			try {
-				this.currentValue = cliStringToObject(s, this.requiredType,	null);
+				this.currentValue = cliStringToObject(s, this.requiredType, null);
 			} catch (Exception e) {
 				throw new IllegalArgumentException("Problems with option: " + getName(), e);
 			}
@@ -103,8 +100,8 @@ public class WEKAClassOption extends AbstractClassOption {
 		return className;
 	}
 
-	public static Object cliStringToObject(String cliString,
-			Class<?> requiredType, Option[] externalOptions) throws Exception {
+	public static Object cliStringToObject(String cliString, Class<?> requiredType, Option[] externalOptions)
+			throws Exception {
 		if (cliString.startsWith(FILE_PREFIX_STRING)) {
 			return new File(cliString.substring(FILE_PREFIX_STRING.length()));
 		}
@@ -129,11 +126,11 @@ public class WEKAClassOption extends AbstractClassOption {
 		} catch (Throwable t1) {
 			try {
 				// try prepending default package
-				classObject = Class.forName(requiredType.getPackage().getName()	+ "." + className);
+				classObject = Class.forName(requiredType.getPackage().getName() + "." + className);
 			} catch (Throwable t2) {
 				try {
 					// try prepending task package
-					classObject = Class.forName(Task.class.getPackage().getName()	+ "." + className);
+					classObject = Class.forName(Task.class.getPackage().getName() + "." + className);
 				} catch (Throwable t3) {
 					throw new Exception("Class not found: " + className);
 				}
@@ -143,18 +140,16 @@ public class WEKAClassOption extends AbstractClassOption {
 		try {
 			classInstance = classObject.newInstance();
 		} catch (Exception ex) {
-			throw new Exception("Problem creating instance of class: "
-					+ className, ex);
+			throw new Exception("Problem creating instance of class: " + className, ex);
 		}
-		if (requiredType.isInstance(classInstance)
-				|| ((classInstance instanceof Task) && requiredType.isAssignableFrom(((Task) classInstance).getTaskResultType()))) {
-			Vector<String> options = new Vector<String>();
+		if (requiredType.isInstance(classInstance) || ((classInstance instanceof Task)
+				&& requiredType.isAssignableFrom(((Task) classInstance).getTaskResultType()))) {
+			Vector<String> options = new Vector<>();
 			if (externalOptions != null) {
 				for (Option option : externalOptions) {
 					options.add(option.getValueAsCLIString());
 				}
-			}
-			else {
+			} else {
 				String[] optionsTmp = Utils.splitOptions(cliString);
 				for (int i = 1; i < optionsTmp.length; i++)
 					options.add(optionsTmp[i]);
@@ -170,24 +165,19 @@ public class WEKAClassOption extends AbstractClassOption {
 						optionsText.append(option.synopsis() + '\n');
 						optionsText.append(option.description() + "\n");
 					}
-					throw new Exception("Problem with options to '"
-							+ className
-							+ "'."
-							+ "\n\nValid options for "
-							+ className
-							+ ":\n"
-							+ optionsText.toString(), ex);
+					throw new Exception("Problem with options to '" + className + "'." + "\n\nValid options for "
+							+ className + ":\n" + optionsText.toString(), ex);
 				}
-		  }
+			}
 		} else {
-			throw new Exception("Class named '" + className
-					+ "' is not an instance of " + requiredType.getName() + ".");
+			throw new Exception(
+					"Class named '" + className + "' is not an instance of " + requiredType.getName() + ".");
 		}
 		return classInstance;
 	}
 
-	//@Override
-	//public JComponent getEditComponent() {
-	//	return new WEKAClassOptionEditComponent(this);
-	//}
+	// @Override
+	// public JComponent getEditComponent() {
+	// return new WEKAClassOptionEditComponent(this);
+	// }
 }

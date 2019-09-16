@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.recommender.dataset.impl;
@@ -36,88 +36,89 @@ import moa.options.AbstractOptionHandler;
 import moa.recommender.dataset.Dataset;
 import moa.tasks.TaskMonitor;
 
-public class FlixsterDataset extends AbstractOptionHandler implements Dataset  {
-    private String strLine;
-    private BufferedReader br;
-        public FileOption fileOption = new FileOption("file", 'f',
-            "File to load.", "/home/alex/datasets/ratings.txt", "txt", false);
-    
-    /*public FlixsterDataset() throws IOException {
-        super();
-        FileInputStream fstream = new FileInputStream("/home/alex/datasets/ratings.txt");
-        DataInputStream in = new DataInputStream(fstream);
-        br = new BufferedReader(new InputStreamReader(in));
-    }*/
-        
-         @Override
-    public String getPurposeString() {
-        return "A Jester Dataset reader.";
-    }
+public class FlixsterDataset extends AbstractOptionHandler implements Dataset {
+	private String strLine;
+	private BufferedReader br;
+	public FileOption fileOption = new FileOption("file", 'f', "File to load.", "/home/alex/datasets/ratings.txt",
+			"txt", false);
 
-    public void init() {
-        FileInputStream fstream = null;
-        try {
-            fstream = new FileInputStream(this.fileOption.getFile());
-            DataInputStream in = new DataInputStream(fstream);
-            br = new BufferedReader(new InputStreamReader(in));
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(MovielensDataset.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    
-    @Override
-    public boolean next() {
-        try {
-            return (strLine = br.readLine()) != null;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+	/*
+	 * public FlixsterDataset() throws IOException { super(); FileInputStream
+	 * fstream = new FileInputStream("/home/alex/datasets/ratings.txt");
+	 * DataInputStream in = new DataInputStream(fstream); br = new
+	 * BufferedReader(new InputStreamReader(in)); }
+	 */
 
-    @Override
-    public int curUserID() {
-        String[] split = strLine.split("\\s+");
-        return Integer.valueOf(split[0]);
-    }
+	@Override
+	public String getPurposeString() {
+		return "A Jester Dataset reader.";
+	}
 
-    @Override
-    public int curItemID() {
-        String[] split = strLine.split("\\s+");
-        return Integer.valueOf(split[1]);
-    }
+	public void init() {
+		FileInputStream fstream = null;
+		try {
+			fstream = new FileInputStream(this.fileOption.getFile());
+			DataInputStream in = new DataInputStream(fstream);
+			br = new BufferedReader(new InputStreamReader(in));
+		} catch (FileNotFoundException ex) {
+			Logger.getLogger(MovielensDataset.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
 
-    @Override
-    public double curRating() {
-        String[] split = strLine.split("\\s+");
-        return Double.valueOf(split[2]);
-    }
+	@Override
+	public boolean next() {
+		try {
+			return (strLine = br.readLine()) != null;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 
-    public String toString() {
-        return "Flixster";
-    }
+	@Override
+	public int curUserID() {
+		String[] split = strLine.split("\\s+");
+		return Integer.valueOf(split[0]);
+	}
 
-    @Override
-    public void reset() {
-        try {
-            br.close();
-            //FileInputStream fstream = new FileInputStream("/home/alicia/datasets/flixster/ratings.txt");
-            //DataInputStream in = new DataInputStream(fstream);
-            //br = new BufferedReader(new InputStreamReader(in));
-            this.init();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    @Override
-    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
-        this.init();
-    }
+	@Override
+	public int curItemID() {
+		String[] split = strLine.split("\\s+");
+		return Integer.valueOf(split[1]);
+	}
 
-    @Override
-    public void getDescription(StringBuilder sb, int indent) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+	@Override
+	public double curRating() {
+		String[] split = strLine.split("\\s+");
+		return Double.valueOf(split[2]);
+	}
+
+	@Override
+	public String toString() {
+		return "Flixster";
+	}
+
+	@Override
+	public void reset() {
+		try {
+			br.close();
+			// FileInputStream fstream = new
+			// FileInputStream("/home/alicia/datasets/flixster/ratings.txt");
+			// DataInputStream in = new DataInputStream(fstream);
+			// br = new BufferedReader(new InputStreamReader(in));
+			this.init();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
+		this.init();
+	}
+
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 }

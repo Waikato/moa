@@ -15,16 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks.regression;
 
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-import moa.streams.clustering.ClusterEvent;
-
-import moa.learners.Regressor;
+import moa.learners.predictors.Regressor;
 import moa.options.ClassOption;
 import moa.tasks.AbstractLearnModel;
 
@@ -36,20 +34,23 @@ import moa.tasks.AbstractLearnModel;
  */
 public class LearnModel extends AbstractLearnModel<Regressor> implements RegressionMainTask, CapabilitiesHandler {
 
-    @Override
-    public String getPurposeString() {
-        return "Learns a regression model from a stream.";
-    }
+	@Override
+	public String getPurposeString() {
+		return "Learns a regression model from a stream.";
+	}
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public LearnModel() {
-		this.learnerOption = new ClassOption("learner", 'l', "Learner to train.", Regressor.class, "moa.classifiers.trees.FIMTDD");
-    }
-    
-    public ImmutableCapabilities defineImmutableCapabilities() {
-        // We are restricting tasks based on view mode
-        return new ImmutableCapabilities(Capability.VIEW_STANDARD);
-    }
-    
+	public LearnModel() {
+		this.learnerOption = new ClassOption("learner", 'l', "Learner to train.", Regressor.class,
+				"trees.FIMTDD");
+	}
+
+	@Override
+	public ImmutableCapabilities defineImmutableCapabilities() {
+		if (this.getClass() == LearnModel.class)
+			return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+		else
+			return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+	}
 }

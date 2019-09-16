@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
@@ -46,19 +46,17 @@ public class MultiTargetRegressionTabPanel extends AbstractTabPanel {
 		add(this.previewPanel, BorderLayout.CENTER);
 	}
 
-	//returns the string to display as title of the tab
-    @Override
+	// returns the string to display as title of the tab
+	@Override
 	public String getTabTitle() {
 		return "Multi-target regression"; // "Learning";
 	}
 
-	//a short description (can be used as tool tip) of the tab, or contributor, etc.
-    @Override
-	public String getDescription(){
+	// a short description (can be used as tool tip) of the tab, or contributor,
+	// etc.
+	@Override
+	public String getDescription() {
 		return "MOA MultiTarget Learning";
 	}
 
 }
-
-
-

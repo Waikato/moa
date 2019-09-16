@@ -15,27 +15,27 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.yahoo.labs.samoa.instances;
 
 /**
- * Class for storing the header or context of a multilabel data stream.
- * It allows to know the number of attributes and class labels.
+ * Class for storing the header or context of a multilabel data stream. It
+ * allows to know the number of attributes and class labels.
  *
  * @author Jesse Read (jmr30@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
 public class MultilabelInstancesHeader extends InstancesHeader {
 
-    private int m_NumLabels = -1;
+	private int m_NumLabels = -1;
 
-    public MultilabelInstancesHeader(InstancesHeader i, int numLabels) {
-        super(i);
-        m_NumLabels = numLabels;
-    }
+	public MultilabelInstancesHeader(InstancesHeader i, int numLabels) {
+		super(i);
+		m_NumLabels = numLabels;
+	}
 
-    public int getNumClassLabels() {
-        return m_NumLabels;
-    }
+	public int getNumClassLabels() {
+		return m_NumLabels;
+	}
 }

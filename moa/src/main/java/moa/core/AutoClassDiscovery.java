@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
@@ -36,146 +36,142 @@ import nz.ac.waikato.cms.locator.ClassCache;
 import nz.ac.waikato.cms.locator.FixedClassListTraversal;
 
 /**
- * Class for discovering classes via reflection in the java class path.
- * <br>
- * If analyzing of classpath fails, it falls back on reading class names
- * from file list {@link #CLASS_LIST} as resource stream.
+ * Class for discovering classes via reflection in the java class path. <br>
+ * If analyzing of classpath fails, it falls back on reading class names from
+ * file list {@link #CLASS_LIST} as resource stream.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  */
 public class AutoClassDiscovery {
 
-    protected static final Map<String, String[]> cachedClassNames = new HashMap<String, String[]>();
+	protected static final Map<String, String[]> cachedClassNames = new HashMap<>();
 
-    protected static ClassCache m_Cache;
+	protected static ClassCache m_Cache;
 
-    public final static String CLASS_LIST = "moa.classes";
+	public final static String CLASS_LIST = "moa.classes";
 
-    /**
-     * Initializes the class cache
-     */
-    protected static synchronized void initCache() {
-        if (m_Cache == null) {
-            m_Cache = new ClassCache();
+	/**
+	 * Initializes the class cache
+	 */
+	protected static synchronized void initCache() {
+		if (m_Cache == null) {
+			m_Cache = new ClassCache();
 
-            // try loading fixed list of classes
-            if (m_Cache.isEmpty()) {
-                InputStream inputStream = null;
-                    try {
-                    inputStream = m_Cache.getClass().getResourceAsStream(CLASS_LIST);
-                    m_Cache = new ClassCache(new FixedClassListTraversal(inputStream));
-                }
-                catch (Exception e) {
-                    System.err.println("Failed to initialize class cache from fixed list (" + CLASS_LIST + ")!");
-                        e.printStackTrace();
-                    }
-                finally {
-                    if (inputStream != null) {
-                        try {
-                            inputStream.close();
-                }
-                        catch (Exception e) {
+			// try loading fixed list of classes
+			if (m_Cache.isEmpty()) {
+				InputStream inputStream = null;
+				try {
+					inputStream = m_Cache.getClass().getResourceAsStream(CLASS_LIST);
+					m_Cache = new ClassCache(new FixedClassListTraversal(inputStream));
+				} catch (Exception e) {
+					System.err.println("Failed to initialize class cache from fixed list (" + CLASS_LIST + ")!");
+					e.printStackTrace();
+				} finally {
+					if (inputStream != null) {
+						try {
+							inputStream.close();
+						} catch (Exception e) {
 
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+						}
+					}
+				}
+			}
+		}
+	}
 
-    /**
-     * Returns all class names stored in the cache.
-     * @return the class names
-     */
-    public static List<String> getAllClassNames() {
-        List<String> result = new ArrayList<>();
-        Iterator<String> pkgs = m_Cache.packages();
-        while (pkgs.hasNext()) {
-            String pkg = pkgs.next();
-            if (pkg.startsWith("moa")) {
-                Set<String> classnames = m_Cache.getClassnames(pkg);
-                result.addAll(classnames);
-            }
-            }
-        return result;
-            }
-            // ignore unreadable files
-    public static synchronized String[] findClassNames(String packageNameToSearch) {
-        String[] cached = cachedClassNames.get(packageNameToSearch);
-        if (cached == null) {
-            HashSet<String> classNames = new HashSet<String>();
+	/**
+	 * Returns all class names stored in the cache.
+	 * 
+	 * @return the class names
+	 */
+	public static List<String> getAllClassNames() {
+		List<String> result = new ArrayList<>();
+		Iterator<String> pkgs = m_Cache.packages();
+		while (pkgs.hasNext()) {
+			String pkg = pkgs.next();
+			if (pkg.startsWith("moa")) {
+				Set<String> classnames = m_Cache.getClassnames(pkg);
+				result.addAll(classnames);
+			}
+		}
+		return result;
+	}
 
-            initCache();
-            Iterator<String> iter = m_Cache.packages();
-            while (iter.hasNext()) {
-                String pkg = iter.next();
-                if (pkg.equals(packageNameToSearch) || pkg.startsWith(packageNameToSearch + "."))
-                    classNames.addAll(m_Cache.getClassnames(pkg));
-            }
-            cached = classNames.toArray(new String[classNames.size()]);
-            Arrays.sort(cached);
-            cachedClassNames.put(packageNameToSearch, cached);
-        }
-        return cached;
-    }
+	// ignore unreadable files
+	public static synchronized String[] findClassNames(String packageNameToSearch) {
+		String[] cached = cachedClassNames.get(packageNameToSearch);
+		if (cached == null) {
+			HashSet<String> classNames = new HashSet<>();
 
-    public static Class[] findClassesOfType(String packageNameToSearch,
-            Class<?> typeDesired) {
-        ArrayList<Class<?>> classesFound = new ArrayList<>();
-        String[] classNames = findClassNames(packageNameToSearch);
-        for (String className : classNames) {
-            if (isPublicConcreteClassOfType(className, typeDesired)) {
-                try {
-                    classesFound.add(Class.forName(className));
-                } catch (Exception ignored) {
-                    // ignore classes that we cannot instantiate
-                }
-            }
-        }
-        return classesFound.toArray(new Class[classesFound.size()]);
-    }
+			initCache();
+			Iterator<String> iter = m_Cache.packages();
+			while (iter.hasNext()) {
+				String pkg = iter.next();
+				if (pkg.equals(packageNameToSearch) || pkg.startsWith(packageNameToSearch + "."))
+					classNames.addAll(m_Cache.getClassnames(pkg));
+			}
+			cached = classNames.toArray(new String[classNames.size()]);
+			Arrays.sort(cached);
+			cachedClassNames.put(packageNameToSearch, cached);
+		}
+		return cached;
+	}
 
-    public static boolean isPublicConcreteClassOfType(String className,
-            Class<?> typeDesired) {
-        Class<?> testClass = null;
-        try {
-            testClass = Class.forName(className);
-        } catch (Exception e) {
-            return false;
-        }
-        int classModifiers = testClass.getModifiers();
-        return (java.lang.reflect.Modifier.isPublic(classModifiers)
-                && !java.lang.reflect.Modifier.isAbstract(classModifiers)
-                && typeDesired.isAssignableFrom(testClass) && hasEmptyConstructor(testClass));
-    }
+	public static Class[] findClassesOfType(String packageNameToSearch, Class<?> typeDesired) {
+		ArrayList<Class<?>> classesFound = new ArrayList<>();
+		String[] classNames = findClassNames(packageNameToSearch);
+		for (String className : classNames) {
+			if (isPublicConcreteClassOfType(className, typeDesired)) {
+				try {
+					classesFound.add(Class.forName(className));
+				} catch (Exception ignored) {
+					// ignore classes that we cannot instantiate
+				}
+			}
+		}
+		return classesFound.toArray(new Class[classesFound.size()]);
+	}
 
-    public static boolean hasEmptyConstructor(Class<?> type) {
-        try {
-            type.getConstructor();
-            return true;
-        } catch (Exception ignored) {
-            return false;
-        }
-    }
+	public static boolean isPublicConcreteClassOfType(String className, Class<?> typeDesired) {
+		Class<?> testClass = null;
+		try {
+			testClass = Class.forName(className);
+		} catch (Exception e) {
+			return false;
+		}
+		int classModifiers = testClass.getModifiers();
+		return (java.lang.reflect.Modifier.isPublic(classModifiers)
+				&& !java.lang.reflect.Modifier.isAbstract(classModifiers) && typeDesired.isAssignableFrom(testClass)
+				&& hasEmptyConstructor(testClass));
+	}
 
-    /**
-     * Outputs all class names below "moa" either to stdout or to the
-     * file provided as first argument.
-     *
-     * @param args optional file for storing the classnames
-     * @throws Exception if writing to file fails
-     */
-    public static void main(String[] args) throws Exception {
-        initCache();
-        List<String> allClassnames = getAllClassNames();
-        PrintStream out = System.out;
-        if (args.length > 0)
-            out = new PrintStream(new File(args[0]));
-        Collections.sort(allClassnames);
-        for (String clsname: allClassnames)
-            out.println(clsname);
-        out.flush();
-        if (args.length > 0)
-            out.close();
-    }
+	public static boolean hasEmptyConstructor(Class<?> type) {
+		try {
+			type.getConstructor();
+			return true;
+		} catch (Exception ignored) {
+			return false;
+		}
+	}
+
+	/**
+	 * Outputs all class names below "moa" either to stdout or to the file provided
+	 * as first argument.
+	 *
+	 * @param args optional file for storing the classnames
+	 * @throws Exception if writing to file fails
+	 */
+	public static void main(String[] args) throws Exception {
+		initCache();
+		List<String> allClassnames = getAllClassNames();
+		PrintStream out = System.out;
+		if (args.length > 0)
+			out = new PrintStream(new File(args[0]));
+		Collections.sort(allClassnames);
+		for (String clsname : allClassnames)
+			out.println(clsname);
+		out.flush();
+		if (args.length > 0)
+			out.close();
+	}
 }

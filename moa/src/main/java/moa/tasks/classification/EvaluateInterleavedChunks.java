@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks.classification;
 
@@ -35,9 +35,10 @@ import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
 import moa.evaluation.LearningEvaluation;
-import moa.evaluation.LearningPerformanceEvaluator;
+import moa.evaluation.evaluators.LearningPerformanceEvaluator;
 import moa.evaluation.preview.LearningCurve;
 import moa.learners.MLTask;
+import moa.learners.predictors.Classifier;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.tasks.MainTask;
@@ -49,83 +50,75 @@ public class EvaluateInterleavedChunks extends MainTask implements Classificatio
 	public String getPurposeString() {
 		return "Evaluates a classifier on a stream by testing then training with chunks of data in sequence.";
 	}
-	
+
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Allows to select the trained classifier.
 	 */
-	public ClassOption learnerOption = new ClassOption("learner", 'l',
-			"Classifier to train.", MLTask.class, "moa.classifiers.bayes.NaiveBayes");
+	public ClassOption learnerOption = new ClassOption("learner", 'l', "Classifier to train.", Classifier.class,
+			"bayes.NaiveBayes");
 
 	/**
-	 * Allows to select the stream the classifier will learn. 
+	 * Allows to select the stream the classifier will learn.
 	 */
-	public ClassOption streamOption = new ClassOption("stream", 's',
-			"Stream to learn from.", ExampleStream.class,
+	public ClassOption streamOption = new ClassOption("stream", 's', "Stream to learn from.", ExampleStream.class,
 			"generators.RandomTreeGenerator");
 
 	/**
 	 * Allows to select the classifier performance evaluation method.
 	 */
-	public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
-            "Learning performance evaluation method.",
-            LearningPerformanceEvaluator.class,
-			"BasicClassificationPerformanceEvaluator");
+	public ClassOption evaluatorOption = new ClassOption("evaluator", 'e', "Learning performance evaluation method.",
+			LearningPerformanceEvaluator.class, "BasicClassificationPerformanceEvaluator");
 
 	/**
-	 * Allows to define the maximum number of instances to test/train on  (-1 = no limit).
+	 * Allows to define the maximum number of instances to test/train on (-1 = no
+	 * limit).
 	 */
 	public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
-			"Maximum number of instances to test/train on  (-1 = no limit).",
-			100000000, -1, Integer.MAX_VALUE);
+			"Maximum number of instances to test/train on  (-1 = no limit).", 100000000, -1, Integer.MAX_VALUE);
 
 	/**
 	 * Allow to define the training/testing chunk size.
 	 */
-	public IntOption chunkSizeOption = new IntOption("chunkSize", 'c',
-			"Number of instances in a data chunk.",
-			1000, 1, Integer.MAX_VALUE);
-	
+	public IntOption chunkSizeOption = new IntOption("chunkSize", 'c', "Number of instances in a data chunk.", 1000, 1,
+			Integer.MAX_VALUE);
+
 	/**
-	 * Allows to define the maximum number of seconds to test/train for (-1 = no limit).
+	 * Allows to define the maximum number of seconds to test/train for (-1 = no
+	 * limit).
 	 */
 	public IntOption timeLimitOption = new IntOption("timeLimit", 't',
-			"Maximum number of seconds to test/train for (-1 = no limit).", -1,
-			-1, Integer.MAX_VALUE);
+			"Maximum number of seconds to test/train for (-1 = no limit).", -1, -1, Integer.MAX_VALUE);
 
 	/**
 	 * Defines how often classifier parameters will be calculated.
 	 */
-	public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
-			'f',
-			"How many instances between samples of the learning performance.",
-			100000, 0, Integer.MAX_VALUE);
+	public IntOption sampleFrequencyOption = new IntOption("sampleFrequency", 'f',
+			"How many instances between samples of the learning performance.", 100000, 0, Integer.MAX_VALUE);
 
 	/**
 	 * Allows to define the memory limit for the created model.
 	 */
 	public IntOption maxMemoryOption = new IntOption("maxMemory", 'b',
-			"Maximum size of model (in bytes). -1 = no limit.", -1, -1,
-			Integer.MAX_VALUE);
+			"Maximum size of model (in bytes). -1 = no limit.", -1, -1, Integer.MAX_VALUE);
 
 	/**
 	 * Allows to define the frequency of memory checks.
 	 */
-	public IntOption memCheckFrequencyOption = new IntOption(
-			"memCheckFrequency", 'q',
-			"How many instances between memory bound checks.", 100000, 0,
-			Integer.MAX_VALUE);
+	public IntOption memCheckFrequencyOption = new IntOption("memCheckFrequency", 'q',
+			"How many instances between memory bound checks.", 100000, 0, Integer.MAX_VALUE);
 
 	/**
 	 * Allows to define the output file name and location.
 	 */
-	public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
-			"File to append intermediate csv reslts to.", null, "csv", true);
+	public FileOption dumpFileOption = new FileOption("dumpFile", 'd', "File to append intermediate csv reslts to.",
+			null, "csv", true);
 
 	/**
 	 * Defines the task's result type.
 	 */
+	@Override
 	public Class<?> getTaskResultType() {
 		return LearningCurve.class;
 	}
@@ -134,157 +127,143 @@ public class EvaluateInterleavedChunks extends MainTask implements Classificatio
 	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
 		MLTask learner = (MLTask) getPreparedClassOption(this.learnerOption);
 		ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
-		LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
+		LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(
+				this.evaluatorOption);
 		learner.setModelContext(stream.getHeader());
 		int maxInstances = this.instanceLimitOption.getValue();
 		int chunkSize = this.chunkSizeOption.getValue();
 		long instancesProcessed = 0;
 		int maxSeconds = this.timeLimitOption.getValue();
 		int secondsElapsed = 0;
-		
+
 		monitor.setCurrentActivity("Evaluating learner...", -1.0);
-		LearningCurve learningCurve = new LearningCurve(
-				"learning evaluation instances");
+		LearningCurve learningCurve = new LearningCurve("learning evaluation instances");
 		File dumpFile = this.dumpFileOption.getFile();
 		PrintStream immediateResultStream = null;
 		if (dumpFile != null) {
 			try {
 				if (dumpFile.exists()) {
-					immediateResultStream = new PrintStream(
-							new FileOutputStream(dumpFile, true), true);
+					immediateResultStream = new PrintStream(new FileOutputStream(dumpFile, true), true);
 				} else {
-					immediateResultStream = new PrintStream(
-							new FileOutputStream(dumpFile), true);
+					immediateResultStream = new PrintStream(new FileOutputStream(dumpFile), true);
 				}
 			} catch (Exception ex) {
-				throw new RuntimeException(
-						"Unable to open immediate result file: " + dumpFile, ex);
+				throw new RuntimeException("Unable to open immediate result file: " + dumpFile, ex);
 			}
 		}
 		boolean firstDump = true;
 		boolean firstChunk = true;
 		boolean preciseCPUTiming = TimingUtils.enablePreciseTiming();
 		long evaluateStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
-		long sampleTestTime =0, sampleTrainTime = 0;
+		long sampleTestTime = 0, sampleTrainTime = 0;
 		double RAMHours = 0.0;
-		
-		while (stream.hasMoreInstances()
-				&& ((maxInstances < 0) || (instancesProcessed < maxInstances))
+
+		while (stream.hasMoreInstances() && ((maxInstances < 0) || (instancesProcessed < maxInstances))
 				&& ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
-			
+
 			InstancesHeader chunkInstances = new InstancesHeader(stream.getHeader(), chunkSize);
-			
+
 			while (stream.hasMoreInstances() && chunkInstances.numInstances() < chunkSize) {
 				chunkInstances.add((Instance) stream.nextInstance().getData());
-				if (chunkInstances.numInstances()
-						% INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
+				if (chunkInstances.numInstances() % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
 					if (monitor.taskShouldAbort()) {
 						return null;
 					}
-					
+
 					long estimatedRemainingInstances = stream.estimatedRemainingInstances();
-			
+
 					if (maxInstances > 0) {
 						long maxRemaining = maxInstances - instancesProcessed;
 						if ((estimatedRemainingInstances < 0) || (maxRemaining < estimatedRemainingInstances)) {
 							estimatedRemainingInstances = maxRemaining;
 						}
 					}
-					
-					monitor.setCurrentActivityFractionComplete((double) instancesProcessed/ (double) (instancesProcessed + estimatedRemainingInstances));
+
+					monitor.setCurrentActivityFractionComplete(
+							(double) instancesProcessed / (double) (instancesProcessed + estimatedRemainingInstances));
 				}
-			}		
-			
-			////Testing
+			}
+
+			//// Testing
 			long testStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
-			if(!firstChunk)
-			{
-				for (int i=0; i< chunkInstances.numInstances(); i++) {
-					Example testInst = new InstanceExample((Instance) chunkInstances.instance(i));
-					//testInst.setClassMissing();
+			if (!firstChunk) {
+				for (int i = 0; i < chunkInstances.numInstances(); i++) {
+					Example testInst = new InstanceExample(chunkInstances.instance(i));
+					// testInst.setClassMissing();
 					Prediction prediction = learner.getPredictionForInstance(testInst);
 					evaluator.addResult(testInst, prediction);
-			    }
-			}
-			else
-			{
+				}
+			} else {
 				firstChunk = false;
 			}
-			
+
 			sampleTestTime += TimingUtils.getNanoCPUTimeOfCurrentThread() - testStartTime;
-			
-			////Training
+
+			//// Training
 			long trainStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
-			
-			for (int i=0; i< chunkInstances.numInstances(); i++) {
+
+			for (int i = 0; i < chunkInstances.numInstances(); i++) {
 				learner.trainOnInstance(new InstanceExample(chunkInstances.instance(i)));
 				instancesProcessed++;
-		    }
-			
+			}
+
 			sampleTrainTime += TimingUtils.getNanoCPUTimeOfCurrentThread() - trainStartTime;
-			
-			////Result output
+
+			//// Result output
 			if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0) {
-				
-				double RAMHoursIncrement = learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); //GBs
-                RAMHoursIncrement *= (TimingUtils.nanoTimeToSeconds(sampleTrainTime + sampleTestTime) / 3600.0); //Hours
-                RAMHours += RAMHoursIncrement;
-				
-				double avgTrainTime = TimingUtils.nanoTimeToSeconds(sampleTrainTime)/((double)this.sampleFrequencyOption.getValue()/chunkInstances.numInstances());
-				double avgTestTime = TimingUtils.nanoTimeToSeconds(sampleTestTime)/((double)this.sampleFrequencyOption.getValue()/chunkInstances.numInstances());
-				
+
+				double RAMHoursIncrement = learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); // GBs
+				RAMHoursIncrement *= (TimingUtils.nanoTimeToSeconds(sampleTrainTime + sampleTestTime) / 3600.0); // Hours
+				RAMHours += RAMHoursIncrement;
+
+				double avgTrainTime = TimingUtils.nanoTimeToSeconds(sampleTrainTime)
+						/ ((double) this.sampleFrequencyOption.getValue() / chunkInstances.numInstances());
+				double avgTestTime = TimingUtils.nanoTimeToSeconds(sampleTestTime)
+						/ ((double) this.sampleFrequencyOption.getValue() / chunkInstances.numInstances());
+
 				sampleTestTime = 0;
 				sampleTrainTime = 0;
-				
-				learningCurve.insertEntry(new LearningEvaluation(
-					new Measurement[] {
+
+				learningCurve.insertEntry(new LearningEvaluation(new Measurement[] {
 						new Measurement("learning evaluation instances", instancesProcessed),
-						new Measurement(("evaluation time ("+ (preciseCPUTiming ? "cpu " : "") + "seconds)"),TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread() - evaluateStartTime)),
+						new Measurement(("evaluation time (" + (preciseCPUTiming ? "cpu " : "") + "seconds)"),
+								TimingUtils.nanoTimeToSeconds(
+										TimingUtils.getNanoCPUTimeOfCurrentThread() - evaluateStartTime)),
 						new Measurement("average chunk train time", avgTrainTime),
 						new Measurement("average chunk train speed", chunkInstances.numInstances() / avgTrainTime),
 						new Measurement("average chunk test time", avgTestTime),
-						new Measurement("average chunk test speed", chunkInstances.numInstances()/ avgTestTime),
-						new Measurement( "model cost (RAM-Hours)", RAMHours)}, 
-					evaluator, 
-					learner));
-				
+						new Measurement("average chunk test speed", chunkInstances.numInstances() / avgTestTime),
+						new Measurement("model cost (RAM-Hours)", RAMHours) }, evaluator, learner));
+
 				if (immediateResultStream != null) {
 					if (firstDump) {
-						immediateResultStream.println(learningCurve
-								.headerToString());
+						immediateResultStream.println(learningCurve.headerToString());
 						firstDump = false;
 					}
-					immediateResultStream.println(learningCurve
-							.entryToString(learningCurve.numEntries() - 1));
+					immediateResultStream.println(learningCurve.entryToString(learningCurve.numEntries() - 1));
 					immediateResultStream.flush();
 				}
 			}
-			
-			////Memory testing
+
+			//// Memory testing
 			if (instancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
 				if (monitor.taskShouldAbort()) {
 					return null;
 				}
-				long estimatedRemainingInstances = stream
-						.estimatedRemainingInstances();
+				long estimatedRemainingInstances = stream.estimatedRemainingInstances();
 				if (maxInstances > 0) {
 					long maxRemaining = maxInstances - instancesProcessed;
-					if ((estimatedRemainingInstances < 0)
-							|| (maxRemaining < estimatedRemainingInstances)) {
+					if ((estimatedRemainingInstances < 0) || (maxRemaining < estimatedRemainingInstances)) {
 						estimatedRemainingInstances = maxRemaining;
 					}
 				}
-				monitor
-						.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
-								: (double) instancesProcessed
-										/ (double) (instancesProcessed + estimatedRemainingInstances));
+				monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
+						: (double) instancesProcessed / (double) (instancesProcessed + estimatedRemainingInstances));
 				if (monitor.resultPreviewRequested()) {
 					monitor.setLatestResultPreview(learningCurve.copy());
 				}
 				secondsElapsed = (int) TimingUtils
-						.nanoTimeToSeconds(TimingUtils
-								.getNanoCPUTimeOfCurrentThread()
-								- evaluateStartTime);
+						.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread() - evaluateStartTime);
 			}
 		}
 		if (immediateResultStream != null) {

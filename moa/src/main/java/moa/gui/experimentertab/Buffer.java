@@ -1,6 +1,6 @@
 /*
  *    Buffer.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand 
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.experimentertab;
 
@@ -28,45 +28,46 @@ import moa.tasks.MainTask;
  */
 public class Buffer {
 
-    MainTask tasks[];
-    int cantTask = 0;
+	MainTask tasks[];
+	int cantTask = 0;
 
-    /**
-     * Buffer Constructor 
-     * @param tasks
-     */
-    public Buffer(MainTask tasks[]) {
-        this.tasks = tasks;
-    }
+	/**
+	 * Buffer Constructor
+	 * 
+	 * @param tasks
+	 */
+	public Buffer(MainTask tasks[]) {
+		this.tasks = tasks;
+	}
 
-    /**
-     * Returns the next task to be executed.
-     *
-     * @return the next task to be executed.
-     */
-    synchronized MainTask getTask() {
-        if (this.tasks.length != this.cantTask) {
-            return this.tasks[this.cantTask++];
-        }
-        return null;
-    }
+	/**
+	 * Returns the next task to be executed.
+	 *
+	 * @return the next task to be executed.
+	 */
+	synchronized MainTask getTask() {
+		if (this.tasks.length != this.cantTask) {
+			return this.tasks[this.cantTask++];
+		}
+		return null;
+	}
 
-    /**
-     * Returns the number of executed tasks.
-     *
-     * @return the number of executed tasks.
-     */
-    synchronized int getCantTask() {
-        return this.cantTask;
-    }
+	/**
+	 * Returns the number of executed tasks.
+	 *
+	 * @return the number of executed tasks.
+	 */
+	synchronized int getCantTask() {
+		return this.cantTask;
+	}
 
-    /**
-     * Returns the number of tasks.
-     *
-     * @return the number of tasks.
-     */
-    synchronized int getSize() {
-        return this.tasks.length;
-    }
+	/**
+	 * Returns the number of tasks.
+	 *
+	 * @return the number of tasks.
+	 */
+	synchronized int getSize() {
+		return this.tasks.length;
+	}
 
 }

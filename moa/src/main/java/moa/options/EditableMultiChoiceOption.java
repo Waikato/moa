@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.options;
 
@@ -25,7 +25,7 @@ import moa.gui.EditableMultiChoiceOptionEditComponent;
 
 /**
  * MultiChoiceOption that can have changing options.
- * 
+ *
  * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  * @version $Revision: 1 $
  */
@@ -33,70 +33,60 @@ public class EditableMultiChoiceOption extends MultiChoiceOption {
 
 	private static final long serialVersionUID = 1L;
 	private static final String NO_CHOICES = "--";
-	private static final String NO_CHOICES_DESCRIPTION = 
-			"No choices available.";
-	
+	private static final String NO_CHOICES_DESCRIPTION = "No choices available.";
+
 	/**
 	 * The corresponding UI component
 	 */
 	protected EditableMultiChoiceOptionEditComponent editComponent;
 
-	public EditableMultiChoiceOption(String name, char cliChar, 
-			String purpose, String[] optionLabels,
-			String[] optionDescriptions, int defaultOptionIndex) 
-	{
-		super(name, cliChar, purpose, optionLabels, optionDescriptions, 
-				defaultOptionIndex);
-		
+	public EditableMultiChoiceOption(String name, char cliChar, String purpose, String[] optionLabels,
+			String[] optionDescriptions, int defaultOptionIndex) {
+		super(name, cliChar, purpose, optionLabels, optionDescriptions, defaultOptionIndex);
+
 		// set initial options and refresh edit component
 		this.setOptions(optionLabels, optionDescriptions, defaultOptionIndex);
 	}
-	
+
 	/**
-	 * Register the corresponding UI component, so that it can be refreshed
-	 * when options have changed.
-	 * 
+	 * Register the corresponding UI component, so that it can be refreshed when
+	 * options have changed.
+	 *
 	 * @param editComponent
 	 */
-	public void registerEditComponent(
-			EditableMultiChoiceOptionEditComponent editComponent) 
-	{
+	public void registerEditComponent(EditableMultiChoiceOptionEditComponent editComponent) {
 		this.editComponent = editComponent;
 	}
-	
+
 	/**
-	 * Set new options for this MultiChoiceOption and refresh the edit 
-	 * component.
-	 * 
+	 * Set new options for this MultiChoiceOption and refresh the edit component.
+	 *
 	 * @param labels
 	 * @param descriptions
 	 * @param defaultIndex
 	 */
-	public void setOptions(
-			String[] labels, String[] descriptions, int defaultIndex) 
-	{
+	public void setOptions(String[] labels, String[] descriptions, int defaultIndex) {
 		if (labels.length != descriptions.length) {
-            throw new IllegalArgumentException("Labels/descriptions mismatch.");
-        }
-		
+			throw new IllegalArgumentException("Labels/descriptions mismatch.");
+		}
+
 		if (labels.length > 0) {
 			this.optionLabels = labels.clone();
 			this.optionDescriptions = descriptions.clone();
 			this.defaultOptionIndex = defaultIndex;
-		}
-		else {
+		} else {
 			// use placeholders for empty list of choices
-			this.optionLabels = new String[]{NO_CHOICES};
-			this.optionDescriptions = new String[]{NO_CHOICES_DESCRIPTION};
+			this.optionLabels = new String[] { NO_CHOICES };
+			this.optionDescriptions = new String[] { NO_CHOICES_DESCRIPTION };
 			this.defaultOptionIndex = 0;
 		}
-		
+
 		// reset to default value
-        resetToDefault();
-        
-        // refresh the edit component
-        if (this.editComponent != null) {
-        	this.editComponent.refresh();
-        }
+		resetToDefault();
+
+		// refresh the edit component
+		if (this.editComponent != null) {
+			this.editComponent.refresh();
+		}
 	}
 }

@@ -27,5 +27,4 @@ import moa.tasks.MainTaskInterface;
  */
 public interface RegressionMainTask extends MainTaskInterface {
 
-    
 }

@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.yahoo.labs.samoa.instances;
 
@@ -30,20 +30,20 @@ public class MultiLabelInstance extends InstanceImpl {
 	private static final long serialVersionUID = 1L;
 
 	public MultiLabelInstance(double d, double[] res) {
-         super(d,res);
-    }
+		super(d, res);
+	}
 
-    public MultiLabelInstance(InstanceImpl inst) {
-        super(inst);
-    }
+	public MultiLabelInstance(InstanceImpl inst) {
+		super(inst);
+	}
 
-    int L = -1;
+	int L = -1;
 
-    public void setNumLabels(int n) {
-        this.L = n;
-    }
+	public void setNumLabels(int n) {
+		this.L = n;
+	}
 
-    public int getNumLabels() {
-        return this.L;
-    }
+	public int getNumLabels() {
+		return this.L;
+	}
 }

@@ -16,7 +16,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
@@ -38,52 +38,49 @@ import moa.tasks.conceptdrift.EvaluateConceptDrift;
  */
 public class RunStreamTasks extends ConceptDriftMainTask {
 
-    @Override
-    public String getPurposeString() {
-        return "Runs several experiments modifying values of parameters.";
-    }
+	@Override
+	public String getPurposeString() {
+		return "Runs several experiments modifying values of parameters.";
+	}
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public ClassOption taskOption = new ClassOption("task", 't',
-            "Task to do.", Task.class, "EvaluatePrequential -l active.ALUncertainty -i 1000000 -d temp.txt");
+	public ClassOption taskOption = new ClassOption("task", 't', "Task to do.", Task.class,
+			"EvaluatePrequential -l active.ALUncertainty -i 1000000 -d temp.txt");
 
-    public StringOption streamParameterOption = new StringOption("streamParameter", 'p',
-            "Stream parameter to vary.", "b");
+	public StringOption streamParameterOption = new StringOption("streamParameter", 'p', "Stream parameter to vary.",
+			"b");
 
-    public FloatOption firstValueOption = new FloatOption("firstValue",
-            'f', "First value", 0.0);
+	public FloatOption firstValueOption = new FloatOption("firstValue", 'f', "First value", 0.0);
 
-    public FloatOption lastValueOption = new FloatOption("lastValue",
-            'l', "Last value", 1.0);
+	public FloatOption lastValueOption = new FloatOption("lastValue", 'l', "Last value", 1.0);
 
-    public FloatOption incrementValueOption = new FloatOption("incrementValue",
-            'i', "Increment value", 0.1);
+	public FloatOption incrementValueOption = new FloatOption("incrementValue", 'i', "Increment value", 0.1);
 
-    @Override
-    public Class<?> getTaskResultType() {
-        return this.task.getTaskResultType();
-    }
+	@Override
+	public Class<?> getTaskResultType() {
+		return this.task.getTaskResultType();
+	}
 
-    protected Task task;
+	protected Task task;
 
-    @Override
-    protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-        Object result = null;
-        Task taskBase = (Task) getPreparedClassOption(this.taskOption); 
-        //for each possible value of the parameter
-        for (int valueParameter = (int) this.firstValueOption.getValue();
-                valueParameter <= this.lastValueOption.getValue();
-                valueParameter += (int) this.incrementValueOption.getValue()) {
-            //Add parameter
-            this.task = (Task) ((MOAObject) taskBase).copy();
-            if (this.task instanceof EvaluateConceptDrift) {
-                String stream = ((EvaluateConceptDrift) this.task).streamOption.getValueAsCLIString();
-                ((EvaluateConceptDrift) this.task).streamOption.setValueViaCLIString(stream + " -" + streamParameterOption.getValue() + " " + valueParameter);
-            }
-            //Run task
-            result = this.task.doTask(monitor, repository);
-        }
-        return result;
-    }
+	@Override
+	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
+		Object result = null;
+		Task taskBase = (Task) getPreparedClassOption(this.taskOption);
+		// for each possible value of the parameter
+		for (int valueParameter = (int) this.firstValueOption.getValue(); valueParameter <= this.lastValueOption
+				.getValue(); valueParameter += (int) this.incrementValueOption.getValue()) {
+			// Add parameter
+			this.task = (Task) ((MOAObject) taskBase).copy();
+			if (this.task instanceof EvaluateConceptDrift) {
+				String stream = ((EvaluateConceptDrift) this.task).streamOption.getValueAsCLIString();
+				((EvaluateConceptDrift) this.task).streamOption
+						.setValueViaCLIString(stream + " -" + streamParameterOption.getValue() + " " + valueParameter);
+			}
+			// Run task
+			result = this.task.doTask(monitor, repository);
+		}
+		return result;
+	}
 }

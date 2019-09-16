@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.recommender.rc.data;
@@ -29,35 +29,61 @@ import moa.recommender.rc.utils.Rating;
 import moa.recommender.rc.utils.SparseVector;
 import moa.recommender.rc.utils.Updatable;
 
-
 public interface RecommenderData extends Serializable {
-    
-    public void addUser(int userID, List<Integer> ratedItems, List<Double> ratings);
-    public void removeUser(int userID);
-    public void addItem(int itemID, List<Integer> ratingUsers, List<Double> ratings);
-    public void removeItem(int itemID);
-    public void setRating(int userID, int itemID, double rating);
-    public void removeRating(int userID, int itemID);
-    public SparseVector getRatingsUser(int userID); //TODO:Iterator version for this?
-    public SparseVector getRatingsItem(int itemID); //TODO:Iterator version for this?
-    public double getRating(int userID, int itemID);
-    public int getNumItems();
-    public int getNumUsers();
-    public int getNumRatings();
-    public double getAvgRatingUser(int userID);
-    public double getAvgRatingItem(int itemID);
-    public double getMinRating();
-    public double getMaxRating();
-    public Set<Integer> getUsers();
-    public Set<Integer> getItems();
-    public double getGlobalMean();
-    public void attachUpdatable(Updatable obj);
-    public void disableUpdates(boolean disable);
-    public int countRatingsUser(int userID);
-    public int countRatingsItem(int itemID);
-    public Iterator<Rating> ratingIterator();
-    public boolean userExists(int userID);
-    public boolean itemExists(int itemID);
-    public void clear();
-    public void close();
+
+	void addUser(int userID, List<Integer> ratedItems, List<Double> ratings);
+
+	void removeUser(int userID);
+
+	void addItem(int itemID, List<Integer> ratingUsers, List<Double> ratings);
+
+	void removeItem(int itemID);
+
+	void setRating(int userID, int itemID, double rating);
+
+	void removeRating(int userID, int itemID);
+
+	SparseVector getRatingsUser(int userID); // TODO:Iterator version for this?
+
+	SparseVector getRatingsItem(int itemID); // TODO:Iterator version for this?
+
+	double getRating(int userID, int itemID);
+
+	int getNumItems();
+
+	int getNumUsers();
+
+	int getNumRatings();
+
+	double getAvgRatingUser(int userID);
+
+	double getAvgRatingItem(int itemID);
+
+	double getMinRating();
+
+	double getMaxRating();
+
+	Set<Integer> getUsers();
+
+	Set<Integer> getItems();
+
+	double getGlobalMean();
+
+	void attachUpdatable(Updatable obj);
+
+	void disableUpdates(boolean disable);
+
+	int countRatingsUser(int userID);
+
+	int countRatingsItem(int itemID);
+
+	Iterator<Rating> ratingIterator();
+
+	boolean userExists(int userID);
+
+	boolean itemExists(int itemID);
+
+	void clear();
+
+	void close();
 }

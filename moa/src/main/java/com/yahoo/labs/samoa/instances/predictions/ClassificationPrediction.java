@@ -1,16 +1,16 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * 	        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the
- * License.  
+ * License.
  */
 package com.yahoo.labs.samoa.instances.predictions;
 
@@ -21,24 +21,24 @@ import com.yahoo.labs.samoa.instances.Attribute;
 import moa.core.DoubleVector;
 
 public class ClassificationPrediction implements Prediction, Serializable {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	protected double[] prediction = new double[0];
 
 	protected Attribute classAttribute;
-	
+
 	public ClassificationPrediction() {
 	}
 
 	public ClassificationPrediction(double[] prediction) {
 		this.prediction = prediction;
 	}
-	
+
 	public void setClassAttribute(Attribute a) {
-		this.classAttribute = a;	
+		this.classAttribute = a;
 	}
-	
+
 	@Override
 	public int numOutputAttributes() {
 		return 1;
@@ -53,7 +53,7 @@ public class ClassificationPrediction implements Prediction, Serializable {
 	public double[] getVotes(int outputAttributeIndex) {
 		throw new UnsupportedOperationException("This is a single-target classification prediction.");
 	}
-	
+
 	@Override
 	public double[] getVotes() {
 		return prediction;
@@ -64,12 +64,11 @@ public class ClassificationPrediction implements Prediction, Serializable {
 		throw new UnsupportedOperationException("This is a single-target classification prediction.");
 	}
 
-	
 	@Override
 	public void setVotes(int outputAttributeIndex, double[] votes) {
 		throw new UnsupportedOperationException("This is a single-target classification prediction.");
 	}
-	
+
 	@Override
 	public void setVotes(double[] votes) {
 		this.prediction = votes;
@@ -79,19 +78,18 @@ public class ClassificationPrediction implements Prediction, Serializable {
 	public void setVote(int outputAttributeIndex, int classIndex, double vote) {
 		throw new UnsupportedOperationException("This is a single-target classification prediction.");
 	}
-	
 
 	@Override
 	public void setVote(int outputAttributeIndex, double vote) {
 		throw new UnsupportedOperationException("This is a single-target classification prediction.");
 	}
-	
+
 	@Override
 	public String toString() {
-		StringBuffer sb= new StringBuffer();
+		StringBuffer sb = new StringBuffer();
 		sb.append("Out: ");
 		int id = 0;
-		double max = Double.NEGATIVE_INFINITY; 
+		double max = Double.NEGATIVE_INFINITY;
 		for (int i = 0; i < prediction.length; i++) {
 			if (prediction[i] > max) {
 				id = i;
@@ -110,23 +108,27 @@ public class ClassificationPrediction implements Prediction, Serializable {
 		throw new UnsupportedOperationException("This is a single-target classification prediction.");
 	}
 
-    @Override
-    public int size() {
-        return 1;
-    }
-    
-    public double asDouble() {
-		throw new UnsupportedOperationException("This is a classification prediction.");
-    }
-    
-    public DoubleVector asDoubleVector() {
-    	return new DoubleVector(prediction);
-    }
+	@Override
+	public int size() {
+		return 1;
+	}
 
-    public double[] asDoubleArray() {
-    	return prediction;
-    }
-    
+	@Override
+	public double asDouble() {
+		throw new UnsupportedOperationException("This is a classification prediction.");
+	}
+
+	@Override
+	public DoubleVector asDoubleVector() {
+		return new DoubleVector(prediction);
+	}
+
+	@Override
+	public double[] asDoubleArray() {
+		return prediction;
+	}
+
+	@Override
 	public String asPredictionString() {
 		return String.valueOf(prediction.toString());
 	}

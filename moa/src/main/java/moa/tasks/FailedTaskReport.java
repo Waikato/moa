@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
@@ -26,33 +26,33 @@ import moa.AbstractMOAObject;
 import moa.core.StringUtils;
 
 /**
- * Class for reporting a failed task.
- * <code>TaskThread</code> returns this class as final result object when a task fails.
+ * Class for reporting a failed task. <code>TaskThread</code> returns this class
+ * as final result object when a task fails.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
 public class FailedTaskReport extends AbstractMOAObject {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    protected Throwable failureReason;
+	protected Throwable failureReason;
 
-    public FailedTaskReport(Throwable failureReason) {
-        this.failureReason = failureReason;
-    }
+	public FailedTaskReport(Throwable failureReason) {
+		this.failureReason = failureReason;
+	}
 
-    public Throwable getFailureReason() {
-        return this.failureReason;
-    }
+	public Throwable getFailureReason() {
+		return this.failureReason;
+	}
 
-    @Override
-    public void getDescription(StringBuilder sb, int indent) {
-        sb.append("Failure reason: ");
-        sb.append(this.failureReason.getMessage());
-        StringUtils.appendNewlineIndented(sb, indent, "*** STACK TRACE ***");
-        StringWriter stackTraceWriter = new StringWriter();
-        this.failureReason.printStackTrace(new PrintWriter(stackTraceWriter));
-        sb.append(stackTraceWriter.toString());
-    }
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {
+		sb.append("Failure reason: ");
+		sb.append(this.failureReason.getMessage());
+		StringUtils.appendNewlineIndented(sb, indent, "*** STACK TRACE ***");
+		StringWriter stackTraceWriter = new StringWriter();
+		this.failureReason.printStackTrace(new PrintWriter(stackTraceWriter));
+		sb.append(stackTraceWriter.toString());
+	}
 }

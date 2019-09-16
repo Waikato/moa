@@ -1,17 +1,17 @@
 /*
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * 	        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the
- * License.  
+ * License.
  */
 package com.yahoo.labs.samoa.instances;
 
@@ -72,39 +72,40 @@ public class InstancesHeader implements Serializable {
 	/**
 	 * Instantiates a new instances.
 	 *
-	 * @param reader the reader
-	 * @param size the size
+	 * @param reader         the reader
+	 * @param size           the size
 	 * @param classAttribute the class attribute
 	 */
 	public InstancesHeader(Reader reader, int size, int classAttribute) {
 		arff = new ArffLoader(reader, String.valueOf(classAttribute));
 		this.instanceInformation = arff.instanceInformation;
-		this.instances = new ArrayList<Instance>();
+		this.instances = new ArrayList<>();
 	}
 
 	/**
 	 * Instantiates a new intances header.
-	 * 
-	 * @param reader 
-	 * @param outputDefinition defines the output attributes (others are treated as inputs)
+	 *
+	 * @param reader
+	 * @param outputDefinition defines the output attributes (others are treated as
+	 *                         inputs)
 	 */
 	public InstancesHeader(Reader reader, String outputDefinition) {
 		this.arff = new ArffLoader(reader, outputDefinition);
 		this.instanceInformation = arff.instanceInformation;
-		this.instances = new ArrayList<Instance>();
+		this.instances = new ArrayList<>();
 	}
 
 	/**
 	 * Instantiates a new intances header.
-	 * 
+	 *
 	 * @param reader
 	 * @param outputDefinition defines the output attributes
-	 * @param inputDefinition defines the input attributes
+	 * @param inputDefinition  defines the input attributes
 	 */
 	public InstancesHeader(Reader reader, String outputDefinition, String inputDefinition) {
 		this.arff = new ArffLoader(reader, outputDefinition, inputDefinition);
 		this.instanceInformation = arff.instanceInformation;
-		this.instances = new ArrayList<Instance>();
+		this.instances = new ArrayList<>();
 	}
 
 	/**
@@ -113,16 +114,16 @@ public class InstancesHeader implements Serializable {
 	 * @param reader the reader
 	 * @param range
 	 */
-	//    public Instances(Reader reader, Range range) {
-	//        this.arff = new MultiTargetArffLoader(reader, range);
-	//        this.instanceInformation = arff.getStructure();
-	//        this.instances = new ArrayList<Instance>();
-	//    }
+	// public Instances(Reader reader, Range range) {
+	// this.arff = new MultiTargetArffLoader(reader, range);
+	// this.instanceInformation = arff.getStructure();
+	// this.instances = new ArrayList<Instance>();
+	// }
 
 	/**
 	 * Instantiates a new instances.
 	 *
-	 * @param chunk the chunk
+	 * @param chunk    the chunk
 	 * @param capacity the capacity
 	 */
 	public InstancesHeader(InstancesHeader chunk, int capacity) {
@@ -130,14 +131,14 @@ public class InstancesHeader implements Serializable {
 		if (capacity < 0) {
 			capacity = 0;
 		}
-		this.instances = new ArrayList<Instance>(capacity);
+		this.instances = new ArrayList<>(capacity);
 	}
 
 	/**
 	 * Instantiates a new instances.
 	 *
-	 * @param st the st
-	 * @param v the v
+	 * @param st       the st
+	 * @param v        the v
 	 * @param capacity the capacity
 	 */
 	public InstancesHeader(String st, List<Attribute> v, int capacity) {
@@ -147,8 +148,8 @@ public class InstancesHeader implements Serializable {
 	/**
 	 * Instantiates a new instances.
 	 *
-	 * @param chunk the chunk
-	 * @param first the first instance
+	 * @param chunk  the chunk
+	 * @param first  the first instance
 	 * @param toCopy the j
 	 */
 	public InstancesHeader(InstancesHeader chunk, int first, int toCopy) {
@@ -156,8 +157,7 @@ public class InstancesHeader implements Serializable {
 		this(chunk, toCopy);
 
 		if ((first < 0) || ((first + toCopy) > chunk.numInstances())) {
-			throw new IllegalArgumentException("Parameters first and/or toCopy out "
-					+ "of range");
+			throw new IllegalArgumentException("Parameters first and/or toCopy out " + "of range");
 		}
 		chunk.copyInstances(first, this, toCopy);
 	}
@@ -165,18 +165,18 @@ public class InstancesHeader implements Serializable {
 	/**
 	 * Instantiates a new instances.
 	 *
-	 * @param st the st
+	 * @param st       the st
 	 * @param capacity the capacity
 	 */
 	public InstancesHeader(StringReader st, int capacity) {
-		this.instances = new ArrayList<Instance>(capacity);
+		this.instances = new ArrayList<>(capacity);
 	}
 
 	public InstancesHeader getEmptyHeader() {
 		return new InstancesHeader(this, 0);
 	}
-	
-	//Information Instances
+
+	// Information Instances
 	/**
 	 * Sets the relation name.
 	 *
@@ -205,7 +205,8 @@ public class InstancesHeader implements Serializable {
 	}
 
 	/**
-	 * Sets the class index. Also sets all other attributes as input attributes for backward compatibility.
+	 * Sets the class index. Also sets all other attributes as input attributes for
+	 * backward compatibility.
 	 *
 	 * @param classIndex the new class index
 	 */
@@ -221,7 +222,7 @@ public class InstancesHeader implements Serializable {
 	public void setInputIndexes(List<Integer> inputIndexes) {
 		this.instanceInformation.setInputIndexes(inputIndexes);
 	}
-	
+
 	public int getInputInstanceIndex(int index) {
 		return this.instanceInformation.inputAttributeIndex(index);
 	}
@@ -230,8 +231,7 @@ public class InstancesHeader implements Serializable {
 		return this.instanceInformation.outputAttributeIndex(index);
 	}
 
-	
-	/** 
+	/**
 	 * Sets all non-output attributes as input attributes.
 	 */
 	public void setInputIndexes() {
@@ -288,15 +288,15 @@ public class InstancesHeader implements Serializable {
 	 * Insert attribute at.
 	 *
 	 * @param attribute the attribute
-	 * @param i the i
+	 * @param i         the i
 	 */
 	public void insertAttributeAt(Attribute attribute, int i) {
-		if (this.instanceInformation==null)
-			this.instanceInformation= new InstanceInformation();
+		if (this.instanceInformation == null)
+			this.instanceInformation = new InstanceInformation();
 		this.instanceInformation.insertAttributeAt(attribute, i);
 	}
 
-	//List of Instances
+	// List of Instances
 	/**
 	 * Instance.
 	 *
@@ -355,8 +355,7 @@ public class InstancesHeader implements Serializable {
 				for (int j = index; j < numInstances(); j++) {
 					Instance instance2 = instance(j);
 					if ((instance1.classValue() == instance2.classValue())
-							|| (instance1.classIsMissing()
-									&& instance2.classIsMissing())) {
+							|| (instance1.classIsMissing() && instance2.classIsMissing())) {
 						swap(index, j);
 						index++;
 					}
@@ -368,7 +367,7 @@ public class InstancesHeader implements Serializable {
 	}
 
 	protected void stratStep(int numFolds) {
-		ArrayList<Instance> newVec = new ArrayList<Instance>(this.instances.size());
+		ArrayList<Instance> newVec = new ArrayList<>(this.instances.size());
 		int start = 0, j;
 
 		// create stratified batch
@@ -388,8 +387,8 @@ public class InstancesHeader implements Serializable {
 	 *
 	 * @param numFolds the num folds
 	 * @param numFold
-	 * @param n the n
-	 * @param random the random
+	 * @param n        the n
+	 * @param random   the random
 	 * @return the instances
 	 */
 	public InstancesHeader trainCV(int numFolds, int numFold, Random random) {
@@ -412,8 +411,7 @@ public class InstancesHeader implements Serializable {
 		train = new InstancesHeader(this, numInstances() - numInstForFold);
 		first = numFold * (numInstances() / numFolds) + offset;
 		copyInstances(0, train, first);
-		copyInstances(first + numInstForFold, train,
-				numInstances() - first - numInstForFold);
+		copyInstances(first + numInstForFold, train, numInstances() - first - numInstForFold);
 		return train;
 	}
 
@@ -427,7 +425,7 @@ public class InstancesHeader implements Serializable {
 	 * Test cv.
 	 *
 	 * @param numFolds the num folds
-	 * @param numFold the num fold
+	 * @param numFold  the num fold
 	 * @return the instances
 	 */
 	public InstancesHeader testCV(int numFolds, int numFold) {
@@ -448,9 +446,10 @@ public class InstancesHeader implements Serializable {
 		return test;
 	}
 
-	/*  public Instances dataset() {
-     throw new UnsupportedOperationException("Not yet implemented");
-     }*/
+	/*
+	 * public Instances dataset() { throw new
+	 * UnsupportedOperationException("Not yet implemented"); }
+	 */
 	/**
 	 * Mean or mode.
 	 *
@@ -458,7 +457,7 @@ public class InstancesHeader implements Serializable {
 	 * @return the double
 	 */
 	public double meanOrMode(int j) {
-		throw new UnsupportedOperationException("Not yet implemented"); //CobWeb
+		throw new UnsupportedOperationException("Not yet implemented"); // CobWeb
 	}
 
 	/**
@@ -469,7 +468,7 @@ public class InstancesHeader implements Serializable {
 	 */
 	public boolean readInstance(Reader fileReader) {
 
-		//ArffReader arff = new ArffReader(reader, this, m_Lines, 1);
+		// ArffReader arff = new ArffReader(reader, this, m_Lines, 1);
 		Instance inst = arff.readInstance();
 		if (inst != null) {
 			inst.setDataset(this);
@@ -484,7 +483,7 @@ public class InstancesHeader implements Serializable {
 	 * Delete.
 	 */
 	public void delete() {
-		this.instances = new ArrayList<Instance>();
+		this.instances = new ArrayList<>();
 	}
 
 	/**
@@ -494,7 +493,6 @@ public class InstancesHeader implements Serializable {
 		this.instances.remove(index);
 	}
 
-	
 	public void setInstances(List<Instance> instances) {
 		this.instances = instances;
 	}
@@ -542,21 +540,20 @@ public class InstancesHeader implements Serializable {
 		return this.instance(k);
 	}
 
-	//	public void setRangeOutputIndices(Range range) {
-	//		this.instanceInformation.setRangeOutputIndices(range);
-	//		
-	//	}
+	// public void setRangeOutputIndices(Range range) {
+	// this.instanceInformation.setRangeOutputIndices(range);
+	//
+	// }
 
 	public void setAttributes(List<Attribute> v) {
-		if(this.instanceInformation==null)
-			this.instanceInformation= new InstanceInformation();
+		if (this.instanceInformation == null)
+			this.instanceInformation = new InstanceInformation();
 		this.instanceInformation.setAttributes(v);
 	}
 
 	/**
-	 * Returns the dataset as a string in ARFF format. Strings
-	 * are quoted if they contain whitespace characters, or if they
-	 * are a question mark.
+	 * Returns the dataset as a string in ARFF format. Strings are quoted if they
+	 * contain whitespace characters, or if they are a question mark.
 	 *
 	 * @return the dataset in ARFF format as a string
 	 */
@@ -564,8 +561,8 @@ public class InstancesHeader implements Serializable {
 
 		StringBuffer text = new StringBuffer();
 
-		text.append(ARFF_RELATION).append(" ").
-		append(Utils.quote( this.instanceInformation.getRelationName())).append("\n\n");
+		text.append(ARFF_RELATION).append(" ").append(Utils.quote(this.instanceInformation.getRelationName()))
+				.append("\n\n");
 		for (int i = 0; i < numAttributes(); i++) {
 			text.append(attribute(i).toString()).append("\n");
 		}
@@ -576,9 +573,8 @@ public class InstancesHeader implements Serializable {
 	}
 
 	/**
-	 * Returns the instances in the dataset as a string in ARFF format. Strings
-	 * are quoted if they contain whitespace characters, or if they
-	 * are a question mark.
+	 * Returns the instances in the dataset as a string in ARFF format. Strings are
+	 * quoted if they contain whitespace characters, or if they are a question mark.
 	 *
 	 * @return the dataset in ARFF format as a string
 	 */
@@ -627,32 +623,28 @@ public class InstancesHeader implements Serializable {
 		if ((context == null) || (classLabelIndex >= context.numClasses())) {
 			return "<class " + (classLabelIndex + 1) + ">";
 		}
-		return "<class " + (classLabelIndex + 1) + ":"
-		+ context.classAttribute().value(classLabelIndex) + ">";
+		return "<class " + (classLabelIndex + 1) + ":" + context.classAttribute().value(classLabelIndex) + ">";
 	}
 
 	public static String getAttributeNameString(InstancesHeader context, int attIndex) {
 		if ((context == null) || (attIndex >= context.numAttributes())) {
 			return "[att " + (attIndex + 1) + "]";
 		}
-		return "[att " + (attIndex + 1) + ":"
-		+ context.attribute(attIndex).name() + "]";
+		return "[att " + (attIndex + 1) + ":" + context.attribute(attIndex).name() + "]";
 	}
 
 	public static String getInputAttributeNameString(InstancesHeader context, int attIndex) {
 		if ((context == null) || (attIndex >= context.numInputAttributes())) {
 			return "[att " + (attIndex + 1) + "]";
 		}
-		return "[att " + (attIndex + 1) + ":"
-		+ context.inputAttribute(attIndex).name() + "]";
+		return "[att " + (attIndex + 1) + ":" + context.inputAttribute(attIndex).name() + "]";
 	}
 
 	public static String getNominalValueString(InstancesHeader context, int attIndex, int valIndex) {
 		if (context != null) {
 			if ((attIndex < context.numInputAttributes())
 					&& (valIndex < context.inputAttribute(attIndex).numValues())) {
-				return "{val " + (valIndex + 1) + ":"
-						+ context.inputAttribute(attIndex).value(valIndex) + "}";
+				return "{val " + (valIndex + 1) + ":" + context.inputAttribute(attIndex).value(valIndex) + "}";
 			}
 		}
 		return "{val " + (valIndex + 1) + "}";
@@ -660,8 +652,7 @@ public class InstancesHeader implements Serializable {
 
 	public static String getNumericValueString(InstancesHeader context, int attIndex, double value) {
 		if (context != null) {
-			int instAttIndex = attIndex < context.classIndex() ? attIndex
-					: attIndex + 1;
+			int instAttIndex = attIndex < context.classIndex() ? attIndex : attIndex + 1;
 			if (instAttIndex < context.numAttributes()) {
 				if (context.attribute(instAttIndex).isDate()) {
 					return context.attribute(instAttIndex).formatDate(value);
@@ -670,6 +661,5 @@ public class InstancesHeader implements Serializable {
 		}
 		return Double.toString(value);
 	}
-
 
 }

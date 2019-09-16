@@ -29,7 +29,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
-        <Component class="moa.gui.clustertab.ClusteringSetupTab" name="clusteringSetupTab">
+        <Component class=gui.clustertab.ClusteringSetupTab" name="clusteringSetupTab">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Setup">
@@ -38,7 +38,7 @@
             </Constraint>
           </Constraints>
         </Component>
-        <Component class="moa.gui.clustertab.ClusteringVisualTab" name="clusteringVisualTab">
+        <Component class=gui.clustertab.ClusteringVisualTab" name="clusteringVisualTab">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Visualization">

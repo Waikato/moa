@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
@@ -33,54 +33,51 @@ public abstract class AbstractTask extends AbstractOptionHandler implements Task
 	private static final long serialVersionUID = 1L;
 
 	/**
-     * Gets the name of this task.
-     *
-     * @return the name of this task
-     */
-    public String getTaskName() {
-        return this.getClass().getSimpleName();
-    }
+	 * Gets the name of this task.
+	 *
+	 * @return the name of this task
+	 */
+	public String getTaskName() {
+		return this.getClass().getSimpleName();
+	}
 
-    @Override
-    public Object doTask() {
-        return doTask(new NullMonitor(), null);
-    }
+	@Override
+	public Object doTask() {
+		return doTask(new NullMonitor(), null);
+	}
 
-    @Override
-    public Object doTask(TaskMonitor monitor, ObjectRepository repository) {
-        monitor.setCurrentActivity("Preparing options to " + getTaskName()
-                + "...", -1.0);
-        prepareClassOptions(monitor, repository);
-        if (monitor.taskShouldAbort()) {
-            return null;
-        }
-        monitor.setCurrentActivity("Doing task " + getTaskName() + "...", -1.0);
-        Object result = doTaskImpl(monitor, repository);
-        monitor.setCurrentActivity("Task " + getTaskName() + " complete.", 1.0);
-        //this.classOptionNamesToPreparedObjects = null; // clean up refs
-        return result;
-    }
+	@Override
+	public Object doTask(TaskMonitor monitor, ObjectRepository repository) {
+		monitor.setCurrentActivity("Preparing options to " + getTaskName() + "...", -1.0);
+		prepareClassOptions(monitor, repository);
+		if (monitor.taskShouldAbort()) {
+			return null;
+		}
+		monitor.setCurrentActivity("Doing task " + getTaskName() + "...", -1.0);
+		Object result = doTaskImpl(monitor, repository);
+		monitor.setCurrentActivity("Task " + getTaskName() + " complete.", 1.0);
+		// this.classOptionNamesToPreparedObjects = null; // clean up refs
+		return result;
+	}
 
-    /**
-     * This method performs this task.
-     * <code>AbstractTask</code> implements <code>doTask</code> so all
-     * its extensions only need to implement <code>doTaskImpl</code>.
-     *
-     * @param monitor the TaskMonitor to use
-     * @param repository  the ObjectRepository to use
-     * @return an object with the result of this task
-     */
-    protected abstract Object doTaskImpl(TaskMonitor monitor,
-            ObjectRepository repository);
+	/**
+	 * This method performs this task. <code>AbstractTask</code> implements
+	 * <code>doTask</code> so all its extensions only need to implement
+	 * <code>doTaskImpl</code>.
+	 *
+	 * @param monitor    the TaskMonitor to use
+	 * @param repository the ObjectRepository to use
+	 * @return an object with the result of this task
+	 */
+	protected abstract Object doTaskImpl(TaskMonitor monitor, ObjectRepository repository);
 
-    @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
-        // tasks prepare themselves upon running
-    }
+	@Override
+	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
+		// tasks prepare themselves upon running
+	}
 
-    @Override
-    public void getDescription(StringBuilder sb, int indent) {
-        // TODO Auto-generated method stub
-    }
+	@Override
+	public void getDescription(StringBuilder sb, int indent) {
+		// TODO Auto-generated method stub
+	}
 }

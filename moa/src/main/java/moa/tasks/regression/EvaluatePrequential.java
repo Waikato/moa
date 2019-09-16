@@ -16,7 +16,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks.regression;
 
@@ -25,34 +25,33 @@ import java.io.PrintStream;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.predictions.Prediction;
 
-import moa.evaluation.LearningPerformanceEvaluator;
-import moa.learners.Regressor;
+import moa.evaluation.evaluators.LearningPerformanceEvaluator;
+import moa.learners.predictors.Regressor;
 import moa.options.ClassOption;
 import moa.tasks.AbstractEvaluatePrequential;
 
 /**
- * Task for evaluating a classifier on a stream by testing then training with each example in sequence.
+ * Task for evaluating a classifier on a stream by testing then training with
+ * each example in sequence.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
 public class EvaluatePrequential extends AbstractEvaluatePrequential<Regressor> implements RegressionMainTask {
-	
-    private static final long serialVersionUID = 1L;
-	
-    public EvaluatePrequential() {
-    	this.learnerOption = new ClassOption("learner", 'l', "Regressor to evaluate.", Regressor.class, "moa.classifiers.trees.FIMTDD");
-    	this.evaluatorOption = new ClassOption("evaluator", 'e',
-				"Regression performance evaluation method.",
-				LearningPerformanceEvaluator.class,
-				"WindowRegressionPerformanceEvaluator");
+
+	private static final long serialVersionUID = 1L;
+
+	public EvaluatePrequential() {
+		this.learnerOption = new ClassOption("learner", 'l', "Regressor to evaluate.", Regressor.class, "trees.FIMTDD");
+		this.evaluatorOption = new ClassOption("evaluator", 'e', "Regression performance evaluation method.",
+				LearningPerformanceEvaluator.class, "WindowRegressionPerformanceEvaluator");
 	}
 
 	@Override
-    public String getPurposeString() {
-        return "Evaluates a regressor on a stream by testing then training with each example in sequence.";
-    }
+	public String getPurposeString() {
+		return "Evaluates a regressor on a stream by testing then training with each example in sequence.";
+	}
 
 	@Override
 	public void printPrediction(PrintStream print, Instance inst, Prediction prediction) {

@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
@@ -31,30 +31,28 @@ import moa.options.ClassOptionWithListenerOption;
  * EditComponent for the {@link ClassOptionWithListenerOption}. When its state
  * is changed, the changes are directly applied to the corresponding Option so
  * that potential listeners can be notified and updates can be processed.
- * 
+ *
  * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  * @version $Revision: 1 $
  */
 public class ClassOptionWithListenerOptionEditComponent extends ClassOptionEditComponent {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	public ClassOptionWithListenerOptionEditComponent(Option opt) {
 		super(opt);
-		
+
 		this.addChangeListener(new ChangeListener() {
-			
+
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				if (!ClassOptionWithListenerOptionEditComponent.this.textField
-						.getText().isEmpty()) 
-				{
+				if (!ClassOptionWithListenerOptionEditComponent.this.textField.getText().isEmpty()) {
 					// apply state to set the selected value in the ClassOption
 					// so that it can be picked up by dependent options
 					ClassOptionWithListenerOptionEditComponent.this.applyState();
 				}
 			}
-			
+
 		});
 	}
 

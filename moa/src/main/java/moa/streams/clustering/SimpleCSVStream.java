@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.clustering;
 
@@ -51,14 +51,11 @@ public class SimpleCSVStream extends ClusteringStream {
 
 	String defaultfile = "/Users/kokomo40/Dropbox/BT Kim/Datasets/KDDCUP99/KDDCup99.arff";
 
-	public FileOption csvFileOption = new FileOption("csvFile", 'f',
-			"CSV file to load.", defaultfile, "csv", false);
+	public FileOption csvFileOption = new FileOption("csvFile", 'f', "CSV file to load.", defaultfile, "csv", false);
 
-	public StringOption splitCharOption = new StringOption("splitChar", 's',
-			"Input CSV split character", ",");
+	public StringOption splitCharOption = new StringOption("splitChar", 's', "Input CSV split character", ",");
 
-	public FlagOption classIndexOption = new FlagOption("classIndex", 'c',
-			"Last attribute is class index.");
+	public FlagOption classIndexOption = new FlagOption("classIndex", 'c', "Last attribute is class index.");
 
 	protected InstancesHeader dataset;
 
@@ -77,9 +74,9 @@ public class SimpleCSVStream extends ClusteringStream {
 	protected InputStreamProgressMonitor fileProgressMonitor;
 
 	/**
-	 * Creates a simple ClusteringStream for csv files. Adds if necessary a
-	 * class attribute with an identical default value.
-	 * 
+	 * Creates a simple ClusteringStream for csv files. Adds if necessary a class
+	 * attribute with an identical default value.
+	 *
 	 */
 	public SimpleCSVStream() {
 		this.numAttsOption = null;
@@ -95,7 +92,7 @@ public class SimpleCSVStream extends ClusteringStream {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.options.AbstractOptionHandler#getPurposeString()
 	 */
 	@Override
@@ -105,20 +102,19 @@ public class SimpleCSVStream extends ClusteringStream {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
-	 * moa.options.AbstractOptionHandler#prepareForUseImpl(moa.tasks.TaskMonitor
-	 * , moa.core.ObjectRepository)
+	 * moa.options.AbstractOptionHandler#prepareForUseImpl(moa.tasks.TaskMonitor ,
+	 * moa.core.ObjectRepository)
 	 */
 	@Override
-	public void prepareForUseImpl(TaskMonitor monitor,
-			ObjectRepository repository) {
+	public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 		restart();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.streams.InstanceStream#getHeader()
 	 */
 	@Override
@@ -128,7 +124,7 @@ public class SimpleCSVStream extends ClusteringStream {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.streams.InstanceStream#estimatedRemainingInstances()
 	 */
 	@Override
@@ -142,7 +138,7 @@ public class SimpleCSVStream extends ClusteringStream {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.streams.InstanceStream#hasMoreInstances()
 	 */
 	@Override
@@ -152,7 +148,7 @@ public class SimpleCSVStream extends ClusteringStream {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.streams.InstanceStream#nextInstance()
 	 */
 	@Override
@@ -169,12 +165,10 @@ public class SimpleCSVStream extends ClusteringStream {
 					break;
 				}
 				line = line.trim();
-			} while (line.isEmpty() || line.charAt(0) == '%'
-					|| line.charAt(0) == '@');
+			} while (line.isEmpty() || line.charAt(0) == '%' || line.charAt(0) == '@');
 
 			if (line != null) {
-				StringTokenizer token = new StringTokenizer(line,
-						splitCharOption.getValue());
+				StringTokenizer token = new StringTokenizer(line, splitCharOption.getValue());
 
 				double[] value = new double[this.numAttributes];
 				int i;
@@ -182,8 +176,7 @@ public class SimpleCSVStream extends ClusteringStream {
 					value[i] = Double.valueOf(token.nextToken());
 				}
 				if (i < this.numTokens || token.hasMoreTokens()) {
-					throw new RuntimeException(
-							"Next Instance has an wrong cardinality!");
+					throw new RuntimeException("Next Instance has an wrong cardinality!");
 				}
 				this.lastInstanceRead = new InstanceExample(new DenseInstance(1, value));
 				this.lastInstanceRead.getData().setDataset(this.dataset);
@@ -200,7 +193,7 @@ public class SimpleCSVStream extends ClusteringStream {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.streams.InstanceStream#isRestartable()
 	 */
 	@Override
@@ -210,7 +203,7 @@ public class SimpleCSVStream extends ClusteringStream {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.streams.InstanceStream#restart()
 	 */
 	@Override
@@ -219,12 +212,9 @@ public class SimpleCSVStream extends ClusteringStream {
 			if (fileReader != null) {
 				fileReader.close();
 			}
-			InputStream fileStream = new FileInputStream(
-					this.csvFileOption.getFile());
-			this.fileProgressMonitor = new InputStreamProgressMonitor(
-					fileStream);
-			this.fileReader = new BufferedReader(new InputStreamReader(
-					fileProgressMonitor));
+			InputStream fileStream = new FileInputStream(this.csvFileOption.getFile());
+			this.fileProgressMonitor = new InputStreamProgressMonitor(fileStream);
+			this.fileReader = new BufferedReader(new InputStreamReader(fileProgressMonitor));
 
 			String line;
 			do {
@@ -233,29 +223,23 @@ public class SimpleCSVStream extends ClusteringStream {
 					break;
 				}
 				line = line.trim();
-			} while (line.isEmpty() || line.charAt(0) == '%'
-					|| line.charAt(0) == '@');
+			} while (line.isEmpty() || line.charAt(0) == '%' || line.charAt(0) == '@');
 
 			if (line != null) {
-				StringTokenizer token = new StringTokenizer(line,
-						splitCharOption.getValue());
+				StringTokenizer token = new StringTokenizer(line, splitCharOption.getValue());
 				this.numTokens = token.countTokens();
-				this.numAttributes = this.numTokens
-						- (classIndexOption.isSet() ? 1 : 0) + 1;
+				this.numAttributes = this.numTokens - (classIndexOption.isSet() ? 1 : 0) + 1;
 
-				ArrayList<Attribute> attributes = new ArrayList<Attribute>(
-						this.numAttributes);
+				ArrayList<Attribute> attributes = new ArrayList<>(this.numAttributes);
 				for (int i = 1; i < this.numAttributes; i++) {
 					attributes.add(new Attribute("Dim " + i));
 				}
-				ArrayList<String> classLabels = new ArrayList<String>();
+				ArrayList<String> classLabels = new ArrayList<>();
 				classLabels.add("0");
-		        attributes.add(new Attribute("class", classLabels));
-				this.dataset = new InstancesHeader(csvFileOption.getFile().getName(),
-						attributes, 0);
+				attributes.add(new Attribute("class", classLabels));
+				this.dataset = new InstancesHeader(csvFileOption.getFile().getName(), attributes, 0);
 				this.dataset.setClassIndex(this.numAttributes - 1);
-				numAttsOption = new IntOption("numAtts", 'a', "",
-						this.numAttributes);
+				numAttsOption = new IntOption("numAtts", 'a', "", this.numAttributes);
 
 				double[] value = new double[this.numAttributes];
 				for (int i = 0; i < this.numTokens && token.hasMoreTokens(); i++) {
@@ -277,7 +261,7 @@ public class SimpleCSVStream extends ClusteringStream {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see moa.MOAObject#getDescription(java.lang.StringBuilder, int)
 	 */
 	@Override

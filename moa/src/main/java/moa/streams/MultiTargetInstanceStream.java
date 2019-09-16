@@ -15,17 +15,16 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams;
 
 /**
- * Interface representing a data stream of instances. 
+ * Interface representing a data stream of instances.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $ 
+ * @version $Revision: 7 $
  */
-public interface MultiTargetInstanceStream extends InstanceStream{
-
+public interface MultiTargetInstanceStream extends InstanceStream {
 
 }

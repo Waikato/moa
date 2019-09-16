@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.github.javacliparser.gui;
 
@@ -43,112 +43,111 @@ import moa.options.ClassOption;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class ClassOptionEditComponent extends JPanel implements
-        OptionEditComponent {
+public class ClassOptionEditComponent extends JPanel implements OptionEditComponent {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    protected ClassOption editedOption;
+	protected ClassOption editedOption;
 
-    protected JTextField textField = new JTextField();
+	protected JTextField textField = new JTextField();
 
-    protected JButton editButton = new JButton("Edit");
+	protected JButton editButton = new JButton("Edit");
 
-    /**
-     * Flag that says the text field is in the middle of an update operation.
-     * This is to prevent two change notifications from going out when the
-     * update is implemented as a remove followed by an insert.
-     */
-    protected boolean midUpdate = false;
+	/**
+	 * Flag that says the text field is in the middle of an update operation. This
+	 * is to prevent two change notifications from going out when the update is
+	 * implemented as a remove followed by an insert.
+	 */
+	protected boolean midUpdate = false;
 
-    /** listeners that listen to changes to the chosen option. */
-    protected HashSet<ChangeListener> changeListeners = new HashSet<ChangeListener>();
+	/** listeners that listen to changes to the chosen option. */
+	protected HashSet<ChangeListener> changeListeners = new HashSet<>();
 
-    public ClassOptionEditComponent(Option opt) {
-        ClassOption option = (ClassOption) opt;
-        this.editedOption = option;
-        this.textField.setEditable(false);
-        this.textField.getDocument().addDocumentListener(new DocumentListener() {
+	public ClassOptionEditComponent(Option opt) {
+		ClassOption option = (ClassOption) opt;
+		this.editedOption = option;
+		this.textField.setEditable(false);
+		this.textField.getDocument().addDocumentListener(new DocumentListener() {
 
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                if (!midUpdate)
-                    notifyChangeListeners();
-            }
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				if (!midUpdate)
+					notifyChangeListeners();
+			}
 
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                notifyChangeListeners();
-            }
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				notifyChangeListeners();
+			}
 
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                notifyChangeListeners();
-            }
-        });
-        setLayout(new BorderLayout());
-        add(this.textField, BorderLayout.CENTER);
-        add(this.editButton, BorderLayout.EAST);
-        this.editButton.addActionListener(new ActionListener() {
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				notifyChangeListeners();
+			}
+		});
+		setLayout(new BorderLayout());
+		add(this.textField, BorderLayout.CENTER);
+		add(this.editButton, BorderLayout.EAST);
+		this.editButton.addActionListener(new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                editObject();
-            }
-        });
-        setEditState(this.editedOption.getValueAsCLIString());
-    }
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				editObject();
+			}
+		});
+		setEditState(this.editedOption.getValueAsCLIString());
+	}
 
-    @Override
-    public void applyState() {
-        this.editedOption.setValueViaCLIString(this.textField.getText());
-    }
+	@Override
+	public void applyState() {
+		this.editedOption.setValueViaCLIString(this.textField.getText());
+	}
 
-    @Override
-    public Option getEditedOption() {
-        return this.editedOption;
-    }
+	@Override
+	public Option getEditedOption() {
+		return this.editedOption;
+	}
 
-    @Override
-    public void setEditState(String cliString) {
-        if (cliString.length() > 0) midUpdate = true;
-        this.textField.setText(cliString);
-        midUpdate = false;
-    }
+	@Override
+	public void setEditState(String cliString) {
+		if (cliString.length() > 0)
+			midUpdate = true;
+		this.textField.setText(cliString);
+		midUpdate = false;
+	}
 
-    public void editObject() {
-        setEditState(ClassOptionSelectionPanel.showSelectClassDialog(this,
-                "Editing option: " + this.editedOption.getName(),
-                this.editedOption.getRequiredType(), this.textField.getText(),
-                this.editedOption.getNullString()));
-    }
+	public void editObject() {
+		setEditState(ClassOptionSelectionPanel.showSelectClassDialog(this,
+				"Editing option: " + this.editedOption.getName(), this.editedOption.getRequiredType(),
+				this.textField.getText(), this.editedOption.getNullString()));
+	}
 
-    /**
-     * Adds the listener to the internal set of listeners. Gets notified when
-     * the option string changes.
-     *
-     * @param l the listener to add
-     */
-    public void addChangeListener(ChangeListener l) {
-        changeListeners.add(l);
-    }
+	/**
+	 * Adds the listener to the internal set of listeners. Gets notified when the
+	 * option string changes.
+	 *
+	 * @param l the listener to add
+	 */
+	public void addChangeListener(ChangeListener l) {
+		changeListeners.add(l);
+	}
 
-    /**
-     * Removes the listener from the internal set of listeners.
-     *
-     * @param l the listener to remove
-     */
-    public void removeChangeListener(ChangeListener l) {
-        changeListeners.remove(l);
-    }
+	/**
+	 * Removes the listener from the internal set of listeners.
+	 *
+	 * @param l the listener to remove
+	 */
+	public void removeChangeListener(ChangeListener l) {
+		changeListeners.remove(l);
+	}
 
-    /**
-     * Notifies all registered change listeners that the options have changed.
-     */
-    protected void notifyChangeListeners() {
-        ChangeEvent e = new ChangeEvent(this);
-        for (ChangeListener l : changeListeners) {
-            l.stateChanged(e);
-        }
-    }
+	/**
+	 * Notifies all registered change listeners that the options have changed.
+	 */
+	protected void notifyChangeListeners() {
+		ChangeEvent e = new ChangeEvent(this);
+		for (ChangeListener l : changeListeners) {
+			l.stateChanged(e);
+		}
+	}
 }

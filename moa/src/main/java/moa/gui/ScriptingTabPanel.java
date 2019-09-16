@@ -34,61 +34,62 @@ import com.github.fracpete.jshell.JShellPanel;
  */
 public class ScriptingTabPanel extends AbstractTabPanel {
 
-    /** the panel to use. */
-    protected JShellPanel m_PanelJShell;
+	/** the panel to use. */
+	protected JShellPanel m_PanelJShell;
 
-    /**
-     * Initializes the tab.
-     */
-    public ScriptingTabPanel() {
-        super();
-        setLayout(new BorderLayout());
+	/**
+	 * Initializes the tab.
+	 */
+	public ScriptingTabPanel() {
+		super();
+		setLayout(new BorderLayout());
 
-        m_PanelJShell = new JShellPanel();
-        String sizeOfAg = locateSizeOfAg();
-        if (sizeOfAg != null)
-            m_PanelJShell.setRemoteRuntimeFlags(Arrays.asList("-javaagent:" + sizeOfAg));
-        add(m_PanelJShell, BorderLayout.CENTER);
-    }
+		m_PanelJShell = new JShellPanel();
+		String sizeOfAg = locateSizeOfAg();
+		if (sizeOfAg != null)
+			m_PanelJShell.setRemoteRuntimeFlags(Arrays.asList("-javaagent:" + sizeOfAg));
+		add(m_PanelJShell, BorderLayout.CENTER);
+	}
 
-    /**
-     * Locates the sizeofag jar in the classpath.
-     *
-     * @return the jar, null if not found
-     */
-    protected String locateSizeOfAg() {
-        String      result;
-        String[]      cp;
+	/**
+	 * Locates the sizeofag jar in the classpath.
+	 *
+	 * @return the jar, null if not found
+	 */
+	protected String locateSizeOfAg() {
+		String result;
+		String[] cp;
 
-        result = null;
-        cp     = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
-        for (String part: cp) {
-            if (part.toLowerCase().contains("sizeofag")) {
-                result = part;
-                break;
-            }
-        }
+		result = null;
+		cp = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
+		for (String part : cp) {
+			if (part.toLowerCase().contains("sizeofag")) {
+				result = part;
+				break;
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Returns the string to display as title of the tab.
-     *
-     * @return the string to display as title of the tab
-     */
-    @Override
-    public String getTabTitle() {
-        return "Scripting";
-    }
+	/**
+	 * Returns the string to display as title of the tab.
+	 *
+	 * @return the string to display as title of the tab
+	 */
+	@Override
+	public String getTabTitle() {
+		return "Scripting";
+	}
 
-    /**
-     * Returns a short description (can be used as tool tip) of the tab, or contributor, etc.
-     *
-     * @return a short description of this tab panel.
-     */
-    @Override
-    public String getDescription() {
-        return "Offers scripting via jshell (Java 9+)";
-    }
+	/**
+	 * Returns a short description (can be used as tool tip) of the tab, or
+	 * contributor, etc.
+	 *
+	 * @return a short description of this tab panel.
+	 */
+	@Override
+	public String getDescription() {
+		return "Offers scripting via jshell (Java 9+)";
+	}
 }

@@ -36,31 +36,31 @@ import moa.evaluation.MeasureCollection;
  * @version $Revision: 1 $
  * @see GraphCurve
  */
-public abstract class AbstractGraphPlot extends JPanel{
+public abstract class AbstractGraphPlot extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
 	protected MeasureCollection[] measures;
 	protected MeasureCollection[] measureStds;
-    protected int measureSelected;
+	protected int measureSelected;
 
-    protected double min_x_value;
-    protected double max_x_value;
-    protected double max_y_value;
+	protected double min_x_value;
+	protected double max_x_value;
+	protected double max_y_value;
 
-    protected double lower_x_value;
-    protected double upper_x_value;
-    protected double upper_y_value;
+	protected double lower_x_value;
+	protected double upper_x_value;
+	protected double upper_y_value;
 
-    protected double x_resolution;
+	protected double x_resolution;
 
-    protected Color[] colors;
+	protected Color[] colors;
 
-    protected boolean isStandardDeviationPainted;
+	protected boolean isStandardDeviationPainted;
 
 	public AbstractGraphPlot() {
-	    this.measureSelected = 0;
-	    this.min_x_value = 0;
+		this.measureSelected = 0;
+		this.min_x_value = 0;
 		this.max_x_value = 1;
 		this.max_y_value = 1;
 		this.lower_x_value = 0;
@@ -69,120 +69,118 @@ public abstract class AbstractGraphPlot extends JPanel{
 
 		this.isStandardDeviationPainted = false;
 
-    	setOpaque(false);
+		setOpaque(false);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1000, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
+		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+		this.setLayout(layout);
+		layout.setHorizontalGroup(
+				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 1000, Short.MAX_VALUE));
+		layout.setVerticalGroup(
+				layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 300, Short.MAX_VALUE));
 	}
 
 	/**
-	 * Sets the graph by updating the measures and currently measure index.
-	 * This method should not be directly called, but may be used by subclasses
-	 * to save space.
+	 * Sets the graph by updating the measures and currently measure index. This
+	 * method should not be directly called, but may be used by subclasses to save
+	 * space.
+	 * 
 	 * @param measures measure information
-	 * @param stds standard deviation of the measures
-	 * @param colors color encoding for the plots
+	 * @param stds     standard deviation of the measures
+	 * @param colors   color encoding for the plots
 	 */
 	protected void setGraph(MeasureCollection[] measures, MeasureCollection[] stds, Color[] colors) {
 		this.measures = measures;
 		this.measureStds = stds;
-	    this.colors = colors;
-	    repaint();
+		this.colors = colors;
+		repaint();
 	}
 
-    /**
-     * Sets the currently selected measure index.
-     *
-     * @param selected
-     * 			  new selected measure
-     */
-    public void setMeasureSelected(int selected) {
-        this.measureSelected = selected;
-    }
+	/**
+	 * Sets the currently selected measure index.
+	 *
+	 * @param selected new selected measure
+	 */
+	public void setMeasureSelected(int selected) {
+		this.measureSelected = selected;
+	}
 
-    /**
-     * Sets minimum x value.
-     * @param min minimum x value
-     */
-    protected void setMinXValue(double min){
-        this.min_x_value = min;
-    }
+	/**
+	 * Sets minimum x value.
+	 * 
+	 * @param min minimum x value
+	 */
+	protected void setMinXValue(double min) {
+		this.min_x_value = min;
+	}
 
-    /**
-     * Sets maximum x value.
-     * @param max maximum x value
-     */
-    protected void setMaxXValue(double max){
-        this.max_x_value = max;
-    }
+	/**
+	 * Sets maximum x value.
+	 * 
+	 * @param max maximum x value
+	 */
+	protected void setMaxXValue(double max) {
+		this.max_x_value = max;
+	}
 
-    /**
-     * Sets maximum y value.
-     * @param max maximum y value
-     */
-    protected void setMaxYValue(double max){
-        this.max_y_value = max;
-    }
+	/**
+	 * Sets maximum y value.
+	 * 
+	 * @param max maximum y value
+	 */
+	protected void setMaxYValue(double max) {
+		this.max_y_value = max;
+	}
 
-    /**
-     * Sets the lower value for the x-axis.
-     * 
-     * @param value
-     *            lower x value
-     */
-    protected void setLowerXValue(double value) {
-        this.lower_x_value = value;
-    }
+	/**
+	 * Sets the lower value for the x-axis.
+	 * 
+	 * @param value lower x value
+	 */
+	protected void setLowerXValue(double value) {
+		this.lower_x_value = value;
+	}
 
-    /**
-     * Sets the upper value for the x-axis.
-     * 
-     * @param value
-     *            upper x value
-     */
-    protected void setUpperXValue(double value) {
-    	this.upper_x_value = value;
-    }
+	/**
+	 * Sets the upper value for the x-axis.
+	 * 
+	 * @param value upper x value
+	 */
+	protected void setUpperXValue(double value) {
+		this.upper_x_value = value;
+	}
 
-    /**
-     * Sets the upper value for the y-axis.
-     * 
-     * @param value
-     *            upper y value
-     */
-    protected void setUpperYValue(double value) {
-    	this.upper_y_value = value;
-    }
+	/**
+	 * Sets the upper value for the y-axis.
+	 * 
+	 * @param value upper y value
+	 */
+	protected void setUpperYValue(double value) {
+		this.upper_y_value = value;
+	}
 
-    /**
-     * Sets the resolution on the x-axis
-     * @param x_resolution resolution on the x-axis
-     */
-    protected void setXResolution(double x_resolution) {
-        this.x_resolution = x_resolution;
-    }
+	/**
+	 * Sets the resolution on the x-axis
+	 * 
+	 * @param x_resolution resolution on the x-axis
+	 */
+	protected void setXResolution(double x_resolution) {
+		this.x_resolution = x_resolution;
+	}
 
-    /**
-     * Sets the value for isStandardDeviationPainted.
-     * @param b new setting for isStandardDeviationPainted
-     */
-    protected void setStandardDeviationPainted(boolean b) {
-        this.isStandardDeviationPainted = b;
-    }
+	/**
+	 * Sets the value for isStandardDeviationPainted.
+	 * 
+	 * @param b new setting for isStandardDeviationPainted
+	 */
+	protected void setStandardDeviationPainted(boolean b) {
+		this.isStandardDeviationPainted = b;
+	}
 
-    protected void paintStandardDeviation(Graphics g, int len, int x, int y) {
-        // draw vertical line
-        g.drawLine(x, y-len, x, y+len);
-        // draw horizontal lines
-        g.drawLine(x-5, y-len, x+5, y-len);
-        g.drawLine(x-5, y+len, x+5, y+len);
-    }
+	protected void paintStandardDeviation(Graphics g, int len, int x, int y) {
+		// draw vertical line
+		g.drawLine(x, y - len, x, y + len);
+		// draw horizontal lines
+		g.drawLine(x - 5, y - len, x + 5, y - len);
+		g.drawLine(x - 5, y + len, x + 5, y + len);
+	}
 }

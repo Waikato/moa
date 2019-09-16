@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
@@ -27,31 +27,30 @@ import com.github.javacliparser.gui.MultiChoiceOptionEditComponent;
 import moa.options.EditableMultiChoiceOption;
 
 /**
- * EditComponent for the {@link EditableMultiChoiceOption} which allows for 
+ * EditComponent for the {@link EditableMultiChoiceOption} which allows for
  * refreshing the shown contents.
- * 
+ *
  * @author Cornelius Styp von Rekowski (cornelius.styp@ovgu.de)
  * @version $Revision: 1 $
  */
 public class EditableMultiChoiceOptionEditComponent extends MultiChoiceOptionEditComponent {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	public EditableMultiChoiceOptionEditComponent(Option option) {
 		super(option);
-		
-		// register the EditComponent with the corresponding 
+
+		// register the EditComponent with the corresponding
 		// EditableMultiChoiceOption, so that updates can be received
 		((EditableMultiChoiceOption) option).registerEditComponent(this);
 	}
-	
+
 	/**
 	 * Refresh the shown contents.
 	 */
 	public void refresh() {
-		setModel(new DefaultComboBoxModel<String>(
-				this.editedOption.getOptionLabels()));
-        setSelectedIndex(this.editedOption.getChosenIndex());
+		setModel(new DefaultComboBoxModel<>(this.editedOption.getOptionLabels()));
+		setSelectedIndex(this.editedOption.getChosenIndex());
 	}
-	
+
 }

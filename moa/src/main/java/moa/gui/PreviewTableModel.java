@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
@@ -35,25 +35,24 @@ import moa.evaluation.preview.Preview;
 public class PreviewTableModel extends AbstractTableModel {
 	// TODO add implementation
 	private static final long serialVersionUID = 1L;
-	
+
 	List<String> names;
 	List<double[]> data;
 	Preview latestPreview;
 	boolean structureChangeFlag;
-	
-	public PreviewTableModel()
-	{
+
+	public PreviewTableModel() {
 		names = new ArrayList<>();
 		data = new ArrayList<>();
 		latestPreview = null;
 		structureChangeFlag = false;
 	}
-	
+
 	@Override
 	public String getColumnName(int column) {
 		return names.get(column);
 	}
-	
+
 	@Override
 	public int getColumnCount() {
 		return names.size();
@@ -66,60 +65,49 @@ public class PreviewTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int row, int column) {
-		if(row >= data.size() || column >= data.get(row).length)
-		{
+		if (row >= data.size() || column >= data.get(row).length) {
 			return 0.0;
 		}
 		return data.get(row)[column];
 	}
-	
-	public void setPreview(Preview preview)
-	{
+
+	public void setPreview(Preview preview) {
 		structureChangeFlag = false;
-		
-		if(preview == null)
-		{
-			if(latestPreview != null)
-			{
+
+		if (preview == null) {
+			if (latestPreview != null) {
 				names = new ArrayList<>();
 				data = new ArrayList<>();
 				structureChangeFlag = true;
 			}
-		}
-		else
-		{
+		} else {
 			structureChangeFlag |= latestPreview == null;
 			structureChangeFlag |= latestPreview != null && latestPreview.numEntries() == 0 && preview.numEntries() > 0;
 			structureChangeFlag |= latestPreview != null && latestPreview.getTaskClass() != preview.getTaskClass();
 		}
 		latestPreview = preview;
-		if(preview != null)
-		{
+		if (preview != null) {
 			data = preview.getData();
-			
-			if(structureChangeFlag)
-			{
+
+			if (structureChangeFlag) {
 				copyMeasurementNames(preview);
 			}
 		}
 	}
-	
+
 	@Override
 	public String toString() {
-		return latestPreview == null? "" : latestPreview.toString();
+		return latestPreview == null ? "" : latestPreview.toString();
 	}
-	
-	public boolean structureChanged()
-	{
+
+	public boolean structureChanged() {
 		return structureChangeFlag;
 	}
-	
-	private void copyMeasurementNames(Preview preview)
-	{
+
+	private void copyMeasurementNames(Preview preview) {
 		names = new ArrayList<>();
 		int newMeasurementNameCount = preview.getMeasurementNameCount();
-		for(int measurementNameIdx = 0; measurementNameIdx < newMeasurementNameCount; ++measurementNameIdx)
-		{
+		for (int measurementNameIdx = 0; measurementNameIdx < newMeasurementNameCount; ++measurementNameIdx) {
 			names.add(preview.getMeasurementName(measurementNameIdx));
 		}
 	}
