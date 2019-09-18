@@ -4,9 +4,19 @@ package moa.clusterers.streamkm;
 /**
  *
  * @author Marcel R. Ackermann, Christiane Lammersen, Marcus Maertens, Christoph Raupach, 
-Christian Sohler, Kamil Swierkot
-
-Modified by Richard Hugh Moulton (24 Jul 2017)
+ * Christian Sohler, Kamil Swierkot
+ *
+ * Modified by Richard Hugh Moulton (24 Jul 2017)
+ *
+ * Modified by Mustafa Çelik (13 June 2019)
+ * Contact: celikmustafa89@gmail.com
+ *
+ * @see
+ * <a href="https://groups.google.com/forum/#!topic/moa-development/qe8vRKfI_K4">google
+ * group topic</a> for arrayOutOfBoundsException of bucketsize
+ * @see
+ * <a href ="https://github.com/Waikato/moa/issues/97#issuecomment-497658907">github issue</a>
+ * for arrayOutOfBoundsException of bucketsize
  */
 public class BucketManager  {
 
@@ -90,7 +100,7 @@ public class BucketManager  {
 				/*
 				as long as the next bucket is full output the coreset to the spillover of the next bucket
 				*/
-				while(this.buckets[nextbucket].cursize == this.maxBucketsize){
+				while(nextbucket < this.numberOfBuckets && this.buckets[nextbucket].cursize == this.maxBucketsize){
 					//printf("Bucket %d full \n",nextbucket);
 					this.treeCoreset.unionTreeCoreset(this.maxBucketsize,this.maxBucketsize,
 						this.maxBucketsize,p.dimension, 
@@ -101,12 +111,21 @@ public class BucketManager  {
 					curbucket++;
 					nextbucket++;
 				}
-				this.treeCoreset.unionTreeCoreset(this.maxBucketsize,this.maxBucketsize,
-						this.maxBucketsize,p.dimension, 
-						this.buckets[curbucket].points,this.buckets[curbucket].spillover,
-						this.buckets[nextbucket].points, this.clustererRandom);
-				this.buckets[curbucket].cursize = 0;
-				this.buckets[nextbucket].cursize = this.maxBucketsize;
+				if(nextbucket < this.numberOfBuckets){
+					this.treeCoreset.unionTreeCoreset(this.maxBucketsize,this.maxBucketsize,
+							this.maxBucketsize,p.dimension,
+							this.buckets[curbucket].points,this.buckets[curbucket].spillover,
+							this.buckets[nextbucket].points, this.clustererRandom);
+					this.buckets[curbucket].cursize = 0;
+					this.buckets[nextbucket].cursize = this.maxBucketsize;
+				} else { // if there is no more bucket, move into first bucket
+					this.treeCoreset.unionTreeCoreset(this.maxBucketsize,this.maxBucketsize,
+													  this.maxBucketsize,p.dimension,
+													  this.buckets[curbucket].points,this.buckets[curbucket].spillover,
+													  this.buckets[1].points, this.clustererRandom);
+					this.buckets[curbucket].cursize = 0;
+					this.buckets[1].cursize = this.maxBucketsize;
+				}
 			}
 		}
 		//insert point into the first bucket
