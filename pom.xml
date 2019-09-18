@@ -258,7 +258,7 @@
                         <nohelp>true</nohelp>
                         <!-- avoids "-SNAPSHOT" in title when using the release.xml configuration -->
                         <doctitle>${project.name}</doctitle>
-<!--                        <additionalparam>-Xdoclint:none</additionalparam>-->
+                        <additionalparam>-Xdoclint:none</additionalparam>
                     </configuration>
                 </plugin>
 
@@ -280,7 +280,7 @@
                     </executions>
                 </plugin>
 
-                <!--<plugin>
+                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>latex-maven-plugin</artifactId>
                     <version>1.1</version>
@@ -292,7 +292,7 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>-->
+                </plugin>
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
