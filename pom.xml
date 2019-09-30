@@ -82,6 +82,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <moa.version>2019.05.0</moa.version>
   </properties>
 
   <scm>
@@ -98,6 +99,11 @@
       <version>3.8.2</version>
       <type>jar</type>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>nz.ac.waikato.cms.moa</groupId>
+      <artifactId>moa</artifactId>
+      <version>${moa.version}</version>
     </dependency>
   </dependencies>
 
