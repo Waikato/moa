@@ -49,7 +49,7 @@ public class JSONCell {
   public void addNewLineToCell(String st, int mode) {
     switch (mode) {
       case 1:
-	if (cell_type != "")
+	if (!cell_type.equals(""))
 	  this.cell_type = this.cell_type + ",\n";
 	this.cell_type = this.cell_type + "\"" + st + "\\n\"";
 	break;
@@ -59,19 +59,19 @@ public class JSONCell {
 	break;
 
       case 3:
-	if (metadata != "")
+	if (!metadata.equals(""))
 	  this.metadata = this.metadata + ",\n";
 	this.metadata = this.metadata + "\"" + st + "\\n\"";
 	break;
 
       case 4:
-	if (outputs != "")
+	if (!outputs.equals(""))
 	  this.outputs = this.outputs + ",\n";
 	this.outputs = this.outputs + "\"" + st + "\\n\"";
 	break;
 
       case 5:
-	if (source != "")
+	if (!source.equals(""))
 	  this.source = this.source + ",\n";
 	this.source = this.source + "\"" + st + "\\n\"";
 	break;
