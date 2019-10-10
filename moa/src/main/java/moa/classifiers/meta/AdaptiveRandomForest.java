@@ -98,16 +98,16 @@ public class AdaptiveRandomForest extends AbstractClassifier implements MultiCla
             "ARFHoeffdingTree -e 2000000 -g 50 -c 0.01");
 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
-        "The number of trees.", 10, 1, Integer.MAX_VALUE);
+        "The number of trees.", 100, 1, Integer.MAX_VALUE);
     
     public MultiChoiceOption mFeaturesModeOption = new MultiChoiceOption("mFeaturesMode", 'o', 
         "Defines how m, defined by mFeaturesPerTreeSize, is interpreted. M represents the total number of features.",
         new String[]{"Specified m (integer value)", "sqrt(M)+1", "M-(sqrt(M)+1)",
             "Percentage (M * (m / 100))"},
-        new String[]{"SpecifiedM", "SqrtM1", "MSqrtM1", "Percentage"}, 1);
+        new String[]{"SpecifiedM", "SqrtM1", "MSqrtM1", "Percentage"}, 3);
     
     public IntOption mFeaturesPerTreeSizeOption = new IntOption("mFeaturesPerTreeSize", 'm',
-        "Number of features allowed considered for each split. Negative values corresponds to M - m", 2, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        "Number of features allowed considered for each split. Negative values corresponds to M - m", 60, Integer.MIN_VALUE, Integer.MAX_VALUE);
     
     public FloatOption lambdaOption = new FloatOption("lambda", 'a',
         "The lambda parameter for bagging.", 6.0, 1.0, Float.MAX_VALUE);
@@ -116,10 +116,10 @@ public class AdaptiveRandomForest extends AbstractClassifier implements MultiCla
         "Total number of concurrent jobs used for processing (-1 = as much as possible, 0 = do not use multithreading)", 1, -1, Integer.MAX_VALUE);
     
     public ClassOption driftDetectionMethodOption = new ClassOption("driftDetectionMethod", 'x',
-        "Change detector for drifts and its parameters", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-5");
+        "Change detector for drifts and its parameters", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-3");
 
     public ClassOption warningDetectionMethodOption = new ClassOption("warningDetectionMethod", 'p',
-        "Change detector for warnings (start training bkg learner)", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-4");
+        "Change detector for warnings (start training bkg learner)", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-2");
     
     public FlagOption disableWeightedVote = new FlagOption("disableWeightedVote", 'w', 
             "Should use weighted voting?");
@@ -388,7 +388,7 @@ public class AdaptiveRandomForest extends AbstractClassifier implements MultiCla
         }
 
         public void trainOnInstance(Instance instance, double weight, long instancesSeen) {
-            Instance weightedInstance = (Instance) instance.copy();
+            Instance weightedInstance = instance.copy();
             weightedInstance.setWeight(instance.weight() * weight);
             this.classifier.trainOnInstance(weightedInstance);
             
@@ -425,7 +425,6 @@ public class AdaptiveRandomForest extends AbstractClassifier implements MultiCla
                 }
                 
                 /*********** drift detection ***********/
-                
                 // Update the DRIFT detection method
                 this.driftDetectionMethod.input(correctlyClassifies ? 0 : 1);
                 // Check if there was a change
@@ -470,7 +469,7 @@ public class AdaptiveRandomForest extends AbstractClassifier implements MultiCla
         }
 
         @Override
-        public Integer call() throws Exception {
+        public Integer call() {
             run();
             return 0;
         }
