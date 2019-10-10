@@ -44,8 +44,12 @@ import moa.core.Measurement;
 import moa.core.SizeOf;
 import moa.core.StringUtils;
 
-/*
+/**
  * Implementation of FIMTDD, regression and model trees for data streams.
+ *
+ * <p>See details in:<br> Ikonomovska, Elena, João Gama, and Sašo Džeroski.
+ * Learning model trees from evolving data streams.
+ * Data mining and knowledge discovery 23.1 (2011): 128-168.</p>
  */
 
 public class FIMTDD extends AbstractClassifier implements Regressor {

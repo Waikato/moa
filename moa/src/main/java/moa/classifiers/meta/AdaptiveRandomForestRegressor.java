@@ -52,31 +52,28 @@ public class AdaptiveRandomForestRegressor extends AbstractClassifier implements
 
     public ClassOption treeLearnerOption = new ClassOption("treeLearner", 'l',
             "Random Forest Tree.", ARFFIMTDD.class,
-            "ARFFIMTDD");
+            "ARFFIMTDD -s VarianceReductionSplitCriterion -g 50 -c 0.01");
 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
-            "The number of trees.", 10, 1, Integer.MAX_VALUE);
+            "The number of trees.", 100, 1, Integer.MAX_VALUE);
 
     public MultiChoiceOption mFeaturesModeOption = new MultiChoiceOption("mFeaturesMode", 'o',
             "Defines how m, defined by mFeaturesPerTreeSize, is interpreted. M represents the total number of features.",
             new String[]{"Specified m (integer value)", "sqrt(M)+1", "M-(sqrt(M)+1)",
                     "Percentage (M * (m / 100))"},
-            new String[]{"SpecifiedM", "SqrtM1", "MSqrtM1", "Percentage"}, 1);
+            new String[]{"SpecifiedM", "SqrtM1", "MSqrtM1", "Percentage"}, 3);
 
     public IntOption mFeaturesPerTreeSizeOption = new IntOption("mFeaturesPerTreeSize", 'm',
-            "Number of features allowed considered for each split. Negative values corresponds to M - m", 2, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            "Number of features allowed considered for each split. Negative values corresponds to M - m", 60, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
     public FloatOption lambdaOption = new FloatOption("lambda", 'a',
             "The lambda parameter for bagging.", 6.0, 1.0, Float.MAX_VALUE);
 
     public ClassOption driftDetectionMethodOption = new ClassOption("driftDetectionMethod", 'x',
-            "Change detector for drifts and its parameters", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-5");
+            "Change detector for drifts and its parameters", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-3");
 
     public ClassOption warningDetectionMethodOption = new ClassOption("warningDetectionMethod", 'p',
-            "Change detector for warnings (start training bkg learner)", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-4");
-
-    public FlagOption disableWeightedVote = new FlagOption("disableWeightedVote", 'w',
-            "Should use weighted voting?");
+            "Change detector for warnings (start training bkg learner)", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-2");
 
     public FlagOption disableDriftDetectionOption = new FlagOption("disableDriftDetection", 'u',
             "Should use drift detection? If disabled then bkg learner is also disabled");
