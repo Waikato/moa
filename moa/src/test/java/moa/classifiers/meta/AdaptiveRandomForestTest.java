@@ -52,8 +52,13 @@ public class AdaptiveRandomForestTest
    */
   @Override
   protected Classifier[] getRegressionClassifierSetups() {
+    AdaptiveRandomForest ARFTest = new AdaptiveRandomForest();
+    ARFTest.ensembleSizeOption.setValue(5);
+    ARFTest.mFeaturesModeOption.setChosenIndex(0);
+    ARFTest.mFeaturesPerTreeSizeOption.setValue(2);
+
     return new Classifier[]{
-	new AdaptiveRandomForest(),
+            ARFTest,
     };
   }
   
