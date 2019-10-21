@@ -35,7 +35,7 @@ public abstract class NotebookCell {
     }
 
     /**
-     * Adds a string to cell in a new separate line
+     * Appends a string to cell in a new separate line
      * Depending on the working mode, the string @param st will be added to particular field
      * @param st the string to be added
      */
@@ -55,6 +55,30 @@ public abstract class NotebookCell {
                 if(source.length() > 0)
                     source.append(",\n");
                 source.append("\"" + st + "\\n\"");
+                break;
+        }
+        return this;
+    }
+
+    /**
+     * Adds a quoted string to cell
+     *
+     * @param st   the string to be appended
+     */
+    public NotebookCell addQuoted(String st) {
+        switch (workingMode) {
+            case CELL_TYPE:
+                cell_type.insert(cell_type.length() - 3, "\\\"" + st + "\\\"");
+                break;
+            case METADATA:
+                metadata.insert(metadata.length() - 3, "\\\"" + st + "\\\"");
+                break;
+            case SOURCE:
+                source.insert(source.length() - 3, "\\\"" + st + "\\\"");
+                break;
+            case OUTPUTS:
+                break;
+            case EXECUTION_COUNT:
                 break;
         }
         return this;
