@@ -87,7 +87,6 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                         boolean trainInBatches = false;
                         int widthOption = 1000;
                         double alphaOption = .01;
-                        int cellNum = 1;
 
                         /** Gets out the values of all parameters necessary for creating detailed version of IPYNB file **/
                         if (currentTask instanceof EvaluateInterleavedTestThenTrain) {
@@ -266,17 +265,14 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
 
                             //import all necessary library files
                             nb.addMarkdown()
-                                    .setWorkingMode(NotebookCell.Mod.SOURCE)
+                                    .setWorkingMode(NotebookCell.Mode.SOURCE)
                                     .addNewLine("This IPYNB file was generated automatically by MOA GUI.<br>")
                                     .addNewLine("Task name: " + currentTask.getClass().getName() + "<br>")
                                     .addNewLine("## Libraries importing");
                             nb.addCode()
-                                    .setWorkingMode(NotebookCell.Mod.EXECUTION_COUNT)
-                                    .addNewLine(String.valueOf(cellNum))
-                                    .setWorkingMode(NotebookCell.Mod.SOURCE)
+                                    .setWorkingMode(NotebookCell.Mode.SOURCE)
                                     .addNewLine("%maven nz.ac.waikato.cms.moa:moa:2019.05.0")
-                                    .addNewLine("%classpath ")
-                                    .addQuoted("H:/MOA/moa-flow-core.jar")
+                                    .addNewLine("%classpath \"H:/MOA/moa-flow-core.jar\"")
                                     .addNewLine("import moa.classifiers." + learnerOptionsString.getClassFullName() + ";")
                                     .addNewLine("import moa.streams." + streamOptionsString.getClassFullName() + ";")
                                     .addNewLine("import moa.evaluation." + evaluatorOptionsString.getClassFullName() + ";")
@@ -289,21 +285,16 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                                     .addNewLine("import moa.core.Measurement;");
                             /**-----------------Create second cell for initializing the learner, the stream and the evaluator----------------- **/
                             nb.addMarkdown()
-                                    .setWorkingMode(NotebookCell.Mod.SOURCE)
+                                    .setWorkingMode(NotebookCell.Mode.SOURCE)
                                     .addNewLine("## Configuring learner, stream and evaluator");
 
-                            cellNum++;
                             nb.addCode()
-                                    .setWorkingMode(NotebookCell.Mod.EXECUTION_COUNT)
-                                    .addNewLine(String.valueOf(cellNum))
-                                    .setWorkingMode(NotebookCell.Mod.SOURCE)
-                                    .addNewLine("String learnerString = ")
-                                    .addQuoted(learnerString)
-                                    .add(";");
+                                    .setWorkingMode(NotebookCell.Mode.SOURCE)
+                                    .addNewLine("String learnerString = \""+ learnerString +"\";");
 
                             if ((currentTask instanceof EvaluatePrequentialCV) || (currentTask instanceof EvaluatePrequentialDelayedCV)) {
                                 nb.getCellByIndex(1).addNewLine("import java.util.Random;");
-                                nb.getLastCell().addNewLine("int randomSeed =" + randomSeed + ";")
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("int randomSeed =" + randomSeed + ";")
                                         .addNewLine("Random random = new Random(randomSeed);")
                                         /**-----------------create learner----------------- **/
                                         .addNewLine("int numFolds = " + numFolds + ";")
@@ -317,22 +308,18 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                                         //baseLearner.resetLearning();
                                         /**--------------create stream------------**/
                                         .addNewLine("")
-                                        .addNewLine("String streamString = ")
-                                        .addQuoted(streamString)
-                                        .add(";")
+                                        .addNewLine("String streamString = \""+ streamString +"\";")
                                         .addNewLine(streamOptionsString.generateOptionsString())
                                         .addNewLine(streamOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".prepareForUse();")
                                         .addNewLine(learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".setModelContext("
                                                 + streamOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".getHeader());")
                                         /**--------------create evaluator-----------**/
                                         .addNewLine("")
-                                        .addNewLine("String evaluatorString = ")
-                                        .addQuoted(evaluatorString)
-                                        .add(";")
+                                        .addNewLine("String evaluatorString = \""+ evaluatorString + "\";")
                                         .addNewLine(evaluatorOptionsString.getClassShortName() + "[] " + evaluatorOptionsString.getClassShortName().substring(0, 4).toLowerCase()
                                                 + "Array = new " + evaluatorOptionsString.getClassShortName() + "[numFolds];")
                                         .addNewLine(evaluatorOptionsString.generateOptionsString());
-                                nb.getLastCell().addNewLine("for (int i = 0; i <" + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase()
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("for (int i = 0; i <" + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase()
                                         + "Array.length; i++) {")
                                         .addNewLine("    " + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase()
                                                 + "Array[i] = (" + learnerOptionsString.getClassShortName() + ") " + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".copy();")
@@ -343,29 +330,25 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                                         .addNewLine("}");
                             } else {
                                 /**-----------------create learner----------------- **/
-                                nb.getLastCell().addNewLine(learnerOptionsString.generateOptionsString())
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine(learnerOptionsString.generateOptionsString())
                                         .addNewLine(learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".prepareForUse();");
                                 if (currentTask instanceof EvaluateInterleavedTestThenTrain) {
-                                    nb.getLastCell().addNewLine("int randomSeed = " + randomSeed + ";")
+                                    nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("int randomSeed = " + randomSeed + ";")
                                             .addNewLine("if (" + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".isRandomizable()) {")
                                             .addNewLine("    " + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".setRandomSeed(randomSeed);")
                                             .addNewLine("    " + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".resetLearning();")
                                             .addNewLine("}");
                                 }
                                 /**--------------create stream------------**/
-                                nb.getLastCell().addNewLine("")
-                                        .addNewLine("String streamString = ")
-                                        .addQuoted(streamString)
-                                        .add(";")
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("")
+                                        .addNewLine("String streamString = \""+ streamString +"\";")
                                         .addNewLine(streamOptionsString.generateOptionsString())
                                         .addNewLine(streamOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".prepareForUse();")
                                         .addNewLine(learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".setModelContext("
                                                 + streamOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".getHeader());")
                                         /**--------------create evaluator-----------**/
                                         .addNewLine("")
-                                        .addNewLine("String evaluatorString = ")
-                                        .addQuoted(evaluatorString)
-                                        .add(";")
+                                        .addNewLine("String evaluatorString = \""+ evaluatorString +"\";")
                                         .addNewLine(evaluatorOptionsString.generateOptionsString());
                             }
 
@@ -373,21 +356,14 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                             /**--------------set environment parameters----------- **/
                             nb.addMarkdown()
                                     .addNewLine("## Setting environmental parameters");
-                            cellNum++;
                             nb.addCode()
-                                    .setWorkingMode(NotebookCell.Mod.EXECUTION_COUNT)
-                                    .addNewLine(String.valueOf(cellNum))
-                                    .setWorkingMode(NotebookCell.Mod.SOURCE)
+                                    .setWorkingMode(NotebookCell.Mode.SOURCE)
                                     .addNewLine("int maxInstances = " + instanceLimit + ";")
                                     .addNewLine("long instancesProcessed = 0;")
                                     .addNewLine("int maxSeconds = " + timeLimit + ";")
                                     .addNewLine("int secondsElapsed = 0;")
-                                    .addNewLine("LearningCurve learningCurve = new LearningCurve(")
-                                    .addQuoted("learning evaluation instances")
-                                    .add(");")
-                                    .addNewLine("File dumpFile = new File(")
-                                    .addQuoted(dumpFilePath)
-                                    .add(");")
+                                    .addNewLine("LearningCurve learningCurve = new LearningCurve(\"learning evaluation instances\");")
+                                    .addNewLine("File dumpFile = new File(\""+dumpFilePath+"\");")
                                     .addNewLine("PrintStream immediateResultStream = null;")
                                     .addNewLine("if (dumpFile != null) {")
                                     .addNewLine("    try {")
@@ -400,9 +376,7 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                                     .addNewLine("        }")
                                     .addNewLine("    } catch (Exception ex) {")
                                     .addNewLine("        throw new RuntimeException(")
-                                    .addNewLine("                ")
-                                    .addQuoted("Unable to open immediate result file: ")
-                                    .add(" + dumpFile, ex);")
+                                    .addNewLine("                \"Unable to open immediate result file: \"  + dumpFile, ex);")
                                     .addNewLine("    }")
                                     .addNewLine("}");
 
@@ -410,12 +384,11 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                                     (currentTask instanceof EvaluatePrequentialRegression)) {
                                 //File for output predictions
                                 if (outputPredictionFile != null) {
-                                    nb.getLastCell().addNewLine("File outputPredictionFile = new File()")
-                                            .addQuoted(outputPredictionFile.getAbsolutePath().replace('\\', '/'))
-                                            .add(");");
-                                } else nb.getLastCell().addNewLine("File outputPredictionFile = null;");
+                                    nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("File outputPredictionFile = new File(\"" +
+                                            outputPredictionFile.getAbsolutePath().replace('\\', '/')+ "\");");
+                                } else nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("File outputPredictionFile = null;");
 
-                                nb.getLastCell().addNewLine("PrintStream outputPredictionResultStream = null;")
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("PrintStream outputPredictionResultStream = null;")
                                         .addNewLine("if (outputPredictionFile != null) {")
                                         .addNewLine("    try {")
                                         .addNewLine("        if (outputPredictionFile.exists()) {")
@@ -427,25 +400,23 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                                         .addNewLine("        }")
                                         .addNewLine("    } catch (Exception ex) {")
                                         .addNewLine("        throw new RuntimeException(")
-                                        .addNewLine("                 ")
-                                        .addQuoted("Unable to open prediction result file: ")
-                                        .add(" + outputPredictionFile, ex);")
+                                        .addNewLine("                 \"Unable to open prediction result file: \" + outputPredictionFile, ex);")
                                         .addNewLine("    }")
                                         .addNewLine("}");
                                 if (currentTask instanceof EvaluatePrequentialDelayed) {
                                     nb.getCellByIndex(1).addNewLine("import java.util.LinkedList;");
-                                    nb.getLastCell().addNewLine("LinkedList<Example> trainInstances = new LinkedList<Example>();");
+                                    nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("LinkedList<Example> trainInstances = new LinkedList<Example>();");
                                 }
                             } else if (currentTask instanceof EvaluatePrequentialDelayedCV) {
                                 nb.getCellByIndex(1).addNewLine("import java.util.LinkedList;");
-                                nb.getLastCell().addNewLine("LinkedList<LinkedList<Example>> trainInstances = new LinkedList<LinkedList<Example>>();")
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("LinkedList<LinkedList<Example>> trainInstances = new LinkedList<LinkedList<Example>>();")
 
                                         .addNewLine("for(int i = 0; i < " + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase()
                                                 + "Array.length; i++) {")
                                         .addNewLine("   trainInstances.add(new LinkedList<Example>());")
                                         .addNewLine("}");
                             }
-                            nb.getLastCell().addNewLine("boolean firstDump = true;")
+                            nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("boolean firstDump = true;")
                                     .addNewLine("boolean firstPrint = true;")
                                     .addNewLine("boolean preciseCPUTiming = TimingUtils.enablePreciseTiming();")
                                     .addNewLine("long evaluateStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();")
@@ -455,23 +426,18 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                             nb.addMarkdown()
                                     .addNewLine("## Testing & training, exporting result");
 
-                            cellNum++;
                             nb.addCode()
-                                    .setWorkingMode(NotebookCell.Mod.EXECUTION_COUNT)
-                                    .addNewLine(String.valueOf(cellNum))
-                                    .setWorkingMode(NotebookCell.Mod.SOURCE)
+                                    .setWorkingMode(NotebookCell.Mode.SOURCE)
                                     .addNewLine("DrawTable table = new DrawTable();");
                             nb.getCellByIndex(1).addNewLine("import moaflow.sink.DrawTable;");
-                            nb.getLastCell().addNewLine("System.out.println(")
-                                    .addQuoted("Evaluating learner...")
-                                    .add(");")
+                            nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("System.out.println( \"Evaluating learner...\");")
                                     .addNewLine("while (" + streamOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".hasMoreInstances()")
                                     .addNewLine("        && ((maxInstances < 0) || (instancesProcessed < maxInstances))")
                                     .addNewLine("        && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {");
 
                             if (currentTask instanceof EvaluatePrequentialCV) {
                                 nb.getCellByIndex(1).addNewLine("import moa.core.MiscUtils;");
-                                nb.getLastCell().addNewLine("    Example trainInst = " + streamOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".nextInstance();")
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("    Example trainInst = " + streamOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".nextInstance();")
                                         .addNewLine("    Example testInst = trainInst; //.copy();")
                                         //testInst.setClassMissing();
 
@@ -510,7 +476,7 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                             } else if (currentTask instanceof EvaluatePrequentialDelayed) {
                                 nb.getCellByIndex(1).addNewLine("import moa.core.Utils;")
                                         .addNewLine("import moa.core.InstanceExample;");
-                                nb.getLastCell().addNewLine("    instancesProcessed++;")
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("    instancesProcessed++;")
                                         .addNewLine("    Example currentInst = " + streamOptionsString.getClassShortName().substring(0, 4).toLowerCase()
                                                 + ".nextInstance();")
                                         .addNewLine("    boolean trainOnInitialWindow = " + trainOnInitialWindow + ";")
@@ -558,18 +524,14 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                                         .addNewLine("        // Output prediction")
                                         .addNewLine("        if (outputPredictionFile != null) {")
                                         .addNewLine("            int trueClass = (int) ((Instance) currentInst.getData()).classValue();")
-                                        .addNewLine("            outputPredictionResultStream.println(Utils.maxIndex(prediction) + ")
-                                        .addQuoted(",")
-                                        .add(" + (")
-                                        .addNewLine("                    ((Instance) testInst.getData()).classIsMissing() == true ? ")
-                                        .addQuoted(" ? ")
-                                        .add(" : trueClass));")
+                                        .addNewLine("            outputPredictionResultStream.println(Utils.maxIndex(prediction) + \",\"  + ( ")
+                                        .addNewLine("                    ((Instance) testInst.getData()).classIsMissing() == true ? \" ? \" : trueClass));")
                                         .addNewLine("        }")
                                         .addNewLine("        " + evaluatorOptionsString.getClassShortName().substring(0, 4).toLowerCase()
                                                 + ".addResult(testInst, prediction);");
                             } else if (currentTask instanceof EvaluatePrequentialDelayedCV) {
                                 nb.getCellByIndex(1).addNewLine("import moa.core.MiscUtils;");
-                                nb.getLastCell().addNewLine("    instancesProcessed++;")
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("    instancesProcessed++;")
                                         .addNewLine("    Example trainInst = " + streamOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".nextInstance();")
                                         .addNewLine("    Example testInst = trainInst; //.copy();")
                                         .addNewLine("    for(int i = 0; i < " + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase()
@@ -606,45 +568,39 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                                         .addNewLine("        }")
                                         .addNewLine("    }");
                             } else {
-                                nb.getLastCell().addNewLine("    Example trainInst = " + streamOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".nextInstance();")
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("    Example trainInst = " + streamOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".nextInstance();")
                                         .addNewLine("    Example testInst = trainInst; //.copy();");
                                 if (currentTask instanceof EvaluatePrequentialRegression) {
                                     nb.getCellByIndex(1).addNewLine("import com.yahoo.labs.samoa.instances.Prediction;");
-                                    nb.getLastCell().addNewLine("    Prediction prediction = " + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase()
+                                    nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("    Prediction prediction = " + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase()
                                             + ".getPredictionForInstance(testInst);")
                                             .addNewLine("    if (outputPredictionFile != null) {")
                                             .addNewLine("       double trueClass = ((Instance) trainInst.getData()).classValue();")
-                                            .addNewLine("       outputPredictionResultStream.println(prediction + ")
-                                            .addQuoted(",")
-                                            .add(" + trueClass);")
+                                            .addNewLine("       outputPredictionResultStream.println(prediction + \",\" + trueClass);")
                                             .addNewLine("    }");
                                 } else if (currentTask instanceof EvaluatePrequential) {
                                     nb.getCellByIndex(1).addNewLine("import moa.core.Utils;");
-                                    nb.getLastCell().addNewLine("    double[] prediction = " + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".getVotesForInstance(testInst);")
+                                    nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("    double[] prediction = " + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".getVotesForInstance(testInst);")
                                             .addNewLine("    // Output prediction")
                                             .addNewLine("    if (outputPredictionFile != null) {")
                                             .addNewLine("       int trueClass = (int) ((Instance) trainInst.getData()).classValue();")
-                                            .addNewLine("       outputPredictionResultStream.println(Utils.maxIndex(prediction) + ")
-                                            .addQuoted(",")
-                                            .add(" + (")
-                                            .addNewLine("       ((Instance) testInst.getData()).classIsMissing() == true ? ")
-                                            .addQuoted(" ? ")
-                                            .add(" : trueClass));")
+                                            .addNewLine("       outputPredictionResultStream.println(Utils.maxIndex(prediction) + \",\" + (")
+                                            .addNewLine("       ((Instance) testInst.getData()).classIsMissing() == true ? \" ? \" : trueClass));")
                                             .addNewLine("    }");
                                 } else
-                                    nb.getLastCell().addNewLine("    double[] prediction = " + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".getVotesForInstance(testInst);");
+                                    nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("    double[] prediction = " + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".getVotesForInstance(testInst);");
 
-                                nb.getLastCell().addNewLine("    " + evaluatorOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".addResult(testInst, prediction);")
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("    " + evaluatorOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".addResult(testInst, prediction);")
                                         .addNewLine("    " + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".trainOnInstance(trainInst);")
                                         .addNewLine("    instancesProcessed++;");
                             }
-                            nb.getLastCell().addNewLine("    if (instancesProcessed % " + sampleFrequency + " == 0")
+                            nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("    if (instancesProcessed % " + sampleFrequency + " == 0")
                                     .addNewLine("            ||  " + streamOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ".hasMoreInstances() == false) {")
                                     .addNewLine("        long evaluateTime = TimingUtils.getNanoCPUTimeOfCurrentThread();")
                                     .addNewLine("        double time = TimingUtils.nanoTimeToSeconds(evaluateTime - evaluateStartTime);")
                                     .addNewLine("        double timeIncrement = TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);");
                             if ((currentTask instanceof EvaluatePrequentialCV) || (currentTask instanceof EvaluatePrequentialDelayedCV)) {
-                                nb.getLastCell().addNewLine("        for (int i = 0; i <" + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase()
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("        for (int i = 0; i <" + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase()
                                         + "Array.length; i++) {")
                                         .addNewLine("        double RAMHoursIncrement = " + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase()
                                                 + "Array[i].measureByteSize() / (1024.0 * 1024.0 * 1024.0); //GBs")
@@ -652,35 +608,25 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                                         .addNewLine("        RAMHours += RAMHoursIncrement;")
                                         .addNewLine("        }");
                             } else {
-                                nb.getLastCell().addNewLine("        double RAMHoursIncrement = " + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase()
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("        double RAMHoursIncrement = " + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase()
                                         + ".measureByteSize() / (1024.0 * 1024.0 * 1024.0); //GBs")
                                         .addNewLine("        RAMHoursIncrement *= (timeIncrement / 3600.0); //Hours")
                                         .addNewLine("        RAMHours += RAMHoursIncrement;");
                             }
-                            nb.getLastCell().addNewLine("        lastEvaluateStartTime = evaluateTime;");
+                            nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("        lastEvaluateStartTime = evaluateTime;");
 
                             if ((currentTask instanceof EvaluatePrequentialCV) || (currentTask instanceof EvaluatePrequentialDelayedCV)) {
-                                nb.getLastCell().addNewLine("        Measurement[] modelMeasurements = new Measurement[]{")
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("        Measurement[] modelMeasurements = new Measurement[]{")
                                         .addNewLine("                                           new Measurement(")
-                                        .addNewLine("                                           ")
-                                        .addQuoted("learning evaluation instances")
-                                        .add(",")
+                                        .addNewLine("                                           \"learning evaluation instances\",")
                                         .addNewLine("                                           instancesProcessed),")
                                         .addNewLine("                                           new Measurement(")
-                                        .addNewLine("                                           ")
-                                        .addQuoted("evaluation time (")
-                                        .addNewLine("                                           + (preciseCPUTiming ? ")
-                                        .addQuoted("cpu ")
-                                        .addNewLine("                                           : ")
-                                        .addQuoted("")
-                                        .add(") + ")
-                                        .addQuoted("seconds)")
-                                        .add(",")
+                                        .addNewLine("                                           \"evaluation time (\"")
+                                        .addNewLine("                                           + (preciseCPUTiming ? \"cpu \"")
+                                        .addNewLine("                                           : \"\") + \"seconds)\",")
                                         .addNewLine("                                           time),")
                                         .addNewLine("                                           new Measurement(")
-                                        .addNewLine("                                           ")
-                                        .addQuoted("model cost (RAM-Hours)")
-                                        .add(",")
+                                        .addNewLine("                                           \"model cost (RAM-Hours)\",")
                                         .addNewLine("                                           RAMHours)")
                                         .addNewLine("                                        };")
                                         .addNewLine("        List<Measurement> measurementList = new LinkedList<>();")
@@ -703,73 +649,50 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                                         .addNewLine("        }")
                                         .addNewLine("           learningCurve.insertEntry(new LearningEvaluation(measurementList.toArray(new Measurement[measurementList.size()])));");
                             } else {
-                                nb.getLastCell().addNewLine("        learningCurve.insertEntry(new LearningEvaluation(")
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("        learningCurve.insertEntry(new LearningEvaluation(")
                                         .addNewLine("                new Measurement[]{")
                                         .addNewLine("                        new Measurement(")
-                                        .addNewLine("                                ")
-                                        .addQuoted("learning evaluation instances")
-                                        .add(",")
+                                        .addNewLine("                                \"learning evaluation instances\",")
                                         .addNewLine("                                instancesProcessed),")
                                         .addNewLine("                        new Measurement(")
-                                        .addNewLine("                                ")
-                                        .addQuoted("evaluation time (")
-                                        .addNewLine("                                        + (preciseCPUTiming ? ")
-                                        .addQuoted("cpu ")
-                                        .addNewLine("                                        : ")
-                                        .addQuoted("")
-                                        .add(") + ")
-                                        .addQuoted("seconds)")
-                                        .add(",")
+                                        .addNewLine("                                \"evaluation time (\"")
+                                        .addNewLine("                                        + (preciseCPUTiming ? \"cpu \"")
+                                        .addNewLine("                                        : \"\") + \"seconds)\",")
                                         .addNewLine("                                time),")
                                         .addNewLine("                        new Measurement(")
-                                        .addNewLine("                                ")
-                                        .addQuoted("model cost (RAM-Hours)")
-                                        .add(",")
+                                        .addNewLine("                                \"model cost (RAM-Hours)\",")
                                         .addNewLine("                                RAMHours)")
                                         .addNewLine("                },")
                                         .addNewLine("                " + evaluatorOptionsString.getClassShortName().substring(0, 4).toLowerCase() + ", "
                                                 + learnerOptionsString.getClassShortName().substring(0, 4).toLowerCase() + "));");
                             }
 
-                            nb.getLastCell().addNewLine("        if (immediateResultStream != null) {")
+                            nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("        if (immediateResultStream != null) {")
                                     .addNewLine("            if (firstDump) {")
                                     .addNewLine("                immediateResultStream.println(learningCurve.headerToString());")
                                     .addNewLine("                firstDump = false;")
                                     .addNewLine("            }");
                             if ((currentTask instanceof EvaluatePrequentialCV) || (currentTask instanceof EvaluatePrequentialDelayedCV) ||
                                     (currentTask instanceof EvaluateInterleavedTestThenTrain)) {
-                                nb.getLastCell().addNewLine("            immediateResultStream.print(learnerString + ")
-                                        .addQuoted(",")
-                                        .add(" + streamString + ")
-                                        .addQuoted(",")
-                                        .add("+ Integer.toString(randomSeed) +")
-                                        .addQuoted(",")
-                                        .add(");");
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("            immediateResultStream.print(learnerString + \",\" + streamString +" +
+                                        " \",\"+ Integer.toString(randomSeed) +\",\" );");
                             } else {
-                                nb.getLastCell().addNewLine("            immediateResultStream.print(learnerString + ")
-                                        .addQuoted(",")
-                                        .add(" + streamString);");
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("            immediateResultStream.print(learnerString + \",\" + streamString);");
                             }
 
-                            nb.getLastCell().addNewLine("            immediateResultStream.println(learningCurve.entryToString(learningCurve.numEntries() - 1));")
+                            nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("            immediateResultStream.println(learningCurve.entryToString(learningCurve.numEntries() - 1));")
                                     .addNewLine("            immediateResultStream.flush();")
                                     .addNewLine("        }")
                                     .addNewLine("        if (firstPrint) {");
                             if ((currentTask instanceof EvaluatePrequentialCV) || (currentTask instanceof EvaluatePrequentialDelayedCV) ||
                                     (currentTask instanceof EvaluateInterleavedTestThenTrain)) {
-                                nb.getLastCell().addNewLine("           System.out.println(learnerString + ")
-                                        .addQuoted(",")
-                                        .add(" + streamString + ")
-                                        .addQuoted(", randomSeed = ")
-                                        .add("+ Integer.toString(randomSeed) +")
-                                        .addQuoted(".")
-                                        .add(");");
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("           System.out.println(learnerString + \",\" + streamString + \", randomSeed = \"" +
+                                        "+ Integer.toString(randomSeed) +\".\");");
+
                             } else {
-                                nb.getLastCell().addNewLine("           System.out.println(learnerString + ")
-                                        .addQuoted(",")
-                                        .add(" + streamString);");
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("           System.out.println(learnerString + \",\" + streamString);");
                             }
-                            nb.getLastCell().addNewLine("           System.out.print(table.headerLine(learningCurve.headerToString()));")
+                            nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("           System.out.print(table.headerLine(learningCurve.headerToString()));")
                                     .addNewLine("           firstPrint = false;")
                                     .addNewLine("        }")
                                     .addNewLine("        System.out.print(table.bodyLine(learningCurve.entryToString(learningCurve.numEntries() - 1)));")
@@ -777,13 +700,9 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
 
                                     .addNewLine("    }")
                                     .addNewLine("}");
-                            if (currentTask instanceof EvaluatePrequentialDelayed) nb.getLastCell().addNewLine("}");
-                            nb.getLastCell().addNewLine("double time = TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread()- evaluateStartTime);")
-                                    .addNewLine("System.out.println(instancesProcessed + ")
-                                    .addQuoted(" instances processed in ")
-                                    .add(" + time + ")
-                                    .addQuoted(" seconds.")
-                                    .add(");")
+                            if (currentTask instanceof EvaluatePrequentialDelayed) nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("}");
+                            nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("double time = TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread()- evaluateStartTime);")
+                                    .addNewLine("System.out.println(instancesProcessed + \" instances processed in \" + time + \" seconds.\");")
                                     .addNewLine("if (immediateResultStream != null) {")
                                     .addNewLine("    immediateResultStream.close();")
                                     .addNewLine("}");
@@ -796,17 +715,14 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                         else {
                             /**-----------------Imports all necessary libraries----------------- **/
                             nb.addMarkdown()
-                                    .setWorkingMode(NotebookCell.Mod.SOURCE)
+                                    .setWorkingMode(NotebookCell.Mode.SOURCE)
                                     .addNewLine("This IPYNB file was generated automatically by MOA GUI.<br>")
                                     .addNewLine("Task name: " + currentTask.getClass().getName() + "<br>")
                                     .addNewLine("## Libraries importing");
                             nb.addCode()
-                                    .setWorkingMode(NotebookCell.Mod.EXECUTION_COUNT)
-                                    .addNewLine(String.valueOf(cellNum))
-                                    .setWorkingMode(NotebookCell.Mod.SOURCE)
+                                    .setWorkingMode(NotebookCell.Mode.SOURCE)
                                     .addNewLine("%maven nz.ac.waikato.cms.moa:moa:2019.05.0")
-                                    .addNewLine("%classpath ")
-                                    .addQuoted("H:/MOA/moa-flow-core.jar")
+                                    .addNewLine("%classpath \"H:/MOA/moa-flow-core.jar\"")
                                     .addNewLine("import moaflow.transformer.*;")
                                     .addNewLine("import moaflow.core.Utils;")
                                     .addNewLine("import moaflow.sink.*;")
@@ -814,32 +730,20 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
 
                             /**-----------------Prints out the configuration of learner, stream and evaluator----------------- **/
                             nb.addMarkdown()
-                                    .setWorkingMode(NotebookCell.Mod.SOURCE)
+                                    .setWorkingMode(NotebookCell.Mode.SOURCE)
                                     .addNewLine("## Configuring learner, stream and evaluator");
-                            cellNum++;
                             nb.addCode()
-                                    .setWorkingMode(NotebookCell.Mod.EXECUTION_COUNT)
-                                    .addNewLine(String.valueOf(cellNum))
-                                    .setWorkingMode(NotebookCell.Mod.SOURCE)
-                                    .addNewLine("String learnerString = ")
-                                    .addQuoted(learnerString)
-                                    .add(";")
-                                    .addNewLine("String streamString = ")
-                                    .addQuoted(streamString)
-                                    .add(";")
-                                    .addNewLine("String evaluatorString = ")
-                                    .addQuoted(evaluatorString)
-                                    .add(";");
+                                    .setWorkingMode(NotebookCell.Mode.SOURCE)
+                                    .addNewLine("String learnerString = \""+learnerString+"\";")
+                                    .addNewLine("String streamString = \""+streamString+"\";")
+                                    .addNewLine("String evaluatorString = \""+evaluatorString+"\";");
 
                             /**-----------------Creates flow for testing, training and exporting result----------------- **/
                             nb.addMarkdown()
-                                    .setWorkingMode(NotebookCell.Mod.SOURCE)
+                                    .setWorkingMode(NotebookCell.Mode.SOURCE)
                                     .addNewLine("## Testing & training, exporting result");
-                            cellNum++;
                             nb.addCode()
-                                    .setWorkingMode(NotebookCell.Mod.EXECUTION_COUNT)
-                                    .addNewLine(String.valueOf(cellNum))
-                                    .setWorkingMode(NotebookCell.Mod.SOURCE)
+                                    .setWorkingMode(NotebookCell.Mode.SOURCE)
                                     .addNewLine("InstanceSource source;")
                                     .addNewLine("source = new InstanceSource();")
                                     .addNewLine("source.setGenerator(streamString);;")
@@ -849,41 +753,33 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                             if (currentTask instanceof EvaluateInterleavedTestThenTrain || currentTask instanceof EvaluatePrequential || currentTask instanceof EvaluatePrequentialCV
                                     || currentTask instanceof EvaluatePrequentialDelayed || currentTask instanceof EvaluatePrequentialDelayedCV) {
 
-                                nb.getLastCell().addNewLine("EvaluateClassifier eval = new EvaluateClassifier();")
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("EvaluateClassifier eval = new EvaluateClassifier();")
                                         .addNewLine("eval.setClassifier(learnerString);");
                                 if (currentTask instanceof EvaluateInterleavedTestThenTrain)
-                                    nb.getLastCell().addNewLine("eval.setEvaluationScheme(")
-                                            .addQuoted("Prequential")
-                                            .add(");");
+                                    nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("eval.setEvaluationScheme(\"Prequential\");");
                                 else
-                                    nb.getLastCell().addNewLine("eval.setEvaluationScheme(")
-                                            .addQuoted(currentTask.getClass().getName().substring(18, currentTask.getClass().getName().length()))
-                                            .add(");");
+                                    nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("eval.setEvaluationScheme(\""
+                                            +currentTask.getClass().getName().substring(18, currentTask.getClass().getName().length())+"\");");
 
                             } else if (currentTask instanceof EvaluatePrequentialRegression) {
-                                nb.getLastCell().addNewLine("EvaluateRegressor eval = new EvaluateRegressor();")
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("EvaluateRegressor eval = new EvaluateRegressor();")
                                         .addNewLine("eval.setRegressor(learnerString);");
                             }
-                            nb.getLastCell().addNewLine("eval.setEvaluator(evaluatorString);")
+                            nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("eval.setEvaluator(evaluatorString);")
                                     .addNewLine("eval.everyNth.setValue(" + sampleFrequency + ");")
                                     .addNewLine("source.subscribe(eval);")
                                     .addNewLine("")
                                     .addNewLine("MeasurementTableSawPlot plot = new MeasurementTableSawPlot();");
                             if (currentTask instanceof EvaluateInterleavedTestThenTrain || currentTask instanceof EvaluatePrequential ||
                                     currentTask instanceof EvaluatePrequentialDelayed) {
-                                nb.getLastCell().addNewLine("plot.measurement.setValue(")
-                                        .addQuoted("classifications correct (percent)")
-                                        .add(");");
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("plot.measurement.setValue(\"classifications correct (percent)\");");
+
                             } else if (currentTask instanceof EvaluatePrequentialCV || currentTask instanceof EvaluatePrequentialDelayedCV) {
-                                nb.getLastCell().addNewLine("plot.measurement.setValue(")
-                                        .addQuoted("[avg] classifications correct (percent)")
-                                        .add(");");
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("plot.measurement.setValue(\"[avg] classifications correct (percent)\");");
                             } else if (currentTask instanceof EvaluatePrequentialRegression) {
-                                nb.getLastCell().addNewLine("plot.measurement.setValue(")
-                                        .addQuoted("mean absolute error")
-                                        .add(");");
+                                nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("plot.measurement.setValue(\"mean absolute error\");");
                             }
-                            nb.getLastCell().addNewLine("plot.maxPoints.setValue(-1);")
+                            nb.getCellByIndex(nb.getNotebookCells().size()-1).addNewLine("plot.maxPoints.setValue(-1);")
                                     .addNewLine("eval.subscribe(plot);")
                                     .addNewLine("")
                                     .addNewLine("OutputLearningCurve curve = new OutputLearningCurve();")
