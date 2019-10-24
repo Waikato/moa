@@ -10,8 +10,8 @@ import java.util.ArrayList;
  * @author Truong To (todinhtruong at gmail dot com)
  */
 public class Notebook {
-    ArrayList<NotebookCell> notebookCells;
-    NotebookCell cell;
+    private ArrayList<NotebookCell> notebookCells;
+    private NotebookCell cell;
     private StringBuilder notebook;
 
     public Notebook(){
@@ -20,10 +20,14 @@ public class Notebook {
     }
 
     public StringBuilder createNotebook() {
+        int count = 1;
         for (int i = 0; i < notebookCells.size(); i++) {
+            if (notebookCells.get(i) instanceof CodeCell){
+                notebookCells.get(i).setWorkingMode(NotebookCell.Mode.EXECUTION_COUNT);
+                notebookCells.get(i).add(Integer.toString(count));
+                count ++;
+            }
             notebookCells.get(i).createCell();
-            notebookCells.get(i).setWorkingMode(NotebookCell.Mod.EXECUTION_COUNT);
-            notebookCells.get(i).add(Integer.toString(i + 1));
             notebook.append("\n")
                     .append(notebookCells.get(i).getCell())
                     .append(",\n");
@@ -60,8 +64,12 @@ public class Notebook {
         return notebook;
     }
 
-    public NotebookCell getLastCell(){
+    /**public NotebookCell getLastCell(){
         return notebookCells.get(notebookCells.size()-1);
+    }**/
+
+    public ArrayList<NotebookCell> getNotebookCells() {
+        return notebookCells;
     }
 
     public NotebookCell getCellByIndex(int index){

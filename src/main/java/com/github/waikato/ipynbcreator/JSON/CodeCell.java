@@ -8,45 +8,36 @@ public class CodeCell extends NotebookCell {
     private StringBuilder outputs;
 
     public CodeCell() {
-        cell = new StringBuilder();
-        metadata = new StringBuilder();
-        source = new StringBuilder();
         cell_type = new StringBuilder("code");
         outputs = new StringBuilder();
         execution_count = 0;
     }
 
     /**
-     * Adds a string to cell in a new separate line
+     * Appends a string to cell in a new separate line
      *
-     * @param st   the string to be added
+     * @param st   the string to be appended
      */
     public NotebookCell addNewLine(String st) {
+        StringBuilder workingString = new StringBuilder();
         switch (workingMode) {
             case CELL_TYPE:
-                if(cell_type.length() > 0)
-                    cell_type.append(",\n");
-                cell_type.append("\"" + st + "\\n\"");
+                addNewLineToStringBuilder(st, cell_type);
                 break;
             case METADATA:
-                if(metadata.length() > 0)
-                    metadata.append(",\n");
-                metadata.append("\"" + st + "\\n\"");
+                addNewLineToStringBuilder(st, metadata);
                 break;
             case SOURCE:
-                if(source.length() > 0)
-                    source.append(",\n");
-                source.append("\"" + st + "\\n\"");
+                addNewLineToStringBuilder(st, source);
                 break;
             case OUTPUTS:
-                if(outputs.length() > 0)
-                    outputs.append(",\n");
-                outputs.append("\"" + st + "\\n\"");
+                addNewLineToStringBuilder(st, outputs);
                 break;
             case EXECUTION_COUNT:
                 execution_count = Integer.valueOf(st);
                 break;
         }
+
         return this;
     }
 
@@ -56,18 +47,19 @@ public class CodeCell extends NotebookCell {
      * @param st   the string to be added
      */
     public NotebookCell add(String st) {
+
         switch (workingMode) {
             case CELL_TYPE:
-                cell_type.insert(cell_type.length() - 3, st);
+                addToStringBuilder(st,cell_type);
                 break;
             case METADATA:
-                metadata.insert(metadata.length() - 3, st);
+                addToStringBuilder(st,metadata);
                 break;
             case SOURCE:
-                source.insert(source.length() - 3, st);
+                addToStringBuilder(st,source);
                 break;
             case OUTPUTS:
-                outputs.insert(source.length() - 3, st);
+                addToStringBuilder(st,outputs);
                 break;
             case EXECUTION_COUNT:
                 execution_count = Integer.valueOf(st);

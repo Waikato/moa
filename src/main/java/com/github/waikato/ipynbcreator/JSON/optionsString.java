@@ -52,8 +52,8 @@ public class optionsString {
                 .append(" = new " + this.getClassShortName() + "();");
         if (!this.classOptionsString.equals(""))
             str.append(this.getClassShortName().substring(0, 4).toLowerCase())
-                    .append(".getOptions().setViaCLIString(\\\"")
-                    .append(this.classOptionsString + "\\\");");
+                    .append(".getOptions().setViaCLIString(\"")
+                    .append(this.classOptionsString + "\");");
         return str.toString();
     }
 

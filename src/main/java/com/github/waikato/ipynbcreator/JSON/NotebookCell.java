@@ -6,7 +6,7 @@ package moa.tasks.JSON;
  * @author Truong To (todinhtruong at gmail dot com)
  */
 public abstract class NotebookCell {
-    public enum Mod {
+    public enum Mode {
         CELL_TYPE,
         EXECUTION_COUNT,
         METADATA,
@@ -19,17 +19,17 @@ public abstract class NotebookCell {
     protected StringBuilder metadata;
     protected StringBuilder source;
     protected StringBuilder cell;
-    protected Mod workingMode;
+    protected Mode workingMode;
 
     public NotebookCell() {
         cell = new StringBuilder();
         cell_type = new StringBuilder();
         metadata = new StringBuilder();
         source = new StringBuilder();
-        workingMode = Mod.SOURCE;
+        workingMode = Mode.SOURCE;
     }
 
-    public NotebookCell setWorkingMode(Mod workingMode) {
+    public NotebookCell setWorkingMode(Mode workingMode) {
         this.workingMode = workingMode;
         return this;
     }
@@ -42,43 +42,13 @@ public abstract class NotebookCell {
     public NotebookCell addNewLine(String st) {
         switch (workingMode) {
             case CELL_TYPE:
-                if(cell_type.length() > 0)
-                    cell_type.append(",\n");
-                cell_type.append("\"" + st + "\\n\"");
+                addNewLineToStringBuilder(st, cell_type);
                 break;
             case METADATA:
-                if(metadata.length() > 0)
-                    metadata.append(",\n");
-                metadata.append("\"" + st + "\\n\"");
+                addNewLineToStringBuilder(st, metadata);
                 break;
             case SOURCE:
-                if(source.length() > 0)
-                    source.append(",\n");
-                source.append("\"" + st + "\\n\"");
-                break;
-        }
-        return this;
-    }
-
-    /**
-     * Adds a quoted string to cell
-     *
-     * @param st   the string to be appended
-     */
-    public NotebookCell addQuoted(String st) {
-        switch (workingMode) {
-            case CELL_TYPE:
-                cell_type.insert(cell_type.length() - 3, "\\\"" + st + "\\\"");
-                break;
-            case METADATA:
-                metadata.insert(metadata.length() - 3, "\\\"" + st + "\\\"");
-                break;
-            case SOURCE:
-                source.insert(source.length() - 3, "\\\"" + st + "\\\"");
-                break;
-            case OUTPUTS:
-                break;
-            case EXECUTION_COUNT:
+                addNewLineToStringBuilder(st, source);
                 break;
         }
         return this;
@@ -92,17 +62,27 @@ public abstract class NotebookCell {
     public NotebookCell add(String st) {
         switch (workingMode) {
             case CELL_TYPE:
-                cell_type.insert(cell_type.length() - 3, st);
+                addNewLineToStringBuilder(st, cell_type);
                 break;
             case METADATA:
-                metadata.insert(metadata.length() - 3, st);
+                addNewLineToStringBuilder(st, metadata);
                 break;
             case SOURCE:
-                source.insert(source.length() - 3, st);
+                addNewLineToStringBuilder(st, source);
                 break;
         }
 
         return this;
+    }
+
+    public void addNewLineToStringBuilder(String st, StringBuilder builder){
+        if(builder.length() > 0)
+            builder.append(",\n");
+        builder.append("\"" + st.replace("\"", "\\\"") + "\\n\"");
+    }
+
+    public void addToStringBuilder(String st, StringBuilder builder){
+        builder.insert(cell_type.length() - 3, st.replace("\"", "\\\""));
     }
 
     /**
