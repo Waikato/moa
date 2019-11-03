@@ -42,12 +42,17 @@ import moa.core.SizeOf;
 import moa.core.StringUtils;
 
 /**
- * Implementation of ARFFIMTDD, an extension of ARFFIMTDD to be used by AdaptiveRandomForestRegressor.
+ * Implementation of ARFFIMTDD, an extension of FIMTDD to be used by AdaptiveRandomForestRegressor.
  *
  * <p>See details in:<br> Heitor Murilo Gomes, Jean Paul Barddal, Luis Eduardo Boiko Ferreira, Albert Bifet.
  * Adaptive random forests for data stream regression.
  * In European Symposium on Artificial Neural Networks, Computational Intelligence and Machine Learning (ESANN), 2018.
  * https://www.elen.ucl.ac.be/Proceedings/esann/esannpdf/es2018-183.pdf</p>
+ *
+ *
+ * <p>FIMT-DD:<br> Ikonomovska, Elena, João Gama, and Sašo Džeroski.
+ * Learning model trees from evolving data streams.
+ * Data mining and knowledge discovery 23.1 (2011): 128-168.</p>
  */
 public class ARFFIMTDD extends AbstractClassifier implements Regressor {
 
@@ -108,9 +113,6 @@ public class ARFFIMTDD extends AbstractClassifier implements Regressor {
     public IntOption alternateTreeTimeOption = new IntOption(
             "alternateTreeTime", 'u', "The number of instances used to decide if an alternate tree should be discarded.",
             1500, 0, Integer.MAX_VALUE);
-
-    public FlagOption regressionTreeOption = new FlagOption(
-            "regressionTree", 'e', "Build a regression tree instead of a model tree.");
 
     public FloatOption learningRatioOption = new FloatOption(
             "learningRatio", 'l', "Learning ratio to used for training the Perceptrons in the leaves.",
@@ -257,9 +259,6 @@ public class ARFFIMTDD extends AbstractClassifier implements Regressor {
          */
         public LeafNode(ARFFIMTDD tree, int subspaceSize) {
             super(tree);
-            if (tree.buildingModelTree()) {
-                learningModel = tree.newLeafModel();
-            }
             examplesSeen = 0;
             sumOfValues = 0;
             sumOfSquares = 0;
@@ -303,8 +302,6 @@ public class ARFFIMTDD extends AbstractClassifier implements Regressor {
 
             // sum of absolute errors
             sumOfAbsErrors += inst.weight() * Math.abs(tree.normalizeTargetValue(Math.abs(inst.classValue() - getPrediction(inst))));
-
-            if (tree.buildingModelTree()) learningModel.updatePerceptron(inst);
 
             if (this.listAttributes == null) {
                 this.listAttributes = new int[this.numAttributes];
@@ -395,7 +392,7 @@ public class ARFFIMTDD extends AbstractClassifier implements Regressor {
         }
 
         public double getPrediction(Instance inst) {
-            return (tree.buildingModelTree()) ? getPredictionModel(inst) : getPredictionTargetMean(inst);
+            return getPredictionTargetMean(inst);
         }
 
         public void checkForSplit(ARFFIMTDD tree) {
@@ -411,12 +408,8 @@ public class ARFFIMTDD extends AbstractClassifier implements Regressor {
 
         public void describeSubtree(StringBuilder out, int indent) {
             StringUtils.appendIndented(out, indent, "Leaf ");
-            if (tree.buildingModelTree()) {
-                learningModel.getModelDescription(out, 0);
-            } else {
                 out.append(tree.getClassNameString() + " = " + String.format("%.4f", (sumOfValues / examplesSeen)));
                 StringUtils.appendNewline(out);
-            }
         }
     }
 
@@ -907,10 +900,6 @@ public class ARFFIMTDD extends AbstractClassifier implements Regressor {
         return Math.sqrt(( (range * range) * Math.log(1 / confidence)) / (2.0 * n));
     }
 
-    public boolean buildingModelTree() {
-        return !regressionTreeOption.isSet();
-    }
-
     protected void attemptToSplit(LeafNode node, Node parent, int parentIndex) {
         // Set the split criterion to use to the SDR split criterion as described by Ikonomovska et al.
         SplitCriterion splitCriterion = (SplitCriterion) getPreparedClassOption(this.splitCriterionOption);
@@ -967,11 +956,6 @@ public class ARFFIMTDD extends AbstractClassifier implements Regressor {
             leafNodeCount--;
             for (int i = 0; i < splitDecision.numSplits(); i++) {
                 LeafNode newChild = newLeafNode();
-                if (buildingModelTree()) {
-                    // Copy the splitting node's perceptron to it's children
-                    newChild.learningModel = new FIMTDDPerceptron((FIMTDDPerceptron) node.learningModel);
-
-                }
                 newChild.changeDetection = node.changeDetection;
                 newChild.setParent(newSplit);
                 newSplit.setChild(i, newChild);
