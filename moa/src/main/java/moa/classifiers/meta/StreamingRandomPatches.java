@@ -1,5 +1,5 @@
 /*
- *    AdaptiveRandomForest.java
+ *    StreamingRandomPatches.java
  *
  *    @author Heitor Murilo Gomes (heitor dot gomes at waikato dot ac dot nz)
  *
