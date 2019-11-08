@@ -60,7 +60,8 @@ public class AccuracyUpdatedEnsemble extends AbstractClassifier implements Multi
 			"The chunk size used for classifier creation and evaluation.", 500, 1, Integer.MAX_VALUE);
 
 	/**
-	 * Determines the maximum size of model (evaluated after every chunk).
+	 * Determines the maximum size of model (evaluated after every chunk). In effect only for HoeffdingTree-based
+	 * component classifiers.
 	 */
 	public IntOption maxByteSizeOption = new IntOption("maxByteSize", 'm', "Maximum memory consumed by ensemble.",
 			33554432, 0, Integer.MAX_VALUE);
@@ -209,7 +210,9 @@ public class AccuracyUpdatedEnsemble extends AbstractClassifier implements Multi
 		this.candidate = (Classifier) getPreparedClassOption(this.learnerOption);
 		this.candidate.resetLearning();
 
-		this.enforceMemoryLimit();
+		if (this.candidate instanceof HoeffdingTree) {
+			this.enforceMemoryLimit();
+		}
 	}
 
 	/**
