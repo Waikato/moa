@@ -1,0 +1,1 @@
+java -classpath /mnt/d/Study/M2_DK/Internship/work/moa/moa/target/classes moa.DoTask

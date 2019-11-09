@@ -201,4 +201,10 @@ public class NaiveBayes extends AbstractClassifier  implements MultiClassClassif
     public void manageMemory(int currentByteSize, int maxByteSize) {
         // TODO Auto-generated method stub
     }
+
+    @Override
+    public double getConfidenceForPrediction(Instance inst, double label) {
+        double[] votes = this.getVotesForInstance(inst);
+        return votes[(int)label];
+    }
 }

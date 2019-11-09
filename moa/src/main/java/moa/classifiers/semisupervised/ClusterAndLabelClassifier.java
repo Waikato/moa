@@ -318,56 +318,6 @@ public class ClusterAndLabelClassifier extends AbstractClassifier
             }
         }
 
-        // examines the measures from the clusterer
-        if (clusterer instanceof WithDBSCAN) {
-            measurements.add(new Measurement("#micro-cluster", clustering.size()));
-            measurements.add(new Measurement("#outlier-cluster",
-                    ((WithDBSCAN) clusterer).getOutlierClusteringResult().size()));
-            measurements.add(new Measurement("tp", ((WithDBSCAN) clusterer).getMinimalTimeSpan()));
-            measurements.add(new Measurement("#pruned pmc", ((WithDBSCAN) clusterer).prunedPMC));
-            measurements.add(new Measurement("#pruned omc", ((WithDBSCAN) clusterer).prunedOMC));
-            measurements.add(new Measurement("#omc to pmc", ((WithDBSCAN) clusterer).grownClusters));
-        } else if (clusterer instanceof WithKmeans) {
-            measurements.add(new Measurement("m_added", ((WithKmeans) clusterer).numAdded));
-            measurements.add(new Measurement("m_deleted", ((WithKmeans) clusterer).numDeleted));
-            measurements.add(new Measurement("m_updated", ((WithKmeans) clusterer).numUpdated));
-            ((WithKmeans) clusterer).numAdded = 0;
-            ((WithKmeans) clusterer).numDeleted = 0;
-            ((WithKmeans) clusterer).numUpdated = 0;
-            // time measurement
-            for (Map.Entry<String, Long> entry : ((WithKmeans) clusterer).time_measures.entrySet()) {
-                measurements.add(new Measurement(entry.getKey(), entry.getValue()));
-            }
-            for (Map.Entry<String, Long> entry : times.entrySet()) {
-                measurements.add(new Measurement(entry.getKey(), entry.getValue()));
-            }
-        } else if (clusterer instanceof Dstream) {
-            measurements.add(new Measurement("num_clusters", clustering.size()));
-            measurements.add(new Measurement("#pruning", ((Dstream) clusterer).countPruning));
-            measurements.add(new Measurement("times_pruning", ((Dstream) clusterer).timePruning));
-            ((Dstream) clusterer).countPruning = 0;
-            ((Dstream) clusterer).timePruning = 0;
-        } else if (clusterer instanceof ClustreamSSL) {
-            measurements.add(new Measurement("m_added", ((ClustreamSSL) clusterer).numAdded));
-            measurements.add(new Measurement("m_deleted", ((ClustreamSSL) clusterer).numDeleted));
-            measurements.add(new Measurement("m_updated", ((ClustreamSSL) clusterer).numUpdated));
-            ((ClustreamSSL) clusterer).numAdded = 0;
-            ((ClustreamSSL) clusterer).numDeleted = 0;
-            ((ClustreamSSL) clusterer).numUpdated = 0;
-            // time measurement
-            for (Map.Entry<String, Long> entry : ((ClustreamSSL) clusterer).time_measures.entrySet()) {
-                measurements.add(new Measurement(entry.getKey(), entry.getValue()));
-            }
-            for (Map.Entry<String, Long> entry : times.entrySet()) {
-                measurements.add(new Measurement(entry.getKey(), entry.getValue()));
-            }
-        }
-
-        // side information
-        // measurements.add(new Measurement("null times", this.nullCTimes));
-        // measurements.add(new Measurement("not null times", this.notNullCTimes));
-        measurements.add(new Measurement("not normalized", notNormalized));
-
         Measurement[] result = new Measurement[measurements.size()];
         return measurements.toArray(result);
     }

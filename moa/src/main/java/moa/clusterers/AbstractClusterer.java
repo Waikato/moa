@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import moa.classifiers.semisupervised.attributeSimilarity.AttributeSimilarityCalculator;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 
@@ -138,6 +139,18 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 	public void trainOnInstance(Instance inst) {
 		if (inst.weight() > 0.0) {
 			this.trainingWeightSeenByModel += inst.weight();
+
+			// update the attribute observer before training
+			if (header == null) header = inst.getHeader();
+			for (int i = 0; i < inst.numAttributes(); i++) {
+				if (inst.attribute(i).isNominal()) {
+					attributeObserver.updateAttributeStatistics(i, inst.attribute(i), (int)inst.value(i));
+				}
+				attributeObserver.increaseSize(1);
+				if (attributeObserver.getDimension() == 0) attributeObserver.setDimension(inst.numAttributes());
+			}
+
+			// train the clusterer
 			trainOnInstanceImpl(inst);
 		}
 	}
@@ -321,6 +334,10 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 	protected double labelDecayFactor;
 
 	protected boolean excludeLabel;
+
+	protected AttributeSimilarityCalculator attributeObserver;
+
+	protected InstancesHeader header;
 
 	@Override
 	public Cluster getUpdatedCluster() { return updatedCluster; }

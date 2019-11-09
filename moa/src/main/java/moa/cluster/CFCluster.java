@@ -21,7 +21,9 @@
 package moa.cluster;
 import java.util.Arrays;
 
+import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /* micro cluster, as defined by Aggarwal et al, On Clustering Massive Data Streams: A Summarization Praradigm 
  * in the book Data streams : models and algorithms, by Charu C Aggarwal
@@ -79,9 +81,7 @@ public abstract class CFCluster extends SphereCluster {
 	 */
 	public CFCluster(Instance instance, int dimensions, long timestamp) {
 		this(instance.toDoubleArray(), dimensions);
-
-		// update the weight in label feature
-		this.updateLabelWeight(instance, 1, timestamp);
+		this.updateLabelWeight(instance, 1, timestamp); // update the weight in label feature
 	}
 
 	protected CFCluster(int dimensions) {
@@ -108,9 +108,7 @@ public abstract class CFCluster extends SphereCluster {
 		this.N = cluster.N;
 		this.LS = Arrays.copyOf(cluster.LS, cluster.LS.length);
 		this.SS = Arrays.copyOf(cluster.SS, cluster.SS.length);
-
-		// copy the label count
-		this.labelFeature = cluster.getLabelFeatureCopy();
+		this.labelFeature = cluster.getLabelFeatureCopy(); // copy the label count
 	}
 
 	public void add(CFCluster cluster) {
@@ -142,6 +140,11 @@ public abstract class CFCluster extends SphereCluster {
 		 return res;
 	 }
 
+	@Override
+	public Instance getCenterPoint(InstancesHeader header) {
+		double[] center = this.getCenter();
+		return new DenseInstance(this.getWeight(), center, header);
+	}
 
 	 @Override
 	 public abstract double getInclusionProbability(Instance instance);

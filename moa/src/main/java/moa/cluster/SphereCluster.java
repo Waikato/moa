@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Random;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * A simple implementation of the <code>Cluster</code> interface representing
@@ -374,5 +375,9 @@ public class SphereCluster extends Cluster {
 		infoValue.add(Double.toString(getRadius()));
 	}
 
+	@Override
+	public Instance getCenterPoint(InstancesHeader header) {
+		return null;
+	}
 
 }

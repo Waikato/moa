@@ -20,6 +20,8 @@
 package moa.clusterers;
 
 import moa.MOAObject;
+import moa.classifiers.semisupervised.attributeSimilarity.AttributeSimilarityCalculator;
+import moa.classifiers.semisupervised.attributeSimilarity.EuclideanDistanceSimilarityCalculator;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
@@ -28,7 +30,6 @@ import moa.gui.AWTRenderable;
 import moa.options.OptionHandler;
 import com.yahoo.labs.samoa.instances.Instance;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface Clusterer extends MOAObject, OptionHandler, AWTRenderable {
@@ -120,6 +121,40 @@ public interface Clusterer extends MOAObject, OptionHandler, AWTRenderable {
 			}
 		}
 		return Math.sqrt(distance);
+	}
+
+	/**
+	 * Computes the distance between two points, such that: numeric attributes are computed with Euclidean didstance,
+	 * and nominal attributes are computed with an attribute similarity observer
+	 * @param p1 point 1
+	 * @param p2 point 2
+	 * @param excludes list of attributed excluded from the distance computation
+	 * @param obs the attribute similarity observer
+	 * @return the distance between 2 points
+	 */
+	public static double distance(Instance p1, Instance p2, List<Integer> excludes, AttributeSimilarityCalculator obs) {
+		double distance = 0.0;
+
+		// compute distances between numeric attributes
+		for (int i = 0; i < p1.numAttributes(); i++) {
+			if (excludes != null && excludes.contains(i)) continue;
+			if ((p1.attribute(i).isNumeric() && p2.attribute(i).isNumeric()) ||
+					(obs instanceof EuclideanDistanceSimilarityCalculator)) {
+				if (!Double.isNaN(p1.value(i)) && !Double.isNaN(p2.value(i))) {
+					double d = p1.value(i) - p2.value(i);
+					distance += d * d;
+				}
+			}
+		}
+		distance = Math.sqrt(distance);
+
+		// compute similarity-based distances between nominal attributes
+		if (obs != null && !(obs instanceof EuclideanDistanceSimilarityCalculator)) {
+			double similarity = obs.computeSimilarityOfInstance(p1, p2);
+			distance += (1 / similarity - 1);
+		}
+
+		return distance;
 	}
 
 	public void setExcludeLabel(boolean excludeLabel);
