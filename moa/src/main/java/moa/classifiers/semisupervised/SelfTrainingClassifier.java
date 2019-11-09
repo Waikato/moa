@@ -97,14 +97,6 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
     private double N;
     private double lastConfidenceScore;
 
-    /***** Measurement only *****/
-    private int mostConfidentSize;
-    private int Lsize;
-    private int Usize;
-    private double[] confidenceScoreDist;
-    private List<Double> confidenceScoreProbab;
-    /***** Measurement only *****/
-
     @Override
     public String getPurposeString() { return "A self-training classifier"; }
 
@@ -113,7 +105,6 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
         this.learner = (Classifier) getPreparedClassOption(learnerOption);
         this.batchSize = batchSizeOption.getValue();
         this.threshold = thresholdOption.getValue();
-        this.confidenceScoreProbab = new ArrayList<>();
         this.ratio = ratioThresholdOption.getValue();
         this.horizon = horizonOption.getValue();
         LS = SS = N = t = 0;
@@ -129,7 +120,6 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
     @Override
     public void resetLearningImpl() {
         this.learner.resetLearning();
-        confidenceScoreProbab = new ArrayList<>();
         lastConfidenceScore = LS = SS = N = t = 0;
         allocateBatch();
     }
@@ -168,9 +158,6 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
             else getMostConfidentFromLearner(Uhat, mostConfident);
             // train from the most confident examples
             mostConfident.forEach(x -> learner.trainOnInstance(x));
-            mostConfidentSize = mostConfident.size();
-            Lsize = L.size();
-            Usize = U.size();
             cleanBatch();
         }
     }
@@ -184,8 +171,6 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
         if (t % horizon == 0) {
             if (N == 0 || LS == 0 || SS == 0) return;
             threshold = (LS / N) * ratio;
-            // threshold = (threshold <= 1.0 ? threshold : 1.0);
-            // N = LS = SS = 0; // to reset or not?
             t = 0;
         }
     }
@@ -198,17 +183,7 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
         double zscore = (lastConfidenceScore - mean) / variance;
         if (Math.abs(zscore) > 1.0) {
             threshold = mean * ratio;
-            // threshold = (threshold <= 1.0 ? threshold : 1.0);
         }
-    }
-
-    /**
-     * Gets the prediction from an instance (a shortcut to pass getVotesForInstance)
-     * @param inst the instance
-     * @return the most likely prediction (the label with the highest probability in <code>getVotesForInstance</code>)
-     */
-    private double getPrediction(Instance inst) {
-        return Utils.maxIndex(this.getVotesForInstance(inst));
     }
 
     /**
@@ -227,7 +202,6 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
     private void getMostConfidentFromLearner(List<Instance> batch, List<Instance> result) {
         for (Instance instance : batch) {
             double[] votes = learner.getVotesForInstance(instance);
-            confidenceScoreProbab.add(votes[Utils.maxIndex(votes)]);
             if (votes[Utils.maxIndex(votes)] >= threshold) {
                 result.add(instance);
             }
@@ -277,8 +251,6 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
                 result.add(batch.get(j));
             }
         }
-
-        confidenceScoreDist = confidences.clone();
     }
 
     /**
@@ -307,24 +279,8 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        List<Measurement> measures = new ArrayList<>();
-
         // measures of the learner
-        measures.addAll(Arrays.asList(learner.getModelMeasurements()));
-
-        // more measures of self-trained learner
-        measures.add(new Measurement("most confident", mostConfidentSize));
-        measures.add(new Measurement("L size", Lsize));
-        measures.add(new Measurement("U size", Usize));
-
-        double avgConfScore = 0;
-        if (confidenceOption.getChosenIndex() == 0) {
-            for (double v : confidenceScoreDist) avgConfScore += v / confidenceScoreDist.length;
-        } else {
-            for (Double v : confidenceScoreProbab) avgConfScore += v / confidenceScoreProbab.size();
-        }
-        measures.add(new Measurement("avg confidence", avgConfScore));
-
+        List<Measurement> measures = new ArrayList<>(Arrays.asList(learner.getModelMeasurements()));
         Measurement[] result = new Measurement[measures.size()];
         return measures.toArray(result);
     }

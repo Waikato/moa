@@ -5,7 +5,6 @@ import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
-import moa.classifiers.Classifier;
 import moa.classifiers.semisupervised.attributeSimilarity.*;
 import moa.cluster.CFCluster;
 import moa.cluster.Cluster;
@@ -20,7 +19,7 @@ import moa.core.Utils;
 import java.util.*;
 
 /**
- * A modified version of Clustream to work with SSL paradigm
+ * A modified version of CluStream to work with semi-supervised learning
  */
 public class ClustreamSSL extends AbstractClusterer {
 
@@ -144,8 +143,8 @@ public class ClustreamSSL extends AbstractClusterer {
         ClustreamKernel closestKernel = null;
         double minDistance = Double.MAX_VALUE;
         for (ClustreamKernel kernel : kernels) {
-            //double distance = Clusterer.distance(instance.toDoubleArray(), kernel.getCenter(), excludes);
-            double distance = Clusterer.distance(instance, kernel.getCenterPoint(this.header), excludes, attributeObserver);
+            double distance = Clusterer.distance(instance, kernel.getCenterPoint(this.header),
+                    excludes, attributeObserver);
             if (distance < minDistance) {
                 closestKernel = kernel;
                 minDistance = distance;
@@ -158,10 +157,8 @@ public class ClustreamSSL extends AbstractClusterer {
             if (closestKernel.getN() == 1) {
                 // Special case: estimate radius by determining the distance to the next closest cluster
                 radius = Double.MAX_VALUE;
-                double[] center = closestKernel.getCenter();
                 for (ClustreamKernel kernel : kernels) {
                     if (kernel == closestKernel) continue;
-                    //double distance = Clusterer.distance(kernel.getCenter(), center, excludes);
                     double distance = Clusterer.distance(
                             kernel.getCenterPoint(this.header), closestKernel.getCenterPoint(this.header),
                             excludes, attributeObserver);
@@ -195,9 +192,7 @@ public class ClustreamSSL extends AbstractClusterer {
         int closestB = 0;
         minDistance = Double.MAX_VALUE;
         for ( int i = 0; i < kernels.length; i++ ) {
-            double[] centerA = kernels[i].getCenter();
             for ( int j = i + 1; j < kernels.length; j++ ) {
-                //double dist = Clusterer.distance(centerA, kernels[j].getCenter(), excludes);
                 double dist = Clusterer.distance(
                         kernels[i].getCenterPoint(this.header), kernels[j].getCenterPoint(this.header),
                         excludes, attributeObserver);
@@ -221,13 +216,12 @@ public class ClustreamSSL extends AbstractClusterer {
     public Clustering getMicroClusteringResult() {
         if (!initialized) return new Clustering(new Cluster[0]);
 
+        // weight each cluster based on the lambda factor
         ClustreamKernel[] result = new ClustreamKernel[kernels.length];
         for (int i = 0; i < result.length; i++) {
             result[i] = new ClustreamKernel(kernels[i], t, m);
             result[i].setDecayFactor(lambda);
             result[i].setWeight(kernels[i].getWeight());
-            //double weight = kernels[i].getN() / Math.log(kernels[i].getLST()); // weight = N / log(LST)
-            //result[i].setWeight(weight);
         }
 
         return new Clustering(result);

@@ -20,6 +20,11 @@ import moa.tasks.TaskMonitor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Heterogeneous Dynamic Selection variance of Cluster-and-Label:
+ * - Heterogeneous: use a variety of learner (a clusterer, one local learner, one global learner)
+ * - Dynamic Selection: the predictions for each instance are decided by a heuristic
+ */
 public class ClusterAndLabelSubLearnerClassifier extends AbstractClassifier implements SemiSupervisedLearner {
     @Override
     public String getPurposeString() {
@@ -36,7 +41,7 @@ public class ClusterAndLabelSubLearnerClassifier extends AbstractClassifier impl
     /** Chooses the base learner in each cluster */
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
             "A learner that trains from the instances in a cluster",
-            AbstractClassifier.class, "trees.HoeffdingTree");
+            AbstractClassifier.class, "bayes.NaiveBayes");
 
     /** Chooses the global learner */
     public ClassOption globalLearnerOption = new ClassOption("globalLearner", 'g',
@@ -52,13 +57,11 @@ public class ClusterAndLabelSubLearnerClassifier extends AbstractClassifier impl
             "Chooses the way we issue the final prediction",
             new String[] {
                     "majorityVoting",
-                    "selective",
-                    "force"
+                    "selective"
             },
             new String[] {
                     "Majority voting combined from all three learners",
-                    "Selective prediction chosen from one learner only",
-                    "Force the learner to always pick the correct prediction (for experiments only)"
+                    "Selective prediction chosen from one learner only"
             }, 1);
 
     /** Does clustering and holds the micro-clusters for classification */
@@ -76,22 +79,6 @@ public class ClusterAndLabelSubLearnerClassifier extends AbstractClassifier impl
     /** Which prediction to do */
     private int predictionChoice;
 
-    ////////////////////////
-    // just some measures //
-    ////////////////////////
-    private int agreementLocalGlobal;
-    private int agreementLearnerCluster;
-    private int useGlobal;
-    private int useLearner;
-    private int useLabelFeature;
-    private int useLocal;
-    private int[][] confusionMatrix; // row 0 = label feature, row 1 = local learner, row 2 = global learner
-    private boolean isFromLocal, isFromGlobal, isFromCluster;
-    private int[] correctTime;
-    ////////////////////////
-    // just some measures //
-    ////////////////////////
-
     @Override
     public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         this.clusterer = (AbstractClusterer) getPreparedClassOption(this.clustererOption);
@@ -102,8 +89,6 @@ public class ClusterAndLabelSubLearnerClassifier extends AbstractClassifier impl
         this.globalLearner.prepareForUse();
         this.usePseudoLabel = usePseudoLabelOption.isSet();
         this.predictionChoice = predictionOption.getChosenIndex();
-        this.confusionMatrix = new int[3][3];
-        this.correctTime = new int[8];
         super.prepareForUseImpl(monitor, repository);
     }
 
@@ -114,108 +99,8 @@ public class ClusterAndLabelSubLearnerClassifier extends AbstractClassifier impl
 
     @Override
     public double[] getVotesForInstance(Instance inst) {
-        double[] votes;
-        if (predictionChoice == 0) {
-            //return getMajorityVotes(inst); // get simple majority votes from all 3 learners
-            votes = getMajorityVotes(inst);
-        } else if (predictionChoice == 1) {
-            // return getSelectiveVotes(inst); // get selective votes
-            votes = getSelectiveVotes(inst);
-        } else {
-            // force the learner to choose the correct prediction to establish the baseline
-            return getForcedVotes(inst);
-        }
-
-        // collect data for confusion matrix
-        double realLabel = inst.maskedClassValue();
-        double predictedLabel = Utils.maxIndex(votes);
-        if (realLabel == predictedLabel) {
-            if (isFromCluster) { // cluster is correct while local learner & global learner are incorrect
-                confusionMatrix[1][0]++;
-                confusionMatrix[2][0]++;
-            } else if (isFromLocal) { // local learner is correct while cluster & global learner are incorrect
-                confusionMatrix[0][1]++;
-                confusionMatrix[2][1]++;
-            } else if (isFromGlobal) { // global learner is correct while cluster & local learner are incorrect
-                confusionMatrix[0][2]++;
-                confusionMatrix[1][2]++;
-            }
-        } else { // no one is correct lmao
-            if (isFromCluster) confusionMatrix[0][0]++;
-            if (isFromLocal) confusionMatrix[1][1]++;
-            if (isFromGlobal) confusionMatrix[2][2]++;
-        }
-
-        // reset the flag
-        isFromCluster = isFromGlobal = isFromLocal = false;
-
-        return votes;
-    }
-
-    private double[] getForcedVotes(Instance inst) {
-        // vote from the cluster
-        Cluster C = this.clusterer.getNearestCluster(inst, false);
-        double[] clusterVotes = C != null ? C.getLabelFeature().getVotes() : null;
-        double clusterLabel = clusterVotes != null ? Utils.maxIndex(clusterVotes) : -1;
-
-        // vote from the cluster's local learner (if C is not null)
-        double[] localLearnerVotes;
-        double localLearnerLabel;
-        if (C != null) {
-            localLearnerVotes = C.getLearner() != null ? C.getLearner().getVotesForInstance(inst) : null;
-            localLearnerLabel = localLearnerVotes != null ? Utils.maxIndex(localLearnerVotes) : -1;
-        } else {
-            localLearnerVotes = new double[0];
-            localLearnerLabel = -1;
-        }
-
-        // vote from the global learner
-        double[] globalVotes = globalLearner.getVotesForInstance(inst);
-        double globalLabel = Utils.maxIndex(globalVotes);
-
-        // real label
-        double trueLabel = (!inst.classIsMasked() && !inst.classIsMissing()) ? inst.classValue() : inst.maskedClassValue();
-
-        // check if there is one factor that gets the true label; if there is, force the correct choice, and note which one is that
-
-        // if all is correct: CL + LL + GL
-        if (trueLabel == clusterLabel && trueLabel == localLearnerLabel && trueLabel == globalLabel) {
-            correctTime[7]++;
-            return clusterVotes;
-        }
-        // if CL + LL correct
-        if (trueLabel == clusterLabel && trueLabel == localLearnerLabel) {
-            correctTime[4]++;
-            return clusterVotes;
-        }
-        // if CL + GL are correct
-        if (trueLabel == clusterLabel && trueLabel == globalLabel) {
-            correctTime[5]++;
-            return clusterVotes;
-        }
-        // if LL + GL are correct
-        if (trueLabel == localLearnerLabel && trueLabel == globalLabel) {
-            correctTime[6]++;
-            return globalVotes;
-        }
-        // if only CL is correct
-        if (trueLabel == clusterLabel) {
-            correctTime[1]++;
-            return clusterVotes;
-        }
-        // if only LL is correct
-        if (trueLabel == localLearnerLabel) {
-            correctTime[2]++;
-            return localLearnerVotes;
-        }
-        // if only GL is correct
-        if (trueLabel == globalLabel) {
-            correctTime[3]++;
-            return globalVotes;
-        }
-        // if no one is correct it sucks lmao
-        correctTime[0]++;
-        return new double[0];
+        if (predictionChoice == 0) return getMajorityVotes(inst); // get simple majority votes from all 3 learners
+        else return getSelectiveVotes(inst); // get selective votes
     }
 
     private double[] getSelectiveVotes(Instance inst) {
@@ -226,24 +111,12 @@ public class ClusterAndLabelSubLearnerClassifier extends AbstractClassifier impl
 
         // TODO if inclusion probab too low --> use global votes
         // if localVotes has only 0, return the global votes
-        if (isAllZero(localVotes)) {
-            useGlobal++;
-            isFromGlobal = true;
-            return globalVotes;
-        }
+        if (isAllZero(localVotes)) return globalVotes;
         // if local and global votes agree on the best label, return the local votes
-        if (Utils.maxIndex(localVotes) == Utils.maxIndex(globalVotes)) {
-            agreementLocalGlobal++;
-            return localVotes;
-        }
+        if (Utils.maxIndex(localVotes) == Utils.maxIndex(globalVotes)) return localVotes;
         // if the cluster issues the local votes has too few points/ratio of L over U is too small --> return global
-        if (hasTooFewData(C)) {
-            useGlobal++;
-            isFromGlobal = true;
-            return globalVotes;
-        }
+        if (hasTooFewData(C)) return globalVotes;
         // if all else, return the local votes
-        useLocal++;
         return localVotes;
     }
 
@@ -271,33 +144,12 @@ public class ClusterAndLabelSubLearnerClassifier extends AbstractClassifier impl
     private double[] getLocalVotes(Instance inst, Cluster C) {
         if (C == null) return new double[0];
         double[] labelVotes = C.getLabelVotes();
-        if (C.getLearner() == null) {
-            useLabelFeature++;
-            isFromCluster = true;
-            return labelVotes;
-        }
-
+        if (C.getLearner() == null) return labelVotes;
         double[] learnerVotes = C.getLearner().getVotesForInstance(inst);
-
         if (!isAllZero(labelVotes) & !isAllZero(learnerVotes)) {
-            if (Utils.maxIndex(labelVotes) == Utils.maxIndex(learnerVotes)) {
-                useLabelFeature++;
-                agreementLearnerCluster++;
-                isFromCluster = true;
-                return labelVotes;
-            }
-            else {
-                useLearner++;
-                isFromLocal = true;
-                return learnerVotes;
-            }
-        } else if (isAllZero(labelVotes)) {
-            useLearner++;
-            isFromLocal = true;
-            return learnerVotes; // if labelVotes has only 0, return learnerVotes
-        }
-        useLabelFeature++;
-        isFromCluster = true;
+            if (Utils.maxIndex(labelVotes) == Utils.maxIndex(learnerVotes)) return labelVotes;
+            else return learnerVotes;
+        } else if (isAllZero(labelVotes)) return learnerVotes; // if labelVotes has only 0, return learnerVotes
         return labelVotes; // or otherwise
     }
 
@@ -349,23 +201,7 @@ public class ClusterAndLabelSubLearnerClassifier extends AbstractClassifier impl
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        List<Measurement> measures = new ArrayList<>();
-        measures.add(new Measurement("useGlobal", useGlobal));
-        measures.add(new Measurement("useLocal", useLocal));
-        measures.add(new Measurement("useLearner", useLearner));
-        measures.add(new Measurement("useLabelFeature", useLabelFeature));
-        measures.add(new Measurement("agreementLocalGlobal", agreementLocalGlobal));
-        measures.add(new Measurement("agreementLearnerCluster", agreementLearnerCluster));
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                measures.add(new Measurement("confusionMatrix-" + i + "-" + j , confusionMatrix[i][j]));
-            }
-        }
-        for (int i = 0; i < correctTime.length; i++) {
-            measures.add(new Measurement("correctTimes-" + i, correctTime[i]));
-        }
-        Measurement[] result = new Measurement[measures.size()];
-        return measures.toArray(result);
+        return new Measurement[0];
     }
 
     @Override

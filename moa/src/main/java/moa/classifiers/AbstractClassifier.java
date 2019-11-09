@@ -436,6 +436,6 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
 
     @Override
     public double getConfidenceForPrediction(Instance inst, double label) {
-        return 0;
+        return 0; // to be overriden by each subclass
     }
 }

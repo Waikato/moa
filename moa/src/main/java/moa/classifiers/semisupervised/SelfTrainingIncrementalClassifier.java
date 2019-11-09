@@ -149,7 +149,7 @@ public class SelfTrainingIncrementalClassifier extends AbstractClassifier implem
         if (t % horizon == 0) {
             if (N == 0 || LS == 0 || SS == 0) return;
             threshold = (LS / N) * ratio;
-            threshold = (threshold <= 1.0 ? threshold : 1.0);
+            threshold = (Math.min(threshold, 1.0));
             // N = LS = SS = 0; // to reset or not?
             t = 0;
         }
@@ -163,7 +163,7 @@ public class SelfTrainingIncrementalClassifier extends AbstractClassifier implem
         double zscore = (lastConfidenceScore - mean) / variance;
         if (Math.abs(zscore) > 1.0) {
             threshold = mean * ratio;
-            threshold = (threshold <= 1.0 ? threshold : 1.0);
+            threshold = (Math.min(threshold, 1.0));
         }
     }
 

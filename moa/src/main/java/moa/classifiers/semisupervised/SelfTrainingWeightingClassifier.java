@@ -12,7 +12,8 @@ import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 
 /**
- * Baseline of self-training: all instances are weighted and used to self-train the learner
+ * Variance of Self-training: all instances are used to self-train the learner, but each has a weight, depending
+ * on the confidence of their prediction
  */
 public class SelfTrainingWeightingClassifier extends AbstractClassifier implements SemiSupervisedLearner {
 
@@ -59,9 +60,7 @@ public class SelfTrainingWeightingClassifier extends AbstractClassifier implemen
             Instance instCopy = inst.copy();
             int yHat = Utils.maxIndex(learner.getVotesForInstance(instCopy));
             instCopy.setClassValue(yHat);
-            if (!equalWeight) {
-                instCopy.setWeight(learner.getConfidenceForPrediction(instCopy, yHat));
-            }
+            if (!equalWeight) instCopy.setWeight(learner.getConfidenceForPrediction(instCopy, yHat));
             learner.trainOnInstance(instCopy);
         }
     }
