@@ -49,7 +49,7 @@ public class SelfTrainingWeightingClassifier extends AbstractClassifier implemen
 
     @Override
     public void resetLearningImpl() {
-
+        this.learner.resetLearning();
     }
 
     @Override

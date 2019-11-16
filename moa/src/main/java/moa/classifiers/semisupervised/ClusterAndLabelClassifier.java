@@ -69,7 +69,6 @@ public class ClusterAndLabelClassifier extends AbstractClassifier
     }
 
     private Clustering getClusteringResult() {
-        // TODO get the online clustering result?
         if (clusterer.implementsMicroClusterer()) return clusterer.getMicroClusteringResult();
         return clusterer.getClusteringResult();
     }
@@ -86,6 +85,11 @@ public class ClusterAndLabelClassifier extends AbstractClassifier
         return votes;
     }
 
+    /**
+     * Gets the predictions from K nearest clusters
+     * @param kC array of k nearest clusters
+     * @return the final predictions
+     */
     private double[] getVotesFromKClusters(Cluster[] kC) {
         DoubleVector result = new DoubleVector();
         for (Cluster cluster : kC) {
@@ -100,7 +104,6 @@ public class ClusterAndLabelClassifier extends AbstractClassifier
 
     @Override
     public void resetLearningImpl() {
-        // just clean up everything
         this.clusterer.resetLearning();
     }
 
@@ -111,11 +114,19 @@ public class ClusterAndLabelClassifier extends AbstractClassifier
         else this.trainOnInstanceNoPseudoLabel(inst);
     }
 
+    /**
+     * Trains Cluster-and-Label normally (use the instance to train the clusterer)
+     * @param inst the instance X
+     */
     private void trainOnInstanceNoPseudoLabel(Instance inst) {
         // train stuffs
         this.clusterer.trainOnInstance(inst);
     }
 
+    /**
+     * Trains Cluster-and-Label with pseudo-label
+     * @param inst the instance X
+     */
     private void trainOnInstanceWithPseudoLabel(Instance inst) {
         // if the class is masked (simulated as missing) or is missing (for real) --> pseudo-label
         if (inst.classIsMasked() || inst.classIsMissing()) {
@@ -135,6 +146,7 @@ public class ClusterAndLabelClassifier extends AbstractClassifier
         }
     }
 
+    /** Allows the us to quickly find the k closest cluster */
     class DistanceKernelComparator implements Comparator<Cluster> {
 
         private Instance instance;
@@ -151,6 +163,12 @@ public class ClusterAndLabelClassifier extends AbstractClassifier
         }
     }
 
+    /**
+     * Finds K nearest cluster from an instance
+     * @param instance the instance X
+     * @param k K closest clusters
+     * @return set of K closest clusters
+     */
     private Cluster[] findKNearestClusters(Instance instance, int k) {
         Set<Cluster> sortedClusters = new TreeSet<>(new DistanceKernelComparator(instance));
         Clustering clustering = this.getClusteringResult();
@@ -169,7 +187,7 @@ public class ClusterAndLabelClassifier extends AbstractClassifier
      * @return the nearest cluster if any found, <code>null</code> otherwise
      */
     private Cluster findClosestCluster(Instance instance, boolean includeClass) {
-            return clusterer.getNearestCluster(instance, includeClass);
+        return clusterer.getNearestCluster(instance, includeClass);
     }
 
     @Override

@@ -167,6 +167,9 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
         if (thresholdChoiceOption.getChosenIndex() == 2) updateThresholdVariance();
     }
 
+    /**
+     * Dynamically updates the confidence threshold at the end of each window horizon
+     */
     private void updateThresholdWindowing() {
         if (t % horizon == 0) {
             if (N == 0 || LS == 0 || SS == 0) return;
@@ -175,6 +178,10 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
         }
     }
 
+    /**
+     * Dynamically updates the confidence threshold:
+     * adapt the threshold if the last confidence score falls out of z-index = 1 zone
+     */
     private void updateThresholdVariance() {
         // TODO update right when it detects a drift, or to wait until H drifts have happened?
         if (N == 0 || LS == 0 || SS == 0) return;
@@ -199,6 +206,11 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
         }
     }
 
+    /**
+     * Gets the most confident predictions
+     * @param batch batch of instances to give prediction to
+     * @param result instances that are more confidence than a threshold
+     */
     private void getMostConfidentFromLearner(List<Instance> batch, List<Instance> result) {
         for (Instance instance : batch) {
             double[] votes = learner.getVotesForInstance(instance);
@@ -279,10 +291,7 @@ public class SelfTrainingClassifier extends AbstractClassifier implements SemiSu
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        // measures of the learner
-        List<Measurement> measures = new ArrayList<>(Arrays.asList(learner.getModelMeasurements()));
-        Measurement[] result = new Measurement[measures.size()];
-        return measures.toArray(result);
+        return new Measurement[0];
     }
 
     @Override

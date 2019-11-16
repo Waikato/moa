@@ -1,6 +1,5 @@
 package moa.classifiers.semisupervised;
 
-import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
@@ -72,12 +71,11 @@ public class SelfTrainingIncrementalClassifier extends AbstractClassifier implem
     /** Ratio of the threshold wrt the average confidence score*/
     private double ratio;
 
+    // statistics needed to update the confidence threshold
     private double LS;
     private double SS;
     private double N;
     private double lastConfidenceScore;
-    private List<Double> confidences = new ArrayList<>();
-    private int numKeptInstances = 0;
 
     @Override
     public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
@@ -127,14 +125,12 @@ public class SelfTrainingIncrementalClassifier extends AbstractClassifier implem
                 Instance instCopy = inst.copy();
                 instCopy.setClassValue(prediction);
                 learner.trainOnInstance(instCopy);
-                numKeptInstances++;
             }
-            // accumulate the statistics
+            // accumulate the statistics to update the adaptive threshold
             LS += confidenceScore;
             SS += confidenceScore * confidenceScore;
             N++;
             lastConfidenceScore = confidenceScore;
-            confidences.add(confidenceScore);
         }
 
         t++;
@@ -145,6 +141,9 @@ public class SelfTrainingIncrementalClassifier extends AbstractClassifier implem
         if (thresholdChoiceOption.getChosenIndex() == 2) updateThresholdVariance();
     }
 
+    /**
+     * Updates the threshold after each window horizon
+     */
     private void updateThresholdWindowing() {
         if (t % horizon == 0) {
             if (N == 0 || LS == 0 || SS == 0) return;
@@ -155,8 +154,12 @@ public class SelfTrainingIncrementalClassifier extends AbstractClassifier implem
         }
     }
 
+    /**
+     * Update the thresholds based on the variance:
+     * if the z-score of the last confidence score wrt the mean is more than 1.0,
+     * update the confidence threshold
+     */
     private void updateThresholdVariance() {
-        // TODO update right when it detects a drift, or to wait until H drifts have happened?
         if (N == 0 || LS == 0 || SS == 0) return;
         double variance = (SS - LS * LS / N) / (N - 1);
         double mean = LS / N;
@@ -178,23 +181,7 @@ public class SelfTrainingIncrementalClassifier extends AbstractClassifier implem
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        List<Measurement> measures = new ArrayList<>();
-
-        // confidence threshold
-        measures.add(new Measurement("threshold", threshold));
-
-        // average confidence score
-        double avgConfidence = 0;
-        for (Double confidence : confidences) avgConfidence += confidence;
-        avgConfidence /= confidences.size();
-        measures.add(new Measurement("average confidence", avgConfidence));
-
-        // number of instances kept as training data
-        measures.add(new Measurement("kept instances", numKeptInstances));
-        numKeptInstances = 0;
-
-        Measurement[] result = new Measurement[measures.size()];
-        return measures.toArray(result);
+        return new Measurement[0];
     }
 
     @Override

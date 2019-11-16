@@ -17,9 +17,6 @@ import moa.core.Utils;
 import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Heterogeneous Dynamic Selection variance of Cluster-and-Label:
  * - Heterogeneous: use a variety of learner (a clusterer, one local learner, one global learner)
@@ -92,6 +89,12 @@ public class ClusterAndLabelSubLearnerClassifier extends AbstractClassifier impl
         super.prepareForUseImpl(monitor, repository);
     }
 
+    /**
+     * Checks if the votes are all 0's.
+     * This may occur if a learner has seen too few instances to issue reliable predictions
+     * @param votes the votes array
+     * @return True if the votes are all 0's, False otherwise.
+     */
     private boolean isAllZero(double[] votes) {
         for (double vote : votes) if (vote != 0) return false;
         return true;
@@ -103,6 +106,11 @@ public class ClusterAndLabelSubLearnerClassifier extends AbstractClassifier impl
         else return getSelectiveVotes(inst); // get selective votes
     }
 
+    /**
+     * Gets selective votes from the three learners
+     * @param inst the instance X
+     * @return the votes
+     */
     private double[] getSelectiveVotes(Instance inst) {
         // get local and global votes
         Cluster C = this.clusterer.getNearestCluster(inst, false);
@@ -120,6 +128,11 @@ public class ClusterAndLabelSubLearnerClassifier extends AbstractClassifier impl
         return localVotes;
     }
 
+    /**
+     * Gets the majority votes from the three learners
+     * @param inst the instance X
+     * @return the votes
+     */
     private double[] getMajorityVotes(Instance inst) {
         // get votes from the nearest cluster, local & global learner
         Cluster C = clusterer.getNearestCluster(inst, false);
@@ -136,11 +149,24 @@ public class ClusterAndLabelSubLearnerClassifier extends AbstractClassifier impl
         return prediction.getArrayRef();
     }
 
+    /**
+     * Chekcs if the cluster has too few data i.e.
+     * if the cluster has less than 10 points OR
+     * the ratio of labeled instances over unlabeled instances is less than 0.3
+     * @param C the cluster of interest
+     * @return
+     */
     private boolean hasTooFewData(Cluster C) {
         return ( ((CFCluster) C).getN() < 10
                 || ((float)C.getNumLabeledPoints() / (float)C.getNumUnlabeledPoints() < 0.3));
     }
 
+    /**
+     * Gets the local votes
+     * @param inst the instance X
+     * @param C the cluster C
+     * @return the votes
+     */
     private double[] getLocalVotes(Instance inst, Cluster C) {
         if (C == null) return new double[0];
         double[] labelVotes = C.getLabelVotes();
@@ -153,6 +179,11 @@ public class ClusterAndLabelSubLearnerClassifier extends AbstractClassifier impl
         return labelVotes; // or otherwise
     }
 
+    /**
+     * Gets the global votes
+     * @param inst the instance X
+     * @return the votes
+     */
     private double[] getGlobalVotes(Instance inst) {
         return this.globalLearner.getVotesForInstance(inst);
     }
@@ -172,11 +203,19 @@ public class ClusterAndLabelSubLearnerClassifier extends AbstractClassifier impl
         this.globalLearner.trainOnInstance(inst);
     }
 
+    /**
+     * Trains the learner without pseudo-labeling
+     * @param inst the instance X
+     */
     private void trainOnInstanceNoPseudoLabel(Instance inst) {
         this.clusterer.trainOnInstance(inst);
         trainLearnerInCluster(inst, this.clusterer.getUpdatedCluster());
     }
 
+    /**
+     * Trains the learner with pseudo-labeling
+     * @param inst the instance X
+     */
     private void trainOnInstanceWithPseudoLabel(Instance inst) {
         // if the class is masked (simulated as missing) or is missing (for real) --> pseudo-label
         if (inst.classIsMasked() || inst.classIsMissing()) {
@@ -192,6 +231,11 @@ public class ClusterAndLabelSubLearnerClassifier extends AbstractClassifier impl
         }
     }
 
+    /**
+     * Trains the local learner
+     * @param inst the instance X
+     * @param C the cluster of interest
+     */
     private void trainLearnerInCluster(Instance inst, Cluster C) {
         if (C != null) {
             if (C.getLearner() == null) C.setLearner(this.baseLearner.copy());
