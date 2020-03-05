@@ -448,7 +448,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
             }
             this.subset = new Instances("Subsets Candidate Instances", attSub, 100);
             this.subset.setClassIndex(this.subset.numAttributes()-1);
-            StreamingRandomPatchesClassifier prepareRandomSubspaceInstance = prepareRandomSubspaceInstance(instance,1);
+            prepareRandomSubspaceInstance = prepareRandomSubspaceInstance(instance,1);
         }
 
         /**
