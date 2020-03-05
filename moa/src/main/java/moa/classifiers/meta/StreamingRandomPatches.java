@@ -77,7 +77,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
     private static final long serialVersionUID = 1L;
 
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train on instances.", Classifier.class, "trees.EFDT -g 50 -c 0.01");
+            "Classifier to train on instances.", Classifier.class, "trees.ARFHoeffdingTree -g 50 -c 0.01");
 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
             "The number of models.", 100, 1, Integer.MAX_VALUE);
@@ -143,22 +143,19 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
         if(this.ensemble == null)
             initEnsemble(instance);
 
-        for (int i = 0 ; i < this.ensemble.length ; i++) {
-            double[] rawVote = this.ensemble[i].getVotesForInstance(instance);
+        for (StreamingRandomPatchesClassifier ensemble1 : this.ensemble) {
+            double[] rawVote = ensemble1.getVotesForInstance(instance);
             DoubleVector vote = new DoubleVector(rawVote);
             InstanceExample example = new InstanceExample(instance);
-
-            this.ensemble[i].evaluator.addResult(example, vote.getArrayRef());
+            ensemble1.evaluator.addResult(example, vote.getArrayRef());
             // Train using random subspaces without resampling, i.e. all instances are used for training.
-            if(this.trainingMethodOption.getChosenIndex() == TRAIN_RANDOM_SUBSPACES) {
-                this.ensemble[i].trainOnInstance(instance,1, this.instancesSeen, this.classifierRandom);
-            }
-            // Train using random patches or resampling, thus we simulate online bagging with poisson(lambda=...)
-            else {
+            if (this.trainingMethodOption.getChosenIndex() == TRAIN_RANDOM_SUBSPACES) {
+                ensemble1.trainOnInstance(instance, 1, this.instancesSeen, this.classifierRandom);
+            } else {
                 int k = MiscUtils.poisson(this.lambdaOption.getValue(), this.classifierRandom);
                 if (k > 0) {
                     double weight = k;
-                    this.ensemble[i].trainOnInstance(instance, weight, this.instancesSeen, this.classifierRandom);
+                    ensemble1.trainOnInstance(instance, weight, this.instancesSeen, this.classifierRandom);
                 }
             }
         }
