@@ -451,12 +451,8 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
             prepareRandomSubspaceInstance = prepareRandomSubspaceInstance(instance,1);
         }
 
-        /**
-         *
-         * @param instance
-         * @param weight
-         */
-        public final void prepareRandomSubspaceInstance(Instance instance, double weight) {
+
+        public void prepareRandomSubspaceInstance(Instance instance, double weight) {
             // If there is any instance lingering in the subset, remove it.
             while(this.subset.numInstances() > 0)
                 this.subset.delete(0);
