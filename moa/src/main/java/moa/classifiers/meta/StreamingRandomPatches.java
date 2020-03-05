@@ -38,6 +38,7 @@ import moa.evaluation.BasicClassificationPerformanceEvaluator;
 import moa.options.ClassOption;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -310,7 +311,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
 
     @Override
     public ImmutableCapabilities defineImmutableCapabilities() {
-        if (this.getClass() == StreamingRandomPatches.class)
+        if (Objects.equals(this.getClass(), StreamingRandomPatches.class))
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
         else
             return new ImmutableCapabilities(Capability.VIEW_STANDARD);
@@ -450,10 +451,15 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
             }
             this.subset = new Instances("Subsets Candidate Instances", attSub, 100);
             this.subset.setClassIndex(this.subset.numAttributes()-1);
-            prepareRandomSubspaceInstance(instance,1);
+            StreamingRandomPatchesClassifier prepareRandomSubspaceInstance = prepareRandomSubspaceInstance(instance,1);
         }
 
-        public void prepareRandomSubspaceInstance(Instance instance, double weight) {
+        /**
+         *
+         * @param instance
+         * @param weight
+         */
+        public final void prepareRandomSubspaceInstance(Instance instance, double weight) {
             // If there is any instance lingering in the subset, remove it.
             while(this.subset.numInstances() > 0)
                 this.subset.delete(0);
