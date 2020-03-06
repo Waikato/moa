@@ -1,0 +1,77 @@
+{
+	"windowSize": 1000, 							// size of the window
+	"ensembleSize": 20, 							// size of the ensemble
+	"newConfigurations": 10, 						// number of new configurations
+	"keepCurrentModel": "true", 					// try to adapt parameters on the fly and keep the underlying model
+	"reinitialiseWithClusters": "true", 			// if model cannot be kept, reinitialise with the existing clusters
+	"preventAlgorithmDeath": "true", 				// prevent removal of algorithm with only one configuration in ensemble
+	"evaluateMacro": "false", 						// evaluate macro clusters instead of micro
+	"keepGlobalIncumbent": "true", 					// prevent removal of the currently best configuration
+	"keepAlgorithmIncumbents": "true", 				// prevent removal of the currently best configuration per algorithm
+	"keepInitialConfigurations": "true", 			// prevent removal of the starting configurations 
+	"useTestEnsemble": "true", 						// test new configurations in separate ensemble
+	"lambda": 0.05, 								// fading parameter for reduction of  standard deviation
+	"resetProbability": 0.01,						// reset probability for standard deviation or probability vector
+	"numberOfCores": 1,								// number of cores for parallel training (-1 for all available cores)
+	"performanceMeasure": "SilhouetteCoefficient",	// evaluation measure for clustering quality
+	"performanceMeasureMaximisation": "true", 		// whether evaluation measure should be maximised
+	"algorithms": [
+		{
+			"algorithm": "denstream.WithDBSCAN",
+			"parameters": [
+				{"parameter": "e", "type":"numeric", "value":0.02, "range":[0,1]},
+				{"parameter": "b", "type":"numeric", "value":0.2, "range":[0,1]},
+				{"parameter": "m", "type":"integer", "value":1, "range":[0,10000]},
+				{"parameter": "o", "type":"integer", "value":2, "range":[2,20]},
+				{"parameter": "l", "type":"numeric", "value":0.25, "range":[0,1]}
+				// {"parameter": "o", "type":"ordinal", "value":"good", "range":["bad","medium","good"]},
+				// {"parameter": "c", "type":"categorical", "value":"female", "range":["female","male"]},
+				// {"parameter": "b", "type":"boolean", "value":"true"}
+			]
+		}
+		,
+		{
+			"algorithm": "clustree.ClusTree",
+			"parameters": [
+				{"parameter": "H", "type":"integer", "value":8, "range":[1,20]},
+				{"parameter": "B", "type":"boolean", "value":"false"}
+			]
+		}
+		,
+		{
+			"algorithm": "clustream.WithKmeans",
+			"parameters": [
+				{"parameter": "k", "type":"integer", "value":5, "range":[2, 20]},
+				{"parameter": "m", "type":"integer", "value":100, "range":[1,10000]},
+				{"parameter": "t", "type":"integer", "value":2, "range":[1,10]}
+			]
+		}
+		,
+		{
+			"algorithm": "kmeanspm.BICO",
+			"parameters": [
+				{"parameter": "k", "type":"integer", "value":5, "range":[2, 20]},
+				{"parameter": "n", "type":"integer", "value":1000, "range":[1,2000]},
+				{"parameter": "p", "type":"integer", "value":10, "range":[1,20]},
+				{"parameter": "d", "type":"integer", "value":2, "optimise":"false"}
+			]
+		}
+		// ,
+		// {
+		// 	"algorithm": "dstream.Dstream",
+		// 	"parameters": [
+		// 		{"parameter": "m", "type":"numeric", "value":3, "range":[1.001,10000]},
+		// 		{"parameter": "l", "type":"numeric", "value":0.8, "range":[0.001, 0.999]}
+		// 	]
+		// }
+		// ,
+		// {
+		// 	"algorithm": "streamkm.StreamKM",
+		// 	"parameters": [
+		// 		{"parameter": "s", "type":"integer", "value":10000, "range":[10,100000]},
+		// 		{"parameter": "k", "type":"integer", "value":5, "range":[2, 20]},
+		// 		{"parameter": "l", "type":"integer", "value":10000, "fixed":"true"}
+		// 	]
+		// }
+	]
+}

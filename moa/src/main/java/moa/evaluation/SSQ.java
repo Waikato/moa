@@ -46,7 +46,10 @@ public class SSQ extends MeasureCollection{
         double sum = 0.0;
         for (int p = 0; p < points.size(); p++) {
             //don't include noise
-            if(points.get(p).classValue()==-1) continue;
+            // Matthias Carnein 2019/09/20
+            // Removed condition, will go out of bounds if class label does not exist
+            // same as in SilhouetteCoefficient
+            // if(points.get(p).classValue()==-1) continue;
 
             double minDistance = Double.MAX_VALUE;
             for (int c = 0; c < clustering.size(); c++) {

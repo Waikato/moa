@@ -347,4 +347,18 @@ public class WithDBSCAN extends AbstractClusterer {
 		return sb.toString();
 	}
 
+	
+	public void adjustParameters() {
+		lambda = lambdaOption.getValue();
+
+		epsilon = epsilonOption.getValue();
+		minPoints = (int) muOption.getValue();
+		mu = (int) muOption.getValue();
+		beta = betaOption.getValue();
+		
+		tp = Math.round(1 / lambda * Math.log((beta * mu) / (beta * mu - 1))) + 1;
+		
+		processingSpeed = speedOption.getValue();
+	}
+
 }
