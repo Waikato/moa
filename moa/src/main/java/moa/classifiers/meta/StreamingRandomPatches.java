@@ -77,7 +77,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
     private static final long serialVersionUID = 1L;
 
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train on instances.", Classifier.class, "trees.HoeffdingTree -g 50 -c 0.01");
+            "Classifier to train on instances.", Classifier.class, "trees.HoeffdingOptionTree -g 50 -c 0.01");
 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
             "The number of models.", 100, 1, Integer.MAX_VALUE);
