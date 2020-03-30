@@ -149,9 +149,9 @@ public class EFDT extends AbstractClassifier implements MultiClassClassifier {
 
   public MultiChoiceOption leafpredictionOption = new MultiChoiceOption(
     "leafprediction", 'l', "Leaf prediction to use.", new String[]{
-    "MC", "NB", "NBAdaptive"}, new String[]{
-    "Majority class",
-    "Naive Bayes",
+    "HO", "AD", "NBAdaptive"}, new String[]{
+    "HoeffdingOptionTree",
+    "ARFFIMTDD",
     "Naive Bayes Adaptive"}, 2);
 
   public IntOption nbThresholdOption = new IntOption(
