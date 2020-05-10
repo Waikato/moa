@@ -19,6 +19,8 @@
  */
 package moa.classifiers.functions;
 
+import moa.capabilities.Capability;
+import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
