@@ -70,4 +70,12 @@ public class NoChange extends AbstractClassifier implements MultiClassClassifier
     public boolean isRandomizable() {
         return false;
     }
+    
+    @Override
+    public ImmutableCapabilities defineImmutableCapabilities() {
+        if (this.getClass() == NoChange.class)
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
+        else
+            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+    }
 }
