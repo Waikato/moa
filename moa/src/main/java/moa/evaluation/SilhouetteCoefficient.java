@@ -74,7 +74,11 @@ public class SilhouetteCoefficient extends MeasureCollection{
                     //calculate averageDistance of p to all cluster
                 for (int p1 = 0; p1 < points.size(); p1++) {
                     DataPoint point1 = points.get(p1);
-                    if(p1!= p && point1.classValue() != -1){
+                    if(p1!= p){ 
+                        // Matthias Carnein 2019/04/03
+                        // Removed second part of if-condition: && point1.classValue() != -1 
+                        // Accessing the classValue will go outOfBounds when no class label exists
+                        // What is the purpose of this check anyway? Class label is not used for Silhouette calculation
                         for (int fc = 0; fc < numFCluster; fc++) {
                             if(pointInclusionProbFC[p1][fc] > pointInclusionProbThreshold){
                                 double distance = distance(point, point1);

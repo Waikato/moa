@@ -301,4 +301,10 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
         public Clustering getMicroClusteringResult(){
             return null;
         };
+
+	// re-read the parameters from the options
+	// this is necessary in order to change parameters on-the-fly while the algorithm is running
+	public void adjustParameters() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 }

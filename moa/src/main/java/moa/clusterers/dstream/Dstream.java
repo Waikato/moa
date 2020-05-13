@@ -1406,4 +1406,12 @@ public class Dstream extends AbstractClusterer {
 			System.out.println(gc.getClusterLabel()+": "+gc.getWeight()+" {"+gc.toString()+"}");
 		}
 	}
+
+	
+	public void adjustParameters(){
+		this.decayFactor = decayFactorOption.getValue();
+		this.cm = cmOption.getValue();
+		this.cl = clOption.getValue();
+		this.beta = betaOption.getValue();
+	}
 }

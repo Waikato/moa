@@ -473,4 +473,16 @@ public class WithKmeans extends AbstractClusterer {
 	public void getModelDescription(StringBuilder out, int indent) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
+
+	public void adjustParameters() {
+
+		if(maxNumKernelsOption.getValue() != this.kernels.length){
+			throw new UnsupportedOperationException("Cannot change kernel size");
+		}
+
+		this.timeWindow = timeWindowOption.getValue();
+		this.bufferSize = maxNumKernelsOption.getValue();
+		t = kernelRadiFactorOption.getValue();
+		m = maxNumKernelsOption.getValue();
+	}
 }
