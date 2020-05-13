@@ -59,7 +59,7 @@ public class AutoClassDiscovery {
             m_Cache = new ClassCache();
             // failed to locate any classes on the classpath, maybe inside Weka?
             // try loading fixed list of classes
-            if (m_Cache.isEmpty()) {
+            if (m_Cache.getClassnames("moa.classifiers.trees").isEmpty()) {
                 InputStream inputStream = null;
                 try {
                     inputStream = m_Cache.getClass().getResourceAsStream(CLASS_LIST);
