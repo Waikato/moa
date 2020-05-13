@@ -27,7 +27,7 @@ Description=Massive On-line Analysis is an environment for massive data mining. 
 Changes=
 
 # Package URL for obtaining the package archive (required)
-PackageURL=https://github.com/Waikato/moa/releases/download/2019.05.0/massiveOnlineAnalysis-2020.05.0-HOTFIX.zip
+PackageURL=https://github.com/Waikato/moa/releases/download/2020.05.0-HOTFIX/massiveOnlineAnalysis-2020.05.0-HOTFIX.zip
 
 # URL for further information
 URL=http://moa.cs.waikato.ac.nz/
