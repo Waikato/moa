@@ -2,10 +2,10 @@
 PackageName=massiveOnlineAnalysis
 
 # Version (required)
-Version=2020.05.0-HOTFIX
+Version=2020.05.1
 
 #Date
-Date=2020-05-13
+Date=2020-05-19
 
 # Title (required)
 Title=MOA (Massive On-line Analysis).
@@ -27,7 +27,7 @@ Description=Massive On-line Analysis is an environment for massive data mining. 
 Changes=
 
 # Package URL for obtaining the package archive (required)
-PackageURL=https://github.com/Waikato/moa/releases/download/2020.05.0-HOTFIX/massiveOnlineAnalysis-2020.05.0-HOTFIX.zip
+PackageURL=https://github.com/Waikato/moa/releases/download/2020.05.1/massiveOnlineAnalysis-2020.05.1.zip
 
 # URL for further information
 URL=http://moa.cs.waikato.ac.nz/

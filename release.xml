@@ -4,7 +4,7 @@
   <parent>
     <groupId>nz.ac.waikato.cms.moa</groupId>
     <artifactId>moa-pom</artifactId>
-    <version>2020.05.0-HOTFIX</version>  <!-- adjust -->
+    <version>2020.05.1</version>  <!-- adjust -->
   </parent>
 
   <artifactId>moa-release</artifactId>

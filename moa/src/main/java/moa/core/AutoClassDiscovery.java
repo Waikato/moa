@@ -62,7 +62,7 @@ public class AutoClassDiscovery {
             if (m_Cache.getClassnames("moa.classifiers.trees").isEmpty()) {
                 InputStream inputStream = null;
                 try {
-                    inputStream = m_Cache.getClass().getResourceAsStream(CLASS_LIST);
+                    inputStream = m_Cache.getClass().getClassLoader().getResourceAsStream(CLASS_LIST);
                     m_Cache = new ClassCache(new FixedClassListTraversal(inputStream));
                 }
                 catch (Exception e) {
