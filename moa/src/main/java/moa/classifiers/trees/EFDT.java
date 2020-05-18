@@ -1165,7 +1165,7 @@ public class EFDT extends AbstractClassifier implements MultiClassClassifier {
   }
 
 
-  public class EFDTLearningNode extends LearningNodeNBAdaptive implements EFDTNode {
+  public class EFDTLearningNode extends LearningNodeHO implements EFDTNode {
 
     private boolean isRoot;
 
@@ -1323,18 +1323,41 @@ public class EFDT extends AbstractClassifier implements MultiClassClassifier {
     }
   }
 
-  public static class LearningNodeNB extends ActiveLearningNode {
+  public static class LearningNodeHO extends ActiveLearningNode {
 
     private static final long serialVersionUID = 1L;
 
-    public LearningNodeNB(double[] initialClassObservations) {
+    public LearningNodeHO(double[] initialClassObservations) {
       super(initialClassObservations);
     }
 
     @Override
     public double[] getClassVotes(Instance inst, EFDT ht) {
       if (getWeightSeen() >= ht.nbThresholdOption.getValue()) {
-	return NaiveBayes.doNaiveBayesPrediction(inst,
+	return HoeffdingOptionTree.doHoeffdingOtionTreePrediction(inst,
+	  this.observedClassDistribution,
+	  this.attributeObservers);
+      }
+      return super.getClassVotes(inst, ht);
+    }
+
+    @Override
+    public void disableAttribute(int attIndex) {
+      // should not disable poor atts - they are used in NB calc
+    }
+  }
+    public static class LearningNodeAD extends ActiveLearningNode {
+
+    private static final long serialVersionUID = 1L;
+
+    public LearningNodeAD(double[] initialClassObservations) {
+      super(initialClassObservations);
+    }
+
+    @Override
+    public double[] getClassVotes(Instance inst, EFDT ht) {
+      if (getWeightSeen() >= ht.nbThresholdOption.getValue()) {
+	return ARFFIMTDD.doARFFIMTDDPrediction(inst,
 	  this.observedClassDistribution,
 	  this.attributeObservers);
       }
