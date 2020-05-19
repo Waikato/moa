@@ -2,10 +2,10 @@
 PackageName=massiveOnlineAnalysis
 
 # Version (required)
-Version=2019.05.0
+Version=2020.05.1
 
 #Date
-Date=2019-05-17
+Date=2020-05-19
 
 # Title (required)
 Title=MOA (Massive On-line Analysis).
@@ -16,7 +16,7 @@ Category=Data streams
 Author=MOA team.
 
 # Maintainer (required)
-Maintainer=Abert Bifet <abifet@cs.waikato.ac.nz>
+Maintainer=Albert Bifet <abifet@cs.waikato.ac.nz>
 
 # License (required)
 License=GPL 3.0
@@ -27,7 +27,7 @@ Description=Massive On-line Analysis is an environment for massive data mining. 
 Changes=
 
 # Package URL for obtaining the package archive (required)
-PackageURL=http://prdownloads.sourceforge.net/weka/massiveOnlineAnalysis-2019.05.0.zip?download
+PackageURL=https://github.com/Waikato/moa/releases/download/2020.05.1/massiveOnlineAnalysis-2020.05.1.zip
 
 # URL for further information
 URL=http://moa.cs.waikato.ac.nz/
