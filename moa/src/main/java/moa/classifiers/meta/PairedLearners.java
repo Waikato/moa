@@ -55,7 +55,7 @@ public class PairedLearners extends AbstractClassifier implements MultiClassClas
             's', "Stable learner", Classifier.class, "bayes.NaiveBayes");
 
     public ClassOption reactiveLearnerOption = new ClassOption("reactiveLearner", 
-            'r', "Reactive learner", Classifier.class, "bayes.NaiveBayes");
+            'e', "Reactive learner", Classifier.class, "bayes.NaiveBayes");
 
     public IntOption windowSizeOption = new IntOption("windowSize", 
             'w', "Window size for the reactive learner", 

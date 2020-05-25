@@ -162,7 +162,7 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
             "Stop growing as soon as memory limit is hit.");
 
     public FlagOption removePoorAttsOption = new FlagOption("removePoorAtts",
-            'r', "Disable poor attributes.");
+            'x', "Disable poor attributes.");
 
     public FlagOption noPrePruneOption = new FlagOption("noPrePrune", 'p',
             "Disable pre-pruning.");

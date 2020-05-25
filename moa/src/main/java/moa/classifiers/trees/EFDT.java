@@ -82,7 +82,7 @@ public class EFDT extends AbstractClassifier implements MultiClassClassifier {
 
   public IntOption reEvalPeriodOption = new IntOption(
     "reevaluationPeriod",
-    'R',
+    'e',
     "The number of instances an internal node should observe between re-evaluation attempts.",
     2000, 0, Integer.MAX_VALUE);
 

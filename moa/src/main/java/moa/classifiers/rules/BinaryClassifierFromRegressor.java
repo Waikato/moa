@@ -38,7 +38,7 @@ public class BinaryClassifierFromRegressor extends AbstractClassifier {
 	/**
 	 * 
 	 */
-    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'r',
+    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'e',
             "Regressor to train.", Regressor.class, "rules.AMRulesRegressor");
     
 	private static final long serialVersionUID = 8271864290912280188L;

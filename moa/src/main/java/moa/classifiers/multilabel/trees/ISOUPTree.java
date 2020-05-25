@@ -132,7 +132,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 	public FlagOption regressionTreeOption = new FlagOption(
 			"regressionTree",
-			'r',
+			'e',
 			"Build a regression tree instead of a model tree.");
 
 	public FloatOption learningRatioOption = new FloatOption(

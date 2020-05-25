@@ -142,9 +142,9 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 			InputAttributesSelector.class,
 			//"MeritThreshold");
 			SelectAllInputs.class.getName());
-	public IntOption randomSeedOption = new IntOption("randomSeedOption",
-			'r', "randomSeedOption", 
-			1,Integer.MIN_VALUE, Integer.MAX_VALUE);
+//	public IntOption randomSeedOption = new IntOption("randomSeedOption",
+//			'r', "randomSeedOption",
+//			1,Integer.MIN_VALUE, Integer.MAX_VALUE);
 	
 	public ClassOption featureRankingOption = new ClassOption("featureRanking",
 			'F', "Feature ranking algorithm.", 

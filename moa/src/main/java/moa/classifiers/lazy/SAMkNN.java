@@ -71,7 +71,7 @@ public class SAMkNN extends AbstractClassifier implements MultiClassClassifier,
             "The allowed LTM size relative to the total limit.",
             0.4, 0.0, 1.0);
 
-    public FlagOption recalculateSTMErrorOption = new FlagOption("recalculateError", 'r',
+    public FlagOption recalculateSTMErrorOption = new FlagOption("recalculateError", 'e',
             "Recalculates the error rate of the STM for size adaption (Costly operation). Otherwise, an approximation is used.");
 	private int maxClassValue = 0;
 

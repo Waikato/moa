@@ -55,9 +55,9 @@ implements MultiTargetRegressor, AMRulesFunction {
 
 	public ClassOption errorMeasurerOption;
 	
-	public IntOption randomSeedOption = new IntOption("randomSeedOption",
-			'r', "randomSeedOption", 
-			1,Integer.MIN_VALUE, Integer.MAX_VALUE);
+	//public IntOption randomSeedOption = new IntOption("randomSeedOption",
+	//		'r', "randomSeedOption",
+	//		1,Integer.MIN_VALUE, Integer.MAX_VALUE);
 
 	protected boolean hasStarted;
 

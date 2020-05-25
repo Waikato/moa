@@ -66,7 +66,7 @@ public class SGD extends AbstractClassifier implements MultiClassClassifier, Reg
     protected double m_learningRate = 0.01;
 
     public FloatOption learningRateOption = new FloatOption("learningRate",
-            'r', "Learning rate parameter.",
+            'e', "Learning rate parameter.",
             0.0001, 0.00, Integer.MAX_VALUE);
 
     /** Stores the weights (+ bias in the last element) */

@@ -49,9 +49,9 @@ import java.util.Arrays;;
 
 public class BasicMultiLabelLearner extends AbstractMultiLabelLearner{
 	
-	public IntOption randomSeedOption = new IntOption("randomSeedOption",
-			'r', "randomSeedOption", 
-			1,Integer.MIN_VALUE, Integer.MAX_VALUE);
+	//public IntOption randomSeedOption = new IntOption("randomSeedOption",
+	//		'r', "randomSeedOption",
+	//		1,Integer.MIN_VALUE, Integer.MAX_VALUE);
 
 	public BasicMultiLabelLearner() {
 		super.randomSeedOption=randomSeedOption;

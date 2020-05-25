@@ -177,7 +177,7 @@ public class RuleClassifier extends AbstractClassifier implements MultiClassClas
 	            "firstHit", "weightedSum", "weightedMax"}, new String[]{
 	            "first Hit",  "weighted Sum", "weighted Max"}, 0);
 	  
-	 public FlagOption orderedRulesOption = new FlagOption("orderedRules", 'r',
+	 public FlagOption orderedRulesOption = new FlagOption("orderedRules", 'e',
 	            "orderedRules.");
 	  
 	public FlagOption anomalyDetectionOption = new FlagOption("anomalyDetection", 'u',

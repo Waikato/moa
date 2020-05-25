@@ -82,7 +82,7 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Mult
     /**
      * Number of classifiers remembered and available for ensemble construction.
      */
-    public FloatOption storedCountOption = new FloatOption("storedCount", 'r', "The maximum number of classifiers to store and choose from when creating an ensemble.", 30, 1, Integer.MAX_VALUE);
+    public FloatOption storedCountOption = new FloatOption("storedCount", 'e', "The maximum number of classifiers to store and choose from when creating an ensemble.", 30, 1, Integer.MAX_VALUE);
 
     /**
      * Chunk size.

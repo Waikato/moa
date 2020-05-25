@@ -53,8 +53,8 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 			"fadingFactor", 'e', 
 			"Fading factor for the Perceptron accumulated error", 0.99, 0, 1);
 	
-	public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
-            "Seed for random behaviour of the classifier.", 1);
+	//public IntOption randomSeedOption = new IntOption("randomSeedOption", 'r',
+    //        "Seed for random behaviour of the classifier.", 1);
 	
 	private double nError;
 	protected double fadingFactor;

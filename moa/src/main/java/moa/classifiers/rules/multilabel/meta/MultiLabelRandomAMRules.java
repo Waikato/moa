@@ -84,8 +84,8 @@ implements MultiTargetRegressor {
 
 
 
-	public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
-			"Seed for random behaviour of the classifier.", 1);
+	//public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
+	//		"Seed for random behaviour of the classifier.", 1);
 	protected AMRulesMultiLabelLearner [] ensemble;
 
 	protected MultiLabelErrorMeasurer [] errorMeasurer;

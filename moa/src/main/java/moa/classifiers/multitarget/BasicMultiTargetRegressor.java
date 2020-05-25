@@ -49,9 +49,9 @@ import com.yahoo.labs.samoa.instances.Prediction;
 
 public class BasicMultiTargetRegressor extends AbstractMultiLabelLearner implements MultiTargetRegressor{
 
-	public IntOption randomSeedOption = new IntOption("randomSeedOption",
-			'r', "randomSeedOption", 
-			1,Integer.MIN_VALUE, Integer.MAX_VALUE);
+	//public IntOption randomSeedOption = new IntOption("randomSeedOption",
+	//		'r', "randomSeedOption",
+	//		1,Integer.MIN_VALUE, Integer.MAX_VALUE);
 
 	public BasicMultiTargetRegressor() {
 		super.randomSeedOption=randomSeedOption;

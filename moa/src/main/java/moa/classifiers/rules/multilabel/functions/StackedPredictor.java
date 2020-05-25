@@ -68,8 +68,8 @@ MultiTargetRegressor, AMRulesFunction {
 			"skipStackingOption", 's',
 			"Predicts the outputs of the first layer (no dependence among output is computed)");
 
-	public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
-			"Seed for random behaviour of the classifier.", 1);
+	//public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
+	//		"Seed for random behaviour of the classifier.", 1);
 
 	public FlagOption printWeightsOption = new FlagOption(
 			"printWeights", 'p',

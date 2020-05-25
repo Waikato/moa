@@ -169,7 +169,7 @@ public class HoeffdingOptionTree extends AbstractClassifier implements MultiClas
             "Only allow binary splits.");
 
     public FlagOption removePoorAttsOption = new FlagOption("removePoorAtts",
-            'r', "Disable poor attributes.");
+            'x', "Disable poor attributes.");
 
     public FlagOption noPrePruneOption = new FlagOption("noPrePrune", 'p',
             "Disable pre-pruning.");
