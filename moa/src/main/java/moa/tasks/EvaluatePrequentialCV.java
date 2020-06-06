@@ -170,26 +170,25 @@ public class EvaluatePrequentialCV extends ClassificationMainTask {
             //testInst.setClassMissing();
 
             for (int i = 0; i < learners.length; i++) {
-                evaluators[i].addResult(testInst, learners[i].getVotesForInstance(testInst));
-            }
-
-            for (int i = 0; i < learners.length; i++) {
                 int k = 1;
                 switch (this.validationMethodologyOption.getChosenIndex()) {
                     case 0: //Cross-Validation;
-                        k = instancesProcessed % learners.length == i ? 0: 1; //Test all except one
+                        k = instancesProcessed % learners.length == i ? 1: 0; //Test only one
                         break;
                     case 1: //Bootstrap;
                         k = MiscUtils.poisson(1, random);
                         break;
                     case 2: //Split-Validation;
-                        k = instancesProcessed % learners.length == i ? 1: 0; //Test only one
+                        k = instancesProcessed % learners.length == i ? 0: 1; //Test all except one
                         break;
                 }
-                if (k > 0) {
+                
+                if (k > 0) { // k > 0: Train this copy.
                     Example weightedInst = (Example) trainInst.copy();
                     weightedInst.setWeight(trainInst.weight() * k);
                     learners[i].trainOnInstance(weightedInst);
+                } else { // k <= 0: Test this copy.
+                    evaluators[i].addResult(testInst, learners[i].getVotesForInstance(testInst));
                 }
             }
 
