@@ -101,7 +101,6 @@ public class WithKmeans extends AbstractClusterer {
 	
 				buffer.clear();
 				initialized = true;
-				return;
 			}
 		}
 

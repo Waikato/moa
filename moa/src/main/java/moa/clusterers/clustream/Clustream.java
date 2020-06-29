@@ -103,7 +103,6 @@ public class Clustream extends AbstractClusterer{
 
 			buffer.clear();
 			initialized = true;
-			return;
 		}
 
 
