@@ -66,8 +66,10 @@ public class FadingFactorClassificationPerformanceEvaluator extends BasicClassif
 
         @Override
         public void add(double value) {
+          if (!Double.isNaN(value)) {
             estimation = alpha * estimation + value;
             b = alpha * b + 1.0;
+          }
         }
 
         @Override
