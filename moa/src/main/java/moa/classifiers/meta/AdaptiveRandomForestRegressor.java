@@ -122,9 +122,8 @@ public class AdaptiveRandomForestRegressor extends AbstractClassifier implements
         Instance testInstance = instance.copy();
         if(this.ensemble == null)
             initEnsemble(testInstance);
-        double accounted = 0;
 
-        DoubleVector predictions = new DoubleVector();
+        double sumPredictions = 0;
         DoubleVector ages = new DoubleVector();
         DoubleVector performance = new DoubleVector();
 
@@ -133,10 +132,9 @@ public class AdaptiveRandomForestRegressor extends AbstractClassifier implements
 
             ages.addToValue(i, this.instancesSeen - this.ensemble[i].createdOn);
             performance.addToValue(i, this.ensemble[i].evaluator.getSquareError());
-            predictions.addToValue(i, currentPrediction);
-            ++accounted;
+            sumPredictions += currentPrediction;
         }
-        double predicted = predictions.sumOfValues() / accounted;
+        double predicted = sumPredictions / this.ensemble.length;
 //        if(predicted >= 1500) {
 //            System.out.println(this.instancesSeen + " = " + predictions);
 //            System.out.println(this.instancesSeen + " = " + ages);
@@ -144,7 +142,7 @@ public class AdaptiveRandomForestRegressor extends AbstractClassifier implements
 //            System.out.println();
 //        }
 
-        return new double[] {predictions.sumOfValues() / accounted};
+        return new double[] {predicted};
     }
 
     @Override
