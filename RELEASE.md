@@ -5,6 +5,12 @@
 * use Java 9+ for making release. Make sure the JAVA_HOME environment
   variable is set to the correct JDK directory and exported in your
   terminal
+  
+* make sure the `pdflatex` program is installed:
+
+    ```
+    sudo apt-get install texlive-full
+    ```
 
 * ensure that all `pom.xml` files list the same version, update them if 
   necessary to `yyyy.mm.0-SNAPSHOT` (check correct patch level)
@@ -65,7 +71,7 @@
   Maven Central (the search index at https://search.maven.org/ only gets updated
   every few hours):
   
-  http://central.maven.org/maven2/nz/ac/waikato/cms/moa/
+  https://repo1.maven.org/maven2/nz/ac/waikato/cms/moa/
 
 
 ## Generate release files
