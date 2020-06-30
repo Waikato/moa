@@ -183,8 +183,6 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Mult
 
     /**
      * Processes a chunk.
-     *
-     * @param useMseR Determines whether to use the MSEr threshold.
      */
     protected void processChunk() {
         // Compute weights
@@ -241,7 +239,6 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Mult
      * @param candidate Candidate classifier.
      * @param chunk Data chunk of examples.
      * @param numFolds Number of folds in candidate classifier cross-validation.
-     * @param useMseR Determines whether to use the MSEr threshold.
      * @return Candidate classifier weight.
      */
     protected double computeCandidateWeight(Classifier candidate, Instances chunk, int numFolds) {
@@ -280,7 +277,6 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Mult
      *
      * @param learner Classifier to calculate weight for.
      * @param chunk Data chunk of examples.
-     * @param useMseR Determines whether to use the MSEr threshold.
      * @return The given classifier's weight.
      */
     protected double computeWeight(Classifier learner, Instances chunk) {

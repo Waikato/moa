@@ -80,7 +80,7 @@ public interface Learner<E extends Example> extends MOAObject, OptionHandler, AW
     /**
      * Trains this learner incrementally using the given example.
      *
-     * @param inst the instance to be used for training
+     * @param example the instance to be used for training
      */
     public void trainOnInstance(E example);
 
@@ -89,7 +89,7 @@ public interface Learner<E extends Example> extends MOAObject, OptionHandler, AW
      * an instance is unclassified, the returned array elements
      * must be all zero.
      *
-     * @param inst the instance to be classified
+     * @param example the instance to be classified
      * @return an array containing the estimated membership
      * probabilities of the test instance in each class
      */

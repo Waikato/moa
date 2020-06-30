@@ -118,14 +118,12 @@ public class Node implements Serializable {
      * @param buffer The cluster to which the distance has to be compared.
      * @return The <code>Entry</code> with minimal distance to the given
      * cluster.
-     * @throws EmptyNodeException This Exception is thrown when this function is
-     * called on an empty node.
-     * @see Kernel
-     * @see Entry#calcDistance(moa.clusterers.tree.Kernel)
+     * @see ClusKernel
+     * @see Entry#calcDistance(ClusKernel)
      */
     public Entry nearestEntry(ClusKernel buffer) {
 
-        // TODO: (Fernando) Adapt the nearestEntry(...) function to the new algorithmn.
+        // TODO: (Fernando) Adapt the nearestEntry(...) function to the new algorithm.
 
         Entry res = entries[0];
         double min = res.calcDistance(buffer);
@@ -198,7 +196,7 @@ public class Node implements Serializable {
      * Add a new <code>Entry</code> to this node. If there is no space left a
      * <code>NoFreeEntryException</code> is thrown.
      * @param newEntry The <code>Entry</code> to be added.
-     * @throws NoFreeEntryException Is thrown when there is no space left in
+     * @throws RuntimeException Is thrown when there is no space left in
      * the node for the new entry.
      */
     public void addEntry(Entry newEntry, long currentTime){
@@ -210,7 +208,7 @@ public class Node implements Serializable {
     /**
      * Returns the position of the next free Entry.
      * @return The position of the next free Entry.
-     * @throws NoFreeEntryException Is thrown when there is no free entry left in
+     * @throws RuntimeException Is thrown when there is no free entry left in
      * the node.
      */
     private int getNextEmptyPosition(){
@@ -263,7 +261,7 @@ public class Node implements Serializable {
      * Return the level number in the node. This is not the real level. For the
      * real level one has to call <code>getLevel(Tree tree)</code>.
      * @return The raw level of the node.
-     * @see #getLevel(moa.clusterers.LiarTree.Tree)
+     * @see #getLevel(ClusTree)
      */
     protected int getRawLevel() {
         return level;
@@ -287,7 +285,7 @@ public class Node implements Serializable {
      * that the split counter is set to zero and the node is set to not be a
      * fake root. Notice that the level stays the same after calling this
      * function.
-     * @see Kernel#clear()
+     * @see ClusKernel#clear()
      * @see Entry#shallowClear()
      */
     // Level stays the same.

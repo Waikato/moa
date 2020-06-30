@@ -16,7 +16,7 @@ public interface ErrorWeightedVoteMultiLabel {
 	/**
 	 * Adds a vote and the corresponding error for the computation of the weighted vote and respective weighted error.
 	 * 
-	 * @param  vote - a vote returned by a classifier
+	 * @param  prediction - a vote returned by a classifier
 	 * @param  error - the error associated to the vote
 	 */
 	public void addVote(Prediction prediction, double [] error);

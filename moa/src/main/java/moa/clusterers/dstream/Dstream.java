@@ -91,14 +91,14 @@ public class Dstream extends AbstractClusterer {
 	/**
 	 * Density threshold for dense grids; controlled by cm; given in eq 8 of Chen and Tu 2007
 	 * 
-	 * @see cm
+	 * @see #cm
 	 */
 	private double dm;
 	
 	/**
 	 * Density threshold for sparse grids; controlled by cl; given in eq 9 of Chen and Tu 2007
 	 * 
-	 * @see cl
+	 * @see #cl
 	 */
 	private double dl;
 	
@@ -145,14 +145,14 @@ public class Dstream extends AbstractClusterer {
 	/**
 	 * The minimum value seen for a numerical dimension; used to calculate N
 	 * 
-	 * @see N
+	 * @see #N
 	 */
 	private int[]minVals;
 	
 	/**
 	 * The maximum value seen for a numerical dimension; used to calculate N
 	 * 
-	 * @see N
+	 * @see #N
 	 */
 	private int[]maxVals;
 
@@ -549,7 +549,7 @@ public class Dstream extends AbstractClusterer {
 	 * Performs the periodic adjustment of clusters every 'gap' timesteps.
 	 * Implements the procedure given in Figure 4 of Chen and Tu 2007
 	 * 
-	 * @see moa.clusterers.dstream.Dstream.gap
+	 * @see moa.clusterers.dstream.Dstream#gap
 	 */
 	private void adjustClustering() {
 		//System.out.println("ADJUST CLUSTERING CALLED (time"+this.getCurrTime()+")");
@@ -1373,8 +1373,8 @@ public class Dstream extends AbstractClusterer {
 	/**
 	 * Iterates through grid_list and prints out each density grid therein as a string.
 	 * 
-	 * @see moa.clusterers.dstream.Dstream.grid_list
-	 * @see moa.clusterers.dstream.DensityGrid.toString
+	 * @see moa.clusterers.dstream.Dstream#grid_list
+	 * @see moa.clusterers.dstream.DensityGrid#toString
 	 */
 	public void printGridList()
 	{
@@ -1395,8 +1395,8 @@ public class Dstream extends AbstractClusterer {
 	/**
 	 * Iterates through cluster_list and prints out each grid cluster therein as a string.
 	 * 
-	 * @see moa.clusterers.dstream.Dstream.cluster_list
-	 * @see moa.clusterers.dstream.GridCluster.toString
+	 * @see moa.clusterers.dstream.Dstream#cluster_list
+	 * @see moa.clusterers.dstream.GridCluster#toString
 	 */
 	public void printGridClusters()
 	{

@@ -50,7 +50,6 @@ public interface LearningPerformanceEvaluator<E extends Example> extends MOAObje
      * @param example the example to be classified
      * @param classVotes an array containing the estimated membership
      * probabilities of the test instance in each class
-     * @return an array of measurements monitored in this evaluator
      */
     public void addResult(E example, double[] classVotes);
     public void addResult(E testInst, Prediction prediction);

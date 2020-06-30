@@ -195,10 +195,10 @@ public class Statistics {
    * minus infinity to <tt>x</tt>) is equal to the argument <tt>y</tt>
    * (assumes mean is zero, variance is one).
    * <p>
-   * For small arguments <tt>0 < y < exp(-2)</tt>, the program computes
+   * For small arguments <tt>0 {@literal <} y {@literal <} exp(-2)</tt>, the program computes
    * <tt>z = sqrt( -2.0 * log(y) )</tt>;  then the approximation is
    * <tt>x = z - log(z)/z  - (1/z) P(1/z) / Q(1/z)</tt>.
-   * There are two rational functions P/Q, one for <tt>0 < y < exp(-32)</tt>
+   * There are two rational functions P/Q, one for <tt>0 {@literal <} y {@literal <} exp(-32)</tt>
    * and the other for <tt>y</tt> up to <tt>exp(-2)</tt>. 
    * For larger arguments,
    * <tt>w = y - 0.5</tt>, and  <tt>x/sqrt(2pi) = w + w**3 R(w**2)/S(w**2))</tt>.
@@ -344,7 +344,7 @@ public class Statistics {
    *                           0
    * </pre>
    * <b>Implementation:</b>
-   * For <tt>0 <= |x| < 1, erf(x) = x * P4(x**2)/Q5(x**2)</tt>; otherwise
+   * For <tt>0 {@literal <=} |x| {@literal <} 1, erf(x) = x * P4(x**2)/Q5(x**2)</tt>; otherwise
    * <tt>erf(x) = 1 - erfc(x)</tt>.
    * <p>
    * Code adapted from the <A HREF="http://www.sci.usq.edu.au/staff/leighb/graph/Top.html">
@@ -353,7 +353,7 @@ public class Statistics {
    * <A HREF="http://people.ne.mediaone.net/moshier/index.html#Cephes">Cephes 2.2</A>
    * Math Library (C).
    *
-   * @param a the argument to the function.
+   * @param x the argument to the function.
    */
   public static double errorFunction(double x) { 
     double y, z;
@@ -725,7 +725,7 @@ public class Statistics {
 
   /**
    * Returns the Gamma function computed by Stirling's formula.
-   * The polynomial STIR is valid for 33 <= x <= 172.
+   * The polynomial STIR is valid for {@literal 33 <= x <= 172}.
    */
   public static double stirlingFormula(double x) {
 

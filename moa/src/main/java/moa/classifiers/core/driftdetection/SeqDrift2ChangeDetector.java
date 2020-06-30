@@ -30,7 +30,7 @@ import moa.AbstractMOAObject;
  * SeqDriftChangeDetector.java. This extends Abstract Change Detector 
  * as required by MOA.
  * 
- * Pears, R., Sakthithasan, S., & Koh, Y. (2014). Detecting concept change in 
+ * Pears, R., Sakthithasan, S., {@literal &} Koh, Y. (2014). Detecting concept change in
  * dynamic data streams. Machine Learning, 97(3), 259-293. doi:10.1007/s10994-013-5433-9
  *
  * @author Sakthithasan Sripirakas sripirakas363 at yahoo dot com
@@ -88,7 +88,7 @@ public class SeqDrift2ChangeDetector extends AbstractChangeDetector {
  * 
  * 
  * 
- * Pears, R., Sakthithasan, S., & Koh, Y. (2014). Detecting concept change in 
+ * Pears, R., Sakthithasan, S., {@literal &} Koh, Y. (2014). Detecting concept change in
  * dynamic data streams. Machine Learning, 97(3), 259-293. doi:10.1007/s10994-013-5433-9
  * 
  * @author Sakthithasan Sripirakas sripirakas363 at yahoo dot com
@@ -148,7 +148,7 @@ public class SeqDrift2 extends AbstractMOAObject {
      * This method can be used to directly interface with SeqDrift change
      * detector. This method requires a numerical value as an input. The return 
      * value indicates whether there is a change detected or not. 
-     * @param input numerical value
+     * @param _inputValue numerical value
      */
     public boolean setInput(double _inputValue) {
         ++instanceCount;
@@ -201,7 +201,6 @@ public class SeqDrift2 extends AbstractMOAObject {
      * This method copies the data values of the repository to the reservoir
      * applying reservoir algorithm
      *
-     * @param void
      * @return void
      */
     private void moveFromRepositoryToReservoir() {
@@ -214,7 +213,6 @@ public class SeqDrift2 extends AbstractMOAObject {
      * This method removes all elements from the reservoir after a drift is
      * detected.
      *
-     * @param void
      * @return void
      */
     private void clearLeftReservoir() {

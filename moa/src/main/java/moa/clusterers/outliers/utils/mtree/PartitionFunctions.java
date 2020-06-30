@@ -63,7 +63,7 @@ public final class PartitionFunctions {
 		 *     Return result
 		 * </pre>
 		 * 
-		 * @see mtree.PartitionFunction#process(mtree.utils.Pair, java.util.Set, mtree.DistanceFunction)
+		 * @see PartitionFunction#process(Pair, java.util.Set, DistanceFunction)
 		 */
 		@Override
 		public Pair<Set<DATA>> process(

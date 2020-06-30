@@ -58,7 +58,7 @@ public abstract class Cluster extends AbstractMOAObject {
      * Returns the probability of the given point belonging to
      * this cluster.
      *
-     * @param point
+     * @param instance
      * @return a value between 0 and 1
      */
     public abstract double getInclusionProbability(Instance instance);

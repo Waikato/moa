@@ -78,8 +78,7 @@ public class DataObject {
     /**
      * Standard constructor for <code>DataObject</code>.
      * @param idCounter The id for the <code>DataObject</code>.
-     * @param features The feature as a <code>double[]</code>
-     * @param classLabel The label id for the <code>DataObject</code>.
+     * @param inst
      */
     public DataObject(int idCounter, Instance inst){
         this.id = idCounter;

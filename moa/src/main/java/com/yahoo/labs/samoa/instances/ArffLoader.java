@@ -65,9 +65,6 @@ public class ArffLoader {
      * Instantiates a new arff loader.
      *
      * @param reader the reader
-     * @param range
-     * @param size the size
-     * @param classAttribute the class attribute
      */
     public ArffLoader(Reader reader) {
         this(reader, null);
@@ -77,9 +74,7 @@ public class ArffLoader {
      * Instantiates a new arff loader.
      *
      * @param reader the reader
-     * @param range
-     * @param size the size
-     * @param classAttribute the class attribute
+     * @param range the range
      */
     public ArffLoader(Reader reader, Range range) {
         this.range = range;

@@ -42,12 +42,12 @@ import moa.tasks.TaskMonitor;
  * @author Fabrício Enembreck
  *
  * @version 1.0
- * @see Originally discussed in F. Enembreck, B. C. Ávila, E. E. Scalabrin &
+ * Originally discussed in F. Enembreck, B. C. Ávila, E. E. Scalabrin {@literal &}
  * J-P. Barthès. LEARNING DRIFTING NEGOTIATIONS. In Applied Artificial
  * Intelligence: An International Journal. Volume 21, Issue 9, 2007. DOI:
  * 10.1080/08839510701526954
- * @see First used in the data stream configuration in J. P. Barddal, H. M.
- * Gomes, F. Enembreck, B. Pfahringer & A. Bifet. ON DYNAMIC FEATURE WEIGHTING
+ * First used in the data stream configuration in J. P. Barddal, H. M.
+ * Gomes, F. Enembreck, B. Pfahringer {@literal &} A. Bifet. ON DYNAMIC FEATURE WEIGHTING
  * FOR FEATURE DRIFTING DATA STREAMS. In European Conference on Machine Learning
  * and Principles and Practice of Knowledge Discovery (ECML/PKDD'16). 2016.
  */

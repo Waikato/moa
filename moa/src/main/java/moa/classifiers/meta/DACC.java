@@ -269,8 +269,7 @@ public class DACC extends AbstractClassifier implements MultiClassClassifier {
      * The best classifiers are used to compute the stability index in ADACC. The worst 
      * classifiers are returned in order to select a classifier for deletion.  
      * @param bestHalf boolean value set to true (false) if we want to return 
-     * the best (worst) half of adaptive classifiers.  
-     * @param horizon
+     * the best (worst) half of adaptive classifiers.
      * @return an array containing the weight values of the corresponding classifiers
      * and their indexes in the ensemble.
      */

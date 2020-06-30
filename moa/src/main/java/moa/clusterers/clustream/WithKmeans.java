@@ -226,7 +226,7 @@ public class WithKmeans extends AbstractClusterer {
 	 * (to produce best results) 
 	 * 
 	 * @param k
-	 * @param data
+	 * @param clustering
 	 * @return (macro)clustering - CFClusters
 	 */
 	public static Clustering kMeans_gta(int k, Clustering clustering, Clustering gtClustering) {
@@ -264,7 +264,7 @@ public class WithKmeans extends AbstractClusterer {
 	 * k-means of (micro)clusters, with randomized initialization. 
 	 * 
 	 * @param k
-	 * @param data
+	 * @param clustering
 	 * @return (macro)clustering - CFClusters
 	 */
 	public static Clustering kMeans_rand(int k, Clustering clustering) {

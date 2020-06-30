@@ -39,7 +39,7 @@ public interface SplitCriterion extends OptionHandler {
      * ditribution before the split and after it.
      *
      * @param preSplitDist the class distribution before the split
-     * @param postSplitDist the class distribution after the split
+     * @param postSplitDists the class distribution after the split
      * @return value of the merit of splitting
      */
     public double getMeritOfSplit(double[] preSplitDist,

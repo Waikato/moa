@@ -76,9 +76,6 @@ public class DependentOptionsUpdater implements ChangeListener, Serializable {
 	 * <br>
 	 * If one of the options is named "budget" or its name contains the word 
 	 * "budget", it is selected as the default option.
-	 * 
-	 * @param evalTaskOption
-	 * @param variedParamNameOption
 	 */
 	public void refreshVariedParamNameOption()
 	{

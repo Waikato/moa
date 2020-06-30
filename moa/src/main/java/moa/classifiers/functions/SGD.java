@@ -275,7 +275,7 @@ public class SGD extends AbstractClassifier implements MultiClassClassifier, Reg
      * Calculates the class membership probabilities for the given test
      * instance.
      *
-     * @param instance 	the instance to be classified
+     * @param inst 	the instance to be classified
      * @return 		predicted class probability distribution
      */
     @Override

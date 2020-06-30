@@ -48,7 +48,7 @@ public class ClusKernel extends CFCluster{
     /**
      * A constructor that makes a Kernel which just represents the given point.
      * @param point The point to be converted into a corresponding Kernel.
-     * @param numberClasses The number of classes possible for points in this
+     * @param dim The number of classes possible for points in this
      * experiment(<code>Tree</code>).
      */
     public ClusKernel(double[] point, int dim) {
@@ -60,7 +60,6 @@ public class ClusKernel extends CFCluster{
      * Constructor of the Cluster.
      * @param numberDimensions Dimensionality of the points added that can be
      * added to this cluster
-     * @param numberClasses The number of classes possible for points in this
      * experiment(<code>Tree</code>).
      */
     protected ClusKernel(int numberDimensions) {
@@ -96,7 +95,7 @@ public class ClusKernel extends CFCluster{
      * <code>Entry</code> to which this cluster belongs and the update that
      * caused the call to this function.
      * @param negLambda A parameter needed to weight the cluster.
-     * @see #add(tree.Kernel)
+     * @see #add(ClusKernel)
      */
     protected void aggregate(ClusKernel other, long timeDifference, double negLambda) {
         makeOlder(timeDifference, negLambda);
@@ -264,7 +263,7 @@ public class ClusKernel extends CFCluster{
     /**
      * See interface <code>Cluster</code>
      * @return The radius of the cluster.
-     * @see Cluster#getRadius()
+     * @see moa.cluster.SphereCluster#getRadius()
      */
     @Override
     public double getRadius() {
@@ -315,7 +314,7 @@ public class ClusKernel extends CFCluster{
     /**
      * Calculate the normalized euclidean distance (Mahalanobis distance for
      * distribution w/o covariances) to a point.
-     * @param other The point to which the distance is calculated.
+     * @param point The point to which the distance is calculated.
      * @return The normalized distance to the cluster center.
      *
      * TODO: check whether WEIGHTING is correctly applied to variances

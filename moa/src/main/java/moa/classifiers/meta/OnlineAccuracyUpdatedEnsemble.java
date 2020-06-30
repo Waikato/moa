@@ -277,8 +277,6 @@ public class OnlineAccuracyUpdatedEnsemble extends AbstractClassifier implements
 
 	/**
 	 * Computes the MSEr threshold.
-	 * 
-	 * @return The MSEr threshold.
 	 */
 	protected void computeMseR() {
 		double p_c;

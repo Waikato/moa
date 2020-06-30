@@ -192,13 +192,14 @@ public class MetaMultilabelGenerator extends AbstractOptionHandler implements In
         } while (Utils.sum(P) < z);
         return P;
     }
+
+    LinkedList<Instance> queue[] = null;
+
     /**
      * GetNextWithBinary. Get the next instance with binary class i
      *
      * @param	i	the class to generate (0,1)
      */
-    LinkedList<Instance> queue[] = null;
-
     private Instance getNextWithBinary(int i) {
         int lim = 1000;
         if (queue[i].size() <= 0) {
@@ -322,7 +323,7 @@ public class MetaMultilabelGenerator extends AbstractOptionHandler implements In
     /**
      * ModifyPriorVector. A certain number of values will be altered.
      *
-     * @param	P[]	the prior distribution
+     * @param	P	the prior distribution
      * @param	u	the probability of changing P[j]
      * @param	r	for random numbers
      * @param	skew	NOTE not currently used
@@ -344,7 +345,7 @@ public class MetaMultilabelGenerator extends AbstractOptionHandler implements In
      * minimal problems it would cause (and considering that inconsistencies
      * also occr in real datasets) we don't implement this.
      *
-     * @param	M[][]	a boolean matrix
+     * @param	M	a boolean matrix
      * @param	u	the probability of changing the relationship M[j][k]
      * @param	r	for random numbers
      * @return	the modified M

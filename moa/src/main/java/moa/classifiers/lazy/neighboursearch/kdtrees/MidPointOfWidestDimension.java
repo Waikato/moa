@@ -124,8 +124,8 @@ public class MidPointOfWidestDimension
   }
   
   /** 
-   * Re-arranges the indices array such that the points <= to the splitVal 
-   * are on the left of the array and those > the splitVal are on the right.
+   * Re-arranges the indices array such that the points {@literal <=} to the splitVal
+   * are on the left of the array and those {@literal >} the splitVal are on the right.
    * 
    * @param indices The master index array.
    * @param startidx The begining index of portion of indices that needs 
@@ -134,7 +134,7 @@ public class MidPointOfWidestDimension
    * re-arranging. 
    * @param splitDim The split dimension/attribute.
    * @param splitVal The split value.
-   * @return The startIdx of the points > the splitVal (the points 
+   * @return The startIdx of the points {@literal >} the splitVal (the points
    * belonging to the right child of the node).
    */
   protected int rearrangePoints(int[] indices, final int startidx, final int endidx,

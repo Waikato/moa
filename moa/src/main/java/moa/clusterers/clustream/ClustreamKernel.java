@@ -139,8 +139,7 @@ public class ClustreamKernel extends CFCluster {
 
     /**
      * See interface <code>Cluster</code>
-     * @param point
-     * @return
+     * @param instance
      */
     @Override
     public double getInclusionProbability(Instance instance) {
@@ -206,7 +205,7 @@ public class ClustreamKernel extends CFCluster {
     /**
      * Calculate the normalized euclidean distance (Mahalanobis distance for
      * distribution w/o covariances) to a point.
-     * @param other The point to which the distance is calculated.
+     * @param point The point to which the distance is calculated.
      * @return The normalized distance to the cluster center.
      *
      * TODO: check whether WEIGHTING is correctly applied to variances
@@ -226,7 +225,7 @@ public class ClustreamKernel extends CFCluster {
 
         /**
      * Approximates the inverse error function. Clustream needs this.
-     * @param z
+     * @param x
      */
     public static double inverseError(double x) {
         double z = Math.sqrt(Math.PI) * x;

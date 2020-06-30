@@ -52,7 +52,7 @@ import moa.core.InstanceExample;
  * Beware of numerical strategies 2 to 5: if no previous non-missing values were processed,
  * missing values will be replaced by 0.
  *   
- * @author Manuel Martin Salvador <draxus@gmail.com>
+ * @author Manuel Martin Salvador {@literal <draxus@gmail.com>}
  * 
  */
 public class ReplacingMissingValuesFilter extends AbstractStreamFilter {

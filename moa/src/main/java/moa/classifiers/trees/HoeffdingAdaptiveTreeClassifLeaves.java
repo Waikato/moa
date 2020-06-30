@@ -34,11 +34,12 @@ import moa.options.ClassOption;
  * Hoeffding Adaptive Tree for evolving data streams that has a classifier at
  * the leaves.
  *
- * @version 1.0
- * @see First used in the data stream configuration in J. P. Barddal, H. M.
- * Gomes, F. Enembreck, B. Pfahringer & A. Bifet. ON DYNAMIC FEATURE WEIGHTING
+ * First used in the data stream configuration in J. P. Barddal, H. M.
+ * Gomes, F. Enembreck, B. Pfahringer {@literal &} A. Bifet. ON DYNAMIC FEATURE WEIGHTING
  * FOR FEATURE DRIFTING DATA STREAMS. In European Conference on Machine Learning
  * and Principles and Practice of Knowledge Discovery (ECML/PKDD'16). 2016.
+ *
+ * @version 1.0
  */
 public class HoeffdingAdaptiveTreeClassifLeaves extends HoeffdingAdaptiveTree {
 

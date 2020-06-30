@@ -1147,9 +1147,7 @@ public class TaskManagerTabPanel extends JPanel {
 
     /**
      *
-     * @return a task thread
      */
-    
      public void taskSelectionChanged() {
         ExpTaskThread[] selectedTasks = getSelectedTasks();
         if (selectedTasks.length == 1) {

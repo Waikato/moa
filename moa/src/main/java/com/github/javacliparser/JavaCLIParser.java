@@ -95,9 +95,6 @@ public class JavaCLIParser implements Serializable {
 
     /**
      * Prepares the options of this class.
-     * 
-     * @param monitor the TaskMonitor to use
-     * @param repository  the ObjectRepository to use
      */
     public void prepareClassOptions() { //TaskMonitor monitor,
             //ObjectRepository repository) {

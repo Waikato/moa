@@ -230,7 +230,6 @@ public class CharacteristicVector {
 	 * @param decayFactor the value of lambda
 	 * @param dl the threshold for sparse grids
 	 * @param dm the threshold for dense grids
-	 * @param addRecord TRUE if a record has been added to the density grid, FALSE otherwise
 	 */
 	public void updateGridDensity(int currTime, double decayFactor, double dl, double dm)
 	{

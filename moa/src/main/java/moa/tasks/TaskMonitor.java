@@ -30,7 +30,7 @@ public interface TaskMonitor {
     /**
      * Sets the description and the percentage done of the current activity.
      *
-     * @param activity the description of the current activity
+     * @param activityDescription the description of the current activity
      * @param fracComplete the percentage done of the current activity
      */
     public void setCurrentActivity(String activityDescription,

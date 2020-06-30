@@ -30,7 +30,7 @@ import moa.tasks.TaskMonitor;
  * </p>
  * David Tse Jung Huang, Yun Sing Koh, Gillian Dobbie, and Russel Pears: Detecting Volatility Shift in Data Streams. ICDM 2014: 863-868
  * </p>
- * Usage: {@link #setInput(double)}
+ * Usage: {@link #input(double)}
  * </p>
  * 
  * @author David T.J. Huang - The University of Auckland
@@ -95,7 +95,7 @@ public class SEEDChangeDetector extends AbstractChangeDetector
 	 * @param blockSize Recommended value: 32
 	 * @param epsilonPrime Recommended values between [0.0025, 0.01]
 	 * @param alpha Growth parameter - Recommended values between [0.2, 0.8]
-	 * @param compressionterm Recommended values between [50, 100]
+	 * @param term Recommended values between [50, 100]
 	 */
 	public SEED(double delta, int blockSize, double epsilonPrime, double alpha, int term)
 	{

@@ -315,8 +315,8 @@ public class KMeansInpiredMethod
   
   /** 
    * Re-arranges the indices array so that in the portion of the array
-   * belonging to the node to be split, the points <= to the splitVal 
-   * are on the left of the portion and those > the splitVal are on the right.
+   * belonging to the node to be split, the points {@literal <=} to the splitVal
+   * are on the left of the portion and those {@literal >} the splitVal are on the right.
    * 
    * @param indices The master index array.
    * @param startidx The begining index of portion of indices that needs 
@@ -325,7 +325,7 @@ public class KMeansInpiredMethod
    * re-arranging. 
    * @param splitDim The split dimension/attribute.
    * @param splitVal The split value.
-   * @return The startIdx of the points > the splitVal (the points 
+   * @return The startIdx of the points {@literal >} the splitVal (the points
    * belonging to the right child of the node).
    */
   protected int rearrangePoints(int[] indices, final int startidx, final int endidx,

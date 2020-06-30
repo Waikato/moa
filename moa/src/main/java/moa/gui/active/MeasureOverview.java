@@ -47,7 +47,7 @@ import moa.evaluation.MeasureCollection;
  * This class is partially based on moa.gui.clustertab.ClusteringVisualEvalPanel.
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
- * @see ClusteringVisualEvalPanel
+ * @see moa.gui.clustertab.ClusteringVisualEvalPanel
  */
 public class MeasureOverview extends JPanel {
 

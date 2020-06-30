@@ -31,7 +31,7 @@ import java.util.ArrayList;
 *GNU General Public License for more details.<br>
 *<br>
 *You should have received a copy of the GNU General Public License<br>
-*along with this program. If not, see <http://www.gnu.org/licenses/>.<br>
+*along with this program. If not, see <a href="http://www.gnu.org/licenses/">{@literal <http://www.gnu.org/licenses/>}</a>.<br>
 *Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA,<br>
 *or download the License terms from prep.ai.mit.edu/pub/gnu/COPYING-2.0.<br>
 *<br>
@@ -45,7 +45,7 @@ import java.util.ArrayList;
 *http://www.inf.ethz.ch/personal/gaertner<br>
 
 * Original Java port from Paolo Perissinotto for Jpatch Project by Sascha Ledinsky
-* found at http://forum.jpatch.com/viewtopic.php?f=3&t=919
+* found at {@literal http://forum.jpatch.com/viewtopic.php?f=3&t=919}
 *
 * @author Paolo Perissinotto for Jpatch Project by <B>Sascha Ledinsky</B>
 *

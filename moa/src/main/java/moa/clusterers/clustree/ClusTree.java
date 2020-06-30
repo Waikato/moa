@@ -169,7 +169,7 @@ public class ClusTree extends AbstractClusterer{
      * @param newPoint The point to be inserted.
      * @param budget The budget and statistics recollector for the insertion.
      * @param timestamp The moment at which this point is inserted.
-     * @see Kernel
+     * @see ClusKernel
      * @see Budget
      */
     public void insert(ClusKernel newPoint, Budget budget, long timestamp) {
@@ -566,7 +566,7 @@ public class ClusTree extends AbstractClusterer{
      * @return An object which encodes the two position of the entries with the
      * smallest distance in the node and the distance between them.
      * @see BestMergeInNode
-     * @see Entry#calcDistance(tree.Entry) 
+     * @see Entry#calcDistance(Entry)
      */
     private BestMergeInNode calculateBestMergeInNode(Node node) {
         assert (node.numFreeEntries() == 0);
@@ -744,7 +744,6 @@ public class ClusTree extends AbstractClusterer{
     }
 
     /**
-     * @param currentTime The current time
      * @return The kernels at the leaf level as a clustering
      */
     //TODO: Microcluster unter dem Threshhold nich zur�ckgeben (WIe bei outdated entries)

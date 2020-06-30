@@ -30,8 +30,8 @@ import moa.classifiers.core.driftdetection.SeqDrift2ChangeDetector.Repository;
  * SeqDrift1ChangeDetector.java. This extends Abstract Change Detector 
  * as required by MOA.
  * 
- * Sakthithasan, S., Pears, R., & Koh, Y. (2013). One Pass Concept Change
- * Detection for Data Streams. In J. Pei, V. Tseng, L. Cao, H. Motoda, & G. Xu
+ * Sakthithasan, S., Pears, R., {@literal &} Koh, Y. (2013). One Pass Concept Change
+ * Detection for Data Streams. In J. Pei, V. Tseng, L. Cao, H. Motoda, {@literal &} G. Xu
  * (Eds.), Advances in Knowledge Discovery and Data Mining (Vol. 7819, pp.
  * 461-472): Springer Berlin Heidelberg.
  *
@@ -97,8 +97,8 @@ public class SeqDrift1ChangeDetector extends AbstractChangeDetector {
  *
  *
  *
- * Sakthithasan, S., Pears, R., & Koh, Y. (2013). One Pass Concept Change
- * Detection for Data Streams. In J. Pei, V. Tseng, L. Cao, H. Motoda, & G. Xu
+ * Sakthithasan, S., Pears, R., {@literal &} Koh, Y. (2013). One Pass Concept Change
+ * Detection for Data Streams. In J. Pei, V. Tseng, L. Cao, H. Motoda, {@literal &} G. Xu
  * (Eds.), Advances in Knowledge Discovery and Data Mining (Vol. 7819, pp.
  * 461-472): Springer Berlin Heidelberg.
  *
@@ -227,7 +227,6 @@ public class SeqDrift1 extends AbstractMOAObject {
      * Removes excess instances in sliding window when the number of blocks is more than
      * the sliding window size threshold
      * <p>
-     * @param void
      * @return void
      */
     private void removeExcessRightRepositoryValues() {
@@ -241,7 +240,6 @@ public class SeqDrift1 extends AbstractMOAObject {
     /**
      * Moving the instances from  sliding window to  repository
      * <p>
-     * @param void
      * @return void
      */
     private void moveValuesFromRightToLeft() {
@@ -278,7 +276,6 @@ public class SeqDrift1 extends AbstractMOAObject {
      * <p>
      * After deletion the block counter is set to zero
      *
-     * @param void
      * @return void
      */
     private void clearLeftRepository() {
@@ -290,8 +287,6 @@ public class SeqDrift1 extends AbstractMOAObject {
     /**
      * Detects a drift
      * <p>
-     * @param _bIsWarning Drift detection in warning significance level or
-     * actual significance level
      * @return boolean True - if drift is detected. False - otherwise
      */
     private int getDriftType() {

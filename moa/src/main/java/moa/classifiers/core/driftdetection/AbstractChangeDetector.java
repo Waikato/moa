@@ -130,7 +130,7 @@ public abstract class AbstractChangeDetector extends AbstractOptionHandler
     /**
      * Returns a string representation of the model.
      *
-     * @param out	the stringbuilder to add the description
+     * @param sb	    the stringbuilder to add the description
      * @param indent	the number of characters to indent
      */
     @Override

@@ -49,8 +49,8 @@ public interface AttributeStatisticsObserver extends OptionHandler {
      * Gets the best split suggestion given a criterion and a class distribution
      *
      * @param criterion the split criterion to use
-     * @param preSplitDist the class distribution before the split
-     * @param attIndex the input attribute index
+     * @param preSplitStatistics the class distribution before the split
+     * @param inputAttributeIndex the input attribute index
      * @return suggestion of best attribute split
      */
     public AttributeExpansionSuggestion getBestEvaluatedSplitSuggestion(

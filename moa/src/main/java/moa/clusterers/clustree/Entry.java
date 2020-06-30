@@ -110,7 +110,7 @@ public class Entry implements Serializable {
      * @param cluster The cluster from which the information is to be extracted.
      * @param currentTime The timestamp for the moment where this Entry was
      * was generated.
-     * @see Kernel
+     * @see ClusKernel
      * @see #data
      */
     public Entry(int numberDimensions, ClusKernel cluster, long currentTime) {
@@ -175,7 +175,7 @@ public class Entry implements Serializable {
      * entry. This function does not clear the child of this <code>Entry</code>.
      * @see #data
      * @see #buffer
-     * @see Kernel
+     * @see ClusKernel
      */
     protected void shallowClear() {
         this.buffer.clear();
@@ -188,7 +188,7 @@ public class Entry implements Serializable {
      * calculated.
      * @return The distance to the data <code>Kernel</code> in this
      * <code>Entry</code>
-     * @see Kernel
+     * @see ClusKernel
      * @see #data
      */
     protected double calcDistance(ClusKernel cluster) {
@@ -203,7 +203,7 @@ public class Entry implements Serializable {
      * @return The distance to the data <code>Kernel</code> in this
      * <code>Entry</code> of the data <code>Kernel</code> in the other
      * <code>Entry</code>.
-     * @see Kernel
+     * @see ClusKernel
      * @see #data
      */
     public double calcDistance(Entry other) {
@@ -239,7 +239,7 @@ public class Entry implements Serializable {
      * @param other The entry of which the data cluster should be added to
      * the local data cluster.
      * @see #data
-     * @see Kernel#add(tree.Kernel) 
+     * @see ClusKernel#add(ClusKernel)
      */
     public void add(Entry other) {
         this.data.add(other.data);
@@ -250,7 +250,7 @@ public class Entry implements Serializable {
      * <code>Entry</code>.
      * @param other The <code>Entry</code> to be aggregated.
      * @see #data
-     * @see Kernel
+     * @see ClusKernel
      */
     protected void aggregateEntry(Entry other, long currentTime,
             double negLambda) {
@@ -264,7 +264,7 @@ public class Entry implements Serializable {
      * of this entry.
      * @param otherData The <code>Entry</code> to be aggregated.
      * @see #data
-     * @see Kernel
+     * @see ClusKernel
      */
     protected void aggregateCluster(ClusKernel otherData, long currentTime,
             double negLambda) {
@@ -294,7 +294,7 @@ public class Entry implements Serializable {
      * cluster of the given Entry to the data cluster of this entry and sets the 
      * timestamp to the newest one of the the two entries.
      * @param other The entry from which the data cluster is added.
-     * @see Kernel#add(tree.Kernel) 
+     * @see ClusKernel#add(ClusKernel)
      */
     protected void mergeWith(Entry other) {
         // We should only merge entries in leafs, and leafes should have empty
@@ -331,7 +331,7 @@ public class Entry implements Serializable {
      * Getter for the data. It is the real object, that means side effects are
      * possible!
      * @return A reference to the data <code>Kernel</code> in this entry.
-     * @see Kernel
+     * @see ClusKernel
      */
     protected ClusKernel getData() {
         return data;
@@ -416,7 +416,7 @@ public class Entry implements Serializable {
      * This functions reads every entry in the child node and calculates the
      * corresponding <code>data Kernel</code>. Timestamps are not changed.
      * @see #data
-     * @see Kerne
+     * @see ClusKernel
      */
     protected void recalculateData() {
         Node currentChild = this.getChild();
