@@ -164,7 +164,7 @@ public class LookAndFeel {
             if (style == -1)
                 LOGGER.severe("Failed to install JIDE Look'n'Feel based on built-in strategy: " + t);
             else
-                LOGGER.severe("Failed to install JIDE Look'n'Feel based on built-in strategy: " + t);
+                LOGGER.severe("Failed to install JIDE Look'n'Feel style " + style + ": " + t);
         }
 
         return result;
