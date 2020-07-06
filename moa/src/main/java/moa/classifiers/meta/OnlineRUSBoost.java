@@ -19,8 +19,6 @@
 package moa.classifiers.meta;
 
 import com.yahoo.labs.samoa.instances.Instance;
-
-
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
@@ -28,30 +26,15 @@ import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
-import moa.core.InstanceExample;
 import moa.core.Measurement;
-import moa.core.MiscUtils;
 import moa.core.Utils;
 import moa.options.ClassOption;
-
-import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Random;
-import java.util.concurrent.Callable;
-
-import moa.classifiers.trees.ARFHoeffdingTree;
-import moa.evaluation.BasicClassificationPerformanceEvaluator;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import moa.AbstractMOAObject;
 import moa.classifiers.core.driftdetection.ADWIN;
-import moa.classifiers.core.driftdetection.ChangeDetector;
 
 
 /**
