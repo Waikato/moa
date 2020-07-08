@@ -117,6 +117,10 @@
             <groupId>com.googlecode.jfilechooser-bookmarks</groupId>
             <artifactId>jfilechooser-bookmarks</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>com.jidesoft</groupId>
+            <artifactId>jide-oss</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
 
