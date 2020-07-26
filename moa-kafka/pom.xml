@@ -3,7 +3,7 @@
   <parent>
     <artifactId>moa-pom</artifactId>
     <groupId>nz.ac.waikato.cms.moa</groupId>
-    <version>2020.07.1-SNAPSHOT</version>
+    <version>2020.07.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
