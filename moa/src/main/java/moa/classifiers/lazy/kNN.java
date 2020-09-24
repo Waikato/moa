@@ -50,8 +50,6 @@ public class kNN extends AbstractClassifier implements MultiClassClassifier, Reg
 
 	public IntOption kOption = new IntOption( "k", 'k', "The number of neighbors", 10, 1, Integer.MAX_VALUE);
 
-	// For checking if users want to predict with regression
-	public FlagOption regressionOption = new FlagOption("regression",'r',"Regression or not");
 	// For checking regression with mean value or median value
 	public FlagOption medianOption = new FlagOption("median",'m',"median or mean");
 
@@ -118,7 +116,7 @@ public class kNN extends AbstractClassifier implements MultiClassClassifier, Reg
 			if (this.window.numInstances()>0) {	
 				Instances neighbours = search.kNearestNeighbours(inst,Math.min(kOption.getValue(),this.window.numInstances()));
 				//================== Regression ====================
-				if(inst.classAttribute().isNumeric() && regressionOption.isSet()){
+				if(inst.classAttribute().isNumeric()){
 					double[] result = new double[1];
 					// For storing the sum of class values of all the k nearest neighbours
 					double sum = 0;
