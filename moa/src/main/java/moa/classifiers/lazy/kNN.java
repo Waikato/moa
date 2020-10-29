@@ -18,8 +18,12 @@
 package moa.classifiers.lazy;
 
 import java.io.StringReader;
+import java.util.Arrays;
+
+import com.github.javacliparser.FlagOption;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
+import moa.classifiers.Regressor;
 import moa.classifiers.lazy.neighboursearch.KDTree;
 import moa.classifiers.lazy.neighboursearch.LinearNNSearch;
 import moa.classifiers.lazy.neighboursearch.NearestNeighbourSearch;
@@ -40,11 +44,14 @@ import com.github.javacliparser.MultiChoiceOption;
  * @author Jesse Read (jesse@tsc.uc3m.es)
  * @version 03.2012
  */
-public class kNN extends AbstractClassifier implements MultiClassClassifier {
+public class kNN extends AbstractClassifier implements MultiClassClassifier, Regressor {
 
     private static final long serialVersionUID = 1L;
 
 	public IntOption kOption = new IntOption( "k", 'k', "The number of neighbors", 10, 1, Integer.MAX_VALUE);
+
+	// For checking regression with mean value or median value
+	public FlagOption medianOption = new FlagOption("median",'m',"median or mean");
 
 	public IntOption limitOption = new IntOption( "limit", 'w', "The maximum number of instances to store", 1000, 1, Integer.MAX_VALUE);
 
@@ -108,8 +115,46 @@ public class kNN extends AbstractClassifier implements MultiClassClassifier {
 			}	
 			if (this.window.numInstances()>0) {	
 				Instances neighbours = search.kNearestNeighbours(inst,Math.min(kOption.getValue(),this.window.numInstances()));
-				for(int i = 0; i < neighbours.numInstances(); i++) {
-					v[(int)neighbours.instance(i).classValue()]++;
+				//================== Regression ====================
+				if(inst.classAttribute().isNumeric()){
+					double[] result = new double[1];
+					// For storing the sum of class values of all the k nearest neighbours
+					double sum = 0;
+					// For storing the number of the nearest neighbours
+					int num = neighbours.numInstances();
+					//================== Median ====================
+					if(medianOption.isSet()){
+						// For storing every neighbour's class value
+						double[] classValues = new double[num];
+
+						for(int i=0;i<num;i++){
+							classValues[i] = neighbours.instance(i).classValue();
+						}
+						// Sort the class values
+						Arrays.sort(classValues);
+						// Assign the median value into result
+						if(classValues.length%2==1){
+							result[0] = classValues[num/2];
+						}else{
+							result[0] = (classValues[num/2 - 1] + classValues[num/2]) / 2;
+						}
+						return result;
+						//=============== End of Median ============
+					}else{
+						//================== Mean ==================
+						for(int i=0;i<num;i++){
+							sum += neighbours.instance(i).classValue();
+						}
+						// Calculate the mean of all k nearest neighbours' class values
+						result[0] = sum / num;
+						return result;
+						//=============== End of Mean ==============
+					}
+					//============= End of Regression ==============
+				}else{
+					for (int i = 0; i < neighbours.numInstances(); i++) {
+						v[(int) neighbours.instance(i).classValue()]++;
+					}
 				}
 			}
 		} catch(Exception e) {
