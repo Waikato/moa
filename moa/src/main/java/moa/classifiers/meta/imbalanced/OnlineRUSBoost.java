@@ -1,5 +1,5 @@
 /*
- *  OnlineCSB2.java
+ *  OnlineRUSBoost.java
  *  
  *  @author Alessio Bernardo (alessio dot bernardo at polimi dot dot it)
  *
@@ -16,7 +16,7 @@
  *  limitations under the License.
         
  */
-package moa.classifiers.meta;
+package moa.classifiers.meta.imbalanced;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.capabilities.CapabilitiesHandler;
@@ -29,21 +29,25 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.Utils;
 import moa.options.ClassOption;
-import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
+import com.github.javacliparser.MultiChoiceOption;
 import java.util.ArrayList;
 import java.util.Random;
 import moa.classifiers.core.driftdetection.ADWIN;
 
 
 /**
- *  Online CSB2 is the online version of the ensemble learner CSB2.
+ *  Online RUSBoost is the adaptation of the ensemble learner to data streams.
  *
- * <p>CSB2 algorithm is a compromise between AdaBoost and AdaC2. For correctly
-    classified examples, CSB2 treats them in the same way as AdaBoost, while
-    for misclassified examples, it does the same as AdaC2. In addition, the
-    voting weight of each base learner in CSB2 is the same as AdaBoost.</p>
+ * <p>RUSBoost follows the techniques of UnderOverBagging and SMOTEBagging by
+    introducing sampling techniques as a postprocessing step before each iteration of
+    the standard AdaBoost algorithm. RUSBoost uses three implementations:
+
+        - RUSBoost 1: fixes the class ration.
+        - RUSBoosT 2: fixes the example distribution.
+        - RUSBoost 3: fixes the sampling rate.
+  </p>
 
     <p>This online ensemble learner method is improved by the addition of an ADWIN change
     detector. ADWIN stands for Adaptive Windowing. It works by keeping updated
@@ -57,8 +61,8 @@ import moa.classifiers.core.driftdetection.ADWIN;
  * <p>Parameters:</p> <ul>
  * <li>-l : Each classiﬁer to train of the ensemble is an instance of the base estimator.</li>
  * <li>-s : The size of the ensemble, in other words, how many classifiers to train.</li>
- * <li>-p : The cost of misclassifying a positive sample.</li>
- * <li>-n : The cost of misclassifying a negative sample.</li>
+ * <li>-i : The sampling rate of the positive instances.</li>
+ * <li>-a : The implementation of RUSBoost to use {1, 2, 3}.</li>
  * <li>-d : Should use ADWIN as drift detector? If enabled it is used by the method 
  * 	to track the performance of the classifiers and adapt when a drift is detected.</li>
  * <li>-r : Seed for the random state.</li>
@@ -67,12 +71,12 @@ import moa.classifiers.core.driftdetection.ADWIN;
  * @author Alessio Bernardo (alessio dot bernardo at polimi dot dot it)
  * @version $Revision: 1 $
  */
-public class OnlineCSB2 extends AbstractClassifier implements MultiClassClassifier,
+public class OnlineRUSBoost extends AbstractClassifier implements MultiClassClassifier,
                                                                         CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
-        return "Online CSB2 is the online version of the ensemble learner CSB2";
+        return "Online RUSBoost is the adaptation of the ensemble learner to data streams.";
     }
     
     private static final long serialVersionUID = 1L;
@@ -83,11 +87,13 @@ public class OnlineCSB2 extends AbstractClassifier implements MultiClassClassifi
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
         "The size of the ensemble.", 10, 1, Integer.MAX_VALUE);        
     
-    public FloatOption costPositiveOption = new FloatOption("costPositive", 'p',
-        "The cost of misclassifying a positive sample.", 1, 0.1, 1);
+    public IntOption samplingRateOption = new IntOption("samplingRate", 'i',
+        "The sampling rate of the positive instances.", 3, 1, 10);
     
-    public FloatOption costNegativeOption = new FloatOption("costNegative", 'n',
-            "The cost of misclassifying a negative sample.", 0.1, 0.1, 1);
+    public MultiChoiceOption algorithmImplementationOption = new MultiChoiceOption("algorithmImplementation", 'a', 
+            "The implementation of RUSBoost to use.",
+            new String[]{"Fixed class ration", "Fixed example distribution", "Fixed sampling rate"},
+            new String[]{"ClassRation", "ExampleDistribution", "SamplingRate"}, 0);
     
     public FlagOption disableDriftDetectionOption = new FlagOption("disableDriftDetection", 'd',
             "Should use ADWIN as drift detector?");
@@ -97,18 +103,19 @@ public class OnlineCSB2 extends AbstractClassifier implements MultiClassClassifi
     
     protected Classifier baseLearner;
     protected int nEstimators;    
-    protected double costPositive;
-    protected double costNegative;
+    protected int samplingRate;
+    protected int algorithmImplementation;
     protected boolean driftDetection;        
     protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();
     protected Random randomState;
-    protected ArrayList<ADWIN> adwinEnsemble = new ArrayList<ADWIN>();    
-    protected ArrayList<Double> lambdaFN = new ArrayList<Double>();
-    protected ArrayList<Double> lambdaFP = new ArrayList<Double>();    
-    protected ArrayList<Double> lambdaSum = new ArrayList<Double>();
+    protected ArrayList<ADWIN> adwinEnsemble = new ArrayList<ADWIN>();
+    protected ArrayList<Double> lambdaSc = new ArrayList<Double>();
+    protected ArrayList<Double> lambdaPos = new ArrayList<Double>();
+    protected ArrayList<Double> lambdaNeg = new ArrayList<Double>();
     protected ArrayList<Double> lambdaSw = new ArrayList<Double>();
     protected ArrayList<Double> epsilon = new ArrayList<Double>();
-    protected ArrayList<Double> wErr = new ArrayList<Double>();     
+    protected double nPositive;
+    protected double nNegative;   
     
     @Override
     public void resetLearningImpl() {
@@ -116,22 +123,23 @@ public class OnlineCSB2 extends AbstractClassifier implements MultiClassClassifi
     	this.baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
     	this.baseLearner.resetLearning();
         this.nEstimators = this.ensembleSizeOption.getValue();        
-        this.costPositive = this.costPositiveOption.getValue();
-        this.costNegative = this.costNegativeOption.getValue();
+        this.samplingRate = this.samplingRateOption.getValue();
+        this.algorithmImplementation = this.algorithmImplementationOption.getChosenIndex();
         this.driftDetection = !this.disableDriftDetectionOption.isSet();                
         for (int i = 0; i < this.nEstimators; i++) {
         	this.ensemble.add(this.baseLearner.copy());         	        
         	if (this.driftDetection) {
         		this.adwinEnsemble.add(new ADWIN());
-        	}        	
-            this.lambdaFP.add(0.0);
-            this.lambdaFN.add(0.0);
-            this.lambdaSum.add(0.0);
+        	}
+        	this.lambdaSc.add(0.0);
+            this.lambdaPos.add(0.0);
+            this.lambdaNeg.add(0.0);
             this.lambdaSw.add(0.0);
-            this.epsilon.add(0.0);
-            this.wErr.add(0.0);   
+            this.epsilon.add(0.0);               
 		}
-        this.randomState = new Random(this.seedOption.getValue());           
+        this.randomState = new Random(this.seedOption.getValue());  
+        this.nPositive = 0.0;
+        this.nNegative = 0.0;
     }
 
     @Override
@@ -142,39 +150,74 @@ public class OnlineCSB2 extends AbstractClassifier implements MultiClassClassifi
         adjustEnsembleSize(instance.numClasses());
         
         double lambda = 1.0;
-        boolean changeDetected  = false;        
+        boolean changeDetected = false;        
         
         for (int i = 0 ; i < this.ensemble.size(); i++) {
-			this.lambdaSum.set(i, this.lambdaSum.get(i) + lambda);			
-			double k = getPoisson(lambda);
+        	if (instance.classValue() == 1.0) {
+        		this.lambdaPos.set(i, this.lambdaPos.get(i) + lambda);
+        		this.nPositive ++;
+        	}
+        	else {
+        		this.lambdaNeg.set(i, this.lambdaNeg.get(i) + lambda);
+        		this.nNegative ++;
+        	}
+        	double lambdaRus = 1;
+        	if (this.algorithmImplementation == 0) {
+        		if (instance.classValue() == 1.0) {
+        			if (this.nNegative != 0) {
+        				lambdaRus = lambda * ((this.lambdaPos.get(i) + this.lambdaNeg.get(i)) / 
+        									  (this.lambdaPos.get(i) + this.lambdaNeg.get(i) * 
+        									  (this.samplingRate * (this.nPositive / this.nNegative))) *
+        									  (((this.samplingRate + 1) * this.nPositive) / (this.nPositive + this.nNegative)));
+        			}
+        		}
+        		else {
+        			if (this.nPositive != 0) {
+        				lambdaRus = lambda * ((this.lambdaPos.get(i) + this.lambdaNeg.get(i)) / 
+        									  (this.lambdaPos.get(i) + this.lambdaNeg.get(i) * 
+        									  (this.nNegative / (this.nPositive * this.samplingRate))) *
+        									  (((this.samplingRate + 1) * this.nPositive) / (this.nPositive + this.nNegative)));
+        			}
+        		}
+        	}
+        	else if (this.algorithmImplementation == 1) {
+        		if (instance.classValue() == 1.0) {
+        			lambdaRus = ((lambda * this.nPositive) / (this.nPositive + this.nNegative)) /
+        						(this.lambdaPos.get(i) / (this.lambdaPos.get(i) + this.lambdaNeg.get(i)));
+        		}
+        		else {
+        			lambdaRus = ((lambda * this.samplingRate * this.nPositive) / (this.nPositive + this.nNegative)) /
+    							(this.lambdaNeg.get(i) / (this.lambdaPos.get(i) + this.lambdaNeg.get(i)));
+        		}
+        	}
+        	else if (this.algorithmImplementation == 2) {
+        		if (instance.classValue() == 1.0) {
+        			lambdaRus = lambda;
+        		}
+        		else {
+        			lambdaRus = lambda / this.samplingRate;
+        		}
+        	}        	        						
+			double k = getPoisson(lambdaRus);
 			if (k > 0) {
 				for (int b = 0; b < k; b++) {
 					this.ensemble.get(i).trainOnInstance(instance);					
 				}
-				if (Utils.maxIndex(this.ensemble.get(i).getVotesForInstance(instance)) == instance.classValue()) {
-					this.epsilon.set(i, this.lambdaSw.get(i) / this.lambdaSum.get(i));					
-					this.wErr.set(i, (this.lambdaFP.get(i) + this.lambdaFN.get(i)) / this.lambdaSum.get(i));
-					if ( (this.epsilon.get(i) + this.wErr.get(i)) != 0 && this.epsilon.get(i) != 1 ) {
-						lambda = this.epsilon.get(i) / ( (1 - this.epsilon.get(i)) * (this.epsilon.get(i) + this.wErr.get(i)) );
-					}															
+			}												
+			if (Utils.maxIndex(this.ensemble.get(i).getVotesForInstance(instance)) == instance.classValue()) {
+				this.lambdaSc.set(i, this.lambdaSc.get(i) + lambda);
+				this.epsilon.set(i, this.lambdaSw.get(i) / (this.lambdaSc.get(i) + this.lambdaSw.get(i)));
+				if (this.epsilon.get(i) != 1) {
+					lambda = lambda / (2 * (1- this.epsilon.get(i)));
 				}
-				else {
-					if (Utils.maxIndex(this.ensemble.get(i).getVotesForInstance(instance)) == 0 && instance.classValue() == 1) {
-						this.lambdaFP.set(i, this.lambdaFP.get(i) + (this.costPositive * lambda));
-						this.lambdaSw.set(i, this.lambdaSw.get(i) + lambda);
-						this.epsilon.set(i, this.lambdaSw.get(i) / this.lambdaSum.get(i));
-						this.wErr.set(i, (this.lambdaFP.get(i) + this.lambdaFN.get(i)) / this.lambdaSum.get(i));
-						lambda = (this.costPositive * lambda) / (this.epsilon.get(i) * this.wErr.get(i));
-					}
-					else {
-						this.lambdaFN.set(i, this.lambdaFN.get(i) + (this.costPositive * lambda));
-						this.lambdaSw.set(i, this.lambdaSw.get(i) + lambda);
-						this.epsilon.set(i, this.lambdaSw.get(i) / this.lambdaSum.get(i));
-						this.wErr.set(i, (this.lambdaFP.get(i) + this.lambdaFN.get(i)) / this.lambdaSum.get(i));
-						lambda = (this.costNegative * lambda) / (this.epsilon.get(i) * this.wErr.get(i));
-					}
-				}				
 			}
+			else {
+				this.lambdaSw.set(i, this.lambdaSw.get(i) + lambda);				
+				this.epsilon.set(i, this.lambdaSw.get(i) / (this.lambdaSc.get(i) + this.lambdaSw.get(i)));
+				if (this.epsilon.get(i) != 0) {
+					lambda = lambda / (2 * this.epsilon.get(i));
+				}
+			}								
 			if (this.driftDetection) {
 				double pred = Utils.maxIndex(this.ensemble.get(i).getVotesForInstance(instance));
 				double errorEstimation = this.adwinEnsemble.get(i).getEstimation();
@@ -213,7 +256,7 @@ public class OnlineCSB2 extends AbstractClassifier implements MultiClassClassifi
             DoubleVector vote = new DoubleVector(this.ensemble.get(i).getVotesForInstance(testInstance));
             if (vote.sumOfValues() > 0.0) {                                                                                  
                 for(int v = 0 ; v < vote.numValues() ; ++v) {
-                    vote.setValue(v, vote.getValue(v) * Math.log((1 - this.epsilon.get(i)) / this.epsilon.get(i)) );
+                    vote.setValue(v, vote.getValue(v) * Math.log((1 - this.epsilon.get(i)) / this.epsilon.get(i)));
                 }                                
             	vote.normalize();
                 combinedVote.addValues(vote);                
@@ -241,13 +284,12 @@ public class OnlineCSB2 extends AbstractClassifier implements MultiClassClassifi
     		for (int i = this.nEstimators; i < nClasses; i++) {
     			this.ensemble.add(this.baseLearner.copy()); 
     			this.nEstimators ++;
-    			this.adwinEnsemble.add(new ADWIN());    			
-    			this.lambdaFP.add(0.0);
-                this.lambdaFN.add(0.0);
-                this.lambdaSum.add(0.0);
+    			this.adwinEnsemble.add(new ADWIN());
+    			this.lambdaSc.add(0.0);
+                this.lambdaPos.add(0.0);
+                this.lambdaNeg.add(0.0);
                 this.lambdaSw.add(0.0);
-                this.epsilon.add(0.0);
-                this.wErr.add(0.0);   
+                this.epsilon.add(0.0); 
 			}
     	}
     }
@@ -266,7 +308,7 @@ public class OnlineCSB2 extends AbstractClassifier implements MultiClassClassifi
 
     @Override
     public ImmutableCapabilities defineImmutableCapabilities() {
-        if (this.getClass() == OnlineCSB2.class)
+        if (this.getClass() == OnlineRUSBoost.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
         else
             return new ImmutableCapabilities(Capability.VIEW_STANDARD);

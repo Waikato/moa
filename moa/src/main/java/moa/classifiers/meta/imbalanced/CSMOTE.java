@@ -19,7 +19,7 @@
  *
  */
 
-package moa.classifiers.meta;
+package moa.classifiers.meta.imbalanced;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
@@ -42,14 +42,8 @@ import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 import com.yahoo.labs.samoa.instances.WekaToSamoaInstanceConverter;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 

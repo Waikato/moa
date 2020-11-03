@@ -1,5 +1,5 @@
 /*
- *  OnlineAdaC2.java
+ *  OnlineAdaBoost.java
  *  
  *  @author Alessio Bernardo (alessio dot bernardo at polimi dot dot it)
  *
@@ -16,11 +16,9 @@
  *  limitations under the License.
         
  */
-package moa.classifiers.meta;
+package moa.classifiers.meta.imbalanced;
 
 import com.yahoo.labs.samoa.instances.Instance;
-
-
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
@@ -31,7 +29,6 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.Utils;
 import moa.options.ClassOption;
-import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import java.util.ArrayList;
@@ -39,14 +36,21 @@ import java.util.Random;
 import moa.classifiers.core.driftdetection.ADWIN;
 
 
+
 /**
- *  OnlineAdaC2 is the adaptation of the ensemble learner to data streams
+ *  Online AdaBoost is the online version of the boosting ensemble method AdaBoost
  *
- * <p>AdaC2 is a boosting algorithm that takes the different misclassification costs
-    into consideration when calculating the classier weights, and updates the sample
-    weight. AdaC2 increases more the weights on the misclassified positive samples,
-    compared to misclassified negative samples.:math:`C_P` and :math:`C_N` are the
-    positive and negative costs.</p>
+ * <p>AdaBoost focuses more on difficult examples. The misclassified examples by the current
+    classifier :math:`h_m` are given more weights in the training set of the following
+    learner :math:`h_{m+1}`. In the online context, since there is no training dataset, but a stream
+    of samples, the drawing of samples with replacement can't be trivially
+    executed. The strategy adopted by the Online Boosting algorithm is to
+    simulate this task by training each arriving sample K times, which is
+    drawn by the binomial distribution. Since we can consider the data stream
+    to be infinite, and knowing that with infinite samples the binomial
+    distribution  :math:`Binomial(p, N)` tends to a :math:`Poisson(\lambda)` distribution,
+    where :math:`\lambda = Np`. :math:`\lambda` is computed by tracking the total weights
+    of the correctly and misclassified examples.</p>
 
     <p>This online ensemble learner method is improved by the addition of an ADWIN change
     detector. ADWIN stands for Adaptive Windowing. It works by keeping updated
@@ -60,8 +64,6 @@ import moa.classifiers.core.driftdetection.ADWIN;
  * <p>Parameters:</p> <ul>
  * <li>-l : Each classiﬁer to train of the ensemble is an instance of the base estimator.</li>
  * <li>-s : The size of the ensemble, in other words, how many classifiers to train.</li>
- * <li>-p : The cost of misclassifying a positive sample.</li>
- * <li>-n : The cost of misclassifying a negative sample.</li>
  * <li>-d : Should use ADWIN as drift detector? If enabled it is used by the method 
  * 	to track the performance of the classifiers and adapt when a drift is detected.</li>
  * <li>-r : Seed for the random state.</li>
@@ -70,12 +72,12 @@ import moa.classifiers.core.driftdetection.ADWIN;
  * @author Alessio Bernardo (alessio dot bernardo at polimi dot dot it)
  * @version $Revision: 1 $
  */
-public class OnlineAdaC2 extends AbstractClassifier implements MultiClassClassifier,
+public class OnlineAdaBoost extends AbstractClassifier implements MultiClassClassifier,
                                                                         CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
-        return "OnlineAdaC2 is the adaptation of the ensemble learner to data streams from B. Wang and J. Pineau";
+        return "Online Boosting is the online version of the boosting ensemble method (AdaBoost)";
     }
     
     private static final long serialVersionUID = 1L;
@@ -86,12 +88,6 @@ public class OnlineAdaC2 extends AbstractClassifier implements MultiClassClassif
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
         "The size of the ensemble.", 10, 1, Integer.MAX_VALUE);        
     
-    public FloatOption costPositiveOption = new FloatOption("costPositive", 'p',
-        "The cost of misclassifying a positive sample.", 1, 0.1, 1);
-    
-    public FloatOption costNegativeOption = new FloatOption("costNegative", 'n',
-            "The cost of misclassifying a negative sample.", 0.1, 0.1, 1);
-    
     public FlagOption disableDriftDetectionOption = new FlagOption("disableDriftDetection", 'd',
             "Should use ADWIN as drift detector?");
     
@@ -100,19 +96,13 @@ public class OnlineAdaC2 extends AbstractClassifier implements MultiClassClassif
     
     protected Classifier baseLearner;
     protected int nEstimators;    
-    protected double costPositive;
-    protected double costNegative;
     protected boolean driftDetection;        
     protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();
     protected Random randomState;
-    protected ArrayList<ADWIN> adwinEnsemble = new ArrayList<ADWIN>();
-    protected ArrayList<Double> lambdaTP = new ArrayList<Double>();
-    protected ArrayList<Double> lambdaTN = new ArrayList<Double>();
-    protected ArrayList<Double> lambdaFP = new ArrayList<Double>();
-    protected ArrayList<Double> lambdaFN = new ArrayList<Double>();
-    protected ArrayList<Double> lambdaSum = new ArrayList<Double>();
-    protected ArrayList<Double> wAcc = new ArrayList<Double>();
-    protected ArrayList<Double> wErr = new ArrayList<Double>();     
+    protected ArrayList<ADWIN> adwinEnsemble = new ArrayList<ADWIN>();        
+    protected ArrayList<Double> lambdaSc = new ArrayList<Double>();
+    protected ArrayList<Double> lambdaSw = new ArrayList<Double>();
+    protected ArrayList<Double> epsilon = new ArrayList<Double>();     
     
     @Override
     public void resetLearningImpl() {
@@ -120,21 +110,15 @@ public class OnlineAdaC2 extends AbstractClassifier implements MultiClassClassif
     	this.baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
     	this.baseLearner.resetLearning();
         this.nEstimators = this.ensembleSizeOption.getValue();        
-        this.costPositive = this.costPositiveOption.getValue();
-        this.costNegative = this.costNegativeOption.getValue();
         this.driftDetection = !this.disableDriftDetectionOption.isSet();                
         for (int i = 0; i < this.nEstimators; i++) {
         	this.ensemble.add(this.baseLearner.copy());         	        
         	if (this.driftDetection) {
         		this.adwinEnsemble.add(new ADWIN());
         	}
-        	this.lambdaTP.add(0.0);
-            this.lambdaTN.add(0.0);
-            this.lambdaFP.add(0.0);
-            this.lambdaFN.add(0.0);
-            this.lambdaSum.add(0.0);
-            this.wAcc.add(0.0);
-            this.wErr.add(0.0);   
+        	this.lambdaSc.add(0.0);
+            this.lambdaSw.add(0.0);
+            this.epsilon.add(0.0);             
 		}
         this.randomState = new Random(this.seedOption.getValue());           
     }
@@ -149,37 +133,28 @@ public class OnlineAdaC2 extends AbstractClassifier implements MultiClassClassif
         double lambda = 1.0;
         boolean changeDetected = false;        
         
-        for (int i = 0 ; i < this.ensemble.size(); i++) {
-			this.lambdaSum.set(i, this.lambdaSum.get(i) + lambda);			
+        for (int i = 0 ; i < this.ensemble.size(); i++) {					
 			double k = getPoisson(lambda);
 			if (k > 0) {
 				for (int b = 0; b < k; b++) {
 					this.ensemble.get(i).trainOnInstance(instance);					
 				}
-				if (Utils.maxIndex(this.ensemble.get(i).getVotesForInstance(instance)) == 1.0 && instance.classValue() == 1.0) {
-					this.lambdaTP.set(i, this.lambdaTP.get(i) + (this.costPositive * lambda));
-					this.wAcc.set(i, (this.lambdaTP.get(i) + this.lambdaTN.get(i)) / this.lambdaSum.get(i));
-					this.wErr.set(i, (this.lambdaFP.get(i) + this.lambdaFN.get(i)) / this.lambdaSum.get(i));
-					lambda = (this.costPositive * lambda) / (2 * this.wAcc.get(i));
+				
+				
+				if (Utils.maxIndex(this.ensemble.get(i).getVotesForInstance(instance)) == instance.classValue()) {
+					this.lambdaSc.set(i, this.lambdaSc.get(i) + lambda);
+					this.epsilon.set(i, this.lambdaSw.get(i) / (this.lambdaSw.get(i) + this.lambdaSc.get(i)));
+					if (this.epsilon.get(i) != 0) {
+						lambda /= (2 * (1 - this.epsilon.get(i)));
+					}										
 				}
-				else if (Utils.maxIndex(this.ensemble.get(i).getVotesForInstance(instance)) == 0.0 && instance.classValue() == 0.0) {
-					this.lambdaTN.set(i, this.lambdaTN.get(i) + (this.costNegative * lambda));
-					this.wAcc.set(i, (this.lambdaTP.get(i) + this.lambdaTN.get(i)) / this.lambdaSum.get(i));
-					this.wErr.set(i, (this.lambdaFP.get(i) + this.lambdaFN.get(i)) / this.lambdaSum.get(i));
-					lambda = (this.costNegative * lambda) / (2 * this.wAcc.get(i));
-				}
-				else if (Utils.maxIndex(this.ensemble.get(i).getVotesForInstance(instance)) == 0.0 && instance.classValue() == 1.0) {
-					this.lambdaFN.set(i, this.lambdaFN.get(i) + (this.costPositive * lambda));
-					this.wAcc.set(i, (this.lambdaTP.get(i) + this.lambdaTN.get(i)) / this.lambdaSum.get(i));
-					this.wErr.set(i, (this.lambdaFP.get(i) + this.lambdaFN.get(i)) / this.lambdaSum.get(i));
-					lambda = (this.costPositive * lambda) / (2 * this.wErr.get(i));
-				}
-				else if (Utils.maxIndex(this.ensemble.get(i).getVotesForInstance(instance)) == 1.0 && instance.classValue() == 0.0) {
-					this.lambdaFP.set(i, this.lambdaFP.get(i) + (this.costNegative * lambda));
-					this.wAcc.set(i, (this.lambdaTP.get(i) + this.lambdaTN.get(i)) / this.lambdaSum.get(i));
-					this.wErr.set(i, (this.lambdaFP.get(i) + this.lambdaFN.get(i)) / this.lambdaSum.get(i));
-					lambda = (this.costNegative * lambda) / (2 * this.wErr.get(i));
-				}
+				else {
+					this.lambdaSw.set(i, this.lambdaSw.get(i) + lambda);
+					this.epsilon.set(i, this.lambdaSw.get(i) / (this.lambdaSw.get(i) + this.lambdaSc.get(i)));
+					if (this.epsilon.get(i) != 0) {
+						lambda /= (2 * this.epsilon.get(i));
+					}	
+				}												
 			}
 			if (this.driftDetection) {
 				double pred = Utils.maxIndex(this.ensemble.get(i).getVotesForInstance(instance));
@@ -219,7 +194,7 @@ public class OnlineAdaC2 extends AbstractClassifier implements MultiClassClassif
             DoubleVector vote = new DoubleVector(this.ensemble.get(i).getVotesForInstance(testInstance));
             if (vote.sumOfValues() > 0.0) {                                                                                  
                 for(int v = 0 ; v < vote.numValues() ; ++v) {
-                    vote.setValue(v, vote.getValue(v) * Math.log(this.wAcc.get(i) / this.wErr.get(i)));
+                    vote.setValue(v, vote.getValue(v) * Math.log( (1 - this.epsilon.get(i)) / this.epsilon.get(i) ));
                 }                                
             	vote.normalize();
                 combinedVote.addValues(vote);                
@@ -248,13 +223,9 @@ public class OnlineAdaC2 extends AbstractClassifier implements MultiClassClassif
     			this.ensemble.add(this.baseLearner.copy()); 
     			this.nEstimators ++;
     			this.adwinEnsemble.add(new ADWIN());
-    			this.lambdaTP.add(0.0);
-                this.lambdaTN.add(0.0);
-                this.lambdaFP.add(0.0);
-                this.lambdaFN.add(0.0);
-                this.lambdaSum.add(0.0);
-                this.wAcc.add(0.0);
-                this.wErr.add(0.0);  
+    			this.lambdaSc.add(0.0);
+                this.lambdaSw.add(0.0);
+                this.epsilon.add(0.0);               
 			}
     	}
     }
@@ -273,7 +244,7 @@ public class OnlineAdaC2 extends AbstractClassifier implements MultiClassClassif
 
     @Override
     public ImmutableCapabilities defineImmutableCapabilities() {
-        if (this.getClass() == OnlineAdaC2.class)
+        if (this.getClass() == OnlineAdaBoost.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
         else
             return new ImmutableCapabilities(Capability.VIEW_STANDARD);

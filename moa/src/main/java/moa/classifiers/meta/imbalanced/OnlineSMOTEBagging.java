@@ -16,7 +16,7 @@
  *  limitations under the License.
         
  */
-package moa.classifiers.meta;
+package moa.classifiers.meta.imbalanced;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;

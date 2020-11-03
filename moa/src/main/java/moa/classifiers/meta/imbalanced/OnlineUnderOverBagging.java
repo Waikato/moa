@@ -1,5 +1,5 @@
 /*
- *  OnlineBoosting.java
+ *  OnlineUnderOverBagging.java
  *  
  *  @author Alessio Bernardo (alessio dot bernardo at polimi dot dot it)
  *
@@ -16,7 +16,7 @@
  *  limitations under the License.
         
  */
-package moa.classifiers.meta;
+package moa.classifiers.meta.imbalanced;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.capabilities.CapabilitiesHandler;
@@ -38,19 +38,16 @@ import moa.classifiers.core.driftdetection.ADWIN;
 
 
 /**
- *  Online Boosting is the online version of the boosting ensemble method (AdaBoost)
+ *  Online UnderOverBagging is the online version of the ensemble method.
  *
- * <p>AdaBoost focuses more on difficult examples. The misclassified examples by the current
-    classifier :math:`h_m` are given more weights in the training set of the following
-    learner :math:`h_{m+1}`. In the online context, since there is no training dataset, but a stream
-    of samples, the drawing of samples with replacement can't be trivially
-    executed. The strategy adopted by the Online Boosting algorithm is to
-    simulate this task by training each arriving sample K times, which is
-    drawn by the binomial distribution. Since we can consider the data stream
-    to be infinite, and knowing that with infinite samples the binomial
-    distribution  :math:`Binomial(p, N)` tends to a :math:`Poisson(\lambda)` distribution,
-    where :math:`\lambda = Np`. :math:`\lambda` is computed by tracking the total weights
-    of the correctly and misclassified examples.</p>
+ * <p>In case of imbalanced classes UnderOverBagging uses the strategy of under-sampling
+     the majority class and oversampling the minority class. In addition the sampling
+     rate can be also varied over the bagging iterations, which further boosts the
+     diversity of the base learners. <p>
+
+   <p>The derivation of the online UnderOverBagging algorithm is made through the observation
+     that a Binomial distribution with sampling rate :math:`\frac{C}{N}` corresponds to a
+     poisson distribution with :math:`\lambda=C`.</p>
 
     <p>This online ensemble learner method is improved by the addition of an ADWIN change
     detector. ADWIN stands for Adaptive Windowing. It works by keeping updated
@@ -64,6 +61,7 @@ import moa.classifiers.core.driftdetection.ADWIN;
  * <p>Parameters:</p> <ul>
  * <li>-l : Each classiﬁer to train of the ensemble is an instance of the base estimator.</li>
  * <li>-s : The size of the ensemble, in other words, how many classifiers to train.</li>
+ * <li>-i : The sampling rate of the positive instances.</li>
  * <li>-d : Should use ADWIN as drift detector? If enabled it is used by the method 
  * 	to track the performance of the classifiers and adapt when a drift is detected.</li>
  * <li>-r : Seed for the random state.</li>
@@ -72,12 +70,12 @@ import moa.classifiers.core.driftdetection.ADWIN;
  * @author Alessio Bernardo (alessio dot bernardo at polimi dot dot it)
  * @version $Revision: 1 $
  */
-public class OnlineBoosting extends AbstractClassifier implements MultiClassClassifier,
+public class OnlineUnderOverBagging extends AbstractClassifier implements MultiClassClassifier,
                                                                         CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
-        return "Online Boosting is the online version of the boosting ensemble method (AdaBoost)";
+        return "OnlineAdaC2 is the adaptation of the ensemble learner to data streams from B. Wang and J. Pineau";
     }
     
     private static final long serialVersionUID = 1L;
@@ -88,6 +86,9 @@ public class OnlineBoosting extends AbstractClassifier implements MultiClassClas
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
         "The size of the ensemble.", 10, 1, Integer.MAX_VALUE);        
     
+    public IntOption samplingRateOption = new IntOption("samplingRate", 'i',
+            "The sampling rate of the positive instances.", 2, 1, 10);
+    
     public FlagOption disableDriftDetectionOption = new FlagOption("disableDriftDetection", 'd',
             "Should use ADWIN as drift detector?");
     
@@ -96,13 +97,11 @@ public class OnlineBoosting extends AbstractClassifier implements MultiClassClas
     
     protected Classifier baseLearner;
     protected int nEstimators;    
+    protected int samplingRate; 
     protected boolean driftDetection;        
     protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();
     protected Random randomState;
-    protected ArrayList<ADWIN> adwinEnsemble = new ArrayList<ADWIN>();        
-    protected ArrayList<Double> lambdaSc = new ArrayList<Double>();
-    protected ArrayList<Double> lambdaSw = new ArrayList<Double>();
-    protected ArrayList<Double> epsilon = new ArrayList<Double>();     
+    protected ArrayList<ADWIN> adwinEnsemble = new ArrayList<ADWIN>();      
     
     @Override
     public void resetLearningImpl() {
@@ -110,15 +109,13 @@ public class OnlineBoosting extends AbstractClassifier implements MultiClassClas
     	this.baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
     	this.baseLearner.resetLearning();
         this.nEstimators = this.ensembleSizeOption.getValue();        
+        this.samplingRate = this.samplingRateOption.getValue();
         this.driftDetection = !this.disableDriftDetectionOption.isSet();                
         for (int i = 0; i < this.nEstimators; i++) {
         	this.ensemble.add(this.baseLearner.copy());         	        
         	if (this.driftDetection) {
         		this.adwinEnsemble.add(new ADWIN());
-        	}
-        	this.lambdaSc.add(0.0);
-            this.lambdaSw.add(0.0);
-            this.epsilon.add(0.0);             
+        	}        	
 		}
         this.randomState = new Random(this.seedOption.getValue());           
     }
@@ -129,32 +126,23 @@ public class OnlineBoosting extends AbstractClassifier implements MultiClassClas
         	resetLearningImpl();
         }  
         adjustEnsembleSize(instance.numClasses());
-        
-        double lambda = 1.0;
+                
         boolean changeDetected = false;        
+        double lambda = 0.0;
         
-        for (int i = 0 ; i < this.ensemble.size(); i++) {					
+        for (int i = 0 ; i < this.ensemble.size(); i++) {
+        	double a = (double)(i + 1) / (double)this.nEstimators;
+        	if (instance.classValue() == 1.0) {
+        		lambda = a * this.samplingRate;
+        	}
+        	else {
+        		lambda = a;
+        	}        	        	
 			double k = getPoisson(lambda);
 			if (k > 0) {
 				for (int b = 0; b < k; b++) {
 					this.ensemble.get(i).trainOnInstance(instance);					
-				}
-				
-				
-				if (Utils.maxIndex(this.ensemble.get(i).getVotesForInstance(instance)) == instance.classValue()) {
-					this.lambdaSc.set(i, this.lambdaSc.get(i) + lambda);
-					this.epsilon.set(i, this.lambdaSw.get(i) / (this.lambdaSw.get(i) + this.lambdaSc.get(i)));
-					if (this.epsilon.get(i) != 0) {
-						lambda /= (2 * (1 - this.epsilon.get(i)));
-					}										
-				}
-				else {
-					this.lambdaSw.set(i, this.lambdaSw.get(i) + lambda);
-					this.epsilon.set(i, this.lambdaSw.get(i) / (this.lambdaSw.get(i) + this.lambdaSc.get(i)));
-					if (this.epsilon.get(i) != 0) {
-						lambda /= (2 * this.epsilon.get(i));
-					}	
-				}												
+				}	
 			}
 			if (this.driftDetection) {
 				double pred = Utils.maxIndex(this.ensemble.get(i).getVotesForInstance(instance));
@@ -192,10 +180,7 @@ public class OnlineBoosting extends AbstractClassifier implements MultiClassClas
 
         for(int i = 0 ; i < this.ensemble.size() ; ++i) {
             DoubleVector vote = new DoubleVector(this.ensemble.get(i).getVotesForInstance(testInstance));
-            if (vote.sumOfValues() > 0.0) {                                                                                  
-                for(int v = 0 ; v < vote.numValues() ; ++v) {
-                    vote.setValue(v, vote.getValue(v) * Math.log( (1 - this.epsilon.get(i)) / this.epsilon.get(i) ));
-                }                                
+            if (vote.sumOfValues() > 0.0) {                                                                                                                              
             	vote.normalize();
                 combinedVote.addValues(vote);                
             }
@@ -222,10 +207,7 @@ public class OnlineBoosting extends AbstractClassifier implements MultiClassClas
     		for (int i = this.nEstimators; i < nClasses; i++) {
     			this.ensemble.add(this.baseLearner.copy()); 
     			this.nEstimators ++;
-    			this.adwinEnsemble.add(new ADWIN());
-    			this.lambdaSc.add(0.0);
-                this.lambdaSw.add(0.0);
-                this.epsilon.add(0.0);               
+    			this.adwinEnsemble.add(new ADWIN());    			
 			}
     	}
     }
@@ -244,7 +226,7 @@ public class OnlineBoosting extends AbstractClassifier implements MultiClassClas
 
     @Override
     public ImmutableCapabilities defineImmutableCapabilities() {
-        if (this.getClass() == OnlineBoosting.class)
+        if (this.getClass() == OnlineUnderOverBagging.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
         else
             return new ImmutableCapabilities(Capability.VIEW_STANDARD);

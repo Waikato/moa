@@ -19,33 +19,22 @@
  *
  */
 
-package moa.classifiers.meta;
+package moa.classifiers.meta.imbalanced;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.core.driftdetection.ADWIN;
-
 import weka.core.Attribute;
 import weka.core.Instances;
-import weka.core.Utils;
-
 import moa.core.Measurement;
-import moa.core.InstanceExample;
-import moa.core.SerializeUtils;
 import moa.core.TimingUtils;
-
 import moa.options.ClassOption;
-import weka.filters.Filter;
-
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 import com.yahoo.labs.samoa.instances.WekaToSamoaInstanceConverter;
 
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -55,14 +44,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
-import java.util.TreeMap;
-import java.util.stream.IntStream;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.netlib.util.booleanW;
-
 
 
 /**
@@ -504,9 +486,7 @@ public class RebalanceStream extends AbstractClassifier implements MultiClassCla
         try {
         	nnArray = new Instance[this.effectiveNearestNeighbors];
 		} catch (Exception e) {
-			// TODO: handle exception
-			int err = 1;
-			err++;
+			// TODO: handle exception			
 		}
         
         
@@ -514,9 +494,7 @@ public class RebalanceStream extends AbstractClassifier implements MultiClassCla
         int pos = 0;
         try {
         	pos = rand.nextInt(this.minorityInstances.numInstances());
-		} catch (Exception e) {
-			int er = 1;
-			er++;
+		} catch (Exception e) {			
 		}
         
         while (this.alreadyUsed.contains(pos)) {
