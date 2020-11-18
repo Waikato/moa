@@ -213,6 +213,10 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
             return this.observedClassDistribution.getArrayCopy();
         }
 
+        public double[] getObservedClassDistributionAtLeavesReachableThroughThisNode() {
+            return this.observedClassDistribution.getArrayCopy();
+        }
+
         public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
             return this.observedClassDistribution.getArrayCopy();
         }
@@ -272,6 +276,29 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
                 }
             }
             return byteSize;
+        }
+
+        @Override
+        public double[] getObservedClassDistributionAtLeavesReachableThroughThisNode() {
+            // Start a new DoubleVector with 0 in all positions.
+            DoubleVector sumObservedClassDistributionAtLeaves =
+                    new DoubleVector(new double[this.getObservedClassDistribution().length]);
+
+            for(Node childNode : this.children) {
+                if(childNode != null) {
+                    double[] childDist = childNode.getObservedClassDistributionAtLeavesReachableThroughThisNode();
+                    sumObservedClassDistributionAtLeaves.addValues(childDist);
+                }
+            }
+            return sumObservedClassDistributionAtLeaves.getArrayCopy();
+        }
+
+        public AutoExpandVector<Node> getChildren() {
+            return children;
+        }
+
+        public InstanceConditionalTest getSplitTest() {
+            return splitTest;
         }
 
         public SplitNode(InstanceConditionalTest splitTest,
@@ -490,6 +517,14 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
             size += this.treeRoot.calcByteSizeIncludingSubtree();
         }
         return size;
+    }
+
+    public int getNodeCount() {
+        return this.decisionNodeCount + this.activeLeafNodeCount + this.inactiveLeafNodeCount;
+    }
+
+    public Node getTreeRoot() {
+        return this.treeRoot;
     }
 
     @Override
