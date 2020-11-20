@@ -64,7 +64,7 @@ public class ClassifierWithFeatureImportance extends AbstractClassifier
 
     public ClassOption featureImportanceLearnerOption = new ClassOption("featureImportanceLearner", 'l',
             "Learner used to build the model from which the feature importances are extracted",
-            FeatureImportanceClassifier.class, "moa.learners.analysis.FeatureImportanceHoeffdingTree");
+            FeatureImportanceClassifier.class, "moa.learners.featureanalysis.FeatureImportanceHoeffdingTree");
 
     public FlagOption doNotNormalizeFeatureScoreOption = new FlagOption("doNotNormalizeFeatureScore", 'n',
             "If set the feature importances will not be normalized");
