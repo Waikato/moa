@@ -1,4 +1,4 @@
-package moa.learners.analysis;
+package moa.learners.featureanalysis;
 
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;

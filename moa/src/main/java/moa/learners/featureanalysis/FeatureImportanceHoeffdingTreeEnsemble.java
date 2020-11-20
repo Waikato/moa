@@ -1,4 +1,4 @@
-package moa.learners.analysis;
+package moa.learners.featureanalysis;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.capabilities.CapabilitiesHandler;
