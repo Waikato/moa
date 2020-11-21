@@ -316,6 +316,15 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
             return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 
+    @Override
+    public Classifier[] getSublearners() {
+        /* Extracts the reference to the base learner object from within the ensemble of StreamingRandomPatchesClassifier */
+        Classifier[] baseModels = new Classifier[this.ensemble.length];
+        for(int i = 0 ; i < baseModels.length ; ++i)
+            baseModels[i] = this.ensemble[i].classifier;
+        return baseModels;
+    }
+
     private static ArrayList<ArrayList<Integer>> localRandomKCombinations(int k, int length,
                                                                           int nCombinations, Random random) {
         ArrayList<ArrayList<Integer>> combinations = new ArrayList<>();

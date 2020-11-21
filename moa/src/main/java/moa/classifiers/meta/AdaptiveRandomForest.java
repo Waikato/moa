@@ -24,6 +24,7 @@ import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.InstanceExample;
@@ -303,6 +304,16 @@ public class AdaptiveRandomForest extends AbstractClassifier implements MultiCla
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
         else
             return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+    }
+
+    @Override
+    public Classifier[] getSublearners() {
+        /* Extracts the reference to the ARFHoeffdingTree object from within the ensemble of ARFBaseLearner's */
+        Classifier[] forest = new Classifier[this.ensemble.length];
+        for(int i = 0 ; i < forest.length ; ++i)
+            forest[i] = this.ensemble[i].classifier;
+        return forest;
+
     }
     
     /**
