@@ -2,8 +2,6 @@
  *    RebalanceStream.java
  * 
  *    @author Alessio Bernardo (alessio dot bernardo at polimi dot com)
- *    @author Emanuele Della Valle (emanuele dot dellavalle at polimi dot com)
- *    @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
