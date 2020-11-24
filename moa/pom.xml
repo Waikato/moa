@@ -231,7 +231,7 @@
     							<action>
     								<ignore />
     							</action>
-    						</pluginExecution>    						
+						</pluginExecution>    						
     					</pluginExecutions>
     				</lifecycleMappingMetadata>
     			</configuration>
