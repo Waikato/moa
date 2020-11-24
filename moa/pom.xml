@@ -231,41 +231,7 @@
     							<action>
     								<ignore />
     							</action>
-    						</pluginExecution>
-    						<pluginExecution>
-    							<pluginExecutionFilter>
-    								<groupId>org.codehaus.mojo</groupId>
-    								<artifactId>
-    									exec-maven-plugin
-    								</artifactId>
-    								<versionRange>
-    									[1.6.0,)
-    								</versionRange>
-    								<goals>
-    									<goal>exec</goal>
-    								</goals>
-    							</pluginExecutionFilter>
-    							<action>
-    								<ignore></ignore>
-    							</action>
-    						</pluginExecution>
-    						<pluginExecution>
-    							<pluginExecutionFilter>
-    								<groupId>
-    									org.apache.maven.plugins
-    								</groupId>
-    								<artifactId>
-    									maven-enforcer-plugin
-    								</artifactId>
-    								<versionRange>[1.0,)</versionRange>
-    								<goals>
-    									<goal>enforce</goal>
-    								</goals>
-    							</pluginExecutionFilter>
-    							<action>
-    								<ignore></ignore>
-    							</action>
-    						</pluginExecution>
+    						</pluginExecution>    						
     					</pluginExecutions>
     				</lifecycleMappingMetadata>
     			</configuration>
