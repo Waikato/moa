@@ -29,6 +29,7 @@ import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+import moa.core.MiscUtils;
 import moa.core.Utils;
 import moa.options.ClassOption;
 import weka.core.Attribute;
@@ -36,7 +37,6 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Random;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.classifiers.lazy.neighboursearch.LinearNNSearch;
 import moa.classifiers.lazy.neighboursearch.NearestNeighbourSearch;
@@ -92,16 +92,12 @@ public class OnlineSMOTEBagging extends AbstractClassifier implements MultiClass
     
     public FlagOption disableDriftDetectionOption = new FlagOption("disableDriftDetection", 'd',
             "Should use ADWIN as drift detector?");
-    
-    public IntOption seedOption = new IntOption("seed", 'r',
-        "Seed for the random state.", 1, 1, Integer.MAX_VALUE);
-    
+
     protected Classifier baseLearner;
     protected int nEstimators;    
     protected int samplingRate;    
     protected boolean driftDetection;        
     protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();
-    protected Random randomState;
     protected ArrayList<ADWIN> adwinEnsemble = new ArrayList<ADWIN>();   
     protected Instances posSamples;
     protected SamoaToWekaInstanceConverter samoaToWeka = new SamoaToWekaInstanceConverter();
@@ -120,7 +116,6 @@ public class OnlineSMOTEBagging extends AbstractClassifier implements MultiClass
         		this.adwinEnsemble.add(new ADWIN());
         	}        	
 		}
-        this.randomState = new Random(this.seedOption.getValue());
         this.posSamples = null;
     }
 
@@ -143,14 +138,14 @@ public class OnlineSMOTEBagging extends AbstractClassifier implements MultiClass
             	}    		        		
         		this.posSamples.add(instance); 
         		lambda = a * this.samplingRate;
-        		double lambdaSMOTE = (1 - a) * this.samplingRate;               	        				
-				double k = getPoisson(lambda);
+        		double lambdaSMOTE = (1 - a) * this.samplingRate;               	        								
+				double k = MiscUtils.poisson(lambda, this.classifierRandom);
 				if (k > 0) {
 					for (int b = 0; b < k; b++) {
 						this.ensemble.get(i).trainOnInstance(instance);					
 					}
 				}
-				double kSMOTE = getPoisson(lambdaSMOTE);
+				double kSMOTE = MiscUtils.poisson(lambdaSMOTE, this.classifierRandom);				
 				if (kSMOTE > 0) {
 					for (int b = 0; b < kSMOTE; b++) {
 						Instance instanceSMOTE = onlineSMOTE();						
@@ -159,7 +154,7 @@ public class OnlineSMOTEBagging extends AbstractClassifier implements MultiClass
 				}
         	}
         	else {
-        		double k = getPoisson(lambda);
+        		double k = MiscUtils.poisson(lambda, this.classifierRandom);        		
         		if (k > 0) {
 					for (int b = 0; b < k; b++) {
 						this.ensemble.get(i).trainOnInstance(instance);					
@@ -234,18 +229,6 @@ public class OnlineSMOTEBagging extends AbstractClassifier implements MultiClass
     	}
     }
     
-    protected double getPoisson(double lambda) {    	
-        double L = Math.exp(-lambda);
-        int k = 0;
-        double p = 1.0;
-        do {
-            k++;
-            p = p * this.randomState.nextDouble();
-        } while (p > L);
-
-        return k - 1;        
-    }
-    
     protected Instance onlineSMOTE() {
     	int k = 5;
     	if (this.posSamples.numInstances() > 1) {
@@ -255,18 +238,18 @@ public class OnlineSMOTEBagging extends AbstractClassifier implements MultiClass
 				Instances neighbours = search.kNearestNeighbours(x,Math.min(k,this.posSamples.numInstances()-1));
 				// create synthetic sample    	
 				double[] values = new double[this.posSamples.numAttributes()];
-				int nn = this.randomState.nextInt(neighbours.numInstances());
+				int nn = this.classifierRandom.nextInt(neighbours.numInstances());
 				Enumeration attrEnum = this.samoaToWeka.wekaInstance(this.posSamples.instance(0)).enumerateAttributes();
 				while(attrEnum.hasMoreElements()) {
 					Attribute attr = (Attribute) attrEnum.nextElement();				
 					if (!attr.equals(this.samoaToWeka.wekaInstance(this.posSamples.instance(0)).classAttribute())) {
 						if (attr.isNumeric()) {
 							double dif = this.samoaToWeka.wekaInstance(neighbours.instance(nn)).value(attr) - this.samoaToWeka.wekaInstance(x).value(attr);
-							double gap = this.randomState.nextDouble();
+							double gap = this.classifierRandom.nextDouble();
 							values[attr.index()] = (double) (this.samoaToWeka.wekaInstance(x).value(attr) + gap * dif);
 						} else if (attr.isDate()) {
 							double dif = this.samoaToWeka.wekaInstance(neighbours.instance(nn)).value(attr) - this.samoaToWeka.wekaInstance(x).value(attr);
-							double gap = this.randomState.nextDouble();
+							double gap = this.classifierRandom.nextDouble();
 							values[attr.index()] = (long) (this.samoaToWeka.wekaInstance(x).value(attr) + gap * dif);
 						} else {
 							int[] valueCounts = new int[attr.numValues()];

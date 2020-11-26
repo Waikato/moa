@@ -42,7 +42,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+
 
 
 /**
@@ -478,8 +478,7 @@ public class RebalanceStream extends AbstractClassifier implements MultiClassCla
     	if (this.effectiveNearestNeighbors == -1) {
     		setParameters(minoritySamples);
     	}
-    	       
-        Random rand = new Random(1);  
+    	         
         Instance[] nnArray = new Instance[1];
         try {
         	nnArray = new Instance[this.effectiveNearestNeighbors];
@@ -491,12 +490,12 @@ public class RebalanceStream extends AbstractClassifier implements MultiClassCla
         //find randomly an instance
         int pos = 0;
         try {
-        	pos = rand.nextInt(this.minorityInstances.numInstances());
+        	pos = this.classifierRandom.nextInt(this.minorityInstances.numInstances());
 		} catch (Exception e) {			
 		}
         
         while (this.alreadyUsed.contains(pos)) {
-        	pos = rand.nextInt(this.minorityInstances.numInstances());
+        	pos = this.classifierRandom.nextInt(this.minorityInstances.numInstances());
         }
         this.alreadyUsed.add(pos);
         if (this.alreadyUsed.size() == minoritySamples.size()) {
@@ -548,18 +547,18 @@ public class RebalanceStream extends AbstractClassifier implements MultiClassCla
 
     	// create synthetic sample    	
 		double[] values = new double[this.minorityInstances.numAttributes()];
-		int nn = rand.nextInt(this.effectiveNearestNeighbors);
+		int nn = this.classifierRandom.nextInt(this.effectiveNearestNeighbors);
 		Enumeration attrEnum = this.minorityInstances.enumerateAttributes();
 		while(attrEnum.hasMoreElements()) {
 			Attribute attr = (Attribute) attrEnum.nextElement();
 			if (!attr.equals(this.minorityInstances.classAttribute())) {
 				if (attr.isNumeric()) {
 					double dif = this.samoaToWeka.wekaInstance(nnArray[nn]).value(attr) - this.samoaToWeka.wekaInstance(instanceI).value(attr);
-					double gap = rand.nextDouble();
+					double gap = this.classifierRandom.nextDouble();
 					values[attr.index()] = (double) (this.samoaToWeka.wekaInstance(instanceI).value(attr) + gap * dif);
 				} else if (attr.isDate()) {
 					double dif = this.samoaToWeka.wekaInstance(nnArray[nn]).value(attr) - this.samoaToWeka.wekaInstance(instanceI).value(attr);
-					double gap = rand.nextDouble();
+					double gap = this.classifierRandom.nextDouble();
 					values[attr.index()] = (long) (this.samoaToWeka.wekaInstance(instanceI).value(attr) + gap * dif);
 				} else {
 					int[] valueCounts = new int[attr.numValues()];

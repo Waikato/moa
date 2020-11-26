@@ -29,13 +29,13 @@ import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+import moa.core.MiscUtils;
 import moa.core.Utils;
 import moa.options.ClassOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import java.util.ArrayList;
-import java.util.Random;
 import moa.classifiers.core.driftdetection.ADWIN;
 
 
@@ -95,16 +95,12 @@ public class OnlineAdaC2 extends AbstractClassifier implements MultiClassClassif
     public FlagOption disableDriftDetectionOption = new FlagOption("disableDriftDetection", 'd',
             "Should use ADWIN as drift detector?");
     
-    public IntOption seedOption = new IntOption("seed", 'r',
-        "Seed for the random state.", 1, 1, Integer.MAX_VALUE);
-    
     protected Classifier baseLearner;
     protected int nEstimators;    
     protected double costPositive;
     protected double costNegative;
     protected boolean driftDetection;        
-    protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();
-    protected Random randomState;
+    protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();    
     protected ArrayList<ADWIN> adwinEnsemble = new ArrayList<ADWIN>();
     protected ArrayList<Double> lambdaTP = new ArrayList<Double>();
     protected ArrayList<Double> lambdaTN = new ArrayList<Double>();
@@ -135,8 +131,7 @@ public class OnlineAdaC2 extends AbstractClassifier implements MultiClassClassif
             this.lambdaSum.add(0.0);
             this.wAcc.add(0.0);
             this.wErr.add(0.0);   
-		}
-        this.randomState = new Random(this.seedOption.getValue());           
+		}                   
     }
 
     @Override
@@ -150,8 +145,8 @@ public class OnlineAdaC2 extends AbstractClassifier implements MultiClassClassif
         boolean changeDetected = false;        
         
         for (int i = 0 ; i < this.ensemble.size(); i++) {
-			this.lambdaSum.set(i, this.lambdaSum.get(i) + lambda);			
-			double k = getPoisson(lambda);
+			this.lambdaSum.set(i, this.lambdaSum.get(i) + lambda);
+			double k = MiscUtils.poisson(lambda, this.classifierRandom);			
 			if (k > 0) {
 				for (int b = 0; b < k; b++) {
 					this.ensemble.get(i).trainOnInstance(instance);					
@@ -257,19 +252,7 @@ public class OnlineAdaC2 extends AbstractClassifier implements MultiClassClassif
                 this.wErr.add(0.0);  
 			}
     	}
-    }
-    
-    protected double getPoisson(double lambda) {    	
-        double L = Math.exp(-lambda);
-        int k = 0;
-        double p = 1.0;
-        do {
-            k++;
-            p = p * this.randomState.nextDouble();
-        } while (p > L);
-
-        return k - 1;        
-    }
+    }    
 
     @Override
     public ImmutableCapabilities defineImmutableCapabilities() {

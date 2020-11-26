@@ -27,12 +27,12 @@ import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+import moa.core.MiscUtils;
 import moa.core.Utils;
 import moa.options.ClassOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import java.util.ArrayList;
-import java.util.Random;
 import moa.classifiers.core.driftdetection.ADWIN;
 
 
@@ -92,15 +92,11 @@ public class OnlineUnderOverBagging extends AbstractClassifier implements MultiC
     public FlagOption disableDriftDetectionOption = new FlagOption("disableDriftDetection", 'd',
             "Should use ADWIN as drift detector?");
     
-    public IntOption seedOption = new IntOption("seed", 'r',
-        "Seed for the random state.", 1, 1, Integer.MAX_VALUE);
-    
     protected Classifier baseLearner;
     protected int nEstimators;    
     protected int samplingRate; 
     protected boolean driftDetection;        
-    protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();
-    protected Random randomState;
+    protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();    
     protected ArrayList<ADWIN> adwinEnsemble = new ArrayList<ADWIN>();      
     
     @Override
@@ -116,8 +112,7 @@ public class OnlineUnderOverBagging extends AbstractClassifier implements MultiC
         	if (this.driftDetection) {
         		this.adwinEnsemble.add(new ADWIN());
         	}        	
-		}
-        this.randomState = new Random(this.seedOption.getValue());           
+		}                   
     }
 
     @Override
@@ -137,8 +132,8 @@ public class OnlineUnderOverBagging extends AbstractClassifier implements MultiC
         	}
         	else {
         		lambda = a;
-        	}        	        	
-			double k = getPoisson(lambda);
+        	}        	        				
+			double k = MiscUtils.poisson(lambda, this.classifierRandom);
 			if (k > 0) {
 				for (int b = 0; b < k; b++) {
 					this.ensemble.get(i).trainOnInstance(instance);					
@@ -212,18 +207,6 @@ public class OnlineUnderOverBagging extends AbstractClassifier implements MultiC
     	}
     }
     
-    protected double getPoisson(double lambda) {    	
-        double L = Math.exp(-lambda);
-        int k = 0;
-        double p = 1.0;
-        do {
-            k++;
-            p = p * this.randomState.nextDouble();
-        } while (p > L);
-
-        return k - 1;        
-    }
-
     @Override
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == OnlineUnderOverBagging.class)

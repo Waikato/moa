@@ -27,13 +27,13 @@ import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+import moa.core.MiscUtils;
 import moa.core.Utils;
 import moa.options.ClassOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import java.util.ArrayList;
-import java.util.Random;
 import moa.classifiers.core.driftdetection.ADWIN;
 
 
@@ -96,18 +96,14 @@ public class OnlineRUSBoost extends AbstractClassifier implements MultiClassClas
             new String[]{"ClassRation", "ExampleDistribution", "SamplingRate"}, 0);
     
     public FlagOption disableDriftDetectionOption = new FlagOption("disableDriftDetection", 'd',
-            "Should use ADWIN as drift detector?");
-    
-    public IntOption seedOption = new IntOption("seed", 'r',
-        "Seed for the random state.", 1, 1, Integer.MAX_VALUE);
+            "Should use ADWIN as drift detector?");       
     
     protected Classifier baseLearner;
     protected int nEstimators;    
     protected int samplingRate;
     protected int algorithmImplementation;
     protected boolean driftDetection;        
-    protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();
-    protected Random randomState;
+    protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();    
     protected ArrayList<ADWIN> adwinEnsemble = new ArrayList<ADWIN>();
     protected ArrayList<Double> lambdaSc = new ArrayList<Double>();
     protected ArrayList<Double> lambdaPos = new ArrayList<Double>();
@@ -136,8 +132,7 @@ public class OnlineRUSBoost extends AbstractClassifier implements MultiClassClas
             this.lambdaNeg.add(0.0);
             this.lambdaSw.add(0.0);
             this.epsilon.add(0.0);               
-		}
-        this.randomState = new Random(this.seedOption.getValue());  
+		}         
         this.nPositive = 0.0;
         this.nNegative = 0.0;
     }
@@ -197,8 +192,8 @@ public class OnlineRUSBoost extends AbstractClassifier implements MultiClassClas
         		else {
         			lambdaRus = lambda / this.samplingRate;
         		}
-        	}        	        						
-			double k = getPoisson(lambdaRus);
+        	} 
+        	double k = MiscUtils.poisson(lambdaRus, this.classifierRandom);			
 			if (k > 0) {
 				for (int b = 0; b < k; b++) {
 					this.ensemble.get(i).trainOnInstance(instance);					
@@ -292,18 +287,6 @@ public class OnlineRUSBoost extends AbstractClassifier implements MultiClassClas
                 this.epsilon.add(0.0); 
 			}
     	}
-    }
-    
-    protected double getPoisson(double lambda) {    	
-        double L = Math.exp(-lambda);
-        int k = 0;
-        double p = 1.0;
-        do {
-            k++;
-            p = p * this.randomState.nextDouble();
-        } while (p > L);
-
-        return k - 1;        
     }
 
     @Override

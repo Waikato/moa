@@ -27,13 +27,13 @@ import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+import moa.core.MiscUtils;
 import moa.core.Utils;
 import moa.options.ClassOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import java.util.ArrayList;
-import java.util.Random;
 import moa.classifiers.core.driftdetection.ADWIN;
 
 
@@ -90,18 +90,14 @@ public class OnlineCSB2 extends AbstractClassifier implements MultiClassClassifi
             "The cost of misclassifying a negative sample.", 0.1, 0.1, 1);
     
     public FlagOption disableDriftDetectionOption = new FlagOption("disableDriftDetection", 'd',
-            "Should use ADWIN as drift detector?");
-    
-    public IntOption seedOption = new IntOption("seed", 'r',
-        "Seed for the random state.", 1, 1, Integer.MAX_VALUE);
+            "Should use ADWIN as drift detector?");       
     
     protected Classifier baseLearner;
     protected int nEstimators;    
     protected double costPositive;
     protected double costNegative;
     protected boolean driftDetection;        
-    protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();
-    protected Random randomState;
+    protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();    
     protected ArrayList<ADWIN> adwinEnsemble = new ArrayList<ADWIN>();    
     protected ArrayList<Double> lambdaFN = new ArrayList<Double>();
     protected ArrayList<Double> lambdaFP = new ArrayList<Double>();    
@@ -130,8 +126,7 @@ public class OnlineCSB2 extends AbstractClassifier implements MultiClassClassifi
             this.lambdaSw.add(0.0);
             this.epsilon.add(0.0);
             this.wErr.add(0.0);   
-		}
-        this.randomState = new Random(this.seedOption.getValue());           
+		}                   
     }
 
     @Override
@@ -146,7 +141,7 @@ public class OnlineCSB2 extends AbstractClassifier implements MultiClassClassifi
         
         for (int i = 0 ; i < this.ensemble.size(); i++) {
 			this.lambdaSum.set(i, this.lambdaSum.get(i) + lambda);			
-			double k = getPoisson(lambda);
+			double k = MiscUtils.poisson(lambda, this.classifierRandom);
 			if (k > 0) {
 				for (int b = 0; b < k; b++) {
 					this.ensemble.get(i).trainOnInstance(instance);					
@@ -251,19 +246,7 @@ public class OnlineCSB2 extends AbstractClassifier implements MultiClassClassifi
 			}
     	}
     }
-    
-    protected double getPoisson(double lambda) {    	
-        double L = Math.exp(-lambda);
-        int k = 0;
-        double p = 1.0;
-        do {
-            k++;
-            p = p * this.randomState.nextDouble();
-        } while (p > L);
-
-        return k - 1;        
-    }
-
+       
     @Override
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == OnlineCSB2.class)

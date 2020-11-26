@@ -27,12 +27,12 @@ import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+import moa.core.MiscUtils;
 import moa.core.Utils;
 import moa.options.ClassOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import java.util.ArrayList;
-import java.util.Random;
 import moa.classifiers.core.driftdetection.ADWIN;
 
 
@@ -89,16 +89,12 @@ public class OnlineAdaBoost extends AbstractClassifier implements MultiClassClas
         "The size of the ensemble.", 10, 1, Integer.MAX_VALUE);        
     
     public FlagOption disableDriftDetectionOption = new FlagOption("disableDriftDetection", 'd',
-            "Should use ADWIN as drift detector?");
-    
-    public IntOption seedOption = new IntOption("seed", 'r',
-        "Seed for the random state.", 1, 1, Integer.MAX_VALUE);
+            "Should use ADWIN as drift detector?");        
     
     protected Classifier baseLearner;
     protected int nEstimators;    
     protected boolean driftDetection;        
-    protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();
-    protected Random randomState;
+    protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();    
     protected ArrayList<ADWIN> adwinEnsemble = new ArrayList<ADWIN>();        
     protected ArrayList<Double> lambdaSc = new ArrayList<Double>();
     protected ArrayList<Double> lambdaSw = new ArrayList<Double>();
@@ -119,8 +115,7 @@ public class OnlineAdaBoost extends AbstractClassifier implements MultiClassClas
         	this.lambdaSc.add(0.0);
             this.lambdaSw.add(0.0);
             this.epsilon.add(0.0);             
-		}
-        this.randomState = new Random(this.seedOption.getValue());           
+		}                  
     }
 
     @Override
@@ -133,8 +128,8 @@ public class OnlineAdaBoost extends AbstractClassifier implements MultiClassClas
         double lambda = 1.0;
         boolean changeDetected = false;        
         
-        for (int i = 0 ; i < this.ensemble.size(); i++) {					
-			double k = getPoisson(lambda);
+        for (int i = 0 ; i < this.ensemble.size(); i++) {								
+			double k = MiscUtils.poisson(lambda, this.classifierRandom);
 			if (k > 0) {
 				for (int b = 0; b < k; b++) {
 					this.ensemble.get(i).trainOnInstance(instance);					
@@ -228,19 +223,7 @@ public class OnlineAdaBoost extends AbstractClassifier implements MultiClassClas
                 this.epsilon.add(0.0);               
 			}
     	}
-    }
-    
-    protected double getPoisson(double lambda) {    	
-        double L = Math.exp(-lambda);
-        int k = 0;
-        double p = 1.0;
-        do {
-            k++;
-            p = p * this.randomState.nextDouble();
-        } while (p > L);
-
-        return k - 1;        
-    }
+    }       
 
     @Override
     public ImmutableCapabilities defineImmutableCapabilities() {

@@ -42,7 +42,6 @@ import com.yahoo.labs.samoa.instances.WekaToSamoaInstanceConverter;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Random;
 
 
 /**
@@ -295,11 +294,10 @@ public class CSMOTE extends AbstractClassifier implements MultiClassClassifier {
     }
     
     private Instance generateNewInstance(Instances minoritySamples) {       	    	    		    	
-    	//find randomly an instance
-    	Random rand = new Random(1);
-        int pos = rand.nextInt(minoritySamples.numInstances());
+    	//find randomly an instance    	
+        int pos = this.classifierRandom.nextInt(minoritySamples.numInstances());
         while (this.alreadyUsed.contains(pos)) {
-        	pos = rand.nextInt(minoritySamples.numInstances());
+        	pos = this.classifierRandom.nextInt(minoritySamples.numInstances());
         }
         this.alreadyUsed.add(pos);
         if (this.alreadyUsed.size() == minoritySamples.numInstances()) {
@@ -313,18 +311,18 @@ public class CSMOTE extends AbstractClassifier implements MultiClassClassifier {
 			Instances neighbours = search.kNearestNeighbours(instanceI,Math.min(this.neighbors,minoritySamples.numInstances()-1));			
 			// create synthetic sample    	
 			double[] values = new double[minoritySamples.numAttributes()];
-			int nn = rand.nextInt(neighbours.numInstances());
+			int nn = this.classifierRandom.nextInt(neighbours.numInstances());
 			Enumeration attrEnum = this.samoaToWeka.wekaInstance(minoritySamples.instance(0)).enumerateAttributes();
 			while(attrEnum.hasMoreElements()) {
 				Attribute attr = (Attribute) attrEnum.nextElement();				
 				if (!attr.equals(this.samoaToWeka.wekaInstance(minoritySamples.instance(0)).classAttribute())) {
 					if (attr.isNumeric()) {
 						double dif = this.samoaToWeka.wekaInstance(neighbours.instance(nn)).value(attr) - this.samoaToWeka.wekaInstance(instanceI).value(attr);
-						double gap = rand.nextDouble();
+						double gap = this.classifierRandom.nextDouble();
 						values[attr.index()] = (double) (this.samoaToWeka.wekaInstance(instanceI).value(attr) + gap * dif);
 					} else if (attr.isDate()) {
 						double dif = this.samoaToWeka.wekaInstance(neighbours.instance(nn)).value(attr) - this.samoaToWeka.wekaInstance(instanceI).value(attr);
-						double gap = rand.nextDouble();
+						double gap = this.classifierRandom.nextDouble();
 						values[attr.index()] = (long) (this.samoaToWeka.wekaInstance(instanceI).value(attr) + gap * dif);
 					} else {
 						int[] valueCounts = new int[attr.numValues()];
