@@ -42,6 +42,7 @@ import com.yahoo.labs.samoa.instances.WekaToSamoaInstanceConverter;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Random;
 
 
 /**
@@ -144,6 +145,7 @@ public class CSMOTE extends AbstractClassifier implements MultiClassClassifier {
       	this.min = null;
       	this.maj = null;
       	this.W.clear();  
+      	this.classifierRandom = new Random(this.randomSeed);
     }
 
     @Override

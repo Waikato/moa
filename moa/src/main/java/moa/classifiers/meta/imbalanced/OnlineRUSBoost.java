@@ -34,6 +34,8 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import java.util.ArrayList;
+import java.util.Random;
+
 import moa.classifiers.core.driftdetection.ADWIN;
 
 
@@ -135,6 +137,7 @@ public class OnlineRUSBoost extends AbstractClassifier implements MultiClassClas
 		}         
         this.nPositive = 0.0;
         this.nNegative = 0.0;
+        this.classifierRandom = new Random(this.randomSeed);
     }
 
     @Override

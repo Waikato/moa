@@ -36,6 +36,8 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import java.util.ArrayList;
+import java.util.Random;
+
 import moa.classifiers.core.driftdetection.ADWIN;
 
 
@@ -130,8 +132,9 @@ public class OnlineAdaC2 extends AbstractClassifier implements MultiClassClassif
             this.lambdaFN.add(0.0);
             this.lambdaSum.add(0.0);
             this.wAcc.add(0.0);
-            this.wErr.add(0.0);   
+            this.wErr.add(0.0);               
 		}                   
+        this.classifierRandom = new Random(this.randomSeed);
     }
 
     @Override

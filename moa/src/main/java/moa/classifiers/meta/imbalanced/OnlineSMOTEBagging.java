@@ -37,6 +37,8 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Random;
+
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.classifiers.lazy.neighboursearch.LinearNNSearch;
 import moa.classifiers.lazy.neighboursearch.NearestNeighbourSearch;
@@ -117,6 +119,7 @@ public class OnlineSMOTEBagging extends AbstractClassifier implements MultiClass
         	}        	
 		}
         this.posSamples = null;
+        this.classifierRandom = new Random(this.randomSeed);
     }
 
     @Override

@@ -34,6 +34,8 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import java.util.ArrayList;
+import java.util.Random;
+
 import moa.classifiers.core.driftdetection.ADWIN;
 
 
@@ -125,8 +127,9 @@ public class OnlineCSB2 extends AbstractClassifier implements MultiClassClassifi
             this.lambdaSum.add(0.0);
             this.lambdaSw.add(0.0);
             this.epsilon.add(0.0);
-            this.wErr.add(0.0);   
+            this.wErr.add(0.0);               
 		}                   
+        this.classifierRandom = new Random(this.randomSeed);
     }
 
     @Override

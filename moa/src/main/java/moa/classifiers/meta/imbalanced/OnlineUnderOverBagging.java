@@ -33,6 +33,8 @@ import moa.options.ClassOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import java.util.ArrayList;
+import java.util.Random;
+
 import moa.classifiers.core.driftdetection.ADWIN;
 
 
@@ -112,7 +114,8 @@ public class OnlineUnderOverBagging extends AbstractClassifier implements MultiC
         	if (this.driftDetection) {
         		this.adwinEnsemble.add(new ADWIN());
         	}        	
-		}                   
+		} 
+        this.classifierRandom = new Random(this.randomSeed);
     }
 
     @Override

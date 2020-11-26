@@ -33,6 +33,8 @@ import moa.options.ClassOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import java.util.ArrayList;
+import java.util.Random;
+
 import moa.classifiers.core.driftdetection.ADWIN;
 
 
@@ -114,8 +116,9 @@ public class OnlineAdaBoost extends AbstractClassifier implements MultiClassClas
         	}
         	this.lambdaSc.add(0.0);
             this.lambdaSw.add(0.0);
-            this.epsilon.add(0.0);             
+            this.epsilon.add(0.0);                
 		}                  
+        this.classifierRandom = new Random(this.randomSeed);
     }
 
     @Override
