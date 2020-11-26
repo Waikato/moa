@@ -54,7 +54,7 @@ public class OnlineSMOTEBaggingTest
 	  OnlineSMOTEBagging OnlineSMOTEBaggingTest = new OnlineSMOTEBagging();
 	  OnlineSMOTEBaggingTest.ensembleSizeOption.setValue(2);
 	  OnlineSMOTEBaggingTest.disableDriftDetectionOption.setValue(true);
-	  OnlineSMOTEBaggingTest.samplingRateOption.setValue(2);	  
+	  OnlineSMOTEBaggingTest.samplingRateOption.setValue(1);	  
 
     return new Classifier[]{
     		OnlineSMOTEBaggingTest,
