@@ -15,6 +15,7 @@ Tabs=\
   moa.gui.ConceptDriftTabPanel,\
   moa.gui.ALTabPanel,\
   moa.gui.ScriptingTabPanel,\
+  moa.gui.featureanalysis.FeatureAnalysisTabPanel,\
   moa.gui.AuxiliarTabPanel,\
   moa.gui.experimentertab.ExperimenterTabPanel
 

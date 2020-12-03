@@ -114,6 +114,7 @@ public class ClassifierWithFeatureImportance extends AbstractClassifier
         this.instancesSeen = 0;
         this.featureImportanceClassifierLearner = null;
         this.featureImportanceClassifierLearner = (FeatureImportanceClassifier) getPreparedClassOption(this.featureImportanceLearnerOption);
+        this.featureImportanceClassifierLearner.resetLearning();
         this.createDebugOutputFile();
     }
 
@@ -166,6 +167,10 @@ public class ClassifierWithFeatureImportance extends AbstractClassifier
                 this.debugStream.println();
             }
         }
+    }
+
+    public double[] getCurrentFeatureImportances() {
+        return this.featureImportanceClassifierLearner.getFeatureImportances(!this.doNotNormalizeFeatureScoreOption.isSet());
     }
 
     @Override
