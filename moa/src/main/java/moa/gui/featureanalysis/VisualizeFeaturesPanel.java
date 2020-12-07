@@ -551,7 +551,9 @@ public class VisualizeFeaturesPanel extends AbstractPerspective {
 
         JPanel lineScatterController = new JPanel();
 
-        lineScatterController.setLayout(new FlowLayout());
+        //lineScatterController.setLayout(new FlowLayout());
+        /** BoxLayout is better than lowLayout on linux machine. */
+        lineScatterController.setLayout(new BoxLayout(lineScatterController,BoxLayout.X_AXIS));
         lineScatterController.add(m_startIndex);
         m_startInstanceInput.setPreferredSize(new Dimension(80, 18));
         lineScatterController.add(m_startInstanceInput);
