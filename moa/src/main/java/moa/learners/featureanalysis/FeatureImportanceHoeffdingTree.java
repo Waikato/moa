@@ -49,7 +49,7 @@ public class FeatureImportanceHoeffdingTree extends AbstractClassifier implement
 
     // Used for feature importance calculation.
     protected double[] featureImportances;
-    protected int nodeCountAtLastFeatureScoreInquiry = 0;
+    protected int nodeCountAtLastFeatureImportanceInquiry = 0;
 
 
     protected int featureImportancesInquiries = 0;
@@ -63,12 +63,12 @@ public class FeatureImportanceHoeffdingTree extends AbstractClassifier implement
             // Check if there were changes to the tree topology (new nodes)
             //  If not, it is not necessary to recalculated featureScores,
             //  just return the current values.
-            if (this.treeLearner.getNodeCount() > this.nodeCountAtLastFeatureScoreInquiry) {
+            if (this.treeLearner.getNodeCount() > this.nodeCountAtLastFeatureImportanceInquiry) {
                 // Debug
                 featureImportancesInquiries++;
 
                 this.featureImportances = new double[this.featureImportances.length];
-                this.nodeCountAtLastFeatureScoreInquiry = this.treeLearner.getNodeCount();
+                this.nodeCountAtLastFeatureImportanceInquiry = this.treeLearner.getNodeCount();
 
                 // If there was a split, then recalculate scores.
                 switch(this.featureImportanceOption.getChosenIndex()) {
@@ -189,6 +189,8 @@ public class FeatureImportanceHoeffdingTree extends AbstractClassifier implement
     @Override
     public void resetLearningImpl() {
         this.featureImportances = null;
+        this.nodeCountAtLastFeatureImportanceInquiry = 0;
+        this.featureImportancesInquiries = 0;
         this.treeLearner = (HoeffdingTree) getPreparedClassOption(this.treeLearnerOption);
         this.treeLearner.resetLearning();
     }
@@ -199,7 +201,7 @@ public class FeatureImportanceHoeffdingTree extends AbstractClassifier implement
         if (this.featureImportances == null)
             this.featureImportances = new double[instance.numAttributes() - 1];
 
-       this.treeLearner.trainOnInstance(instance);
+        this.treeLearner.trainOnInstance(instance);
     }
 
     @Override
