@@ -1,6 +1,6 @@
 /*
  *
- *  DataAnalysisPanel.java
+ *  VisualizeFeaturesPanel.java
  *  Original Work: Copyright (C) 2003-2013 University of Waikato, Hamilton, New Zealand
  *  @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  *  @author Len Trigg (trigg@cs.waikato.ac.nz)
