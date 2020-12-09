@@ -1,5 +1,6 @@
 /*
  *    FeatureImportanceGraph.java
+ *    Copyright (C) 2020 University of Waikato, Hamilton, New Zealand
  *    @author Yongheng Ma (2560653665@qq.com)
  *
  *    This program is free software; you can redistribute it and/or modify
