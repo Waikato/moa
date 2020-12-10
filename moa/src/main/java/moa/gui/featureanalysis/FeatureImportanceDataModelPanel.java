@@ -1,11 +1,4 @@
 /*
- *    FeatureImportanceDataModelPanel.java
- *    Original Work: Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
- *    @author Len Trigg (trigg@cs.waikato.ac.nz)
- *    @author FracPete (fracpete at waikato dot ac dot nz)
- *    Modified Work: Copyright (C) 2020 University of Waikato, Hamilton, New Zealand
- *    @author Yongheng Ma (2560653665@qq.com)
- *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 3 of the License, or
@@ -21,6 +14,10 @@
  *
  */
 
+/*
+ *    FeatureImportanceDataModelPanel.java
+ *    Copyright (C) 2007-2020 University of Waikato, Hamilton, New Zealand
+ */
 package moa.gui.featureanalysis;
 
 import com.yahoo.labs.samoa.instances.Instances;
@@ -39,7 +36,11 @@ import java.util.regex.Pattern;
 
 /**
  * This is a sub panel in FeatureImportance tab. It is used to show scores of feature importance of a data stream as a table.
- * The user can chooses one or multiple features' scores to show as line graphs.
+ * The user can chooses one or multiple features' scores to show as line graphs. This panel refers to weka.gui.AttributeSelectionPanel.
+ *
+ * @author Len Trigg (trigg@cs.waikato.ac.nz)
+ * @author FracPete (fracpete at waikato dot ac dot nz)
+ * @author Yongheng Ma (2560653665@qq.com)
  */
 public class FeatureImportanceDataModelPanel extends JPanel {
 

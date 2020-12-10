@@ -1,10 +1,4 @@
 /*
- *   InstancesSummaryPanel.java
- *   Original Work: Copyright (C) 1999-2012 University of Waikato, Hamilton, New Zealand
- *   @author Len Trigg (trigg@cs.waikato.ac.nz)
- *   Modified Work: Copyright (C) 2020 University of Waikato, Hamilton, New Zealand
- *   @author Yongheng Ma (2560653665@qq.com)
- *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -19,6 +13,10 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+ *   InstancesSummaryPanel.java
+ *   Copyright (C) 1999-2020 University of Waikato, Hamilton, New Zealand
+ */
 package moa.gui.featureanalysis;
 
 import com.yahoo.labs.samoa.instances.Instances;
@@ -29,7 +27,10 @@ import java.awt.*;
 
 /**
  * This panel just displays relation name, number of instances, and number of
- * attributes.
+ * attributes. This panel refers to weka.gui.InstancesSummaryPanel.
+ *
+ * @author Len Trigg (trigg@cs.waikato.ac.nz)
+ * @author Yongheng Ma (2560653665@qq.com)
  */
 public class InstancesSummaryPanel extends JPanel {
 

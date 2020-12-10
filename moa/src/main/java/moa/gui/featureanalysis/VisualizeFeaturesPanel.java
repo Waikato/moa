@@ -1,12 +1,4 @@
 /*
- *
- *  VisualizeFeaturesPanel.java
- *  Original Work: Copyright (C) 2003-2013 University of Waikato, Hamilton, New Zealand
- *  @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- *  @author Len Trigg (trigg@cs.waikato.ac.nz)
- *  Modified Work: Copyright (C) 2020 University of Waikato, Hamilton, New Zealand
- *  @author Yongheng Ma (2560653665@qq.com)
- *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -19,6 +11,11 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ *   VisualizeFeaturesPanel.java
+ *   Copyright (C) 2003-2020 University of Waikato, Hamilton, New Zealand
  */
 
 package moa.gui.featureanalysis;
@@ -55,6 +52,11 @@ import java.util.List;
 
 /**
  * This is VisualizeFeatures tab main panel which loads data stream and shows other sub panels.
+ * This panel refers to weka.gui.explorer.PreprocessPanel.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @author Len Trigg (trigg@cs.waikato.ac.nz)
+ * @author Yongheng Ma (2560653665@qq.com)
  */
 public class VisualizeFeaturesPanel extends AbstractPerspective {
 

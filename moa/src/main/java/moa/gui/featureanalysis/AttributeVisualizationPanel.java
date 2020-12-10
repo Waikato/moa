@@ -1,11 +1,4 @@
 /*
- *   AttributeVisualizationPanel.java
- *   Original Work: Copyright (C) 2003-2012 University of Waikato, Hamilton, New Zealand
- *   @author Ashraf M. Kibriya (amk14@cs.waikato.ac.nz)
- *   Modified Work: Copyright (C) 2020 University of Waikato, Hamilton, New Zealand
- *   @author Yongheng Ma (2560653665@qq.com)
- *
- *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +11,11 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ *   AttributeVisualizationPanel.java
+ *   Copyright (C) 2003-2020 University of Waikato, Hamilton, New Zealand
  */
 package moa.gui.featureanalysis;
 
@@ -40,7 +38,10 @@ import java.util.ArrayList;
  * intervalWidth = Max(1, 3.49*Std.Dev*numInstances^(1/3)) Then the number of
  * intervals is calculated by: <br>
  * intervals = max(1, Math.round(Range/intervalWidth);
+ * This panel refers to weka.gui.AttributeVisualizationPanel
  *
+ * @author Ashraf M. Kibriya (amk14@cs.waikato.ac.nz)
+ * @author Yongheng Ma (2560653665@qq.com)
  */
 public class AttributeVisualizationPanel extends PrintablePanel {
 

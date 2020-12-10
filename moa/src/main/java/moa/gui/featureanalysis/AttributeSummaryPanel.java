@@ -1,10 +1,4 @@
 /*
- *   AttributeSummaryPanel.java
- *   Original Work: Copyright (C) 1999-2012 University of Waikato, Hamilton, New Zealand
- *   @author Len Trigg (trigg@cs.waikato.ac.nz)
- *   Modified Work: Copyright (C) 2020 University of Waikato, Hamilton, New Zealand
- *   @author Yongheng Ma (2560653665@qq.com)
- *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -17,6 +11,11 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ *   AttributeSummaryPanel.java
+ *   Copyright (C) 1999-2020 University of Waikato, Hamilton, New Zealand
  */
 package moa.gui.featureanalysis;
 
@@ -36,7 +35,10 @@ import java.awt.*;
  * This panel displays summary statistics about an attribute: name, type
  * number/% of missing/unique values, number of distinct values. For numeric
  * attributes gives some other stats (mean/std dev), for nominal attributes
- * gives counts for each attribute value.
+ * gives counts for each attribute value. This panel refers to weka.gui.AttributeSummaryPanel.
+ *
+ * @author Len Trigg (trigg@cs.waikato.ac.nz)
+ * @author Yongheng Ma (2560653665@qq.com)
  */
 public class AttributeSummaryPanel extends JPanel {
 

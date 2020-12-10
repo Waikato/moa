@@ -1,11 +1,4 @@
 /*
- *   AttributeSelectionPanel.java
- *   Original Work: Copyright (C) 1999-2012 University of Waikato, Hamilton, New Zealand
- *   @author Len Trigg (trigg@cs.waikato.ac.nz)
- *   @author FracPete (fracpete at waikato dot ac dot nz)
- *   Modified Work: Copyright (C) 2020 University of Waikato, Hamilton, New Zealand
- *   @author Yongheng Ma (2560653665@qq.com)
- *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +11,11 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+ *   AttributeSelectionPanel.java
+ *   Copyright (C) 1999-2020 University of Waikato, Hamilton, New Zealand
  */
 package moa.gui.featureanalysis;
 
@@ -35,7 +33,11 @@ import java.util.regex.Pattern;
 
 /**
  * A sub panel in visualizeFeatures tab. It shows all the attributes in a data stream so that a user selects to show the attribute's
- * statistical information, graphs.
+ * statistical information, graphs. This panel refers to weka.gui.AttributeSelectionPanel.
+ *
+ * @author Len Trigg (trigg@cs.waikato.ac.nz)
+ * @author FracPete (fracpete at waikato dot ac dot nz)
+ * @author Yongheng Ma (2560653665@qq.com)
  */
 public class AttributeSelectionPanel extends JPanel {
 
