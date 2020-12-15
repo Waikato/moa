@@ -40,6 +40,17 @@
       <id>rkirkby</id>
       <name>Richard Kirkby</name>
     </developer>
+    <developer>
+      <id>truong</id>
+      <name>To Dinh Truong</name>
+      <email>todinhtruong@gmail.com</email>
+      <organization>University of Waikato, CS department</organization>
+      <organizationUrl>http://www.cs.waikato.ac.nz/</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>+12</timezone>
+    </developer>
   </developers>
 
   <dependencies>

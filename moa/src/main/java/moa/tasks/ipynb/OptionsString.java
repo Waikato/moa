@@ -18,7 +18,7 @@
  * Copyright (C) 2019 University of Waikato, Hamilton, NZ
  */
 
-package moa.tasks;
+package moa.tasks.ipynb;
 
 
 import org.apache.commons.math3.util.Pair;
@@ -43,21 +43,21 @@ public class OptionsString {
 
   private ArrayList<Pair<String, String>> outputClassOptions = new ArrayList();
 
-  private String inputString = "";
+    private StringBuilder inputString;
 
   public OptionsString(String str) {
-    this.inputString = str;
+	  inputString = new StringBuilder(str);
     int i = this.inputString.indexOf(" ");
     if (i > 0) {
       this.classOptionsString = this.inputString.substring(i + 1);
       this.classFullName = this.inputString.substring(0, i);
     } else {
-      this.classFullName = this.inputString;
+		this.classFullName = this.inputString.toString();
     }
   }
 
   public String getInputString() {
-    return this.inputString;
+        return this.inputString.toString();
   }
 
   public String getClassShortName() {
@@ -68,12 +68,16 @@ public class OptionsString {
     return this.classFullName;
   }
 
-  public void addOptionsStringToCell(JSONCell cell) {
-    cell.addNewLineToCell(this.getClassShortName() + " " + this.getClassShortName().substring(0, 4).toLowerCase() +
-      " = new " + this.getClassShortName() + "();", 5);
+    public String generateOptionsString() {
+        StringBuilder str = new StringBuilder(this.getClassShortName())
+                .append(" ")
+                .append(this.getClassShortName().substring(0, 4).toLowerCase())
+                .append(" = new " + this.getClassShortName() + "();");
     if (!this.classOptionsString.equals(""))
-      cell.addNewLineToCell(this.getClassShortName().substring(0, 4).toLowerCase() +
-	".getOptions().setViaCLIString(\\\"" + this.classOptionsString + "\\\");", 5);
+            str.append(this.getClassShortName().substring(0, 4).toLowerCase())
+                    .append(".getOptions().setViaCLIString(\"")
+                    .append(this.classOptionsString + "\");");
+        return str.toString();
   }
 
   /**
