@@ -1,0 +1,18 @@
+pre {
+    white-space: pre;  /*prevent wrapping but enable multiple scrollbars*/
+	overflow: hidden;	/*keep wrapping but hide all multiple scrollbars*/
+	word-wrap: normal; /*prevent wrapping but enable multiple scrollbars for safari*/
+}
+
+.output {  
+  flex-flow: wrap; /*unwrap long rows but enable overflow*/  
+  overflow: auto; /*prevent overflow by enable a scrollbars outside*/
+}
+
+div.output_subarea {
+  padding: 0;
+}
+
+div.output_area pre{
+  padding-right: 10px;
+}
