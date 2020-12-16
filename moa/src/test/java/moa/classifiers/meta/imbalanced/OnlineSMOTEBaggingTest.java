@@ -52,9 +52,9 @@ public class OnlineSMOTEBaggingTest
   @Override
   protected Classifier[] getRegressionClassifierSetups() {
 	  OnlineSMOTEBagging OnlineSMOTEBaggingTest = new OnlineSMOTEBagging();
-	  OnlineSMOTEBaggingTest.ensembleSizeOption.setValue(2);
+	  OnlineSMOTEBaggingTest.ensembleSizeOption.setValue(1);
 	  OnlineSMOTEBaggingTest.disableDriftDetectionOption.setValue(true);
-	  OnlineSMOTEBaggingTest.samplingRateOption.setValue(1);	  
+	  OnlineSMOTEBaggingTest.baseLearnerOption.setValueViaCLIString("bayes.NaiveBayes");
 
     return new Classifier[]{
     		OnlineSMOTEBaggingTest,

@@ -52,10 +52,9 @@ public class OnlineAdaC2Test
   @Override
   protected Classifier[] getRegressionClassifierSetups() {	  
 	  OnlineAdaC2 OnlineAdaC2Test = new OnlineAdaC2();
-	  OnlineAdaC2Test.ensembleSizeOption.setValue(5);	  
+	  OnlineAdaC2Test.ensembleSizeOption.setValue(1);	  
 	  OnlineAdaC2Test.disableDriftDetectionOption.setValue(true);
-	  OnlineAdaC2Test.costNegativeOption.setValue(0.3);
-	  OnlineAdaC2Test.costPositiveOption.setValue(0.9);
+	  OnlineAdaC2Test.baseLearnerOption.setValueViaCLIString("bayes.NaiveBayes");
 
     return new Classifier[]{
     		OnlineAdaC2Test,

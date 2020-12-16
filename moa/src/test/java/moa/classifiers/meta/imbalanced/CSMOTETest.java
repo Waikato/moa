@@ -53,9 +53,10 @@ public class CSMOTETest
   protected Classifier[] getRegressionClassifierSetups() {
     CSMOTE CSTest = new CSMOTE();
     CSTest.neighborsOption.setValue(5);
-    CSTest.thresholdOption.setValue(0.5);
+    CSTest.thresholdOption.setValue(0.1);
     CSTest.minSizeAllowedOption.setValue(100);
     CSTest.disableDriftDetectionOption.setValue(true);
+    CSTest.baseLearnerOption.setValueViaCLIString("bayes.NaiveBayes");
     
     return new Classifier[]{
     		CSTest,

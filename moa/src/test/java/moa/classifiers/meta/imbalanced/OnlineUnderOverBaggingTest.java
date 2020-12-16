@@ -53,9 +53,9 @@ public class OnlineUnderOverBaggingTest
   @Override
   protected Classifier[] getRegressionClassifierSetups() {
 	  OnlineUnderOverBagging OnlineUOBaggingTest = new OnlineUnderOverBagging();
-	  OnlineUOBaggingTest.ensembleSizeOption.setValue(2);
+	  OnlineUOBaggingTest.ensembleSizeOption.setValue(1);
 	  OnlineUOBaggingTest.disableDriftDetectionOption.setValue(true);
-	  OnlineUOBaggingTest.samplingRateOption.setValue(2);	
+	  OnlineUOBaggingTest.baseLearnerOption.setValueViaCLIString("bayes.NaiveBayes");
 
     return new Classifier[]{
     		OnlineUOBaggingTest,

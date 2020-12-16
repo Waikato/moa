@@ -52,11 +52,10 @@ public class OnlineRUSBoostTest
   @Override
   protected Classifier[] getRegressionClassifierSetups() {
 	  OnlineRUSBoost OnlineRUSBoostTest = new OnlineRUSBoost();
-	  OnlineRUSBoostTest.ensembleSizeOption.setValue(5);
+	  OnlineRUSBoostTest.ensembleSizeOption.setValue(1);
 	  OnlineRUSBoostTest.disableDriftDetectionOption.setValue(true);
-	  OnlineRUSBoostTest.samplingRateOption.setValue(2);
-	  OnlineRUSBoostTest.algorithmImplementationOption.setChosenIndex(1);
-
+	  OnlineRUSBoostTest.baseLearnerOption.setValueViaCLIString("bayes.NaiveBayes");
+	  
     return new Classifier[]{
     		OnlineRUSBoostTest,
     };

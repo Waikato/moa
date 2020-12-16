@@ -52,10 +52,11 @@ public class RebalanceStreamTest
   @Override
   protected Classifier[] getRegressionClassifierSetups() {
 	  RebalanceStream RBTest = new RebalanceStream();
-	  RBTest.minInstanceLimitBatchOption.setValue(10);
-	  RBTest.maxInstanceLimitBatchOption.setValue(10);
-	  RBTest.minInstanceLimitResetBatchOption.setValue(-1);
-	  RBTest.maxInstanceLimitResetBatchOption.setValue(-1);
+	  RBTest.minInstanceLimitBatchOption.setValue(100001);
+	  RBTest.maxInstanceLimitBatchOption.setValue(100001);
+	  RBTest.minInstanceLimitResetBatchOption.setValue(100001);
+	  RBTest.maxInstanceLimitResetBatchOption.setValue(100001);
+	  RBTest.baseLearnerOption.setValueViaCLIString("bayes.NaiveBayes");
 
     return new Classifier[]{
     		RBTest,
