@@ -140,10 +140,6 @@ public class RebalanceStream extends AbstractClassifier implements MultiClassCla
     SamoaToWekaInstanceConverter samoaToWeka = new SamoaToWekaInstanceConverter();
     WekaToSamoaInstanceConverter wekaToSamoa = new WekaToSamoaInstanceConverter();        	
 
-	protected ArrayList<Double> modelChosen = new ArrayList<Double>();
-	protected ArrayList<Integer> sizeBatchReset = new ArrayList<Integer>();	
-	protected ArrayList<Integer> sizeBatch = new ArrayList<Integer>();
-	protected ArrayList<Double> timeLearningModels = new ArrayList<Double>();
 	protected double modelInUse = 0.0;
 	
 	protected int nMinorityTotal;
@@ -158,22 +154,6 @@ public class RebalanceStream extends AbstractClassifier implements MultiClassCla
 	protected Map vdmMap = new HashMap();
 	protected int[] indexValues;
 	
-	public ArrayList<Double> getModelChosen() {
-		return modelChosen;
-	}
-
-	public ArrayList<Integer> getSizeBatchReset() {
-		return sizeBatchReset;
-	}
-
-	public ArrayList<Integer> getSizeBatch() {
-		return sizeBatch;
-	}
-
-	public ArrayList<Double> getTimeLearningModels() {
-		return timeLearningModels;
-	}
-	
     
     @Override
     public void resetLearningImpl() {     	    	
@@ -187,11 +167,7 @@ public class RebalanceStream extends AbstractClassifier implements MultiClassCla
         
         this.learner.resetLearning();
       	clean(this.confusionMatrixLearner,this.accLearner,this.kStatLearner); 
-      	
-        this.modelChosen.clear();
-        this.sizeBatchReset.clear();
-        this.sizeBatch.clear();
-        timeLearningModels.clear();
+
         this.modelInUse = 0.0;
         
         this.nMinorityTotal = 0;
@@ -290,13 +266,7 @@ public class RebalanceStream extends AbstractClassifier implements MultiClassCla
     		//it starts training the models in parallel
     	    if (minBatchSizeCheck && minResetBatchSizeCheck) {    	    	   	    	
     	    	trainsParallelModels();
-    	    }
-    	    else {    	    	
-    	    	this.modelChosen.add(this.modelInUse); 
-    	    	this.timeLearningModels.add(-1.0);
-    	    	this.sizeBatchReset.add(this.resetBatch.size()); 
-    	    	this.sizeBatch.add(this.batch.size()); 
-    	    }
+    	    }    	    
     		//set the new batch
     		int newWidth = this.adwin.getWidth();
     		int windowSize = this.batch.size();
@@ -463,14 +433,7 @@ public class RebalanceStream extends AbstractClassifier implements MultiClassCla
     	//find the best model based on kStatistic
     	int maxPos = findMaxKStatistic();  
     	//save the best model in the learner
-    	swipeModelInUse(maxPos); 
-    	//save statistics
-    	this.modelChosen.add(this.modelInUse); 
-    	double time = TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread()- evaluateStartTime);
-    	this.timeLearningModels.add(time);
-    	//save the size of the batch and batchReset
-    	this.sizeBatchReset.add(this.resetBatch.size()); 
-    	this.sizeBatch.add(this.batch.size()); 
+    	swipeModelInUse(maxPos);  
     	//reset the model created
     	resetAfterDrift();    	
     }

@@ -52,8 +52,9 @@ public class OnlineAdaBoostTest
   @Override
   protected Classifier[] getRegressionClassifierSetups() {
     OnlineAdaBoost OnlineAdaBoostTest = new OnlineAdaBoost();
-    OnlineAdaBoostTest.ensembleSizeOption.setValue(5);
+    OnlineAdaBoostTest.ensembleSizeOption.setValue(1);
     OnlineAdaBoostTest.disableDriftDetectionOption.setValue(true);
+    OnlineAdaBoostTest.baseLearnerOption.setValueViaCLIString("bayes.NaiveBayes");
 
     return new Classifier[]{
     		OnlineAdaBoostTest,

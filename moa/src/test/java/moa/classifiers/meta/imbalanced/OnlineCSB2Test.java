@@ -52,10 +52,9 @@ public class OnlineCSB2Test
   @Override
   protected Classifier[] getRegressionClassifierSetups() {
 	  OnlineCSB2 OnlineCSB2Test = new OnlineCSB2();
-	  OnlineCSB2Test.ensembleSizeOption.setValue(5);	  
+	  OnlineCSB2Test.ensembleSizeOption.setValue(1);	  
 	  OnlineCSB2Test.disableDriftDetectionOption.setValue(true);
-	  OnlineCSB2Test.costNegativeOption.setValue(0.3);
-	  OnlineCSB2Test.costPositiveOption.setValue(0.9);
+	  OnlineCSB2Test.baseLearnerOption.setValueViaCLIString("bayes.NaiveBayes");
 
     return new Classifier[]{
     		OnlineCSB2Test,
