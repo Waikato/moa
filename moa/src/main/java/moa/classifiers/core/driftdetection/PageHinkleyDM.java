@@ -24,7 +24,7 @@ import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
 
 /**
- * Drift detection method based in Page Hinkley Test.
+ * Drift detection method based in Page Hinckley Test.
  *
  *
  * @author Manuel Baena (mbaena@lcc.uma.es)
@@ -54,6 +54,8 @@ public class PageHinkleyDM extends AbstractChangeDetector {
     private double sum;
 
     private double x_mean;
+    
+    private double Mint;
 
     private double alpha;
 
@@ -70,6 +72,7 @@ public class PageHinkleyDM extends AbstractChangeDetector {
         m_n = 1;
         x_mean = 0.0;
         sum = 0.0;
+        this.Mint = Double.MAX_VALUE;
         delta = this.deltaOption.getValue();
         alpha = this.alphaOption.getValue();
         lambda = this.lambdaOption.getValue();
@@ -87,6 +90,11 @@ public class PageHinkleyDM extends AbstractChangeDetector {
         sum = this.alpha * sum + (x - x_mean - this.delta);
 
         m_n++;
+        
+        if (this.sum <= this.Mint) {
+            this.Mint = this.sum;
+        }
+        double pht = sum - this.Mint;
 
         // System.out.print(prediction + " " + m_n + " " + (m_p+m_s) + " ");
         this.estimation = x_mean;
@@ -98,7 +106,7 @@ public class PageHinkleyDM extends AbstractChangeDetector {
             return;
         }
 
-        if (sum > this.lambda) {
+        if (pht > this.lambda) {
             this.isChangeDetected = true;
         } 
     }
