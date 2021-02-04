@@ -105,7 +105,7 @@ public class DDM extends AbstractChangeDetector {
         this.isWarningZone = false;
         this.delay = 0;
 
-        if (m_n < minNumInstances) {
+        if (m_n <= minNumInstances) {
             return;
         }
 
@@ -115,11 +115,11 @@ public class DDM extends AbstractChangeDetector {
             m_psmin = m_p + m_s;
         }
 
-        if (m_n > minNumInstances && m_p + m_s > m_pmin + outcontrolLevel * m_smin) {
+        if (m_n > minNumInstances && m_p + m_s >= m_pmin + outcontrolLevel * m_smin) {
             //System.out.println(m_p + ",D");
             this.isChangeDetected = true;
             //resetLearning();
-        } else if (m_p + m_s > m_pmin + warningLevel * m_smin) {
+        } else if (m_p + m_s >= m_pmin + warningLevel * m_smin) {
             //System.out.println(m_p + ",W");
             this.isWarningZone = true;
         } else {
