@@ -17,7 +17,17 @@ import java.io.Writer;
 /**
  * Filter for standardising and normalising instances in a stream.
  *
+ * <p>Standardisation is scaling technique where the values are centered around the mean with a unit standard deviation.
+ * This means that the mean of the attribute becomes zero and the resultant distribution has a unit standard deviation.</p>
+ *
+ * <p>Normalisation is another scaling technique in which values are shifted and rescaled so that they end up ranging between 0 and 1.
+ * It is also known as Min-Max scaling.</p>
+ *
+ * <p>For further information about the scaling technique included in this filter, please view the following website:
+ * https://www.analyticsvidhya.com/blog/2020/04/feature-scaling-machine-learning-normalization-standardization/</p>
+ *
  * @author Yibin Sun (ys388@students.waikato.ac.nz)
+ * @version 03.2021
  */
 public class FeatureScaling extends AbstractStreamFilter {
 
@@ -64,26 +74,25 @@ public class FeatureScaling extends AbstractStreamFilter {
 
     public Instance filterInstance(Instance inst) {
 
-        // Return unchanged instance when both standardisation and normalisation are checked
-
+        // Return the original instance if the standardisation and normalisation options are selected at the same time
         if(standardisationOption.isSet() && normalisationOption.isSet()) return inst;
 
-        // For standardisation
+        /** For standardisation
+         *  Scale every numeric feature's values to a state where the mean is 0 and the standard deviation is 1.
+         *  The formula used here is :    X' = (X - µ) / σ
+         *  NOTE: Since we are in a stream, we don't know the overall situation.
+         *        Therefore, we can only scale the instance with the most current information.
+         */
         if (standardisationOption.isSet()) {
 
             // Initiate the variables when first arrive
             if (this.sum == null) this.sum = new double[inst.numAttributes() - 1];
             if (this.sumOfSquare == null) this.sumOfSquare = new double[inst.numAttributes() - 1];
 
-            // Copy the original instance
             Instance standardisedInstance = inst.copy();
-
-            // Update the counter
             count++;
 
-            // Loop through the instance
             for (int i = 0; i < inst.numAttributes() - 1; i++) {
-
                 // Ignore the nominal attributes
                 if (!inst.attribute(i).isNominal()) {
 
@@ -98,13 +107,16 @@ public class FeatureScaling extends AbstractStreamFilter {
                         standardisedInstance.setValue(i, 0);
                 }
             }
-
-            // Return the standardised instance
             return standardisedInstance;
 
         }
 
-        // For normalisation
+        /** For normalisation
+         *  Scale every numeric feature's values to the range between 0 and 1.
+         *  The formula used here is :    X' = (X - X_min) / (X_max - X_min)
+         *  NOTE: Similar to the standardisation, the information is evolving over time in a stream.
+         *        We can only scale the instances with the most current information instead of the overall information.
+         */
         if (normalisationOption.isSet()) {
 
             // Initiate the variables when first arrive
@@ -117,12 +129,9 @@ public class FeatureScaling extends AbstractStreamFilter {
                 }
             }
 
-            // Copy the original instance
             Instance normalisedInstance = inst.copy();
 
-            // Loop through the instance
             for (int i = 0; i < inst.numAttributes() - 1; i++) {
-
                 // Ignore the nominal attributes
                 if (!inst.attribute(i).isNominal()) {
 
@@ -138,11 +147,9 @@ public class FeatureScaling extends AbstractStreamFilter {
 
                 }
             }
-
-            // Return the normalised instance
             return normalisedInstance;
         }
-        // If no option was selected, return the original instance
+        // If no option is selected, return the original instance
         return inst;
 
     }
