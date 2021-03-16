@@ -25,7 +25,6 @@ public class RandomProjectionFilter extends AbstractStreamFilter {
     public IntOption dim = new IntOption("OutputFeatureDimension", 'd',
             "the target feature dimension.", 10);
     protected InstancesHeader streamHeader;
-    protected FastVector attributes;
     protected double[][] GaussMatrix ;
 
 
@@ -48,14 +47,14 @@ public class RandomProjectionFilter extends AbstractStreamFilter {
 
         if (streamHeader == null) {
             //Create a new header
-            this.attributes = new FastVector();
+            FastVector attributes = new FastVector();
             for (int i = 0; i < this.dim.getValue(); i++) {
-                this.attributes.addElement(new Attribute("numeric" + (i + 1)));
+                attributes.addElement(new Attribute("numeric" + (i + 1)));
             }
 
-            this.attributes.addElement(sparseInstance.classAttribute());
+            attributes.addElement(sparseInstance.classAttribute());
             this.streamHeader = new InstancesHeader(new Instances(
-                    getCLICreationString(InstanceStream.class), this.attributes, 0));
+                    getCLICreationString(InstanceStream.class), attributes, 0));
             this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
 
         }
