@@ -3,6 +3,7 @@
 package moa.streams.filters;
 import com.github.javacliparser.IntOption;
 import com.google.common.hash.Hashing;
+import com.google.common.hash.HashFunction;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
@@ -16,14 +17,14 @@ import moa.streams.InstanceStream;
  *    Filter to perform feature hashing to reduce the number of attributes by applying
  *    a hash function to features.
  *
- * @author Maroua Bahri
+ *   @author Maroua Bahri
  */
 
 public class HashingTrickFilter extends AbstractStreamFilter {
 
     private static final long serialVersionUID = 1L;
 
-    public IntOption dim = new IntOption("FeatureDimension", 'd',
+    public IntOption dim = new IntOption("OutputFeatureDimension", 'd',
             "the target feature dimension.", 10);
 
     protected InstancesHeader streamHeader;
@@ -59,7 +60,6 @@ public class HashingTrickFilter extends AbstractStreamFilter {
 
 
         double [] hashVal = hashVector(sparseInstance,this.dim.getValue(), Hashing.murmur3_128());
-       // System.out.println(transformedInstance(sparseInstance, hashVal));
 
         return new InstanceExample(transformedInstance(sparseInstance, hashVal));
     }
@@ -87,8 +87,7 @@ public class HashingTrickFilter extends AbstractStreamFilter {
     }
 
 
-    public  double[] hashVector(Instance instance, int n,
-                                com.google.common.hash.HashFunction hashFunction) {
+    public  double[] hashVector(Instance instance, int n, HashFunction hashFunction) {
 
         double [] denseValues = new double [n];
         for (int i = 0 ; i < n ; i++) {
@@ -101,7 +100,7 @@ public class HashingTrickFilter extends AbstractStreamFilter {
                     int bucket = Math.abs(hash) % n;
                     denseValues[bucket] += (hash < 0 ? -1d : 1d);
                 }
-            }
+        }
         
         return denseValues;
     }

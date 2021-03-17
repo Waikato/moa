@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
  *    Filter to perform random projection to reduce the number of attributes. It applies
  *    a Gaussian matrix on features to project them into a lower-dimensional space.
  *
- * @author Maroua Bahri
+ *   @author Maroua Bahri
  */
 
 public class RandomProjectionFilter extends AbstractStreamFilter {
@@ -67,7 +67,7 @@ public class RandomProjectionFilter extends AbstractStreamFilter {
         Instance sparseInstance = (Instance) this.inputStream.nextInstance().getData();
 
         return new InstanceExample(transformedInstance(sparseInstance,
-                GaussianProjection(sparseInstance,this.GaussMatrix)));
+                randomProjection(sparseInstance,this.GaussMatrix)));
     }
 
 
@@ -90,7 +90,7 @@ public class RandomProjectionFilter extends AbstractStreamFilter {
         // TODO Auto-generated method stub
     }
 
-    public  double[] GaussianProjection(Instance instance, double[][] gm) {
+    public  double[] randomProjection(Instance instance, double[][] gm) {
 
         double [] denseValues;
 
