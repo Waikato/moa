@@ -32,6 +32,9 @@ public class HashingTrickFilter extends AbstractStreamFilter {
     protected FastVector attributes;
 
     @Override
+    public String getPurposeString() { return "Reduces the number of input features using a hash function.";  }
+
+    @Override
     protected void restartImpl() {
         this.streamHeader = null;
     }

@@ -28,6 +28,7 @@ public class RandomProjectionFilter extends AbstractStreamFilter {
     protected double[][] GaussMatrix ;
 
 
+    public String getPurposeString() { return "Reduces the number of input features using random projection.";  }
 
     @Override
     protected void restartImpl() {
