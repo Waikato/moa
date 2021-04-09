@@ -4,6 +4,10 @@ RUN mkdir /app
 
 WORKDIR /app
 
+# This is a workaround to bypass the tzdata prompts
+ENV TZ=Europe/Paris
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
         wget \
         git \
@@ -12,6 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         openjdk-8-jdk \
         maven \
         unzip \
+        texlive-full \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
