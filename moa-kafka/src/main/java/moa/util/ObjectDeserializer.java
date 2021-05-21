@@ -14,41 +14,38 @@
  */
 
 /*
- * ObjectSerializer.java
+ * ObjectDeserializer.java
  * Copyright (C) 2019 University of Waikato, Hamilton, NZ
  */
 
-package moa.streams;
+package moa.util;
 
-import org.apache.kafka.common.serialization.Serializer;
+import org.apache.kafka.common.serialization.Deserializer;
 
-import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
 
 /**
- * Kafka serialiser for Java objects. Uses Java's serialisation tools
+ * Kafka deserialiser for Java objects. Uses Java's serialisation tools
  * internally.
  *
  * @author Corey Sterling (csterlin at waikato dot ac dot nz)
  */
-public class ObjectSerializer<T>
-  implements Serializer<T> {
+public class ObjectDeserializer<T>
+  implements Deserializer<T>{
 
   @Override
-  public byte[] serialize(String topic, T data) {
-    // Null serialises to null
-    if (data == null)
+  public T deserialize(String s, byte[] bytes) {
+    // Bytes can be null; deserialise to null
+    if (bytes == null)
       return null;
 
     try {
-      ByteArrayOutputStream streamSerialiser = new ByteArrayOutputStream();
-      ObjectOutputStream objectStream = new ObjectOutputStream(streamSerialiser);
-      objectStream.writeObject(data);
-      objectStream.flush();
-      return streamSerialiser.toByteArray();
-    } catch (IOException e) {
-      throw new RuntimeException("Failed to serialise instance for Kafka", e);
+      ObjectInputStream streamDeserialiser = new ObjectInputStream(new ByteArrayInputStream(bytes));
+      return (T) streamDeserialiser.readObject();
+    } catch (IOException | ClassNotFoundException | ClassCastException e) {
+      throw new RuntimeException("Failed to deserialise object from Kafka", e);
     }
   }
 }

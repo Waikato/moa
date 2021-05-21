@@ -32,6 +32,9 @@ import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
+import moa.util.KafkaUtils;
+import moa.util.ObjectDeserializer;
+import moa.util.ObjectSerializer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -69,9 +72,6 @@ public class KafkaStream extends AbstractOptionHandler implements
   // Serialisation UID#
   private static final long serialVersionUID = 671271388371039247L;
 
-  // The longest wait time that can be specified to Kafka calls
-  public static final Duration WAIT_AS_LONG_AS_POSSIBLE = Duration.ofMillis(Long.MAX_VALUE);
-
   // -- OPTIONS -- //
 
   // The topic to consume
@@ -80,11 +80,11 @@ public class KafkaStream extends AbstractOptionHandler implements
 
   // The broker host to connect to
   public StringOption hostOption = new StringOption("host", 'h',
-    "The Kafka broker host", "");
+    "The Kafka broker host", "localhost");
 
   // The broker port to connect to
   public StringOption portOption = new StringOption("port", 'p',
-    "The Kafka broker port", "");
+    "The Kafka broker port", "9092");
 
   // -- TRANSIENTS -- //
 
@@ -134,7 +134,7 @@ public class KafkaStream extends AbstractOptionHandler implements
   public boolean hasMoreInstances() {
     fillBufferIfNecessary();
 
-    return !m_EndOfStreamReached;
+    return !m_EndOfStreamReached || !bufferIsEmpty();
   }
 
   @Override
@@ -226,7 +226,7 @@ public class KafkaStream extends AbstractOptionHandler implements
     config.put("value.deserializer", ObjectDeserializer.class);
     config.put("bootstrap.servers", broker());
     config.put("fetch.min.bytes", 1);
-    config.put("group.id", uniqueGroupIDString());
+    config.put("group.id", KafkaUtils.uniqueGroupIDString(this));
     config.put("max.partition.fetch.bytes", 1 << 20); // 1MB
     config.put("allow.auto.create.topics", false);
     config.put("auto.offset.reset", "earliest");
@@ -242,15 +242,7 @@ public class KafkaStream extends AbstractOptionHandler implements
    * Gets the Kafka broker to connect to.
    */
   protected String broker() {
-    return hostOption.getValue() + ":" + portOption.getValue();
-  }
-
-  /**
-   * Generates a unique but consistent group ID string for
-   * the consumer.
-   */
-  protected String uniqueGroupIDString() {
-    return Long.toHexString(System.currentTimeMillis()) + "-" + Integer.toHexString(this.hashCode());
+    return KafkaUtils.broker(hostOption.getValue(), portOption.getValue());
   }
 
   /**
@@ -309,12 +301,10 @@ public class KafkaStream extends AbstractOptionHandler implements
       m_InstanceBuffer = new LinkedList<>();
 
     // Get some records from Kafka
-    ConsumerRecords<Long, Instance> records = m_Consumer.poll(WAIT_AS_LONG_AS_POSSIBLE);
+    ConsumerRecords<Long, Instance> records = m_Consumer.poll(KafkaUtils.WAIT_AS_LONG_AS_POSSIBLE);
 
     // Add each instance to the buffer
     for (ConsumerRecord<Long, Instance> record : records) {
-      System.out.println(record.key());
-
       // Extract the instance from the record
       Instance instance = record.value();
 
