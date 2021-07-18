@@ -4,7 +4,7 @@
   <parent>
     <groupId>nz.ac.waikato.cms.moa</groupId>
     <artifactId>moa-pom</artifactId>
-    <version>2020.12.1-SNAPSHOT</version>
+    <version>2021.07.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>moa</artifactId>
