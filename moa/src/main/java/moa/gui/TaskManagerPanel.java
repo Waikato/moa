@@ -216,6 +216,8 @@ public class TaskManagerPanel extends JPanel {
     
     private final String PREF_NAME = "currentTask";
 
+    private final String PREF_VIEW_MODE = "viewModeOption";
+
     public TaskManagerPanel() {
         // Read current task preference
         prefs = Preferences.userRoot().node(this.getClass().getName());
@@ -289,6 +291,7 @@ public class TaskManagerPanel extends JPanel {
         this.viewModeList.setPrototypeDisplayValue(Capability.VIEW_EXPERIMENTAL.toString() + "        "); // Require extra spacing to force enough width
         runViewPanel.add(this.viewModeList, BorderLayout.EAST);
         configPanel.add(runViewPanel, BorderLayout.EAST);
+        this.viewModeList.setSelectedIndex(prefs.getInt(PREF_VIEW_MODE, 0));
         this.taskTableModel = new TaskTableModel();
         this.taskTable = new JTable(this.taskTableModel);
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -328,6 +331,13 @@ public class TaskManagerPanel extends JPanel {
                         null);
                 setTaskString(newTaskString);
                 ClassOptionSelectionPanel.setRequiredCapabilities(null);
+            }
+        });
+        this.viewModeList.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                storeSelectedViewMode();
             }
         });
         this.runTaskButton.addActionListener(new ActionListener() {
@@ -428,6 +438,11 @@ public class TaskManagerPanel extends JPanel {
             selectedTasks[i] = this.taskList.get(selectedRows[i]);
         }
         return selectedTasks;
+    }
+
+    public void storeSelectedViewMode() {
+        int selectedIndexMode = viewModeList.getSelectedIndex();
+        prefs.putInt(PREF_VIEW_MODE, selectedIndexMode);
     }
 
     public void pauseSelectedTasks() {
