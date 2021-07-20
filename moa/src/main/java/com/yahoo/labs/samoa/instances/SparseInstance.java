@@ -46,7 +46,7 @@ public class SparseInstance extends InstanceImpl {
      * @param numberAttributes the number attributes
      */
     public SparseInstance(double numberAttributes) {
-        super(1, null, null, (int) numberAttributes);
+        super((int) numberAttributes);
     }
 
     /**
