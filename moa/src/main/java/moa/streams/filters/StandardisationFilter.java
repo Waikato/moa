@@ -15,19 +15,12 @@
  */
 package moa.streams.filters;
 
-import com.github.javacliparser.FileOption;
-import com.github.javacliparser.FlagOption;
+
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import meka.core.F;
-import moa.capabilities.CapabilitiesHandler;
-import moa.capabilities.Capability;
-import moa.capabilities.ImmutableCapabilities;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.Writer;
 
 /**
  * Filter for standardising instances in a stream.
@@ -41,6 +34,25 @@ import java.io.Writer;
  * @author Yibin Sun (ys388@students.waikato.ac.nz)
  * @version 03.2021
  */
+
+/**
+ * This filter is to standardise instances in a stream.
+ * Fixed the previous algorithm to correct, add two more Welford's online and Two-pass.
+ * <p>
+ * Z-SCORE is used to standardise the values of a normal distribution.
+ * For more information: https://en.wikipedia.org/wiki/Standard_score. The formula is:
+ * z=(z-μ)/σ
+ * μ is the mean of the population.
+ * σ is the standard deviation of the population, as the square root of variance.
+ * <p>
+ * There are three algorithms for calculating variance.
+ * For more information: https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Computing_shifted_data
+ * 1. Naive algorithm
+ * 2. Welford's online algorithm
+ * 3. Two-pass algorithm
+ *
+ * @author Ethan Wang
+ */
 public class StandardisationFilter extends AbstractStreamFilter {
 
     @Override
@@ -48,55 +60,106 @@ public class StandardisationFilter extends AbstractStreamFilter {
         return "Standardise or Normalise instances in a stream.";
     }
 
+    public MultiChoiceOption AlgorithmOption = new MultiChoiceOption(
+            "AlgorithmOption", 'a', "Standardisation Algorithm Option",
+            new String[]{"Naive", "Welford", "Two-pass", "Weighted"},
+            new String[]{"Naive(default)",
+                    "Welford", "Two-pass", "Weighted"}
+            , 0);
+    public FloatOption WeightedOptionFloat = new FloatOption("WeightedOptionFloat", 'w', "The weight of weighted incremental algorithm", 0.0);
     private static final long serialVersionUID = 1L;
 
     // Keep tracking statistics
-    double[] sum;
-    double[] sumOfSquare;
-    int count = 0;
+    private static double[] sum;
+    private static double[] sumOfSquare;
+    private static int count = 0;
+    private static double[] delta;
+    private static double[] delta2;
+    private static double[] M2;
+    private static double[] mean;
+    private static double[] meanOld;
 
+    protected int AlgorithmIndex = 0;
 
     @Override
     protected void restartImpl() {
         //reset all variables
-        this.sum = null;
-        this.sumOfSquare = null;
-        this.count = 0;
+        sum = null;
+        sumOfSquare = null;
+        delta = null;
+        delta2 = null;
+        count = 0;
+        M2 = null;
+        mean = null;
+        meanOld = null;
     }
 
     @Override
-    public InstancesHeader getHeader() { return this.inputStream.getHeader(); }
+    public InstancesHeader getHeader() {
+        return this.inputStream.getHeader();
+    }
 
     public Instance filterInstance(Instance inst) {
-
-        /**
-         * For standardisation
-         * Scale every numeric feature's values to a state where the mean is 0 and the standard deviation is 1.
-         * The formula used here is :    X' = (X - µ) / σ
-         * NOTE: Since we are in a stream, we don't know the overall situation.
-         *       Therefore, we can only scale the instance with the most current information.
-         */
-
         // Initiate the variables when first arrive
-        if (this.sum == null) this.sum = new double[inst.numAttributes() - 1];
-        if (this.sumOfSquare == null) this.sumOfSquare = new double[inst.numAttributes() - 1];
-
+        // The variable names below are meaningless sometimes to reduce the amount of them.
+        if (sum == null) sum = new double[inst.numAttributes() - 1];
+        if (sumOfSquare == null) sumOfSquare = new double[inst.numAttributes() - 1];
+        if (delta == null) delta = new double[inst.numAttributes() - 1];
+        if (delta2 == null) delta2 = new double[inst.numAttributes() - 1];
+        if (M2 == null) M2 = new double[inst.numAttributes() - 1];
+        if (mean == null) mean = new double[inst.numAttributes() - 1];
+        if (meanOld == null) meanOld = new double[inst.numAttributes() - 1];
+        AlgorithmIndex = this.AlgorithmOption.getChosenIndex();
         Instance standardisedInstance = inst.copy();
         count++;
 
         for (int i = 0; i < inst.numAttributes() - 1; i++) {
             // Ignore the nominal attributes
             if (!inst.attribute(i).isNominal()) {
+                switch (AlgorithmIndex) {
+                    case 0://Naive
+                        // Update the statistics
+                        sum[i] += inst.value(i);
+                        sumOfSquare[i] += inst.value(i) * inst.value(i);
+//                        System.out.println(sumOfSquare[i]);
+                        // Assign the new values if it's not infinity
+                        if (sumOfSquare[i] / count != 0)
+                            //Standardisation
+                            standardisedInstance.setValue(i, (inst.value(i) - sum[i] / count) / Math.sqrt((sumOfSquare[i] - (sum[i] * sum[i]) / count) / (count)));
+                            //Standard deviation
+//                            standardisedInstance.setValue(i, Math.sqrt((sumOfSquare[i] - (sum[i] * sum[i]) / count) / (count - 1)));
+                        else {
+                            standardisedInstance.setValue(i, 0);
+                        }
+                        break;
+                    case 1: //Welford
+                        delta[i] = inst.value(i) - mean[i];
+                        mean[i] += delta[i] / count;
+                        delta2[i] = inst.value(i) - mean[i];
+                        M2[i] += delta[i] * delta2[i];
 
-                // Update the statistics
-                sum[i] += inst.value(i);
-                sumOfSquare[i] += inst.value(i) * inst.value(i);
+                        if (M2[i] / count != 0)
+                            //Standardisation
+                            standardisedInstance.setValue(i, (inst.value(i) - mean[i]) / (Math.sqrt(M2[i] / count)));
+                            //Standard deviation
+//                            standardisedInstance.setValue(i, Math.sqrt(M2[i] / count));
+                        else
+                            standardisedInstance.setValue(i, 0);
+                        break;
+                    case 2: //Two-pass
+                        delta[i] += inst.value(i);
+                        mean[i] = delta[i] / count;
+                        delta2[i] += (inst.value(i) - mean[i]) * (inst.value(i) - mean[i]);
 
-                // Assign the new values if it's not infinity
-                if (sumOfSquare[i] / count != 0)
-                    standardisedInstance.setValue(i, (inst.value(i) - sum[i] / count) / Math.sqrt(sumOfSquare[i] / count));
-                else
-                    standardisedInstance.setValue(i, 0);
+                        if (delta2[i] / count != 0)
+                            //Standardisation
+                            standardisedInstance.setValue(i, (inst.value(i) - mean[i]) / Math.sqrt(delta2[i] / count));
+                            //Standard deviation
+//                            standardisedInstance.setValue(i, Math.sqrt(delta2[i] / count));
+                        else
+                            standardisedInstance.setValue(i, 0);
+                        break;
+                }
             }
         }
         return standardisedInstance;
