@@ -42,7 +42,7 @@ public class ADWINChangeDetector extends AbstractChangeDetector {
 
     @Override
     public void input(double inputValue) {
-        if (this.adwin == null) {
+        if (this.adwin == null || this.isChangeDetected) {
             resetLearning();
         }
         double ErrEstim = this.adwin.getEstimation();
