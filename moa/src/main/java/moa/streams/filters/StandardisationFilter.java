@@ -125,7 +125,7 @@ public class StandardisationFilter extends AbstractStreamFilter {
                         // Assign the new values if it's not infinity
                         if (sumOfSquare[i] / count != 0)
                             //Standardisation
-                            standardisedInstance.setValue(i, (inst.value(i) - sum[i] / count) / Math.sqrt((sumOfSquare[i] - (sum[i] * sum[i]) / count) / (count)));
+                            standardisedInstance.setValue(i, (inst.value(i) - sum[i] / count) / Math.sqrt((sumOfSquare[i] - (sum[i] * sum[i]) / count) / (count-1)));
                             //Standard deviation
 //                            standardisedInstance.setValue(i, Math.sqrt((sumOfSquare[i] - (sum[i] * sum[i]) / count) / (count - 1)));
                         else {
@@ -140,9 +140,9 @@ public class StandardisationFilter extends AbstractStreamFilter {
 
                         if (M2[i] / count != 0)
                             //Standardisation
-                            standardisedInstance.setValue(i, (inst.value(i) - mean[i]) / (Math.sqrt(M2[i] / count)));
+                            standardisedInstance.setValue(i, (inst.value(i) - mean[i]) / (Math.sqrt(M2[i] / (count-1))));
                             //Standard deviation
-//                            standardisedInstance.setValue(i, Math.sqrt(M2[i] / count));
+//                            standardisedInstance.setValue(i, Math.sqrt(M2[i] / (count-1)));
                         else
                             standardisedInstance.setValue(i, 0);
                         break;
@@ -153,9 +153,9 @@ public class StandardisationFilter extends AbstractStreamFilter {
 
                         if (delta2[i] / count != 0)
                             //Standardisation
-                            standardisedInstance.setValue(i, (inst.value(i) - mean[i]) / Math.sqrt(delta2[i] / count));
+                            standardisedInstance.setValue(i, (inst.value(i) - mean[i]) / Math.sqrt(delta2[i] / (count-1)));
                             //Standard deviation
-//                            standardisedInstance.setValue(i, Math.sqrt(delta2[i] / count));
+//                            standardisedInstance.setValue(i, Math.sqrt(delta2[i] / (count-1)));
                         else
                             standardisedInstance.setValue(i, 0);
                         break;
