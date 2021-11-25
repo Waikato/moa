@@ -93,7 +93,7 @@
       <dependency>
         <groupId>com.github.waikato</groupId>
         <artifactId>fcms-widgets</artifactId>
-        <version>0.0.20</version>
+        <version>0.0.21</version>
       </dependency>
 
       <dependency>
