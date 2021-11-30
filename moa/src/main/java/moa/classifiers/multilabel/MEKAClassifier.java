@@ -48,7 +48,7 @@ import moa.core.Example;
  * @author Jesse Read
  * @version $Revision: 1 $
  */
-public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiTargetRegressor, Serializable {
+public class MEKAClassifier extends AbstractMultiLabelLearner implements MultiLabelLearner, MultiTargetRegressor, Serializable {
 
 	private static final long serialVersionUID = 1L;
 

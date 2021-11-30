@@ -40,6 +40,7 @@ import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.AbstractMOAObject;
 import moa.classifiers.AbstractMultiLabelLearner;
+import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.multilabel.core.splitcriteria.ICVarianceReduction;
 import moa.classifiers.rules.core.Predicate;
@@ -62,7 +63,7 @@ import moa.core.StringUtils;
  * @author Aljaž Osojnik (aljaz.osojnik@ijs.si)
  * @version $Revision: 1 $
  */
-public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetRegressor {
+public class ISOUPTree extends AbstractMultiLabelLearner implements MultiLabelLearner, MultiTargetRegressor {
 
 	private static final long serialVersionUID = 1L;
 
