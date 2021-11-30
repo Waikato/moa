@@ -98,13 +98,13 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 			super(initialClassObservations);
 		
 			if (cl== null) {
-	            MEKAClassifier learner = new MEKAClassifier();
-	            learner.baseLearnerOption.setValueViaCLIString("meka.classifiers.multilabel.incremental.PSUpdateable");
-	            learner.prepareForUse();
-	            learner.setModelContext(ht.getModelContext());
-				
-	            this.classifier = learner;
-	            this.classifier.resetLearning();
+				MEKAClassifier learner = new MEKAClassifier();
+				learner.baseLearnerOption.setValueViaCLIString("meka.classifiers.multilabel.incremental.PSUpdateable");
+				learner.prepareForUse();
+				learner.setModelContext(ht.getModelContext());
+
+				this.classifier = learner;
+				this.classifier.resetLearning();
 			}
 			else{
 				this.classifier = cl.copy();

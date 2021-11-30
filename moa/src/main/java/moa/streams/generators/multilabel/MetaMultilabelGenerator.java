@@ -157,24 +157,24 @@ public class MetaMultilabelGenerator extends AbstractOptionHandler implements Mu
      */
     protected MultilabelInstancesHeader generateMultilabelHeader(Instances si) {
     	Instances mi = new Instances(si, 0, 0);
-		mi.deleteAttributeAt(mi.numAttributes() - 1);
-		FastVector bfv = new FastVector();
-		bfv.addElement("0");
-		bfv.addElement("1");
-		for (int i = 0; i < this.m_L; i++) {
-			mi.insertAttributeAt(new Attribute("class" + i, bfv), i);
-		}
+    	mi.deleteAttributeAt(mi.numAttributes() - 1);
+    	FastVector bfv = new FastVector();
+    	bfv.addElement("0");
+    	bfv.addElement("1");
+    	for (int i = 0; i < this.m_L; i++) {
+    		mi.insertAttributeAt(new Attribute("class" + i, bfv), i);
+    	}
 
-		Range range = new Range(Integer.toString((numLabelsOption.getValue())));
+    	Range range = new Range(Integer.toString((numLabelsOption.getValue())));
 
-		this.multilabelStreamTemplate = mi;
-		this.multilabelStreamTemplate.setRelationName("SYN_Z" + this.labelCardinalityOption.getValue() + "L" + this.m_L + "X" + m_A + "S" + metaRandomSeedOption.getValue() + ": -C " + this.m_L);
-		this.multilabelStreamTemplate.setClassIndex(Integer.MAX_VALUE);
-		this.multilabelStreamTemplate.setRangeOutputIndices(range);
+    	this.multilabelStreamTemplate = mi;
+    	this.multilabelStreamTemplate.setRelationName("SYN_Z" + this.labelCardinalityOption.getValue() + "L" + this.m_L + "X" + m_A + "S" + metaRandomSeedOption.getValue() + ": -C " + this.m_L);
+    	this.multilabelStreamTemplate.setClassIndex(Integer.MAX_VALUE);
+    	this.multilabelStreamTemplate.setRangeOutputIndices(range);
 
-		MultilabelInstancesHeader header = new MultilabelInstancesHeader(multilabelStreamTemplate, m_L);
-		header.setRangeOutputIndices(range);
-		return header;
+    	MultilabelInstancesHeader header = new MultilabelInstancesHeader(multilabelStreamTemplate, m_L);
+    	header.setRangeOutputIndices(range);
+    	return header;
     }
 
     /**
