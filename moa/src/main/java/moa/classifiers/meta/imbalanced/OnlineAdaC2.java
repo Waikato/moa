@@ -102,15 +102,15 @@ public class OnlineAdaC2 extends AbstractClassifier implements MultiClassClassif
     protected double costPositive;
     protected double costNegative;
     protected boolean driftDetection;        
-    protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();    
-    protected ArrayList<ADWIN> adwinEnsemble = new ArrayList<ADWIN>();
-    protected ArrayList<Double> lambdaTP = new ArrayList<Double>();
-    protected ArrayList<Double> lambdaTN = new ArrayList<Double>();
-    protected ArrayList<Double> lambdaFP = new ArrayList<Double>();
-    protected ArrayList<Double> lambdaFN = new ArrayList<Double>();
-    protected ArrayList<Double> lambdaSum = new ArrayList<Double>();
-    protected ArrayList<Double> wAcc = new ArrayList<Double>();
-    protected ArrayList<Double> wErr = new ArrayList<Double>();     
+    protected ArrayList<Classifier> ensemble;
+    protected ArrayList<ADWIN> adwinEnsemble;
+    protected ArrayList<Double> lambdaTP;
+    protected ArrayList<Double> lambdaTN;
+    protected ArrayList<Double> lambdaFP;
+    protected ArrayList<Double> lambdaFN;
+    protected ArrayList<Double> lambdaSum;
+    protected ArrayList<Double> wAcc;
+    protected ArrayList<Double> wErr;
     
     @Override
     public void resetLearningImpl() {
@@ -120,7 +120,18 @@ public class OnlineAdaC2 extends AbstractClassifier implements MultiClassClassif
         this.nEstimators = this.ensembleSizeOption.getValue();        
         this.costPositive = this.costPositiveOption.getValue();
         this.costNegative = this.costNegativeOption.getValue();
-        this.driftDetection = !this.disableDriftDetectionOption.isSet();                
+        this.driftDetection = !this.disableDriftDetectionOption.isSet();
+        this.ensemble = new ArrayList<Classifier>();
+        if (this.driftDetection) {
+            this.adwinEnsemble = new ArrayList<ADWIN>();
+        }
+        this.lambdaTP = new ArrayList<Double>();
+        this.lambdaTN = new ArrayList<Double>();
+        this.lambdaFP = new ArrayList<Double>();
+        this.lambdaFN = new ArrayList<Double>();
+        this.lambdaSum = new ArrayList<Double>();
+        this.wAcc = new ArrayList<Double>();
+        this.wErr = new ArrayList<Double>();
         for (int i = 0; i < this.nEstimators; i++) {
         	this.ensemble.add(this.baseLearner.copy());         	        
         	if (this.driftDetection) {

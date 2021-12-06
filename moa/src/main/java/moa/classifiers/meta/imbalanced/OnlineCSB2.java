@@ -99,14 +99,14 @@ public class OnlineCSB2 extends AbstractClassifier implements MultiClassClassifi
     protected double costPositive;
     protected double costNegative;
     protected boolean driftDetection;        
-    protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();    
-    protected ArrayList<ADWIN> adwinEnsemble = new ArrayList<ADWIN>();    
-    protected ArrayList<Double> lambdaFN = new ArrayList<Double>();
-    protected ArrayList<Double> lambdaFP = new ArrayList<Double>();    
-    protected ArrayList<Double> lambdaSum = new ArrayList<Double>();
-    protected ArrayList<Double> lambdaSw = new ArrayList<Double>();
-    protected ArrayList<Double> epsilon = new ArrayList<Double>();
-    protected ArrayList<Double> wErr = new ArrayList<Double>();     
+    protected ArrayList<Classifier> ensemble;
+    protected ArrayList<ADWIN> adwinEnsemble;
+    protected ArrayList<Double> lambdaFN;
+    protected ArrayList<Double> lambdaFP;
+    protected ArrayList<Double> lambdaSum;
+    protected ArrayList<Double> lambdaSw;
+    protected ArrayList<Double> epsilon;
+    protected ArrayList<Double> wErr;    
     
     @Override
     public void resetLearningImpl() {
@@ -116,7 +116,17 @@ public class OnlineCSB2 extends AbstractClassifier implements MultiClassClassifi
         this.nEstimators = this.ensembleSizeOption.getValue();        
         this.costPositive = this.costPositiveOption.getValue();
         this.costNegative = this.costNegativeOption.getValue();
-        this.driftDetection = !this.disableDriftDetectionOption.isSet();                
+        this.driftDetection = !this.disableDriftDetectionOption.isSet();
+        this.ensemble = new ArrayList<Classifier>();
+        if (this.driftDetection) {
+            this.adwinEnsemble = new ArrayList<ADWIN>();
+        }
+        this.lambdaFN = new ArrayList<Double>();
+        this.lambdaFP = new ArrayList<Double>();
+        this.lambdaSum = new ArrayList<Double>();
+        this.lambdaSw = new ArrayList<Double>();
+        this.epsilon = new ArrayList<Double>();
+        this.wErr = new ArrayList<Double>();
         for (int i = 0; i < this.nEstimators; i++) {
         	this.ensemble.add(this.baseLearner.copy());         	        
         	if (this.driftDetection) {
