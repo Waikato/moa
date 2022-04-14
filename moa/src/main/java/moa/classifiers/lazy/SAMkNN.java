@@ -160,9 +160,9 @@ public class SAMkNN extends AbstractClassifier implements MultiClassClassifier,
 				}
 			}
 			for (int i = 0; i < diff; i++) {
-				this.stmHistory.remove(0);
-				this.ltmHistory.remove(0);
-				this.cmHistory.remove(0);
+				if(this.stmHistory.size() > 0)	this.stmHistory.remove(0);
+				if(this.ltmHistory.size() > 0)	this.ltmHistory.remove(0);
+				if(this.cmHistory.size()  > 0)	 this.cmHistory.remove(0);
 			}
 
 			this.clean(this.stm, discardedSTMInstances, false);

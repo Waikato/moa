@@ -42,6 +42,7 @@ public class ADWINChangeDetector extends AbstractChangeDetector {
 
     @Override
     public void input(double inputValue) {
+        this.isChangeDetected = false;
         if (this.adwin == null) {
             resetLearning();
         }
