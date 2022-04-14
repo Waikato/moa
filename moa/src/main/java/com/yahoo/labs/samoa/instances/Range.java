@@ -27,7 +27,7 @@ public class Range implements Serializable {
 
     public Range(String range) {
         this.rangeText = range;
-        //this.setRange(range); //needs upperLimit
+        this.setRange(range); //needs upperLimit
     }
 
     /**
