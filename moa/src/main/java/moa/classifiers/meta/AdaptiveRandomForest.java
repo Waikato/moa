@@ -281,13 +281,16 @@ public class AdaptiveRandomForest extends AbstractClassifier implements MultiCla
             this.subspaceSize = n;
         
         ARFHoeffdingTree treeLearner = (ARFHoeffdingTree) getPreparedClassOption(this.treeLearnerOption);
-        treeLearner.resetLearning();
+        treeLearner.subspaceSizeOption.setValue(this.subspaceSize);
         
         for(int i = 0 ; i < ensembleSize ; ++i) {
-            treeLearner.subspaceSizeOption.setValue(this.subspaceSize);
+        	ARFHoeffdingTree baseLearner = (ARFHoeffdingTree) treeLearner.copy();
+        	baseLearner.setRandomSeed(this.classifierRandom.nextInt());
+        	baseLearner.resetLearning();
+        	
             this.ensemble[i] = new ARFBaseLearner(
                 i, 
-                (ARFHoeffdingTree) treeLearner.copy(), 
+                baseLearner, 
                 (BasicClassificationPerformanceEvaluator) classificationEvaluator.copy(), 
                 this.instancesSeen, 
                 ! this.disableBackgroundLearnerOption.isSet(),
