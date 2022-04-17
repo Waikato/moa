@@ -113,7 +113,7 @@ public class OnlineAdaBoost extends AbstractClassifier implements MultiClassClas
         if (this.driftDetection) {
             this.adwinEnsemble = new ArrayList<ADWIN>();
         }
-        this.ambdaSc = new ArrayList<Double>();
+        this.lambdaSc = new ArrayList<Double>();
         this.lambdaSw = new ArrayList<Double>();
         this.epsilon = new ArrayList<Double>();
         for (int i = 0; i < this.nEstimators; i++) {
