@@ -99,8 +99,8 @@ public class OnlineSMOTEBagging extends AbstractClassifier implements MultiClass
     protected int nEstimators;    
     protected int samplingRate;    
     protected boolean driftDetection;        
-    protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();
-    protected ArrayList<ADWIN> adwinEnsemble = new ArrayList<ADWIN>();   
+    protected ArrayList<Classifier> ensemble;
+    protected ArrayList<ADWIN> adwinEnsemble;  
     protected Instances posSamples;
     protected SamoaToWekaInstanceConverter samoaToWeka = new SamoaToWekaInstanceConverter();
     
@@ -111,7 +111,11 @@ public class OnlineSMOTEBagging extends AbstractClassifier implements MultiClass
     	this.baseLearner.resetLearning();
         this.nEstimators = this.ensembleSizeOption.getValue(); 
         this.samplingRate = this.samplingRateOption.getValue();
-        this.driftDetection = !this.disableDriftDetectionOption.isSet();                
+        this.driftDetection = !this.disableDriftDetectionOption.isSet();
+        this.ensemble = new ArrayList<Classifier>();
+        if (this.driftDetection) {
+            this.adwinEnsemble = new ArrayList<ADWIN>();
+        }          
         for (int i = 0; i < this.nEstimators; i++) {
         	this.ensemble.add(this.baseLearner.copy());         	        
         	if (this.driftDetection) {

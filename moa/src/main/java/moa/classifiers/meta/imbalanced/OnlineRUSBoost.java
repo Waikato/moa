@@ -105,13 +105,13 @@ public class OnlineRUSBoost extends AbstractClassifier implements MultiClassClas
     protected int samplingRate;
     protected int algorithmImplementation;
     protected boolean driftDetection;        
-    protected ArrayList<Classifier> ensemble = new ArrayList<Classifier>();    
-    protected ArrayList<ADWIN> adwinEnsemble = new ArrayList<ADWIN>();
-    protected ArrayList<Double> lambdaSc = new ArrayList<Double>();
-    protected ArrayList<Double> lambdaPos = new ArrayList<Double>();
-    protected ArrayList<Double> lambdaNeg = new ArrayList<Double>();
-    protected ArrayList<Double> lambdaSw = new ArrayList<Double>();
-    protected ArrayList<Double> epsilon = new ArrayList<Double>();
+    protected ArrayList<Classifier> ensemble;
+    protected ArrayList<ADWIN> adwinEnsemble;
+    protected ArrayList<Double> lambdaSc;
+    protected ArrayList<Double> lambdaPos;
+    protected ArrayList<Double> lambdaNeg;
+    protected ArrayList<Double> lambdaSw;
+    protected ArrayList<Double> epsilon;
     protected double nPositive;
     protected double nNegative;   
     
@@ -123,7 +123,16 @@ public class OnlineRUSBoost extends AbstractClassifier implements MultiClassClas
         this.nEstimators = this.ensembleSizeOption.getValue();        
         this.samplingRate = this.samplingRateOption.getValue();
         this.algorithmImplementation = this.algorithmImplementationOption.getChosenIndex();
-        this.driftDetection = !this.disableDriftDetectionOption.isSet();                
+        this.driftDetection = !this.disableDriftDetectionOption.isSet();
+        this.ensemble = new ArrayList<Classifier>();
+        if (this.driftDetection) {
+            this.adwinEnsemble = new ArrayList<ADWIN>();
+        }
+        this.lambdaSc = new ArrayList<Double>();
+        this.lambdaPos = new ArrayList<Double>();
+        this.lambdaNeg = new ArrayList<Double>();
+        this.lambdaSw = new ArrayList<Double>();
+        this.epsilon = new ArrayList<Double>();
         for (int i = 0; i < this.nEstimators; i++) {
         	this.ensemble.add(this.baseLearner.copy());         	        
         	if (this.driftDetection) {
