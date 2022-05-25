@@ -35,7 +35,7 @@ public class MultiTargetArffLoaderTest {
 		try {
             InputStream fileStream = new FileInputStream(ClassLoader.getSystemResource("moa/classifiers/data/small_regression.arff").getPath());
             Reader  reader= new BufferedReader(new InputStreamReader(fileStream));
-    		instancesRegression = new Instances(reader,new Range("4-6"));
+    		instancesRegression = new Instances(reader, new Range("4-6"));
     		fileStream = new FileInputStream(ClassLoader.getSystemResource("moa/classifiers/data/small_classification.arff").getPath());
     		reader = new BufferedReader(new InputStreamReader(fileStream));
     		instancesClassification = new Instances(reader,new Range("2"));
@@ -49,8 +49,8 @@ public class MultiTargetArffLoaderTest {
 	 */
 	@Test
 	public void testRangeRegression(){
-		assertEquals(3,instancesRegression.arff.range.getStart());
-		assertEquals(5,instancesRegression.arff.range.getEnd());
+		assertEquals(3,(int) instancesRegression.arff.instanceInformation.outputIndexes.get(0));
+		assertEquals(5,(int) instancesRegression.arff.instanceInformation.outputIndexes.get(instancesRegression.arff.instanceInformation.outputIndexes.size() - 1));
 	}
 	
 	public void testClassRegression(){
@@ -161,8 +161,8 @@ public class MultiTargetArffLoaderTest {
 
 	@Test
 	public void testRangeClassification(){
-		assertEquals(0,instancesClassification.arff.range.getStart());
-		assertEquals(1,instancesClassification.arff.range.getEnd());
+		assertEquals(0,(int) instancesClassification.arff.instanceInformation.outputIndexes.get(0));
+		assertEquals(1,(int) instancesClassification.arff.instanceInformation.outputIndexes.get(instancesClassification.arff.instanceInformation.outputIndexes.size() - 1));
 	}
 	
 	public void testClassClassification(){

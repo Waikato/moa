@@ -127,10 +127,6 @@ public class InstanceImpl implements MultiLabelInstance {
     public Attribute attribute(int instAttIndex) {
         return this.instanceHeader.attribute(instAttIndex);
     }
-
-    public int indexOfAttribute(Attribute attribute){
-        return this.instanceHeader.indexOf(attribute);
-    }
     
     /**
      * Delete attribute at.
@@ -233,9 +229,12 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public double value(Attribute attribute) {
-        int index = this.instanceHeader.indexOf(attribute);
-        return value(index);
+		return value(this.indexOfAttribute(attribute));
     }
+
+	public int indexOfAttribute(Attribute attribute) {
+		return instanceHeader.instanceInformation.attributesInformation.indexOfAttribute(attribute);
+	}
 
     /**
      * String value.
@@ -285,16 +284,9 @@ public class InstanceImpl implements MultiLabelInstance {
      * @return the int
      */
     @Override
-    public int classIndex() {
-        int classIndex = instanceHeader.classIndex();
-       // return  ? classIndex : 0;
-        if(classIndex == Integer.MAX_VALUE)
-        	if(this.instanceHeader.instanceInformation.range!=null)
-        		classIndex=instanceHeader.instanceInformation.range.getStart();
-        	else
-        		classIndex=0;
-        return classIndex;
-    }
+	public int classIndex() {
+		return this.instanceHeader.classIndex();
+	}
 
     /**
      * Num classes.
@@ -466,19 +458,19 @@ public class InstanceImpl implements MultiLabelInstance {
 
     @Override
     public void setMissing(Attribute attribute) {
-        int index = this.instanceHeader.indexOf(attribute);
+        int index = indexOfAttribute(attribute);
         this.setMissing(index);
     }
 
     @Override
     public boolean isMissing(Attribute attribute) {
-        int index = this.instanceHeader.indexOf(attribute);
+        int index = indexOfAttribute(attribute);
         return this.isMissing(index);
     }
 
     @Override
     public void setValue(Attribute attribute, double value) {
-        int index = this.instanceHeader.indexOf(attribute);
+        int index = indexOfAttribute(attribute);
         this.setValue(index, value);
     }
 }
