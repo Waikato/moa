@@ -136,6 +136,7 @@ public class Instances implements Serializable {
 	 */
 	public Instances(Instances chunk, int capacity) {
 		this.instanceInformation = chunk.instanceInformation();
+		this.arff = chunk.arff;
 		if (capacity < 0) {
 			capacity = 0;
 		}

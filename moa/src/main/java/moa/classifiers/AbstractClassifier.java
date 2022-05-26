@@ -120,7 +120,7 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     
     @Override
     public void setModelContext(InstancesHeader ih) {
-        if ((ih != null) && (ih.classIndex() < 0)) {
+        if ((ih != null) && (ih.numOutputAttributes() == 0)) {
             throw new IllegalArgumentException(
                     "Context for a classifier must include a class to learn");
         }
