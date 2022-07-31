@@ -40,6 +40,40 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.*;
 
+/**
+ * Continuously Adaptive Neural networks for Data streams
+ *
+ * <p>Continuously Adaptive Neural networks for Data streams (CAND). For every prediction, CAND chooses the current best
+ * network from a pool of candidates by continuously monitoring the performance of all candidate networks. The candidates
+ * are trained using different optimizers and hyperparameters. There are two orthogonal heuristics (skip back propagation,
+ * smaller training pool) for accelerating CAND, which trade-off small amounts of accuracy for significant runtime gains.
+ * When training, small mini-batches yields similar accuracy to single-instance fully incremental training, even on
+ * evolving data streams.</p>
+ *
+ * <p>See details in:<br> Nuwan Gunasekara, Heitor Murilo Gomes, Bernhard Pfahringer, Albert Bifet.
+ * Online Hyperparameter Optimization for Streaming Neural Networks.
+ * International Joint Conference on Neural Networks (IJCNN), 2022.</p>
+ *
+ * <p>Parameters:</p> <ul>
+ * <li>-P : The larger pool type.
+ * P10 = { learning rates: 5.0E-(1 to 5), optimizes: SGD,Adam, neurons in 1st layer:  2^(8 to 10) },
+ * P30 = { learning rates: 5.0E-(1 to 5), optimizes: Adam, neurons in 1st layer:  2^9 }</li>
+ * <li>-o : Number of MLPs to train at a given time (after -s numberOfInstancesToTrainAllMLPsAtStart instances).</li>
+ * <li>-L : Number of layers in each MLP.</li>
+ * <li>-s : Number of instances to train all MLPs at start.</li>
+ * <li>-B : Mini Batch Size.</li>
+ * <li>-h : Use one hot encoding.</li>
+ * <li>-n : Normalize data.</li>
+ * <li>-b : Skip back propagation loss threshold.</li>
+ * <li>-d : Choose device to run the model(For GPU, needs CUDA installed on the system. Use CPU if GPUs are not available)</li>
+ * <li>-t : Do NOT train each MLP using a separate thread.</li>
+ * <li>-f : Votes dump file name.</li>
+ * <li>-F : Stats dump file name.</li>
+ * </ul>
+ *
+ * @author Nuwan Gunasekara (ng98 at students dot waikato dot ac dot nz)
+ * @version $Revision: 1 $
+ */
 
 public class CAND extends AbstractClassifier implements MultiClassClassifier, CapabilitiesHandler {
 
@@ -108,7 +142,7 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
     public FloatOption backPropLossThreshold = new FloatOption(
             "backPropLossThreshold",
             'b',
-            "Back propagation loss threshold",
+            "Skip back propagation loss threshold",
             0.0, 0.0, Math.pow(10,10));
 
     public MultiChoiceOption deviceTypeOption = new MultiChoiceOption("deviceType", 'd',
