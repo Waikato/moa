@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.classifiers.neuralNetworks;
+package moa.classifiers.deeplearning;
 
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
@@ -28,7 +28,6 @@ import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.core.Measurement;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.MultiChoiceOption;
 

@@ -18,7 +18,7 @@
 /**
  *
  */
-package moa.classifiers.neuralNetworks;
+package moa.classifiers.deeplearning;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

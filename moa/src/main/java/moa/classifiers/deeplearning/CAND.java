@@ -18,7 +18,7 @@
  *
  */
 
-package moa.classifiers.neuralNetworks;
+package moa.classifiers.deeplearning;
 
 import com.github.javacliparser.*;
 import com.yahoo.labs.samoa.instances.Instance;
