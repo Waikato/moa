@@ -112,7 +112,7 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
             "numberOfMLPsToTrain",
             'o',
             "Number of MLPs to train at a given time (after numberOfInstancesToTrainAllMLPsAtStart instances)",
-            2, 2, Integer.MAX_VALUE);
+            10, 2, Integer.MAX_VALUE);
 
     public IntOption numberOfLayersInEachMLP = new IntOption(
             "numberOfLayersInEachMLP",
@@ -143,7 +143,7 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
             "backPropLossThreshold",
             'b',
             "Skip back propagation loss threshold",
-            0.0, 0.0, Math.pow(10,10));
+            0.3, 0.0, Math.pow(10,10));
 
     public MultiChoiceOption deviceTypeOption = new MultiChoiceOption("deviceType", 'd',
             "Choose device to run the model(For GPU, needs CUDA installed on the system. Use CPU if GPUs are not available)",
