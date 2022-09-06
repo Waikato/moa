@@ -256,7 +256,9 @@ public class OnlineAdaC2 extends AbstractClassifier implements MultiClassClassif
     		for (int i = this.nEstimators; i < nClasses; i++) {
     			this.ensemble.add(this.baseLearner.copy()); 
     			this.nEstimators ++;
-    			this.adwinEnsemble.add(new ADWIN());
+                if (this.driftDetection) {
+                    this.adwinEnsemble.add(new ADWIN());
+                }
     			this.lambdaTP.add(0.0);
                 this.lambdaTN.add(0.0);
                 this.lambdaFP.add(0.0);

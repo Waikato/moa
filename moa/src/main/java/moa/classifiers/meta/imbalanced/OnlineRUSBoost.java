@@ -291,7 +291,9 @@ public class OnlineRUSBoost extends AbstractClassifier implements MultiClassClas
     		for (int i = this.nEstimators; i < nClasses; i++) {
     			this.ensemble.add(this.baseLearner.copy()); 
     			this.nEstimators ++;
-    			this.adwinEnsemble.add(new ADWIN());
+				if (this.driftDetection) {
+					this.adwinEnsemble.add(new ADWIN());
+				}
     			this.lambdaSc.add(0.0);
                 this.lambdaPos.add(0.0);
                 this.lambdaNeg.add(0.0);

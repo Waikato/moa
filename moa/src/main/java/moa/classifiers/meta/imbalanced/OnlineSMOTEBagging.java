@@ -231,7 +231,9 @@ public class OnlineSMOTEBagging extends AbstractClassifier implements MultiClass
     		for (int i = this.nEstimators; i < nClasses; i++) {
     			this.ensemble.add(this.baseLearner.copy()); 
     			this.nEstimators ++;
-    			this.adwinEnsemble.add(new ADWIN());    			
+				if (this.driftDetection) {
+					this.adwinEnsemble.add(new ADWIN());
+				}
 			}
     	}
     }
