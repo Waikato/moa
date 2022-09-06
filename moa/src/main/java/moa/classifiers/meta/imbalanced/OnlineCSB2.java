@@ -249,7 +249,9 @@ public class OnlineCSB2 extends AbstractClassifier implements MultiClassClassifi
     		for (int i = this.nEstimators; i < nClasses; i++) {
     			this.ensemble.add(this.baseLearner.copy()); 
     			this.nEstimators ++;
-    			this.adwinEnsemble.add(new ADWIN());    			
+                if (this.driftDetection) {
+                    this.adwinEnsemble.add(new ADWIN());
+                }
     			this.lambdaFP.add(0.0);
                 this.lambdaFN.add(0.0);
                 this.lambdaSum.add(0.0);
