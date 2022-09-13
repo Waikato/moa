@@ -1,7 +1,7 @@
 # Tutorial: Getting Started with MOA Docker
 
 
-Massive Online Analysis (MOA) is also available in Docker. Docker images are located in the ghcr.io/waikato/moa Github Container Registry.
+Massive Online Analysis (MOA) is also available in Docker. Docker images are located in the [ghcr.io/waikato/moa](https://github.com/waikato/moa/pkgs/container/moa) Github Container Registry.
 
 You can download the image and start using MOA. Image releases are tagged using the following format:
 
