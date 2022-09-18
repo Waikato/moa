@@ -4,140 +4,140 @@ moa.classifiers.meta.imbalanced.OnlineUnderOverBagging -l bayes.NaiveBayes -s 1 
 Index
   10000
 Votes
-  0: 1.40184819
-  1: 1.59815181
+  0: 1.03163334
+  1: 0.96836666
 Measurements
   classified instances: 9999
-  classifications correct (percent): 70.0470047
-  Kappa Statistic (percent): 32.1442941
-  Kappa Temporal Statistic (percent): 36.86762226
-  Kappa M Statistic (percent): 26.86202686
+  classifications correct (percent): 69.9869987
+  Kappa Statistic (percent): 31.91905703
+  Kappa Temporal Statistic (percent): 36.74114671
+  Kappa M Statistic (percent): 26.71550672
 Model measurements
   model training instances: 9999
 
 Index
   20000
 Votes
-  0: 0.61733266
-  1: 2.38266734
+  0: 0.45383873
+  1: 1.54616127
 Measurements
   classified instances: 19999
-  classifications correct (percent): 69.94849742
-  Kappa Statistic (percent): 32.79938902
-  Kappa Temporal Statistic (percent): 37.25858649
-  Kappa M Statistic (percent): 27.95492688
+  classifications correct (percent): 69.79848992
+  Kappa Statistic (percent): 32.39377549
+  Kappa Temporal Statistic (percent): 36.9454014
+  Kappa M Statistic (percent): 27.59530089
 Model measurements
   model training instances: 19999
 
 Index
   30000
 Votes
-  0: 0.68148947
-  1: 2.31851053
+  0: 0.47721444
+  1: 1.52278556
 Measurements
   classified instances: 29999
-  classifications correct (percent): 69.96233208
-  Kappa Statistic (percent): 32.74216512
-  Kappa Temporal Statistic (percent): 37.75644125
-  Kappa M Statistic (percent): 27.84272902
+  classifications correct (percent): 69.84899497
+  Kappa Statistic (percent): 32.4242055
+  Kappa Temporal Statistic (percent): 37.52158596
+  Kappa M Statistic (percent): 27.57046765
 Model measurements
   model training instances: 29999
 
 Index
   40000
 Votes
-  0: 0.40489692
-  1: 2.59510308
+  0: 0.24928672
+  1: 1.75071328
 Measurements
   classified instances: 39999
-  classifications correct (percent): 69.94674867
-  Kappa Statistic (percent): 32.91913706
-  Kappa Temporal Statistic (percent): 37.87917937
-  Kappa M Statistic (percent): 28.10406699
+  classifications correct (percent): 69.85424636
+  Kappa Statistic (percent): 32.65905583
+  Kappa Temporal Statistic (percent): 37.68797478
+  Kappa M Statistic (percent): 27.88277512
 Model measurements
   model training instances: 39999
 
 Index
   50000
 Votes
-  0: 0.5101611
-  1: 2.4898389
+  0: 0.34274108
+  1: 1.65725892
 Measurements
   classified instances: 49999
-  classifications correct (percent): 69.98339967
-  Kappa Statistic (percent): 32.98884026
-  Kappa Temporal Statistic (percent): 37.87565196
-  Kappa M Statistic (percent): 28.17764165
+  classifications correct (percent): 69.89539791
+  Kappa Statistic (percent): 32.73716607
+  Kappa Temporal Statistic (percent): 37.69351768
+  Kappa M Statistic (percent): 27.96707504
 Model measurements
   model training instances: 49999
 
 Index
   60000
 Votes
-  0: 0.26979993
-  1: 2.73020007
+  0: 0.17936704
+  1: 1.82063296
 Measurements
   classified instances: 59999
-  classifications correct (percent): 70.06283438
-  Kappa Statistic (percent): 33.40813955
-  Kappa Temporal Statistic (percent): 38.09408926
-  Kappa M Statistic (percent): 28.72787874
+  classifications correct (percent): 69.98449974
+  Kappa Statistic (percent): 33.17486013
+  Kappa Temporal Statistic (percent): 37.93210408
+  Kappa M Statistic (percent): 28.5413856
 Model measurements
   model training instances: 59999
 
 Index
   70000
 Votes
-  0: 0.74793955
-  1: 2.25206045
+  0: 0.48963286
+  1: 1.51036714
 Measurements
   classified instances: 69999
-  classifications correct (percent): 70.04671495
-  Kappa Statistic (percent): 33.54441662
-  Kappa Temporal Statistic (percent): 38.25789923
-  Kappa M Statistic (percent): 28.93505965
+  classifications correct (percent): 69.99957142
+  Kappa Statistic (percent): 33.38843877
+  Kappa Temporal Statistic (percent): 38.16072323
+  Kappa M Statistic (percent): 28.82321041
 Model measurements
   model training instances: 69999
 
 Index
   80000
 Votes
-  0: 1.13871423
-  1: 1.86128577
+  0: 0.77581225
+  1: 1.22418775
 Measurements
   classified instances: 79999
-  classifications correct (percent): 70.1196265
-  Kappa Statistic (percent): 33.72450454
-  Kappa Temporal Statistic (percent): 38.46945867
-  Kappa M Statistic (percent): 29.10191007
+  classifications correct (percent): 70.0958762
+  Kappa Statistic (percent): 33.62123199
+  Kappa Temporal Statistic (percent): 38.42055137
+  Kappa M Statistic (percent): 29.04555701
 Model measurements
   model training instances: 79999
 
 Index
   90000
 Votes
-  0: 1.03341767
-  1: 1.96658233
+  0: 0.70422672
+  1: 1.29577328
 Measurements
   classified instances: 89999
-  classifications correct (percent): 70.15633507
-  Kappa Statistic (percent): 33.80226873
-  Kappa Temporal Statistic (percent): 38.51665331
-  Kappa M Statistic (percent): 29.1693038
+  classifications correct (percent): 70.12744586
+  Kappa Statistic (percent): 33.69396701
+  Kappa Temporal Statistic (percent): 38.45713632
+  Kappa M Statistic (percent): 29.1007384
 Model measurements
   model training instances: 89999
 
 Index
   100000
 Votes
-  0: 2.37025918
-  1: 0.62974082
+  0: 1.58003357
+  1: 0.41996643
 Measurements
   classified instances: 99999
-  classifications correct (percent): 70.14870149
-  Kappa Statistic (percent): 33.84591534
-  Kappa Temporal Statistic (percent): 38.50733355
-  Kappa M Statistic (percent): 29.23284813
+  classifications correct (percent): 70.12870129
+  Kappa Statistic (percent): 33.76533125
+  Kappa Temporal Statistic (percent): 38.46613382
+  Kappa M Statistic (percent): 29.18543455
 Model measurements
   model training instances: 99999
 
