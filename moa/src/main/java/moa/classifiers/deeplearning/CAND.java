@@ -160,6 +160,12 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
             "Stats dump file name",
             "" );
 
+    public IntOption djlRandomSeed = new IntOption(
+            "djlRandomSeed",
+            'S',
+            "Random seed for DJL Engine",
+            10, 0, Integer.MAX_VALUE);
+
     @Override
     public void resetLearningImpl() {
         if (nn != null) {
@@ -428,6 +434,7 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
             this.nn[i].numberOfLayers.setValue(numberOfLayersInEachMLP.getValue());
             this.nn[i].deltaForADWIN = nnConfigs[i].deltaForADWIN;
             this.nn[i].backPropLossThreshold.setValue(backPropLossThreshold.getValue());
+            this.nn[i].djlRandomSeed.setValue(djlRandomSeed.getValue());
             this.nn[i].initializeNetwork(instance);
         }
 
