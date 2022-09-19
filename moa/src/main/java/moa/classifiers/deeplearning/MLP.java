@@ -31,6 +31,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.MultiChoiceOption;
 
+import ai.djl.engine.Engine;
 import ai.djl.Device;
 import ai.djl.Model;
 import ai.djl.basicmodelzoo.basic.Mlp;
@@ -48,9 +49,7 @@ import ai.djl.training.optimizer.Optimizer;
 
 import java.text.DecimalFormat;
 import java.lang.Math;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static ai.djl.ndarray.types.DataType.FLOAT32;
 
@@ -219,6 +218,12 @@ public class MLP extends AbstractClassifier implements MultiClassClassifier {
 			new String[]{"GPU","CPU"},
 			new String[]{"GPU (use CPU if not available)", "CPU"},
 			deviceTypeOptionCPU);
+
+	public IntOption djlRandomSeed = new IntOption(
+			"djlRandomSeed",
+			'S',
+			"Random seed for DJL Engine",
+			10, 0, Integer.MAX_VALUE);
 
 
 	public double deltaForADWIN = 1.0E-5;
@@ -441,6 +446,12 @@ public class MLP extends AbstractClassifier implements MultiClassClassifier {
 	public void initializeNetwork(Instance inst) {
 		if (nnmodel != null){
 			return;
+		}
+
+		Set<String> engines = Engine.getAllEngines();
+		Iterator<String> engineIterator = engines.iterator();
+		while (engineIterator.hasNext()){
+			Engine.getEngine(engineIterator.next()).setRandomSeed(djlRandomSeed.getValue());
 		}
 
 		votes = new double [inst.numClasses()];
