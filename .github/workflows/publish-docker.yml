@@ -1,0 +1,52 @@
+name: Publish MOA Docker image
+
+on:
+  push:
+    tags: ['*']
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}-gha
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: 'master'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          driver-opts: env.BUILDKIT_STEP_LOG_MAX_SIZE=10485760
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push latest image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: "docker/moa-gui.Dockerfile"
+          push: true
+          no-cache: true
+          tags: ghcr.io/waikato/moa:latest
+
+      - name: Build and push devel image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: "docker/devel-gui.Dockerfile"
+          push: true
+          no-cache: true
+          tags: ghcr.io/waikato/moa:devel

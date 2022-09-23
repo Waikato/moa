@@ -113,7 +113,9 @@
 * create new release tag on Github (tag version `yyyy.mm.0`, release title `MOA yy.mm.0`) 
   and upload the generated MOA release zip file from the top-level `target` directory 
   and the zip file from the `weka-package/dist` directory
-  
+
+* make sure that the Github action `Publish MOA Docker image` is triggered and ran successfully.
+
 * email Mark Hall (mhall at waikato.ac.nz) the link to the Weka package zip
   file to upload to the central Weka package repository on Sourceforge.net
 

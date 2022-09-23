@@ -1,8 +1,8 @@
 build-latest:
-	    docker build -t waikato/moa:latest -f moa-gui.Dockerfile .
+	    docker build --no-cache -t ghcr.io/waikato/moa:latest -f moa-gui.Dockerfile .
 build-devel:
-	    docker build -t waikato/moa:devel -f devel-gui.Dockerfile .
+	    docker build --no-cache -t ghcr.io/waikato/moa:devel -f devel-gui.Dockerfile .
 push-latest:
-	    docker push waikato/moa:latest
+	    docker push ghcr.io/waikato/moa:latest
 push-devel:
-	    docker push waikato/moa:devel
+	    docker push ghcr.io/waikato/moa:devel

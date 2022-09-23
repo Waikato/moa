@@ -1,9 +1,7 @@
 # Tutorial: Getting Started with MOA Docker
-by Walid Gara on April 20, 2019 using MOA 2019.04.0
 
 
-
-Massive Online Analysis (MOA) is also available in Docker. Docker images are located in the [waikato/moa](https://hub.docker.com/r/waikato/moa) Docker Hub repository.
+Massive Online Analysis (MOA) is also available in Docker. Docker images are located in the [ghcr.io/waikato/moa](https://github.com/waikato/moa/pkgs/container/moa) Github Container Registry.
 
 You can download the image and start using MOA. Image releases are tagged using the following format:
 
@@ -19,7 +17,7 @@ First, you need to install Docker in your machine.
 Download MOA Docker image
 
 ```bash
-$ docker pull waikato/moa:latest
+$ docker pull ghcr.io/waikato/moa:latest
 ```
 
 
@@ -32,7 +30,7 @@ $ xhost +local:root
 Start MOA Docker container.
 
 ```bash
-$ docker run -it --env="DISPLAY" --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" waikato/moa:latest
+$ docker run -it --env="DISPLAY" --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" ghcr.io/waikato/moa:latest
 ```
 
 
@@ -52,7 +50,7 @@ Example of local ip address: `10.42.0.94`
 Then start MOA GUI container where `<ip_address>` is your local ip address.
 
 ```bash
-$ docker run -it --privileged -e DISPLAY=<ip_address>:0.0 -v /tmp/.X11-unix:/tmp/.X11-unix waikato/moa:latest
+$ docker run -it --privileged -e DISPLAY=<ip_address>:0.0 -v /tmp/.X11-unix:/tmp/.X11-unix ghcr.io/waikato/moa:latest
 ```
 
 
@@ -75,5 +73,5 @@ $ xhost + <ip_address>
 Start MOA GUI container
 
 ```bash
-$ docker run -d -e DISPLAY=<ip_address>:0 -v /tmp/.X11-unix:/tmp/.X11-unix waikato/moa:latest
+$ docker run -d -e DISPLAY=<ip_address>:0 -v /tmp/.X11-unix:/tmp/.X11-unix ghcr.io/waikato/moa:latest
 ```
