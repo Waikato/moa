@@ -62,25 +62,3 @@ FileChooserHeight=500
 # See also:
 # https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
 LookAndFeel=
-
-# the Look'n'Feel to use for JIDE components (eg directory chooser)
-#
-# Accepted values:
-# - empty: default strategy
-# - 0: VS Net (no menu) - https://www.jidesoft.com/javadoc/com/jidesoft/plaf/LookAndFeelFactory.html#EXTENSION_STYLE_VSNET_WITHOUT_MENU
-# - 1: VS Net - https://www.jidesoft.com/javadoc/com/jidesoft/plaf/LookAndFeelFactory.html#EXTENSION_STYLE_VSNET
-# - 2: Eclipse - https://www.jidesoft.com/javadoc/com/jidesoft/plaf/LookAndFeelFactory.html#EXTENSION_STYLE_ECLIPSE
-# - 3: Office 2003 - https://www.jidesoft.com/javadoc/com/jidesoft/plaf/LookAndFeelFactory.html#EXTENSION_STYLE_OFFICE2003
-# - 4: Xerto - https://www.jidesoft.com/javadoc/com/jidesoft/plaf/LookAndFeelFactory.html#EXTENSION_STYLE_XERTO
-# - 5: Eclipse 3x - https://www.jidesoft.com/javadoc/com/jidesoft/plaf/LookAndFeelFactory.html#EXTENSION_STYLE_ECLIPSE3X
-# - 6: Xerto (no menu) - https://www.jidesoft.com/javadoc/com/jidesoft/plaf/LookAndFeelFactory.html#EXTENSION_STYLE_XERTO_WITHOUT_MENU
-# - 7: Office 2007 - https://www.jidesoft.com/javadoc/com/jidesoft/plaf/LookAndFeelFactory.html#EXTENSION_STYLE_OFFICE2007
-# - 8: Office 2003 (no menu) https://www.jidesoft.com/javadoc/com/jidesoft/plaf/LookAndFeelFactory.html#EXTENSION_STYLE_OFFICE2003_WITHOUT_MENU
-# - 9: Office 2007 (no menu) - https://www.jidesoft.com/javadoc/com/jidesoft/plaf/LookAndFeelFactory.html#EXTENSION_STYLE_OFFICE2007_WITHOUT_MENU
-# - 10: Eclipse (no menu) - https://www.jidesoft.com/javadoc/com/jidesoft/plaf/LookAndFeelFactory.html#EXTENSION_STYLE_ECLIPSE_WITHOUT_MENU
-# - 11: Eclipse 3x (no menu) - https://www.jidesoft.com/javadoc/com/jidesoft/plaf/LookAndFeelFactory.html#EXTENSION_STYLE_ECLIPSE3X_WITHOUT_MENU
-#
-# See also:
-# https://www.jidesoft.com/javadoc/com/jidesoft/plaf/LookAndFeelFactory.html
-# https://www.jidesoft.com/javadoc/constant-values.html
-JideLookAndFeel=

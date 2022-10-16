@@ -15,12 +15,10 @@
 
 /*
  * LookAndFeel.java
- * Copyright (C) 2019 University of Waikato, Hamilton, NZ
+ * Copyright (C) 2019-2022 University of Waikato, Hamilton, NZ
  */
 
 package moa.gui;
-
-import com.jidesoft.plaf.LookAndFeelFactory;
 
 import javax.swing.UIManager;
 import java.util.logging.Level;
@@ -39,14 +37,11 @@ public class LookAndFeel {
     /** the LnF property in the GUI defaults. */
     public static final String KEY_LOOKANDFEEL = "LookAndFeel";
 
-    /** the LnF for JIDE property in the GUI defaults. */
-    public static final String KEY_JIDELOOKANDFEEL = "JideLookAndFeel";
-
     /** the Windows LnF classname. */
-    public static final String WINDOWS_LNF = LookAndFeelFactory.WINDOWS_LNF;
+    public static final String WINDOWS_LNF = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
 
     /** the cross-platform LnF classname. */
-    public static final String CROSSPLATFORM_LNF = LookAndFeelFactory.METAL_LNF;
+    public static final String CROSSPLATFORM_LNF = "javax.swing.plaf.metal.MetalLookAndFeel";
 
     /** for using the system's default LnF. */
     public static final String VALUE_SYSTEM = "system";
@@ -140,87 +135,15 @@ public class LookAndFeel {
     }
 
     /**
-     * Attempts to install the specified JIDE style.
-     *
-     * @param style the style to install, uses default strategy if -1
-     * @return true if successful
-     * @see LookAndFeelFactory
-     */
-    protected static boolean installJideLookAndFeel(int style) {
-        boolean result = true;
-
-        try {
-            if (style == -1) {
-                LOGGER.info("Using built-in strategy for setting JIDE Look'n'Feel...");
-                LookAndFeelFactory.installJideExtension();
-            }
-            else {
-                LOGGER.info("Using JIDE Look'n'Feel style: " + style);
-                LookAndFeelFactory.installJideExtension(style);
-            }
-        }
-        catch (Throwable t) {
-            result = false;
-            if (style == -1)
-                LOGGER.severe("Failed to install JIDE Look'n'Feel based on built-in strategy: " + t);
-            else
-                LOGGER.severe("Failed to install JIDE Look'n'Feel style " + style + ": " + t);
-        }
-
-        return result;
-    }
-
-    /**
-     * Attempts to install the specifoed JIDE style, but falls back on
-     * cross-platform Java Look'n'Feel and JIDE style {@link LookAndFeelFactory#VSNET_STYLE_WITHOUT_MENU}
-     * if it fails.
-     *
-     * @param style the style to install, uses default strategy if -1
-     * @return true if successful
-     * @see LookAndFeelFactory
-     */
-    protected static boolean attemptInstallJideLookAndFeel(int style) {
-        boolean result;
-        result = installJideLookAndFeel(style);
-        if (!result) {
-            LOGGER.info("Falling back on cross-platform Look'n'Feel and JIDE style " + LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU + "...");
-            result = installJavaLookAndFeel(CROSSPLATFORM_LNF)
-                && installJideLookAndFeel(LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU);
-            if (!result)
-                LOGGER.severe("Failed to set cross-platform Look'n'Feel (" + CROSSPLATFORM_LNF + ") and JIDE style " + LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU + ", which should always succeed!");
-        }
-        return result;
-    }
-
-    /**
      * Installs the look and feel.
      */
     public static void install() {
         String lnf;
-        int style;
         boolean success;
 
         // Java
         lnf     = GUIDefaults.get(KEY_LOOKANDFEEL, "").trim();
         success = attemptInstallJavaLookAndFeel(lnf);
         LOGGER.info("Setting Java Look'n'Feel: " + success);
-
-        // JIDE
-        lnf = GUIDefaults.get(KEY_JIDELOOKANDFEEL, "").trim();
-        if (lnf.isEmpty()) {
-            success = attemptInstallJideLookAndFeel(-1);
-        }
-        else {
-            try {
-                style   = Integer.parseInt(lnf);
-                success = attemptInstallJideLookAndFeel(style);
-            }
-            catch (Throwable t) {
-                LOGGER.severe("JIDE Look'n'Feel must be an integer, found: " + lnf);
-                LOGGER.info("Falling back on JIDE Look'n'Feel style: " + LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU);
-                success = attemptInstallJideLookAndFeel(LookAndFeelFactory.VSNET_STYLE_WITHOUT_MENU);
-            }
-        }
-        LOGGER.info("Setting JIDE style: " + success);
     }
 }

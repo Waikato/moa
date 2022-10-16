@@ -87,19 +87,19 @@
       <dependency>
         <groupId>com.github.fracpete</groupId>
         <artifactId>jshell-scripting</artifactId>
-        <version>0.1.1</version>
+        <version>0.1.2</version>
       </dependency>
 
       <dependency>
         <groupId>com.github.waikato</groupId>
         <artifactId>fcms-widgets</artifactId>
-        <version>0.0.21</version>
+        <version>0.0.22</version>
       </dependency>
 
       <dependency>
         <groupId>net.sf.meka</groupId>
         <artifactId>meka</artifactId>
-        <version>1.9.2</version>
+        <version>1.9.7</version>
         <exclusions>
           <exclusion>
             <groupId>nz.ac.waikato.cms.moa</groupId>
@@ -116,10 +116,6 @@
           <exclusion>
             <groupId>com.googlecode.jfilechooser-bookmarks</groupId>
             <artifactId>jfilechooser-bookmarks</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>com.jidesoft</groupId>
-            <artifactId>jide-oss</artifactId>
           </exclusion>
         </exclusions>
       </dependency>

@@ -20,15 +20,15 @@
  */
 package moa.gui;
 
-import com.jidesoft.swing.JideButton;
-import com.jidesoft.swing.JideSplitButton;
 import moa.DoTask;
 import moa.core.WekaUtils;
+import nz.ac.waikato.cms.gui.core.BaseFlatSplitButton;
 import nz.ac.waikato.cms.gui.core.GUIHelper;
 import nz.ac.waikato.cms.gui.core.MultiPagePane;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JFrame;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -63,10 +63,8 @@ public class GUI extends JPanel {
         add(pagePane, BorderLayout.CENTER);
 
         // sub-menu for adding tabs via action button
-        JideSplitButton buttonAdd = new JideSplitButton(GUIHelper.getIcon("add.gif"));
-        buttonAdd.setButtonStyle(JideButton.TOOLBOX_STYLE);
+        BaseFlatSplitButton buttonAdd = new BaseFlatSplitButton(GUIHelper.getIcon("add.gif"));
         buttonAdd.setFont(getFont().deriveFont(Font.PLAIN));
-        buttonAdd.setAlwaysDropdown(false);
         pagePane.getButtonPanel().add(buttonAdd);
 
         // the default tabs
@@ -74,6 +72,7 @@ public class GUI extends JPanel {
 
         // initialize additional panels
         String[] tabs = GUIDefaults.getTabs();
+        boolean first = true;
         for (int i = 0; i < tabs.length; i++) {
             try {
                 // determine classname
@@ -85,17 +84,26 @@ public class GUI extends JPanel {
                     pagePane.addPage(tabPanel.getTabTitle(), tabPanel);
 
                 // add tab
-                JMenuItem menuitem = new JMenuItem(tabPanel.getTabTitle());
-                menuitem.addActionListener((ActionEvent e) -> {
-                    try {
-                        AbstractTabPanel tab = (AbstractTabPanel) Class.forName(classname).newInstance();
-                        pagePane.addPage(tab.getTabTitle(), tab);
+                Action action = new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        try {
+                            AbstractTabPanel tab = (AbstractTabPanel) Class.forName(classname).newInstance();
+                            pagePane.addPage(tab.getTabTitle(), tab);
+                        }
+                        catch (Exception ex) {
+                            // ignored
+                        }
                     }
-                    catch (Exception ex) {
-                        // ignored
-                    }
-                });
-                buttonAdd.add(menuitem);
+                };
+                action.putValue(Action.NAME, tabPanel.getTabTitle());
+                if (first) {
+                    buttonAdd.setAction(action);
+                    first = false;
+                }
+                else {
+                    buttonAdd.add(action);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
