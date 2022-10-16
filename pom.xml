@@ -58,8 +58,8 @@
   </mailingLists>
 
   <scm>
-    <connection>scm:git:https://github.com/waikato/moa</connection>
-    <developerConnection>scm:git:https://github.com/waikato/moa</developerConnection>
+    <connection>scm:git:ssh://git@github.com/waikato/moa</connection>
+    <developerConnection>scm:git:ssh://git@github.com/waikato/moa</developerConnection>
     <url>https://github.com/waikato/moa</url>
     <tag>HEAD</tag>
   </scm>
