@@ -19,10 +19,8 @@
  */
 package moa.gui.experimentertab;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.HeadlessException;
-import java.io.File;
+import nz.ac.waikato.cms.gui.core.SimpleDirectoryChooser;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -32,7 +30,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import nz.ac.waikato.cms.gui.core.BaseDirectoryChooser;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.HeadlessException;
+import java.io.File;
 
 /**
  * Class to display summaries in the gui.
@@ -114,8 +115,7 @@ public class SummaryViewer extends JFrame {
      private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {
         
            String path = "";
-                BaseDirectoryChooser propDir = new BaseDirectoryChooser();
-                propDir.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                SimpleDirectoryChooser propDir = new SimpleDirectoryChooser();
                 propDir.setCurrentDirectory(new File(resultsPath));
                 int selection = propDir.showSaveDialog(this);
                 if (selection == JFileChooser.APPROVE_OPTION) {

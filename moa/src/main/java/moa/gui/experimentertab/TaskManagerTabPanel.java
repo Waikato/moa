@@ -38,8 +38,8 @@ import moa.streams.generators.AgrawalGenerator;
 import moa.streams.generators.cd.ConceptDriftGenerator;
 import moa.streams.generators.cd.GradualChangeGenerator;
 import moa.tasks.MainTask;
-import nz.ac.waikato.cms.gui.core.BaseDirectoryChooser;
 import nz.ac.waikato.cms.gui.core.BaseFileChooser;
+import nz.ac.waikato.cms.gui.core.SimpleDirectoryChooser;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.swing.DefaultListModel;
@@ -603,7 +603,7 @@ public class TaskManagerTabPanel extends JPanel {
 
     private String openDirectory() {
         String path = "";
-        BaseDirectoryChooser propDir = new BaseDirectoryChooser();
+        SimpleDirectoryChooser propDir = new SimpleDirectoryChooser();
         int selection = propDir.showOpenDialog(this);
         if (selection == JFileChooser.APPROVE_OPTION) {
             path = propDir.getSelectedFile().getAbsolutePath();

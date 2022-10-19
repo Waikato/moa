@@ -20,7 +20,7 @@
 package moa.gui.experimentertab;
 
 import moa.gui.LookAndFeel;
-import nz.ac.waikato.cms.gui.core.BaseDirectoryChooser;
+import nz.ac.waikato.cms.gui.core.SimpleDirectoryChooser;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.swing.DefaultCellEditor;
@@ -410,8 +410,7 @@ public class SummaryTab extends JPanel {
     }
 
     private void jButtonResultsActionPerformed(java.awt.event.ActionEvent evt) {
-        BaseDirectoryChooser resultsDir = new BaseDirectoryChooser();
-        resultsDir.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        SimpleDirectoryChooser resultsDir = new SimpleDirectoryChooser();
         int selection = -1;
         String path = "";
         selection = resultsDir.showOpenDialog(this);

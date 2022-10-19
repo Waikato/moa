@@ -23,7 +23,7 @@ import moa.gui.LookAndFeel;
 import moa.gui.experimentertab.statisticaltests.PValuePerTwoAlgorithm;
 import moa.gui.experimentertab.statisticaltests.RankPerAlgorithm;
 import moa.gui.experimentertab.statisticaltests.StatisticalTest;
-import nz.ac.waikato.cms.gui.core.BaseDirectoryChooser;
+import nz.ac.waikato.cms.gui.core.SimpleDirectoryChooser;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.swing.JFileChooser;
@@ -339,8 +339,7 @@ public class AnalyzeTab extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonResultsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonResultsActionPerformed
-        BaseDirectoryChooser resultsFile = new BaseDirectoryChooser();
-        //resultsFile.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        SimpleDirectoryChooser resultsFile = new SimpleDirectoryChooser();
         int selection = resultsFile.showOpenDialog(this);
         if (selection == JFileChooser.APPROVE_OPTION) {
             path = resultsFile.getSelectedFile().getAbsolutePath();

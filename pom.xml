@@ -70,6 +70,18 @@
         <groupId>nz.ac.waikato.cms.weka</groupId>
         <artifactId>weka-dev</artifactId>
         <version>3.9.6</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.googlecode.jfilechooser-bookmarks</groupId>
+            <artifactId>jfilechooser-bookmarks</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>com.github.fracpete</groupId>
+        <artifactId>jfilechooser-bookmarks</artifactId>
+        <version>0.1.9</version>
       </dependency>
 
       <dependency>
@@ -93,7 +105,7 @@
       <dependency>
         <groupId>com.github.waikato</groupId>
         <artifactId>fcms-widgets</artifactId>
-        <version>0.0.22</version>
+        <version>0.0.23</version>
       </dependency>
 
       <dependency>
