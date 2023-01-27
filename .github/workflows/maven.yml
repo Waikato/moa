@@ -1,0 +1,44 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Java CI with Maven
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17 (LTS)
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: maven
+      - name: Install Maven 3.6.3
+        # FIXME: Maven 3.8+ does not allow HTTP repositories anymore
+        run: |
+          wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+          tar -xzf apache-maven-3.6.3-bin.tar.gz
+          echo "MAVEN_HOME=$(pwd)/apache-maven-3.6.3" >> $GITHUB_ENV
+          echo "$(pwd)/apache-maven-3.6.3/bin" >> $GITHUB_PATH
+      - name: Test MOA with Maven
+        run: mvn -B -pl moa test
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: MOA JUnit Tests
+          path: moa/target/surefire-reports/TEST-*.xml
+          reporter: java-junit

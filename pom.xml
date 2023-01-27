@@ -216,7 +216,7 @@
             <includes>
               <include>**/*Test.java</include>
             </includes>
-            <disableXmlReport>true</disableXmlReport>
+            <!-- <disableXmlReport>true</disableXmlReport> -->
             <redirectTestOutputToFile>true</redirectTestOutputToFile>
           </configuration>
         </plugin>
@@ -347,4 +347,3 @@
     </plugins>
   </build>
 </project>
-
