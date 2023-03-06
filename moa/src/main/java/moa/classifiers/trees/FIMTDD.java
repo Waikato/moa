@@ -163,8 +163,13 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			sumOfAbsErrors = node.sumOfAbsErrors;
 		}
 
-		public int calcByteSize() {
-			return (int) SizeOf.fullSizeOf(this);
+		public long measureByteSize() {
+			 long size = SizeOf.sizeOf(this);
+			 if (alternateTree != null)
+				 size += alternateTree.measureByteSize();
+			 if (originalNode != null)
+				 size += originalNode.measureByteSize();
+			 return size;
 		}
 
 		/**
@@ -273,6 +278,13 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 		protected boolean skipInLevelCount() {
 			return false;
+		}
+		
+		public long measureByteSize() {
+			long size = super.measureByteSize() + learningModel.measureByteSize();
+			for (FIMTDDNumericAttributeClassObserver o : attributeObservers)
+				size += o.measureByteSize();
+			return size;
 		}
 		
 		/**
@@ -440,6 +452,13 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			}
 		}
 		
+		public long measureByteSize() {
+			long size = super.measureByteSize();
+			for (Node n : children)
+				size += n.measureByteSize();
+			return size;
+		}
+		
 		/**
 		 * Check to see if the tree needs updating
 		 */
@@ -496,6 +515,11 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			this.splitTest = splitTest;
 		}
 
+		public long measureByteSize() {
+			long size = super.measureByteSize() + splitTest.measureByteSize();
+			return size;
+		}
+		
 		public int instanceChildIndex(Instance inst) {
 			return splitTest.branchForInstance(inst);
 		}
@@ -561,6 +585,11 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			return weightAttribute;
 		}
 
+		
+		public long measureByteSize() {
+			long size = SizeOf.sizeOf(this) + SizeOf.fullSizeOf(weightAttribute);
+			return size;
+		}
 		/**
 		 * Update the model using the provided instance
 		 */
@@ -701,10 +730,6 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 		return new Measurement[]{ 
 				new Measurement("tree size (leaves)", this.leafNodeCount)
 		};
-	}
-
-	public int calcByteSize() {
-		return (int) SizeOf.fullSizeOf(this);
 	}
 
 	public double[] getVotesForInstance(Instance inst) {
@@ -965,6 +990,16 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 			ret += u.getValue(i) * v.getValue(i);
 		}
 		return ret;
+	}
+	
+	public long measureByteSize() {
+		// protected DoubleVector sumOfAttrValues = new DoubleVector();
+		// protected DoubleVector sumOfAttrSquares = new DoubleVector();
+		long size = SizeOf.sizeOf(this) + SizeOf.fullSizeOf(sumOfAttrSquares) + SizeOf.fullSizeOf(sumOfAttrValues);
+		
+		size += treeRoot.measureByteSize();
+		
+		return size;
 	}
 	//endregion --- Processing methods
 	

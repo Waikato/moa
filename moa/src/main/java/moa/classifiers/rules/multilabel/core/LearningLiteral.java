@@ -17,6 +17,7 @@ import moa.classifiers.rules.multilabel.instancetransformers.InstanceTransformer
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
+import moa.core.SizeOf;
 import moa.options.AbstractOptionHandler;
 
 import com.yahoo.labs.samoa.instances.Instance;
@@ -97,6 +98,35 @@ public abstract class LearningLiteral extends AbstractOptionHandler {
 		this.outputsToLearn=outputsToLearn.clone();
 	}
 
+	public long measureByteSize() {
+		long size = SizeOf.sizeOf(this);
+		if (attributeObservers != null)
+			for (AttributeStatisticsObserver o : attributeObservers) {
+				size += o.measureByteSize();
+			}
+		size += learner.measureByteSize();
+		size += errorMeasurer.measureByteSize();
+		size += changeDetector.measureByteSize();
+		if (changeDetectors != null)
+			for (ChangeDetector c : changeDetectors)
+				size += c.measureByteSize();
+		size += anomalyDetector.measureByteSize();
+		size += splitCriterion.measureByteSize();
+		if (expandedLearningLiteral != null)
+			size += expandedLearningLiteral.measureByteSize();
+		if (otherBranchLearningLiteral != null)
+			size += otherBranchLearningLiteral.measureByteSize();
+		if (otherOutputsLearningLiteral != null)
+			size += otherOutputsLearningLiteral.measureByteSize();
+		if (bestSuggestion != null)
+			size += bestSuggestion.measureByteSize();
+		size += numericStatisticsObserver.measureByteSize();
+		size += nominalStatisticsObserver.measureByteSize();
+		size += outputSelector.measureByteSize() + inputSelector.measureByteSize();
+		size += instanceTransformer.measureByteSize();
+		return size;
+	}
+	
 	abstract public void trainOnInstance(MultiLabelInstance instance);
 
 	public Prediction getPredictionForInstance(MultiLabelInstance instance) {

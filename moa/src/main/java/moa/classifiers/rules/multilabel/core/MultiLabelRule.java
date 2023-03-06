@@ -18,6 +18,7 @@ import moa.classifiers.rules.multilabel.inputselectors.InputAttributesSelector;
 import moa.classifiers.rules.multilabel.instancetransformers.InstanceTransformer;
 import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector;
 import moa.core.DoubleVector;
+import moa.core.SizeOf;
 import moa.core.StringUtils;
 
 import com.yahoo.labs.samoa.instances.InstanceInformation;
@@ -51,6 +52,17 @@ public class MultiLabelRule extends ObservableMOAObject {
 		this.learningLiteral=learningLiteral; //copy()?
 	}
 
+	public long measureByteSize() {
+		long size = learningLiteral.measureByteSize();
+		if (otherBranchRule != null)
+			size += otherBranchRule.measureByteSize();
+		if (otherOutputsRule != null)
+			size += otherOutputsRule.measureByteSize();
+		for (Literal l : literalList)
+			size += l.measureByteSize();
+		return size;
+	}
+	
 	public MultiLabelRule() {
 
 	}

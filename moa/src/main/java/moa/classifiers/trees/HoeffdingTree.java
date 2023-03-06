@@ -528,7 +528,7 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
     }
 
     @Override
-    public int measureByteSize() {
+    public long measureByteSize() {
         return calcByteSize();
     }
 
@@ -804,7 +804,7 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
             this.inactiveLeafByteSizeEstimate = (double) totalInactiveSize
                     / this.inactiveLeafNodeCount;
         }
-        int actualModelSize = this.measureByteSize();
+        long actualModelSize = this.measureByteSize();
         double estimatedModelSize = (this.activeLeafNodeCount
                 * this.activeLeafByteSizeEstimate + this.inactiveLeafNodeCount
                 * this.inactiveLeafByteSizeEstimate);

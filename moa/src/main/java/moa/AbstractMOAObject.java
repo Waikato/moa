@@ -37,7 +37,7 @@ public abstract class AbstractMOAObject implements MOAObject {
     }
 
     @Override
-    public int measureByteSize() {
+    public long measureByteSize() {
         return measureByteSize(this);
     }
 

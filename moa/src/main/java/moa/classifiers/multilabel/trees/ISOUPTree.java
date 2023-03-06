@@ -200,46 +200,19 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		// PHMT = the minimum error value seen so far
 		protected boolean changeDetection = true;
 
-		// The statistics for this node:
-		// Number of instances that have reached it
-		public DoubleVector examplesSeen = new DoubleVector();
-		// Sum of y values
-		public DoubleVector sumOfValues = new DoubleVector();
-		// Sum of squared y values
-		public DoubleVector sumOfSquares = new DoubleVector();
-
-		// Sum of y values
-		public DoubleVector weightOfInputs;
-		// Sum of y values
-		public DoubleVector sumOfInputValues;
-		// Sum of squared y values
-		public DoubleVector sumOfInputSquares;
-
 		public Node(ISOUPTree tree) {
 			this.tree = tree;
 			this.ID = tree.maxID;
 		}
 
-		public void copyStatistics(Node node) {
-			examplesSeen = (DoubleVector) node.examplesSeen.copy();
-			sumOfValues = (DoubleVector) node.sumOfValues.copy();
-			sumOfSquares = (DoubleVector) node.sumOfSquares.copy();
-			if (tree.runAsPCTOption.isSet()) {
-				weightOfInputs = (DoubleVector) node.weightOfInputs.copy();
-				sumOfInputValues = (DoubleVector) node.sumOfInputValues.copy();
-				sumOfInputSquares = (DoubleVector) node.sumOfInputSquares.copy();
-			}
-		}
 
 		public long calcByteSize() {
-			long size = SizeOf.sizeOf(this) + SizeOf.sizeOf(sumOfSquares) + SizeOf.sizeOf(sumOfValues)
-					+ SizeOf.sizeOf(examplesSeen);
-			if (tree.runAsPCTOption.isSet()) {
-				size += SizeOf.sizeOf(sumOfInputSquares) + SizeOf.sizeOf(sumOfInputValues)
-						+ SizeOf.sizeOf(weightOfInputs);
-			}
-			return size;
+			return 0;
 		}
+		
+//		public long calcByteSize() {
+//			return SizeOf.fullSizeOf(this);
+//		}
 
 		/**
 		 * Set the parent node
@@ -310,6 +283,22 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 		private static final long serialVersionUID = 1L;
 
+		// The statistics for this node:
+		// Number of instances that have reached it
+		public DoubleVector examplesSeen = new DoubleVector();
+		// Sum of y values
+		public DoubleVector sumOfValues = new DoubleVector();
+		// Sum of squared y values
+		public DoubleVector sumOfSquares = new DoubleVector();
+
+		// Sum of y values
+		public DoubleVector weightOfInputs;
+		// Sum of y values
+		public DoubleVector sumOfInputValues;
+		// Sum of squared y values
+		public DoubleVector sumOfInputSquares;
+
+		
 		// Perceptron model that carries out the actual learning in each node
 		public MultitargetPerceptron learningModel;
 
@@ -347,13 +336,19 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		@Override
 		public long calcByteSize() {
 			long size = super.calcByteSize();
+			size += SizeOf.sizeOf(this) + SizeOf.sizeOf(sumOfSquares) + SizeOf.sizeOf(sumOfValues) + SizeOf.sizeOf(examplesSeen);
+			if (tree.runAsPCTOption.isSet()) {
+				size += SizeOf.sizeOf(sumOfInputSquares) + SizeOf.sizeOf(sumOfInputValues) + SizeOf.sizeOf(weightOfInputs);
+			}		
 			if (tree.buildingModelTree()) {
 				size += learningModel.calcByteSize();
 				size += SizeOf.sizeOf(errorP);
 				size += SizeOf.sizeOf(errorM);
 			}
 			size += SizeOf.sizeOf(inputIndexes);
-			size += SizeOf.fullSizeOf(attributeObservers);
+			for (AttributeStatisticsObserver a : attributeObservers) {
+				size += a.measureByteSize();
+			}
 			return size;
 		}
 
@@ -361,6 +356,18 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 			this.inputIndexes = tree.newInputIndexes();
 		}
 
+		public void copyStatistics(LeafNode node) {
+			examplesSeen = (DoubleVector) node.examplesSeen.copy();
+			sumOfValues = (DoubleVector) node.sumOfValues.copy();
+			sumOfSquares = (DoubleVector) node.sumOfSquares.copy();
+			if (tree.runAsPCTOption.isSet()) {
+				weightOfInputs = (DoubleVector) node.weightOfInputs.copy();
+				sumOfInputValues = (DoubleVector) node.sumOfInputValues.copy();
+				sumOfInputSquares = (DoubleVector) node.sumOfInputSquares.copy();
+			}
+		}
+
+		
 		/**
 		 * Method to learn from an instance that passes the new instance to the
 		 * perceptron learner, and also prevents the class value from being truncated to
@@ -982,9 +989,10 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		};
 	}
 
-//	public long measureByteSize() {
-//		return calcByteSize();
-//	}
+	public long measureByteSize() {
+		//return SizeOf.fullSizeOf(this);
+		return calcByteSize();
+	}
 
 	public long calcByteSize() {
 		long size = SizeOf.sizeOf(this);
@@ -1008,7 +1016,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 		double[] predictionVector = treeRoot.getPrediction(inst);
 		MultiLabelPrediction prediction = new MultiLabelPrediction(getModelContext().numOutputAttributes());
 		for (int i = 0; i < getModelContext().numOutputAttributes(); i++) {
-			prediction.setVote(i, 1, predictionVector[i]);
+			prediction.setVote(i, 0, predictionVector[i]);
 		}
 		return prediction;
 	}
@@ -1398,7 +1406,7 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 			SplitNode newSplit = newSplitNode(splitDecision.predicate);
 			newSplit.ID = node.ID;
-			newSplit.copyStatistics(node);
+			//newSplit.copyStatistics(node);
 			newSplit.changeDetection = node.changeDetection;
 			log(Integer.toString(node.ID) + ',' + this.examplesSeen.toString());
 			for (int i = 0; i < 2; i++) { // Hardcoded for 2 values (due to the use of the Predicate class)
@@ -1482,3 +1490,4 @@ public class ISOUPTree extends AbstractMultiLabelLearner implements MultiTargetR
 
 	// endregion ================ METHODS ================
 }
+

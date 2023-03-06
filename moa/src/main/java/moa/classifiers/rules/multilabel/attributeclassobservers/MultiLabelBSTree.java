@@ -28,6 +28,7 @@ import moa.classifiers.rules.multilabel.core.AttributeExpansionSuggestion;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
+import moa.core.SizeOf;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
@@ -147,6 +148,17 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 
 	}
 
+	
+	public long measureByteSize() {
+		long size = SizeOf.sizeOf(this);
+		if (root != null)
+			size += root.calcByteSize();
+		if (leftStatistics != null)
+			size += SizeOf.sizeOf(leftStatistics);
+		if (rightStatistics != null)
+			size += SizeOf.sizeOf(rightStatistics);
+		return size;
+	}
 
 	//Inner classes inspired in FIMTDDNumericalAttributeClassObserver
 
@@ -213,6 +225,17 @@ public class MultiLabelBSTree extends AbstractOptionHandler implements NumericSt
 					this.right.observeAttribute(inputAttributeValue, statistics);
 				}
 			}
+		}
+		
+		public long calcByteSize() {
+			long size = SizeOf.sizeOf(this) + SizeOf.sizeOf(leftStatistics) + SizeOf.sizeOf(rightStatistics);
+			
+			if (left != null)
+				size += left.calcByteSize();
+			if (right != null)
+				size += right.calcByteSize();
+			
+			return size;
 		}
 	}
 

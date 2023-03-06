@@ -121,7 +121,7 @@ public class AutoExpandVector<T> extends ArrayList<T> implements MOAObject {
     }
 
     @Override
-    public int measureByteSize() {
+    public long measureByteSize() {
         return AbstractMOAObject.measureByteSize(this);
     }
 

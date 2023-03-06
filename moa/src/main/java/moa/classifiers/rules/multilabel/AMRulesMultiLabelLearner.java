@@ -46,6 +46,7 @@ import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector
 import moa.classifiers.rules.multilabel.outputselectors.SelectAllOutputs;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+import moa.core.SizeOf;
 import moa.core.StringUtils;
 import moa.options.ClassOption;
 
@@ -561,6 +562,10 @@ public abstract class AMRulesMultiLabelLearner extends AbstractMultiLabelLearner
 	public void setObserver(ObserverMOAObject observer){
 		this.observer=observer;
 		this.defaultRule.addObserver(observer);
+	}
+	
+	public long measureByteSize() {
+	    return SizeOf.fullSizeOf(observer) + ruleSet.measureByteSize() + defaultRule.measureByteSize() + SizeOf.fullSizeOf(featureRanking);
 	}
 
 }

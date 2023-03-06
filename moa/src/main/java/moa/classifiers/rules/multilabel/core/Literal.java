@@ -2,6 +2,7 @@ package moa.classifiers.rules.multilabel.core;
 
 import moa.AbstractMOAObject;
 import moa.classifiers.rules.core.Predicate;
+import moa.core.SizeOf;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceInformation;
@@ -45,5 +46,8 @@ public class Literal extends AbstractMOAObject{
 		return sb.toString();
 	}
 
+	public long measureByteSize() {
+		return SizeOf.sizeOf(this) + SizeOf.fullSizeOf(predicate);
+	}
 
 }

@@ -32,6 +32,7 @@ import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
+import moa.core.SizeOf;
 import moa.tasks.TaskMonitor;
 
 public class FIMTDDNumericAttributeClassObserver extends BinaryTreeNumericAttributeClassObserver implements NumericAttributeClassObserver {
@@ -60,6 +61,16 @@ public class FIMTDDNumericAttributeClassObserver extends BinaryTreeNumericAttrib
             this.leftStatistics.addToValue(2, label * label);
         }
 
+        public long measureByteSize() {
+        	long size = SizeOf.sizeOf(this) + SizeOf.fullSizeOf(leftStatistics) + SizeOf.fullSizeOf(rightStatistics);
+        	if (left != null)
+        		size += left.measureByteSize();
+        	if (right != null)
+        		size += right.measureByteSize();
+        	return size;
+        	
+        }
+        
         /**
          * Insert a new value into the tree, updating both the sum of values and
          * sum of squared values arrays

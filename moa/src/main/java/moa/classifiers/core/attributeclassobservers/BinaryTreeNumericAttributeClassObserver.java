@@ -26,6 +26,7 @@ import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
+import moa.core.SizeOf;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
@@ -60,6 +61,16 @@ public class BinaryTreeNumericAttributeClassObserver extends AbstractOptionHandl
             this.cut_point = val;
             this.classCountsLeft.addToValue(label, weight);
         }
+        
+        public long measureByteSize() {
+        	long size = SizeOf.sizeOf(this) + SizeOf.fullSizeOf(classCountsLeft) + SizeOf.fullSizeOf(classCountsRight);
+        	if (left != null)
+        		size += left.measureByteSize();
+        	if (right != null)
+        		size += right.measureByteSize();
+        	return size;
+        	
+        }
 
         public void insertValue(double val, int label, double weight) {
             if (val == this.cut_point) {
@@ -84,6 +95,14 @@ public class BinaryTreeNumericAttributeClassObserver extends AbstractOptionHandl
 
     public Node root = null;
 
+    public long measureByteSize() {
+    	long size = SizeOf.sizeOf(this);
+    	if (root != null)
+    		size += root.measureByteSize();
+    	return size;
+    	
+    }
+    
     @Override
     public void observeAttributeClass(double attVal, int classVal, double weight) {
         if (Double.isNaN(attVal)) { //Instance.isMissingValue(attVal)
@@ -103,6 +122,8 @@ public class BinaryTreeNumericAttributeClassObserver extends AbstractOptionHandl
         return 0.0;
     }
 
+
+    
     @Override
     public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(
             SplitCriterion criterion, double[] preSplitDist, int attIndex,

@@ -22,6 +22,7 @@ package moa.classifiers.rules.multilabel.core;
 import moa.AbstractMOAObject;
 import moa.classifiers.rules.core.Predicate;
 import moa.core.DoubleVector;
+import moa.core.SizeOf;
 
 /**
  * Class for computing attribute split suggestions given a split test.
@@ -40,6 +41,14 @@ public class AttributeExpansionSuggestion extends AbstractMOAObject implements
 
     public double merit;
 
+    public long measureByteSize() {
+    	long size = SizeOf.sizeOf(this);
+    	for (DoubleVector[] x : resultingNodeStatistics)
+    		for (DoubleVector y : x) 
+    			size += SizeOf.fullSizeOf(y);
+    	return size;
+    }
+    
     public Predicate getPredicate() {
 		return predicate;
 	}

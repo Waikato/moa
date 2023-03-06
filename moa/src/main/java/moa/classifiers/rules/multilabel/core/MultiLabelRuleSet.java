@@ -24,5 +24,13 @@ import java.util.LinkedList;
 public class MultiLabelRuleSet extends LinkedList<MultiLabelRule> {
 
 	private static final long serialVersionUID = 1L;
+
+	public long measureByteSize() {
+		long size = 0;
+		for (MultiLabelRule r : this) {
+			size += r.measureByteSize();
+		}
+		return size;
+	}
 	
 }

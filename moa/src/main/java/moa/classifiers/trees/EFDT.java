@@ -194,7 +194,7 @@ public class EFDT extends AbstractClassifier implements MultiClassClassifier {
   }
 
   @Override
-  public int measureByteSize() {
+  public long measureByteSize() {
     return calcByteSize();
   }
 
@@ -352,7 +352,7 @@ public class EFDT extends AbstractClassifier implements MultiClassClassifier {
       this.inactiveLeafByteSizeEstimate = (double) totalInactiveSize
 	/ this.inactiveLeafNodeCount;
     }
-    int actualModelSize = this.measureByteSize();
+    long actualModelSize = this.measureByteSize();
     double estimatedModelSize = (this.activeLeafNodeCount
       * this.activeLeafByteSizeEstimate + this.inactiveLeafNodeCount
       * this.inactiveLeafByteSizeEstimate);

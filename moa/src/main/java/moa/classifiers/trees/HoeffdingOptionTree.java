@@ -626,7 +626,7 @@ public class HoeffdingOptionTree extends AbstractClassifier implements MultiClas
     }
 
     @Override
-    public int measureByteSize() {
+    public long measureByteSize() {
         return calcByteSize();
     }
 
@@ -1040,7 +1040,7 @@ public class HoeffdingOptionTree extends AbstractClassifier implements MultiClas
             this.inactiveLeafByteSizeEstimate = (double) totalInactiveSize
                     / this.inactiveLeafNodeCount;
         }
-        int actualModelSize = this.measureByteSize();
+        long actualModelSize = this.measureByteSize();
         double estimatedModelSize = (this.activeLeafNodeCount
                 * this.activeLeafByteSizeEstimate + this.inactiveLeafNodeCount
                 * this.inactiveLeafByteSizeEstimate);
