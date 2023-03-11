@@ -185,8 +185,8 @@ public class EFDT extends AbstractClassifier implements MultiClassClassifier {
     return "Hoeffding Tree or VFDT.";
   }
 
-  public int calcByteSize() {
-    int size = (int) SizeOf.sizeOf(this);
+  public long calcByteSize() {
+    long size = SizeOf.sizeOf(this);
     if (this.treeRoot != null) {
       size += this.treeRoot.calcByteSizeIncludingSubtree();
     }
@@ -194,7 +194,7 @@ public class EFDT extends AbstractClassifier implements MultiClassClassifier {
   }
 
   @Override
-  public int measureByteSize() {
+  public long measureByteSize() {
     return calcByteSize();
   }
 
@@ -352,7 +352,7 @@ public class EFDT extends AbstractClassifier implements MultiClassClassifier {
       this.inactiveLeafByteSizeEstimate = (double) totalInactiveSize
 	/ this.inactiveLeafNodeCount;
     }
-    int actualModelSize = this.measureByteSize();
+    long actualModelSize = this.measureByteSize();
     double estimatedModelSize = (this.activeLeafNodeCount
       * this.activeLeafByteSizeEstimate + this.inactiveLeafNodeCount
       * this.inactiveLeafByteSizeEstimate);
@@ -699,11 +699,11 @@ public class EFDT extends AbstractClassifier implements MultiClassClassifier {
       infogainSum = igs;
     }
 
-    public int calcByteSize() {
-      return (int) (SizeOf.sizeOf(this) + SizeOf.fullSizeOf(this.observedClassDistribution));
+    public long calcByteSize() {
+      return (SizeOf.sizeOf(this) + SizeOf.fullSizeOf(this.observedClassDistribution));
     }
 
-    public int calcByteSizeIncludingSubtree() {
+    public long calcByteSizeIncludingSubtree() {
       return calcByteSize();
     }
 
@@ -769,14 +769,14 @@ public class EFDT extends AbstractClassifier implements MultiClassClassifier {
     protected AutoExpandVector<Node> children; // = new AutoExpandVector<Node>();
 
     @Override
-    public int calcByteSize() {
+    public long calcByteSize() {
       return super.calcByteSize()
-	+ (int) (SizeOf.sizeOf(this.children) + SizeOf.fullSizeOf(this.splitTest));
+	+ SizeOf.sizeOf(this.children) + SizeOf.fullSizeOf(this.splitTest);
     }
 
     @Override
-    public int calcByteSizeIncludingSubtree() {
-      int byteSize = calcByteSize();
+    public long calcByteSizeIncludingSubtree() {
+      long byteSize = calcByteSize();
       for (Node child : this.children) {
 	if (child != null) {
 	  byteSize += child.calcByteSizeIncludingSubtree();
@@ -1256,9 +1256,9 @@ public class EFDT extends AbstractClassifier implements MultiClassClassifier {
     }
 
     @Override
-    public int calcByteSize() {
+    public long calcByteSize() {
       return super.calcByteSize()
-	+ (int) (SizeOf.fullSizeOf(this.attributeObservers));
+	+ (SizeOf.fullSizeOf(this.attributeObservers));
     }
 
     @Override

@@ -107,8 +107,8 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
         //		return ErrorChange;
         //}
         @Override
-        public int calcByteSizeIncludingSubtree() {
-            int byteSize = calcByteSize();
+        public long calcByteSizeIncludingSubtree() {
+            long byteSize = calcByteSize();
             if (alternateTree != null) {
                 byteSize += alternateTree.calcByteSizeIncludingSubtree();
             }
@@ -314,8 +314,8 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
         protected Random classifierRandom;
 
         @Override
-        public int calcByteSize() {
-            int byteSize = super.calcByteSize();
+        public long calcByteSize() {
+            long byteSize = super.calcByteSize();
             if (estimationErrorWeight != null) {
                 byteSize += estimationErrorWeight.measureByteSize();
             }
