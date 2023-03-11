@@ -37,7 +37,7 @@ public abstract class AbstractMOAObject implements MOAObject {
     }
 
     @Override
-    public int measureByteSize() {
+    public long measureByteSize() {
         return measureByteSize(this);
     }
 
@@ -73,7 +73,7 @@ public abstract class AbstractMOAObject implements MOAObject {
      * @param obj object to measure the memory size
      * @return the memory size of this object
      */
-    public static int measureByteSize(MOAObject obj) {
-        return (int) SizeOf.fullSizeOf(obj);
+    public static long measureByteSize(MOAObject obj) {
+        return SizeOf.fullSizeOf(obj);
     }
 }

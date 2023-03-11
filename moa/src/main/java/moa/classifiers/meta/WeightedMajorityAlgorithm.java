@@ -197,9 +197,9 @@ public class WeightedMajorityAlgorithm extends AbstractClassifier implements Mul
         this.ensembleWeights = newEnsembleWeights;
     }
 
-    protected int removePoorestModelBytes() {
+    protected long removePoorestModelBytes() {
         int poorestIndex = Utils.minIndex(this.ensembleWeights);
-        int byteSize = this.ensemble[poorestIndex].measureByteSize();
+        long byteSize = this.ensemble[poorestIndex].measureByteSize();
         discardModel(poorestIndex);
         return byteSize;
     }
