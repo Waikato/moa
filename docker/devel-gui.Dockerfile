@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         ca-certificates \
         default-jre \
-        openjdk-8-jdk \
+        openjdk-11-jdk \
         maven \
         unzip \
         texlive-full \
