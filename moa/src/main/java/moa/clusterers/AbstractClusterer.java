@@ -28,7 +28,6 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.StringUtils;
-import moa.gui.AWTRenderer;
 import moa.options.AbstractOptionHandler;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
@@ -260,12 +259,6 @@ public abstract class AbstractClusterer extends AbstractOptionHandler
 			nPos++;
 		}
 		return true; // all checks clear
-	}
-
-	public AWTRenderer getAWTRenderer() {
-		// TODO should return a default renderer here
-		// - or should null be interpreted as the default?
-		return null;
 	}
 
 	// reason for ...Impl methods:

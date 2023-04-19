@@ -28,7 +28,6 @@ import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.core.Measurement;
-import moa.gui.AWTRenderable;
 import moa.options.OptionHandler;
 
 /**
@@ -37,7 +36,7 @@ import moa.options.OptionHandler;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public interface Learner extends MOAObject, OptionHandler, AWTRenderable {
+public interface Learner extends MOAObject, OptionHandler {
 
 
     /**

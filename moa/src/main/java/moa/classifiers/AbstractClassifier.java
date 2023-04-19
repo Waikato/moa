@@ -35,7 +35,6 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.StringUtils;
-import moa.gui.AWTRenderer;
 import moa.learners.Learner;
 import moa.options.AbstractOptionHandler;
 
@@ -336,18 +335,6 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
             nPos++;
         }
         return true; // all checks clear
-    }
-
-    /**
-     * Returns the AWT Renderer
-     *
-     * @return the AWT Renderer
-     */
-    @Override
-    public AWTRenderer getAWTRenderer() {
-        // TODO should return a default renderer here
-        // - or should null be interpreted as the default?
-        return null;
     }
 
 
