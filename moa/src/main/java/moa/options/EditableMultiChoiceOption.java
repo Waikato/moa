@@ -21,7 +21,7 @@ package moa.options;
 
 import com.github.javacliparser.MultiChoiceOption;
 
-import moa.gui.EditableMultiChoiceOptionEditComponent;
+import java.util.function.Function;
 
 /**
  * MultiChoiceOption that can have changing options.
@@ -39,7 +39,7 @@ public class EditableMultiChoiceOption extends MultiChoiceOption {
 	/**
 	 * The corresponding UI component
 	 */
-	protected EditableMultiChoiceOptionEditComponent editComponent;
+	protected Function<Void, Void> editComponent;
 
 	public EditableMultiChoiceOption(String name, char cliChar, 
 			String purpose, String[] optionLabels,
@@ -58,8 +58,7 @@ public class EditableMultiChoiceOption extends MultiChoiceOption {
 	 * 
 	 * @param editComponent
 	 */
-	public void registerEditComponent(
-			EditableMultiChoiceOptionEditComponent editComponent) 
+	public void registerEditComponent(Function<Void, Void> editComponent)
 	{
 		this.editComponent = editComponent;
 	}
@@ -96,7 +95,7 @@ public class EditableMultiChoiceOption extends MultiChoiceOption {
         
         // refresh the edit component
         if (this.editComponent != null) {
-        	this.editComponent.refresh();
+        	this.editComponent.apply(null);
         }
 	}
 }

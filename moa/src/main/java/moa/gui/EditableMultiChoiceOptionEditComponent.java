@@ -42,7 +42,12 @@ public class EditableMultiChoiceOptionEditComponent extends MultiChoiceOptionEdi
 		
 		// register the EditComponent with the corresponding 
 		// EditableMultiChoiceOption, so that updates can be received
-		((EditableMultiChoiceOption) option).registerEditComponent(this);
+		((EditableMultiChoiceOption) option).registerEditComponent(
+					n -> {
+						this.refresh();
+						return null;
+					}
+		);
 	}
 	
 	/**
