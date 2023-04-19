@@ -114,8 +114,8 @@ public class EvaluateModelRegression extends RegressionMainTask {
         }
         while (stream.hasMoreInstances()
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))) {
-            Example testInst = (Example) stream.nextInstance();//.copy();
-            double trueClass = ((Instance) testInst.getData()).classValue();
+            Instance testInst = stream.nextInstance();//.copy();
+            double trueClass = testInst.classValue();
             //testInst.setClassMissing();
             double[] prediction = model.getVotesForInstance(testInst);
             //evaluator.addClassificationAttempt(trueClass, prediction, testInst

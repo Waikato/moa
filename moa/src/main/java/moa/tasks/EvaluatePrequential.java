@@ -192,15 +192,15 @@ public class EvaluatePrequential extends ClassificationMainTask implements Capab
         while (stream.hasMoreInstances()
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))
                 && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
-            Example trainInst = stream.nextInstance();
-            Example testInst = (Example) trainInst; //.copy();
+            Instance trainInst = stream.nextInstance();
+            Instance testInst = trainInst; //.copy();
             //testInst.setClassMissing();
             double[] prediction = learner.getVotesForInstance(testInst);
             // Output prediction
             if (outputPredictionFile != null) {
-                int trueClass = (int) ((Instance) trainInst.getData()).classValue();
+                int trueClass = (int) trainInst.classValue();
                 outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," + (
-                 ((Instance) testInst.getData()).classIsMissing() == true ? " ? " : trueClass));
+                 testInst.classIsMissing() == true ? " ? " : trueClass));
             }
 
             //evaluator.addClassificationAttempt(trueClass, prediction, testInst.weight());

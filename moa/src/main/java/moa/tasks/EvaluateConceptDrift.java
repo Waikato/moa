@@ -155,9 +155,9 @@ public class EvaluateConceptDrift extends ConceptDriftMainTask{
         while (stream.hasMoreInstances()
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))
                 && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
-            Example trainInst = (Example) stream.nextInstance();
-            Example testInst = trainInst; 
-            int trueClass = (int) ((Instance)trainInst.getData()).classValue();
+            Instance trainInst = stream.nextInstance();
+            Instance testInst = trainInst;
+            int trueClass = (int) trainInst.classValue();
             //testInst.setClassMissing();
             double[] prediction = learner.getVotesForInstance(testInst);
             if (prediction[0] ==1 ){ //Change detected

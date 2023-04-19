@@ -125,7 +125,7 @@ public class EvaluateModel extends ClassificationMainTask implements Capabilitie
         while (stream.hasMoreInstances()
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))) {
             Instance testInst = stream.nextInstance();//.copy();
-            int trueClass = (int) ((Instance) testInst.getData()).classValue();
+            int trueClass = (int) testInst.classValue();
             //testInst.setClassMissing();
             double[] prediction = model.getVotesForInstance(testInst);
             //evaluator.addClassificationAttempt(trueClass, prediction, testInst

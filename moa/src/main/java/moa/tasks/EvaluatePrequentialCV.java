@@ -23,6 +23,7 @@ package moa.tasks;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.*;
 import moa.evaluation.*;
@@ -164,8 +165,8 @@ public class EvaluatePrequentialCV extends ClassificationMainTask {
         while (stream.hasMoreInstances()
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))
                 && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
-            Example trainInst = stream.nextInstance();
-            Example testInst = (Example) trainInst; //.copy();
+            Instance trainInst = stream.nextInstance();
+            Instance testInst = trainInst; //.copy();
             //testInst.setClassMissing();
 
             for (int i = 0; i < learners.length; i++) {
@@ -186,7 +187,7 @@ public class EvaluatePrequentialCV extends ClassificationMainTask {
                         break;
                 }
                 if (k > 0) {
-                    Example weightedInst = (Example) trainInst.copy();
+                    Instance weightedInst = trainInst.copy();
                     weightedInst.setWeight(trainInst.weight() * k);
                     learners[i].trainOnInstance(weightedInst);
                 }

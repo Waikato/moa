@@ -212,7 +212,7 @@ public class EvaluatePrequentialMultiLabel extends MultiLabelMainTask {
 
             // Output prediction
             if (outputPredictionFile != null) {
-                double trueClass = ((Instance) trainInst.getData()).classValue();
+                double trueClass = trainInst.classValue();
                 outputPredictionResultStream.println(prediction + "," + trueClass);
             }
 

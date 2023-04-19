@@ -26,7 +26,6 @@ import moa.options.ClassOption;
 import moa.options.OptionHandler;
 import moa.streams.filters.MultiLabelStreamFilter;
 import moa.streams.filters.SelectAttributesFilter;
-import moa.streams.filters.StreamFilter;
 import moa.tasks.TaskMonitor;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;

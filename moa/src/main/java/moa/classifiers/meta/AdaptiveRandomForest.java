@@ -173,7 +173,7 @@ public class AdaptiveRandomForest extends AbstractClassifier implements MultiCla
         Collection<TrainingRunnable> trainers = new ArrayList<TrainingRunnable>();
         for (int i = 0 ; i < this.ensemble.length ; i++) {
             DoubleVector vote = new DoubleVector(this.ensemble[i].getVotesForInstance(instance));
-            InstanceExample example = new InstanceExample(instance);
+            Instance example = instance;
             this.ensemble[i].evaluator.addResult(example, vote.getArrayRef());
             int k = MiscUtils.poisson(this.lambdaOption.getValue(), this.classifierRandom);
             if (k > 0) {

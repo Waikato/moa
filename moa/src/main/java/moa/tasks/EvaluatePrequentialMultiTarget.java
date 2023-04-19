@@ -198,7 +198,7 @@ public class EvaluatePrequentialMultiTarget extends MultiTargetMainTask {
             Prediction prediction = learner.getPredictionForInstance(testInst);
             // Output prediction
             if (outputPredictionFile != null) {
-                double trueClass = ((Instance) trainInst.getData()).classValue();
+                double trueClass = trainInst.classValue();
                 outputPredictionResultStream.println(prediction + "," + trueClass);
             }
 

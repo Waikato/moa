@@ -274,8 +274,8 @@ public class EvaluatePrequentialMultiTargetSemiSuper extends MultiTargetMainTask
         while (examplesCounter<StrmDtSz-1) {
             
             trainInst =streamData[randIndex[examplesCounter]];
-            testInst = (Example) trainInst;
-            inst= (Instance) testInst.getData();
+            testInst = trainInst;
+            inst= testInst;
 
             Prediction prediction = learner.getPredictionForInstance(testInst);
             evaluator.addResult(testInst,prediction);
