@@ -20,7 +20,6 @@
  */
 package moa.streams;
 
-import moa.core.Example;
 import java.util.Random;
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
@@ -80,7 +79,7 @@ public class RecurrentConceptDriftStream extends ConceptDriftStream {
     }
 
     @Override
-    public Example nextInstance() {
+    public Instance nextInstance() {
 
         numberInstanceStream++;
         double x = numberInstanceStream;

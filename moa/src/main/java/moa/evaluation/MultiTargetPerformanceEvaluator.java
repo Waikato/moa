@@ -19,7 +19,6 @@
  */
 package moa.evaluation;
 
-import moa.core.Example;
 import com.yahoo.labs.samoa.instances.Instance;
 
 
@@ -30,7 +29,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public interface MultiTargetPerformanceEvaluator extends LearningPerformanceEvaluator<Example<Instance>> {
+public interface MultiTargetPerformanceEvaluator extends LearningPerformanceEvaluator {
 
     
 }

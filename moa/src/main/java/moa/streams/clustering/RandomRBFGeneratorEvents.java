@@ -34,7 +34,6 @@ import java.util.Vector;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.core.AutoExpandVector;
-import moa.core.InstanceExample;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.gui.visualization.DataPoint;
@@ -524,7 +523,7 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         normalizeWeights();
     }
 
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
         numGeneratedInstances++;
         eventScheduler();
 
@@ -563,7 +562,7 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         }
 //        System.out.println(numGeneratedInstances+": Overlap is"+updateOverlaps());
         
-        return new InstanceExample(inst);
+        return inst;
     }
 
 

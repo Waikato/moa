@@ -26,7 +26,6 @@ import com.yahoo.labs.samoa.instances.Instance;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;

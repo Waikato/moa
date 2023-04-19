@@ -30,7 +30,6 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 import java.util.Arrays;
 import java.util.Random;
 import moa.core.FastVector;
-import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.streams.InstanceStream;
@@ -372,7 +371,7 @@ public class AssetNegotiationGenerator
     }
 
     @Override
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
 	Instance instnc = null;
 
 	boolean classFound = false;
@@ -419,7 +418,7 @@ public class AssetNegotiationGenerator
 	//add noise
 	int newClassValue = addNoise((int) instnc.classValue());
 	instnc.setClassValue(newClassValue);
-	return new InstanceExample(instnc);
+	return instnc;
     }
 
     @Override

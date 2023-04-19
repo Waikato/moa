@@ -22,9 +22,7 @@ package moa.tasks;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import moa.classifiers.Classifier;
-import moa.core.Example;
-import moa.core.InstanceExample;
+
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
@@ -35,7 +33,6 @@ import moa.learners.Learner;
 import moa.options.ClassOption;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
-import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
@@ -59,7 +56,7 @@ public class EvaluateInterleavedChunks extends ClassificationMainTask {
 	 * Allows to select the stream the classifier will learn. 
 	 */
 	public ClassOption streamOption = new ClassOption("stream", 's',
-			"Stream to learn from.", ExampleStream.class,
+			"Stream to learn from.", InstanceStream.class,
 			"generators.RandomTreeGenerator");
 
 	/**
@@ -130,7 +127,7 @@ public class EvaluateInterleavedChunks extends ClassificationMainTask {
 	@Override
 	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
 		Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
-		ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+		InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
 		LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
 		learner.setModelContext(stream.getHeader());
 		int maxInstances = this.instanceLimitOption.getValue();
@@ -172,7 +169,7 @@ public class EvaluateInterleavedChunks extends ClassificationMainTask {
 			Instances chunkInstances = new Instances(stream.getHeader(), chunkSize);
 			
 			while (stream.hasMoreInstances() && chunkInstances.numInstances() < chunkSize) {
-				chunkInstances.add((Instance) stream.nextInstance().getData());
+				chunkInstances.add(stream.nextInstance());
 				if (chunkInstances.numInstances()
 						% INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
 					if (monitor.taskShouldAbort()) {
@@ -197,7 +194,7 @@ public class EvaluateInterleavedChunks extends ClassificationMainTask {
 			if(!firstChunk)
 			{
 				for (int i=0; i< chunkInstances.numInstances(); i++) {
-					Example testInst = new InstanceExample((Instance) chunkInstances.instance(i));
+					Instance testInst = chunkInstances.instance(i);
 					//testInst.setClassMissing();
 					double[] prediction = learner.getVotesForInstance(testInst);
 					evaluator.addResult(testInst, prediction);
@@ -214,7 +211,7 @@ public class EvaluateInterleavedChunks extends ClassificationMainTask {
 			long trainStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
 			
 			for (int i=0; i< chunkInstances.numInstances(); i++) {
-				learner.trainOnInstance(new InstanceExample(chunkInstances.instance(i)));
+				learner.trainOnInstance(chunkInstances.instance(i));
 				instancesProcessed++;
 		    }
 			

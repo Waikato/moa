@@ -39,7 +39,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @version $Revision: 7 $
  */
 public class MultiFilteredStream extends AbstractOptionHandler implements
-        ExampleStream {
+      InstanceStream {
 
     @Override
     public String getPurposeString() {
@@ -49,7 +49,7 @@ public class MultiFilteredStream extends AbstractOptionHandler implements
     private static final long serialVersionUID = 1L;
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to filter.", ExampleStream.class,
+            "Stream to filter.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public ListOption filtersOption = new ListOption("filters", 'f',
@@ -57,7 +57,7 @@ public class MultiFilteredStream extends AbstractOptionHandler implements
             "Stream filter.", StreamFilter.class, "AddNoiseFilter"),
             new Option[0], ',');
 
-    protected ExampleStream filterChain;
+    protected InstanceStream filterChain;
 
     @Override
     public void prepareForUseImpl(TaskMonitor monitor,
@@ -80,7 +80,7 @@ public class MultiFilteredStream extends AbstractOptionHandler implements
                 }
             }
         }
-        ExampleStream chain = (ExampleStream) getPreparedClassOption(this.streamOption);
+        InstanceStream chain = (InstanceStream) getPreparedClassOption(this.streamOption);
         for (int i = 0; i < filters.length; i++) {
             filters[i].setInputStream(chain);
             chain = filters[i];
@@ -109,7 +109,7 @@ public class MultiFilteredStream extends AbstractOptionHandler implements
     }
 
     @Override
-    public Example nextInstance() {
+    public Instance nextInstance() {
         return this.filterChain.nextInstance();
     }
 

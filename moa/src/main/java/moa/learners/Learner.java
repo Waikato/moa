@@ -19,8 +19,8 @@
  */
 package moa.learners;
 
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.MOAObject;
-import moa.core.Example;
 
 import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
@@ -37,7 +37,7 @@ import moa.options.OptionHandler;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public interface Learner<E extends Example> extends MOAObject, OptionHandler, AWTRenderable {
+public interface Learner extends MOAObject, OptionHandler, AWTRenderable {
 
 
     /**
@@ -82,7 +82,7 @@ public interface Learner<E extends Example> extends MOAObject, OptionHandler, AW
      *
      * @param example the instance to be used for training
      */
-    public void trainOnInstance(E example);
+    public void trainOnInstance(Instance example);
 
     /**
      * Predicts the class memberships for a given instance. If
@@ -93,7 +93,7 @@ public interface Learner<E extends Example> extends MOAObject, OptionHandler, AW
      * @return an array containing the estimated membership
      * probabilities of the test instance in each class
      */
-    public double[] getVotesForInstance(E example);
+    public double[] getVotesForInstance(Instance example);
 
     /**
      * Gets the current measurements of this learner.
@@ -135,7 +135,7 @@ public interface Learner<E extends Example> extends MOAObject, OptionHandler, AW
      */
     public InstancesHeader getModelContext();
 
-	public Prediction getPredictionForInstance(E testInst);
+	public Prediction getPredictionForInstance(Instance testInst);
     
 }
 

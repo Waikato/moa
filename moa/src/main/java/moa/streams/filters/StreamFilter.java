@@ -20,7 +20,7 @@
 package moa.streams.filters;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import moa.streams.ExampleStream;
+import moa.streams.InstanceStream;
 
 /**
  * Interface representing a stream filter. 
@@ -28,14 +28,14 @@ import moa.streams.ExampleStream;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $ 
  */
-public interface StreamFilter extends ExampleStream {
+public interface StreamFilter extends InstanceStream {
 
     /**
      * Sets the input stream to the filter
      *
      * @param stream the input stream to the filter
      */
-    public void setInputStream(ExampleStream stream);
+    public void setInputStream(InstanceStream stream);
     
     public Instance filterInstance(Instance inst);
 }

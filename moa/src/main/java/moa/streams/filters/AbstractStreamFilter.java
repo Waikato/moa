@@ -20,10 +20,8 @@
 package moa.streams.filters;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
@@ -37,10 +35,10 @@ public abstract class AbstractStreamFilter extends AbstractOptionHandler
         implements StreamFilter {
 
     /** The input stream to this filter. */
-    protected ExampleStream inputStream;
+    protected InstanceStream inputStream;
 
     @Override
-    public void setInputStream(ExampleStream stream) {
+    public void setInputStream(InstanceStream stream) {
         this.inputStream = stream;
         prepareForUse();
     }
@@ -80,9 +78,9 @@ public abstract class AbstractStreamFilter extends AbstractOptionHandler
     protected abstract void restartImpl();
     
     @Override
-    public InstanceExample nextInstance() {
-         Instance inst = (Instance) ((Instance) this.inputStream.nextInstance().getData()).copy();
-         return new InstanceExample(filterInstance(inst));
+    public Instance nextInstance() {
+         Instance inst = this.inputStream.nextInstance().copy();
+         return filterInstance(inst);
     }
     
     @Override

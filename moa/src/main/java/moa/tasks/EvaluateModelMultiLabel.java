@@ -26,19 +26,16 @@ import java.io.PrintStream;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiLabelClassifier;
 import moa.classifiers.rules.multilabel.functions.MultiLabelNaiveBayes;
-import moa.core.Example;
 import moa.core.ObjectRepository;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
 import moa.evaluation.MultiTargetPerformanceEvaluator;
 import moa.learners.Learner;
 import moa.options.ClassOption;
-import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 import moa.streams.MultiTargetInstanceStream;
 
@@ -96,7 +93,7 @@ public class EvaluateModelMultiLabel extends MultiLabelMainTask {
     @Override
     public Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Learner model = (Learner) getPreparedClassOption(this.modelOption);
-        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
         LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         int maxInstances = this.maxInstancesOption.getValue();
         long instancesProcessed = 0;

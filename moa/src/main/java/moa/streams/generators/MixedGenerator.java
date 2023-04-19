@@ -29,7 +29,6 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import moa.core.InstanceExample;
 
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
@@ -118,7 +117,7 @@ public class MixedGenerator extends AbstractOptionHandler implements
     }
 
     @Override
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
         double v = 0, w = 0, x = 0, y = 0, group = 0;
         boolean desiredClassFound = false;
         while (!desiredClassFound) {
@@ -147,7 +146,7 @@ public class MixedGenerator extends AbstractOptionHandler implements
         inst.setValue(3, y);
         inst.setDataset(header);
         inst.setClassValue(group);
-        return new InstanceExample(inst);
+        return inst;
     }
 
     @Override

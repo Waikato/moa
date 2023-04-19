@@ -1,6 +1,5 @@
 package moa.classifiers;
 
-import moa.core.Example;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
@@ -18,11 +17,6 @@ public abstract class AbstractMultiLabelLearner extends AbstractClassifier imple
     @Override
     public void trainOnInstanceImpl(Instance instance) {
         trainOnInstanceImpl((MultiLabelInstance) instance);
-    }
-
-    @Override
-    public Prediction getPredictionForInstance(Example<Instance> example) {
-        return getPredictionForInstance(example.getData());
     }
 
     @Override

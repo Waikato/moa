@@ -22,7 +22,6 @@ import moa.classifiers.Classifier;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.classifiers.meta.OzaBagAdwin;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import moa.core.InstanceExample;
 import moa.core.MiscUtils;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
@@ -30,7 +29,6 @@ import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
-import moa.core.Example;
 import meka.core.Metrics;
 import meka.core.A;
 
@@ -89,7 +87,7 @@ public class OzaBagAdwinML extends OzaBagAdwin implements MultiLabelLearner, Mul
 	}
 
 	@Override
-    public Prediction getPredictionForInstance(Example<Instance> example) {
+    public Prediction getPredictionForInstance(Instance example) {
         return OzaBagML.compilePredictions(this.ensemble, example);
     }
 
@@ -102,7 +100,7 @@ public class OzaBagAdwinML extends OzaBagAdwin implements MultiLabelLearner, Mul
 
 	@Override
 	public Prediction getPredictionForInstance(MultiLabelInstance instance) {
-		return getPredictionForInstance((new InstanceExample(instance)));
+		return getPredictionForInstance((Instance) instance);
 	}
 
 }

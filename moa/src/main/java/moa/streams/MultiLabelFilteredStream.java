@@ -19,7 +19,7 @@
  */
 package moa.streams;
 
-import moa.core.Example;
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
@@ -55,7 +55,7 @@ MultiTargetInstanceStream {
             "Filters to apply.", MultiLabelStreamFilter.class, 
             SelectAttributesFilter.class.getName());
 
-    protected ExampleStream filterChain;
+    protected InstanceStream filterChain;
 
     @Override
     public void prepareForUseImpl(TaskMonitor monitor,
@@ -102,7 +102,7 @@ MultiTargetInstanceStream {
     }
 
     @Override
-    public Example nextInstance() {
+    public Instance nextInstance() {
         return this.filterChain.nextInstance();
     }
 

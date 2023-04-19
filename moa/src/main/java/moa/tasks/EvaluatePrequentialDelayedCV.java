@@ -24,14 +24,14 @@ package moa.tasks;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
-import moa.classifiers.Classifier;
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.*;
 import moa.evaluation.*;
 import moa.evaluation.preview.LearningCurve;
 import moa.learners.Learner;
 import moa.options.ClassOption;
-import moa.streams.ExampleStream;
+import moa.streams.InstanceStream;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -73,7 +73,7 @@ public class EvaluatePrequentialDelayedCV extends ClassificationMainTask {
             "Learner to train.", MultiClassClassifier.class, "moa.classifiers.bayes.NaiveBayes");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", ExampleStream.class,
+            "Stream to learn from.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
@@ -123,7 +123,7 @@ public class EvaluatePrequentialDelayedCV extends ClassificationMainTask {
     // Buffer of instances to use for training. 
     // Note: It is a list of lists because it stores instances per learner, e.g.
     // CV of 10, would be 10 lists of buffered instances for delayed training. 
-    protected LinkedList<LinkedList<Example>> trainInstances;
+    protected LinkedList<LinkedList<Instance>> trainInstances;
     
     @Override
     public Class<?> getTaskResultType() {
@@ -134,7 +134,7 @@ public class EvaluatePrequentialDelayedCV extends ClassificationMainTask {
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
 
         Random random = new Random(this.randomSeedOption.getValue());
-        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
 
         Learner[] learners = new Learner[this.numFoldsOption.getValue()];
         Learner baseLearner = (Learner) getPreparedClassOption(this.learnerOption);
@@ -156,10 +156,10 @@ public class EvaluatePrequentialDelayedCV extends ClassificationMainTask {
         int secondsElapsed = 0;
         monitor.setCurrentActivity("Evaluating learner...", -1.0);
 
-        this.trainInstances = new LinkedList<LinkedList<Example>>();
+        this.trainInstances = new LinkedList<LinkedList<Instance>>();
         
         for(int i = 0; i < learners.length; i++) {
-            this.trainInstances.add(new LinkedList<Example>());
+            this.trainInstances.add(new LinkedList<Instance>());
         }
         File dumpFile = this.dumpFileOption.getFile();
         PrintStream immediateResultStream = null;
@@ -189,8 +189,8 @@ public class EvaluatePrequentialDelayedCV extends ClassificationMainTask {
                 && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
             
             
-            Example trainInst = stream.nextInstance();
-            Example testInst = (Example) trainInst;
+            Instance trainInst = stream.nextInstance();
+            Instance testInst = trainInst;
             
             instancesProcessed++;
             for (int i = 0; i < learners.length; i++) {
@@ -214,7 +214,7 @@ public class EvaluatePrequentialDelayedCV extends ClassificationMainTask {
                     this.trainInstances.get(i).addLast(trainInst);
                 }
                 if(this.delayLengthOption.getValue() < this.trainInstances.get(i).size()) {
-                    Example trainInstI = this.trainInstances.get(i).removeFirst();
+                    Instance trainInstI = this.trainInstances.get(i).removeFirst();
                     learners[i].trainOnInstance(trainInstI);
                 }
             }

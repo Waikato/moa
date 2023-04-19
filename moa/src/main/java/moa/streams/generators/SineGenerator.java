@@ -29,7 +29,6 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import moa.core.InstanceExample;
 
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
@@ -143,7 +142,7 @@ public class SineGenerator extends AbstractOptionHandler implements
     }
 
     @Override
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
         double a1 = 0, a2 = 0, group = 0;
 
         boolean desiredClassFound = false;
@@ -174,7 +173,7 @@ public class SineGenerator extends AbstractOptionHandler implements
             }
         }
         inst.setClassValue(group);
-        return new InstanceExample(inst);
+        return inst;
     }
 
     @Override

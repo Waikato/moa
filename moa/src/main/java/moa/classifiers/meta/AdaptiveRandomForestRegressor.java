@@ -27,7 +27,6 @@ import moa.classifiers.AbstractClassifier;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.trees.ARFFIMTDD;
 import moa.core.DoubleVector;
-import moa.core.InstanceExample;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.evaluation.BasicRegressionPerformanceEvaluator;
@@ -108,7 +107,7 @@ public class AdaptiveRandomForestRegressor extends AbstractClassifier implements
 
         for (int i = 0 ; i < this.ensemble.length ; i++) {
             DoubleVector vote = new DoubleVector(this.ensemble[i].getVotesForInstance(instance));
-            InstanceExample example = new InstanceExample(instance);
+            Instance example = instance;
             this.ensemble[i].evaluator.addResult(example, vote.getArrayRef());
             int k = MiscUtils.poisson(this.lambdaOption.getValue(), this.classifierRandom);
             if (k > 0) {

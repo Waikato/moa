@@ -24,11 +24,10 @@ import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.AbstractMOAObject;
-import moa.core.Example;
 import moa.core.Measurement;
 
 public class BasicConceptDriftPerformanceEvaluator extends AbstractMOAObject
-        implements LearningPerformanceEvaluator<Example<Instance>> {
+        implements LearningPerformanceEvaluator {
 
     private static final long serialVersionUID = 1L;
 
@@ -70,8 +69,7 @@ public class BasicConceptDriftPerformanceEvaluator extends AbstractMOAObject
     private boolean hasChangeOccurred = false;
     
     @Override
-    public void addResult(Example<Instance> example, double[] classVotes) {
-        Instance inst = example.getData();
+    public void addResult(Instance inst, double[] classVotes) {
         //classVotes[0] -> is Change
         //classVotes[1] -> is in Warning Zone
         //classVotes[2] -> delay
@@ -203,7 +201,7 @@ public class BasicConceptDriftPerformanceEvaluator extends AbstractMOAObject
     }
 
 	@Override
-	public void addResult(Example<Instance> testInst, Prediction prediction) {
+	public void addResult(Instance testInst, Prediction prediction) {
 		// TODO Auto-generated method stub
 		
 	}

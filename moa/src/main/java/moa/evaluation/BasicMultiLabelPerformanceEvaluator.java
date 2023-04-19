@@ -19,7 +19,6 @@
 package moa.evaluation;
 
 import moa.AbstractMOAObject;
-import moa.core.Example;
 import moa.core.Measurement;
 
 import com.yahoo.labs.samoa.instances.Instance;
@@ -65,14 +64,14 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
     }
 
     @Override
-    public void addResult(Example<Instance> example, Prediction y) {
+    public void addResult(Instance example, Prediction y) {
 
         int sumReunion= 0;
         int sumInterse= 0;
         int sumOnesTrue=0;
         int sumOnesPred=0;
 
-        MultiLabelInstance x = (MultiLabelInstance) example.getData();
+        MultiLabelInstance x = (MultiLabelInstance) example;
 
         if (L == 0) {
             L = x.numberOutputTargets();
@@ -164,7 +163,7 @@ public class BasicMultiLabelPerformanceEvaluator extends AbstractMOAObject imple
     }
 
     @Override
-    public void addResult(Example<Instance> example, double[] classVotes) {
+    public void addResult(Instance example, double[] classVotes) {
         // TODO Auto-generated method stub
 
     }

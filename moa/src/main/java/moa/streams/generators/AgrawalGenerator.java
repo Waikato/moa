@@ -30,8 +30,6 @@ import com.yahoo.labs.samoa.instances.Instances;
 
 import java.util.Random;
 
-import moa.core.InstanceExample;
-
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
@@ -335,7 +333,7 @@ public class AgrawalGenerator extends AbstractOptionHandler implements
     }
 
     @Override
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
         double salary = 0, commission = 0, hvalue = 0, loan = 0;
         int age = 0, elevel = 0, car = 0, zipcode = 0, hyears = 0, group = 0;
         boolean desiredClassFound = false;
@@ -394,7 +392,7 @@ public class AgrawalGenerator extends AbstractOptionHandler implements
         inst.setValue(8, loan);
         inst.setDataset(header);
         inst.setClassValue(group);
-        return new InstanceExample(inst);
+        return inst;
     }
 
     protected double perturbValue(double val, double min, double max) {

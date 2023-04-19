@@ -21,10 +21,8 @@ package moa.streams.filters;
 
 import com.yahoo.labs.samoa.instances.Instance;
 
-import moa.core.Example;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
@@ -38,10 +36,10 @@ public abstract class AbstractMultiLabelStreamFilter extends AbstractOptionHandl
         implements MultiLabelStreamFilter {
 
     /** The input stream to this filter. */
-    protected ExampleStream<Example<Instance>> inputStream;
+    protected InstanceStream inputStream;
 
     @Override
-    public void setInputStream(ExampleStream<Example<Instance>> stream) {
+    public void setInputStream(InstanceStream stream) {
         this.inputStream = stream;
         prepareForUse();
     }

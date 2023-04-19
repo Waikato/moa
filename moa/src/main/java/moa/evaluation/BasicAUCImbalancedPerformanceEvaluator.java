@@ -20,7 +20,6 @@ package moa.evaluation;
 
 import java.util.TreeSet;
 
-import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.Utils;
@@ -353,8 +352,8 @@ public class BasicAUCImbalancedPerformanceEvaluator extends AbstractOptionHandle
 	}
 
 	@Override
-	public void addResult(Example<Instance> exampleInstance, double[] classVotes) {
-		InstanceImpl inst = (InstanceImpl) exampleInstance.getData();
+	public void addResult(Instance exampleInstance, double[] classVotes) {
+		InstanceImpl inst = (InstanceImpl) exampleInstance;
 		double weight = inst.weight();
 
 		if (inst.classIsMissing() == false) {
@@ -415,7 +414,7 @@ public class BasicAUCImbalancedPerformanceEvaluator extends AbstractOptionHandle
 	}
 
 	@Override
-	public void addResult(Example<Instance> arg0, Prediction arg1) {
+	public void addResult(Instance arg0, Prediction arg1) {
 		throw new RuntimeException("Designed for scoring classifiers");
 	}
 }

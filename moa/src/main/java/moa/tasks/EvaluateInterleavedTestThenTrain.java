@@ -25,9 +25,7 @@ import java.io.PrintStream;
 
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
-import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
@@ -38,7 +36,6 @@ import moa.learners.Learner;
 import moa.options.ClassOption;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
-import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 import com.yahoo.labs.samoa.instances.Instance;
 
@@ -61,7 +58,7 @@ public class EvaluateInterleavedTestThenTrain extends ClassificationMainTask {
             "Learner to train.", MultiClassClassifier.class, "moa.classifiers.bayes.NaiveBayes");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", ExampleStream.class,
+            "Stream to learn from.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public IntOption randomSeedOption = new IntOption(
@@ -112,7 +109,7 @@ public class EvaluateInterleavedTestThenTrain extends ClassificationMainTask {
             learner.setRandomSeed(this.randomSeedOption.getValue());
             learner.resetLearning();
         }
-        ExampleStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
         
         LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         learner.setModelContext(stream.getHeader());
@@ -147,8 +144,8 @@ public class EvaluateInterleavedTestThenTrain extends ClassificationMainTask {
         while (stream.hasMoreInstances()
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))
                 && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
-            Example trainInst = stream.nextInstance();
-            Example testInst = trainInst; //.copy();
+            Instance trainInst = stream.nextInstance();
+            Instance testInst = trainInst; //.copy();
             //int trueClass = (int) trainInst.classValue();
             //testInst.setClassMissing();
             double[] prediction = learner.getVotesForInstance(testInst);

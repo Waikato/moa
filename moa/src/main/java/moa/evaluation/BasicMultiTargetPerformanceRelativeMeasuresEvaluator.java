@@ -20,7 +20,6 @@
 package moa.evaluation;
 
 import moa.AbstractMOAObject;
-import moa.core.Example;
 import moa.core.Measurement;
 import moa.evaluation.MultiTargetWindowRegressionPerformanceRelativeMeasuresEvaluator.Estimator;
 
@@ -69,8 +68,8 @@ implements MultiTargetPerformanceEvaluator, RegressionPerformanceEvaluator{
 	}
 
 	@Override
-	public void addResult(Example<Instance> example, Prediction prediction) {
-		MultiLabelInstance inst = (MultiLabelInstance) example.getData();
+	public void addResult(Instance example, Prediction prediction) {
+		MultiLabelInstance inst = (MultiLabelInstance) example;
 		if (numberOutputs == 0) {
 			numberOutputs = inst.numberOutputTargets();
 		}
@@ -150,7 +149,7 @@ implements MultiTargetPerformanceEvaluator, RegressionPerformanceEvaluator{
 
 	//only for one output
 	@Override
-	public void addResult(Example<Instance> example, double[] classVotes) {
+	public void addResult(Instance example, double[] classVotes) {
 		Prediction p=new MultiLabelPrediction(1);
 		p.setVotes(classVotes);
 		addResult(example, p);

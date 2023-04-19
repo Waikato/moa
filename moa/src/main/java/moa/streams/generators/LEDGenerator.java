@@ -29,7 +29,6 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 
 import java.util.Random;
-import moa.core.InstanceExample;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
@@ -126,7 +125,7 @@ public class LEDGenerator extends AbstractOptionHandler implements
     }
 
     @Override
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
         InstancesHeader header = getHeader();
         Instance inst = new DenseInstance(header.numAttributes());
         inst.setDataset(header);
@@ -144,7 +143,7 @@ public class LEDGenerator extends AbstractOptionHandler implements
             }
         }
         inst.setClassValue(selected);
-        return new InstanceExample(inst);
+        return inst;
     }
 
     @Override

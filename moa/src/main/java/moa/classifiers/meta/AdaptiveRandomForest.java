@@ -27,7 +27,6 @@ import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
-import moa.core.InstanceExample;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;

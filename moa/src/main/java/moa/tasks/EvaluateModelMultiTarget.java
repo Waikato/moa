@@ -27,14 +27,12 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiTargetRegressor;
-import moa.core.Example;
 import moa.core.ObjectRepository;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
 import moa.evaluation.MultiTargetPerformanceEvaluator;
 import moa.learners.Learner;
 import moa.options.ClassOption;
-import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 import moa.streams.MultiTargetInstanceStream;
 
@@ -92,7 +90,7 @@ public class EvaluateModelMultiTarget extends MultiTargetMainTask {
     @Override
     public Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Learner model = (Learner) getPreparedClassOption(this.modelOption);
-        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
         LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         int maxInstances = this.maxInstancesOption.getValue();
         long instancesProcessed = 0;
@@ -117,8 +115,8 @@ public class EvaluateModelMultiTarget extends MultiTargetMainTask {
         }
         while (stream.hasMoreInstances()
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))) {
-            Example testInst = (Example) stream.nextInstance();//.copy();
-            double trueClass = ((Instance) testInst.getData()).classValue();
+            Instance testInst = stream.nextInstance();//.copy();
+            double trueClass = testInst.classValue();
             //testInst.setClassMissing();
             double[] prediction = model.getVotesForInstance(testInst);
             //evaluator.addClassificationAttempt(trueClass, prediction, testInst

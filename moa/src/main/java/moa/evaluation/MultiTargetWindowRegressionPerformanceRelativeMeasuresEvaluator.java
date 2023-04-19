@@ -19,7 +19,6 @@
  */
 package moa.evaluation;
 
-import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
@@ -114,7 +113,7 @@ implements MultiTargetPerformanceEvaluator, RegressionPerformanceEvaluator {
     }
 
     @Override
-    public void addResult(Example<Instance> example, double[] prediction) {
+    public void addResult(Instance example, double[] prediction) {
     }
 
     @Override
@@ -167,8 +166,8 @@ implements MultiTargetPerformanceEvaluator, RegressionPerformanceEvaluator {
 
 
     @Override
-    public void addResult(Example<Instance> testInst, Prediction prediction) {
-    	MultiLabelInstance inst=(MultiLabelInstance) testInst.getData();
+    public void addResult(Instance testInst, Prediction prediction) {
+    	MultiLabelInstance inst=(MultiLabelInstance) testInst;
     	if(this.squareError==null){
     		this.squareError=new Estimator[inst.numOutputAttributes()];
     		this.averageError=new Estimator[inst.numOutputAttributes()];

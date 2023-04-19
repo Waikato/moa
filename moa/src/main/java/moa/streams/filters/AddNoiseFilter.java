@@ -24,7 +24,6 @@ import java.util.Random;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.GaussianEstimator;
-import moa.core.InstanceExample;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;

@@ -5,7 +5,6 @@ package moa.streams.filters;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.*;
 import moa.core.FastVector;
-import moa.core.InstanceExample;
 import moa.streams.InstanceStream;
 
 import java.util.Arrays;
@@ -37,7 +36,7 @@ public class RandomProjectionFilter extends AbstractStreamFilter {
 
     @Override
     public InstancesHeader getHeader() {
-        Instance sparseInstance = (Instance) this.inputStream.nextInstance().getData();
+        Instance sparseInstance = this.inputStream.nextInstance();
         Random r = new Random(System.currentTimeMillis());
         this.GaussMatrix = new double[this.dim.getValue()][sparseInstance.numAttributes()-1] ;
         for(int i = 0 ; i < this.dim.getValue() ; i++){
@@ -64,11 +63,11 @@ public class RandomProjectionFilter extends AbstractStreamFilter {
     }
 
     @Override
-    public InstanceExample nextInstance() {
-        Instance sparseInstance = (Instance) this.inputStream.nextInstance().getData();
+    public Instance nextInstance() {
+        Instance sparseInstance = this.inputStream.nextInstance();
 
-        return new InstanceExample(transformedInstance(sparseInstance,
-                randomProjection(sparseInstance,this.GaussMatrix)));
+        return transformedInstance(sparseInstance,
+                randomProjection(sparseInstance,this.GaussMatrix));
     }
 
 

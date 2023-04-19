@@ -19,7 +19,7 @@
  */
 package moa.streams;
 
-import moa.core.Example;
+import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
@@ -35,7 +35,7 @@ import moa.tasks.TaskMonitor;
  * @version $Revision: 7 $
  */
 public class FilteredStream extends AbstractOptionHandler implements
-        ExampleStream {
+      InstanceStream {
 
     @Override
     public String getPurposeString() {
@@ -45,14 +45,14 @@ public class FilteredStream extends AbstractOptionHandler implements
     private static final long serialVersionUID = 1L;
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to filter.", ExampleStream.class,
+            "Stream to filter.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public ClassOption filtersOption = new ClassOption("filters", 'f',
             "Filters to apply.", StreamFilter.class, 
             "AddNoiseFilter");
 
-    protected ExampleStream filterChain;
+    protected InstanceStream filterChain;
 
     @Override
     public void prepareForUseImpl(TaskMonitor monitor,
@@ -72,7 +72,7 @@ public class FilteredStream extends AbstractOptionHandler implements
                     return;
                 }
             }
-        ExampleStream chain = (ExampleStream) getPreparedClassOption(this.streamOption);
+        InstanceStream chain = (InstanceStream) getPreparedClassOption(this.streamOption);
             filters.setInputStream(chain);
             chain = filters;
         this.filterChain = chain;
@@ -99,7 +99,7 @@ public class FilteredStream extends AbstractOptionHandler implements
     }
 
     @Override
-    public Example nextInstance() {
+    public Instance nextInstance() {
         return this.filterChain.nextInstance();
     }
 

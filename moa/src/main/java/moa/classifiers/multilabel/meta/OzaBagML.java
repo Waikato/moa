@@ -27,9 +27,7 @@ import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
-import moa.core.InstanceExample;
 import moa.core.MiscUtils;
-import moa.core.Example;
 
 import java.util.Arrays;
 
@@ -49,16 +47,16 @@ public class OzaBagML extends OzaBag implements MultiLabelLearner, MultiTargetRe
 
 	// Predictions
 	@Override
-	public Prediction getPredictionForInstance(Example<Instance> example) {
+	public Prediction getPredictionForInstance(Instance example) {
 		return compilePredictions(this.ensemble, example);
 	}
 
-	public static Prediction compilePredictions(Classifier h[], Example example) {
+	public static Prediction compilePredictions(Classifier h[], Instance example) {
 		Prediction[] predictions = new Prediction[h.length];
 		for (int i = 0; i < h.length; i++) {
 			predictions[i] = h[i].getPredictionForInstance(example);
 		}
-		return combinePredictions(predictions, (Instance) example.getData());
+		return combinePredictions(predictions, example);
 	}
 
 	public static Prediction combinePredictions(Prediction[] predictions, Instance inst) {
@@ -120,7 +118,7 @@ public class OzaBagML extends OzaBag implements MultiLabelLearner, MultiTargetRe
 
 	 @Override
     public Prediction getPredictionForInstance(MultiLabelInstance instance) {
-        return getPredictionForInstance((new InstanceExample(instance)));
+        return getPredictionForInstance((Instance) instance);
     }
 
 }

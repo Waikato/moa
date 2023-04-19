@@ -27,9 +27,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.classifiers.MultiLabelClassifier;
-import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.rules.multilabel.functions.MultiLabelNaiveBayes;
-import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
@@ -37,9 +35,8 @@ import moa.evaluation.*;
 import moa.evaluation.preview.LearningCurve;
 import moa.learners.Learner;
 import moa.options.ClassOption;
-import moa.streams.ExampleStream;
+import moa.streams.InstanceStream;
 import moa.streams.MultiTargetInstanceStream;
-import weka.core.stopwords.Null;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -119,7 +116,7 @@ public class EvaluatePrequentialMultiLabel extends MultiLabelMainTask {
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
-        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
         LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         LearningCurve learningCurve = new LearningCurve(
                 "learning evaluation instances");
@@ -196,8 +193,8 @@ public class EvaluatePrequentialMultiLabel extends MultiLabelMainTask {
         while (stream.hasMoreInstances()
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))
                 && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
-            Example trainInst = stream.nextInstance();
-            Example testInst = (Example) trainInst; //.copy();
+            Instance trainInst = stream.nextInstance();
+            Instance testInst = trainInst; //.copy();
 
 
             //testInst.setClassMissing();

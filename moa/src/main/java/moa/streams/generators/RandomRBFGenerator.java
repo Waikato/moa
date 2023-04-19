@@ -30,7 +30,6 @@ import com.yahoo.labs.samoa.instances.Instances;
 
 import java.io.Serializable;
 import java.util.Random;
-import moa.core.InstanceExample;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.MiscUtils;
@@ -126,7 +125,7 @@ public class RandomRBFGenerator extends AbstractOptionHandler implements
     }
 
     @Override
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
         Centroid centroid = this.centroids[MiscUtils.chooseRandomIndexBasedOnWeights(this.centroidWeights,
                 this.instanceRandom)];
         int numAtts = this.numAttsOption.getValue();
@@ -148,7 +147,7 @@ public class RandomRBFGenerator extends AbstractOptionHandler implements
         Instance inst = new DenseInstance(1.0, attVals);
         inst.setDataset(getHeader());
         inst.setClassValue(centroid.classLabel);
-        return new InstanceExample(inst);
+        return inst;
     }
 
     protected void generateHeader() {

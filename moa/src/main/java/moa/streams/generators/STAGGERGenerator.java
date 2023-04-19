@@ -29,7 +29,6 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 
 import java.util.Random;
-import moa.core.InstanceExample;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
@@ -167,7 +166,7 @@ public class STAGGERGenerator extends AbstractOptionHandler implements
     }
 
     @Override
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
 
         int size = 0, color = 0, shape = 0, group = 0;
         boolean desiredClassFound = false;
@@ -199,7 +198,7 @@ public class STAGGERGenerator extends AbstractOptionHandler implements
         inst.setValue(2, shape);
         inst.setDataset(header);
         inst.setClassValue(group);
-        return new InstanceExample(inst);
+        return inst;
     }
 
     @Override

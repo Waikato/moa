@@ -28,7 +28,6 @@ import moa.core.ObjectRepository;
 import moa.learners.Learner;
 import moa.options.ClassOption;
 import com.github.javacliparser.IntOption;
-import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 
 /**
@@ -50,7 +49,7 @@ public class LearnModel extends ClassificationMainTask implements CapabilitiesHa
             "Classifier to train.", MultiClassClassifier.class, "moa.classifiers.bayes.NaiveBayes");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", ExampleStream.class,
+            "Stream to learn from.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public IntOption maxInstancesOption = new IntOption("maxInstances", 'm',
@@ -85,7 +84,7 @@ public class LearnModel extends ClassificationMainTask implements CapabilitiesHa
     @Override
     public Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
-        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
         learner.setModelContext(stream.getHeader());
         int numPasses = this.numPassesOption.getValue();
         int maxInstances = this.maxInstancesOption.getValue();

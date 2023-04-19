@@ -26,15 +26,12 @@ import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import moa.classifiers.Classifier;
 import moa.classifiers.Regressor;
-import moa.core.Example;
 import moa.core.ObjectRepository;
-import moa.core.Utils;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
 import moa.evaluation.RegressionPerformanceEvaluator;
 import moa.learners.Learner;
 import moa.options.ClassOption;
-import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 import com.yahoo.labs.samoa.instances.Instance;
 
@@ -57,7 +54,7 @@ public class EvaluateModelRegression extends RegressionMainTask {
             "Learner to evaluate.", Regressor.class, "LearnModelRegression");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to evaluate on.", ExampleStream.class,
+            "Stream to evaluate on.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
@@ -92,7 +89,7 @@ public class EvaluateModelRegression extends RegressionMainTask {
     @Override
     public Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Learner model = (Learner) getPreparedClassOption(this.modelOption);
-        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
         LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         int maxInstances = this.maxInstancesOption.getValue();
         long instancesProcessed = 0;

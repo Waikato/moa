@@ -20,6 +20,7 @@
 package moa.streams;
 
 import com.github.javacliparser.FileOption;
+import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import java.io.BufferedReader;
@@ -30,7 +31,6 @@ import java.io.InputStreamReader;
 import java.io.Reader; 
 import com.github.javacliparser.RangeOption;  // jesse
 import moa.core.InputStreamProgressMonitor;
-import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
@@ -66,7 +66,7 @@ public class MultiTargetArffFileStream extends AbstractOptionHandler implements
 
     protected boolean hitEndOfFile;
 
-    protected InstanceExample lastInstanceRead;
+    protected Instance lastInstanceRead;
 
     protected int numInstancesRead;
 
@@ -116,8 +116,8 @@ public class MultiTargetArffFileStream extends AbstractOptionHandler implements
     }
 
     @Override
-    public InstanceExample nextInstance() {
-        InstanceExample prevInstance = this.lastInstanceRead;
+    public Instance nextInstance() {
+        Instance prevInstance = this.lastInstanceRead;
         this.hitEndOfFile = !readNextInstanceFromFile();
         return prevInstance;
     }
@@ -166,7 +166,7 @@ public class MultiTargetArffFileStream extends AbstractOptionHandler implements
     protected boolean readNextInstanceFromFile() {
         try {
             if (this.instances.readInstance(this.fileReader)) {
-                this.lastInstanceRead = new InstanceExample(this.instances.instance(0));
+                this.lastInstanceRead = this.instances.instance(0);
                 this.instances.delete(); // keep instances clean
                 this.numInstancesRead++;
                 return true;

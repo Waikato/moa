@@ -23,8 +23,6 @@ import com.github.javacliparser.StringOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import moa.core.Example;
-import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
@@ -57,7 +55,7 @@ public class ImbalancedStream extends AbstractOptionHandler implements
 
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to imbalance.", ExampleStream.class,
+            "Stream to imbalance.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public StringOption classRatioOption = new StringOption("classRatio", 'c',
@@ -72,7 +70,7 @@ public class ImbalancedStream extends AbstractOptionHandler implements
             "instanceRandomSeed", 'i',
             "Seed for random generation of instances.", 1);
 
-    protected ExampleStream originalStream    = null;
+    protected InstanceStream originalStream    = null;
     protected Instances     instancesBuffer[] = null;
     protected double        probPerClass[]    = null;
     protected Random        random            = null;
@@ -80,7 +78,7 @@ public class ImbalancedStream extends AbstractOptionHandler implements
 
     @Override
     protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
-        originalStream = (ExampleStream) getPreparedClassOption(streamOption);
+        originalStream = (InstanceStream) getPreparedClassOption(streamOption);
         numClasses = originalStream.getHeader().numClasses();
         probPerClass = new double[numClasses];
         instancesBuffer = new Instances[numClasses];
@@ -131,7 +129,7 @@ public class ImbalancedStream extends AbstractOptionHandler implements
     }
 
     @Override
-    public Example<Instance> nextInstance() {
+    public Instance nextInstance() {
         // a value between 0.0 and 1.0 uniformly distributed
         double p   = random.nextDouble();
         int iClass = -1;
@@ -143,8 +141,8 @@ public class ImbalancedStream extends AbstractOptionHandler implements
 
         // keeps on creating and storing instances until we have an instance for the desired class
         while(instancesBuffer[iClass].size() == 0){
-            Example<Instance> inst = originalStream.nextInstance();
-            instancesBuffer[(int) inst.getData().classValue()].add(inst.getData());
+            Instance inst = originalStream.nextInstance();
+            instancesBuffer[(int) inst.classValue()].add(inst);
         }
 
         // retrieves the instance from the desired class
@@ -152,7 +150,7 @@ public class ImbalancedStream extends AbstractOptionHandler implements
         // and also removes it from the buffer
         instancesBuffer[iClass].delete(0);
 
-        return new InstanceExample(instance);
+        return instance;
     }
 
     @Override

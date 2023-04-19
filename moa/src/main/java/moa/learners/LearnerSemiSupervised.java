@@ -21,13 +21,12 @@ package moa.learners;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Prediction;
-import moa.core.Example;
 
 /**
  *
  * @author RSousa
  */
-public interface LearnerSemiSupervised<E extends Example> extends Learner<Example<Instance>>{
+public interface LearnerSemiSupervised extends Learner {
     
    public Prediction getTrainingPrediction();
  

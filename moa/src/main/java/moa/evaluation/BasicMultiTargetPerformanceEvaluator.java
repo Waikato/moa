@@ -20,7 +20,6 @@
 package moa.evaluation;
 
 import moa.AbstractMOAObject;
-import moa.core.Example;
 import moa.core.Measurement;
 
 import com.yahoo.labs.samoa.instances.DenseInstance;
@@ -57,9 +56,9 @@ public class BasicMultiTargetPerformanceEvaluator extends AbstractMOAObject
     }
 
     @Override
-    public void addResult(Example<Instance> example, Prediction prediction) {
+    public void addResult(Instance example, Prediction prediction) {
 
-    MultiLabelInstance inst = (MultiLabelInstance) example.getData();
+    MultiLabelInstance inst = (MultiLabelInstance) example;
     if (numberOutputs == 0) {
     	numberOutputs = inst.numberOutputTargets();
     }
@@ -108,7 +107,7 @@ public class BasicMultiTargetPerformanceEvaluator extends AbstractMOAObject
     }
 
 	@Override
-	public void addResult(Example<Instance> example, double[] classVotes) {
+	public void addResult(Instance example, double[] classVotes) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -22,8 +22,6 @@ package moa.streams;
 
 import java.util.Random;
 
-import moa.core.Example;
-import moa.core.InstanceExample;
 import moa.core.MiscUtils;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
@@ -55,7 +53,7 @@ public class BootstrappedStream extends AbstractOptionHandler implements
     
     protected MultiTargetInstanceStream originalStream;
     protected int waitingToSend;
-    protected Example<Instance> queuedInstance;
+    protected Instance queuedInstance;
     protected Random randomGenerator;
     
 	public BootstrappedStream() {
@@ -90,7 +88,7 @@ public class BootstrappedStream extends AbstractOptionHandler implements
 	}
 
 	@Override
-	public Example<Instance> nextInstance() {
+	public Instance nextInstance() {
 
 		if(waitingToSend==0){
 			do {
@@ -99,7 +97,7 @@ public class BootstrappedStream extends AbstractOptionHandler implements
 			} while (waitingToSend==0);
 			
 		}
-		Example<Instance> instance=new InstanceExample(queuedInstance.getData().copy());
+		Instance instance=queuedInstance.copy();
 		instance.setWeight(queuedInstance.weight());
 		waitingToSend--;
 		return instance;

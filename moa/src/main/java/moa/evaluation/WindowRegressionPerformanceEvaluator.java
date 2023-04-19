@@ -19,7 +19,6 @@
  */
 package moa.evaluation;
 
-import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
@@ -107,8 +106,7 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
     }
 
     @Override
-    public void addResult(Example<Instance> example, double[] prediction) {
-        Instance inst = example.getData();
+    public void addResult(Instance inst, double[] prediction) {
         double weight = inst.weight();
         if (weight > 0.0) {
             if (TotalweightObserved == 0) {
@@ -163,7 +161,7 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
     
 
 	@Override
-	public void addResult(Example<Instance> testInst, Prediction prediction) {
+	public void addResult(Instance testInst, Prediction prediction) {
 		double votes[];
 		if(prediction==null)
 			votes = new double[0];

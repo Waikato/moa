@@ -24,7 +24,6 @@ import com.github.javacliparser.FileOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import java.io.File;
@@ -32,8 +31,6 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 import moa.classifiers.MultiTargetRegressor;
-import moa.classifiers.Regressor;
-import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
@@ -42,12 +39,11 @@ import moa.evaluation.FadingFactorClassificationPerformanceEvaluator;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
 import moa.evaluation.MultiTargetPerformanceEvaluator;
-import moa.evaluation.RegressionPerformanceEvaluator;
 import moa.evaluation.WindowClassificationPerformanceEvaluator;
 import moa.evaluation.preview.LearningCurve;
 import moa.learners.Learner;
 import moa.options.ClassOption;
-import moa.streams.ExampleStream;
+import moa.streams.InstanceStream;
 import moa.streams.MultiTargetInstanceStream;
 
 /**
@@ -118,7 +114,7 @@ public class EvaluatePrequentialMultiTarget extends MultiTargetMainTask {
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
-        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
         LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         LearningCurve learningCurve = new LearningCurve(
                 "learning evaluation instances");
@@ -195,8 +191,8 @@ public class EvaluatePrequentialMultiTarget extends MultiTargetMainTask {
         while (stream.hasMoreInstances()
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))
                 && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
-            Example trainInst = stream.nextInstance();
-            Example testInst = (Example) trainInst; //.copy();
+            Instance trainInst = stream.nextInstance();
+            Instance testInst = trainInst; //.copy();
             //testInst.setClassMissing();
             //double[] prediction = learner.getVotesForInstance(testInst);
             Prediction prediction = learner.getPredictionForInstance(testInst);

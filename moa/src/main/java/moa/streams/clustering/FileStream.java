@@ -35,7 +35,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import moa.core.InputStreamProgressMonitor;
-import moa.core.InstanceExample;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import com.github.javacliparser.FileOption;
@@ -96,7 +95,7 @@ public class FileStream extends ClusteringStream{
 
 	protected boolean hitEndOfFile;
 
-    protected InstanceExample lastInstanceRead;
+    protected Instance lastInstanceRead;
 
 	protected int numInstancesRead;
 
@@ -137,8 +136,8 @@ public class FileStream extends ClusteringStream{
 		return !this.hitEndOfFile;
 	}
 
-    public InstanceExample nextInstance() {
-        InstanceExample prevInstance = this.lastInstanceRead;
+    public Instance nextInstance() {
+        Instance prevInstance = this.lastInstanceRead;
 		this.hitEndOfFile = !readNextInstanceFromFile();
 		return prevInstance;
 	}
@@ -247,7 +246,7 @@ public class FileStream extends ClusteringStream{
 					}
 				}
 				
-                this.lastInstanceRead = new InstanceExample(rawInstance);
+                this.lastInstanceRead = rawInstance;
 				this.instances.delete(); // keep instances clean
 				this.numInstancesRead++;
 				return true;

@@ -30,7 +30,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import moa.core.InstanceExample;
 
 
 
@@ -106,8 +105,8 @@ public class ReplacingMissingValuesFilter extends AbstractStreamFilter {
 	}
 
     @Override
-    public InstanceExample nextInstance() {
-        Instance inst = (Instance) ((Instance) this.inputStream.nextInstance().getData()).copy();
+    public Instance nextInstance() {
+        Instance inst = this.inputStream.nextInstance().copy();
  		
 		// Initialization
 		if (numAttributes < 0){
@@ -210,7 +209,7 @@ public class ReplacingMissingValuesFilter extends AbstractStreamFilter {
 			}
 		}
 		
-        return new InstanceExample(inst);
+        return inst;
     }
 
 	@Override

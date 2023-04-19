@@ -21,9 +21,9 @@ package moa.streams.generators;
 
 import java.util.Random;
 
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-import moa.core.InstanceExample;
 
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.FloatOption;
@@ -52,7 +52,7 @@ public class RandomRBFGeneratorDrift extends RandomRBFGenerator {
     protected double[][] speedCentroids;
 
     @Override
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
         //Update Centroids with drift
         int len = this.numDriftCentroidsOption.getValue();
         if (len > this.centroids.length) {

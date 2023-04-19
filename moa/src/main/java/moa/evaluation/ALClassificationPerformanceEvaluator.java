@@ -21,8 +21,6 @@ package moa.evaluation;
 
 import com.yahoo.labs.samoa.instances.Instance;
 
-import moa.core.Example;
-
 /**
  * Active Learning Evaluator Interface to make AL Evaluators selectable in AL tasks.
  *
@@ -38,6 +36,6 @@ public interface ALClassificationPerformanceEvaluator extends ClassificationPerf
 	     * @param labelAcquired bool type which indicates if trainInst 
 	     *        was acquired by the active learner
 	     */
-		public void doLabelAcqReport(Example<Instance> trainInst, int labelAcquired);
+		public void doLabelAcqReport(Instance trainInst, int labelAcquired);
 
 }

@@ -30,9 +30,7 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
-import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.StringUtils;
@@ -43,7 +41,7 @@ import moa.evaluation.preview.LearningCurve;
 import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.CachedInstancesStream;
-import moa.streams.ExampleStream;
+import moa.streams.InstanceStream;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 
@@ -66,7 +64,7 @@ public class EvaluatePeriodicHeldOutTest extends ClassificationMainTask {
             "Classifier to train.", MultiClassClassifier.class, "moa.classifiers.trees.HoeffdingTree");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", ExampleStream.class,
+            "Stream to learn from.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
@@ -99,7 +97,7 @@ public class EvaluatePeriodicHeldOutTest extends ClassificationMainTask {
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
-        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
         LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         learner.setModelContext(stream.getHeader());
         long instancesProcessed = 0;
@@ -121,14 +119,14 @@ public class EvaluatePeriodicHeldOutTest extends ClassificationMainTask {
             }
         }
         boolean firstDump = true;
-        ExampleStream testStream = null;
+        InstanceStream testStream = null;
         int testSize = this.testSizeOption.getValue();
         if (this.cacheTestOption.isSet()) {
             monitor.setCurrentActivity("Caching test examples...", -1.0);
             Instances testInstances = new Instances(stream.getHeader(),
                     this.testSizeOption.getValue());
             while (testInstances.numInstances() < testSize) {
-                testInstances.add((Instance) stream.nextInstance().getData());
+                testInstances.add(stream.nextInstance());
                 if (testInstances.numInstances()
                         % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
                     if (monitor.taskShouldAbort()) {
@@ -190,8 +188,8 @@ public class EvaluatePeriodicHeldOutTest extends ClassificationMainTask {
 				if (stream.hasMoreInstances() == false) {
 					break;
 				}
-                Example testInst = (Example) testStream.nextInstance(); //.copy();
-                double trueClass = ((Instance) testInst.getData()).classValue();
+                Instance testInst = testStream.nextInstance(); //.copy();
+                double trueClass = testInst.classValue();
                 //testInst.setClassMissing();
                 double[] prediction = learner.getVotesForInstance(testInst);
                 //testInst.setClassValue(trueClass);

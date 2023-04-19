@@ -10,7 +10,6 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.FastVector;
-import moa.core.InstanceExample;
 import moa.streams.InstanceStream;
 
 /**
@@ -45,9 +44,9 @@ public class HashingTrickFilter extends AbstractStreamFilter {
     }
 
     @Override
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
 
-        Instance sparseInstance = (Instance) this.inputStream.nextInstance().getData();
+        Instance sparseInstance = this.inputStream.nextInstance();
 
         if (streamHeader == null) {
             //Create a new header
@@ -64,7 +63,7 @@ public class HashingTrickFilter extends AbstractStreamFilter {
 
         double [] hashVal = hashVector(sparseInstance,this.dim.getValue(), Hashing.murmur3_128());
 
-        return new InstanceExample(transformedInstance(sparseInstance, hashVal));
+        return transformedInstance(sparseInstance, hashVal);
     }
 
 

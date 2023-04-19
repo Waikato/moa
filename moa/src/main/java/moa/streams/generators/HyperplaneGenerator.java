@@ -26,7 +26,6 @@ import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.core.FastVector;
-import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.streams.InstanceStream;
@@ -130,7 +129,7 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
     }
 
     @Override
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
 
         int numAtts = this.numAttsOption.getValue();
         double[] attVals = new double[numAtts + 1];
@@ -156,7 +155,7 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
         inst.setDataset(getHeader());
         inst.setClassValue(classLabel);
         addDrift();
-        return new InstanceExample(inst);
+        return inst;
     }
 
     private void addDrift() {

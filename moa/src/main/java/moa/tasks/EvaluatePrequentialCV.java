@@ -23,14 +23,13 @@ package moa.tasks;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
-import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.*;
 import moa.evaluation.*;
 import moa.evaluation.preview.LearningCurve;
 import moa.learners.Learner;
 import moa.options.ClassOption;
-import moa.streams.ExampleStream;
+import moa.streams.InstanceStream;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -65,7 +64,7 @@ public class EvaluatePrequentialCV extends ClassificationMainTask {
             "Learner to train.", MultiClassClassifier.class, "moa.classifiers.bayes.NaiveBayes");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", ExampleStream.class,
+            "Stream to learn from.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
@@ -118,7 +117,7 @@ public class EvaluatePrequentialCV extends ClassificationMainTask {
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
 
         Random random = new Random(this.randomSeedOption.getValue());
-        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
 
         Learner[] learners = new Learner[this.numFoldsOption.getValue()];
         Learner baseLearner = (Learner) getPreparedClassOption(this.learnerOption);

@@ -20,7 +20,6 @@
 package moa.evaluation;
 
 import moa.AbstractMOAObject;
-import moa.core.Example;
 import moa.core.Measurement;
 
 import com.yahoo.labs.samoa.instances.Instance;
@@ -62,8 +61,7 @@ public class BasicRegressionPerformanceEvaluator extends AbstractMOAObject
     }
 
     @Override
-    public void addResult(Example<Instance> example, double[] prediction) {
-	Instance inst = example.getData();
+    public void addResult(Instance inst, double[] prediction) {
         if (inst.weight() > 0.0) {
             if (prediction.length > 0) {
                 double meanTarget = this.weightObserved != 0 ? 
@@ -140,7 +138,7 @@ public class BasicRegressionPerformanceEvaluator extends AbstractMOAObject
     }
     
     @Override
-    public void addResult(Example<Instance> example, Prediction prediction) {
+    public void addResult(Instance example, Prediction prediction) {
     	if(prediction!=null)
     		addResult(example,prediction.getVotes(0));
     }

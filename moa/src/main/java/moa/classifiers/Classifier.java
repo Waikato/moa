@@ -19,7 +19,6 @@
  */
 package moa.classifiers;
 
-import moa.core.Example;
 import moa.learners.Learner;
 
 import com.yahoo.labs.samoa.instances.Instance;
@@ -32,7 +31,7 @@ import com.yahoo.labs.samoa.instances.Prediction;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public interface Classifier extends Learner<Example<Instance>> {
+public interface Classifier extends Learner {
 
     /**
      * Gets the classifiers of this ensemble. Returns null if this learner is a

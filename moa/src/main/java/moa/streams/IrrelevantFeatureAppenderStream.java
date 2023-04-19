@@ -20,8 +20,6 @@ package moa.streams;
 
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.*;
-import moa.core.Example;
-import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
@@ -52,7 +50,7 @@ import java.util.Random;
 public class IrrelevantFeatureAppenderStream extends AbstractOptionHandler implements InstanceStream {
 
     public ClassOption streamOption                    = new ClassOption("stream", 's',
-            "Stream to imbalance.", ExampleStream.class,
+            "Stream to imbalance.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public IntOption numNumericFeaturesOption          = new IntOption("numNumericFeatures", 'n',
@@ -70,7 +68,7 @@ public class IrrelevantFeatureAppenderStream extends AbstractOptionHandler imple
     /**
      * The original stream.
      */
-    protected ExampleStream originalStream = null;
+    protected InstanceStream originalStream = null;
 
     /**
      * The header with the new features appended.
@@ -84,7 +82,7 @@ public class IrrelevantFeatureAppenderStream extends AbstractOptionHandler imple
 
     @Override
     protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
-        this.originalStream = (ExampleStream) getPreparedClassOption(streamOption);
+        this.originalStream = (InstanceStream) getPreparedClassOption(streamOption);
         this.random = new Random(instanceRandomSeedOption.getValue());
         buildHeader();
     }
@@ -105,15 +103,15 @@ public class IrrelevantFeatureAppenderStream extends AbstractOptionHandler imple
     }
 
     @Override
-    public Example<Instance> nextInstance() {
-        Example<Instance> original = originalStream.nextInstance();
+    public Instance nextInstance() {
+        Instance original = originalStream.nextInstance();
 
         // copies the original values
         double values[] = new double[this.newHeader.numAttributes()];
         int ix = 0;
-        for(int i = 0; i < original.getData().dataset().numAttributes(); i++){
-            if(original.getData().dataset().classIndex() != i) {
-                values[ix] = original.getData().value(i);
+        for(int i = 0; i < original.dataset().numAttributes(); i++){
+            if(original.dataset().classIndex() != i) {
+                values[ix] = original.value(i);
                 ix++;
             }
         }
@@ -127,15 +125,15 @@ public class IrrelevantFeatureAppenderStream extends AbstractOptionHandler imple
         }
 
         //copies the class value
-        if(original.getData().classIndex() != -1) {
-            values[values.length - 1] = original.getData().classValue();
+        if(original.classIndex() != -1) {
+            values[values.length - 1] = original.classValue();
         }
 
         // instantiates and returns the actual instance
         Instance instnc = new DenseInstance(1.0, values);
         instnc.setDataset(this.newHeader);
 
-        return new InstanceExample(instnc);
+        return instnc;
     }
 
     @Override

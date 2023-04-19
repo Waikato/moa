@@ -19,8 +19,8 @@
  */
 package moa.streams;
 
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.AbstractMOAObject;
-import moa.core.InstanceExample;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Instances;
 
@@ -61,8 +61,8 @@ public class CachedInstancesStream extends AbstractMOAObject implements
 	}
 
     @Override
-	public InstanceExample nextInstance() {
-		return new InstanceExample(this.toStream.instance(this.streamPos++));
+	public Instance nextInstance() {
+		return this.toStream.instance(this.streamPos++);
 	}
 
     @Override

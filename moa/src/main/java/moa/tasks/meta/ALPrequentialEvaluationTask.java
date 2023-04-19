@@ -31,7 +31,6 @@ import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.active.ALClassifier;
-import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
@@ -40,7 +39,7 @@ import moa.evaluation.LearningEvaluation;
 import moa.evaluation.preview.LearningCurve;
 import moa.evaluation.preview.PreviewCollectionLearningCurveWrapper;
 import moa.options.ClassOption;
-import moa.streams.ExampleStream;
+import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
 /**
@@ -67,7 +66,7 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
             "moa.classifiers.active.ALRandom");
 	
 	public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", ExampleStream.class,
+            "Stream to learn from.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 	
 	public ClassOption evaluatorOption = new ClassOption(
@@ -117,8 +116,8 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
 	@Override
 	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
 		// get stream
-		ExampleStream<Example<Instance>> stream = 
-				(ExampleStream<Example<Instance>>) 
+		InstanceStream stream =
+				(InstanceStream)
 				getPreparedClassOption(this.streamOption);
 		
 		// initialize learner
@@ -169,8 +168,8 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         		   || (instancesProcessed < maxInstances))
         	   && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) 
         {
-        	Example<Instance> trainInst = stream.nextInstance();
-        	Example<Instance> testInst = trainInst;
+        	Instance trainInst = stream.nextInstance();
+        	Instance testInst = trainInst;
         	
         	// predict class for instance
         	double[] prediction = learner.getVotesForInstance(testInst);

@@ -20,19 +20,14 @@
 package moa.tasks;
 
 import com.github.javacliparser.FileOption;
-import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import com.github.javacliparser.Option;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import moa.classifiers.MultiTargetRegressor;
-import moa.core.Example;
+
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
@@ -43,25 +38,18 @@ import moa.evaluation.LearningPerformanceEvaluator;
 import moa.evaluation.MultiTargetPerformanceEvaluator;
 import moa.evaluation.WindowClassificationPerformanceEvaluator;
 import moa.evaluation.preview.LearningCurve;
-import moa.learners.Learner;
-import moa.learners.LearnerSemiSupervised;
 import moa.classifiers.MultiTargetLearnerSemiSupervised;
-import moa.classifiers.MultiLabelLearner;
 
 import moa.options.ClassOption;
-import moa.streams.ExampleStream;
+import moa.streams.InstanceStream;
 import moa.streams.MultiTargetInstanceStream;
-import static moa.tasks.MainTask.INSTANCES_BETWEEN_MONITOR_UPDATES;
 
 import java.util.Random;
 
-import moa.classifiers.rules.multilabel.AMRulesMultiLabelLearnerSemiSuper;
 //import moa.classifiers.rules.multilabel.AMRulesMultiLabelLearnerSemiSuperDualPerturb;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.io.*;
-
 
 
 /**
@@ -128,7 +116,7 @@ public class EvaluatePrequentialMultiTargetSemiSuper extends MultiTargetMainTask
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         
         MultiTargetLearnerSemiSupervised learner = (MultiTargetLearnerSemiSupervised) getPreparedClassOption(this.learnerOption);
-        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
         LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         LearningCurve learningCurve = new LearningCurve("learning evaluation instances");
 
@@ -213,7 +201,7 @@ public class EvaluatePrequentialMultiTargetSemiSuper extends MultiTargetMainTask
         }
 
         
-        Example [] streamData = new Example[StrmDtSz];
+        Instance [] streamData = new Instance[StrmDtSz];
         int[] randIndex= new int[StrmDtSz];
         
         int i=0;
@@ -243,15 +231,15 @@ public class EvaluatePrequentialMultiTargetSemiSuper extends MultiTargetMainTask
         //TRAIN  initial Model 
         double errorAllSum=0;
         int examplesCounter=0;
-        Example trainInst=streamData[randIndex[0]]; 
-        Example testInst= (Example) trainInst;
-        Instance inst= (Instance) testInst.getData();
+        Instance trainInst=streamData[randIndex[0]];
+        Instance testInst= trainInst;
+        Instance inst= testInst;
         
         while( examplesCounter < dbInitialModelPercentage.getValue()/100*StrmDtSz ){
         	
             trainInst =streamData[randIndex[examplesCounter]]; 
-            testInst = (Example) trainInst;
-            inst= (Instance) testInst.getData();
+            testInst = trainInst;
+            inst= testInst;
             examplesCounter++;
             learner.trainOnInstance(trainInst);
             

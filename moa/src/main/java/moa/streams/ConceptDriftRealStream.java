@@ -29,7 +29,6 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 
 import java.util.Random;
-import moa.core.InstanceExample;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
@@ -68,11 +67,11 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
     private static final long serialVersionUID = 1L;
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to add concept drift.", ExampleStream.class,
+            "Stream to add concept drift.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public ClassOption driftstreamOption = new ClassOption("driftstream", 'd',
-            "Concept drift Stream.", ExampleStream.class,
+            "Concept drift Stream.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public FloatOption alphaOption = new FloatOption("alpha",
@@ -161,7 +160,7 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
     }
 
     @Override
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
         numberInstanceStream++;
         double numclass = 0.0;
         double x = -4.0 * (double) (numberInstanceStream - this.positionOption.getValue()) / (double) this.widthOption.getValue();
@@ -170,13 +169,13 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
             if (this.inputStream.hasMoreInstances() == false) {
                 this.inputStream.restart();
             }
-            this.inputInstance = this.inputStream.nextInstance().getData();
+            this.inputInstance = this.inputStream.nextInstance();
             numclass = this.inputInstance.classValue();
         } else {
             if (this.driftStream.hasMoreInstances() == false) {
                 this.driftStream.restart();
             }
-            this.driftInstance = this.driftStream.nextInstance().getData();
+            this.driftInstance = this.driftStream.nextInstance();
             numclass = this.driftInstance.classValue();
         }
         int m = 0;
@@ -192,7 +191,7 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
         Instance inst = new DenseInstance(1.0, newVals);
         inst.setDataset(this.getHeader());
         inst.setClassValue(numclass);
-        return new InstanceExample(inst);
+        return inst;
 
     }
 
@@ -201,8 +200,8 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
         this.inputStream.restart();
         this.driftStream.restart();
         numberInstanceStream = 0;
-        this.inputInstance = this.inputStream.nextInstance().getData();
-        this.driftInstance = this.driftStream.nextInstance().getData();
+        this.inputInstance = this.inputStream.nextInstance();
+        this.driftInstance = this.driftStream.nextInstance();
     }
 
     @Override

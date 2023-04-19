@@ -31,7 +31,6 @@ import com.yahoo.labs.samoa.instances.Instances;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
-import moa.core.InstanceExample;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
@@ -148,7 +147,7 @@ public class RandomTreeGenerator extends AbstractOptionHandler implements
     }
 
     @Override
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
         double[] attVals = new double[this.numNominalsOption.getValue()
                 + this.numNumericsOption.getValue()];
         InstancesHeader header = getHeader();
@@ -160,7 +159,7 @@ public class RandomTreeGenerator extends AbstractOptionHandler implements
         }
         inst.setDataset(header);
         inst.setClassValue(classifyInstance(this.treeRoot, attVals));
-        return new InstanceExample(inst);
+        return inst;
     }
 
     protected int classifyInstance(Node node, double[] attVals) {

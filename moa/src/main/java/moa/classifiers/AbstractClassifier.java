@@ -29,7 +29,6 @@ import moa.MOAObject;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-import moa.core.Example;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 
@@ -96,19 +95,8 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
         }
     }
 
-	
-    @Override
-    public double[] getVotesForInstance(Example<Instance> example){
-		return getVotesForInstance(example.getData());
-	}
-
     @Override
     public abstract double[] getVotesForInstance(Instance inst);
-
-    @Override
-    public Prediction getPredictionForInstance(Example<Instance> example){
-		return getPredictionForInstance(example.getData());
-	}
 
     @Override
     public Prediction getPredictionForInstance(Instance inst){
@@ -243,11 +231,6 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     public MOAObject getModel(){
         return this;
     };
-    
-    @Override
-    public void trainOnInstance(Example<Instance> example){
-		trainOnInstance(example.getData());
-	}
 
     @Override
     public boolean correctlyClassifies(Instance inst) {

@@ -1,9 +1,6 @@
 package moa.streams.filters;
 
-import com.yahoo.labs.samoa.instances.Instance;
-
-import moa.core.Example;
-import moa.streams.ExampleStream;
+import moa.streams.InstanceStream;
 import moa.streams.MultiTargetInstanceStream;
 
 public interface MultiLabelStreamFilter extends MultiTargetInstanceStream {
@@ -13,5 +10,5 @@ public interface MultiLabelStreamFilter extends MultiTargetInstanceStream {
      *
      * @param stream the input stream to the filter
      */
-    public void setInputStream(ExampleStream<Example<Instance>> stream);
+    public void setInputStream(InstanceStream stream);
 }

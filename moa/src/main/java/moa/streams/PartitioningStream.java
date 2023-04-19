@@ -25,7 +25,6 @@ import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 
-import moa.core.Example;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
@@ -38,13 +37,13 @@ import moa.tasks.TaskMonitor;
  * @version $Revision: 1 $
  */
 @SuppressWarnings("rawtypes")
-public class PartitioningStream extends AbstractOptionHandler  implements ExampleStream {
+public class PartitioningStream extends AbstractOptionHandler  implements InstanceStream {
 
 
 	private static final long serialVersionUID = 1L;
 	
 	public ClassOption streamOption = new ClassOption("baseStream", 's',
-            "Stream which is used for partitioning.", ExampleStream.class,
+            "Stream which is used for partitioning.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public IntOption partitionIndexOption = new IntOption(
@@ -59,7 +58,7 @@ public class PartitioningStream extends AbstractOptionHandler  implements Exampl
             "randomSeed", 'r',
             "The seed which is used (all other partitions should use the same one to guarentee).", 0);
 	
-    protected ExampleStream baseStream;
+    protected InstanceStream baseStream;
     protected int partitionIndex;
     protected int numPartitions;
     protected Random random;
@@ -93,9 +92,9 @@ public class PartitioningStream extends AbstractOptionHandler  implements Exampl
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Example<Instance> nextInstance() {
+	public Instance nextInstance() {
 		// take the first instance from the stream which is guaranteed to be valid
-		Example<Instance> result = baseStream.nextInstance();
+		Instance result = baseStream.nextInstance();
 		
 		discardNexInstancesNotFromPartition();
 		
@@ -120,7 +119,7 @@ public class PartitioningStream extends AbstractOptionHandler  implements Exampl
 	@Override
 	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 		// get parameter from options
-		baseStream = (ExampleStream) getPreparedClassOption(streamOption);
+		baseStream = (InstanceStream) getPreparedClassOption(streamOption);
 		partitionIndex = partitionIndexOption.getValue();
 		numPartitions = numPartitionsOption.getValue();
 		

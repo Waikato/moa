@@ -20,7 +20,6 @@
 package moa.streams.generators.multilabel;
 
 import java.util.*;
-import moa.core.InstanceExample;
 import moa.core.MultilabelInstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
@@ -214,7 +213,7 @@ public class MetaMultilabelGenerator extends AbstractOptionHandler implements Mu
         if (queue[i].size() <= 0) {
             int c = -1;
             while (lim-- > 0) {
-                Instance tinst = this.m_BinaryGenerator.nextInstance().getData();
+                Instance tinst = this.m_BinaryGenerator.nextInstance();
                 c = (int) Math.round(tinst.classValue());
                 if (i == c) {
                     return tinst;
@@ -234,8 +233,8 @@ public class MetaMultilabelGenerator extends AbstractOptionHandler implements Mu
      * GenerateML. Generates a multi-label example.
      */
     @Override
-    public InstanceExample nextInstance() {
-        return new InstanceExample(generateMLInstance(generateSet()));
+    public Instance nextInstance() {
+        return generateMLInstance(generateSet());
     }
 
     /**

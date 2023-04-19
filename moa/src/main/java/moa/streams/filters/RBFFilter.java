@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import moa.core.InstanceExample;
 import moa.streams.MultiTargetInstanceStream;
 
 import com.github.javacliparser.IntOption;
@@ -39,9 +38,9 @@ public class RBFFilter extends AbstractStreamFilter {
 	}
 
 	@Override
-	public InstanceExample nextInstance() {
+	public Instance nextInstance() {
 
-		Instance x = (Instance) ((Instance) this.inputStream.nextInstance().getData());
+		Instance x = this.inputStream.nextInstance();
 
 		if(dataset==null){
 			System.out.println("INIT. ");
@@ -66,7 +65,7 @@ public class RBFFilter extends AbstractStreamFilter {
 		z.setValue(h,x.classValue());
 		z.setDataset(dataset);
 
-		return new InstanceExample(z);
+		return z;
 	}
 
 	@Override

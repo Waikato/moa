@@ -18,7 +18,6 @@ package moa.streams.generators;
 
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.*;
-import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.streams.InstanceStream;
@@ -74,7 +73,7 @@ public class TextGenerator extends AbstractOptionHandler implements InstanceStre
     }
 
     @Override
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
         int[] votes;
         double[] attVals;
         attVals = new double[this.numAttsOption.getValue() + 1];
@@ -109,7 +108,7 @@ public class TextGenerator extends AbstractOptionHandler implements InstanceStre
         inst.setDataset(getHeader());
         inst.setClassValue((votes[1] > votes[2]) ? 0 : 1);
         this.countTweets++;
-        return new InstanceExample(inst);
+        return inst;
     }
 
     @Override

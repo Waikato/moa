@@ -21,7 +21,6 @@ package moa.evaluation;
 
 import java.util.Arrays;
 
-import moa.core.Example;
 import moa.core.Measurement;
 import com.yahoo.labs.samoa.instances.Instance;
 
@@ -50,7 +49,7 @@ public class ALWindowClassificationPerformanceEvaluator extends WindowClassifica
      *        was acquired by the active learner
      */
 	@Override
-	public void doLabelAcqReport(Example<Instance> trainInst, int labelAcquired) {
+	public void doLabelAcqReport(Instance trainInst, int labelAcquired) {
 		this.acquisitionRateEstimator.add(labelAcquired);
 		this.acquiredInstances += labelAcquired;
 	}

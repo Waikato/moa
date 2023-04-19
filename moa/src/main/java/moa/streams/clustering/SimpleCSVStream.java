@@ -33,11 +33,11 @@ import com.github.javacliparser.IntOption;
 import com.github.javacliparser.StringOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.core.InputStreamProgressMonitor;
-import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
 
@@ -67,7 +67,7 @@ public class SimpleCSVStream extends ClusteringStream {
 
 	protected boolean hitEndOfFile;
 
-	protected InstanceExample lastInstanceRead;
+	protected Instance lastInstanceRead;
 
 	protected int numInstancesRead;
 
@@ -157,8 +157,8 @@ public class SimpleCSVStream extends ClusteringStream {
 	 * @see moa.streams.InstanceStream#nextInstance()
 	 */
 	@Override
-	public InstanceExample nextInstance() {
-		InstanceExample prevInstance = this.lastInstanceRead;
+	public Instance nextInstance() {
+		Instance prevInstance = this.lastInstanceRead;
 		if (prevInstance != null) {
 			this.numInstancesRead++;
 		}
@@ -186,8 +186,8 @@ public class SimpleCSVStream extends ClusteringStream {
 					throw new RuntimeException(
 							"Next Instance has an wrong cardinality!");
 				}
-				this.lastInstanceRead = new InstanceExample(new DenseInstance(1, value));
-				this.lastInstanceRead.getData().setDataset(this.dataset);
+				this.lastInstanceRead = new DenseInstance(1, value);
+				this.lastInstanceRead.setDataset(this.dataset);
 				this.hitEndOfFile = false;
 			} else {
 				this.lastInstanceRead = null;
@@ -262,8 +262,8 @@ public class SimpleCSVStream extends ClusteringStream {
 				for (int i = 0; i < this.numTokens && token.hasMoreTokens(); i++) {
 					value[i] = Double.valueOf(token.nextToken());
 				}
-				this.lastInstanceRead = new InstanceExample(new DenseInstance(1, value));
-				this.lastInstanceRead.getData().setDataset(this.dataset);
+				this.lastInstanceRead = new DenseInstance(1, value);
+				this.lastInstanceRead.setDataset(this.dataset);
 				this.numInstancesRead = 0;
 				this.hitEndOfFile = false;
 			} else {

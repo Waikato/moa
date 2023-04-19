@@ -3,7 +3,6 @@ package moa.streams.filters;
 import java.util.ArrayList;
 import java.util.List;
 
-import moa.core.InstanceExample;
 import moa.streams.MultiTargetInstanceStream;
 
 import com.github.javacliparser.StringOption;
@@ -36,12 +35,12 @@ public class SelectAttributesFilter extends AbstractMultiLabelStreamFilter imple
 	}
 
 	@Override
-	public InstanceExample nextInstance() {
-		Instance instance = (Instance) ((Instance) this.inputStream.nextInstance().getData());
+	public Instance nextInstance() {
+		Instance instance = this.inputStream.nextInstance();
 		if(dataset==null){
 			initialize(instance);
 		}		
-		return new InstanceExample(processInstance(instance));
+		return processInstance(instance);
 	}
 
 	private void initialize(Instance instance) {

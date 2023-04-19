@@ -22,7 +22,6 @@ package moa.streams.generators;
 
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-import moa.core.InstanceExample;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
@@ -72,7 +71,7 @@ public class WaveformGeneratorDrift extends WaveformGenerator {
     }
 
     @Override
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
         InstancesHeader header = getHeader();
         Instance inst = new DenseInstance(header.numAttributes());
         inst.setDataset(header);
@@ -106,7 +105,7 @@ public class WaveformGeneratorDrift extends WaveformGenerator {
             }
         }
         inst.setClassValue(waveform);
-        return new InstanceExample(inst);
+        return inst;
     }
 
     @Override

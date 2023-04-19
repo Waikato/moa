@@ -29,7 +29,6 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 import java.util.ArrayList;
 import java.util.Random;
 import moa.core.FastVector;
-import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.streams.InstanceStream;
@@ -137,7 +136,7 @@ public abstract class AbstractConceptDriftGenerator extends AbstractOptionHandle
         return this.change;
     }
 
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
         this.numInstances++;
         InstancesHeader header = getHeader();
         Instance inst = new DenseInstance(header.numAttributes());
@@ -154,7 +153,7 @@ public abstract class AbstractConceptDriftGenerator extends AbstractOptionHandle
             //this.clusterEvents.add(new ClusterEvent(this, this.numInstances, "Change", "Drift"));
         }
         inst.setValue(2,  nextValue);
-        return new InstanceExample(inst);
+        return inst;
     }
 
     public void restart() {

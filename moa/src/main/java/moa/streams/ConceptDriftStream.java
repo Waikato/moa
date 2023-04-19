@@ -21,10 +21,10 @@ package moa.streams;
 
 import java.util.Random;
 
+import com.yahoo.labs.samoa.instances.Instance;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-import moa.core.Example;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
@@ -61,11 +61,11 @@ public class ConceptDriftStream extends AbstractOptionHandler implements
     private static final long serialVersionUID = 1L;
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to add concept drift.", ExampleStream.class,
+            "Stream to add concept drift.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public ClassOption driftstreamOption = new ClassOption("driftstream", 'd',
-            "Concept drift Stream.", ExampleStream.class,
+            "Concept drift Stream.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public FloatOption alphaOption = new FloatOption("alpha",
@@ -80,9 +80,9 @@ public class ConceptDriftStream extends AbstractOptionHandler implements
     public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
             "Seed for random noise.", 1);
 
-    protected ExampleStream inputStream;
+    protected InstanceStream inputStream;
 
-    protected ExampleStream driftStream;
+    protected InstanceStream driftStream;
 
     protected Random random;
 
@@ -92,8 +92,8 @@ public class ConceptDriftStream extends AbstractOptionHandler implements
     public void prepareForUseImpl(TaskMonitor monitor,
             ObjectRepository repository) {
 
-        this.inputStream = (ExampleStream) getPreparedClassOption(this.streamOption);
-        this.driftStream = (ExampleStream) getPreparedClassOption(this.driftstreamOption);
+        this.inputStream = (InstanceStream) getPreparedClassOption(this.streamOption);
+        this.driftStream = (InstanceStream) getPreparedClassOption(this.driftstreamOption);
         this.random = new Random(this.randomSeedOption.getValue());
         numberInstanceStream = 0;
         if (this.alphaOption.getValue() != 0.0) {
@@ -122,7 +122,7 @@ public class ConceptDriftStream extends AbstractOptionHandler implements
     }
 
     @Override
-    public Example nextInstance() {
+    public Instance nextInstance() {
         numberInstanceStream++;
         double x = -4.0 * (double) (numberInstanceStream - this.positionOption.getValue()) / (double) this.widthOption.getValue();
         double probabilityDrift = 1.0 / (1.0 + Math.exp(x));

@@ -29,7 +29,6 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 
 import java.util.Random;
-import moa.core.InstanceExample;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
@@ -165,7 +164,7 @@ public class SEAGenerator extends AbstractOptionHandler implements
     }
 
     @Override
-    public InstanceExample nextInstance() {
+    public Instance nextInstance() {
         double attrib1 = 0, attrib2 = 0, attrib3 = 0;
         int group = 0;
         boolean desiredClassFound = false;
@@ -201,7 +200,7 @@ public class SEAGenerator extends AbstractOptionHandler implements
         inst.setValue(2, attrib3);
         inst.setDataset(header);
         inst.setClassValue(group);
-        return new InstanceExample(inst);
+        return inst;
     }
 
     @Override

@@ -25,7 +25,6 @@ import moa.classifiers.MultiTargetRegressor;
 import moa.core.ObjectRepository;
 import moa.learners.Learner;
 import moa.options.ClassOption;
-import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 import moa.streams.MultiTargetInstanceStream;
 
@@ -83,7 +82,7 @@ public class LearnModelMultiTarget extends MultiTargetMainTask {
     @Override
     public Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
-        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
         learner.setModelContext(stream.getHeader());
         int numPasses = this.numPassesOption.getValue();
         int maxInstances = this.maxInstancesOption.getValue();

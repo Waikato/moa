@@ -23,7 +23,6 @@ package moa.evaluation;
 import com.github.javacliparser.FlagOption;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.Utils;
@@ -113,8 +112,7 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
     }
 
     @Override
-    public void addResult(Example<Instance> example, double[] classVotes) {
-        Instance inst = example.getData();
+    public void addResult(Instance inst, double[] classVotes) {
         double weight = inst.weight();
         if (inst.classIsMissing() == false) {
             int trueClass = (int) inst.classValue();
@@ -287,7 +285,7 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
     }
 
     @Override
-    public void addResult(Example<Instance> testInst, Prediction prediction) {
+    public void addResult(Instance testInst, Prediction prediction) {
         // TODO Auto-generated method stub
 
     }

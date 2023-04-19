@@ -25,9 +25,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
-import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
@@ -44,10 +42,9 @@ import com.github.javacliparser.FileOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import moa.streams.ExampleStream;
+import moa.streams.InstanceStream;
 import com.yahoo.labs.samoa.instances.Instance;
 import java.util.LinkedList;
-import moa.core.InstanceExample;
 import moa.core.Utils;
 
 /**
@@ -77,7 +74,7 @@ public class EvaluatePrequentialDelayed extends ClassificationMainTask {
             "Learner to train.", MultiClassClassifier.class, "moa.classifiers.bayes.NaiveBayes");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", ExampleStream.class,
+            "Stream to learn from.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
@@ -131,7 +128,7 @@ public class EvaluatePrequentialDelayed extends ClassificationMainTask {
             'a', "Fading factor or exponential smoothing factor", .01);
 
     // Buffer of instances to use for training. 
-    protected LinkedList<Example> trainInstances;
+    protected LinkedList<Instance> trainInstances;
     
     @Override
     public Class<?> getTaskResultType() {
@@ -141,12 +138,12 @@ public class EvaluatePrequentialDelayed extends ClassificationMainTask {
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
-        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
         LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         LearningCurve learningCurve = new LearningCurve(
                 "learning evaluation instances");
 
-        this.trainInstances = new LinkedList<Example>();
+        this.trainInstances = new LinkedList<Instance>();
         
         //New for prequential methods
         if (evaluator instanceof WindowClassificationPerformanceEvaluator) {
@@ -222,7 +219,7 @@ public class EvaluatePrequentialDelayed extends ClassificationMainTask {
                 && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
             
             instancesProcessed++;
-            Example currentInst = stream.nextInstance();
+            Instance currentInst = stream.nextInstance();
             
             if(instancesProcessed <= this.initialWindowSizeOption.getValue()) {
                 if(this.trainOnInitialWindowOption.isSet()) {
@@ -240,32 +237,32 @@ public class EvaluatePrequentialDelayed extends ClassificationMainTask {
                         // Do not train on the latest instance, otherwise
                         // it would train on k+1 instances
                         while(this.trainInstances.size() > 1) {
-                            Example trainInst = this.trainInstances.removeFirst();
+                            Instance trainInst = this.trainInstances.removeFirst();
                             learner.trainOnInstance(trainInst);
                         }
                     }
                     else {
-                        Example trainInst = this.trainInstances.removeFirst();
+                        Instance trainInst = this.trainInstances.removeFirst();
                         learner.trainOnInstance(trainInst);
                     }
                 }
 
                 // Remove class label from test instances. 
-                Instance testInstance = ((Instance) currentInst.getData()).copy();
-                Example testInst = new InstanceExample(testInstance);
+                Instance testInstance = currentInst.copy();
+                Instance testInst = testInstance;
                 testInstance.setMissing(testInstance.classAttribute());
                 testInstance.setClassValue(0.0);
           
                 double[] prediction = learner.getVotesForInstance(testInst);
     //          reinstate the testInstance as it is used in evaluator.addResult
-                testInstance = ((Instance) currentInst.getData()).copy();
-                testInst = new InstanceExample(testInstance);
+                testInstance = currentInst.copy();
+                testInst = testInstance;
 
                 // Output prediction
                 if (outputPredictionFile != null) {
-                    int trueClass = (int) ((Instance) currentInst.getData()).classValue();
+                    int trueClass = (int) currentInst.classValue();
                     outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," + (
-                     ((Instance) testInst.getData()).classIsMissing() == true ? " ? " : trueClass));
+                     testInst.classIsMissing() == true ? " ? " : trueClass));
                 }
                 evaluator.addResult(testInst, prediction);
                 

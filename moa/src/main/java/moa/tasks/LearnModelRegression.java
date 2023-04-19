@@ -25,7 +25,6 @@ import moa.learners.Learner;
 import moa.options.ClassOption;
 import com.github.javacliparser.IntOption;
 import moa.classifiers.Regressor;
-import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 
 /**
@@ -47,7 +46,7 @@ public class LearnModelRegression extends RegressionMainTask {
             "Learner to train.", Regressor.class, "moa.classifiers.trees.FIMTDD");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", ExampleStream.class,
+            "Stream to learn from.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public IntOption maxInstancesOption = new IntOption("maxInstances", 'm',
@@ -82,7 +81,7 @@ public class LearnModelRegression extends RegressionMainTask {
     @Override
     public Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
-        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
         learner.setModelContext(stream.getHeader());
         int numPasses = this.numPassesOption.getValue();
         int maxInstances = this.maxInstancesOption.getValue();

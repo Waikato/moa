@@ -21,7 +21,6 @@ package moa.streams.filters;
 
 import java.util.ArrayList;
 import java.util.List;
-import moa.core.InstanceExample;
 import moa.streams.InstanceStream;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
@@ -59,8 +58,8 @@ public class RemoveDiscreteAttributeFilter extends AbstractStreamFilter {
     }
 
     @Override
-    public InstanceExample nextInstance() {
-        Instance inst = (Instance) this.inputStream.nextInstance().getData();
+    public Instance nextInstance() {
+        Instance inst = this.inputStream.nextInstance();
 
         if (streamHeader == null) {
             //Create a new header
@@ -94,7 +93,7 @@ public class RemoveDiscreteAttributeFilter extends AbstractStreamFilter {
         }
 
 
-        return new InstanceExample(instance);
+        return instance;
     }
 
     @Override

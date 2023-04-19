@@ -19,13 +19,13 @@
  */
 package moa.evaluation;
 
+import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.MOAObject;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-import moa.core.Example;
 import moa.core.Measurement;
 
 /**
@@ -35,7 +35,7 @@ import moa.core.Measurement;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public interface LearningPerformanceEvaluator<E extends Example> extends MOAObject, CapabilitiesHandler {
+public interface LearningPerformanceEvaluator extends MOAObject, CapabilitiesHandler {
 
     /**
      * Resets this evaluator. It must be similar to
@@ -51,8 +51,8 @@ public interface LearningPerformanceEvaluator<E extends Example> extends MOAObje
      * @param classVotes an array containing the estimated membership
      * probabilities of the test instance in each class
      */
-    public void addResult(E example, double[] classVotes);
-    public void addResult(E testInst, Prediction prediction);
+    public void addResult(Instance example, double[] classVotes);
+    public void addResult(Instance testInst, Prediction prediction);
 
     /**
      * Gets the current measurements monitored by this evaluator.

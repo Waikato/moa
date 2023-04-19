@@ -29,7 +29,6 @@ import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
-import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.Utils;
@@ -38,7 +37,6 @@ import moa.evaluation.LearningPerformanceEvaluator;
 import moa.evaluation.preview.LearningCurve;
 import moa.learners.Learner;
 import moa.options.ClassOption;
-import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 import com.yahoo.labs.samoa.instances.Instance;
 
@@ -61,7 +59,7 @@ public class EvaluateModel extends ClassificationMainTask implements Capabilitie
             "Learner to evaluate.", MultiClassClassifier.class, "LearnModel");
 
     public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to evaluate on.", ExampleStream.class,
+            "Stream to evaluate on.", InstanceStream.class,
             "generators.RandomTreeGenerator");
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
@@ -100,7 +98,7 @@ public class EvaluateModel extends ClassificationMainTask implements Capabilitie
     @Override
     public Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Learner model = (Learner) getPreparedClassOption(this.modelOption);
-        ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
+        InstanceStream stream = (InstanceStream) getPreparedClassOption(this.streamOption);
         LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         LearningCurve learningCurve = new LearningCurve("learning evaluation instances");
         int maxInstances = this.maxInstancesOption.getValue();
@@ -126,7 +124,7 @@ public class EvaluateModel extends ClassificationMainTask implements Capabilitie
         }
         while (stream.hasMoreInstances()
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))) {
-            Example testInst = (Example) stream.nextInstance();//.copy();
+            Instance testInst = stream.nextInstance();//.copy();
             int trueClass = (int) ((Instance) testInst.getData()).classValue();
             //testInst.setClassMissing();
             double[] prediction = model.getVotesForInstance(testInst);
@@ -134,7 +132,7 @@ public class EvaluateModel extends ClassificationMainTask implements Capabilitie
             //		.weight());
             if (outputPredictionFile != null) {
                 outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," +(
-                        ((Instance) testInst.getData()).classIsMissing() == true ? " ? " : trueClass));
+                        testInst.classIsMissing() == true ? " ? " : trueClass));
             }
             evaluator.addResult(testInst, prediction);
             instancesProcessed++;
