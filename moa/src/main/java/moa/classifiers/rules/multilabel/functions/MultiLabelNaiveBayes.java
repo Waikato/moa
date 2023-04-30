@@ -21,7 +21,6 @@ package moa.classifiers.rules.multilabel.functions;
 
 import moa.classifiers.MultiLabelClassifier;
 import moa.classifiers.bayes.NaiveBayes;
-import moa.classifiers.rules.functions.Perceptron;
 import moa.options.ClassOption;
 
 /**

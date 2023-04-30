@@ -25,7 +25,6 @@ import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiLabelClassifier;
-import moa.classifiers.MultiLabelLearner;
 import moa.core.Measurement;
 
 public class DominantLabelsClassifier extends AbstractMultiLabelLearner

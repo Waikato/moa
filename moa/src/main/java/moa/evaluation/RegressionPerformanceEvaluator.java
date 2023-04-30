@@ -19,8 +19,6 @@
  */
 package moa.evaluation;
 
-import com.yahoo.labs.samoa.instances.Instance;
-
 
 /**
  * Interface implemented by learner evaluators to monitor

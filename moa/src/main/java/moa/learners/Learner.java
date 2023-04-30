@@ -22,9 +22,7 @@ package moa.learners;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.MOAObject;
 
-import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.core.Measurement;

@@ -37,14 +37,12 @@ import moa.classifiers.rules.core.Utils;
 import moa.classifiers.rules.multilabel.attributeclassobservers.AttributeStatisticsObserver;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatisticsObserver;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
-import static moa.classifiers.rules.multilabel.core.LearningLiteral.computeHoeffdingBound;
 import moa.classifiers.rules.multilabel.core.splitcriteria.MultiLabelSplitCriterion;
 import moa.classifiers.rules.multilabel.functions.AMRulesFunction;
 import moa.classifiers.rules.multilabel.instancetransformers.InstanceOutputAttributesSelector;
 import moa.classifiers.rules.multilabel.instancetransformers.InstanceTransformer;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
-import moa.core.StringUtils;
 
 
 /**

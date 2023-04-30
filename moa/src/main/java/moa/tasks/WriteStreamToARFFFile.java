@@ -29,8 +29,6 @@ import moa.options.ClassOption;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.InstanceImpl;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.streams.InstanceStream;
 
 /**

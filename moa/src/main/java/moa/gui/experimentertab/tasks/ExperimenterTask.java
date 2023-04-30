@@ -6,9 +6,7 @@
 package moa.gui.experimentertab.tasks;
 
 
-import moa.core.ObjectRepository;
 import moa.tasks.AbstractTask;
-import moa.tasks.TaskMonitor;
 
 /**
  *

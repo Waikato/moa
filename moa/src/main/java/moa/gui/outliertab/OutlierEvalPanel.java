@@ -22,12 +22,10 @@ package moa.gui.outliertab;
 
 import java.awt.GridBagConstraints;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import moa.core.AutoClassDiscovery;
 import moa.core.AutoExpandVector;
-import moa.evaluation.ClassificationMeasureCollection;
 import moa.evaluation.MeasureCollection;
 import moa.evaluation.OutlierPerformance;
 

@@ -25,8 +25,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import javax.swing.ButtonGroup;

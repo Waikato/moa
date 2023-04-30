@@ -20,7 +20,6 @@
 package moa.clusterers.clustream;
 
 import java.util.ArrayList;
-import java.util.Random;
 import moa.cluster.CFCluster;
 import com.yahoo.labs.samoa.instances.Instance;
 

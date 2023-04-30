@@ -20,24 +20,19 @@
 package moa.classifiers.multilabel;
 
 import moa.classifiers.trees.HoeffdingTreeClassifLeaves;
-import java.io.StringReader;
+
 import java.util.List;
 import moa.classifiers.Classifier;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.trees.HoeffdingTree;
 import moa.core.StringUtils;
-import moa.core.utils.Converter;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import java.util.LinkedList;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
 import moa.core.Example;
-import java.util.Arrays;
 
 /**
  * Hoeffding Tree for classifying multi-label data.

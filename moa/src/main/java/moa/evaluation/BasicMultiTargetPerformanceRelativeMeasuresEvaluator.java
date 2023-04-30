@@ -21,12 +21,8 @@ package moa.evaluation;
 
 import moa.AbstractMOAObject;
 import moa.core.Measurement;
-import moa.evaluation.MultiTargetWindowRegressionPerformanceRelativeMeasuresEvaluator.Estimator;
 
-import com.yahoo.labs.samoa.instances.DenseInstance;
-import com.yahoo.labs.samoa.instances.DenseInstanceData;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;

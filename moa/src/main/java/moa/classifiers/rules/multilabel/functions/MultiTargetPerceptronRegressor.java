@@ -20,7 +20,6 @@
 package moa.classifiers.rules.multilabel.functions;
 
 import moa.classifiers.MultiTargetRegressor;
-import moa.classifiers.multitarget.BasicMultiTargetRegressor;
 import moa.classifiers.rules.functions.Perceptron;
 import moa.options.ClassOption;
 

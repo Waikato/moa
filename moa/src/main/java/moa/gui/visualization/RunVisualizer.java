@@ -45,7 +45,6 @@ import moa.gui.clustertab.ClusteringVisualEvalPanel;
 import moa.gui.clustertab.ClusteringVisualTab;
 import moa.streams.clustering.ClusterEvent;
 import com.yahoo.labs.samoa.instances.Instance;
-import moa.gui.clustertab.ClusteringSetupTab;
 import moa.streams.clustering.ClusterEventListener;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;

@@ -45,7 +45,6 @@ import com.github.javacliparser.gui.OptionsConfigurationPanel;
 import moa.options.ClassOption;
 import com.github.javacliparser.Option;
 import moa.streams.clustering.ClusteringStream;
-import moa.streams.generators.RandomRBFGenerator;
 
 public class ClusteringAlgoPanel extends javax.swing.JPanel implements ActionListener{
 

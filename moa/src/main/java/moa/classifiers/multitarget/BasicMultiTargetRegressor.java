@@ -24,7 +24,6 @@ import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.rules.AMRulesRegressor;
-import moa.classifiers.rules.multilabel.AMRulesMultiLabelLearner;
 import moa.core.DoubleVector;
 import moa.core.FastVector;
 import moa.core.Measurement;

@@ -30,10 +30,8 @@ import com.github.javacliparser.IntOption;
 import com.github.javacliparser.StringOption;
 
 import moa.core.ObjectRepository;
-import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
 import moa.streams.InstanceStream;
-import moa.streams.generators.RandomRBFGenerator;
 
 /**
  * Task to output multiple streams to a ARFF files using different random seeds

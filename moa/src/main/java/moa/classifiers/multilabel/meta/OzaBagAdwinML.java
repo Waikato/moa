@@ -18,14 +18,10 @@
  */
 package moa.classifiers.multilabel.meta;
 
-import moa.classifiers.Classifier;
 import moa.classifiers.core.driftdetection.ADWIN;
 import moa.classifiers.meta.OzaBagAdwin;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import moa.core.MiscUtils;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;

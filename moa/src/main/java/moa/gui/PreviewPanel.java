@@ -35,7 +35,6 @@ import moa.evaluation.MeasureCollection;
 import moa.evaluation.preview.Preview;
 import moa.evaluation.RegressionAccuracy;
 import moa.gui.conceptdrift.CDTaskManagerPanel;
-import moa.tasks.FailedTaskReport;
 import moa.tasks.ResultPreviewListener;
 import moa.tasks.TaskThread;
 

@@ -20,7 +20,6 @@
 package moa.classifiers.trees.iadem;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.classifiers.core.driftdetection.AbstractChangeDetector;
 
 

@@ -39,8 +39,6 @@ import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
-import java.util.Arrays;;
-
 /**
  * Binary relevance Multilabel Classifier
  *

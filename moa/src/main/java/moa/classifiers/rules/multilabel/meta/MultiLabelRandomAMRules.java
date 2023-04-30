@@ -23,7 +23,6 @@ package moa.classifiers.rules.multilabel.meta;
 
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
-import moa.classifiers.rules.featureranking.BasicFeatureRanking;
 import moa.classifiers.rules.featureranking.FeatureRanking;
 import moa.classifiers.rules.featureranking.NoFeatureRanking;
 import moa.classifiers.rules.multilabel.AMRulesMultiLabelLearner;
@@ -40,7 +39,6 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 

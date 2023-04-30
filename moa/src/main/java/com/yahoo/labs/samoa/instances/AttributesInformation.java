@@ -16,7 +16,6 @@
 package com.yahoo.labs.samoa.instances;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

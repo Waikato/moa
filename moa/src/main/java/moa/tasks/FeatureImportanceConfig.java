@@ -28,7 +28,6 @@ import moa.learners.featureanalysis.ClassifierWithFeatureImportance;
 import moa.options.ClassOption;
 
 import javax.swing.*;
-import java.util.Arrays;
 
 /**
  * This class Provides GUI to user so that they can configure parameters for feature importance algorithm.

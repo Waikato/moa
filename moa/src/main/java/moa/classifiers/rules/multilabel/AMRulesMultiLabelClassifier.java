@@ -20,8 +20,6 @@
 
 package moa.classifiers.rules.multilabel;
 
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import moa.classifiers.MultiLabelClassifier;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.rules.multilabel.core.MultiLabelRule;

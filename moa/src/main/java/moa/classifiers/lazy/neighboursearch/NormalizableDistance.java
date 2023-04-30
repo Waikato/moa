@@ -21,7 +21,6 @@
 
 package moa.classifiers.lazy.neighboursearch;
 
-import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 

@@ -22,7 +22,6 @@ package moa.classifiers;
 import moa.learners.Learner;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 /**

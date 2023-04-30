@@ -19,7 +19,6 @@
  */
 package moa.evaluation;
 
-import com.github.javacliparser.IntOption;
 import moa.classifiers.core.driftdetection.ADWIN;
 
 /**

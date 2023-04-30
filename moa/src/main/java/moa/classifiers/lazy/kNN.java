@@ -17,7 +17,6 @@
  */
 package moa.classifiers.lazy;
 
-import java.io.StringReader;
 import java.util.Arrays;
 
 import com.github.javacliparser.FlagOption;

@@ -22,11 +22,6 @@
 package moa.gui.visualization;
 
 import java.awt.*;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
 import javax.swing.*;
 import moa.cluster.SphereCluster;
 import moa.clusterers.outliers.MyBaseOutlierDetector;

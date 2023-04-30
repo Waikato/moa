@@ -22,7 +22,6 @@ package moa.classifiers.functions;
 import moa.core.DoubleVector;
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import moa.core.Utils;
 
 /**
 <!-- globalinfo-start -->

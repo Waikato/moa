@@ -20,7 +20,6 @@
 package moa.classifiers.rules.functions;
 
 import java.util.LinkedList;
-import java.util.Random;
 
 import moa.classifiers.AbstractClassifier;
 import moa.core.DoubleVector;

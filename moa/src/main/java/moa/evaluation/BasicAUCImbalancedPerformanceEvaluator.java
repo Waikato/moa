@@ -26,7 +26,6 @@ import moa.core.Utils;
 import moa.options.AbstractOptionHandler;
 
 import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceImpl;
 import com.yahoo.labs.samoa.instances.Prediction;

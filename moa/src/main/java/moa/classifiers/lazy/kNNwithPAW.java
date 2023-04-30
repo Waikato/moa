@@ -18,7 +18,6 @@
 package moa.classifiers.lazy;
 
 import moa.classifiers.MultiClassClassifier;
-import moa.classifiers.core.driftdetection.ADWIN;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 

@@ -25,7 +25,6 @@ package moa.classifiers.rules.multilabel.functions;
 
 import moa.classifiers.MultiLabelClassifier;
 import moa.options.ClassOption;
-import moa.classifiers.rules.functions.Perceptron;
 
 /**
  * Multi-Label perceptron classifier (by Binary Relevance).

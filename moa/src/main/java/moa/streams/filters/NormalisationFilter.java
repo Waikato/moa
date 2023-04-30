@@ -15,19 +15,8 @@
  */
 package moa.streams.filters;
 
-import com.github.javacliparser.FileOption;
-import com.github.javacliparser.FlagOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import meka.core.F;
-import moa.capabilities.CapabilitiesHandler;
-import moa.capabilities.Capability;
-import moa.capabilities.ImmutableCapabilities;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.Writer;
 
 /**
  * Filter for standardising and normalising instances in a stream.

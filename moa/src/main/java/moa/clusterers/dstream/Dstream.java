@@ -18,7 +18,6 @@
 
 package moa.clusterers.dstream;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;

@@ -24,8 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import moa.AbstractMOAObject;
-import moa.classifiers.Classifier;
-import moa.clusterers.Clusterer;
 import moa.learners.Learner;
 import moa.core.Measurement;
 

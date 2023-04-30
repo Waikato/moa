@@ -30,7 +30,6 @@ import moa.classifiers.rules.core.anomalydetection.OddsRatioScore;
 import moa.classifiers.rules.featureranking.FeatureRanking;
 import moa.classifiers.rules.featureranking.NoFeatureRanking;
 import moa.classifiers.rules.featureranking.messages.ChangeDetectedMessage;
-import moa.classifiers.rules.functions.Perceptron;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NominalStatisticsObserver;
 import moa.classifiers.rules.multilabel.attributeclassobservers.NumericStatisticsObserver;
 import moa.classifiers.rules.multilabel.core.MultiLabelRule;
