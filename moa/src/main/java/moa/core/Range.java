@@ -13,7 +13,7 @@
  * language governing permissions and limitations under the
  * License.  
  */
-package com.yahoo.labs.samoa.instances;
+package moa.core;
 
 import java.io.Serializable;
 
@@ -86,7 +86,7 @@ public class Range implements Serializable {
         return ret;
     }
 
-    int getSelectionLength() {
+    public int getSelectionLength() {
         return end - start + 1;
     }
 

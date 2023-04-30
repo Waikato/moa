@@ -15,6 +15,8 @@
  */
 package com.yahoo.labs.samoa.instances;
 
+import moa.core.Range;
+
 import java.io.Reader;
 
 public class MultiTargetArffLoader extends ArffLoader {

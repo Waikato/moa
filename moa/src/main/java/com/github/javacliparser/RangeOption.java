@@ -18,7 +18,7 @@
 package com.github.javacliparser;
 
 import java.util.Arrays;
-import com.yahoo.labs.samoa.instances.Range;
+import moa.core.Range;
 
 /**
  * Range option.

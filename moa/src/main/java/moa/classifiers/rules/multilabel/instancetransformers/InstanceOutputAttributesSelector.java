@@ -31,7 +31,7 @@ import com.yahoo.labs.samoa.instances.InstanceImpl;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
-import com.yahoo.labs.samoa.instances.Range;
+import moa.core.Range;
 
 /**
  * Transforms instances considering only a subset of output attributes

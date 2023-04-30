@@ -2,24 +2,15 @@ package moa.classifiers.rules.multilabel.instancetransformers;
 
 import static org.junit.Assert.*;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-
 import moa.streams.MultiTargetArffFileStream;
-import moa.streams.filters.SelectAttributesFilter;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
-import com.yahoo.labs.samoa.instances.Range;
 
 public class InstanceOutputAttributesSelectorTest {
 	private static Instance instance1, instance2, transformed1, transformed2;

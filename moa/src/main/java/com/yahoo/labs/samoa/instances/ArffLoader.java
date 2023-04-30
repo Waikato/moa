@@ -15,6 +15,8 @@
  */
 package com.yahoo.labs.samoa.instances;
 
+import moa.core.Range;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;

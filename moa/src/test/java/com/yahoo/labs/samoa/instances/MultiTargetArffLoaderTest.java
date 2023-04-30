@@ -9,15 +9,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import moa.core.InputStreamProgressMonitor;
-import moa.streams.ArffFileStream;
-import moa.streams.MultiTargetArffFileStream;
-import moa.test.MoaTestCase;
-import moa.test.TmpFile;
+import moa.core.Range;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 /**
