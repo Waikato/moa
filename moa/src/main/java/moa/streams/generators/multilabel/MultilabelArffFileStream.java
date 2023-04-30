@@ -24,7 +24,7 @@ import moa.streams.MultiTargetInstanceStream;
 
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 
-import moa.core.MultilabelInstancesHeader;
+import moa.core.instances.MultilabelInstancesHeader;
 
 import com.github.javacliparser.IntOption;
 

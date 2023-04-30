@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.core;
+package moa.core.instances;
 
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;

@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.core.utils;
+package moa.core.instances;
 
 import java.util.LinkedList;
 import java.util.List;

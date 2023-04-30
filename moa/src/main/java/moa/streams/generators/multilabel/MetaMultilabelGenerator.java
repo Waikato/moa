@@ -20,7 +20,7 @@
 package moa.streams.generators.multilabel;
 
 import java.util.*;
-import moa.core.MultilabelInstancesHeader;
+import moa.core.instances.MultilabelInstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
