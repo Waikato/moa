@@ -24,11 +24,10 @@ import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
 import com.github.javacliparser.IntOption;
-import moa.options.WEKAClassOption;
+import moa.options.weka.WEKAClassOption;
 import weka.classifiers.Classifier;
 import weka.classifiers.UpdateableClassifier;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 
 /**

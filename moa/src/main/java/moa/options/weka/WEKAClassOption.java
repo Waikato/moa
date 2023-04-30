@@ -18,9 +18,10 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.options;
+package moa.options.weka;
 
 import com.github.javacliparser.Option;
+import moa.options.AbstractClassOption;
 import weka.core.Utils;
 
 import java.io.File;

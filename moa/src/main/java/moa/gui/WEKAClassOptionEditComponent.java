@@ -35,7 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.github.javacliparser.Option;
-import moa.options.WEKAClassOption;
+import moa.options.weka.WEKAClassOption;
 
 /**
  * An OptionEditComponent that lets the user edit a WEKA class option.
