@@ -26,7 +26,6 @@ import com.yahoo.labs.samoa.instances.Instance;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-import moa.core.Example;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
 import moa.streams.InstanceStream;
@@ -135,11 +134,11 @@ public class WriteToTopicTask extends AuxiliarMainTask implements CapabilitiesHa
       if (!stream.hasMoreInstances()) break;
 
       // Get the next instance from the stream
-      Example<Instance> inst = stream.nextInstance();
+      Instance inst = stream.nextInstance();
 
       // Create a record of the instance for the topic
       ProducerRecord<Long, Instance> record = new ProducerRecord<>(
-            topic, (long) i++, inst.getData()
+            topic, (long) i++, inst
       );
 
       // Send the record to the Kafka instance

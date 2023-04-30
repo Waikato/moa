@@ -33,7 +33,6 @@ import com.yahoo.labs.samoa.instances.Prediction;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
-import moa.core.Example;
 
 /**
  * Wrapper for MEKA classifiers. 

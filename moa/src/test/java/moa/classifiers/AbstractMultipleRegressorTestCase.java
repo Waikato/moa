@@ -20,7 +20,6 @@ package moa.classifiers;
 
 import com.yahoo.labs.samoa.instances.Instance;
 
-import moa.core.Example;
 import moa.evaluation.BasicRegressionPerformanceEvaluator;
 import moa.evaluation.ClassificationPerformanceEvaluator;
 import moa.evaluation.LearningPerformanceEvaluator;
@@ -49,7 +48,6 @@ public abstract class AbstractMultipleRegressorTestCase
     /**
      * Sets the number of tests to run with this classifier.
      *
-     * @param name the name of the test
      * @param numberTests the numbers of tests to run
      */
 
@@ -142,11 +140,11 @@ public abstract class AbstractMultipleRegressorTestCase
      * @return	the setups
      */
     @Override
-    protected LearningPerformanceEvaluator<Example<Instance>> [] getRegressionEvaluatorSetups() {
-    	LearningPerformanceEvaluator<Example<Instance>>  value = new BasicRegressionPerformanceEvaluator();
-    	LearningPerformanceEvaluator<Example<Instance>> [] ret = new BasicRegressionPerformanceEvaluator[this.numberTests];
+    protected LearningPerformanceEvaluator[] getRegressionEvaluatorSetups() {
+    	LearningPerformanceEvaluator value = new BasicRegressionPerformanceEvaluator();
+    	LearningPerformanceEvaluator[] ret = new BasicRegressionPerformanceEvaluator[this.numberTests];
         for (int i = 0; i < this.numberTests; i++) {
-            ret[i] = (LearningPerformanceEvaluator<Example<Instance>> ) value.copy();
+            ret[i] = (LearningPerformanceEvaluator) value.copy();
         }
         return ret;
     }

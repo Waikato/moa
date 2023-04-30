@@ -143,7 +143,7 @@ public class WriteMultipleStreamsToARFF extends AuxiliarMainTask
 					while ((numWritten < this.maxInstancesOption.getValue())
 							&& stream.hasMoreInstances())
 					{
-						w.write(stream.nextInstance().getData().toString());
+						w.write(stream.nextInstance().toString());
 						w.write("\n");
 						numWritten++;
 					}

@@ -921,7 +921,7 @@ public class VisualizeFeaturesPanel extends AbstractPerspective {
 
 
                         while(afs.hasMoreInstances()){
-                            instance=afs.nextInstance().getData();
+                            instance=afs.nextInstance();
                             insts.add(instance);
                         }
                         setInstances(insts);

@@ -58,7 +58,7 @@ public class TestSpeed {
         
         int numberSamples = 0;     
         while (stream.hasMoreInstances() && (numberSamples < numInstances)) {               
-            Instance newInst = stream.nextInstance().getData();
+            Instance newInst = stream.nextInstance();
             
             //scod.processNewInstanceImpl(newInst);  
             mcod.processNewInstanceImpl(newInst);  

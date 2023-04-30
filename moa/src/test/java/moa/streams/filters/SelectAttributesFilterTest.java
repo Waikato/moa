@@ -29,7 +29,7 @@ public class SelectAttributesFilterTest {
 	}
 	@Test
 	public void testNextInstance(){
-		Instance inst=filter.nextInstance().getData();
+		Instance inst=filter.nextInstance();
 		assertEquals("F2", inst.inputAttribute(0).name());
 		assertEquals("N1", inst.inputAttribute(1).name());
 		assertEquals("R1", inst.inputAttribute(2).name());

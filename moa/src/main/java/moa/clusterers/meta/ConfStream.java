@@ -25,7 +25,7 @@ public class ConfStream extends EnsembleClustererAbstract {
 		stream.prepareForUse();
 		algorithm.prepareForUse();
 		for (int i = 0; i < 1000000; i++) {
-			Instance inst = stream.nextInstance().getData();
+			Instance inst = stream.nextInstance();
 			algorithm.trainOnInstanceImpl(inst);
 		}
 		algorithm.getClusteringResult();

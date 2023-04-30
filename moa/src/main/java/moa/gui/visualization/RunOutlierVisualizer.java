@@ -319,7 +319,7 @@ public class RunOutlierVisualizer implements Runnable, ActionListener, ClusterEv
             if (timestamp % 100 == 0) 
                 m_visualPanel.setProcessedPointsCounter(timestamp);
 
-            Instance nextStreamObj0 = m_stream0.nextInstance().getData();
+            Instance nextStreamObj0 = m_stream0.nextInstance();
             DataPoint point0 = new DataPoint(nextStreamObj0,timestamp);
 
             pointBuffer0.add(point0);

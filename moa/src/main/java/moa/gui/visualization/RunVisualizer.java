@@ -206,7 +206,7 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
                     m_visualPanel.setProcessedPointsCounter(timestamp);
                 }
 
-                Instance next0 = m_stream0.nextInstance().getData();
+                Instance next0 = m_stream0.nextInstance();
                 DataPoint point0 = new DataPoint(next0,timestamp);
 
                 pointBuffer0.add(point0);

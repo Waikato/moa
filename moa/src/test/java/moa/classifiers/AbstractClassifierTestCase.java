@@ -24,8 +24,6 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import moa.core.Example;
-import moa.core.InstanceExample;
 import moa.core.Measurement;
 import moa.evaluation.LearningPerformanceEvaluator;
 import moa.test.AbstractTestHelper;
@@ -166,7 +164,7 @@ extends MoaTestCase {
 	 * @param scheme		the scheme to process the data with
 	 * @return			the processed data
 	 */
-	protected InspectionData[] inspect(Instances data, int[] inspectionPoints, LearningPerformanceEvaluator<Example<Instance>>  evaluator, Classifier scheme) {
+	protected InspectionData[] inspect(Instances data, int[] inspectionPoints, LearningPerformanceEvaluator evaluator, Classifier scheme) {
 		InspectionData[]	result;
 		int			i;
 		int			point;
@@ -183,7 +181,7 @@ extends MoaTestCase {
 			if (i > 0) {
 				votes = scheme.getVotesForInstance(inst);
 
-				evaluator.addResult((Example<Instance>)new InstanceExample(inst), votes);
+				evaluator.addResult(inst, votes);
 
 				if (point < inspectionPoints.length) {
 					if (i == inspectionPoints[point] - 1) {
@@ -261,7 +259,7 @@ extends MoaTestCase {
 	 *
 	 * @return		the setups
 	 */
-	protected abstract LearningPerformanceEvaluator<Example<Instance>> [] getRegressionEvaluatorSetups();
+	protected abstract LearningPerformanceEvaluator[] getRegressionEvaluatorSetups();
 
 	/**
 	 * Creates an output filename based on the input filename.
@@ -302,7 +300,7 @@ extends MoaTestCase {
 		String[]					input;
 		int[]					cindices;
 		Classifier[]				setups;
-		LearningPerformanceEvaluator<Example<Instance>> []	evals;
+		LearningPerformanceEvaluator[]	evals;
 		int[][]					points;
 		Classifier					current;
 		String[]					output;

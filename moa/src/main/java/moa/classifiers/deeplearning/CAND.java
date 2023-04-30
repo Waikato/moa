@@ -28,7 +28,6 @@ import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.driftdetection.ADWIN;
-import moa.core.InstanceExample;
 import moa.core.Measurement;
 import moa.evaluation.BasicClassificationPerformanceEvaluator;
 
@@ -347,7 +346,7 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
         MLP.setFeatureValuesArray(instance, featureValues, useOneHotEncode.isSet(), true, normalizeInfo, samplesSeen);
 
         votes = this.nn[chosenIndex].getVotesForFeatureValues(instance, featureValues);
-        performanceEvaluator.addResult(new InstanceExample(instance), votes);
+        performanceEvaluator.addResult(instance, votes);
         double lastAcc = accEstimator.getEstimation();
         accEstimator.setInput(performanceEvaluator.getPerformanceMeasurements()[1].getValue());
         if (accEstimator.getChange() && (accEstimator.getEstimation() < lastAcc)){

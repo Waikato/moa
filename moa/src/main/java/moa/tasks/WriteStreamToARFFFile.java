@@ -75,7 +75,7 @@ public class WriteStreamToARFFFile extends AuxiliarMainTask {
                 int numWritten = 0;
                 while ((numWritten < this.maxInstancesOption.getValue())
                         && stream.hasMoreInstances()) {
-                    w.write(stream.nextInstance().getData().toString());
+                    w.write(stream.nextInstance().toString());
                     w.write("\n");
                     numWritten++;
                 }

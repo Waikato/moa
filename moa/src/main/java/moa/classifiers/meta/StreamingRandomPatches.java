@@ -145,7 +145,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
         for (int i = 0 ; i < this.ensemble.length ; i++) {
             double[] rawVote = this.ensemble[i].getVotesForInstance(instance);
             DoubleVector vote = new DoubleVector(rawVote);
-            InstanceExample example = new InstanceExample(instance);
+            Instance example = instance;
 
             this.ensemble[i].evaluator.addResult(example, vote.getArrayRef());
             // Train using random subspaces without resampling, i.e. all instances are used for training.

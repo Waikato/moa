@@ -157,7 +157,7 @@ public class BatchCmd implements ClusterEventListener{
 		while(m_timestamp < totalInstances && stream.hasMoreInstances()){
 			m_timestamp++;
 			counter--;
-			Instance next = stream.nextInstance().getData();
+			Instance next = stream.nextInstance();
 			DataPoint point0 = new DataPoint(next,m_timestamp);
 			pointBuffer0.add(point0);
 

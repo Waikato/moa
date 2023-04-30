@@ -32,7 +32,6 @@ import com.yahoo.labs.samoa.instances.Prediction;
 import java.util.LinkedList;
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
-import moa.core.Example;
 
 /**
  * Hoeffding Tree for classifying multi-label data.
@@ -178,8 +177,8 @@ public class MultilabelHoeffdingTree extends HoeffdingTreeClassifLeaves implemen
 
 
 	@Override
-	public Prediction getPredictionForInstance(Example<Instance> example) {
-		return getPredictionForInstance((MultiLabelInstance)example.getData());
+	public Prediction getPredictionForInstance(Instance example) {
+		return getPredictionForInstance((MultiLabelInstance)example);
 	}
 
 	@Override

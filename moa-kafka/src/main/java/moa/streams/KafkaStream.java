@@ -27,8 +27,6 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-import moa.core.Example;
-import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
@@ -138,7 +136,7 @@ public class KafkaStream extends AbstractOptionHandler implements
   }
 
   @Override
-  public Example<Instance> nextInstance() {
+  public Instance nextInstance() {
     // Retrieve more instances from Kafka if the buffer is empty
     fillBufferIfNecessary();
 
@@ -147,7 +145,7 @@ public class KafkaStream extends AbstractOptionHandler implements
       return null;
 
     // Return the next instance from the buffer
-    return new InstanceExample(m_InstanceBuffer.remove());
+    return m_InstanceBuffer.remove();
   }
 
   @Override

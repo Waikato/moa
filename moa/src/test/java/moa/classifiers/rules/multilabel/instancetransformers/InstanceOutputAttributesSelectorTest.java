@@ -19,8 +19,8 @@ public class InstanceOutputAttributesSelectorTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
         MultiTargetArffFileStream stream =  new MultiTargetArffFileStream(ClassLoader.getSystemResource("moa/classifiers/data/small_regression.arff").getPath(), "4-6");
-		instance1=stream.nextInstance().getData();
-		instance2=stream.nextInstance().getData();
+		instance1=stream.nextInstance();
+		instance2=stream.nextInstance();
 		transformer= new InstanceOutputAttributesSelector(new InstancesHeader(instance1.dataset()), new int[]{0,2});
 		transformed1=transformer.sourceInstanceToTarget(instance1);
 		transformed2=transformer.sourceInstanceToTarget(instance2);

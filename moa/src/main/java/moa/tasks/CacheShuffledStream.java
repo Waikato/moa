@@ -62,7 +62,7 @@ public class CacheShuffledStream extends AbstractTask {
         monitor.setCurrentActivity("Caching instances...", -1.0);
         while ((cache.numInstances() < this.maximumCacheSizeOption.getValue())
                 && stream.hasMoreInstances()) {
-            cache.add(stream.nextInstance().getData());
+            cache.add(stream.nextInstance());
             if (cache.numInstances()
                     % MainTask.INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
                 if (monitor.taskShouldAbort()) {

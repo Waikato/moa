@@ -46,7 +46,7 @@ public class Test {
         int numberSamples = 0;   
         int w = myOutlierDetector.windowSizeOption.getValue();
         while (stream.hasMoreInstances() && (numberSamples < numInstances)) {
-            Instance newInst = stream.nextInstance().getData();
+            Instance newInst = stream.nextInstance();
             myOutlierDetector.processNewInstanceImpl(newInst);            
             numberSamples++;
         }        

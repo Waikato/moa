@@ -703,7 +703,7 @@ public abstract class EnsembleClustererAbstract extends AbstractClusterer {
 
 		// train the algorithm
 		for (int i = 1; i < 5000; i++) {
-			Instance inst = stream.nextInstance().getData();
+			Instance inst = stream.nextInstance();
 			confStream.trainOnInstanceImpl(inst);
 		}
 

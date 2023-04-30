@@ -262,7 +262,7 @@ public class MOA
    */
   public Instance generateExample() throws Exception {
   	if (m_ActualGenerator.hasMoreInstances()) {
-  		return instanceConverter.wekaInstance(m_ActualGenerator.nextInstance().getData());
+  		return instanceConverter.wekaInstance(m_ActualGenerator.nextInstance());
         } else {
   		return null;
   }
