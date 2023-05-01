@@ -279,7 +279,7 @@ public class SimpleCSVStream extends ClusteringStream {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see moa.MOAObject#getDescription(java.lang.StringBuilder, int)
+	 * @see moa.core.MOAObject#getDescription(java.lang.StringBuilder, int)
 	 */
 	@Override
 	public void getDescription(StringBuilder sb, int indent) {

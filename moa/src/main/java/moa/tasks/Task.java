@@ -19,7 +19,7 @@
  */
 package moa.tasks;
 
-import moa.MOAObject;
+import moa.core.MOAObject;
 import moa.core.ObjectRepository;
 
 /**

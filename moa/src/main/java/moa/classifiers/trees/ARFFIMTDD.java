@@ -28,7 +28,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 
 import moa.options.ClassOption;
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.classifiers.Regressor;
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.FIMTDDNumericAttributeClassObserver;

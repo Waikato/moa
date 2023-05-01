@@ -21,7 +21,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.classifiers.Regressor;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.core.driftdetection.ChangeDetector;

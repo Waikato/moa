@@ -22,9 +22,6 @@ package moa.core;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import moa.AbstractMOAObject;
-import moa.MOAObject;
-
 /**
  * Vector with the capability of automatic expansion.
  *

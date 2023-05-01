@@ -36,7 +36,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
 import moa.classifiers.rules.AbstractAMRules;

@@ -22,7 +22,7 @@ package moa.evaluation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.cluster.Clustering;
 import moa.gui.visualization.DataPoint;
 

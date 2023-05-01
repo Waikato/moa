@@ -4,7 +4,7 @@ package moa.classifiers.rules.multilabel.core.voting;
 import java.util.LinkedList;
 import java.util.List;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 
 import com.yahoo.labs.samoa.instances.Prediction;
 

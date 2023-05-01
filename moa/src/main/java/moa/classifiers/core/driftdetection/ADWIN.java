@@ -19,7 +19,7 @@
  */
 package moa.classifiers.core.driftdetection;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 
 /**
  * ADaptive sliding WINdow method. This method is a change detector and estimator.

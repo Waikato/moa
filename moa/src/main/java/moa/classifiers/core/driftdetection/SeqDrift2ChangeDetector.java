@@ -24,7 +24,7 @@ import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
 import java.util.ArrayList;
 import java.util.List;
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 
 /**
  * SeqDriftChangeDetector.java. This extends Abstract Change Detector 

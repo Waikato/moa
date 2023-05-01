@@ -22,7 +22,7 @@ package moa.evaluation.preview;
 import java.util.ArrayList;
 import java.util.List;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 
 /**
  * Abstract class which is used to define the methods needed from a preview

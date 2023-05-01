@@ -19,8 +19,6 @@
  */
 package moa.core;
 
-import moa.AbstractMOAObject;
-
 /**
  * Vector of double numbers with some utilities.
  *

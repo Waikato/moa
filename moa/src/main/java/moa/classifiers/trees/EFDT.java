@@ -54,7 +54,7 @@ import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.bayes.NaiveBayes;

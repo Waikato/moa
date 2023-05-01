@@ -20,7 +20,7 @@
 
 package moa.classifiers.rules.multilabel.instancetransformers;
 
-import moa.MOAObject;
+import moa.core.MOAObject;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Prediction;

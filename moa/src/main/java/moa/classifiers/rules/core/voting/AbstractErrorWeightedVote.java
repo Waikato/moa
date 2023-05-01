@@ -23,7 +23,7 @@ package moa.classifiers.rules.core.voting;
 import java.util.ArrayList;
 import java.util.List;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 
 /**
  * AbstractErrorWeightedVote class for weighted votes based on estimates of errors. 

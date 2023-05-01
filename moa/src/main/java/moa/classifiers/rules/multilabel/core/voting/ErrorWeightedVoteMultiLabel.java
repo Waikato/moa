@@ -1,7 +1,7 @@
 
 package moa.classifiers.rules.multilabel.core.voting;
 
-import moa.MOAObject;
+import moa.core.MOAObject;
 
 import com.yahoo.labs.samoa.instances.Prediction;
 

@@ -22,7 +22,7 @@ package moa.tasks;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.core.StringUtils;
 
 /**

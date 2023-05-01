@@ -22,8 +22,6 @@ package moa.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import moa.AbstractMOAObject;
-
 /**
  * Class for storing an evaluation measurement.
  *

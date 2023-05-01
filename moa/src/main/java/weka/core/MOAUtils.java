@@ -21,7 +21,7 @@
 
 package weka.core;
 
-import moa.MOAObject;
+import moa.core.MOAObject;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
 

@@ -34,7 +34,7 @@ package moa.classifiers.rules;
 
 import java.util.ArrayList;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;

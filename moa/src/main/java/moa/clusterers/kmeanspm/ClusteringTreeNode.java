@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.cluster.Clustering;
 
 /**
@@ -171,7 +171,7 @@ public class ClusteringTreeNode extends AbstractMOAObject {
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see moa.MOAObject#getDescription(java.lang.StringBuilder, int)
+	 * @see moa.core.MOAObject#getDescription(java.lang.StringBuilder, int)
 	 */
 	@Override
 	public void getDescription(StringBuilder sb, int indent) {

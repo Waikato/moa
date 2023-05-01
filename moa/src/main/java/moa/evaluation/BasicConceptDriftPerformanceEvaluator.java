@@ -22,7 +22,7 @@ package moa.evaluation;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.core.Measurement;
 
 public class BasicConceptDriftPerformanceEvaluator extends AbstractMOAObject

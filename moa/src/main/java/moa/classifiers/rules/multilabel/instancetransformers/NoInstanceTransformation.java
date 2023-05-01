@@ -21,7 +21,7 @@
 
 package moa.classifiers.rules.multilabel.instancetransformers;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Prediction;

@@ -22,7 +22,7 @@ package moa.tasks;
 
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.StringOption;
-import moa.MOAObject;
+import moa.core.MOAObject;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
 

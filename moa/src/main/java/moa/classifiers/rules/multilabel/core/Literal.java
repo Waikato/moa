@@ -1,6 +1,6 @@
 package moa.classifiers.rules.multilabel.core;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.classifiers.rules.core.Predicate;
 
 import com.yahoo.labs.samoa.instances.Instance;

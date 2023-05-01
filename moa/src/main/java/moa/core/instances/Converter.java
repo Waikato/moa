@@ -21,7 +21,7 @@ package moa.core.instances;
 
 import java.util.LinkedList;
 import java.util.List;
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 

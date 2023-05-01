@@ -19,7 +19,7 @@
  */
 package moa.clusterers;
 
-import moa.MOAObject;
+import moa.core.MOAObject;
 import moa.cluster.Clustering;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.Measurement;

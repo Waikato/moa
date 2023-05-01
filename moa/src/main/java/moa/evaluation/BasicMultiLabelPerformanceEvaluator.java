@@ -18,7 +18,7 @@
  */
 package moa.evaluation;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.core.Measurement;
 
 import com.yahoo.labs.samoa.instances.Instance;

@@ -20,7 +20,7 @@
 
 package moa.classifiers.rules.errormeasurers;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;

@@ -44,7 +44,7 @@ import moa.evaluation.BasicClassificationPerformanceEvaluator;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 
 

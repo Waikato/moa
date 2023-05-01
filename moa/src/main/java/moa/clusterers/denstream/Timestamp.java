@@ -20,7 +20,7 @@
 
 package moa.clusterers.denstream;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 public class Timestamp extends AbstractMOAObject{
 
     private long timestamp;

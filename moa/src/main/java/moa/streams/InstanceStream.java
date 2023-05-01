@@ -19,7 +19,7 @@
  */
 package moa.streams;
 
-import moa.MOAObject;
+import moa.core.MOAObject;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;

@@ -20,7 +20,7 @@
 
 package moa.classifiers.rules.core.voting;
 
-import moa.MOAObject;
+import moa.core.MOAObject;
 
 /**
  * ErrorWeightedVote interface for weighted votes based on estimates of errors. 

@@ -20,7 +20,7 @@
 package moa.streams;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Instances;
 

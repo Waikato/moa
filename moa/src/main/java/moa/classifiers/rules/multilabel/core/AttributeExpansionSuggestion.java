@@ -19,7 +19,7 @@
  */
 package moa.classifiers.rules.multilabel.core;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.classifiers.rules.core.Predicate;
 import moa.core.DoubleVector;
 

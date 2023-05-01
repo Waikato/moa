@@ -17,10 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa;
-
-import moa.core.SerializeUtils;
-import moa.core.SizeOf;
+package moa.core;
 
 /**
  * Abstract MOA Object. All classes that are serializable, copiable,

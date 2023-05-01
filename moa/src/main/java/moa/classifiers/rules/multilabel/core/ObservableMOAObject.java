@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.classifiers.rules.featureranking.messages.FeatureRankingMessage;
 
 //For allowing the implementation of observer pattern for feature ranking in RandomAMRules

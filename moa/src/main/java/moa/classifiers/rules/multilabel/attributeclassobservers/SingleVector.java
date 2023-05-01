@@ -19,7 +19,7 @@
  */
 package moa.classifiers.rules.multilabel.attributeclassobservers;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 
 import com.github.javacliparser.StringUtils;
 

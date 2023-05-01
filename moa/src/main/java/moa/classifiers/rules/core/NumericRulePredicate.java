@@ -19,7 +19,7 @@
  */
 package moa.classifiers.rules.core;
 
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.core.StringUtils;
 
 import com.yahoo.labs.samoa.instances.Instance;

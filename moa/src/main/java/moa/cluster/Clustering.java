@@ -27,7 +27,7 @@ package moa.cluster;
 
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.core.AutoExpandVector;
 import moa.gui.visualization.DataPoint;
 

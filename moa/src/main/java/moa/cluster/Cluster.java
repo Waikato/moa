@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import com.yahoo.labs.samoa.instances.Instance;
 
 public abstract class Cluster extends AbstractMOAObject {

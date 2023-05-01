@@ -22,8 +22,6 @@ package moa.core;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import moa.AbstractMOAObject;
-
 /**
  * Class for representing summaries of Greenwald and Khanna quantiles.
  *

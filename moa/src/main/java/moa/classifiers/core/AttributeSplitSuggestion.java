@@ -20,7 +20,7 @@
 package moa.classifiers.core;
 
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 
 /**
  * Class for computing attribute split suggestions given a split test.

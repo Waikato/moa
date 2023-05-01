@@ -23,7 +23,7 @@ import com.github.javacliparser.IntOption;
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
 import java.util.ArrayList;
-import moa.AbstractMOAObject;
+import moa.core.AbstractMOAObject;
 import moa.classifiers.core.driftdetection.SeqDrift2ChangeDetector.Repository;
 
 /**
