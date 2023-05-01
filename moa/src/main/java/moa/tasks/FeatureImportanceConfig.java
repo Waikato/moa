@@ -27,7 +27,8 @@ import moa.core.ObjectRepository;
 import moa.learners.featureanalysis.ClassifierWithFeatureImportance;
 import moa.options.ClassOption;
 
-import javax.swing.*;
+import java.util.ArrayList;
+import java.util.function.BiFunction;
 
 /**
  * This class Provides GUI to user so that they can configure parameters for feature importance algorithm.
@@ -56,7 +57,7 @@ public class FeatureImportanceConfig extends ClassificationMainTask implements C
     protected boolean m_doNotNormalizeFeatureScore=false;
 
     /** Use progress bar to show the progress of computing scores of feature importance. */
-    protected JProgressBar progressBar=new JProgressBar();
+    protected final ArrayList<BiFunction<Integer, Integer, Void>> changeListeners = new ArrayList<>();
 
     public double getNaNSubstitute() {
         return m_NaNSubstitute;
@@ -66,8 +67,18 @@ public class FeatureImportanceConfig extends ClassificationMainTask implements C
         this.m_NaNSubstitute = NaNSubstitute;
     }
 
-    public JProgressBar getProgressBar() {
-        return progressBar;
+    public void addChangeListener(BiFunction<Integer, Integer, Void> listener) {
+        synchronized (changeListeners) {
+            changeListeners.add(listener);
+        }
+    }
+
+    protected void notifyChangeListeners(int row, int rows) {
+        synchronized (changeListeners) {
+            for (BiFunction<Integer, Integer, Void> listener: changeListeners) {
+                listener.apply(row, rows);
+            }
+        }
     }
 
     public int getWindowSize() {
@@ -126,8 +137,7 @@ public class FeatureImportanceConfig extends ClassificationMainTask implements C
         int columns = m_instances.numAttributes() - 1;// There is no feature importance for class
         double[][] scores = new double[rows][columns];
 
-        progressBar.setValue(0);
-        progressBar.setMaximum(rows);
+        notifyChangeListeners(0, rows);
 
         if (m_instances != null) {
 
@@ -143,7 +153,7 @@ public class FeatureImportanceConfig extends ClassificationMainTask implements C
                             scores[row][j] = currentScore[j];
                         }
                         row++;
-                        progressBar.setValue(row);
+                        notifyChangeListeners(row, rows);
                     }
 
                 }

@@ -301,18 +301,11 @@ public class FeatureImportancePanel extends AbstractPerspective {
                             }
                         });
 
-                        JProgressBar sourceProgressBar =((FeatureImportanceConfig) currentTask).getProgressBar();
-
-                        sourceProgressBar.addChangeListener(new ChangeListener() {
-                            @Override
-                            public void stateChanged(ChangeEvent evt) {
-                                JProgressBar comp = (JProgressBar)evt.getSource();
-                                int value = comp.getValue();
-                                int max = comp.getMaximum();
-                                progressBar.setMinimum(0);
-                                progressBar.setMaximum(max);
-                                progressBar.setValue(value);
-                            }
+                        ((FeatureImportanceConfig) currentTask).addChangeListener((row, rows) -> {
+                            progressBar.setMinimum(0);
+                            progressBar.setMaximum(rows);
+                            progressBar.setValue(row);
+                            return null;
                         });
                     }
                 }else{
