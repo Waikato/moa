@@ -16,10 +16,8 @@
 
 package com.yahoo.labs.samoa.instances;
 
-import moa.core.DoubleVector;
-import org.apache.mahout.math.Arrays;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * The Class DenseInstanceData.
