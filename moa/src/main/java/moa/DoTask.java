@@ -24,7 +24,7 @@ import moa.core.Globals;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.core.TimingUtils;
-import moa.core.WekaUtils;
+import moa.core.weka.WekaUtils;
 import moa.options.ClassOption;
 import moa.tasks.AbstractTask;
 import moa.tasks.FailedTaskReport;

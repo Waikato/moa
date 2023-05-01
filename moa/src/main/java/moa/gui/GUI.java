@@ -21,7 +21,7 @@
 package moa.gui;
 
 import moa.DoTask;
-import moa.core.WekaUtils;
+import moa.core.weka.WekaUtils;
 import nz.ac.waikato.cms.gui.core.BaseFlatSplitButton;
 import nz.ac.waikato.cms.gui.core.GUIHelper;
 import nz.ac.waikato.cms.gui.core.MultiPagePane;

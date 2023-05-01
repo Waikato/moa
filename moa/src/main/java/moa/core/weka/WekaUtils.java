@@ -17,8 +17,9 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.core;
+package moa.core.weka;
 
+import moa.core.Globals;
 import weka.core.Version;
 
 /**
