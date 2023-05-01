@@ -29,7 +29,6 @@ import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.AbstractMOAObject;
 import moa.core.AutoExpandVector;
-import moa.gui.visualization.DataPoint;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,18 +86,18 @@ public class Clustering extends AbstractMOAObject{
         }
     }
 
-    public Clustering(ArrayList<DataPoint> points, double overlapThreshold, int initMinPoints){
+    public Clustering(ArrayList<Instance> points, double overlapThreshold, int initMinPoints){
         HashMap<Integer, Integer> labelMap = Clustering.classValues(points);
         int dim = points.get(0).dataset().numAttributes()-1;
 
         int numClasses = labelMap.size();
         int num = 0;
 
-        ArrayList<DataPoint>[] sorted_points = (ArrayList<DataPoint>[]) new ArrayList[numClasses];
+        ArrayList<Instance>[] sorted_points = (ArrayList<Instance>[]) new ArrayList[numClasses];
         for (int i = 0; i < numClasses; i++) {
-            sorted_points[i] = new ArrayList<DataPoint>();
+            sorted_points[i] = new ArrayList<Instance>();
         }
-        for (DataPoint point : points) {
+        for (Instance point : points) {
             int clusterid = (int)point.classValue();
             if(clusterid == -1) continue;
             sorted_points[labelMap.get(clusterid)].add(point);
@@ -109,7 +108,7 @@ public class Clustering extends AbstractMOAObject{
         int microID = 0;
         for (int i = 0; i < numClasses; i++) {
             ArrayList<SphereCluster> microByClass = new ArrayList<SphereCluster>();
-            ArrayList<DataPoint> pointInCluster = new ArrayList<DataPoint>();
+            ArrayList<Instance> pointInCluster = new ArrayList<>();
             ArrayList<ArrayList<Instance>> pointInMicroClusters = new ArrayList();
 
             pointInCluster.addAll(sorted_points[i]);
