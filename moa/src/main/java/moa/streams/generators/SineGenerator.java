@@ -22,8 +22,8 @@ package moa.streams.generators;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import java.util.ArrayList;
@@ -163,7 +163,7 @@ public class SineGenerator extends AbstractOptionHandler implements
         }
         // construct instance
         InstancesHeader header = getHeader();
-        Instance inst = new DenseInstance(header.numAttributes());
+        Instance inst = new InstanceImpl(header.numAttributes()).toDense();
         inst.setValue(0, a1);
         inst.setValue(1, a2);
         inst.setDataset(header);

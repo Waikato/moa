@@ -20,7 +20,7 @@
 package moa.gui.featureanalysis;
 
 import com.yahoo.labs.samoa.instances.Instances;
-import com.yahoo.labs.samoa.instances.WekaToSamoaInstanceConverter;
+import com.yahoo.labs.samoa.instances.weka.WekaToSamoaInstanceConverter;
 import moa.gui.ClassOptionSelectionPanel;
 import moa.gui.GUIUtils;
 import moa.options.ClassOption;

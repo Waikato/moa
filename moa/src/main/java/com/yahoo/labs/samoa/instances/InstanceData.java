@@ -115,4 +115,18 @@ public interface InstanceData extends Serializable {
    */
     public InstanceData copy();
 
+    /**
+     * Gets the attribute values.
+     *
+     * @return the attribute values
+     */
+    public double[] valuesSparse();
+
+    /**
+     * Gets the index values.
+     *
+     * @return the index values
+     */
+    public int[] indicesSparse();
+
 }

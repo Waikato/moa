@@ -39,6 +39,16 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     protected InstancesHeader instanceHeader;
 
+
+    /**
+     * Instantiates a new instance.
+     *
+     * @param inst the inst
+     */
+    public InstanceImpl(Instance inst) {
+        this((InstanceImpl) inst);
+    }
+
     /**
      * Instantiates a new instance.
      *
@@ -95,6 +105,13 @@ public class InstanceImpl implements MultiLabelInstance {
     public InstanceImpl(int numAttributes) {
         this.instanceData = new DenseInstanceData(new double[numAttributes]); //JD
         this.weight = 1;
+    }
+
+    /**
+     * Whether this instance holds its data in a sparse format.
+     */
+    public boolean isSparse() {
+        return this.instanceData instanceof SparseInstanceData;
     }
 
     /**
@@ -480,5 +497,37 @@ public class InstanceImpl implements MultiLabelInstance {
     public void setValue(Attribute attribute, double value) {
         int index = this.instanceHeader.indexOf(attribute);
         this.setValue(index, value);
+    }
+
+    /**
+     * Gets the attribute values.
+     *
+     * @return the attribute values
+     */
+    public double[] valuesSparse() {
+        return instanceData.valuesSparse();
+    }
+
+    /**
+     * Gets the index values.
+     *
+     * @return the index values
+     */
+    public int[] indicesSparse() {
+        return instanceData.indicesSparse();
+    }
+
+    public InstanceImpl toSparse() {
+        if (instanceData instanceof DenseInstanceData) {
+            instanceData = ((DenseInstanceData) instanceData).sparse();
+        }
+        return this;
+    }
+
+    public InstanceImpl toDense() {
+        if (instanceData instanceof SparseInstanceData) {
+            instanceData = ((SparseInstanceData) instanceData).dense();
+        }
+        return this;
     }
 }

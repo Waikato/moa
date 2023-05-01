@@ -20,6 +20,8 @@
 package moa.streams.generators.multilabel;
 
 import java.util.*;
+
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.core.instances.MultilabelInstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
@@ -30,7 +32,6 @@ import moa.streams.InstanceStream;
 import moa.streams.MultiTargetInstanceStream;
 import moa.tasks.TaskMonitor;
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
@@ -274,7 +275,7 @@ public class MetaMultilabelGenerator extends AbstractOptionHandler implements Mu
     private Instance generateMLInstance(HashSet<Integer> Y) {
 
         // create a multi-label instance:
-        Instance x_ml = new DenseInstance(this.multilabelStreamTemplate.numAttributes());
+        Instance x_ml = new InstanceImpl(this.multilabelStreamTemplate.numAttributes()).toDense();
         x_ml.setDataset(this.multilabelStreamTemplate);
 
         // set classes

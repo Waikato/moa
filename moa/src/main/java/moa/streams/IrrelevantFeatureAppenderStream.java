@@ -130,7 +130,7 @@ public class IrrelevantFeatureAppenderStream extends AbstractOptionHandler imple
         }
 
         // instantiates and returns the actual instance
-        Instance instnc = new DenseInstance(1.0, values);
+        Instance instnc = new InstanceImpl(1.0, values).toDense();
         instnc.setDataset(this.newHeader);
 
         return instnc;

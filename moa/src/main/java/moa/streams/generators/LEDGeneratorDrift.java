@@ -19,9 +19,9 @@
  */
 package moa.streams.generators;
 
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
@@ -72,7 +72,7 @@ public class LEDGeneratorDrift extends LEDGenerator {
     @Override
     public Instance nextInstance() {
         InstancesHeader header = getHeader();
-        Instance inst = new DenseInstance(header.numAttributes());
+        Instance inst = new InstanceImpl(header.numAttributes()).toDense();
         inst.setDataset(header);
         int selected = this.instanceRandom.nextInt(10);
         for (int i = 0; i < 7; i++) {

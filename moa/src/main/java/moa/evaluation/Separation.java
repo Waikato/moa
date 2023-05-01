@@ -20,8 +20,8 @@ package moa.evaluation;
  * #L%
  */
 
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
@@ -73,7 +73,7 @@ public class Separation extends MeasureCollection {
       String s = "";
       List<Instance> listInstances = new ArrayList<Instance>();
       for (Cluster c : trueClustering.getClustering()) {
-        DenseInstance inst = new DenseInstance(c.getWeight(), c.getCenter());
+        Instance inst = new InstanceImpl(c.getWeight(), c.getCenter()).toDense();
         listInstances.add(inst);
         s += " " + c.getWeight();
       }

@@ -20,7 +20,7 @@
 package moa.streams;
 
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
@@ -188,7 +188,7 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
         }
         newVals[m] = numclass;
         //return new Instance(1.0, newVals);
-        Instance inst = new DenseInstance(1.0, newVals);
+        Instance inst = new InstanceImpl(1.0, newVals).toDense();
         inst.setDataset(this.getHeader());
         inst.setClassValue(numclass);
         return inst;

@@ -20,7 +20,7 @@
 package moa.streams.generators;
 
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
@@ -151,7 +151,7 @@ public class RandomTreeGenerator extends AbstractOptionHandler implements
         double[] attVals = new double[this.numNominalsOption.getValue()
                 + this.numNumericsOption.getValue()];
         InstancesHeader header = getHeader();
-        Instance inst = new DenseInstance(header.numAttributes());
+        Instance inst = new InstanceImpl(header.numAttributes()).toDense();
         for (int i = 0; i < attVals.length; i++) {
             attVals[i] = i < this.numNominalsOption.getValue() ? this.instanceRandom.nextInt(this.numValsPerNominalOption.getValue())
                     : this.instanceRandom.nextDouble();

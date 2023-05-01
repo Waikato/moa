@@ -21,12 +21,12 @@ package moa.streams.filters;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.streams.InstanceStream;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.SparseInstance;
 import moa.core.FastVector;
 
 /**
@@ -85,15 +85,7 @@ public class RemoveDiscreteAttributeFilter extends AbstractStreamFilter {
                 vals[i] = inst.value(numericAttributes.get(i));
         }
 
-        Instance instance = null;
-        if (inst instanceof SparseInstance) {
-            instance = new SparseInstance(inst.weight(), vals);
-        } else {
-            instance = new DenseInstance(inst.weight(), vals);
-        }
-
-
-        return instance;
+        return inst.copy();
     }
 
     @Override

@@ -71,7 +71,7 @@ public class RandomProjectionFilter extends AbstractStreamFilter {
     }
 
 
-    public DenseInstance transformedInstance(Instance sparseInst, double [] val) {
+    public Instance transformedInstance(Instance sparseInst, double [] val) {
 
         Instances header = this.streamHeader;
         double[] attributeValues = new double[header.numAttributes()];
@@ -79,7 +79,7 @@ public class RandomProjectionFilter extends AbstractStreamFilter {
         System.arraycopy(val, 0, attributeValues, 0, header.numAttributes()-1);
 
         attributeValues[attributeValues.length-1] = sparseInst.classValue();
-        DenseInstance newInstance = new DenseInstance(1.0, attributeValues);
+        Instance newInstance = new InstanceImpl(1.0, attributeValues).toDense();
         newInstance.setDataset(header);
         return newInstance;
     }

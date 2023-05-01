@@ -13,7 +13,13 @@
  * language governing permissions and limitations under the
  * License.  
  */
-package com.yahoo.labs.samoa.instances;
+package com.yahoo.labs.samoa.instances.weka;
+
+import com.yahoo.labs.samoa.instances.Attribute;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.SparseInstanceData;
 
 import java.util.ArrayList;
 import java.io.Serializable;
@@ -35,12 +41,15 @@ public class SamoaToWekaInstanceConverter implements Serializable {
      * @return the weka.core. instance
      */
     public weka.core.Instance wekaInstance(Instance inst) {
+        InstanceImpl instance = (InstanceImpl) inst;
         weka.core.Instance wekaInstance;
-        if (((InstanceImpl) inst).instanceData instanceof SparseInstanceData) {
-            InstanceImpl instance = (InstanceImpl) inst;
-            SparseInstanceData sparseInstanceData = (SparseInstanceData) instance.instanceData;
-            wekaInstance = new weka.core.SparseInstance(instance.weight(), sparseInstanceData.getAttributeValues(),
-                    sparseInstanceData.getIndexValues(), sparseInstanceData.getNumberAttributes());
+        if (instance.isSparse()) {
+            wekaInstance = new weka.core.SparseInstance(
+                  inst.weight(),
+                  instance.valuesSparse(),
+                  instance.indicesSparse(),
+                  instance.numAttributes()
+            );
             /*if (this.wekaInstanceInformation == null) {
                 this.wekaInstanceInformation = this.wekaInstancesInformation(inst.dataset());
             }
@@ -49,7 +58,6 @@ public class SamoaToWekaInstanceConverter implements Serializable {
             wekaInstance.setClassValue(inst.classValue());
             //wekaInstance.setValueSparse(wekaInstance.numAttributes(), inst.classValue());*/
         } else {
-            Instance instance = inst;
             wekaInstance = new weka.core.DenseInstance(instance.weight(), instance.toDoubleArray());
            /* if (this.wekaInstanceInformation == null) {
                 this.wekaInstanceInformation = this.wekaInstancesInformation(inst.dataset());
@@ -100,12 +108,12 @@ public class SamoaToWekaInstanceConverter implements Serializable {
             attInfo.add(wekaAttribute(i, instances.attribute(i)));
         }
         wekaInstances = new weka.core.Instances(instances.getRelationName(), attInfo, 0);
-        if (instances.instanceInformation.numOutputAttributes() == 1){
+        if (instances.numOutputAttributes() == 1){
             wekaInstances.setClassIndex(instances.classIndex());
         }
         else {
             //Assign a classIndex to a MultiLabel instance for compatibility reasons
-            wekaInstances.setClassIndex(instances.instanceInformation.numOutputAttributes()-1); //instances.numAttributes()-1); //Last
+            wekaInstances.setClassIndex(instances.numOutputAttributes()-1); //instances.numAttributes()-1); //Last
         }
         //System.out.println(attInfo.get(3).name());
         //System.out.println(attInfo.get(3).isNominal());

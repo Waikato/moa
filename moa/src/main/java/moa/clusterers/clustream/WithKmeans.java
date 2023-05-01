@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.cluster.CFCluster;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
@@ -39,7 +40,6 @@ import moa.cluster.SphereCluster;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;
 import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 
 public class WithKmeans extends AbstractClusterer {
@@ -96,7 +96,7 @@ public class WithKmeans extends AbstractClusterer {
 				return;
 			} else {
 				for (int i = 0; i < buffer.size(); i++) {
-					kernels[i] = new ClustreamKernel(new DenseInstance(1.0, buffer.get(i).getCenter()), dim, timestamp, t, m);
+					kernels[i] = new ClustreamKernel(new InstanceImpl(1.0, buffer.get(i).getCenter()).toDense(), dim, timestamp, t, m);
 				}
 	
 				buffer.clear();

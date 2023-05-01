@@ -24,9 +24,11 @@ package moa.clusterers.outliers.AnyOut;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.clusterers.clustree.ClusKernel;
 import moa.clusterers.clustree.ClusTree;
 import moa.clusterers.clustree.Entry;
@@ -101,7 +103,7 @@ public class AnyOutCore extends ClusTree {
 //		} else {
 			//Use traditional initialization
 			for (DataObject o : trainingSet.getDataObjectArray()){
-				DenseInstance inst = new DenseInstance(o.getFeatures().length);
+				Instance inst = new InstanceImpl(o.getFeatures().length);
 				for(int i=0; i<o.getFeatures().length; i++){
 					inst.setValue(i, o.getFeatures()[i]);
 				}
@@ -131,7 +133,7 @@ public class AnyOutCore extends ClusTree {
 	}
 	
 	public void learnObject(double[] features){
-		DenseInstance inst = new DenseInstance(features.length);
+		Instance inst = new InstanceImpl(features.length).toDense();
 		for(int i=0; i<features.length; i++){
 			inst.setValue(i, features[i]);
 		}

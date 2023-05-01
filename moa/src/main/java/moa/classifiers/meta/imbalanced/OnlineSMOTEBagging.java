@@ -20,7 +20,7 @@ package moa.classifiers.meta.imbalanced;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
-import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
+import com.yahoo.labs.samoa.instances.weka.SamoaToWekaInstanceConverter;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;

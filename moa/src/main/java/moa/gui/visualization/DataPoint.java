@@ -29,15 +29,15 @@ import java.util.Iterator;
 import java.util.TreeSet;
 
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 
-public class DataPoint extends DenseInstance{
+public class DataPoint extends InstanceImpl {
     
 	private static final long serialVersionUID = 1L;
 	
 	protected int timestamp;
-    private HashMap<String, String> measure_values;
+    private HashMap<String, String> measure_values = new HashMap<>();
     
     protected int noiseLabel;
 
@@ -45,8 +45,7 @@ public class DataPoint extends DenseInstance{
         super(nextInstance);
         this.setDataset(nextInstance.dataset());
         this.timestamp = timestamp;
-        measure_values = new HashMap<String, String>();
-        
+
         Attribute classLabel = dataset().classAttribute();
         noiseLabel = classLabel.indexOfValue("noise");		// -1 returned if there is no noise
     }

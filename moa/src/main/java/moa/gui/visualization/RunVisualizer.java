@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
@@ -49,7 +50,6 @@ import moa.streams.clustering.ClusterEventListener;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import moa.core.FastVector;
 import com.yahoo.labs.samoa.instances.Instances;
 
@@ -234,7 +234,7 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
                     }
                 }
 
-                Instance traininst0 = new DenseInstance(point0);
+                Instance traininst0 = new InstanceImpl(point0);
                 if(m_clusterer0.keepClassLabel())
                     traininst0.setDataset(point0.dataset());
                 else
@@ -243,7 +243,7 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
 
 
                 if(m_clusterer1!=null){
-                    Instance traininst1 = new DenseInstance(point1);
+                    Instance traininst1 = new InstanceImpl(point1);
                     if(m_clusterer1.keepClassLabel())
                         traininst1.setDataset(point1.dataset());
                     else
@@ -609,7 +609,7 @@ public class RunVisualizer implements Runnable, ActionListener, ClusterEventList
 
         for(int c = 0; c < wekaClustering.size(); c++){
             Cluster cluster = wekaClustering.get(c);
-            Instance inst = new DenseInstance(cluster.getWeight(), cluster.getCenter());
+            Instance inst = new InstanceImpl(cluster.getWeight(), cluster.getCenter()).toDense();
             inst.setDataset(instances);
             instances.add(inst);
         }

@@ -448,19 +448,19 @@ public class ArffLoader {
     }
 
     protected Instance newSparseInstance(double d, double[] res) {
-        Instance inst = new SparseInstance(d, res); //is it dense?
+        Instance inst = new InstanceImpl(d, res).toSparse();
         //inst.setInstanceInformation(this.instanceInformation);
         return inst;
     }
     
     protected Instance newSparseInstance(double d) {
-        Instance inst = new SparseInstance(d);
+        Instance inst = new InstanceImpl((int) d).toSparse();
         //inst.setInstanceInformation(this.instanceInformation);
         return inst;
     }
 
     protected Instance newDenseInstance(int numberAttributes) {
-        Instance inst = new DenseInstance(numberAttributes);
+        Instance inst = new InstanceImpl(numberAttributes).toDense();
         //inst.setInstanceInformation(this.instanceInformation);
         return inst;
     }

@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.Vector;
 
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.core.AutoExpandVector;
@@ -43,7 +44,6 @@ import com.github.javacliparser.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 
@@ -545,7 +545,7 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
         }
         //System.arraycopy(values, 0, values_new, 0, values.length);
         System.arraycopy(values, 0, values_new, 0, values.length);
-        Instance inst = new DenseInstance(1.0, values_new);
+        Instance inst = new InstanceImpl(1.0, values_new).toDense();
         inst.setDataset(getHeader());
         if(clusterChoice == -1){
         	// 2013/06/02 (Yunsu Kim)
@@ -871,7 +871,7 @@ public class RandomRBFGeneratorEvents extends ClusteringStream {
                 counter--;
                 for(int c = 0; c < kernels.size(); c++){
                     for(int m = 0; m < kernels.get(c).microClusters.size(); m++){
-                        Instance inst = new DenseInstance(1, sample);
+                        Instance inst = new InstanceImpl(1, sample).toDense();
                         if(kernels.get(c).microClusters.get(m).getInclusionProbability(inst) > 0){
                             incluster = true;
                             break;

@@ -21,8 +21,8 @@ package moa.gui.featureanalysis;
 
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instances;
-import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
-import com.yahoo.labs.samoa.instances.WekaToSamoaInstanceConverter;
+import com.yahoo.labs.samoa.instances.weka.SamoaToWekaInstanceConverter;
+import com.yahoo.labs.samoa.instances.weka.WekaToSamoaInstanceConverter;
 import moa.core.Utils;
 import weka.core.AttributeStats;
 import javax.swing.*;

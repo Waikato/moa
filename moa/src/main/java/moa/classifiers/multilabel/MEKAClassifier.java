@@ -25,7 +25,7 @@ import weka.classifiers.UpdateableClassifier;
 import moa.options.weka.WEKAClassOption;
 import weka.classifiers.Classifier;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
+import com.yahoo.labs.samoa.instances.weka.SamoaToWekaInstanceConverter;
 
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;

@@ -20,7 +20,7 @@
 package moa.streams.generators;
 
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
@@ -120,7 +120,7 @@ public class WaveformGenerator extends AbstractOptionHandler implements
     @Override
     public Instance nextInstance() {
         InstancesHeader header = getHeader();
-        Instance inst = new DenseInstance(header.numAttributes());
+        Instance inst = new InstanceImpl(header.numAttributes()).toDense();
         inst.setDataset(header);
         int waveform = this.instanceRandom.nextInt(NUM_CLASSES);
         int choiceA = 0, choiceB = 0;

@@ -19,6 +19,7 @@
  */
 package moa.classifiers.multitarget;
 
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.Classifier;
@@ -31,7 +32,6 @@ import moa.streams.InstanceStream;
 
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
@@ -124,7 +124,7 @@ public class BasicMultiLabelLearner extends AbstractMultiLabelLearner{
 		for (int attributeIndex = 0; attributeIndex < numAttributes; attributeIndex++) {
 			attVals[attributeIndex] = inst.valueInputAttribute(attributeIndex);
 		}
-		Instance instance = new DenseInstance(1.0, attVals);
+		Instance instance = new InstanceImpl(1.0, attVals).toDense();
 		instance.setDataset(header[outputIndex]);
 		instance.setClassValue(inst.valueOutputAttribute(outputIndex));
 		// System.out.println(inst.toString());

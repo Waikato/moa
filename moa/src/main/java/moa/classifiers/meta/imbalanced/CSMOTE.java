@@ -36,8 +36,8 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
-import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
-import com.yahoo.labs.samoa.instances.WekaToSamoaInstanceConverter;
+import com.yahoo.labs.samoa.instances.weka.SamoaToWekaInstanceConverter;
+import com.yahoo.labs.samoa.instances.weka.WekaToSamoaInstanceConverter;
 
 import java.util.ArrayList;
 import java.util.Enumeration;

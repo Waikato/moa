@@ -23,8 +23,8 @@ package moa.cluster;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 
 /**
  * A simple implementation of the <code>Cluster</code> interface representing
@@ -362,7 +362,7 @@ public class SphereCluster extends Cluster {
 		// Last value uses only sines
 		res[dimensions-1] = center[dimensions-1] + length*sin[dimensions-2];
 
-		return new DenseInstance(1.0, res);
+		return new InstanceImpl(1.0, res).toDense();
 	}
 
 	@Override

@@ -104,7 +104,7 @@ public class TextGenerator extends AbstractOptionHandler implements InstanceStre
             }
         } while (votes[1] == votes[2]);
 
-        Instance inst = new SparseInstance(1.0, attVals);
+        Instance inst = new InstanceImpl(1.0, attVals).toDense();
         inst.setDataset(getHeader());
         inst.setClassValue((votes[1] > votes[2]) ? 0 : 1);
         this.countTweets++;

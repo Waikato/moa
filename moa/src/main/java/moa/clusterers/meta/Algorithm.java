@@ -5,8 +5,8 @@ import java.util.Arrays;
 import com.github.javacliparser.Option;
 import com.github.javacliparser.Options;
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import com.yahoo.labs.samoa.instances.Instances;
 
 import moa.cluster.Cluster;
@@ -170,7 +170,7 @@ public class Algorithm {
 				// train the algorithm with the clusters
 				for (Cluster cluster : clusters) {
 					SphereCluster c = (SphereCluster) cluster; // TODO are there only SphereCluster?
-					Instance inst = new DenseInstance(c.getWeight(), c.getCenter());
+					Instance inst = new InstanceImpl(c.getWeight(), c.getCenter()).toDense();
 					inst.setDataset(new Instances(null, this.attributes, 0));
 					this.clusterer.trainOnInstance(inst);
 				}

@@ -20,7 +20,7 @@
 package moa.streams.generators;
 
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
@@ -144,7 +144,7 @@ public class RandomRBFGenerator extends AbstractOptionHandler implements
         for (int i = 0; i < numAtts; i++) {
             attVals[i] = centroid.centre[i] + attVals[i] * scale;
         }
-        Instance inst = new DenseInstance(1.0, attVals);
+        Instance inst = new InstanceImpl(1.0, attVals).toDense();
         inst.setDataset(getHeader());
         inst.setClassValue(centroid.classLabel);
         return inst;

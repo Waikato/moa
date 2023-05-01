@@ -21,6 +21,8 @@ package moa.clusterers;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.cluster.Clustering;
 import moa.core.AutoClassDiscovery;
 import moa.core.AutoExpandVector;
@@ -31,10 +33,9 @@ import com.github.javacliparser.MultiChoiceOption;
 import com.github.javacliparser.StringOption;
 import moa.core.FastVector;
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
-import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
+import com.yahoo.labs.samoa.instances.weka.SamoaToWekaInstanceConverter;
 
 import weka.core.Utils;
 
@@ -143,7 +144,7 @@ public class WekaClusteringAlgorithm extends AbstractClusterer {
                 weka.core.Instance inst = wekaInstances.get(i);
                 int cnum = clusterer.clusterInstance(inst);
 
-                Instance newInst = new DenseInstance(instances.instance(cnum));
+                Instance newInst = new InstanceImpl(instances.instance(cnum));
                 newInst.insertAttributeAt(inst.numAttributes());
                 newInst.setDataset(dataset);
                 newInst.setClassValue(cnum);

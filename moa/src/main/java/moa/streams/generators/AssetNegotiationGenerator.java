@@ -23,8 +23,8 @@ package moa.streams.generators;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import java.util.Arrays;
@@ -391,7 +391,7 @@ public class AssetNegotiationGenerator
 	    int classValue = classFunction.
 		    determineClass(color, price, payment, amount, delivery);
 
-	    instnc = new DenseInstance(streamHeader.numAttributes());
+	    instnc = new InstanceImpl(streamHeader.numAttributes()).toDense();
 	    //set values
 	    instnc.setDataset(this.getHeader());
 	    instnc.setValue(0, Arrays.asList(colorValues).indexOf(color));

@@ -5,8 +5,8 @@ import com.github.javacliparser.IntOption;
 import com.google.common.hash.Hashing;
 import com.google.common.hash.HashFunction;
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.FastVector;
@@ -68,7 +68,7 @@ public class HashingTrickFilter extends AbstractStreamFilter {
 
 
 
-    public DenseInstance transformedInstance(Instance sparseInst, double [] hashVal) {
+    public Instance transformedInstance(Instance sparseInst, double [] hashVal) {
 
         Instances header = this.streamHeader;
         double[] attributeValues = new double[header.numAttributes()];
@@ -78,7 +78,7 @@ public class HashingTrickFilter extends AbstractStreamFilter {
         }
 
         attributeValues[attributeValues.length-1] = sparseInst.classValue();
-        DenseInstance newInstance = new DenseInstance(1.0, attributeValues);
+        Instance newInstance = new InstanceImpl(1.0, attributeValues).toDense();
         newInstance.setDataset(header);
         return newInstance;
     }

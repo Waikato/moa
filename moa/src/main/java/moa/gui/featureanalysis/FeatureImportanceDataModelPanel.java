@@ -21,7 +21,7 @@
 package moa.gui.featureanalysis;
 
 import com.yahoo.labs.samoa.instances.Instances;
-import com.yahoo.labs.samoa.instances.WekaToSamoaInstanceConverter;
+import com.yahoo.labs.samoa.instances.weka.WekaToSamoaInstanceConverter;
 import weka.gui.JTableHelper;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;

@@ -32,8 +32,8 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.StringOption;
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 
@@ -186,7 +186,7 @@ public class SimpleCSVStream extends ClusteringStream {
 					throw new RuntimeException(
 							"Next Instance has an wrong cardinality!");
 				}
-				this.lastInstanceRead = new DenseInstance(1, value);
+				this.lastInstanceRead = new InstanceImpl(1, value).toDense();
 				this.lastInstanceRead.setDataset(this.dataset);
 				this.hitEndOfFile = false;
 			} else {
@@ -262,7 +262,7 @@ public class SimpleCSVStream extends ClusteringStream {
 				for (int i = 0; i < this.numTokens && token.hasMoreTokens(); i++) {
 					value[i] = Double.valueOf(token.nextToken());
 				}
-				this.lastInstanceRead = new DenseInstance(1, value);
+				this.lastInstanceRead = new InstanceImpl(1, value).toDense();
 				this.lastInstanceRead.setDataset(this.dataset);
 				this.numInstancesRead = 0;
 				this.hitEndOfFile = false;

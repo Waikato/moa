@@ -139,7 +139,7 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier implements
         double[] x = instance.toDoubleArray();
         double[] x2 = Arrays.copyOfRange(this.oldLabels, 0, numLabels + x.length);
         System.arraycopy(x, 0, x2, numLabels, x.length);
-        Instance extendedInstance = new DenseInstance(instance.weight(), x2);
+        Instance extendedInstance = new InstanceImpl(instance.weight(), x2).toDense();
         extendedInstance.setDataset(this.header);
         //System.out.println( extendedInstance);
         return extendedInstance;

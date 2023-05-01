@@ -30,8 +30,8 @@ import moa.core.TimingUtils;
 import moa.options.ClassOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
-import com.yahoo.labs.samoa.instances.WekaToSamoaInstanceConverter;
+import com.yahoo.labs.samoa.instances.weka.SamoaToWekaInstanceConverter;
+import com.yahoo.labs.samoa.instances.weka.WekaToSamoaInstanceConverter;
 
 import java.util.ArrayList;
 import java.util.Collections;

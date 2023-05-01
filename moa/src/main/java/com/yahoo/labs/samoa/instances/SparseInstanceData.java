@@ -337,5 +337,18 @@ public class SparseInstanceData implements InstanceData {
       return new SparseInstanceData(this.attributeValues.clone(),this.indexValues.clone(),this.numberAttributes);   
     }
 
+    @Override
+    public double[] valuesSparse() {
+      return getAttributeValues();
+    }
+
+    @Override
+    public int[] indicesSparse() {
+      return getIndexValues();
+    }
+
+    public DenseInstanceData dense() {
+      return new DenseInstanceData(toDoubleArray());
+    }
 
 }

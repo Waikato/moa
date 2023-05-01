@@ -24,13 +24,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.clusterers.AbstractClusterer;
 import moa.core.Measurement;
 import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 
 /** Citation: CluStream: Charu C. Aggarwal, Jiawei Han, Jianyong Wang, Philip S. Yu:
@@ -98,7 +99,7 @@ public class Clustream extends AbstractClusterer{
 //			Clustering kmeans_clustering = kMeans(k, buffer);
 
 			for ( int i = 0; i < kmeans_clustering.size(); i++ ) {
-				kernels[i] = new ClustreamKernel( new DenseInstance(1.0,centers[i].getCenter()), dim, timestamp, t, m );
+				kernels[i] = new ClustreamKernel( new InstanceImpl(1.0,centers[i].getCenter()).toDense(), dim, timestamp, t, m );
 			}
 
 			buffer.clear();

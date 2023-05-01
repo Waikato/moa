@@ -678,4 +678,8 @@ public class Instances implements Serializable {
             }
         }
     }
+
+    public int numOutputAttributes() {
+        return instanceInformation.numOutputAttributes();
+    }
 }

@@ -20,7 +20,7 @@
 package moa.streams.generators;
 
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
@@ -194,7 +194,7 @@ public class SEAGenerator extends AbstractOptionHandler implements
 
         // construct instance
         InstancesHeader header = getHeader();
-        Instance inst = new DenseInstance(header.numAttributes());
+        Instance inst = new InstanceImpl(header.numAttributes()).toDense();
         inst.setValue(0, attrib1);
         inst.setValue(1, attrib2);
         inst.setValue(2, attrib3);

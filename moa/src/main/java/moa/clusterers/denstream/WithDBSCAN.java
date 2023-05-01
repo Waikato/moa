@@ -26,6 +26,7 @@ package moa.clusterers.denstream;
 
 import java.util.ArrayList;
 
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
@@ -33,7 +34,6 @@ import moa.clusterers.macro.dbscan.DBScan;
 import moa.core.Measurement;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 
 public class WithDBSCAN extends AbstractClusterer {
@@ -86,7 +86,7 @@ public class WithDBSCAN extends AbstractClusterer {
 	protected int processingSpeed;
 	// TODO Some variables to prevent duplicated processes
 
-	private class DenPoint extends DenseInstance {
+	private class DenPoint extends InstanceImpl {
 		
 		private static final long serialVersionUID = 1L;
 		

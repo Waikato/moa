@@ -28,7 +28,7 @@ import moa.options.weka.WEKAClassOption;
 import weka.classifiers.Classifier;
 import weka.classifiers.UpdateableClassifier;
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
+import com.yahoo.labs.samoa.instances.weka.SamoaToWekaInstanceConverter;
 
 /**
  * Class for using a classifier from WEKA.

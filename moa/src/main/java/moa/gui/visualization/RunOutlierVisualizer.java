@@ -39,6 +39,8 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.clusterers.outliers.MyBaseOutlierDetector;
@@ -57,7 +59,6 @@ import moa.streams.clustering.ClusterEventListener;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 
@@ -650,7 +651,7 @@ public class RunOutlierVisualizer implements Runnable, ActionListener, ClusterEv
 
         for(int c = 0; c < wekaClustering.size(); c++){
             Cluster cluster = wekaClustering.get(c);
-            Instance inst = new DenseInstance(cluster.getWeight(), cluster.getCenter());
+            Instance inst = new InstanceImpl(cluster.getWeight(), cluster.getCenter()).toDense();
             inst.setDataset(instances);
             instances.add(inst);
         }

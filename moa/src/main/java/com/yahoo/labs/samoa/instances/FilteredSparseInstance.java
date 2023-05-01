@@ -26,7 +26,7 @@ package com.yahoo.labs.samoa.instances;
  *
  * @author Jean Paul Barddal
  */
-public class FilteredSparseInstance extends SparseInstance {
+public class FilteredSparseInstance extends InstanceImpl {
 
     /**
      * Instantiates a new sparse instance.
@@ -54,7 +54,7 @@ public class FilteredSparseInstance extends SparseInstance {
      * @param numberAttributes the number attributes
      */
     public FilteredSparseInstance(double numberAttributes) {
-        super(numberAttributes);
+        super(1, null, null, (int) numberAttributes);
     }
 
     /**
@@ -66,9 +66,7 @@ public class FilteredSparseInstance extends SparseInstance {
      * @param numberAttributes the number attributes
      */
     public FilteredSparseInstance(double weight, double[] attributeValues, int[] indexValues, int numberAttributes) {
-        super(numberAttributes);
-        this.weight = weight;
-        this.instanceData = new FilteredSparseInstanceData(attributeValues, indexValues, numberAttributes);
+        super(weight, new FilteredSparseInstanceData(attributeValues, indexValues, numberAttributes));
     }
 
 }

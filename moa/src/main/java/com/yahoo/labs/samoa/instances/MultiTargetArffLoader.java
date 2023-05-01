@@ -31,14 +31,14 @@ public class MultiTargetArffLoader extends ArffLoader {
 
     @Override
     protected Instance newSparseInstance(double d, double[] res) {
-        return new SparseInstance(d, res); // TODO
+        return new InstanceImpl(d, res).toSparse(); // TODO
     }
 
     @Override
     protected Instance newDenseInstance(int numAttributes) {
         // numAttributes is this.instanceInformation.numAttributes()
         this.range.setUpper(numAttributes);
-        return new DenseInstance(numAttributes);
+        return new InstanceImpl(numAttributes).toDense();
     }
 
 }

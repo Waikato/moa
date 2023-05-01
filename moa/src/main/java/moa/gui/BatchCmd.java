@@ -32,6 +32,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
 import moa.clusterers.ClusterGenerator;
@@ -52,7 +53,6 @@ import com.yahoo.labs.samoa.instances.Instance;
 import moa.streams.clustering.ClusterEventListener;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 
 public class BatchCmd implements ClusterEventListener{
 
@@ -161,7 +161,7 @@ public class BatchCmd implements ClusterEventListener{
 			DataPoint point0 = new DataPoint(next,m_timestamp);
 			pointBuffer0.add(point0);
 
-			Instance traininst0 = new DenseInstance(point0);
+			Instance traininst0 = new InstanceImpl(point0);
 			if(clusterer instanceof ClusterGenerator)
 				traininst0.setDataset(point0.dataset());
 			else

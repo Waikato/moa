@@ -12,7 +12,12 @@
  * language governing permissions and limitations under the
  * License.  
  */
-package com.yahoo.labs.samoa.instances;
+package com.yahoo.labs.samoa.instances.weka;
+
+import com.yahoo.labs.samoa.instances.Attribute;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
+import com.yahoo.labs.samoa.instances.Instances;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -45,10 +50,14 @@ public class WekaToSamoaInstanceConverter implements Serializable{
                     indexValues[i] = inst.index(i);
                 }
             }
-            samoaInstance = new SparseInstance(inst.weight(), attributeValues,
-                    indexValues, inst.numAttributes());
+            samoaInstance = new InstanceImpl(
+                  inst.weight(),
+                  attributeValues,
+                  indexValues,
+                  inst.numAttributes()
+            );
         } else {
-            samoaInstance = new DenseInstance(inst.weight(), inst.toDoubleArray());
+            samoaInstance = new InstanceImpl(inst.weight(), inst.toDoubleArray());
             //samoaInstance.deleteAttributeAt(inst.classIndex());
         }
         if (this.samoaInstanceInformation == null) {

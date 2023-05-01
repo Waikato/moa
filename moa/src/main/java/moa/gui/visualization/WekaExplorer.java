@@ -28,7 +28,7 @@
 package moa.gui.visualization;
 
 import com.yahoo.labs.samoa.instances.Instances;
-import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
+import com.yahoo.labs.samoa.instances.weka.SamoaToWekaInstanceConverter;
 import moa.gui.LookAndFeel;
 import weka.core.Memory;
 import weka.gui.explorer.Explorer;

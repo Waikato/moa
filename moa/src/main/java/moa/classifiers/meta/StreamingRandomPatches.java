@@ -23,8 +23,8 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import com.yahoo.labs.samoa.instances.Instances;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
@@ -473,7 +473,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
 
             // Set the class value for each value array.
             values[values.length-1] = instance.classValue();
-            DenseInstance subInstance = new DenseInstance(1.0, values);
+            Instance subInstance = new InstanceImpl(1.0, values).toDense();
             subInstance.setWeight(weight);
             subInstance.setDataset(this.subset);
             this.subset.add(subInstance);

@@ -11,8 +11,8 @@ import java.util.concurrent.Executors;
 
 import com.github.javacliparser.FileOption;
 import com.google.gson.Gson;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import com.yahoo.labs.samoa.instances.Instances;
 
 import moa.classifiers.meta.AdaptiveRandomForestRegressor;
@@ -361,7 +361,7 @@ public abstract class EnsembleClustererAbstract extends AbstractClusterer {
 	protected void trainRegressor(Algorithm algortihm, double performance) {
 		double[] params = algortihm.getParamVector(1);
 		params[params.length - 1] = performance; // add performance as class
-		Instance inst = new DenseInstance(1.0, params);
+		Instance inst = new InstanceImpl(1.0, params).toDense();
 
 		// add header to dataset TODO: do we need an attribute for the class label?
 		Instances dataset = new Instances(null, algortihm.attributes, 0);
@@ -516,7 +516,7 @@ public abstract class EnsembleClustererAbstract extends AbstractClusterer {
 	protected double predictPerformance(Algorithm newAlgorithm) {
 		// create a data point from new configuration
 		double[] params = newAlgorithm.getParamVector(0);
-		Instance newInst = new DenseInstance(1.0, params);
+		Instance newInst = new InstanceImpl(1.0, params).toDense();
 		Instances newDataset = new Instances(null, newAlgorithm.attributes, 0);
 		newDataset.setClassIndex(newDataset.numAttributes());
 		newInst.setDataset(newDataset);

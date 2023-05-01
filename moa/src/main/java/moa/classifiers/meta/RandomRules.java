@@ -19,11 +19,11 @@
  */
 package moa.classifiers.meta;
 
+import com.yahoo.labs.samoa.instances.InstanceImpl;
 import moa.options.ClassOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
@@ -187,7 +187,7 @@ public class RandomRules extends AbstractClassifier implements Regressor {
 			//instance.setValue(attributeIndex, inst.value(this.listAttributes[attributeIndex][classifierIndex]));
 			attVals[attributeIndex] = inst.value(this.listAttributes[attributeIndex][classifierIndex]);
 		}
-		Instance instance = new DenseInstance(1.0, attVals);
+		Instance instance = new InstanceImpl(1.0, attVals).toDense();
 		instance.setDataset(dataset[classifierIndex]);
 		instance.setClassValue(inst.classValue());
 		// System.out.println(inst.toString());

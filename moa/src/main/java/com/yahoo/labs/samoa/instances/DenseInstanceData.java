@@ -16,6 +16,11 @@
 
 package com.yahoo.labs.samoa.instances;
 
+import moa.core.DoubleVector;
+import org.apache.mahout.math.Arrays;
+
+import java.util.ArrayList;
+
 /**
  * The Class DenseInstanceData.
  */
@@ -178,5 +183,38 @@ public class DenseInstanceData implements InstanceData{
     public InstanceData copy() {
         return new DenseInstanceData(this.attributeValues.clone());
     }
-       
+
+    @Override
+    public double[] valuesSparse() {
+        return toDoubleArray();
+    }
+
+    @Override
+    public int[] indicesSparse() {
+        int[] indices = new int[numAttributes()];
+        for (int i = 0; i < indices.length; i++) {
+            indices[i] = i;
+        }
+        return indices;
+    }
+
+    public SparseInstanceData sparse() {
+        double[] attributeValues = new double[this.attributeValues.length];
+        int[] indexValues = new int[this.attributeValues.length];
+        int numberAttributes = 0;
+
+        for (int i = 0; i < this.attributeValues.length; i++) {
+            if (!isMissing(i)) {
+                attributeValues[numberAttributes] = value(i);
+                indexValues[numberAttributes] = i;
+                numberAttributes++;
+            }
+        }
+
+        return new SparseInstanceData(
+              Arrays.copyOf(attributeValues, numberAttributes),
+              Arrays.copyOf(indexValues, numberAttributes),
+              numberAttributes
+        );
+    }
 }
