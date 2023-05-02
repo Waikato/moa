@@ -21,15 +21,12 @@ package com.github.javacliparser.gui;
 
 import com.github.javacliparser.Option;
 import com.github.javacliparser.Options;
-import moa.classifiers.trees.HoeffdingTree;
 import moa.gui.GUIUtils;
-import moa.gui.LookAndFeel;
 import moa.options.OptionHandler;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -225,40 +222,5 @@ public class OptionsConfigurationPanel extends JPanel {
             }
         }
         return ret;
-    }
-    
-    private static void createAndShowGUI() {
-
-        // Create and set up the window.
-        JFrame frame = new JFrame("Test");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // Create and set up the content pane.
-        Options options = new HoeffdingTree().getOptions();
-        JPanel panel = new OptionsConfigurationPanel(null, options);
-        // createLabelledOptionComponentListPanel(options
-        // .getOptionArray(), null);
-        panel.setOpaque(true); // content panes must be opaque
-        frame.setContentPane(panel);
-
-        // Display the window.
-        frame.pack();
-        // frame.setSize(400, 400);
-        frame.setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        try {
-            LookAndFeel.install();
-            javax.swing.SwingUtilities.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    createAndShowGUI();
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
