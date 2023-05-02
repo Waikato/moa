@@ -29,24 +29,26 @@ import weka.core.Version;
  * @version $Revision: 7 $
  */
 public class WekaUtils {
+    /** The minimum version of WEKA compatible with MOA. */
+    public static final String MINIMUM_WEKA_VERSION = "3.7.1";
 
- /**
-     * Checks if the Weka version is recent enough to run MOA.
-     * For example, if the Weka version is not recent, there may be problems
-     * due to the fact that <code>Instance</code> was a class before 3.7.1 and
-     * now is an interface.
-     *
-     * @return true if the Weka version is recent.
-     */
+    /**
+    * Checks if the Weka version is recent enough to run MOA.
+    * For example, if the Weka version is not recent, there may be problems
+    * due to the fact that <code>Instance</code> was a class before 3.7.1 and
+    * now is an interface.
+    *
+    * @return true if the Weka version is recent.
+    */
     public static boolean isWekaVersionOK() {
         try {
             Class.forName("weka.core.Version");
             Version version = new Version();
-            if (version.isOlder("3.7.1")) {
+            if (version.isOlder(MINIMUM_WEKA_VERSION)) {
                 System.err.println();
                 System.err.println(Globals.getWorkbenchInfoString());
                 System.err.println();
-                System.err.print("Weka 3.7.1 or higher is required to run MOA. ");
+                System.err.print("Weka " + MINIMUM_WEKA_VERSION + " or higher is required to run MOA. ");
                 System.err.println("Weka version " + Version.VERSION + " found");
                 return false;
             } else {
