@@ -19,23 +19,26 @@
  *    
  */
 package moa.clusterers.macro;
-import java.awt.Color;
 
 public class ColorObject {
 
-	private Color mColor;
+	private int mColor;
 	private String mName;
 
-	public ColorObject(String name, Color c) {
+	public ColorObject(String name, int c) {
 		mColor = c;
 		mName = name;
 	}
 
-	public Color getColor() {
+	public int getColor() {
 		return mColor;
 	}
 
 	public String getName() {
 		return mName;
+	}
+
+	public static ColorObject decode(String name, String color) {
+		return new ColorObject(name, Integer.decode(color));
 	}
 }
