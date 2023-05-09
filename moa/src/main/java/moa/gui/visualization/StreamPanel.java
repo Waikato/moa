@@ -52,6 +52,7 @@ import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.clusterers.macro.NonConvexCluster;
+import moa.core.instances.DataPoint;
 
 public class StreamPanel extends JPanel implements ComponentListener{
 

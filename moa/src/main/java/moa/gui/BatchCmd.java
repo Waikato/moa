@@ -46,7 +46,7 @@ import moa.evaluation.SSQ;
 import moa.evaluation.Separation;
 import moa.evaluation.SilhouetteCoefficient;
 import moa.evaluation.StatisticalCollection;
-import moa.gui.visualization.DataPoint;
+import moa.core.instances.DataPoint;
 import moa.gui.visualization.RunVisualizer;
 import moa.streams.clustering.ClusterEvent;
 import com.yahoo.labs.samoa.instances.Instance;

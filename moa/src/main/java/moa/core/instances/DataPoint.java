@@ -22,7 +22,7 @@
  *    
  */
 
-package moa.gui.visualization;
+package moa.core.instances;
 
 import java.util.HashMap;
 import java.util.Iterator;

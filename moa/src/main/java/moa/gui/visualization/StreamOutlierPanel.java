@@ -36,6 +36,7 @@ import javax.swing.JScrollPane;
 import moa.cluster.SphereCluster;
 import moa.clusterers.outliers.MyBaseOutlierDetector;
 import moa.clusterers.outliers.MyBaseOutlierDetector.Outlier;
+import moa.core.instances.DataPoint;
 
 public class StreamOutlierPanel extends JPanel implements ComponentListener {
     private OutlierPanel highlighted_outlier = null;
@@ -158,7 +159,7 @@ public class StreamOutlierPanel extends JPanel implements ComponentListener {
     }
     
     private void drawPoint(
-            DataPoint point, 
+            DataPoint point,
             boolean bShowDecay,
             Color c, 
             boolean bFill,

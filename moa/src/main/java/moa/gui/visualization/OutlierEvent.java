@@ -17,6 +17,8 @@
 
 package moa.gui.visualization;
 
+import moa.core.instances.DataPoint;
+
 /**
  *
  * @author mits
@@ -39,9 +41,9 @@ class OutlierEvent implements Comparable<OutlierEvent> {
         else if (this.timestamp < o.timestamp)
             return -1;
         else {
-            if (this.point.timestamp > o.point.timestamp)
+            if (this.point.getTimestamp() > o.point.getTimestamp())
                 return 1;
-            else if (this.point.timestamp < o.point.timestamp)
+            else if (this.point.getTimestamp() < o.point.getTimestamp())
                 return -1;
         }
             
@@ -51,6 +53,6 @@ class OutlierEvent implements Comparable<OutlierEvent> {
     @Override
     public boolean equals(Object o) {
         return ( (this.timestamp == ((OutlierEvent) o).timestamp) && 
-                 (this.point.timestamp == ((OutlierEvent) o).point.timestamp) );
+                 (this.point.getTimestamp() == ((OutlierEvent) o).point.getTimestamp()) );
     }
 }

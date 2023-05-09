@@ -24,7 +24,7 @@ package moa.evaluation;
 import java.util.ArrayList;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
-import moa.gui.visualization.DataPoint;
+import moa.core.instances.DataPoint;
 import com.yahoo.labs.samoa.instances.Instance;
 
 public class General extends MeasureCollection{

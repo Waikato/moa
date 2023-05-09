@@ -23,6 +23,8 @@
 
 package moa.gui.visualization;
 
+import moa.core.instances.DataPoint;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -234,7 +236,7 @@ public class PointPanel extends JPanel{
         Color c;
         int classValue = (int)point.classValue();
         
-        if (classValue != point.noiseLabel) {
+        if (classValue != (int) point.getNoiseLabel()) {
             c = new Color(Color.HSBtoRGB((float)((classValue+1)/numClasses), 1f, 240f/240));
         } else {
             c = Color.GRAY;

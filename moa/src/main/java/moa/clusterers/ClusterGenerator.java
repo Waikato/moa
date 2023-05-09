@@ -28,7 +28,7 @@ import com.github.javacliparser.IntOption;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.core.Measurement;
-import moa.gui.visualization.DataPoint;
+import moa.core.instances.DataPoint;
 import com.yahoo.labs.samoa.instances.Instance;
 
 public class ClusterGenerator extends AbstractClusterer{

@@ -39,6 +39,7 @@ import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.clusterers.AbstractClusterer;
 import moa.clusterers.ClusterGenerator;
+import moa.core.instances.DataPoint;
 import moa.evaluation.MeasureCollection;
 import moa.gui.TextViewerPanel;
 import moa.gui.clustertab.ClusteringSetupTab;

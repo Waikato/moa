@@ -48,6 +48,7 @@ import moa.clusterers.outliers.MyBaseOutlierDetector.Outlier;
 import moa.clusterers.outliers.MyBaseOutlierDetector.OutlierNotifier;
 import moa.clusterers.outliers.MyBaseOutlierDetector.PrintMsg;
 import moa.core.FastVector;
+import moa.core.instances.DataPoint;
 import moa.evaluation.MeasureCollection;
 import moa.evaluation.OutlierPerformance;
 import moa.gui.TextViewerPanel;

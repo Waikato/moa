@@ -23,7 +23,7 @@ package moa.evaluation;
 import java.util.ArrayList;
 import moa.cluster.Cluster;
 import moa.cluster.Clustering;
-import moa.gui.visualization.DataPoint;
+import moa.core.instances.DataPoint;
 
 public class SilhouetteCoefficient extends MeasureCollection{
     private double pointInclusionProbThreshold = 0.8;

@@ -37,7 +37,7 @@ import moa.cluster.SphereCluster;
 import moa.core.AutoExpandVector;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
-import moa.gui.visualization.DataPoint;
+import moa.core.instances.DataPoint;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;

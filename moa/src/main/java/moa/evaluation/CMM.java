@@ -31,7 +31,7 @@ import moa.cluster.Cluster;
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
 import moa.evaluation.CMM_GTAnalysis.CMMPoint;
-import moa.gui.visualization.DataPoint;
+import moa.core.instances.DataPoint;
 
 
 public class CMM extends MeasureCollection{

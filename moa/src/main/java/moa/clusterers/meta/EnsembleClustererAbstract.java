@@ -22,7 +22,7 @@ import moa.clusterers.Clusterer;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.evaluation.MeasureCollection;
-import moa.gui.visualization.DataPoint;
+import moa.core.instances.DataPoint;
 import moa.options.ClassOption;
 import moa.streams.clustering.RandomRBFGeneratorEvents;
 import moa.tasks.TaskMonitor;
