@@ -29,9 +29,15 @@
 
   <developers>
     <developer>
-      <id>csterlin</id>
+      <id>csterling</id>
       <name>Corey Sterling</name>
-      <email>csterlin@waikato.ac.nz</email>
+      <email>coreytsterling@gmail.com</email>
+      <organization>University of Waikato, CS department</organization>
+      <organizationUrl>http://www.cs.waikato.ac.nz/</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>+12</timezone>
     </developer>
   </developers>
 

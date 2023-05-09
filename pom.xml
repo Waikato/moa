@@ -42,6 +42,17 @@
       <id>rkirkby</id>
       <name>Richard Kirkby</name>
     </developer>
+    <developer>
+      <id>csterling</id>
+      <name>Corey Sterling</name>
+      <email>coreytsterling@gmail.com</email>
+      <organization>University of Waikato, CS department</organization>
+      <organizationUrl>http://www.cs.waikato.ac.nz/</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>+12</timezone>
+    </developer>
   </developers>
 
   <mailingLists>
