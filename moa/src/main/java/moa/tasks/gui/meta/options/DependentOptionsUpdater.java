@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.options;
+package moa.tasks.gui.meta.options;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,7 +30,10 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.Option;
 
-import moa.tasks.meta.ALPrequentialEvaluationTask;
+import moa.options.ClassOption;
+import moa.options.EditableMultiChoiceOption;
+import moa.options.OptionHandler;
+import moa.tasks.gui.meta.ALPrequentialEvaluationTask;
 
 /**
  * This class handles the dependency between two options by updating the 
@@ -93,7 +96,7 @@ public class DependentOptionsUpdater implements ChangeListener, Serializable {
 			List<String> optionDescriptions = new ArrayList<String>();
 			
 			// recursively add options
-			ALPrequentialEvaluationTask evalTask = 
+			ALPrequentialEvaluationTask evalTask =
 					(ALPrequentialEvaluationTask) 
 					this.evalTaskOption.getPreMaterializedObject();
 			this.addRecursiveNumberOptions(
@@ -117,9 +120,9 @@ public class DependentOptionsUpdater implements ChangeListener, Serializable {
 		}
 	}
 	
-	private void addRecursiveNumberOptions(ClassOption option, 
+	private void addRecursiveNumberOptions(ClassOption option,
 			List<String> optionNames, List<String> optionDescriptions,
-			String namePrefix) 
+			String namePrefix)
 	{
 		OptionHandler optionHandler = (OptionHandler) option.getPreMaterializedObject();
 		Option[]      options       = optionHandler.getOptions().getOptionArray();

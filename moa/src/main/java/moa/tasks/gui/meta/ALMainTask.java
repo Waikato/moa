@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.tasks.meta;
+package moa.tasks.gui.meta;
 
 import java.util.List;
 

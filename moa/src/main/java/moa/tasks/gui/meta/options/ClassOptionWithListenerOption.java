@@ -17,7 +17,9 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.options;
+package moa.tasks.gui.meta.options;
+
+import moa.options.ClassOption;
 
 import javax.swing.event.ChangeListener;
 
@@ -43,7 +45,7 @@ public class ClassOptionWithListenerOption extends ClassOption {
 	
 	public ClassOptionWithListenerOption(String name, char cliChar, 
 			String purpose, Class<?> requiredType,
-			String defaultCLIString, ChangeListener listener) 
+			String defaultCLIString, ChangeListener listener)
 	{
 		super(name, cliChar, purpose, requiredType, defaultCLIString);
 		this.listener = listener;
@@ -60,7 +62,7 @@ public class ClassOptionWithListenerOption extends ClassOption {
 	public ClassOptionWithListenerOption(String name, char cliChar, 
 			String purpose, Class<?> requiredType, 
 			String defaultCLIString, String nullString,
-			ChangeListener listener) 
+			ChangeListener listener)
 	{
         super(name, cliChar, purpose, requiredType, defaultCLIString, 
         		nullString);
@@ -70,7 +72,7 @@ public class ClassOptionWithListenerOption extends ClassOption {
 	public void setChangeListener(ChangeListener listener) {
 		this.listener = listener;
 	}
-	
+
 	public ChangeListener getChangeListener() {
 		return this.listener;
 	}

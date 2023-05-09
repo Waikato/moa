@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa;
+package moa.main;
 
 import moa.core.Globals;
 import moa.core.Measurement;
@@ -29,7 +29,7 @@ import moa.tasks.AbstractTask;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.MainTask;
 import moa.tasks.TaskThread;
-import moa.tasks.meta.MetaMainTask;
+import moa.tasks.gui.meta.MetaMainTask;
 
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;

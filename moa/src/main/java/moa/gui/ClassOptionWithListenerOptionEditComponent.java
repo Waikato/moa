@@ -25,7 +25,7 @@ import javax.swing.event.ChangeListener;
 import com.github.javacliparser.Option;
 import com.github.javacliparser.gui.ClassOptionEditComponent;
 
-import moa.options.ClassOptionWithListenerOption;
+import moa.tasks.gui.meta.options.ClassOptionWithListenerOption;
 
 /**
  * EditComponent for the {@link ClassOptionWithListenerOption}. When its state

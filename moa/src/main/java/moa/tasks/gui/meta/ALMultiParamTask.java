@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.tasks.meta;
+package moa.tasks.gui.meta;
 
 import java.awt.Color;
 import java.io.File;
@@ -37,10 +37,10 @@ import moa.evaluation.preview.PreviewCollection;
 import moa.evaluation.preview.PreviewCollectionLearningCurveWrapper;
 import moa.gui.colorGenerator.HSVColorGenerator;
 import moa.options.ClassOption;
-import moa.options.ClassOptionWithListenerOption;
-import moa.options.DependentOptionsUpdater;
 import moa.options.EditableMultiChoiceOption;
 import moa.tasks.TaskMonitor;
+import moa.tasks.gui.meta.options.ClassOptionWithListenerOption;
+import moa.tasks.gui.meta.options.DependentOptionsUpdater;
 
 /**
  * This task individually evaluates an active learning classifier for each 
@@ -63,12 +63,12 @@ public class ALMultiParamTask extends ALMainTask {
 				+ " sequence).";
 	}
 	
-	public ClassOptionWithListenerOption prequentialEvaluationTaskOption = 
+	public ClassOptionWithListenerOption prequentialEvaluationTaskOption =
 			new ClassOptionWithListenerOption(
 				"prequentialEvaluationTask", 'e', 
 				"Prequential evaluation task to be performed for each " + 
 				"parameter value.", ALPrequentialEvaluationTask.class, 
-				"moa.tasks.meta.ALPrequentialEvaluationTask");
+				"moa.tasks.gui.meta.ALPrequentialEvaluationTask");
 	
 	public EditableMultiChoiceOption variedParamNameOption = 
 			new EditableMultiChoiceOption(

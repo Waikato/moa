@@ -33,9 +33,9 @@ import moa.gui.PreviewTableModel;
 import moa.gui.visualization.ParamGraphCanvas;
 import moa.gui.visualization.ProcessGraphCanvas;
 import moa.tasks.FailedTaskReport;
-import moa.tasks.meta.ALMultiParamTask;
-import moa.tasks.meta.ALPartitionEvaluationTask;
-import moa.tasks.meta.ALPrequentialEvaluationTask;
+import moa.tasks.gui.meta.ALMultiParamTask;
+import moa.tasks.gui.meta.ALPartitionEvaluationTask;
+import moa.tasks.gui.meta.ALPrequentialEvaluationTask;
 import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
 import javax.swing.BorderFactory;

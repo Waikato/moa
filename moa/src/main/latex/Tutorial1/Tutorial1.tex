@@ -258,7 +258,7 @@ For example, suppose we want to process the task
 \begin{verbatim}EvaluatePrequential -l trees.HoeffdingTree -i 1000000 -w 10000\end{verbatim} 
 using the command line. We simply write 
 \begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask  \
+java -cp moa.jar -javaagent:sizeofag.jar moa.main.DoTask  \
 "EvaluatePrequential -l trees.HoeffdingTree -i 1000000 -w 10000"
 \end{verbatim}
 
@@ -267,10 +267,10 @@ Note that some parameters are missing, since they use default values.
 
 \subsection{Learning and Evaluating Models}
 
-The \verb+moa.DoTask+ class is the main class for running tasks on the command line. It will accept the name of a task followed by any appropriate parameters. The first task used is the \verb+LearnModel+ task. The \verb+-l+ parameter specifies the learner, in this case the \verb+HoeffdingTree+ class. The \verb+-s+ parameter specifies the stream to learn from, in this case {\tt generators.Wave- formGenerator} is specified, which is a data stream generator that produces a three-class learning problem of identifying three types of waveform. The \verb+-m+ option specifies the maximum number of examples to train the learner with, in this case one million examples. The \verb+-O+ option specifies a file to output the resulting model to:
+The \verb+moa.main.DoTask+ class is the main class for running tasks on the command line. It will accept the name of a task followed by any appropriate parameters. The first task used is the \verb+LearnModel+ task. The \verb+-l+ parameter specifies the learner, in this case the \verb+HoeffdingTree+ class. The \verb+-s+ parameter specifies the stream to learn from, in this case {\tt generators.Wave- formGenerator} is specified, which is a data stream generator that produces a three-class learning problem of identifying three types of waveform. The \verb+-m+ option specifies the maximum number of examples to train the learner with, in this case one million examples. The \verb+-O+ option specifies a file to output the resulting model to:
 
 \begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -cp moa.jar -javaagent:sizeofag.jar moa.main.DoTask \
   LearnModel -l trees.HoeffdingTree \
   -s generators.WaveformGenerator -m 1000000 -O model1.moa
 \end{verbatim}
@@ -280,7 +280,7 @@ This will create a file named \verb+model1.moa+ that contains the decision stump
 The next example will evaluate the model to see how accurate it is on a set of examples that are generated using a different random seed. The \verb+EvaluateModel+ task is given the parameters needed to load the model produced in the previous step, generate a new waveform stream with a random seed of 2, and test on one million examples:
 
 \begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -cp moa.jar -javaagent:sizeofag.jar moa.main.DoTask \
   "EvaluateModel -m file:model1.moa \
   -s (generators.WaveformGenerator -i 2) -i 1000000"
 \end{verbatim}
@@ -298,7 +298,7 @@ Kappa Statistic (percent) = 76.711
 Note the the above two steps can be achieved by rolling them into one, avoiding the need to create an external file, as follows:
 
 \begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -cp moa.jar -javaagent:sizeofag.jar moa.main.DoTask \
   "EvaluateModel -m (LearnModel -l trees.HoeffdingTree \
   -s generators.WaveformGenerator -m 1000000) \
   -s (generators.WaveformGenerator -i 2) -i 1000000"
@@ -308,7 +308,7 @@ The task \verb+EvaluatePeriodicHeldOutTest+ will train a model while taking snap
 The following command creates a {\em comma separated values} file, training the \verb+HoeffdingTree+ classifier on the \verb+WaveformGenerator+ data, using the first 100 thousand examples for testing, training on a total of 100 million examples, and testing every one million examples:
 
 \begin{verbatim}
-java -cp moa.jar -javaagent:sizeofag.jar moa.DoTask \
+java -cp moa.jar -javaagent:sizeofag.jar moa.main.DoTask \
   "EvaluatePeriodicHeldOutTest -l trees.HoeffdingTree \
   -s generators.WaveformGenerator \
   -n 100000 -i 10000000 -f 1000000" > dsresult.csv

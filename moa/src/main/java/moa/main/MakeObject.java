@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa;
+package moa.main;
 
 import java.io.File;
 import java.io.Serializable;

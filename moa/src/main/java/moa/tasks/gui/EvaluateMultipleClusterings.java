@@ -17,7 +17,7 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.tasks;
+package moa.tasks.gui;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -36,6 +36,8 @@ import moa.gui.visualization.RunVisualizer;
 import moa.options.ClassOption;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.FileStream;
+import moa.tasks.AuxiliarMainTask;
+import moa.tasks.TaskMonitor;
 
 /**
  * Task for evaluating a clusterer on multiple (related) streams.

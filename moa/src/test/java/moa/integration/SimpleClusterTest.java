@@ -5,6 +5,7 @@ import moa.core.Globals;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.core.TimingUtils;
+import moa.main.DoTask;
 import moa.options.ClassOption;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.Task;
@@ -44,7 +45,7 @@ public class SimpleClusterTest extends TestCase {
 		}
 	}
 	
-	// code copied from moa.DoTask.main, to allow exceptions to be thrown in case of failure
+	// code copied from moa.main.DoTask.main, to allow exceptions to be thrown in case of failure
 	public void doTask(String [] args) throws Exception {
         if (args.length < 1) {
             System.out.println();
@@ -52,7 +53,7 @@ public class SimpleClusterTest extends TestCase {
             System.out.println();
             System.out.println("No task specified.");
         } else {
-            if (moa.DoTask.isJavaVersionOK() == false ) {//|| moa.DoTask.isWekaVersionOK() == false) {
+            if (DoTask.isJavaVersionOK() == false ) {//|| moa.main.DoTask.isWekaVersionOK() == false) {
                 return;
             }
             // create standard options
@@ -98,7 +99,7 @@ public class SimpleClusterTest extends TestCase {
                 // inform user of progress
                 while (!taskThread.isComplete()) {
                     StringBuilder progressLine = new StringBuilder();
-                    progressLine.append(moa.DoTask.progressAnimSequence[progressAnimIndex]);
+                    progressLine.append(DoTask.progressAnimSequence[progressAnimIndex]);
                     progressLine.append(' ');
                     progressLine.append(StringUtils.secondsToDHMSString(taskThread.getCPUSecondsElapsed()));
                     progressLine.append(" [");
@@ -111,17 +112,17 @@ public class SimpleClusterTest extends TestCase {
                         progressLine.append("% ");
                     }
                     progressLine.append(taskThread.getCurrentActivityString());
-                    while (progressLine.length() < moa.DoTask.MAX_STATUS_STRING_LENGTH) {
+                    while (progressLine.length() < DoTask.MAX_STATUS_STRING_LENGTH) {
                         progressLine.append(" ");
                     }
-                    if (progressLine.length() > moa.DoTask.MAX_STATUS_STRING_LENGTH) {
-                        progressLine.setLength(moa.DoTask.MAX_STATUS_STRING_LENGTH);
+                    if (progressLine.length() > DoTask.MAX_STATUS_STRING_LENGTH) {
+                        progressLine.setLength(DoTask.MAX_STATUS_STRING_LENGTH);
                         progressLine.setCharAt(
-                        		moa.DoTask.MAX_STATUS_STRING_LENGTH - 1, '~');
+                        		DoTask.MAX_STATUS_STRING_LENGTH - 1, '~');
                     }
                     System.out.print(progressLine.toString());
                     System.out.print('\r');
-                    if (++progressAnimIndex >= moa.DoTask.progressAnimSequence.length) {
+                    if (++progressAnimIndex >= DoTask.progressAnimSequence.length) {
                         progressAnimIndex = 0;
                     }
                     try {
@@ -131,7 +132,7 @@ public class SimpleClusterTest extends TestCase {
                     }
                 }
                 StringBuilder cleanupString = new StringBuilder();
-                for (int i = 0; i < moa.DoTask.MAX_STATUS_STRING_LENGTH; i++) {
+                for (int i = 0; i < DoTask.MAX_STATUS_STRING_LENGTH; i++) {
                     cleanupString.append(' ');
                 }
                 System.out.println(cleanupString);

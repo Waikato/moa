@@ -28,9 +28,9 @@ import moa.gui.FileExtensionFilter;
 import moa.gui.GUIUtils;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
-import moa.tasks.meta.ALMainTask;
-import moa.tasks.meta.ALPartitionEvaluationTask;
-import moa.tasks.meta.ALTaskThread;
+import moa.tasks.gui.meta.ALMainTask;
+import moa.tasks.gui.meta.ALPartitionEvaluationTask;
+import moa.tasks.gui.meta.ALTaskThread;
 import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
 import javax.swing.JButton;
