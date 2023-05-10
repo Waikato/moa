@@ -20,9 +20,10 @@
 package moa.options;
 
 import java.io.File;
+import java.util.Arrays;
+
 import com.github.javacliparser.Option;
 import com.github.javacliparser.Options;
-import moa.options.OptionHandler;
 import moa.tasks.Task;
 
 /**
@@ -88,82 +89,106 @@ public class ClassOption extends AbstractClassOption {
         return className;
     }
 
-    public static Object cliStringToObject(String cliString,
-            Class<?> requiredType, Option[] externalOptions) throws Exception {
+    public static Class<?> classForName(
+          String className,
+          String[] additionalPackagesToSearch
+    ) throws Exception {
+        try {
+            return Class.forName(className);
+        } catch (Throwable ignored1) {
+            for (String packageName: additionalPackagesToSearch) {
+                try {
+                    return Class.forName(packageName + "." + className);
+                } catch (Throwable ignored2) {}
+            }
+        }
+
+        throw new Exception("Class not found: " + className);
+    }
+
+    public static Object cliStringToObject(
+          String cliString,
+          Class<?> requiredType,
+          Option[] externalOptions,
+          String... additionalPackagesToSearch
+    ) throws Exception {
         if (cliString.startsWith(FILE_PREFIX_STRING)) {
             return new File(cliString.substring(FILE_PREFIX_STRING.length()));
         }
         if (cliString.startsWith(INMEM_PREFIX_STRING)) {
             return cliString.substring(INMEM_PREFIX_STRING.length());
         }
+
         cliString = cliString.trim();
-        int firstSpaceIndex = cliString.indexOf(' ', 0);
         String className;
         String classOptions;
+
+        int firstSpaceIndex = cliString.indexOf(' ', 0);
         if (firstSpaceIndex > 0) {
             className = cliString.substring(0, firstSpaceIndex);
-            classOptions = cliString.substring(firstSpaceIndex + 1, cliString.length());
+            classOptions = cliString.substring(firstSpaceIndex + 1);
             classOptions = classOptions.trim();
         } else {
             className = cliString;
             classOptions = "";
         }
-        Class<?> classObject;
-        try {
-            classObject = Class.forName(className);
-        } catch (Throwable t1) {
-            try {
-                // try prepending default package
-                classObject = Class.forName(requiredType.getPackage().getName()
-                        + "." + className);
-            } catch (Throwable t2) {
-                try {
-                    // try prepending task package
-                    classObject = Class.forName(Task.class.getPackage().getName()
-                            + "." + className);
-                } catch (Throwable t3) {
-                    throw new Exception("Class not found: " + className);
-                }
-            }
-        }
+
+        // Add the required type's package and the tasks package into the search space
+        additionalPackagesToSearch = Arrays.copyOf(additionalPackagesToSearch, additionalPackagesToSearch.length + 2);
+        additionalPackagesToSearch[additionalPackagesToSearch.length - 2] = requiredType.getPackage().getName();
+        additionalPackagesToSearch[additionalPackagesToSearch.length - 1] = Task.class.getPackage().getName();
+
+        Class<?> classObject = classForName(className, additionalPackagesToSearch);
+
         Object classInstance;
         try {
             classInstance = classObject.newInstance();
         } catch (Exception ex) {
-            throw new Exception("Problem creating instance of class: "
-                    + className, ex);
+            throw new Exception("Problem creating instance of class: " + className, ex);
         }
-        if (requiredType.isInstance(classInstance)
-                || ((classInstance instanceof Task) && requiredType.isAssignableFrom(((Task) classInstance).getTaskResultType()))) {
-            Options options = new Options();
-            if (externalOptions != null) {
-                for (Option option : externalOptions) {
-                    options.addOption(option);
-                }
+
+        // classInstance must either be a value of the required type, or a task
+        // which results in a value assignable to the required type
+        if (!requiredType.isInstance(classInstance)) {
+            if (!(classInstance instanceof Task) || !requiredType.isAssignableFrom(((Task) classInstance).getTaskResultType())) {
+                throw new Exception(
+                      "Class named '" + className + "' is not an instance of " + requiredType.getName() + "."
+                );
             }
-            if (classInstance instanceof OptionHandler) {
-                Option[] objectOptions = ((OptionHandler) classInstance).getOptions().getOptionArray();
-                for (Option option : objectOptions) {
-                    options.addOption(option);
-                }
-            }
-            try {
-                options.setViaCLIString(classOptions);
-            } catch (Exception ex) {
-                throw new Exception("Problem with options to '"
-                        + className
-                        + "'."
-                        + "\n\nValid options for "
-                        + className
-                        + ":\n"
-                        + ((OptionHandler) classInstance).getOptions().getHelpString(), ex);
-            } finally {
-                options.removeAllOptions(); // clean up listener refs
-            }
-        } else {
-            throw new Exception("Class named '" + className
-                    + "' is not an instance of " + requiredType.getName() + ".");
         }
+
+        Options options = new Options();
+
+        if (externalOptions != null) {
+            for (Option option : externalOptions) {
+                options.addOption(option);
+            }
+        }
+
+        if (classInstance instanceof OptionHandler) {
+            Option[] objectOptions = ((OptionHandler) classInstance).getOptions().getOptionArray();
+
+            for (Option option : objectOptions) {
+                options.addOption(option);
+            }
+        }
+
+        try {
+            options.setViaCLIString(classOptions);
+        } catch (Exception ex) {
+            throw new Exception(
+                  "Problem with options to '"
+                  + className
+                  + "'."
+                  + "\n\nValid options for "
+                  + className
+                  + ":\n"
+                  + ((OptionHandler) classInstance).getOptions().getHelpString()
+                  , ex);
+        } finally {
+            options.removeAllOptions(); // clean up listener refs
+        }
+
         return classInstance;
     }
 

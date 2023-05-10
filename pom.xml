@@ -202,6 +202,7 @@
     <module>moa</module>
     <module>weka-package</module>
     <module>moa-kafka</module>
+    <module>moa-gui</module>
   </modules>
 
   <build>

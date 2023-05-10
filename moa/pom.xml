@@ -243,26 +243,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
       </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifest>
-              <addClasspath>true</addClasspath>
-              <mainClass>moa.gui.GUI</mainClass>
-              <classpathPrefix>.</classpathPrefix>
-            </manifest>
-          </archive>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+
       <!-- outputs a GraphML file with the dependency tree (for analyzing where artifacts come from) -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

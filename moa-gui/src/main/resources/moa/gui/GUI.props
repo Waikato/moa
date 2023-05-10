@@ -1,0 +1,64 @@
+# This props file contains default values for the MOA GUI.
+#
+# Author  FracPete (fracpete at waikato dot ac dot nz)
+#
+# The tabs to display 
+#
+# The classes listed here must be derived from the abstract class moa.gui.AbstractTabPanel
+Tabs=\
+  moa.gui.ClassificationTabPanel,\
+  moa.gui.RegressionTabPanel,\
+  moa.gui.MultiLabelTabPanel,\
+  moa.gui.MultiTargetTabPanel,\
+  moa.gui.clustertab.ClusteringTabPanel,\
+  moa.gui.outliertab.OutlierTabPanel,\
+  moa.gui.ConceptDriftTabPanel,\
+  moa.gui.ALTabPanel,\
+  moa.gui.ScriptingTabPanel,\
+  moa.gui.featureanalysis.FeatureAnalysisTabPanel,\
+  moa.gui.AuxiliarTabPanel,\
+  moa.gui.experimentertab.ExperimenterTabPanel
+
+# The default tabs to display (empty list displays all)
+# comma-separated list of classnames, like "Tabs"
+# This shows only the classification/regression tabs on startup
+#DefaultTabs=\
+#  moa.gui.ClassificationTabPanel,\
+#  moa.gui.RegressionTabPanel
+DefaultTabs=
+
+# The maximum number of undo steps for closing tabs/pages
+# (0 turns undo off)
+MaxTabUndo=10
+
+# the default frame width
+FrameWidth=1200
+
+# the default frame height
+FrameHeight=900
+
+# the filechooser width
+FileChooserWidth=750
+
+# the filechooser height
+FileChooserHeight=500
+
+# the Look'n'Feel to use
+#
+# Accepted values:
+# - <empty>: use built-in LnF setup strategy (default value)
+# - system: use system LnF
+# - crossplatform: use cross-platform Metal LnF
+# - <classname>: the classname of the LnF to use
+#
+# Examples:
+# LookAndFeel=
+# LookAndFeel=system
+# LookAndFeel=crossplatform
+# LookAndFeel=com.sun.java.swing.plaf.windows.WindowsLookAndFeel
+# LookAndFeel=com.sun.java.swing.plaf.gtk.GTKLookAndFeel
+# LookAndFeel=javax.swing.plaf.metal.MetalLookAndFeel
+#
+# See also:
+# https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
+LookAndFeel=

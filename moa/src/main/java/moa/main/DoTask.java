@@ -29,7 +29,6 @@ import moa.tasks.AbstractTask;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.MainTask;
 import moa.tasks.TaskThread;
-import moa.tasks.gui.meta.MetaMainTask;
 
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
@@ -133,15 +132,12 @@ public class DoTask {
                     cliString.append(" ").append(args[i]);
                 }
                 // parse options
-                AbstractTask task;
-                try {
-                	task = (AbstractTask) ClassOption.cliStringToObject(
-                			cliString.toString(), MainTask.class, extraOptions);
-                } catch(Exception e) {
-                	// regular task could not be found, maybe it is a meta task
-            		task = (AbstractTask) ClassOption.cliStringToObject(
-            				cliString.toString(), MetaMainTask.class, extraOptions);
-                }
+                AbstractTask task = (AbstractTask) ClassOption.cliStringToObject(
+                      cliString.toString(),
+                      MainTask.class,
+                      extraOptions,
+                      "moa.gui.tasks.meta" // regular task could not be found, maybe it is a meta task
+                );
                 task.prepareForUse();
                 
                 Object result = null;
