@@ -141,9 +141,9 @@
    </dependency>
 
    <dependency>
-    <groupId>ca.umontreal.iro</groupId>
+    <groupId>ca.umontreal.iro.simul</groupId>
     <artifactId>ssj</artifactId>
-    <version>2.5</version>
+    <version>3.3.2</version>
   </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.github.yannrichet/JMathPlot -->

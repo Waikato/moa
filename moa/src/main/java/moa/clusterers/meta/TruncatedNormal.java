@@ -2,7 +2,7 @@ package moa.clusterers.meta;
 
 import java.util.Random;
 
-import umontreal.iro.lecuyer.probdist.NormalDist;
+import umontreal.ssj.probdist.NormalDist;
 
 public class TruncatedNormal {
 	
