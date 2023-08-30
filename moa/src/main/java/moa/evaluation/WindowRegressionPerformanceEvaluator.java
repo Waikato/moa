@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
@@ -29,7 +29,6 @@ import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
@@ -51,6 +50,14 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
     protected Estimator weightObserved;
 
     protected Estimator squareError;
+
+    protected Estimator squareTargetError;
+
+    protected Estimator sumTarget;
+
+    protected double numAttributes;
+
+    protected Estimator averageTargetError;
 
     protected Estimator averageError;
 
@@ -103,6 +110,9 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
         this.weightObserved = new Estimator(this.widthOption.getValue());
         this.squareError = new Estimator(this.widthOption.getValue());
         this.averageError = new Estimator(this.widthOption.getValue());
+        this.squareTargetError = new Estimator(this.widthOption.getValue());
+        this.sumTarget = new Estimator(this.widthOption.getValue());
+        this.averageTargetError = new Estimator(this.widthOption.getValue());
         this.TotalweightObserved = 0;
     }
 
@@ -118,7 +128,17 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
             this.weightObserved.add(weight);
 
             if (prediction.length > 0) {
+                double meanTarget = this.weightObserved.total() != 0 ?
+                        this.sumTarget.total() / this.weightObserved.total() : 0.0;
+
                 this.squareError.add((inst.classValue() - prediction[0]) * (inst.classValue() - prediction[0]));
+
+                this.squareTargetError.add((inst.classValue() - meanTarget) * (inst.classValue() - meanTarget));
+                this.sumTarget.add(inst.classValue());
+                this.numAttributes = inst.numAttributes();
+
+                this.averageTargetError.add(Math.abs(inst.classValue() - meanTarget));
+
                 this.averageError.add(Math.abs(inst.classValue() - prediction[0]));
             }
             //System.out.println(inst.classValue()+", "+prediction[0]);
@@ -128,12 +148,52 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
     @Override
     public Measurement[] getPerformanceMeasurements() {
         return new Measurement[]{
-                    new Measurement("classified instances",
-                    getTotalWeightObserved()),
-                    new Measurement("mean absolute error",
-                    getMeanError()),
-                    new Measurement("root mean squared error",
-                    getSquareError())};
+                new Measurement("classified instances",
+                        getTotalWeightObserved()),
+                new Measurement("mean absolute error",
+                        getMeanError()),
+                new Measurement("root mean squared error",
+                        getSquareError()),
+                new Measurement("relative mean absolute error",
+                        getRelativeMeanError()),
+                new Measurement("relative root mean squared error",
+                        getRelativeSquareError()),
+                new Measurement("coefficient of determination",
+                        getCoefficientOfDetermination()),
+                new Measurement("adjusted coefficient of determination",
+                        getAdjustedCoefficientOfDetermination())
+        };
+    }
+
+    public double getCoefficientOfDetermination() {
+        if(weightObserved.total() > 0.0) {
+            double SSres = squareError.total();
+            double SStot = squareTargetError.total();
+
+            return 1 - (SSres / SStot);
+        }
+        return 0.0;
+    }
+
+    public double getAdjustedCoefficientOfDetermination() {
+        return 1 - ((1-getCoefficientOfDetermination())*(getTotalWeightObserved() - 1)) /
+                (getTotalWeightObserved() - numAttributes - 1);
+    }
+
+    private double getRelativeMeanError() {
+        //double targetMeanError = getTargetMeanError();
+        //return targetMeanError > 0 ? getMeanError()/targetMeanError : 0.0;
+        return this.averageTargetError.total() > 0 ?
+                this.averageError.total() / this.averageTargetError.total() : 0.0;
+//        //TODO: implement!
+//        return -1.0;
+    }
+
+    private double getRelativeSquareError() {
+        //double targetSquareError = getTargetSquareError();
+        //return targetSquareError > 0 ? getSquareError()/targetSquareError : 0.0;
+        return Math.sqrt(this.squareTargetError.total() > 0 ?
+                this.squareError.total() / this.squareTargetError.total() : 0.0);
     }
 
     public double getTotalWeightObserved() {
@@ -158,18 +218,18 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
 
     @Override
     public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+                                  ObjectRepository repository) {
     }
-    
 
-	@Override
-	public void addResult(Example<Instance> testInst, Prediction prediction) {
-		double votes[];
-		if(prediction==null)
-			votes = new double[0];
-		else
-			votes=prediction.getVotes();
-		addResult(testInst, votes);
-		
-	}
+
+    @Override
+    public void addResult(Example<Instance> testInst, Prediction prediction) {
+        double votes[];
+        if(prediction==null)
+            votes = new double[0];
+        else
+            votes=prediction.getVotes();
+        addResult(testInst, votes);
+
+    }
 }
