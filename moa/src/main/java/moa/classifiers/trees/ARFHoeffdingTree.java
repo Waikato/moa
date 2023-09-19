@@ -94,7 +94,7 @@ public class ARFHoeffdingTree extends HoeffdingTree {
                         allFeatureIndexes.add(i);
                     // Randomly assign attributes to the list of attributes.
                     for(int i = 0 ; i < this.listAttributes.length ; ++i) {
-                        int randIndex = ht.classifierRandom.nextInt(allFeatureIndexes.size() - 1);
+                        int randIndex = ht.classifierRandom.nextInt(allFeatureIndexes.size());
                         this.listAttributes[i] = allFeatureIndexes.get(randIndex);
                         allFeatureIndexes.remove(randIndex);
                     }
