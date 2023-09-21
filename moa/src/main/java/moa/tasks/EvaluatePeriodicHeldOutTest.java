@@ -285,6 +285,11 @@ public class EvaluatePeriodicHeldOutTest extends ClassificationMainTask {
         if (immediateResultStream != null) {
             immediateResultStream.close();
         }
+        try {
+            evaluator.close();
+        } catch (Exception ex) {
+            throw new RuntimeException("Exception closing evaluator", ex);
+        }
         return learningCurve;
     }
 

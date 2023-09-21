@@ -282,6 +282,12 @@ public class EvaluatePrequentialDelayedCV extends ClassificationMainTask {
         if (immediateResultStream != null) {
             immediateResultStream.close();
         }
+        try {
+            for (LearningPerformanceEvaluator evaluator : evaluators)
+                evaluator.close();
+        } catch (Exception ex) {
+            throw new RuntimeException("Exception closing evaluator", ex);
+        }
         return learningCurve;
     }
 

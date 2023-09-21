@@ -35,7 +35,7 @@ import moa.core.Measurement;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public interface LearningPerformanceEvaluator<E extends Example> extends MOAObject, CapabilitiesHandler {
+public interface LearningPerformanceEvaluator<E extends Example> extends MOAObject, CapabilitiesHandler, AutoCloseable {
 
     /**
      * Resets this evaluator. It must be similar to
@@ -66,4 +66,8 @@ public interface LearningPerformanceEvaluator<E extends Example> extends MOAObje
 	  return new ImmutableCapabilities(Capability.VIEW_STANDARD);
 	}
 
+  @Override
+  default void close() throws Exception {
+    // By default an evaluator does nothing when closed.
+  }
 }
