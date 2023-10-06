@@ -25,6 +25,8 @@ import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.core.Utils;
 import com.yahoo.labs.samoa.instances.Instance;
 
+import java.util.ArrayList;
+
 /**
  * Adaptive Random Forest Hoeffding Tree.
  * 
@@ -47,8 +49,8 @@ public class ARFHoeffdingTree extends HoeffdingTree {
     private static final long serialVersionUID = 1L;
     
     public IntOption subspaceSizeOption = new IntOption("subspaceSizeSize", 'k',
-            "Number of features per subset for each node split. Negative values = #features - k", 
-            2, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            "Number of features per subset for each node split.",
+            2, 1, Integer.MAX_VALUE);
     
     @Override
     public String getPurposeString() {
@@ -70,27 +72,36 @@ public class ARFHoeffdingTree extends HoeffdingTree {
         }
 
         @Override
-        public void learnFromInstance(Instance inst, HoeffdingTree ht) {            
+        public void learnFromInstance(Instance inst, HoeffdingTree ht) {
             this.observedClassDistribution.addToValue((int) inst.classValue(),
                     inst.weight());
             if (this.listAttributes == null) {
-                this.listAttributes = new int[this.numAttributes];
-                for (int j = 0; j < this.numAttributes; j++) {
-                    boolean isUnique = false;
-                    while (isUnique == false) {
-                        this.listAttributes[j] = ht.classifierRandom.nextInt(inst.numAttributes() - 1);
-                        isUnique = true;
-                        for (int i = 0; i < j; i++) {
-                            if (this.listAttributes[j] == this.listAttributes[i]) {
-                                isUnique = false;
-                                break;
-                            }
-                        }
+                // -1 to not count the class attribute
+                int totalInstanceNumberOfAttributes = (inst.numAttributes()-1);
+                // Check if the subspaceSize (numAttributes) is greater than the number of attributes in the instance.
+                // If yes, then override numAttributes to match the maximum number of attributes. Also, there is no
+                // need to randomly select features, then just add all to the listAttributes.
+                if(this.numAttributes >= totalInstanceNumberOfAttributes || this.numAttributes < 0) {
+                    this.numAttributes = totalInstanceNumberOfAttributes;
+                    this.listAttributes = new int[this.numAttributes];
+                    for (int i = 0; i < totalInstanceNumberOfAttributes ; i++)
+                        this.listAttributes[i] = i;
+                } else {
+                    this.listAttributes = new int[this.numAttributes];
+                    // Creates a list with all possible indexes
+                    ArrayList<Integer> allFeatureIndexes = new ArrayList<>();
+                    for (int i = 0; i < totalInstanceNumberOfAttributes ; i++)
+                        allFeatureIndexes.add(i);
+                    // Randomly assign attributes to the list of attributes.
+                    for(int i = 0 ; i < this.listAttributes.length ; ++i) {
+                        int randIndex = ht.classifierRandom.nextInt(allFeatureIndexes.size());
+                        this.listAttributes[i] = allFeatureIndexes.get(randIndex);
+                        allFeatureIndexes.remove(randIndex);
                     }
-
                 }
             }
-            for (int j = 0; j < this.numAttributes - 1; j++) {
+
+            for (int j = 0; j < this.listAttributes.length ; j++) {
                 int i = this.listAttributes[j];
                 int instAttIndex = modelAttIndexToInstanceAttIndex(i, inst);
                 AttributeClassObserver obs = this.attributeObservers.get(i);
