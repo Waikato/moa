@@ -303,6 +303,9 @@ public class ARFFIMTDD extends AbstractClassifier implements Regressor {
             // sum of absolute errors
             sumOfAbsErrors += inst.weight() * Math.abs(tree.normalizeTargetValue(Math.abs(inst.classValue() - getPrediction(inst))));
 
+            // prevent subspace surpasses feature space
+            this.numAttributes = Math.min(this.numAttributes, inst.numAttributes() - 1);
+
             if (this.listAttributes == null) {
                 this.listAttributes = new int[this.numAttributes];
                 for (int j = 0; j < this.numAttributes; j++) {
