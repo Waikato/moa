@@ -83,6 +83,6 @@ done
 "$JCMD" \
   -classpath "$CLASSPATH" \
   -Xmx$MEMORY \
-  -javaagent:"$REPO"/sizeofag-1.0.4.jar \
+  -javaagent:"$REPO"/sizeofag-1.1.0.jar \
   $MAIN \
   $ARGS
