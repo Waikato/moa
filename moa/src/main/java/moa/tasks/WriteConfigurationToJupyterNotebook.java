@@ -104,7 +104,6 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                             learnerString = ((EvaluatePrequential) currentTask).learnerOption.getValueAsCLIString().replace('\\', '/');
                             evaluatorString = ((EvaluatePrequential) currentTask).evaluatorOption.getValueAsCLIString().replace('\\', '/');
                             dumpFile = ((EvaluatePrequential) currentTask).dumpFileOption.getFile();
-                            outputPredictionFile = ((EvaluatePrequential) currentTask).outputPredictionFileOption.getFile();
                             sampleFrequency = ((EvaluatePrequential) currentTask).sampleFrequencyOption.getValue();
                             instanceLimit = ((EvaluatePrequential) currentTask).instanceLimitOption.getValue();
 
@@ -154,7 +153,6 @@ public class WriteConfigurationToJupyterNotebook extends AuxiliarMainTask {
                             learnerString = ((EvaluatePrequentialDelayed) currentTask).learnerOption.getValueAsCLIString().replace('\\', '/');
                             evaluatorString = ((EvaluatePrequentialDelayed) currentTask).evaluatorOption.getValueAsCLIString().replace('\\', '/');
                             dumpFile = ((EvaluatePrequentialDelayed) currentTask).dumpFileOption.getFile();
-                            outputPredictionFile = ((EvaluatePrequentialDelayed) currentTask).outputPredictionFileOption.getFile();
                             sampleFrequency = ((EvaluatePrequentialDelayed) currentTask).sampleFrequencyOption.getValue();
                             instanceLimit = ((EvaluatePrequentialDelayed) currentTask).instanceLimitOption.getValue();
                             trainOnInitialWindow = ((EvaluatePrequentialDelayed) currentTask).trainOnInitialWindowOption.isSet();

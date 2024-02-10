@@ -231,9 +231,11 @@ public class EvaluateConceptDrift extends ConceptDriftMainTask{
         if (immediateResultStream != null) {
             immediateResultStream.close();
         }
-       /* if (outputPredictionResultStream != null) {
-            outputPredictionResultStream.close();
-        }*/
+        try {
+            evaluator.close();
+        } catch (Exception ex) {
+            throw new RuntimeException("Exception closing evaluator", ex);
+        }
         return learningCurve;
     }
 }

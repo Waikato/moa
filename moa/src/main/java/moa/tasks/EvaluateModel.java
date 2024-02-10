@@ -107,35 +107,10 @@ public class EvaluateModel extends ClassificationMainTask implements Capabilitie
         long instancesProcessed = 0;
         monitor.setCurrentActivity("Evaluating model...", -1.0);
 
-        //File for output predictions
-        File outputPredictionFile = this.outputPredictionFileOption.getFile();
-        PrintStream outputPredictionResultStream = null;
-        if (outputPredictionFile != null) {
-            try {
-                if (outputPredictionFile.exists()) {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile, true), true);
-                } else {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile), true);
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(
-                        "Unable to open prediction result file: " + outputPredictionFile, ex);
-            }
-        }
         while (stream.hasMoreInstances()
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))) {
             Example testInst = (Example) stream.nextInstance();//.copy();
-            int trueClass = (int) ((Instance) testInst.getData()).classValue();
-            //testInst.setClassMissing();
             double[] prediction = model.getVotesForInstance(testInst);
-            //evaluator.addClassificationAttempt(trueClass, prediction, testInst
-            //		.weight());
-            if (outputPredictionFile != null) {
-                outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," +(
-                        ((Instance) testInst.getData()).classIsMissing() == true ? " ? " : trueClass));
-            }
             evaluator.addResult(testInst, prediction);
             instancesProcessed++;
 
@@ -169,8 +144,10 @@ public class EvaluateModel extends ClassificationMainTask implements Capabilitie
                 }
             }
         }
-        if (outputPredictionResultStream != null) {
-            outputPredictionResultStream.close();
+        try {
+            evaluator.close();
+        } catch (Exception ex) {
+            throw new RuntimeException("Exception closing evaluator", ex);
         }
         return learningCurve;
     }

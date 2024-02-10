@@ -120,9 +120,6 @@ public class EvaluatePrequentialDelayed extends ClassificationMainTask {
     public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
             "File to append intermediate csv results to.", null, "csv", true);
 
-    public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
-            "File to append output predictions to.", null, "pred", true);
-
     //New for prequential method DEPRECATED
     public IntOption widthOption = new IntOption("width",
             'w', "Size of Window", 1000);
@@ -194,23 +191,6 @@ public class EvaluatePrequentialDelayed extends ClassificationMainTask {
                         "Unable to open immediate result file: " + dumpFile, ex);
             }
         }
-        //File for output predictions
-        File outputPredictionFile = this.outputPredictionFileOption.getFile();
-        PrintStream outputPredictionResultStream = null;
-        if (outputPredictionFile != null) {
-            try {
-                if (outputPredictionFile.exists()) {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile, true), true);
-                } else {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile), true);
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(
-                        "Unable to open prediction result file: " + outputPredictionFile, ex);
-            }
-        }
         boolean firstDump = true;
         boolean preciseCPUTiming = TimingUtils.enablePreciseTiming();
         long evaluateStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
@@ -261,12 +241,6 @@ public class EvaluatePrequentialDelayed extends ClassificationMainTask {
                 testInstance = ((Instance) currentInst.getData()).copy();
                 testInst = new InstanceExample(testInstance);
 
-                // Output prediction
-                if (outputPredictionFile != null) {
-                    int trueClass = (int) ((Instance) currentInst.getData()).classValue();
-                    outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," + (
-                     ((Instance) testInst.getData()).classIsMissing() == true ? " ? " : trueClass));
-                }
                 evaluator.addResult(testInst, prediction);
                 
                 if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0
@@ -328,8 +302,10 @@ public class EvaluatePrequentialDelayed extends ClassificationMainTask {
         if (immediateResultStream != null) {
             immediateResultStream.close();
         }
-        if (outputPredictionResultStream != null) {
-            outputPredictionResultStream.close();
+        try {
+            evaluator.close();
+        } catch (Exception ex) {
+            throw new RuntimeException("Exception closing evaluator", ex);
         }
         return learningCurve;
     }

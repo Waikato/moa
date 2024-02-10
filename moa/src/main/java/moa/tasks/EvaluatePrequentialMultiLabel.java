@@ -289,6 +289,11 @@ public class EvaluatePrequentialMultiLabel extends MultiLabelMainTask {
         if (outputPredictionResultStream != null) {
             outputPredictionResultStream.close();
         }
+        try {
+            evaluator.close();
+        } catch (Exception ex) {
+            throw new RuntimeException("Exception closing evaluator", ex);
+        }
         return learningCurve;
     }
 }

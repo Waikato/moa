@@ -52,90 +52,90 @@ import moa.tasks.TaskMonitor;
  * @version $Revision: 1 $
  */
 public class ALPrequentialEvaluationTask extends ALMainTask {
-	
-	private static final long serialVersionUID = 1L;
-	
-	@Override
-	public String getPurposeString() {
-		return "Perform prequential evaluation (testing, then training with"
-				+ " each example in sequence) for an active learning"
-				+ " classifier.";
-	}
-	
-	public ClassOption learnerOption = new ClassOption("learner", 'l',
+    
+    private static final long serialVersionUID = 1L;
+    
+    @Override
+    public String getPurposeString() {
+        return "Perform prequential evaluation (testing, then training with"
+                + " each example in sequence) for an active learning"
+                + " classifier.";
+    }
+    
+    public ClassOption learnerOption = new ClassOption("learner", 'l',
             "Learner to train.", ALClassifier.class, 
             "moa.classifiers.active.ALRandom");
-	
-	public ClassOption streamOption = new ClassOption("stream", 's',
+    
+    public ClassOption streamOption = new ClassOption("stream", 's',
             "Stream to learn from.", ExampleStream.class,
             "generators.RandomTreeGenerator");
-	
-	public ClassOption evaluatorOption = new ClassOption(
-			"evaluator", 'e',
+    
+    public ClassOption evaluatorOption = new ClassOption(
+            "evaluator", 'e',
             "Active Learning classification performance evaluation method.",
             ALClassificationPerformanceEvaluator.class,
             "ALWindowClassificationPerformanceEvaluator");
-	
-	public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
+    
+    public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
             "Maximum number of instances to test/train on  (-1 = no limit).",
             100000000, -1, Integer.MAX_VALUE);
-	
-	public IntOption timeLimitOption = new IntOption("timeLimit", 't',
+    
+    public IntOption timeLimitOption = new IntOption("timeLimit", 't',
             "Maximum number of seconds to test/train for (-1 = no limit).", -1,
             -1, Integer.MAX_VALUE);
-	
-	public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
+    
+    public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
             'f',
             "How many instances between samples of the learning performance.",
             100000, 0, Integer.MAX_VALUE);
-	
-	public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
+    
+    public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
             "File to append intermediate csv results to.", null, "csv", true);
-	
-	
-	/**
-	 * Constructor which sets the color coding to black.
-	 */
-	public ALPrequentialEvaluationTask() {
-		this(Color.BLACK);
-	}
-	
-	/**
-	 * Constructor with which a color coding can be set.
-	 * @param colorCoding the color used by the task
-	 */
-	public ALPrequentialEvaluationTask(Color colorCoding) {
-		this.colorCoding = colorCoding;
-	}
-	
-	@Override
-	public Class<?> getTaskResultType() {
-		return LearningCurve.class;
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-		// get stream
-		ExampleStream<Example<Instance>> stream = 
-				(ExampleStream<Example<Instance>>) 
-				getPreparedClassOption(this.streamOption);
-		
-		// initialize learner
-		ALClassifier learner = 
-				(ALClassifier) getPreparedClassOption(this.learnerOption);
-		learner.resetLearning();
-		learner.setModelContext(stream.getHeader());
-		
-		// get evaluator
+    
+    
+    /**
+     * Constructor which sets the color coding to black.
+     */
+    public ALPrequentialEvaluationTask() {
+        this(Color.BLACK);
+    }
+    
+    /**
+     * Constructor with which a color coding can be set.
+     * @param colorCoding the color used by the task
+     */
+    public ALPrequentialEvaluationTask(Color colorCoding) {
+        this.colorCoding = colorCoding;
+    }
+    
+    @Override
+    public Class<?> getTaskResultType() {
+        return LearningCurve.class;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
+        // get stream
+        ExampleStream<Example<Instance>> stream = 
+                (ExampleStream<Example<Instance>>) 
+                getPreparedClassOption(this.streamOption);
+        
+        // initialize learner
+        ALClassifier learner = 
+                (ALClassifier) getPreparedClassOption(this.learnerOption);
+        learner.resetLearning();
+        learner.setModelContext(stream.getHeader());
+        
+        // get evaluator
         ALClassificationPerformanceEvaluator evaluator = (ALClassificationPerformanceEvaluator) 
-        		getPreparedClassOption(this.evaluatorOption);
+                getPreparedClassOption(this.evaluatorOption);
         
         // initialize learning curve
         LearningCurve learningCurve = new LearningCurve(
-        		"learning evaluation instances");
+                "learning evaluation instances");
         
-		// perform training and testing
+        // perform training and testing
         int maxInstances = this.instanceLimitOption.getValue();
         int instancesProcessed = 0;
         int maxSeconds = this.timeLimitOption.getValue();
@@ -149,75 +149,75 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
         File dumpFile = this.dumpFileOption.getFile();
         PrintStream immediateResultStream = null;
         if (dumpFile != null) {
-        	try {
-        		if (dumpFile.exists()) {
-        			immediateResultStream = new PrintStream(
+            try {
+                if (dumpFile.exists()) {
+                    immediateResultStream = new PrintStream(
                             new FileOutputStream(dumpFile, true), true);
                 } else {
                     immediateResultStream = new PrintStream(
                             new FileOutputStream(dumpFile), true);
                 }
-        	} catch (Exception ex) {
+            } catch (Exception ex) {
                 throw new RuntimeException(
-                		"Unable to open immediate result file: " + dumpFile, ex);
+                        "Unable to open immediate result file: " + dumpFile, ex);
             }
         }
         
         monitor.setCurrentActivity("Evaluating learner...", -1.0);
         while (stream.hasMoreInstances()
-        	   && ((maxInstances < 0) 
-        		   || (instancesProcessed < maxInstances))
-        	   && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) 
+               && ((maxInstances < 0) 
+                   || (instancesProcessed < maxInstances))
+               && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) 
         {
-        	Example<Instance> trainInst = stream.nextInstance();
-        	Example<Instance> testInst = trainInst;
-        	
-        	// predict class for instance
-        	double[] prediction = learner.getVotesForInstance(testInst);
-        	evaluator.addResult(testInst, prediction);
-        	
-        	// train on instance
-        	learner.trainOnInstance(trainInst);
-        	
-        	// check if label was acquired
-        	int labelAcquired = learner.getLastLabelAcqReport();
-        	evaluator.doLabelAcqReport(trainInst, labelAcquired);
-        	
-        	instancesProcessed++;
-        	
-        	// update learning curve
-        	if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0
-        		|| !stream.hasMoreInstances())
-        	{
-        		long evaluateTime = 
-        				TimingUtils.getNanoCPUTimeOfCurrentThread();
+            Example<Instance> trainInst = stream.nextInstance();
+            Example<Instance> testInst = trainInst;
+            
+            // predict class for instance
+            double[] prediction = learner.getVotesForInstance(testInst);
+            evaluator.addResult(testInst, prediction);
+            
+            // train on instance
+            learner.trainOnInstance(trainInst);
+            
+            // check if label was acquired
+            int labelAcquired = learner.getLastLabelAcqReport();
+            evaluator.doLabelAcqReport(trainInst, labelAcquired);
+            
+            instancesProcessed++;
+            
+            // update learning curve
+            if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0
+                || !stream.hasMoreInstances())
+            {
+                long evaluateTime = 
+                        TimingUtils.getNanoCPUTimeOfCurrentThread();
                 double time = TimingUtils.nanoTimeToSeconds(
-                		evaluateTime - evaluateStartTime);
+                        evaluateTime - evaluateStartTime);
                 double timeIncrement = TimingUtils.nanoTimeToSeconds(
-                		evaluateTime - lastEvaluateStartTime);
+                        evaluateTime - lastEvaluateStartTime);
                 double RAMHoursIncrement = 
-                		learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); //GBs
+                        learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); //GBs
                 RAMHoursIncrement *= (timeIncrement / 3600.0); //Hours
                 RAMHours += RAMHoursIncrement;
                 lastEvaluateStartTime = evaluateTime;
-        		
-        		learningCurve.insertEntry(new LearningEvaluation(
-        				new Measurement[]{
-        						new Measurement(
-        								"learning evaluation instances",
-        								instancesProcessed),
-        						new Measurement(
-        	                            "evaluation time ("
-        	                            + (preciseCPUTiming ? "cpu "
-        	                            : "") + "seconds)",
-        	                            time),
-	                            new Measurement(
-        	                            "model cost (RAM-Hours)",
-        	                            RAMHours),
-        				},
-        				evaluator, learner));
-        		
-        		if (immediateResultStream != null) {
+                
+                learningCurve.insertEntry(new LearningEvaluation(
+                        new Measurement[]{
+                                new Measurement(
+                                        "learning evaluation instances",
+                                        instancesProcessed),
+                                new Measurement(
+                                        "evaluation time ("
+                                        + (preciseCPUTiming ? "cpu "
+                                        : "") + "seconds)",
+                                        time),
+                                new Measurement(
+                                        "model cost (RAM-Hours)",
+                                        RAMHours),
+                        },
+                        evaluator, learner));
+                
+                if (immediateResultStream != null) {
                     if (firstDump) {
                         immediateResultStream.println(learningCurve.headerToString());
                         firstDump = false;
@@ -225,57 +225,61 @@ public class ALPrequentialEvaluationTask extends ALMainTask {
                     immediateResultStream.println(learningCurve.entryToString(learningCurve.numEntries() - 1));
                     immediateResultStream.flush();
                 }
-        	}
-        	
-        	// update monitor
-        	if (instancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0 && learningCurve.numEntries() > 0) {
-        		if (monitor.taskShouldAbort()) {
+            }
+            
+            // update monitor
+            if (instancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0 && learningCurve.numEntries() > 0) {
+                if (monitor.taskShouldAbort()) {
                     return null;
                 }
-        		
-        		long estimatedRemainingInstances = 
-        				stream.estimatedRemainingInstances();
-        		
-        		if (maxInstances > 0) {
-        			long maxRemaining = maxInstances - instancesProcessed;
-        			if ((estimatedRemainingInstances < 0 || estimatedRemainingInstances == 0)
-        				|| (maxRemaining < estimatedRemainingInstances))
-        			{
-        				estimatedRemainingInstances = maxRemaining;
-        			}
-        		}
-        		
-        		
-        		// calculate completion fraction
-        		double fractionComplete = (double) instancesProcessed / 
-        				(instancesProcessed + estimatedRemainingInstances);
-        		monitor.setCurrentActivityFractionComplete(
-        				estimatedRemainingInstances < 0 ? 
-        						-1.0 : fractionComplete);
-        		
-        		
-        		// TODO currently the preview is sent after each instance
-        		// 		should be changed later on
-        		if (monitor.resultPreviewRequested() || isSubtask()) {
-        			monitor.setLatestResultPreview(new PreviewCollectionLearningCurveWrapper((LearningCurve)learningCurve.copy(), this.getClass()));
+                
+                long estimatedRemainingInstances = 
+                        stream.estimatedRemainingInstances();
+                
+                if (maxInstances > 0) {
+                    long maxRemaining = maxInstances - instancesProcessed;
+                    if ((estimatedRemainingInstances < 0 || estimatedRemainingInstances == 0)
+                        || (maxRemaining < estimatedRemainingInstances))
+                    {
+                        estimatedRemainingInstances = maxRemaining;
+                    }
                 }
-        		
-        		// update time measurement
-        		secondsElapsed = (int) TimingUtils.nanoTimeToSeconds(
-        				TimingUtils.getNanoCPUTimeOfCurrentThread()
+                
+                
+                // calculate completion fraction
+                double fractionComplete = (double) instancesProcessed / 
+                        (instancesProcessed + estimatedRemainingInstances);
+                monitor.setCurrentActivityFractionComplete(
+                        estimatedRemainingInstances < 0 ? 
+                                -1.0 : fractionComplete);
+                
+                
+                // TODO currently the preview is sent after each instance
+                // 		should be changed later on
+                if (monitor.resultPreviewRequested() || isSubtask()) {
+                    monitor.setLatestResultPreview(new PreviewCollectionLearningCurveWrapper((LearningCurve)learningCurve.copy(), this.getClass()));
+                }
+                
+                // update time measurement
+                secondsElapsed = (int) TimingUtils.nanoTimeToSeconds(
+                        TimingUtils.getNanoCPUTimeOfCurrentThread()
                         - evaluateStartTime);
-        	}
+            }
         }
         
         if (immediateResultStream != null) {
             immediateResultStream.close();
         }
-		
-		return new PreviewCollectionLearningCurveWrapper(learningCurve, this.getClass());
-	}
-	
-	@Override
-	public List<ALTaskThread> getSubtaskThreads() {
-		return new ArrayList<ALTaskThread>();
-	}
+        try {
+            evaluator.close();
+        } catch (Exception ex) {
+            throw new RuntimeException("Exception closing evaluator", ex);
+        }
+        return new PreviewCollectionLearningCurveWrapper(learningCurve, this.getClass());
+    }
+    
+    @Override
+    public List<ALTaskThread> getSubtaskThreads() {
+        return new ArrayList<ALTaskThread>();
+    }
 }
