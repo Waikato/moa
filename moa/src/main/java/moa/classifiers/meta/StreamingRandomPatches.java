@@ -325,7 +325,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
         return baseModels;
     }
 
-    private static ArrayList<ArrayList<Integer>> localRandomKCombinations(int k, int length,
+    public static ArrayList<ArrayList<Integer>> localRandomKCombinations(int k, int length,
                                                                           int nCombinations, Random random) {
         ArrayList<ArrayList<Integer>> combinations = new ArrayList<>();
         for(int i = 0 ; i < nCombinations ; ++i) {
@@ -356,7 +356,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
         }
     }
 
-    private static ArrayList<ArrayList<Integer>> allKCombinations(int k, int length) {
+    public static ArrayList<ArrayList<Integer>> allKCombinations(int k, int length) {
         ArrayList<ArrayList<Integer>> combinations = new ArrayList<>();
         ArrayList<Integer> combination = new ArrayList<>();
         allKCombinationsInner(0, k, combination, length, combinations);
