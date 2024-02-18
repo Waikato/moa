@@ -1,5 +1,5 @@
 /*
- *    CAND.java
+ *    StreamingGradientBoostedTrees.java
  *    Copyright (C) 2024 University of Waikato, Hamilton, New Zealand
  *    @author Nuwan Gunasekara (ng98@students.waikato.ac.nz)
  *
