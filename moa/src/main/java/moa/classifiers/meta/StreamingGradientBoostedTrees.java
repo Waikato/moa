@@ -131,8 +131,10 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
         if (this.reset) { // init
             this.reset = false;
             if (inst.classAttribute().isNominal()){
+                System.out.println("Classification task.");
                 this.numberClasses = inst.numClasses();
             }else{
+                System.out.println("Regression task.");
                 this.numberClasses = 1;
             }
             createSGBTs(this.numberClasses <= 2 ? 1 : this.numberClasses);
@@ -484,7 +486,7 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
                 for (int i = 0; i < numberOfboostingIterations.getValue(); i++) {
                     subSpacesForEachBoostingIteration.add(this.subspaces.get(subSpaceIndexes[i]));
                 }
-                System.out.println("Ensemble size: " + booster.size());
+                System.out.println("Boosting iterations: " + booster.size());
                 System.out.println("Percentage of attributes % for each boosting iteration:" + percentageOfAttributesForEachBoostingIteration.getValue());
             }
 
