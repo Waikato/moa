@@ -38,6 +38,7 @@ import moa.evaluation.BasicClassificationPerformanceEvaluator;
 import moa.options.ClassOption;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -76,7 +77,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
     private static final long serialVersionUID = 1L;
 
     public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train on instances.", Classifier.class, "trees.HoeffdingTree -g 50 -c 0.01");
+            "Classifier to train on instances.", Classifier.class, "trees.HoeffdingOptionTree -g 50 -c 0.01");
 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
             "The number of models.", 100, 1, Integer.MAX_VALUE);
@@ -102,10 +103,10 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
 
     // DRIFT and WARNING DETECTION
     public ClassOption driftDetectionMethodOption = new ClassOption("driftDetectionMethod", 'x',
-            "Change detector for drifts and its parameters", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-5");
+            "Change detector for drifts and its parameters", ChangeDetector.class, "PageHinkleyDM -a 1.0E-5");
 
     public ClassOption warningDetectionMethodOption = new ClassOption("warningDetectionMethod", 'p',
-            "Change detector for warnings (start training bkg learner)", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-4");
+            "Change detector for warnings (start training bkg learner)", ChangeDetector.class, "PageHinkleyDM -a 1.0E-4");
 
     // VOTING
     public FlagOption disableWeightedVote = new FlagOption("disableWeightedVote", 'w',
@@ -142,22 +143,19 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
         if(this.ensemble == null)
             initEnsemble(instance);
 
-        for (int i = 0 ; i < this.ensemble.length ; i++) {
-            double[] rawVote = this.ensemble[i].getVotesForInstance(instance);
+        for (StreamingRandomPatchesClassifier ensemble1 : this.ensemble) {
+            double[] rawVote = ensemble1.getVotesForInstance(instance);
             DoubleVector vote = new DoubleVector(rawVote);
             InstanceExample example = new InstanceExample(instance);
-
-            this.ensemble[i].evaluator.addResult(example, vote.getArrayRef());
+            ensemble1.evaluator.addResult(example, vote.getArrayRef());
             // Train using random subspaces without resampling, i.e. all instances are used for training.
-            if(this.trainingMethodOption.getChosenIndex() == TRAIN_RANDOM_SUBSPACES) {
-                this.ensemble[i].trainOnInstance(instance,1, this.instancesSeen, this.classifierRandom);
-            }
-            // Train using random patches or resampling, thus we simulate online bagging with poisson(lambda=...)
-            else {
+            if (this.trainingMethodOption.getChosenIndex() == TRAIN_RANDOM_SUBSPACES) {
+                ensemble1.trainOnInstance(instance, 1, this.instancesSeen, this.classifierRandom);
+            } else {
                 int k = MiscUtils.poisson(this.lambdaOption.getValue(), this.classifierRandom);
                 if (k > 0) {
                     double weight = k;
-                    this.ensemble[i].trainOnInstance(instance, weight, this.instancesSeen, this.classifierRandom);
+                    ensemble1.trainOnInstance(instance, weight, this.instancesSeen, this.classifierRandom);
                 }
             }
         }
@@ -310,7 +308,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
 
     @Override
     public ImmutableCapabilities defineImmutableCapabilities() {
-        if (this.getClass() == StreamingRandomPatches.class)
+        if (Objects.equals(this.getClass(), StreamingRandomPatches.class))
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
         else
             return new ImmutableCapabilities(Capability.VIEW_STANDARD);
@@ -459,8 +457,9 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
             }
             this.subset = new Instances("Subsets Candidate Instances", attSub, 100);
             this.subset.setClassIndex(this.subset.numAttributes()-1);
-            prepareRandomSubspaceInstance(instance,1);
+            prepareRandomSubspaceInstance = prepareRandomSubspaceInstance(instance,1);
         }
+
 
         public void prepareRandomSubspaceInstance(Instance instance, double weight) {
             // If there is any instance lingering in the subset, remove it.

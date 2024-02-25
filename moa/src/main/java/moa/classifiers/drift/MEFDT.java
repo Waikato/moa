@@ -19,23 +19,15 @@
  */
 
 /*
- * Author: Chaitanya Manapragada.
+ * Author: Darshna Tanwar and Jyoti Vashistha.
  * <p>
- * Based on HoeffdingTree.java by Richard Kirkby.
+ * Based on EFDT.java by Chaitanya Manapragada.
  * <p>
- * There is a lot of code repetition from VFDT.java. This needs to be fixed as per DRY principles.
+ * There is a older leaf prediction classes. This needs to be fixed as per DRY principles.
  * <p>
- * Research code written to test the EFDT idea.
- * <p>
- * Bug-fixed version of Richard Kirkby's  HoeffdingTree.Java written by Chaitanya Manapragada.
- * <p>
- * Bug1 : average delta G's are computed where specified in the Domingos/Hulten paper algorithm listing. This was a bug in the HoeffdingTree.java implementation- fixed here.
- * <p>
- * Bug2: splitting was occurring when the top attribute had no IG, and splitting was occurring on the same attribute. This was also fixed.
- * <p>
+ * Research code written to test the MEFDT idea.
  * The correct reference is:
- * Domingos, P., & Hulten, G. (2000, August). Mining high-speed data streams. In Proceedings of the sixth ACM SIGKDD international conference on Knowledge discovery and data mining (pp. 71-80). ACM.
- */
+ *C. Manapragada, G. Webb, and M. Salehi, “Extremely Fast Decision Tree,” KDD’18, London, United Kingdom, pp. 1–9, Aug. 2018. */
 
 package moa.classifiers.trees;
 
