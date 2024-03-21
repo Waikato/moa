@@ -55,7 +55,7 @@ public class SelfOptimisingKNearestLeavesTest
     SOKNLTest.ensembleSizeOption.setValue(5);
     SOKNLTest.mFeaturesModeOption.setChosenIndex(0);
     SOKNLTest.mFeaturesPerTreeSizeOption.setValue(2);
-    SOKNLTest.selfOptimisingOption.set();
+    SOKNLTest.DisableSelfOptimisingOption.set();
     SOKNLTest.kOption.setValue(5);
 
 

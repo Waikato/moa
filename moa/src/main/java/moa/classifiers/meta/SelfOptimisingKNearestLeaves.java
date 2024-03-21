@@ -17,7 +17,9 @@ import moa.evaluation.BasicRegressionPerformanceEvaluator;
 import moa.options.ClassOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of Self-Optimising K Nearest Leaves.
@@ -43,7 +45,7 @@ public class SelfOptimisingKNearestLeaves extends AbstractClassifier implements 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
             "The number of trees.", 100, 1, Integer.MAX_VALUE);
 
-    public FlagOption selfOptimisingOption = new FlagOption("selfOptimising",'f',"Trigger the self optimising procedure.");
+    public FlagOption DisableSelfOptimisingOption = new FlagOption("DisableSelfOptimising",'f',"Disable the self optimising procedure.");
 
     public IntOption kOption =  new IntOption("kNearestLeaves",'k',"Specify k value when not self-optimising",10,1,this.ensembleSizeOption.getMaxValue());
 
@@ -155,12 +157,10 @@ public class SelfOptimisingKNearestLeaves extends AbstractClassifier implements 
         }
 
         // Activate Self-Optimising K-Nearest Leaves
-        if (this.selfOptimisingOption.isSet()) {
+        if (!this.DisableSelfOptimisingOption.isSet()) {
             InstanceExample example = new InstanceExample(instance);
             int n = selfOptimisingEvaluators.length;
             double[] performances = new double[n];
-
-
 
             this.previousPrediction = new double[n];
 
@@ -171,11 +171,6 @@ public class SelfOptimisingKNearestLeaves extends AbstractClassifier implements 
                 this.previousPrediction[i] = temporaryPrediction[0];
             }
             int k = indexOfSmallestValue(performances);
-            double[] predicts = new double[this.ensemble.length];
-            for (int i = 0; i < this.ensemble.length; i++) {
-                predicts[i] = this.ensemble[i].getVotesForInstance(instance)[0];
-            }
-            Arrays.sort(predicts);
             return new double[]{this.previousPrediction[k]};
         }
 
@@ -264,17 +259,6 @@ public class SelfOptimisingKNearestLeaves extends AbstractClassifier implements 
         return prediction;
     }
 
-    private double getDistance(Instance inst1, Instance inst2) {
-        if (inst1.numAttributes() != inst2.numAttributes()) return 0;
-
-        double sumOfSquare = 0;
-        for (int i = 0; i < inst1.numAttributes() - 1; i++) {
-            sumOfSquare += Math.pow((inst1.value(i) - inst2.value(i)), 2);
-        }
-
-        return Math.sqrt(sumOfSquare);
-    }
-
     private double getDistanceFromCentroid(Instance inst, double[] centroid) {
         double sumOfSquare = 0;
         if (inst.numAttributes() - 1 != centroid.length) return 0;
@@ -296,11 +280,41 @@ public class SelfOptimisingKNearestLeaves extends AbstractClassifier implements 
 
     private int[] indicesOfKSmallestValues(double[] values, int k) {
         int[] smallest = new int[k];
+        ArrayList<IndicesSorting> sortings = new ArrayList<>();
+        for (int i = 0; i < values.length; i++)
+            sortings.add(new IndicesSorting(i, values[i]));
+        sortings = (ArrayList<IndicesSorting>) sortings.stream().sorted(Comparator.comparing(IndicesSorting::getValues)).collect(Collectors.toList());
         for (int i = 0; i < k; i++) {
-            smallest[i] = indexOfSmallestValue(values);
-            values[smallest[i]] = Double.MAX_VALUE;
+            smallest[i] = sortings.get(i).getIndex();
         }
+
         return smallest;
+    }
+
+    private static class IndicesSorting{
+        private int index;
+        private double values;
+
+        public IndicesSorting(int index, double values) {
+            this.index = index;
+            this.values = values;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public void setIndex(int index) {
+            this.index = index;
+        }
+
+        public double getValues() {
+            return values;
+        }
+
+        public void setValues(double values) {
+            this.values = values;
+        }
     }
 
     @Override
