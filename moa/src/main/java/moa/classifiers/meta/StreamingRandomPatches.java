@@ -131,10 +131,12 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
     protected long instancesSeen;
     protected ArrayList<ArrayList<Integer>> subspaces;
 
+
     @Override
     public void resetLearningImpl() {
         this.instancesSeen = 0;
     }
+
 
     @Override
     public void trainOnInstanceImpl(Instance instance) {
@@ -147,7 +149,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
             DoubleVector vote = new DoubleVector(rawVote);
             InstanceExample example = new InstanceExample(instance);
 
-            this.ensemble[i].evaluator.addResult(example, vote.getArrayRef());
+                this.ensemble[i].evaluator.addResult(example, vote.getArrayRef());
             // Train using random subspaces without resampling, i.e. all instances are used for training.
             if(this.trainingMethodOption.getChosenIndex() == TRAIN_RANDOM_SUBSPACES) {
                 this.ensemble[i].trainOnInstance(instance,1, this.instancesSeen, this.classifierRandom);
@@ -173,18 +175,18 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
         DoubleVector combinedVote = new DoubleVector();
 
         for(int i = 0 ; i < this.ensemble.length ; ++i) {
-            DoubleVector vote = new DoubleVector(this.ensemble[i].getVotesForInstance(testInstance));
-            if (vote.sumOfValues() > 0.0) {
-                vote.normalize();
+                DoubleVector vote = new DoubleVector(this.ensemble[i].getVotesForInstance(testInstance));
+                if (vote.sumOfValues() > 0.0) {
+                    vote.normalize();
                 double acc = this.ensemble[i].evaluator.getPerformanceMeasurements()[1].getValue();
-                if(!this.disableWeightedVote.isSet() && acc > 0.0) {
-                    for(int v = 0 ; v < vote.numValues() ; ++v) {
-                        vote.setValue(v, vote.getValue(v) * acc);
+                    if (!this.disableWeightedVote.isSet() && acc > 0.0) {
+                        for (int v = 0; v < vote.numValues(); ++v) {
+                            vote.setValue(v, vote.getValue(v) * acc);
+                        }
                     }
+                    combinedVote.addValues(vote);
                 }
-                combinedVote.addValues(vote);
             }
-        }
         return combinedVote.getArrayRef();
     }
 
@@ -245,7 +247,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
                         if(k == 1 && instance.numAttributes() > 2)
                             k = 2;
                         // Generate all possible combinations of size k
-                        this.subspaces = StreamingRandomPatches.allKCombinations(k, n);
+                        this.subspaces = Utils.allKCombinations(k, n);
                         for(int i = 0 ; this.subspaces.size() < this.ensemble.length ; ++i) {
                             i = i == this.subspaces.size() ? 0 : i;
                             ArrayList<Integer> copiedSubspace = new ArrayList<>(this.subspaces.get(i));
@@ -256,7 +258,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
                     // On top of that, the chance of repeating a subspace is lower, so we can just randomly generate
                     // subspaces without worrying about repetitions.
                     else {
-                        this.subspaces = StreamingRandomPatches.localRandomKCombinations(k, n,
+                        this.subspaces = Utils.localRandomKCombinations(k, n,
                                 this.ensembleSizeOption.getValue(), this.classifierRandom);
                     }
                 }
@@ -325,43 +327,6 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
         return baseModels;
     }
 
-    public static ArrayList<ArrayList<Integer>> localRandomKCombinations(int k, int length,
-                                                                          int nCombinations, Random random) {
-        ArrayList<ArrayList<Integer>> combinations = new ArrayList<>();
-        for(int i = 0 ; i < nCombinations ; ++i) {
-            ArrayList<Integer> combination = new ArrayList<>();
-            // Add all possible items
-            for(int j = 0 ; j < length ; ++j)
-                combination.add(j);
-            // Randomly remove each item by index using the current size
-            // Out of "length" items, maintain only "k" items.
-            for(int j = 0 ; j < (length - k) ; ++j)
-                combination.remove(random.nextInt(combination.size()));
-
-            combinations.add(combination);
-        }
-        return combinations;
-    }
-
-    private static void allKCombinationsInner(int offset, int k, ArrayList<Integer> combination, long originalSize,
-                                              ArrayList<ArrayList<Integer>> combinations) {
-        if (k == 0) {
-            combinations.add(new ArrayList<>(combination));
-            return;
-        }
-        for (int i = offset; i <= originalSize - k; ++i) {
-            combination.add(i);
-            allKCombinationsInner(i+1, k-1, combination, originalSize, combinations);
-            combination.remove(combination.size()-1);
-        }
-    }
-
-    public static ArrayList<ArrayList<Integer>> allKCombinations(int k, int length) {
-        ArrayList<ArrayList<Integer>> combinations = new ArrayList<>();
-        ArrayList<Integer> combination = new ArrayList<>();
-        allKCombinationsInner(0, k, combination, length, combinations);
-        return combinations;
-    }
 
     // Inner class representing the base learner of SRP.
     protected class StreamingRandomPatchesClassifier {
@@ -539,7 +504,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
 
                 // After prepareRandomSubspaceInstance, index 0 of subset holds the instance with this learner subspaces
                 this.classifier.trainOnInstance(this.subset.get(0));
-                correctlyClassifies = this.classifier.correctlyClassifies(this.subset.get(0));
+                    correctlyClassifies = this.classifier.correctlyClassifies(this.subset.get(0));
                 if(this.bkgLearner != null)
                     this.bkgLearner.trainOnInstance(instance, weight, instancesSeen, random);
             }
@@ -547,7 +512,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
                 Instance weightedInstance = instance.copy();
                 weightedInstance.setWeight(instance.weight() * weight);
                 this.classifier.trainOnInstance(weightedInstance);
-                correctlyClassifies = this.classifier.correctlyClassifies(instance);
+                    correctlyClassifies = this.classifier.correctlyClassifies(instance);
                 if(this.bkgLearner != null)
                     this.bkgLearner.trainOnInstance(instance, weight, instancesSeen, random);
             }
