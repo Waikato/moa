@@ -302,13 +302,8 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 				int instAttIndex = modelAttIndexToInstanceAttIndex(i, inst);
 				FIMTDDNumericAttributeClassObserver obs = attributeObservers.get(i);
 				if (obs == null) {
-
+					// At this stage all nominal attributes are ignored
 					if (inst.attribute(instAttIndex).isNumeric()) {
-						obs = tree.newNumericClassObserver();
-						this.attributeObservers.set(i, obs);
-					}else {
-						// Add a newNumericClassObserver for Nominal attribute,
-						// Later it gets the nominal value index as the attribute value
 						obs = tree.newNumericClassObserver();
 						this.attributeObservers.set(i, obs);
 					}
@@ -710,11 +705,6 @@ public class FIMTDD extends AbstractClassifier implements Regressor {
 
 	public int calcByteSize() {
 		return (int) SizeOf.fullSizeOf(this);
-	}
-
-	@Override
-	public int measureByteSize() {
-		return calcByteSize();
 	}
 
 	public double[] getVotesForInstance(Instance inst) {
