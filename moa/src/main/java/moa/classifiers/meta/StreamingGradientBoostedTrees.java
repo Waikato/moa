@@ -38,7 +38,7 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 /**
- * Continuously Adaptive Neural networks for Data streams
+ * Gradient boosted trees for evolving data streams
  *
  * <p>Streaming Gradient Boosted Trees (SGBT), which is trained using weighted squared loss elicited
  * in XGBoost. SGBT exploits trees with a replacement strategy to detect and
@@ -47,14 +47,15 @@ import java.util.stream.IntStream;
  *
  * <p>See details in:<br> Nuwan Gunasekara, Bernhard Pfahringer, Heitor Murilo Gomes, Albert Bifet.
  * Gradient Boosted Trees for Evolving Data Streams.
- * Machine Learning, Springer, 2024.</p>
+ * Machine Learning, Springer, 2024.
+ * <a href="https://doi.org/10.1007/s10994-024-06517-y">DOI</a>. </p>
  *
  * <p>Parameters:</p> <ul>
  * <li>-l : Classifier to train on instances.</li>
  * <li>-s : The number of boosting iterations.</li>
  * <li>-m : Percentage (%) of attributes for each boosting iteration.</li>
  * <li>-L : Learning rate.</li>
- * <li>-h : Use one hot encoding.</li>
+ * <li>-H : Disable one-hot encoding for regressors that supports nominal attributes.</li>
  * <li>-M : Multiple training iterations by Ceiling (Hessian * M).</li>
  * <li>-S : Randomly skipp 1/S th of instances at training (S=1: No Skip, use all instances for training).</li>
  * <li>-K : Use Squared Loss for Classification.</li>
@@ -77,12 +78,13 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
     public FloatOption learningRateOption = new FloatOption(
             "learningRate", 'L', "Learning rate",
             0.0125, 0, 1.00);
-    public FlagOption useOneHotEncoding = new FlagOption("useOneHotEncoding", 'h', "useOneHotEncoding");
+    public FlagOption disableOneHotEncoding = new FlagOption("disableOneHotEncoding", 'H', "disable one-hot encoding for regressors that supports nominal attributes.");
     public IntOption multipleIterationByCeilingOfHessianTimesM = new IntOption("multipleIterationByCeilingOfHessianTimesM", 'M',
-            "Multiple training iterations by Ceiling (Hessian * M).", 1, 1, 100);
+            "Multiple training iterations by Ceiling (Hessian * M). M = 1: No multiple iterations.", 1, 1, 100);
     public IntOption randomlySkip1SthOfInstancesAtTraining = new IntOption("randomlySkip1SthOfInstancesAtTraining", 'S',
-            "Randomly skipp 1/S th of instances at training (S=1: No Skip, use all instances for training).", 1, 1, Integer.MAX_VALUE);
+            "Randomly skip 1/S th of instances at training (S=1: No Skip, use all instances for training).", 1, 1, Integer.MAX_VALUE);
     public FlagOption useSquaredLossForClassification = new FlagOption("useSquaredLossForClassification", 'K', "Use Squared Loss for Classification.");
+    public IntOption randomSeedOption = new IntOption("randomSeed", 'r', "The random seed", 1);
     //endregion ================ OPTIONS ================
 
     //region ================ VARIABLES ================
@@ -96,6 +98,7 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
     @Override
     public void resetLearningImpl() {
         this.reset = true;
+        this.classifierRandom = new Random(randomSeedOption.getValue());
     }
 
     @Override
@@ -153,7 +156,7 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
 
     @Override
     public double[] getVotesForInstance(Instance inst) {
-        double[] votes = new double[inst.numClasses()];
+        double[] votes = new double[inst.classAttribute().isNominal() ? inst.numClasses(): 1];
         if (!this.reset) {
             if (this.numberClasses <= 2){ // regression or binary classification
                 return SGBTCommittee[0].getVotesForInstance(inst);
@@ -303,7 +306,12 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
         base.numberOfboostingIterations.setValue(numberOfboostingIterations.getValue());
         base.percentageOfAttributesForEachBoostingIteration.setValue(percentageOfAttributesForEachBoostingIteration.getValue());
         base.learningRateOption.setValue(learningRateOption.getValue());
-        base.useOneHotEncoding.setValue(useOneHotEncoding.isSet());
+        if (this.disableOneHotEncoding.isSet()){
+            if (this.baseLearnerOption.getDefaultCLIString().contains("trees.FIMTDD")){
+                System.out.println("WARNING: One-hot encoding is DISABLED for baseLearner '" +this.baseLearnerOption.getDefaultCLIString() + "' which does NOT support nominal attributes.");
+            }
+        }
+        base.useOneHotEncoding.setValue(!disableOneHotEncoding.isSet());
         base.multipleIterationByCeilingOfHessianTimesM.setValue(multipleIterationByCeilingOfHessianTimesM.getValue());
         base.randomlySkip1SthOfInstancesAtTraining.setValue(randomlySkip1SthOfInstancesAtTraining.getValue());
         base.useSquaredLossForClassification.setValue(useSquaredLossForClassification.isSet());
@@ -462,7 +470,7 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
                         if (k == 1 && inst.numAttributes() > 2)
                             k = 2;
                         // Generate all possible combinations of size k
-                        this.subspaces = StreamingRandomPatches.allKCombinations(k, n);
+                        this.subspaces = Utils.allKCombinations(k, n);
                         for (int i = 0; this.subspaces.size() < this.numberOfboostingIterations.getValue(); ++i) {
                             i = i == this.subspaces.size() ? 0 : i;
                             ArrayList<Integer> copiedSubspace = new ArrayList<>(this.subspaces.get(i));
@@ -473,11 +481,11 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
                     // On top of that, the chance of repeating a subspace is lower, so we can just randomly generate
                     // subspaces without worrying about repetitions.
                     else {
-                        this.subspaces = StreamingRandomPatches.localRandomKCombinations(k, n,
+                        this.subspaces = Utils.localRandomKCombinations(k, n,
                                 this.numberOfboostingIterations.getValue(), this.classifierRandom);
                     }
                 } else if (k == n) {
-                    this.subspaces = StreamingRandomPatches.localRandomKCombinations(k, n,
+                    this.subspaces = Utils.localRandomKCombinations(k, n,
                             this.numberOfboostingIterations.getValue(), this.classifierRandom);
                 }
 
@@ -545,9 +553,9 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
                 if (booster.size() == 1) {
                     s[0] = getScoreFromSubInstance(inst, subSpacesForEachBoostingIteration.get(0), true, booster.get(0), useOneHotEncoding.isSet());
                 } else {
-                    IntStream.range(0, booster.size())
-                            .parallel()
-                            .forEach(m -> s[m] = getScoreFromSubInstance(inst, subSpacesForEachBoostingIteration.get(m), true, booster.get(m), useOneHotEncoding.isSet()));
+                        IntStream.range(0, booster.size())
+                                .parallel()
+                                .forEach(m -> s[m] = getScoreFromSubInstance(inst, subSpacesForEachBoostingIteration.get(m), true, booster.get(m), useOneHotEncoding.isSet()));
                 }
                 for (int i = 0; i < booster.size(); i++) {
                     rawScore.addValues(s[i]);
