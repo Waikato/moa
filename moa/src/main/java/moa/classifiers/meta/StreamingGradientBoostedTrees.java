@@ -247,16 +247,21 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
         // Add attributes of the selected subset
         for (Integer featuresIndex : subSpaceFeaturesIndexes) {
             int index = i + totalOneHotEncodedSize - totalOneHotEncodedInstances;
-            if (useOneHotEncoding && instance.attribute(featuresIndex).isNominal() && (instance.attribute(featuresIndex).numValues() > 2)) {
-                // Do one hot-encoding
-                for (int j = 0; j < instance.attribute(featuresIndex).numValues(); j++) {
-                    attSub.add(new Attribute(""));
-                    v.add(0.0);
-                }
-                v.set(index + (int) instance.value(featuresIndex), 1.0);
+            if (useOneHotEncoding && instance.attribute(featuresIndex).isNominal()) {
+                if (instance.attribute(featuresIndex).numValues() > 2){
+                    // Do one hot-encoding
+                    for (int j = 0; j < instance.attribute(featuresIndex).numValues(); j++) {
+                        attSub.add(new Attribute(""));
+                        v.add(0.0);
+                    }
+                    v.set(index + (int) instance.value(featuresIndex), 1.0);
 
-                totalOneHotEncodedSize += instance.attribute(featuresIndex).numValues();
-                totalOneHotEncodedInstances++;
+                    totalOneHotEncodedSize += instance.attribute(featuresIndex).numValues();
+                    totalOneHotEncodedInstances++;
+                }else{ // binary feature
+                    attSub.add(new Attribute("")); // create a numeric attribute
+                    v.add(instance.value(featuresIndex)); // sets the index as value
+                }
             } else {
                 attSub.add(instance.attribute(featuresIndex));
                 v.add(instance.value(featuresIndex));
