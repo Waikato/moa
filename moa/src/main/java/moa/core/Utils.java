@@ -30,7 +30,10 @@ import java.io.FileWriter;
 import java.lang.reflect.Array;
 import java.net.URL;
 import java.text.BreakIterator;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Random;
+import java.util.Vector;
 
 /**
  * Class implementing some simple utility methods.
@@ -1895,44 +1898,6 @@ public final class Utils {
       Utils.checkForRemainingOptions(options);
     }*/
     return o;
-  }
-
-  public static ArrayList<ArrayList<Integer>> localRandomKCombinations(int k, int length,
-                                                                       int nCombinations, Random random) {
-    ArrayList<ArrayList<Integer>> combinations = new ArrayList<>();
-    for(int i = 0 ; i < nCombinations ; ++i) {
-      ArrayList<Integer> combination = new ArrayList<>();
-      // Add all possible items
-      for(int j = 0 ; j < length ; ++j)
-        combination.add(j);
-      // Randomly remove each item by index using the current size
-      // Out of "length" items, maintain only "k" items.
-      for(int j = 0 ; j < (length - k) ; ++j)
-        combination.remove(random.nextInt(combination.size()));
-
-      combinations.add(combination);
-    }
-    return combinations;
-  }
-
-  private static void allKCombinationsInner(int offset, int k, ArrayList<Integer> combination, long originalSize,
-                                            ArrayList<ArrayList<Integer>> combinations) {
-    if (k == 0) {
-      combinations.add(new ArrayList<>(combination));
-      return;
-    }
-    for (int i = offset; i <= originalSize - k; ++i) {
-      combination.add(i);
-      allKCombinationsInner(i+1, k-1, combination, originalSize, combinations);
-      combination.remove(combination.size()-1);
-    }
-  }
-
-  public static ArrayList<ArrayList<Integer>> allKCombinations(int k, int length) {
-    ArrayList<ArrayList<Integer>> combinations = new ArrayList<>();
-    ArrayList<Integer> combination = new ArrayList<>();
-    allKCombinationsInner(0, k, combination, length, combinations);
-    return combinations;
   }
 
 }
