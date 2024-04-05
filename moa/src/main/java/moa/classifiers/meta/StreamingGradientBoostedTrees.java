@@ -29,6 +29,7 @@ import moa.capabilities.Capabilities;
 import moa.classifiers.*;
 import moa.core.*;
 import moa.options.ClassOption;
+import moa.classifiers.meta.StreamingRandomPatches;
 
 
 import java.io.Serializable;
@@ -475,7 +476,7 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
                         if (k == 1 && inst.numAttributes() > 2)
                             k = 2;
                         // Generate all possible combinations of size k
-                        this.subspaces = Utils.allKCombinations(k, n);
+                        this.subspaces = StreamingRandomPatches.allKCombinations(k, n);
                         for (int i = 0; this.subspaces.size() < this.numberOfboostingIterations.getValue(); ++i) {
                             i = i == this.subspaces.size() ? 0 : i;
                             ArrayList<Integer> copiedSubspace = new ArrayList<>(this.subspaces.get(i));
@@ -486,11 +487,11 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
                     // On top of that, the chance of repeating a subspace is lower, so we can just randomly generate
                     // subspaces without worrying about repetitions.
                     else {
-                        this.subspaces = Utils.localRandomKCombinations(k, n,
+                        this.subspaces = StreamingRandomPatches.localRandomKCombinations(k, n,
                                 this.numberOfboostingIterations.getValue(), this.classifierRandom);
                     }
                 } else if (k == n) {
-                    this.subspaces = Utils.localRandomKCombinations(k, n,
+                    this.subspaces = StreamingRandomPatches.localRandomKCombinations(k, n,
                             this.numberOfboostingIterations.getValue(), this.classifierRandom);
                 }
 
