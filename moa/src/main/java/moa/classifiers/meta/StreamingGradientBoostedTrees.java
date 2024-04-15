@@ -98,6 +98,11 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
     //region ================ OVERRIDDEN METHODS ================
     @Override
     public void resetLearningImpl() {
+        if(super.randomSeedOption.getValue() != Integer.parseInt(super.randomSeedOption.getDefaultCLIString())){ // super random set
+            this.randomSeedOption.setValue(super.randomSeedOption.getValue()); // override current random
+        }
+        System.out.println("Super Random Seed: " + super.randomSeedOption.getValue());
+        System.out.println("This Random Seed: " + this.randomSeedOption.getValue());
         this.reset = true;
         this.classifierRandom = new Random(randomSeedOption.getValue());
     }
