@@ -138,10 +138,10 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
         if (this.reset) { // init
             this.reset = false;
             if (inst.classAttribute().isNominal()){
-                System.out.println("Classification task.");
+//                System.out.println("Classification task.");
                 this.numberClasses = inst.numClasses();
             }else{
-                System.out.println("Regression task.");
+//                System.out.println("Regression task.");
                 this.numberClasses = 1;
             }
             createSGBTs(this.numberClasses <= 2 ? 1 : this.numberClasses);
@@ -175,7 +175,7 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
                     try {
                         Utils.normalize(votes);
                     } catch (Exception e) {
-                        System.out.println("Error");
+//                        System.out.println("Error");
                         // ignore all zero votes error
                     }
                 }
@@ -425,7 +425,7 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
                 return (int) b;
             }
             public void initEnsemble(Instance inst) {
-                System.out.println("Initializing booster.");
+//                System.out.println("Initializing booster.");
                 Attribute target = inst.classAttribute();
 
                 if (booster == null) {
@@ -438,18 +438,18 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
                 if (target.isNominal()) {
                     committeeSize = target.numValues() - 1;
                     if (useSquaredLossForClassification.isSet()) {
-                        System.out.println("Using SquaredError for Classification");
+//                        System.out.println("Using SquaredError for Classification");
                         mObjective = new SquaredError();
                     } else {
-                        System.out.println("Using SoftmaxCrossEntropy Loss for Classification");
+//                        System.out.println("Using SoftmaxCrossEntropy Loss for Classification");
                         mObjective = new SoftmaxCrossEntropy();
                     }
                 } else {
                     mObjective = new SquaredError();
                     committeeSize = 1;
-                    System.out.println("Using SquaredError for Regression");
+//                    System.out.println("Using SquaredError for Regression");
                 }
-                System.out.println("CommitteeSize: " + committeeSize);
+//                System.out.println("CommitteeSize: " + committeeSize);
 
                 for (int i = 0; i < numberOfboostingIterations.getValue(); i++) {
                     booster.add(new BoostingCommittee(this.baseLearner, committeeSize));
@@ -503,8 +503,8 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
                 for (int i = 0; i < numberOfboostingIterations.getValue(); i++) {
                     subSpacesForEachBoostingIteration.add(this.subspaces.get(subSpaceIndexes[i]));
                 }
-                System.out.println("Boosting iterations: " + booster.size());
-                System.out.println("Percentage of attributes % for each boosting iteration:" + percentageOfAttributesForEachBoostingIteration.getValue());
+//                System.out.println("Boosting iterations: " + booster.size());
+//                System.out.println("Percentage of attributes % for each boosting iteration:" + percentageOfAttributesForEachBoostingIteration.getValue());
             }
 
             public void trainBoosterUsingSoftmaxCrossEntropyLoss(Instance inst) {
