@@ -8,6 +8,7 @@
 Tabs=\
   moa.gui.ClassificationTabPanel,\
   moa.gui.RegressionTabPanel,\
+  moa.gui.SemiSupervisedTabPanel,\
   moa.gui.MultiLabelTabPanel,\
   moa.gui.MultiTargetTabPanel,\
   moa.gui.clustertab.ClusteringTabPanel,\

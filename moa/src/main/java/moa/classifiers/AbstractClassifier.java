@@ -106,6 +106,26 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
     public abstract double[] getVotesForInstance(Instance inst);
 
     @Override
+    public double getConfidenceForPrediction(Instance inst, double prediction) {
+        double[] votes = this.getVotesForInstance(inst);
+        double predictionValue = votes[(int) prediction];
+
+        double sum = 0.0;
+        for (double vote : votes)
+            sum += vote;
+
+        // Check if the sum is zero
+        if (sum == 0.0)
+            return 0.0; // Return 0 if sum is zero to avoid division by zero
+        return predictionValue / sum;
+    }
+
+    @Override
+    public double getConfidenceForPrediction(Example<Instance> example, double prediction) {
+        return getConfidenceForPrediction(example.getData(), prediction);
+    }
+
+    @Override
     public Prediction getPredictionForInstance(Example<Instance> example){
 		return getPredictionForInstance(example.getData());
 	}
