@@ -19,12 +19,16 @@
  */
 package moa.classifiers;
 
+import com.yahoo.labs.samoa.instances.Instance;
+import moa.core.Example;
+import moa.learners.Learner;
+
 /**
- * Learner interface for incremental semi supervised models. It is used only in the GUI Regression Tab. 
- *
- * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $
+ * Updated learner interface for semi-supervised methods.
  */
-public interface SemiSupervisedLearner {
-    
+public interface SemiSupervisedLearner extends Learner<Example<Instance>> {
+    // Returns the pseudo-label used. If no pseudo-label was used, then return -1.
+    int trainOnUnlabeledInstance(Instance instance);
+
+    void addInitialWarmupTrainingInstances();
 }

@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers;
 
@@ -76,7 +76,7 @@ public interface Classifier extends Learner<Example<Instance>> {
      * test instance in each class
      */
     public double[] getVotesForInstance(Instance inst);
-    
+
     /**
      * Sets the reference to the header of the data stream. The header of the
      * data stream is extended from WEKA
@@ -86,7 +86,7 @@ public interface Classifier extends Learner<Example<Instance>> {
      * @param ih the reference to the data stream header
      */
     //public void setModelContext(InstancesHeader ih);
-    
+
     /**
      * Gets the reference to the header of the data stream. The header of the
      * data stream is extended from WEKA
@@ -96,6 +96,8 @@ public interface Classifier extends Learner<Example<Instance>> {
      * @return the reference to the data stream header
      */
     //public InstancesHeader getModelContext();
-    
+
     public Prediction getPredictionForInstance(Instance inst);
+
+    public double getConfidenceForPrediction(Instance inst, double prediction);
 }

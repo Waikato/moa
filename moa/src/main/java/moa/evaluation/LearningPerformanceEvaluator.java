@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
@@ -35,35 +35,37 @@ import moa.core.Measurement;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public interface LearningPerformanceEvaluator<E extends Example> extends MOAObject, CapabilitiesHandler {
+public interface LearningPerformanceEvaluator<E extends Example> extends MOAObject, CapabilitiesHandler, AutoCloseable {
 
-    /**
-     * Resets this evaluator. It must be similar to
-     * starting a new evaluator from scratch.
-     *
-     */
+	/**
+	 * Resets this evaluator. It must be similar to
+	 * starting a new evaluator from scratch.
+	 *
+	 */
 	public void reset();
 
-   /**
-     * Adds a learning result to this evaluator.
-     *
-     * @param example the example to be classified
-     * @param classVotes an array containing the estimated membership
-     * probabilities of the test instance in each class
-     */
-    public void addResult(E example, double[] classVotes);
-    public void addResult(E testInst, Prediction prediction);
+	/**
+	 * Adds a learning result to this evaluator.
+	 *
+	 * @param example the example to be classified
+	 * @param classVotes an array containing the estimated membership
+	 * probabilities of the test instance in each class
+	 */
+	public void addResult(E example, double[] classVotes);
+	public void addResult(E testInst, Prediction prediction);
 
-    /**
-     * Gets the current measurements monitored by this evaluator.
-     *
-     * @return an array of measurements monitored by this evaluator
-     */
+	/**
+	 * Gets the current measurements monitored by this evaluator.
+	 *
+	 * @return an array of measurements monitored by this evaluator
+	 */
 	public Measurement[] getPerformanceMeasurements();
 
 	@Override
 	default ImmutableCapabilities defineImmutableCapabilities() {
-	  return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+		return new ImmutableCapabilities(Capability.VIEW_STANDARD);
 	}
 
+	default void close() throws Exception {
+	}
 }
