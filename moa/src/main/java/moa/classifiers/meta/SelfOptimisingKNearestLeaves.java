@@ -45,11 +45,9 @@ public class SelfOptimisingKNearestLeaves extends AbstractClassifier implements 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
             "The number of trees.", 100, 1, Integer.MAX_VALUE);
 
-    public FlagOption DisableSelfOptimisingOption = new FlagOption("DisableSelfOptimising",'f',"Disable the self optimising procedure.");
+    public FlagOption disableSelfOptimisingOption = new FlagOption("disableSelfOptimising",'f',"Disable the self optimising procedure.");
 
     public IntOption kOption =  new IntOption("kNearestLeaves",'k',"Specify k value when not self-optimising",10,1,this.ensembleSizeOption.getMaxValue());
-
-    public IntOption randomSeedOption = new IntOption("randomSeed", 'r', "The random seed", 1);
 
     public MultiChoiceOption mFeaturesModeOption = new MultiChoiceOption("mFeaturesMode", 'o',
             "Defines how m, defined by mFeaturesPerTreeSize, is interpreted. M represents the total number of features.",
@@ -96,8 +94,6 @@ public class SelfOptimisingKNearestLeaves extends AbstractClassifier implements 
         this.subspaceSize = 0;
         this.instancesSeen = 0;
         this.evaluator = new BasicRegressionPerformanceEvaluator();
-
-        this.classifierRandom = new Random(randomSeedOption.getValue());
 
         this.previousPrediction = new double[this.ensembleSizeOption.getValue()];
 
@@ -157,7 +153,7 @@ public class SelfOptimisingKNearestLeaves extends AbstractClassifier implements 
         }
 
         // Activate Self-Optimising K-Nearest Leaves
-        if (!this.DisableSelfOptimisingOption.isSet()) {
+        if (!this.disableSelfOptimisingOption.isSet()) {
             InstanceExample example = new InstanceExample(instance);
             int n = selfOptimisingEvaluators.length;
             double[] performances = new double[n];
