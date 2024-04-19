@@ -16,7 +16,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
+ *    
  */
 package moa.tasks;
 
@@ -224,17 +224,17 @@ public class EvaluatePrequentialPredictionIntervals extends RegressionMainTask {
                 lastEvaluateStartTime = evaluateTime;
                 learningCurve.insertEntry(new LearningEvaluation(
                         new Measurement[]{
-                                new Measurement(
-                                        "learning evaluation instances",
-                                        instancesProcessed),
-                                new Measurement(
-                                        "evaluation time ("
-                                                + (preciseCPUTiming ? "cpu "
-                                                : "") + "seconds)",
-                                        time),
-                                new Measurement(
-                                        "model cost (RAM-Hours)",
-                                        RAMHours)
+                            new Measurement(
+                            "learning evaluation instances",
+                            instancesProcessed),
+                            new Measurement(
+                            "evaluation time ("
+                            + (preciseCPUTiming ? "cpu "
+                            : "") + "seconds)",
+                            time),
+                            new Measurement(
+                            "model cost (RAM-Hours)",
+                            RAMHours)
                         },
                         evaluator, learner));
 

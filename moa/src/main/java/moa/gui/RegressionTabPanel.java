@@ -40,8 +40,7 @@ public class RegressionTabPanel extends AbstractTabPanel {
 
 	public RegressionTabPanel() {
 		this.taskManagerPanel = new RegressionTaskManagerPanel();
-		if (Objects.equals(this.taskManagerPanel.currentTask.getTaskName(),
-				"EvaluatePrequentialPredictionIntervals")){
+		if (Objects.equals(this.taskManagerPanel.currentTask.getTaskName(), "EvaluatePrequentialPredictionIntervals")) {
 			this.previewPanel = new PreviewPanel(TypePanel.PREDICTIONINTERVAL);
 		}
 		else{
