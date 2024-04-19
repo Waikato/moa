@@ -5,6 +5,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 import moa.capabilities.Capabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Regressor;
+import moa.classifiers.predictioninterval.PredictionIntervalLearner;
 import moa.core.InstanceExample;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
