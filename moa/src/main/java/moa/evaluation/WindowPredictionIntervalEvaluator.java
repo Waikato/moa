@@ -43,16 +43,18 @@ public class WindowPredictionIntervalEvaluator extends AbstractOptionHandler
             'w', "Size of Window", 1000);
 
     protected double TotalweightObserved = 0;
+
     protected Estimator weightObserved;
+
     protected Estimator squareError;
+
     protected Estimator averageError;
 
     protected Estimator lower;
 
     protected Estimator upper;
-    protected Estimator counterCorrect;
 
-    protected Estimator truth;
+    protected Estimator counterCorrect;
 
     protected int numClasses;
 
@@ -118,7 +120,6 @@ public class WindowPredictionIntervalEvaluator extends AbstractOptionHandler
         this.lower = new Estimator(this.widthOption.getValue());
         this.upper = new Estimator(this.widthOption.getValue());
         this.counterCorrect = new Estimator(this.widthOption.getValue());
-        this.truth = new Estimator(this.widthOption.getValue());
         this.TotalweightObserved = 0;
     }
 
@@ -139,7 +140,6 @@ public class WindowPredictionIntervalEvaluator extends AbstractOptionHandler
                 this.lower.add(prediction[0]);
                 this.upper.add(prediction[2]);
                 this.counterCorrect.add( inst.classValue() >= prediction[0] && inst.classValue() <= prediction[2]? 1 : 0);
-                this.truth.add(inst.classValue());
             }
             //System.out.println(inst.classValue()+", "+prediction[0]);
         }
@@ -185,7 +185,14 @@ public class WindowPredictionIntervalEvaluator extends AbstractOptionHandler
     }
 
     public double getNMPIW(){
-      return Math.round(getAverageLength() / (this.truth.max() - this.truth.min()) * 10000.0) / 100.0;
+//        return Math.round((getAverageLength() /
+//                (((this.upper.max() - this.lower.max()) /2 + this.lower.max())
+//                        - ((this.upper.min() - this.lower.min()) /2 + this.lower.min())
+//                )
+//                * 10000.0) / 100.0);
+
+
+      return Math.round(getAverageLength() / ((this.upper.max() + this.lower.max() - this.upper.min() - this.lower.min()) / 2) * 10000.0) / 100.0;
     }
 
     @Override
