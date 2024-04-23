@@ -24,7 +24,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 import moa.capabilities.Capabilities;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-import moa.classifiers.AbstractClassifierMiniBatch;
+import moa.classifiers.AbstractParallelClassifierMiniBatch;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.driftdetection.ADWIN;
@@ -34,7 +34,6 @@ import moa.core.MiscUtils;
 import moa.options.ClassOption;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -87,7 +86,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class OzaBagAdwinMB extends AbstractClassifierMiniBatch implements MultiClassClassifier {
+public class OzaBagAdwinMB extends AbstractParallelClassifierMiniBatch implements MultiClassClassifier {
 
     private static final long serialVersionUID = 2L;
 
@@ -109,12 +108,10 @@ public class OzaBagAdwinMB extends AbstractClassifierMiniBatch implements MultiC
     @Override
     public void resetLearningImpl() {
         this.trainers = new ArrayList<>();
-        int seed = this.randomSeedOption.getValue();
         Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
         baseLearner.resetLearning();
         for (int i = 0; i < this.ensembleSizeOption.getValue(); i++) {
-            this.trainers.add(new TrainingRunnable(baseLearner.copy(), new ADWIN(), seed));
-            seed++;
+            this.trainers.add(new TrainingRunnable(baseLearner.copy(), new ADWIN()));
         }
     }
 
@@ -203,26 +200,20 @@ public class OzaBagAdwinMB extends AbstractClassifierMiniBatch implements MultiC
         private Classifier learner;
         private ArrayList<Instance> instances;
         protected ADWIN ADError;
-        private int localSeed;
-        private Random trRandom;
 
-        public TrainingRunnable(Classifier learner, ADWIN ADError, int seed) {
+        public TrainingRunnable(Classifier learner, ADWIN ADError) {
             this.learner = learner;
             this.instances = new ArrayList<>();
-            this.localSeed = seed;
             this.ADError = ADError;
-            this.trRandom = new Random();
-            this.trRandom.setSeed(this.localSeed);
         }
 
         @Override
         public void run() {
-            for (Instance inst : this.instances) {
-                int k = MiscUtils.poisson(1.0, this.trRandom);
-                Instance weightedInst = inst.copy();
-                weightedInst.setWeight(inst.weight() * k);
-                this.learner.trainOnInstance(weightedInst);
-                boolean correctlyClassifies = this.learner.correctlyClassifies(inst);
+            for (Instance instance : this.instances) {
+                int k = MiscUtils.poisson(1.0, ThreadLocalRandom.current());
+                instance.setWeight(instance.weight() * k);
+                this.learner.trainOnInstance(instance);
+                boolean correctlyClassifies = this.learner.correctlyClassifies(instance);
                 double ErrEstimation = this.ADError.getEstimation();
                 if (this.ADError.setInput(correctlyClassifies ? 0 : 1)) {
                     if (this.ADError.getEstimation() > ErrEstimation) {

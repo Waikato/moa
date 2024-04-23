@@ -95,7 +95,6 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
             resetLearning();
         }
     }
-
 	
     @Override
     public double[] getVotesForInstance(Example<Instance> example){

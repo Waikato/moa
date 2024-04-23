@@ -27,7 +27,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 import moa.capabilities.Capabilities;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-import moa.classifiers.AbstractClassifierMiniBatch;
+import moa.classifiers.AbstractParallelClassifierMiniBatch;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.driftdetection.ADWIN;
@@ -37,7 +37,6 @@ import moa.core.MiscUtils;
 import moa.options.ClassOption;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -52,7 +51,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class LeveragingBagMB extends AbstractClassifierMiniBatch implements MultiClassClassifier {
+public class LeveragingBagMB extends AbstractParallelClassifierMiniBatch implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -109,9 +108,8 @@ public class LeveragingBagMB extends AbstractClassifierMiniBatch implements Mult
         if (ocos) {
             this.initMatrixCodes = true;
         }
-        int seed = this.randomSeedOption.getValue();
         for (int i = 0; i < this.ensembleSizeOption.getValue(); i++) {
-            this.trainers.add(new TrainingRunnable(baseLearner.copy(), new ADWIN((double) this.deltaAdwinOption.getValue()), ocos, wso, lao, seed));
+            this.trainers.add(new TrainingRunnable(baseLearner.copy(), new ADWIN((double) this.deltaAdwinOption.getValue()), ocos, wso, lao));
         }
     }
 
@@ -277,18 +275,13 @@ public class LeveragingBagMB extends AbstractClassifierMiniBatch implements Mult
         protected ADWIN ADError;
         protected boolean outputCodesOptionIsSet;
         protected int[] matrixCodes;
-        private int localSeed;
-        private Random trRandom;
 
-        public TrainingRunnable(Classifier learner, ADWIN ADError, boolean ocos, double wso, int lao, int seed) {
+        public TrainingRunnable(Classifier learner, ADWIN ADError, boolean ocos, double wso, int lao) {
             this.learner = learner;
             this.ADError = ADError;
             this.outputCodesOptionIsSet = ocos;
             this.w = wso;
             this.LevAlgOption = lao;
-            this.localSeed = seed;
-            this.trRandom = new Random();
-            this.trRandom.setSeed(this.localSeed);
         }
 
         @Override
@@ -297,24 +290,24 @@ public class LeveragingBagMB extends AbstractClassifierMiniBatch implements Mult
                 double k = 0.0;
                 switch (this.LevAlgOption) {
                     case 0: //LBagMC
-                        k = MiscUtils.poisson(w, this.trRandom);
+                        k = MiscUtils.poisson(w, ThreadLocalRandom.current());
                         break;
                     case 1: //LeveragingBagME
                         double error = this.ADError.getEstimation();
                         k = !this.learner.correctlyClassifies(instances.get(i).copy()) ?
-                                1.0 : (this.trRandom.nextDouble() < (error / (1.0 - error)) ? 1.0 : 0.0);
+                                1.0 : (ThreadLocalRandom.current().nextDouble() < (error / (1.0 - error)) ? 1.0 : 0.0);
                         break;
                     case 2: //LeveragingBagHalf
                         w = 1.0;
-                        k = this.trRandom.nextBoolean() ? 0.0 : w;
+                        k = ThreadLocalRandom.current().nextBoolean() ? 0.0 : w;
                         break;
                     case 3: //LeveragingBagWT
                         w = 1.0;
-                        k = 1.0 + MiscUtils.poisson(w, this.trRandom);
+                        k = 1.0 + MiscUtils.poisson(w, ThreadLocalRandom.current());
                         break;
                     case 4: //LeveragingSubag
                         w = 1.0;
-                        k = MiscUtils.poisson(1, this.trRandom);
+                        k = MiscUtils.poisson(1, ThreadLocalRandom.current());
                         k = (k > 0) ? w : 0;
                         break;
                 }

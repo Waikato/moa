@@ -26,7 +26,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 import moa.AbstractMOAObject;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-import moa.classifiers.AbstractClassifierMiniBatch;
+import moa.classifiers.AbstractParallelClassifierMiniBatch;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.driftdetection.ChangeDetector;
@@ -38,7 +38,6 @@ import moa.evaluation.BasicClassificationPerformanceEvaluator;
 import moa.options.ClassOption;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -78,7 +77,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author Heitor Murilo Gomes (heitor_murilo_gomes at yahoo dot com dot br)
  * @version $Revision: 1 $
  */
-public class AdaptiveRandomForestMB extends AbstractClassifierMiniBatch implements MultiClassClassifier {
+public class AdaptiveRandomForestMB extends AbstractParallelClassifierMiniBatch implements MultiClassClassifier {
 
     @Override
     public String getPurposeString() {
@@ -244,7 +243,7 @@ public class AdaptiveRandomForestMB extends AbstractClassifierMiniBatch implemen
         
         ARFHoeffdingTree treeLearner = (ARFHoeffdingTree) getPreparedClassOption(this.treeLearnerOption);
         treeLearner.resetLearning();
-        int seed = this.randomSeedOption.getValue();
+        
         for(int i = 0 ; i < ensembleSize ; ++i) {
             treeLearner.subspaceSizeOption.setValue(this.subspaceSize);
             ARFBaseLearner tempARFBL = new ARFBaseLearner(
@@ -257,8 +256,7 @@ public class AdaptiveRandomForestMB extends AbstractClassifierMiniBatch implemen
                 driftDetectionMethodOption,
                 warningDetectionMethodOption,
                 false);
-            this.trainers.add(new TrainingRunnable(tempARFBL, this.lambdaOption.getValue(), seed));
-            seed++;
+            this.trainers.add(new TrainingRunnable(tempARFBL, this.lambdaOption.getValue()));
         }
     }
 
@@ -429,27 +427,23 @@ public class AdaptiveRandomForestMB extends AbstractClassifierMiniBatch implemen
         private ArrayList<Instance> instances;
         private final double lambdaOption;
         private long instancesSeen;
-        private int localSeed;
-        private Random trRandom;
 
-        public TrainingRunnable(ARFBaseLearner learner, double lambdaOption, int seed) {
+        public TrainingRunnable(ARFBaseLearner learner, double lambdaOption) {
             this.learner = learner;
             this.lambdaOption = lambdaOption;
             this.instancesSeen = 0;
-            this.localSeed = seed;
-            this.trRandom = new Random();
-            this.trRandom.setSeed(this.localSeed);
         }
 
         @Override
         public void run() {
             for (Instance instance : this.instances) {
                 ++this.instancesSeen;
-                int k = MiscUtils.poisson(this.lambdaOption, this.trRandom);
+                int k = MiscUtils.poisson(this.lambdaOption, ThreadLocalRandom.current());
                 if (k > 0) {
                     learner.trainOnInstance(instance, k, this.instancesSeen);
                 }
             }
+
         }
 
         @Override
