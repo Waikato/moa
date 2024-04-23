@@ -23,7 +23,7 @@ import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-import moa.classifiers.AbstractClassifierMiniBatch;
+import moa.classifiers.AbstractParallelClassifierMiniBatch;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
@@ -32,8 +32,8 @@ import moa.core.MiscUtils;
 import moa.options.ClassOption;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Incremental on-line bagging of Oza and Russell.
@@ -55,7 +55,7 @@ import java.util.concurrent.Callable;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class OzaBagMB extends AbstractClassifierMiniBatch implements MultiClassClassifier {
+public class OzaBagMB extends AbstractParallelClassifierMiniBatch implements MultiClassClassifier {
 
     @Override
     public String getPurposeString() {
@@ -75,12 +75,10 @@ public class OzaBagMB extends AbstractClassifierMiniBatch implements MultiClassC
     @Override
     public void resetLearningImpl() {
         this.trainers = new ArrayList<>();
-        int seed = this.randomSeedOption.getValue();
         Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
         baseLearner.resetLearning();
         for (int i = 0; i < this.ensembleSizeOption.getValue(); i++) {
-            trainers.add(new TrainingRunnable(baseLearner.copy(), seed));
-            seed++;
+            trainers.add(new TrainingRunnable(baseLearner.copy()));
         }
     }
 
@@ -146,29 +144,26 @@ public class OzaBagMB extends AbstractClassifierMiniBatch implements MultiClassC
     /***
      * Inner class to assist with the multi-thread execution.
      */
-
     protected class TrainingRunnable implements Runnable, Callable<Integer> {
-        // TODO: Fix bug that makes seed initialized random objects not give the same result in MOA
         private Classifier learner;
         private ArrayList<Instance> instances;
-        private Random trRandom;
-        public int localSeed;
+//        private int instancesSeen;
+//        private int weightsSeen;
 
-        public TrainingRunnable(Classifier learner, int seed) {
+
+        public TrainingRunnable(Classifier learner) {
             this.learner = learner;
             this.instances = new ArrayList<>();
-            this.localSeed = seed;
-            this.trRandom = new Random();
-            this.trRandom.setSeed(this.localSeed);
         }
 
         @Override
         public void run() {
             for (Instance inst : this.instances) {
-                int k = MiscUtils.poisson(1.0, this.trRandom);
-                Instance weightedInst = inst.copy();
-                weightedInst.setWeight(inst.weight() * k);
-                this.learner.trainOnInstance(weightedInst);
+                int k = MiscUtils.poisson(1.0, ThreadLocalRandom.current());
+//                this.weightsSeen += k;
+//                this.instancesSeen++;
+                inst.setWeight(inst.weight() * k);
+                this.learner.trainOnInstance(inst);
             }
         }
 
