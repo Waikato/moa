@@ -4,6 +4,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.SemiSupervisedLearner;
 import moa.classifiers.semisupervised.ClusterAndLabelClassifier;
 import moa.core.Example;
+import moa.core.InstanceExample;
 import moa.core.Measurement;
 import moa.learners.Learner;
 import moa.streams.ArffFileStream;
@@ -25,12 +26,24 @@ public class EfficientEvaluationLoops {
     public static class PrequentialResult {
         public ArrayList<double[]> windowedResults;
         public double[] cumulativeResults;
+        public ArrayList<Double> targets;
+        public ArrayList<Double> predictions;
 
         public HashMap<String, Double> otherMeasurements;
 
         public PrequentialResult(ArrayList<double[]> windowedResults, double[] cumulativeResults) {
             this.windowedResults = windowedResults;
             this.cumulativeResults = cumulativeResults;
+            this.targets = null;
+            this.predictions = null;
+        }
+
+        public PrequentialResult(ArrayList<double[]> windowedResults, double[] cumulativeResults,
+                                 ArrayList<Double> targets, ArrayList<Double> predictions) {
+            this.windowedResults = windowedResults;
+            this.cumulativeResults = cumulativeResults;
+            this.targets = targets;
+            this.predictions = predictions;
         }
 
         public PrequentialResult(ArrayList<double[]> windowedResults, double[] cumulativeResults,
@@ -57,24 +70,33 @@ public class EfficientEvaluationLoops {
     public static PrequentialResult PrequentialEvaluation(ExampleStream stream, Learner learner,
                                                           LearningPerformanceEvaluator basicEvaluator,
                                                           LearningPerformanceEvaluator windowedEvaluator,
-                                                          long maxInstances, long windowSize) {
+                                                          long maxInstances, long windowSize,
+                                                          boolean storeY, boolean storePredictions) {
         int instancesProcessed = 0;
 
         if (!stream.hasMoreInstances())
             stream.restart();
 
         ArrayList<double[]> windowed_results = new ArrayList<>();
+        ArrayList<Double> targetValues = new ArrayList<>();
+        ArrayList<Double> predictions = new ArrayList<>();
+
 
         while (stream.hasMoreInstances() &&
                 (maxInstances == -1 || instancesProcessed < maxInstances)) {
 
-            Example instance = stream.nextInstance();
+            Example<Instance> instance = stream.nextInstance();
+            if (storeY)
+                targetValues.add(instance.getData().classValue());
 
             double[] prediction = learner.getVotesForInstance(instance);
             if (basicEvaluator != null)
                 basicEvaluator.addResult(instance, prediction);
             if (windowedEvaluator != null)
                 windowedEvaluator.addResult(instance, prediction);
+
+            if (storePredictions)
+                predictions.add(prediction.length == 0? 0 : prediction[0]);
 
             learner.trainOnInstance(instance);
 
@@ -106,8 +128,10 @@ public class EfficientEvaluationLoops {
             for (int i = 0; i < cumulative_results.length; ++i)
                 cumulative_results[i] = measurements[i].getValue();
         }
-
-        return new PrequentialResult(windowed_results, cumulative_results);
+        if (!storePredictions && !storeY)
+            return new PrequentialResult(windowed_results, cumulative_results);
+        else
+            return new PrequentialResult(windowed_results, cumulative_results, targetValues, predictions);
     }
 
     public static PrequentialResult PrequentialSSLEvaluation(ExampleStream stream, Learner learner,
@@ -379,7 +403,7 @@ public class EfficientEvaluationLoops {
         basic_evaluator.recallPerClassOption.setValue(true);
         basic_evaluator.prepareForUse();
 
-        PrequentialResult results = PrequentialEvaluation(stream, learner, basic_evaluator, null, 100000, 1);
+        PrequentialResult results = PrequentialEvaluation(stream, learner, basic_evaluator, null, 100000, 1, false, false);
 
         // Record the end time
         long endTime = System.currentTimeMillis();
@@ -413,7 +437,7 @@ public class EfficientEvaluationLoops {
 //        windowed_evaluator.widthOption.setValue(1000);
 //        windowed_evaluator.prepareForUse();
 
-        PrequentialResult results = PrequentialEvaluation(stream, learner, null, null, 100000, 1000);
+        PrequentialResult results = PrequentialEvaluation(stream, learner, null, null, 100000, 1000, false, false);
 
         // Record the end time
         long endTime = System.currentTimeMillis();
@@ -455,7 +479,7 @@ public class EfficientEvaluationLoops {
         windowed_evaluator.widthOption.setValue(1000);
         windowed_evaluator.prepareForUse();
 
-        PrequentialResult results = PrequentialEvaluation(stream, learner, basic_evaluator, windowed_evaluator, 1000, 10000);
+        PrequentialResult results = PrequentialEvaluation(stream, learner, basic_evaluator, windowed_evaluator, 1000, 10000, false, false);
 
         // Record the end time
         long endTime = System.currentTimeMillis();
@@ -496,7 +520,7 @@ public class EfficientEvaluationLoops {
         windowed_evaluator.widthOption.setValue(1000);
         windowed_evaluator.prepareForUse();
 
-        PrequentialResult results = PrequentialEvaluation(stream, learner, basic_evaluator, windowed_evaluator, 10, 1);
+        PrequentialResult results = PrequentialEvaluation(stream, learner, basic_evaluator, windowed_evaluator, 10, 1, false, false);
 
         // Record the end time
         long endTime = System.currentTimeMillis();
@@ -537,7 +561,7 @@ public class EfficientEvaluationLoops {
         windowed_evaluator.widthOption.setValue(10000);
         windowed_evaluator.prepareForUse();
 
-        PrequentialResult results = PrequentialEvaluation(stream, learner, basic_evaluator, windowed_evaluator, -1, 10000);
+        PrequentialResult results = PrequentialEvaluation(stream, learner, basic_evaluator, windowed_evaluator, -1, 10000, false, false);
 
         // Record the end time
         long endTime = System.currentTimeMillis();
@@ -579,7 +603,7 @@ public class EfficientEvaluationLoops {
 //        windowed_evaluator.widthOption.setValue(10000);
 //        windowed_evaluator.prepareForUse();
 
-        PrequentialResult results = PrequentialEvaluation(stream, learner, null, basic_evaluator, -1, 10000);
+        PrequentialResult results = PrequentialEvaluation(stream, learner, null, basic_evaluator, -1, 10000, false, false);
 
         // Record the end time
         long endTime = System.currentTimeMillis();
@@ -621,7 +645,7 @@ public class EfficientEvaluationLoops {
         windowed_evaluator.widthOption.setValue(1000);
 //        windowed_evaluator.prepareForUse();
 
-        PrequentialResult results = PrequentialEvaluation(stream, learner, basic_evaluator, windowed_evaluator, 100000, 1000);
+        PrequentialResult results = PrequentialEvaluation(stream, learner, basic_evaluator, windowed_evaluator, 100000, 1000, false, false);
 
         // Record the end time
         long endTime = System.currentTimeMillis();
@@ -664,7 +688,7 @@ public class EfficientEvaluationLoops {
         windowed_evaluator.widthOption.setValue(1000);
         windowed_evaluator.prepareForUse();
 
-        PrequentialResult results = PrequentialEvaluation(stream, learner, basic_evaluator, windowed_evaluator, 100000, 1000);
+        PrequentialResult results = PrequentialEvaluation(stream, learner, basic_evaluator, windowed_evaluator, 100000, 1000, false, false);
 
         // Record the end time
         long endTime = System.currentTimeMillis();
@@ -703,7 +727,7 @@ public class EfficientEvaluationLoops {
         evaluator.recallPerClassOption.setValue(true);
         evaluator.prepareForUse();
 
-        PrequentialResult results = PrequentialEvaluation(stream, learner, evaluator, null, 100000, 100000);
+        PrequentialResult results = PrequentialEvaluation(stream, learner, evaluator, null, 100000, 100000, false, false);
 
         // Record the end time
         long endTime = System.currentTimeMillis();
@@ -735,7 +759,7 @@ public class EfficientEvaluationLoops {
         evaluator.recallPerClassOption.setValue(true);
         evaluator.prepareForUse();
 
-        PrequentialResult results = PrequentialEvaluation(stream, learner, null, evaluator, 100000, 10000);
+        PrequentialResult results = PrequentialEvaluation(stream, learner, null, evaluator, 100000, 10000, false, false);
 
         // Record the end time
         long endTime = System.currentTimeMillis();
