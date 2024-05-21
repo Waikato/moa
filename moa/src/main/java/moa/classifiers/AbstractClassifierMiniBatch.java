@@ -82,7 +82,6 @@ public abstract class AbstractClassifierMiniBatch extends AbstractClassifier
     public void trainingHasEnded() {
         if (this.threadpool != null)
             this.threadpool.shutdown();
-        this.myBatch = null;
     }
 
     @Override
