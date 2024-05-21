@@ -55,7 +55,7 @@ import java.util.concurrent.Callable;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class OzaBagMB extends AbstractClassifierMiniBatch implements MultiClassClassifier {
+public class threadTesting extends AbstractClassifierMiniBatch implements MultiClassClassifier {
 
     @Override
     public String getPurposeString() {
@@ -74,12 +74,14 @@ public class OzaBagMB extends AbstractClassifierMiniBatch implements MultiClassC
 
     @Override
     public void resetLearningImpl() {
+        System.out.println("\n\n\n\n\n\nthreadTsting resetIMPL");
         this.trainers = new ArrayList<>();
         int seed = this.randomSeedOption.getValue();
         Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
         baseLearner.resetLearning();
         for (int i = 0; i < this.ensembleSizeOption.getValue(); i++) {
             trainers.add(new TrainingRunnable(baseLearner.copy(), seed));
+            System.out.println("created trainer " + i + " with seed " + seed);
             seed++;
         }
     }
@@ -137,7 +139,7 @@ public class OzaBagMB extends AbstractClassifierMiniBatch implements MultiClassC
 
     @Override
     public ImmutableCapabilities defineImmutableCapabilities() {
-        if (this.getClass() == OzaBagMB.class)
+        if (this.getClass() == threadTesting.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
         else
             return new ImmutableCapabilities(Capability.VIEW_STANDARD);
@@ -146,28 +148,38 @@ public class OzaBagMB extends AbstractClassifierMiniBatch implements MultiClassC
     /***
      * Inner class to assist with the multi-thread execution.
      */
-
     protected class TrainingRunnable implements Runnable, Callable<Integer> {
-        // TODO: Fix bug that makes seed initialized random objects not give the same result in MOA
         private Classifier learner;
         private ArrayList<Instance> instances;
         private Random trRandom;
         public int localSeed;
+//        private int instancesSeen;
+//        private int weightsSeen;
+
 
         public TrainingRunnable(Classifier learner, int seed) {
             this.learner = learner;
             this.instances = new ArrayList<>();
             this.localSeed = seed;
-            this.trRandom = new Random();
-            this.trRandom.setSeed(this.localSeed);
+//            this.trRandom = null;
+            this.trRandom = new Random(seed);
         }
 
         @Override
         public void run() {
             if (this.trRandom == null) {
-                this.trRandom = new Random();
-                this.trRandom.setSeed(this.localSeed);
+                this.trRandom = new Random(this.localSeed);
+                System.out.println("created local random in run method with seed " + this.localSeed);
+//                String debugging = "";
+//                for (int i = 0; i < 10; i++) {
+//                    debugging += this.trRandom.nextInt(1000) + ", ";
+//                }
+//                System.out.println("classifier with seed " + this.localSeed + " generated:\n" + debugging);
             }
+//            String debugging = "";
+//            for (int i = 0; i < 10; i++) {
+//                debugging += MiscUtils.poisson(1.0, this.trRandom) + ", ";
+//            }
             for (Instance inst : this.instances) {
                 int k = MiscUtils.poisson(1.0, this.trRandom);
                 inst.setWeight(inst.weight() * k);
