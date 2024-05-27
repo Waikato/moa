@@ -217,11 +217,12 @@ public class OzaBagAdwinMB extends AbstractClassifierMiniBatch implements MultiC
 
         @Override
         public void run() {
-            for (Instance instance : this.instances) {
+            for (Instance inst : this.instances) {
                 int k = MiscUtils.poisson(1.0, this.trRandom);
-                instance.setWeight(instance.weight() * k);
-                this.learner.trainOnInstance(instance);
-                boolean correctlyClassifies = this.learner.correctlyClassifies(instance);
+                Instance weightedInst = inst.copy();
+                weightedInst.setWeight(inst.weight() * k);
+                this.learner.trainOnInstance(weightedInst);
+                boolean correctlyClassifies = this.learner.correctlyClassifies(inst);
                 double ErrEstimation = this.ADError.getEstimation();
                 if (this.ADError.setInput(correctlyClassifies ? 0 : 1)) {
                     if (this.ADError.getEstimation() > ErrEstimation) {
