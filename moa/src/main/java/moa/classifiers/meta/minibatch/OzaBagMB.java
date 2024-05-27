@@ -164,14 +164,11 @@ public class OzaBagMB extends AbstractClassifierMiniBatch implements MultiClassC
 
         @Override
         public void run() {
-            if (this.trRandom == null) {
-                this.trRandom = new Random();
-                this.trRandom.setSeed(this.localSeed);
-            }
             for (Instance inst : this.instances) {
                 int k = MiscUtils.poisson(1.0, this.trRandom);
-                inst.setWeight(inst.weight() * k);
-                this.learner.trainOnInstance(inst);
+                Instance weightedInst = inst.copy();
+                weightedInst.setWeight(inst.weight() * k);
+                this.learner.trainOnInstance(weightedInst);
             }
         }
 
