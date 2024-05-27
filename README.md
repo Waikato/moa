@@ -32,3 +32,25 @@ If you want to refer to MOA in a publication, please cite the following JMLR pap
 > MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604 
 
 
+## Building MOA for CapyMOA
+
+> These steps assume you have Java installed and maven installed. If you don't
+> have maven installed, you can download it from
+> [here](https://maven.apache.org/download.cgi). You can achieve the same
+> outcome with IntelliJ IDEA by [building moa with the IDE](https://moa.cms.waikato.ac.nz/tutorial-6-building-moa-from-the-source/) (The linked doc is a  little out of date)
+> and [packaging it as a single jar file](https://stackoverflow.com/questions/1082580/how-to-build-jars-from-intellij-idea-properly).
+
+You can compile moa as a single jar file with all dependencies included by running the following command in the `moa` directory:
+```bash
+cd ./moa
+mvn compile assembly:single
+```
+
+If successful, the jar file will be built to a file like this `moa/target/moa-2023.04.1-SNAPSHOT-jar-with-dependencies.jar` with a different date.
+
+One way to verify that the jar file was built correctly is to run the following command:
+```bash
+java -jar ./moa/target/moa-2023.04.1-SNAPSHOT-jar-with-dependencies.jar
+```
+This should start the MOA GUI.
+
