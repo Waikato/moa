@@ -175,6 +175,7 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
         return 0.0;
     }
 
+
     public double getAdjustedCoefficientOfDetermination() {
         return 1 - ((1-getCoefficientOfDetermination())*(getTotalWeightObserved() - 1)) /
                 (getTotalWeightObserved() - numAttributes - 1);
@@ -197,6 +198,7 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
     }
 
     public double getTotalWeightObserved() {
+//        return this.weightObserved.total();
         return this.TotalweightObserved;
     }
 
