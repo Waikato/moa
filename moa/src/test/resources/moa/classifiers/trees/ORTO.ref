@@ -11,6 +11,8 @@ Measurements
   root mean squared error: 140869.24410153
   relative mean absolute error: 2.87455879
   relative root mean squared error: 2.16699194
+  coefficient of determination: -3.69585407
+  adjusted coefficient of determination: -4.17071572
 Model measurements
   model training instances: 99
   number of subtrees: 1
@@ -28,6 +30,8 @@ Measurements
   root mean squared error: 121447.35397784
   relative mean absolute error: 2.70347334
   relative root mean squared error: 2.33600975
+  coefficient of determination: -4.45694154
+  adjusted coefficient of determination: -4.7167959
 Model measurements
   model training instances: 199
   number of subtrees: 1
@@ -45,6 +49,8 @@ Measurements
   root mean squared error: 113974.39751727
   relative mean absolute error: 2.59117241
   relative root mean squared error: 2.26552209
+  coefficient of determination: -4.13259034
+  adjusted coefficient of determination: -4.29242879
 Model measurements
   model training instances: 299
   number of subtrees: 1
@@ -62,6 +68,8 @@ Measurements
   root mean squared error: 115041.41511421
   relative mean absolute error: 2.29329055
   relative root mean squared error: 2.1455026
+  coefficient of determination: -3.60318141
+  adjusted coefficient of determination: -3.70968175
 Model measurements
   model training instances: 399
   number of subtrees: 1
@@ -79,6 +87,8 @@ Measurements
   root mean squared error: 109448.19586749
   relative mean absolute error: 2.24900515
   relative root mean squared error: 2.13216221
+  coefficient of determination: -3.54611568
+  adjusted coefficient of determination: -3.62978652
 Model measurements
   model training instances: 499
   number of subtrees: 1
@@ -96,6 +106,8 @@ Measurements
   root mean squared error: 105432.18407086
   relative mean absolute error: 2.1934258
   relative root mean squared error: 2.01093266
+  coefficient of determination: -3.04385015
+  adjusted coefficient of determination: -3.10564073
 Model measurements
   model training instances: 599
   number of subtrees: 1
@@ -113,6 +125,8 @@ Measurements
   root mean squared error: 101644.72210786
   relative mean absolute error: 2.15423345
   relative root mean squared error: 2.00081995
+  coefficient of determination: -3.00328047
+  adjusted coefficient of determination: -3.05557295
 Model measurements
   model training instances: 699
   number of subtrees: 1
@@ -130,6 +144,8 @@ Measurements
   root mean squared error: 106245.56581861
   relative mean absolute error: 2.13032999
   relative root mean squared error: 2.11113894
+  coefficient of determination: -3.4569076
+  adjusted coefficient of determination: -3.50774685
 Model measurements
   model training instances: 799
   number of subtrees: 1
@@ -147,6 +163,8 @@ Measurements
   root mean squared error: 102296.95096271
   relative mean absolute error: 2.08856426
   relative root mean squared error: 2.09576461
+  coefficient of determination: -3.3922293
+  adjusted coefficient of determination: -3.43669507
 Model measurements
   model training instances: 899
   number of subtrees: 1
@@ -164,6 +182,8 @@ Measurements
   root mean squared error: 101947.30173238
   relative mean absolute error: 2.08369075
   relative root mean squared error: 2.09977466
+  coefficient of determination: -3.40905363
+  adjusted coefficient of determination: -3.44917647
 Model measurements
   model training instances: 999
   number of subtrees: 1

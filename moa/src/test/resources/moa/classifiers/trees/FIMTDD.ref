@@ -11,6 +11,8 @@ Measurements
   root mean squared error: 140869.24410153
   relative mean absolute error: 2.87455879
   relative root mean squared error: 2.16699194
+  coefficient of determination: -3.69585407
+  adjusted coefficient of determination: -4.17071572
 Model measurements
   model training instances: 99
   tree size (leaves): 1
@@ -25,6 +27,8 @@ Measurements
   root mean squared error: 121447.35397784
   relative mean absolute error: 2.70347334
   relative root mean squared error: 2.33600975
+  coefficient of determination: -4.45694154
+  adjusted coefficient of determination: -4.7167959
 Model measurements
   model training instances: 199
   tree size (leaves): 1
@@ -39,6 +43,8 @@ Measurements
   root mean squared error: 111033.54110199
   relative mean absolute error: 2.51062889
   relative root mean squared error: 2.20706532
+  coefficient of determination: -3.87113732
+  adjusted coefficient of determination: -4.02283364
 Model measurements
   model training instances: 299
   tree size (leaves): 2
@@ -53,6 +59,8 @@ Measurements
   root mean squared error: 106698.55569198
   relative mean absolute error: 2.25076167
   relative root mean squared error: 1.98990971
+  coefficient of determination: -2.95974065
+  adjusted coefficient of determination: -3.05135418
 Model measurements
   model training instances: 399
   tree size (leaves): 2
@@ -67,6 +75,8 @@ Measurements
   root mean squared error: 97826.30734892
   relative mean absolute error: 2.06657535
   relative root mean squared error: 1.905756
+  coefficient of determination: -2.63190591
+  adjusted coefficient of determination: -2.69875081
 Model measurements
   model training instances: 499
   tree size (leaves): 2
@@ -81,6 +91,8 @@ Measurements
   root mean squared error: 91890.31722165
   relative mean absolute error: 1.9237887
   relative root mean squared error: 1.75264547
+  coefficient of determination: -2.07176614
+  adjusted coefficient of determination: -2.11870315
 Model measurements
   model training instances: 599
   tree size (leaves): 2
@@ -95,6 +107,8 @@ Measurements
   root mean squared error: 87024.29804229
   relative mean absolute error: 1.83156659
   relative root mean squared error: 1.71302501
+  coefficient of determination: -1.9344547
+  adjusted coefficient of determination: -1.97278575
 Model measurements
   model training instances: 699
   tree size (leaves): 2
@@ -109,6 +123,8 @@ Measurements
   root mean squared error: 83081.44102444
   relative mean absolute error: 1.72259017
   relative root mean squared error: 1.65085915
+  coefficient of determination: -1.72533595
+  adjusted coefficient of determination: -1.75642343
 Model measurements
   model training instances: 799
   tree size (leaves): 2
@@ -123,6 +139,8 @@ Measurements
   root mean squared error: 79287.58006333
   relative mean absolute error: 1.65545615
   relative root mean squared error: 1.62437006
+  coefficient of determination: -1.63857809
+  adjusted coefficient of determination: -1.66529036
 Model measurements
   model training instances: 899
   tree size (leaves): 2
@@ -137,6 +155,8 @@ Measurements
   root mean squared error: 76274.17698211
   relative mean absolute error: 1.57192805
   relative root mean squared error: 1.57099385
+  coefficient of determination: -1.46802168
+  adjusted coefficient of determination: -1.49048093
 Model measurements
   model training instances: 999
   tree size (leaves): 2
