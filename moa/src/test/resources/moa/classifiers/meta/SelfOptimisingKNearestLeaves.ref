@@ -4,7 +4,7 @@ moa.classifiers.meta.SelfOptimisingKNearestLeaves -s 5 -f -k 5 -o (Specified m (
 Index
   10000
 Votes
-  0: 0.59032161
+  0: 0.46450253
 Measurements
   classified instances: 9999
   classifications correct (percent): 40.95409541
@@ -17,7 +17,7 @@ Model measurements
 Index
   20000
 Votes
-  0: 0.57656135
+  0: 0.45515177
 Measurements
   classified instances: 19999
   classifications correct (percent): 41.7120856
@@ -30,7 +30,7 @@ Model measurements
 Index
   30000
 Votes
-  0: 0.57536109
+  0: 0.58995787
 Measurements
   classified instances: 29999
   classifications correct (percent): 41.62805427
@@ -43,7 +43,7 @@ Model measurements
 Index
   40000
 Votes
-  0: 0.5793644
+  0: 0.46424416
 Measurements
   classified instances: 39999
   classifications correct (percent): 41.80104503
@@ -56,7 +56,7 @@ Model measurements
 Index
   50000
 Votes
-  0: 0.57383691
+  0: 0.56282691
 Measurements
   classified instances: 49999
   classifications correct (percent): 41.79283586
@@ -69,7 +69,7 @@ Model measurements
 Index
   60000
 Votes
-  0: 0.58995386
+  0: 0.58911199
 Measurements
   classified instances: 59999
   classifications correct (percent): 42.0040334
@@ -82,7 +82,7 @@ Model measurements
 Index
   70000
 Votes
-  0: 0.55461637
+  0: 0.45678544
 Measurements
   classified instances: 69999
   classifications correct (percent): 42.14917356
@@ -95,7 +95,7 @@ Model measurements
 Index
   80000
 Votes
-  0: 0.57951388
+  0: 0.46959475
 Measurements
   classified instances: 79999
   classifications correct (percent): 42.14552682
@@ -108,7 +108,7 @@ Model measurements
 Index
   90000
 Votes
-  0: 0.56722753
+  0: 0.57203693
 Measurements
   classified instances: 89999
   classifications correct (percent): 42.13380149
@@ -121,7 +121,7 @@ Model measurements
 Index
   100000
 Votes
-  0: 0.5706712
+  0: 0.58028958
 Measurements
   classified instances: 99999
   classifications correct (percent): 42.18242182
