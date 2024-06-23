@@ -11,6 +11,8 @@ Measurements
   root mean squared error: 65129.5747211
   relative mean absolute error: 1.00023248
   relative root mean squared error: 1.00188841
+  coefficient of determination: -0.00378039
+  adjusted coefficient of determination: -0.10528628
 Model measurements
   model training instances: 99
   anomaly detections: 0
@@ -29,6 +31,8 @@ Measurements
   root mean squared error: 51752.33673783
   relative mean absolute error: 0.97415822
   relative root mean squared error: 0.99544337
+  coefficient of determination: 0.0090925
+  adjusted coefficient of determination: -0.03809357
 Model measurements
   model training instances: 199
   anomaly detections: 0
@@ -47,6 +51,8 @@ Measurements
   root mean squared error: 49145.69117053
   relative mean absolute error: 0.96732943
   relative root mean squared error: 0.97689175
+  coefficient of determination: 0.0456825
+  adjusted coefficient of determination: 0.01596327
 Model measurements
   model training instances: 299
   anomaly detections: 0
@@ -65,6 +71,8 @@ Measurements
   root mean squared error: 51358.13737722
   relative mean absolute error: 0.94994309
   relative root mean squared error: 0.95782043
+  coefficient of determination: 0.08258003
+  adjusted coefficient of determination: 0.06135438
 Model measurements
   model training instances: 399
   anomaly detections: 0
@@ -83,6 +91,8 @@ Measurements
   root mean squared error: 48465.35768983
   relative mean absolute error: 0.91641167
   relative root mean squared error: 0.94415448
+  coefficient of determination: 0.10857232
+  adjusted coefficient of determination: 0.09216568
 Model measurements
   model training instances: 499
   anomaly detections: 0
@@ -101,6 +111,8 @@ Measurements
   root mean squared error: 49053.18023401
   relative mean absolute error: 0.89375218
   relative root mean squared error: 0.93560276
+  coefficient of determination: 0.12464748
+  adjusted coefficient of determination: 0.11127198
 Model measurements
   model training instances: 599
   anomaly detections: 0
@@ -119,6 +131,8 @@ Measurements
   root mean squared error: 46681.82880826
   relative mean absolute error: 0.86717656
   relative root mean squared error: 0.91890589
+  coefficient of determination: 0.15561196
+  adjusted coefficient of determination: 0.14458221
 Model measurements
   model training instances: 699
   anomaly detections: 0
@@ -137,6 +151,8 @@ Measurements
   root mean squared error: 48571.53587788
   relative mean absolute error: 0.88041499
   relative root mean squared error: 0.9651345
+  coefficient of determination: 0.06851541
+  adjusted coefficient of determination: 0.05789011
 Model measurements
   model training instances: 799
   anomaly detections: 0
@@ -155,6 +171,8 @@ Measurements
   root mean squared error: 46810.81877853
   relative mean absolute error: 0.87444528
   relative root mean squared error: 0.95901644
+  coefficient of determination: 0.08028747
+  adjusted coefficient of determination: 0.07097655
 Model measurements
   model training instances: 899
   anomaly detections: 0
@@ -173,6 +191,8 @@ Measurements
   root mean squared error: 46872.8677322
   relative mean absolute error: 0.8767323
   relative root mean squared error: 0.96542486
+  coefficient of determination: 0.06795483
+  adjusted coefficient of determination: 0.05947312
 Model measurements
   model training instances: 999
   anomaly detections: 0
