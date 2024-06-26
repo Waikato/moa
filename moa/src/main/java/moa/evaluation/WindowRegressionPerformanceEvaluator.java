@@ -197,7 +197,7 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
     }
 
     public double getTotalWeightObserved() {
-        return this.weightObserved.total();
+        return this.TotalweightObserved;
     }
 
     public double getMeanError() {
