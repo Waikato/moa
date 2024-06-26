@@ -19,13 +19,9 @@
  */
 package moa.learners;
 
+import com.yahoo.labs.samoa.instances.*;
 import moa.MOAObject;
 import moa.core.Example;
-
-import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.core.Measurement;
 import moa.gui.AWTRenderable;
@@ -94,6 +90,14 @@ public interface Learner<E extends Example> extends MOAObject, OptionHandler, AW
      * probabilities of the test instance in each class
      */
     public double[] getVotesForInstance(E example);
+
+    /**
+     *
+     * @param example the instance whose confidence we are observing
+     * @param label
+     * @return
+     */
+    public double getConfidenceForPrediction(E example, double label);
 
     /**
      * Gets the current measurements of this learner.

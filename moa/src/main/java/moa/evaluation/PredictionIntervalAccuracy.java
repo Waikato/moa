@@ -1,7 +1,7 @@
 /*
- *    SemiSupervisedLearner.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
- *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ *    RegressionAccuracy.java
+ *    Copyright (C) 2010 RWTH Aachen University, Germany
+ *    @author Jansen (moa@cs.rwth-aachen.de)
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -17,18 +17,20 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *    
  */
-package moa.classifiers;
+package moa.evaluation;
 
-import com.yahoo.labs.samoa.instances.Instance;
-import moa.core.Example;
-import moa.learners.Learner;
+public class PredictionIntervalAccuracy extends RegressionAccuracy {
 
-/**
- * Updated learner interface for semi-supervised methods.
- */
-public interface SemiSupervisedLearner extends Learner<Example<Instance>> {
-    // Returns the pseudo-label used. If no pseudo-label was used, then return -1.
-    int trainOnUnlabeledInstance(Instance instance);
+    @Override
+    public String[] getNames() {
+        String[] names = {"mean abs. error", "root mean sq. er.", "", "coverage", "average length", "NMPIW", "Ram-Hours", "Time", "Memory"};
+        return names;
+    }
 
-    void addInitialWarmupTrainingInstances();
+    @Override
+    protected boolean[] getDefaultEnabled() {
+        boolean[] defaults = {true, true, false, true, true, true, true, true, true};
+        return defaults;
+    }
+
 }

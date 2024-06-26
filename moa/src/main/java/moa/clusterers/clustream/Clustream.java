@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.clusterers.clustream;
@@ -98,7 +98,9 @@ public class Clustream extends AbstractClusterer{
 //			Clustering kmeans_clustering = kMeans(k, buffer);
 
 			for ( int i = 0; i < kmeans_clustering.size(); i++ ) {
-				kernels[i] = new ClustreamKernel( new DenseInstance(1.0,centers[i].getCenter()), dim, timestamp, t, m );
+				Instance newInstance = new DenseInstance(1.0,centers[i].getCenter());
+				newInstance.setDataset(instance.dataset());
+				kernels[i] = new ClustreamKernel(newInstance, dim, timestamp, t, m );
 			}
 
 			buffer.clear();
@@ -111,7 +113,7 @@ public class Clustream extends AbstractClusterer{
 		double minDistance = Double.MAX_VALUE;
 		for ( int i = 0; i < kernels.length; i++ ) {
 			//System.out.println(i+" "+kernels[i].getWeight()+" "+kernels[i].getDeviation());
-			double distance = distance(instance.toDoubleArray(), kernels[i].getCenter() );
+			double distance = distanceIgnoreNaN(instance.toDoubleArray(), kernels[i].getCenter() );
 			if ( distance < minDistance ) {
 				closestKernel = kernels[i];
 				minDistance = distance;
@@ -209,6 +211,26 @@ public class Clustream extends AbstractClusterer{
 		for (int i = 0; i < pointA.length; i++) {
 			double d = pointA[i] - pointB[i];
 			distance += d * d;
+		}
+		return Math.sqrt(distance);
+	}
+
+	/***
+	 * This function avoids the undesirable situation where the whole distance becomes NaN if one of the attributes
+	 * is NaN.
+	 * (SSL) This was observed when calculating the distance between an instance without the class label and a center
+	 * which was updated using the class label.
+	 * @param pointA
+	 * @param pointB
+	 * @return
+	 */
+	public static double distanceIgnoreNaN(double[] pointA, double [] pointB){
+		double distance = 0.0;
+		for (int i = 0; i < pointA.length; i++) {
+			if(!(Double.isNaN(pointA[i]) || Double.isNaN(pointB[i]))) {
+				double d = pointA[i] - pointB[i];
+				distance += d * d;
+			}
 		}
 		return Math.sqrt(distance);
 	}

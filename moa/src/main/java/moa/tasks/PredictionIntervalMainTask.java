@@ -1,5 +1,5 @@
 /*
- *    SemiSupervisedLearner.java
+ *    RegressionMainTask.java
  *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  *
@@ -15,20 +15,31 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
-package moa.classifiers;
+package moa.tasks;
 
-import com.yahoo.labs.samoa.instances.Instance;
-import moa.core.Example;
-import moa.learners.Learner;
+import moa.streams.clustering.ClusterEvent;
+
+import java.util.ArrayList;
 
 /**
- * Updated learner interface for semi-supervised methods.
+ * Abstract Regression Main Task. All tasks that uses prediction intervals must
+ * extend this class.
+ *
+ * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
+ * @version $Revision: 7 $
  */
-public interface SemiSupervisedLearner extends Learner<Example<Instance>> {
-    // Returns the pseudo-label used. If no pseudo-label was used, then return -1.
-    int trainOnUnlabeledInstance(Instance instance);
+public abstract class PredictionIntervalMainTask extends RegressionMainTask {
 
-    void addInitialWarmupTrainingInstances();
+    protected ArrayList<ClusterEvent> events;
+
+    protected void setEventsList(ArrayList<ClusterEvent> events) {
+        this.events = events;
+    }
+    
+    public ArrayList<ClusterEvent> getEventsList() {
+        return this.events;
+    }
+    
 }

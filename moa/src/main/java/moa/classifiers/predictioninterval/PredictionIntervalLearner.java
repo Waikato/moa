@@ -17,14 +17,11 @@
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-package moa.classifiers;
-
-import moa.core.Example;
-import moa.learners.Learner;
+package moa.classifiers.predictioninterval;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.Prediction;
+import moa.core.Example;
+import moa.learners.Learner;
 
 /**
  * Classifier interface for incremental classification models.
@@ -32,7 +29,7 @@ import com.yahoo.labs.samoa.instances.Prediction;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public interface Classifier extends Learner<Example<Instance>> {
+public interface PredictionIntervalLearner extends Learner<Example<Instance>> {
 
     /**
      * Gets the classifiers of this ensemble. Returns null if this learner is a
@@ -40,14 +37,14 @@ public interface Classifier extends Learner<Example<Instance>> {
      *
      * @return an array of the learners of the ensemble
      */
-    public Classifier[] getSubClassifiers();
+//    public PredictionIntervalLearner[] getSubClassifiers();
 
     /**
      * Produces a copy of this learner.
      *
      * @return the copy of this learner
      */
-    public Classifier copy();
+//    public PredictionIntervalLearner copy();
 
     /**
      * Gets whether this classifier correctly classifies an instance. Uses
@@ -58,13 +55,7 @@ public interface Classifier extends Learner<Example<Instance>> {
      * @param inst the instance to be classified
      * @return true if the instance is correctly classified
      */
-    public boolean correctlyClassifies(Instance inst);
 
-    /**
-     * Trains this learner incrementally using the given example.
-     *
-     * @param inst the instance to be used for training
-     */
     public void trainOnInstance(Instance inst);
 
     /**
@@ -77,27 +68,5 @@ public interface Classifier extends Learner<Example<Instance>> {
      */
     public double[] getVotesForInstance(Instance inst);
 
-    /**
-     * Sets the reference to the header of the data stream. The header of the
-     * data stream is extended from WEKA
-     * <code>Instances</code>. This header is needed to know the number of
-     * classes and attributes
-     *
-     * @param ih the reference to the data stream header
-     */
-    //public void setModelContext(InstancesHeader ih);
 
-    /**
-     * Gets the reference to the header of the data stream. The header of the
-     * data stream is extended from WEKA
-     * <code>Instances</code>. This header is needed to know the number of
-     * classes and attributes
-     *
-     * @return the reference to the data stream header
-     */
-    //public InstancesHeader getModelContext();
-
-    public Prediction getPredictionForInstance(Instance inst);
-
-    public double getConfidenceForPrediction(Instance inst, double prediction);
 }

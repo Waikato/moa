@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.clusterers.clustream;
 
@@ -25,9 +25,9 @@ import moa.cluster.CFCluster;
 import com.yahoo.labs.samoa.instances.Instance;
 
 public class ClustreamKernel extends CFCluster {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final static double EPSILON = 0.00005;
+    private final static double EPSILON = 0.00005;
     public static final double MIN_VARIANCE = 1e-50;
 
     protected double LST;
@@ -36,66 +36,111 @@ public class ClustreamKernel extends CFCluster {
     int m;
     double t;
 
+    public double[] classObserver;
 
-    public ClustreamKernel( Instance instance, int dimensions, long timestamp , double t, int m) {
+    public static int ID_GENERATOR = 0;
+
+    public ClustreamKernel(Instance instance, int dimensions, long timestamp , double t, int m) {
         super(instance, dimensions);
+
+//        Avoid situations where the instance header hasn't been defined and runtime errors.
+        if(instance.dataset() != null) {
+            this.classObserver = new double[instance.numClasses()];
+//        instance.numAttributes() <= instance.classIndex() -> edge case where the class index is equal the
+//        number of attributes (i.e. there is no class value in the attributes array).
+            if (instance.numAttributes() > instance.classIndex() &&
+                    !instance.classIsMissing() &&
+                    instance.classValue() >= 0 &&
+                    instance.classValue() < instance.numClasses()) {
+                this.classObserver[(int) instance.classValue()]++;
+            }
+        }
+        this.setId(ID_GENERATOR++);
         this.t = t;
         this.m = m;
         this.LST = timestamp;
-		this.SST = timestamp*timestamp;
+        this.SST = timestamp*timestamp;
     }
 
     public ClustreamKernel( ClustreamKernel cluster, double t, int m ) {
         super(cluster);
+        this.setId(ID_GENERATOR++);
         this.t = t;
         this.m = m;
         this.LST = cluster.LST;
         this.SST = cluster.SST;
+        this.classObserver = cluster.classObserver;
     }
 
     public void insert( Instance instance, long timestamp ) {
-		N++;
-		LST += timestamp;
-		SST += timestamp*timestamp;
-	
-		for ( int i = 0; i < instance.numValues(); i++ ) {
-		    LS[i] += instance.value(i);
-		    SS[i] += instance.value(i)*instance.value(i);
-		}
+        if(this.classObserver == null)
+            this.classObserver = new double[instance.numClasses()];
+        if(!instance.classIsMissing() &&
+                instance.classValue() >= 0 &&
+                instance.classValue() < instance.numClasses()) {
+            this.classObserver[(int)instance.classValue()]++;
+        }
+        N++;
+        LST += timestamp;
+        SST += timestamp*timestamp;
+
+        for ( int i = 0; i < instance.numValues(); i++ ) {
+            LS[i] += instance.value(i);
+            SS[i] += instance.value(i)*instance.value(i);
+        }
     }
 
     @Override
     public void add( CFCluster other2 ) {
         ClustreamKernel other = (ClustreamKernel) other2;
-		assert( other.LS.length == this.LS.length );
-		this.N += other.N;
-		this.LST += other.LST;
-		this.SST += other.SST;
-	
-		for ( int i = 0; i < LS.length; i++ ) {
-		    this.LS[i] += other.LS[i];
-		    this.SS[i] += other.SS[i];
-		}
+        assert( other.LS.length == this.LS.length );
+        this.N += other.N;
+        this.LST += other.LST;
+        this.SST += other.SST;
+        this.classObserver = sumClassObservers(other.classObserver, this.classObserver);
+
+        for ( int i = 0; i < LS.length; i++ ) {
+            this.LS[i] += other.LS[i];
+            this.SS[i] += other.SS[i];
+        }
     }
 
+    private double[] sumClassObservers(double[] A, double[] B) {
+        double[] result = null;
+        if (A != null && B != null) {
+            result = new double[A.length];
+            if(A.length == B.length)
+                for(int i = 0 ; i < A.length ; ++i)
+                    result[i] += A[i] + B[i];
+        }
+        return result;
+    }
+
+//    @Override
+//    public void add( CFCluster other2, long timestamp) {
+//        this.add(other2);
+//        // accumulate the count
+//        this.accumulateWeight(other2, timestamp);
+//    }
+
     public double getRelevanceStamp() {
-		if ( N < 2*m )
-		    return getMuTime();
-	
-		return getMuTime() + getSigmaTime() * getQuantile( ((double)m)/(2*N) );
+        if ( N < 2*m )
+            return getMuTime();
+
+        return getMuTime() + getSigmaTime() * getQuantile( ((double)m)/(2*N) );
     }
 
     private double getMuTime() {
-    	return LST / N;
+        return LST / N;
     }
 
     private double getSigmaTime() {
-    	return Math.sqrt(SST/N - (LST/N)*(LST/N));
+        return Math.sqrt(SST/N - (LST/N)*(LST/N));
     }
 
     private double getQuantile( double z ) {
-		assert( z >= 0 && z <= 1 );
-		return Math.sqrt( 2 ) * inverseError( 2*z - 1 );
+        assert( z >= 0 && z <= 1 );
+        return Math.sqrt( 2 ) * inverseError( 2*z - 1 );
     }
 
     @Override
@@ -187,7 +232,7 @@ public class ClustreamKernel extends CFCluster {
                 }
             }
             else{
-                
+
             }
         }
         return res;
@@ -223,7 +268,7 @@ public class ClustreamKernel extends CFCluster {
         return Math.sqrt(res);
     }
 
-        /**
+    /**
      * Approximates the inverse error function. Clustream needs this.
      * @param x
      */
@@ -266,7 +311,7 @@ public class ClustreamKernel extends CFCluster {
         }
 
         sumOfDeviation/= variance.length;
-        
+
         infoValue.add(Double.toString(sumOfDeviation));
     }
 }
