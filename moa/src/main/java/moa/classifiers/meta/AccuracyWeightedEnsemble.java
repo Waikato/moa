@@ -430,9 +430,9 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Mult
      *
      * @return the size of the removed classifier.
      */
-    protected int removePoorestModelBytes() {
+    protected long removePoorestModelBytes() {
         int poorestIndex = Utils.minIndex(this.ensembleWeights);
-        int byteSize = this.ensemble[poorestIndex].measureByteSize();
+        long byteSize = this.ensemble[poorestIndex].measureByteSize();
         discardModel(poorestIndex);
         return byteSize;
     }

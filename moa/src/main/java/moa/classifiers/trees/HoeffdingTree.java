@@ -192,11 +192,11 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
             this.observedClassDistribution = new DoubleVector(classObservations);
         }
 
-        public int calcByteSize() {
-            return (int) (SizeOf.sizeOf(this) + SizeOf.fullSizeOf(this.observedClassDistribution));
+        public long calcByteSize() {
+            return SizeOf.sizeOf(this) + SizeOf.fullSizeOf(this.observedClassDistribution);
         }
 
-        public int calcByteSizeIncludingSubtree() {
+        public long calcByteSizeIncludingSubtree() {
             return calcByteSize();
         }
 
@@ -262,14 +262,14 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
         protected AutoExpandVector<Node> children; // = new AutoExpandVector<Node>();
 
         @Override
-        public int calcByteSize() {
+        public long calcByteSize() {
             return super.calcByteSize()
-                    + (int) (SizeOf.sizeOf(this.children) + SizeOf.fullSizeOf(this.splitTest));
+                    + SizeOf.sizeOf(this.children) + SizeOf.fullSizeOf(this.splitTest);
         }
 
         @Override
-        public int calcByteSizeIncludingSubtree() {
-            int byteSize = calcByteSize();
+        public long calcByteSizeIncludingSubtree() {
+            long byteSize = calcByteSize();
             for (Node child : this.children) {
                 if (child != null) {
                     byteSize += child.calcByteSizeIncludingSubtree();
@@ -429,9 +429,9 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
         }
 
         @Override
-        public int calcByteSize() {
+        public long calcByteSize() {
             return super.calcByteSize()
-                    + (int) (SizeOf.fullSizeOf(this.attributeObservers));
+                    + SizeOf.fullSizeOf(this.attributeObservers);
         }
 
         @Override
@@ -511,8 +511,8 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
 
     protected boolean growthAllowed;
 
-    public int calcByteSize() {
-        int size = (int) SizeOf.sizeOf(this);
+    public long calcByteSize() {
+        long size = SizeOf.sizeOf(this);
         if (this.treeRoot != null) {
             size += this.treeRoot.calcByteSizeIncludingSubtree();
         }
@@ -528,7 +528,7 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
     }
 
     @Override
-    public int measureByteSize() {
+    public long measureByteSize() {
         return calcByteSize();
     }
 
@@ -804,7 +804,7 @@ public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
             this.inactiveLeafByteSizeEstimate = (double) totalInactiveSize
                     / this.inactiveLeafNodeCount;
         }
-        int actualModelSize = this.measureByteSize();
+        long actualModelSize = this.measureByteSize();
         double estimatedModelSize = (this.activeLeafNodeCount
                 * this.activeLeafByteSizeEstimate + this.inactiveLeafNodeCount
                 * this.inactiveLeafByteSizeEstimate);
