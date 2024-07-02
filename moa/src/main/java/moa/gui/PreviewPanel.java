@@ -29,11 +29,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import moa.core.StringUtils;
-import moa.evaluation.Accuracy;
-import moa.evaluation.ChangeDetectionMeasures;
-import moa.evaluation.MeasureCollection;
+import moa.evaluation.*;
 import moa.evaluation.preview.Preview;
-import moa.evaluation.RegressionAccuracy;
 import moa.gui.conceptdrift.CDTaskManagerPanel;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.ResultPreviewListener;
@@ -72,7 +69,8 @@ public class PreviewPanel extends JPanel implements ResultPreviewListener {
     public enum TypePanel {
         CLASSIFICATION(new Accuracy()),
         REGRESSION(new RegressionAccuracy()),
-        CONCEPT_DRIFT(new ChangeDetectionMeasures());
+        CONCEPT_DRIFT(new ChangeDetectionMeasures()),
+        PREDICTIONINTERVAL(new PredictionIntervalAccuracy());
         private final MeasureCollection measureCollection;
         //Constructor
         TypePanel(MeasureCollection measureCollection){

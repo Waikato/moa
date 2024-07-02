@@ -20,6 +20,8 @@
 package moa.gui;
 
 import java.awt.BorderLayout;
+import java.util.Objects;
+
 import moa.gui.PreviewPanel.TypePanel;
 
 /**
@@ -38,7 +40,13 @@ public class RegressionTabPanel extends AbstractTabPanel {
 
 	public RegressionTabPanel() {
 		this.taskManagerPanel = new RegressionTaskManagerPanel();
-		this.previewPanel = new PreviewPanel(TypePanel.REGRESSION);
+		if (Objects.equals(this.taskManagerPanel.currentTask.getTaskName(),
+				"EvaluatePrequentialPredictionIntervals")){
+			this.previewPanel = new PreviewPanel(TypePanel.PREDICTIONINTERVAL);
+		}
+		else{
+			this.previewPanel = new PreviewPanel(TypePanel.REGRESSION);
+		}
 		this.taskManagerPanel.setPreviewPanel(this.previewPanel);
 		setLayout(new BorderLayout());
 		add(this.taskManagerPanel, BorderLayout.NORTH);
