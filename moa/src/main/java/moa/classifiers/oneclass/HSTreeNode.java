@@ -15,12 +15,13 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 
 package moa.classifiers.oneclass;
 
 import java.io.Serializable;
+import java.util.Random;
 
 import com.yahoo.labs.samoa.instances.Instance;
 
@@ -28,9 +29,9 @@ import com.yahoo.labs.samoa.instances.Instance;
  * A node in an HSTree. Based on the work S. C. Tan, K. M. Ting, and T. F. Liu,
  * “Fast anomaly detection for streaming data,” in IJCAI Proceedings-International
  * Joint Conference on Artificial Intelligence, 2011, vol. 22, no. 1, pp. 1511–1516.
- * 
+ *
  * Made use of by HSTrees.java.
- * 
+ *
  * @author Richard Hugh Moulton
  *
  */
@@ -42,7 +43,7 @@ public class HSTreeNode implements Serializable
 	 * The left/right nodes pointed to by this node.
 	 */
 	private HSTreeNode left, right;
-	
+
 	/**
 	 * The randomly chosen attribute that this node splits on. In the paper this is 'q'.
 	 */
@@ -72,36 +73,42 @@ public class HSTreeNode implements Serializable
 	 * If this node is an internal node: <b>true</b>, if it is a leaf node: <b>false</b>.
 	 */
 	private boolean internalNode;
-	
+
+	/**
+	 * To be initialized by the HSTree algorithm during construction
+	 */
+	private Random classifierRandom;
+
 	/**
 	 * Constructor for an HSTreeNode.
-	 * 
+	 *
 	 * @param min the minimum values of the attributes for this node's workspace
 	 * @param max the maximum values of the attributes for this node's workspace
 	 * @param k the depth of this node in the HSTree
 	 * @param maxDepth the maximum depth of this HSTree
 	 */
-	public HSTreeNode(double[] min, double[] max, int k, int maxDepth)
+	public HSTreeNode(double[] min, double[] max, int k, int maxDepth, Random classifierRandom)
 	{
 		this.r = 0;
 		this.l = 0;
 		this.dimensions = min.length;
 		this.depth = k;
-		
+		this.classifierRandom = classifierRandom;
+
 		//If this node is not at the maximum depth level, then create two subordinate nodes.
 		if((depth < maxDepth))
 		{
 			this.internalNode = true;
-			this.splitAttribute = (int) Math.floor((Math.random() * (this.dimensions)));
+			this.splitAttribute = (int) Math.floor((this.classifierRandom.nextDouble() * (this.dimensions)));
 			this.splitValue = (min[this.splitAttribute] + max[this.splitAttribute]) / 2.0;
-			
+
 			double temp = max[this.splitAttribute];
 			max[this.splitAttribute] = this.splitValue;
-			this.left = new HSTreeNode(min, max, k+1, maxDepth);
-			
+			this.left = new HSTreeNode(min, max, k+1, maxDepth, classifierRandom);
+
 			max[this.splitAttribute] = temp;
 			min[this.splitAttribute] = this.splitValue;
-			this.right = new HSTreeNode(min, max, k+1, maxDepth);
+			this.right = new HSTreeNode(min, max, k+1, maxDepth, classifierRandom);
 		}
 		// If this node is a leaf node, mark it as such.
 		else
@@ -113,7 +120,7 @@ public class HSTreeNode implements Serializable
 
 	/**
 	 * Update the mass profile of this node.
-	 * 
+	 *
 	 * @param inst the instance being passed through the HSTree.
 	 * @param referenceWindow if the HSTree is in the initial reference window: <b>true</b>, else: <b>false</b>
 	 */
@@ -123,7 +130,7 @@ public class HSTreeNode implements Serializable
 			r++;
 		else
 			l++;
-		
+
 		if(internalNode)
 		{
 			if(inst.value(this.splitAttribute) > this.splitValue)
@@ -132,7 +139,7 @@ public class HSTreeNode implements Serializable
 				left.updateMass(inst, referenceWindow);
 		}
 	}
-	
+
 	/**
 	 * Update the node's model by setting the latest window's mass profile as the reference window's mass profile,
 	 * resetting the latest window's mass profile to zero and updating any subordinates nodes' models.
@@ -141,7 +148,7 @@ public class HSTreeNode implements Serializable
 	{
 		this.r = this.l;
 		this.l = 0;
-		
+
 		if(internalNode)
 		{
 			left.updateModel();
@@ -152,16 +159,16 @@ public class HSTreeNode implements Serializable
 	/**
 	 * If this node is a leaf node or it has a mass profile of less than sizeLimit, this returns the anomaly score for the argument instance.
 	 * Otherwise this node determines which of its subordinate nodes the argument instance belongs to and asks it provide the anomaly score.
-	 * 
+	 *
 	 * @param inst the instance being passed through the tree
 	 * @param sizeLimit the minimum mass profile for a node to calculate the argument instance's anomaly score
-	 * 
+	 *
 	 * @return the argument instance's anomaly score (r * 2^depth)
 	 */
 	public double score(Instance inst, int sizeLimit)
 	{
 		double anomalyScore = 0.0;
-		
+
 		if(this.internalNode && this.r > sizeLimit)
 		{
 			if(inst.value(this.splitAttribute) > this.splitValue)
@@ -173,10 +180,10 @@ public class HSTreeNode implements Serializable
 		{
 			anomalyScore = this.r * Math.pow(2.0, this.depth);
 		}
-		
+
 		return anomalyScore;
 	}
-	
+
 	/**
 	 * Prints this node to string and, if it is an internal node, prints its children nodes as well.
 	 * Useful for debugging the entire tree structure.
@@ -184,7 +191,7 @@ public class HSTreeNode implements Serializable
 	protected void printNode()
 	{
 		System.out.println(this.depth+", "+this.splitAttribute+", "+this.splitValue+", "+this.r);
-		
+
 		if(this.internalNode)
 		{
 			this.right.printNode();
