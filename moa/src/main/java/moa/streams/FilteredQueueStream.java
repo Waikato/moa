@@ -31,8 +31,8 @@ import moa.tasks.TaskMonitor;
 
 /**
  * Helper class for pipelines in CapyMOA.
- * Implements the stream interface, acts as a queue by supporting `addToQueue`,
- * allows specifying a filter that is applied to the queued instances.
+ * Implements the stream interface, acts as a queue by supporting `addToQueue`.
+ * In comparison to QueueStream, this class allows specifying a filter that is applied to the queued instances.
  *
  * @author Marco Heyden (marco.heyden@kit.edu)
  * @version $Revision: 1 $

@@ -10,7 +10,8 @@ import moa.tasks.TaskMonitor;
 import java.util.LinkedList;
 
 /**
- * Helper class for pipelines in CapyMOA. Implements the stream interface and also acts as a queue by supporting `addToQueue`.
+ * Helper class for pipelines in CapyMOA.
+ * Implements the stream interface and also acts as a queue by supporting `addToQueue`.
  *
  * @author Marco Heyden (marco.heyden@kit.edu)
  * @version $Revision: 1 $
