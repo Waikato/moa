@@ -26,7 +26,7 @@ public class QueueStream extends AbstractOptionHandler implements ExampleStream 
 
 
     @Override
-    public int measureByteSize() {
+    public long measureByteSize() {
         return 0;
     }
 

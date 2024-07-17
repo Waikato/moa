@@ -129,9 +129,23 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
         return Utils.maxIndex(lastPrediction) == (int) inst.classValue();
     }
     @Override
-    public int measureByteSize() {
+    public long measureByteSize() {
         long b = 0;
-        return (int) b;
+        // long[] bb = new long[SGBTCommittee.length];
+        // if (!this.reset) {
+        //     if (SGBTCommittee.length == 1){ // regression or binary classification
+        //         return SGBTCommittee[0].measureByteSize();
+        //     }else { // multi class classification
+        //         // get measureByteSize from each base learner
+        //         IntStream.range(0, SGBTCommittee.length)
+        //                 .parallel()
+        //                 .forEach(i -> bb[i] = SGBTCommittee[i].measureByteSize());
+        //         for (int i = 0; i < SGBTCommittee.length; i++){
+        //             b += bb[i];
+        //         }
+        //     }
+        // }
+        return b; // skip costly measureByteSize calculation to save evaluation time. Uncomment above if you need pararell implimentation
     }
     @Override
     public void trainOnInstanceImpl(Instance inst) {
@@ -401,26 +415,26 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
 
             }
             @Override
-            public int measureByteSize() {
+            public long measureByteSize() {
                 long b = 0;
                 // get shallow size of this
-        //        b = SizeOf.sizeOf(this);
-        //        if (booster != null) {
-        //            long[] byteSize = new long[booster.size()];
-        //            // get deep size of each item
-        //            if (booster.size() == 1) {
-        //                IntStream.range(0, booster.size())
-        //                        .forEach(i -> byteSize[i] = booster.get(i).measureByteSize());
-        //            }else{
-        //                IntStream.range(0, booster.size())
-        //                        .parallel()
-        //                        .forEach(i -> byteSize[i] = booster.get(i).measureByteSize());
-        //            }
-        //            for (int i = 0; i < booster.size(); i++) {
-        //                b += byteSize[i];
-        //            }
-        //        }
-                return (int) b;
+            //    b = SizeOf.sizeOf(this);
+            //    if (booster != null) {
+            //        long[] byteSize = new long[booster.size()];
+            //        // get deep size of each item
+            //        if (booster.size() == 1) {
+            //            IntStream.range(0, booster.size())
+            //                    .forEach(i -> byteSize[i] = booster.get(i).measureByteSize());
+            //        }else{
+            //            IntStream.range(0, booster.size())
+            //                    .parallel()
+            //                    .forEach(i -> byteSize[i] = booster.get(i).measureByteSize());
+            //        }
+            //        for (int i = 0; i < booster.size(); i++) {
+            //            b += byteSize[i];
+            //        }
+            //    }
+                return b; // skip costly measureByteSize calculation to save evaluation time. Uncomment above if you need pararell implimentation
             }
             public void initEnsemble(Instance inst) {
                 Attribute target = inst.classAttribute();
