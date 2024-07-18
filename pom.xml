@@ -4,7 +4,7 @@
   <groupId>nz.ac.waikato.cms.moa</groupId>
   <artifactId>moa-pom</artifactId>
   <packaging>pom</packaging>
-  <version>2024.07.0</version>
+  <version>2024.07.1-SNAPSHOT</version>
 
   <name>MOA: meta-package</name>
   <description>
@@ -61,7 +61,7 @@
     <connection>scm:git:ssh://git@github.com/waikato/moa</connection>
     <developerConnection>scm:git:ssh://git@github.com/waikato/moa</developerConnection>
     <url>https://github.com/waikato/moa</url>
-    <tag>moa-pom-2024.07.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <dependencyManagement>
