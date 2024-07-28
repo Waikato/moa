@@ -90,7 +90,7 @@ public class RW_kNN extends AbstractClassifier implements MultiClassClassifier {
     }
 
     public void trainOnInstanceImpl(Instance inst) {
-        Random r = new Random();
+        // Random r = new Random();
         if (inst.classValue() > (double)this.C)
             this.C = (int)inst.classValue();
 
