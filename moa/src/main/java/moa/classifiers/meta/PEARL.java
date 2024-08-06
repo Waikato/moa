@@ -40,8 +40,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
+
 /**
- * PEARL
+ * Probabilistic Exact Adaptive Random Forest with Lossy Counting (PEARL)
+ *
+ * <p> Probabilistic Exact Adaptive Random Forest with Lossy Counting (PEARL),
+ * utilises an exact technique and a probabilistic technique to replace drifted
+ * trees in an ensemble with relevant trees from a repository of trees for
+ * learning from a data stream with recurrent concept drifts.</p>
+ *
+ * <p>See details in:<br> Ocean Wu, Yun Sing Koh, Gillian Dobbie, Thomas Lacombe
+ * Probabilistic exact adaptive random forest for recurrent concepts in data streams.
+ * International Journal of Data Science and Analytics, 2022.
+ * <a href="https://doi.org/10.1007/s41060-021-00273-1">DOI</a>. </p>
  *
  * <p>Parameters:</p> <ul>
  * <li>-l : Classiﬁer to train. Must be set to ARFHoeffdingTree</li>
@@ -57,8 +68,19 @@ import java.util.concurrent.Executors;
  * <li>-w : Should use weighted voting?</li>
  * <li>-u : Should use drift detection? If disabled then bkg learner is also disabled</li>
  * <li>-q : Should use bkg learner? If disabled then reset tree immediately</li>
+ * <li>-r : The number of trees in tree pool (default 100000)</li>
+ * <li>-c : The number of candidate trees. (default 120)</li>
+ * <li>-k : The kappa parameter for tree swapping. (default 0.0)</li>
+ * <li>-e : The edit distance parameter for tree swapping (default 100)</li>
+ * <li>-f : The size of LRU state queue (default 10000000)</li>
+ * <li>-z : The window size for tracking candidate trees' performance (default 50)</li>
+ * <li>-g : Enable lossy state graph</li>
+ * <li>-d : Lossy window size (default 100000)</li>
+ * <li>-v : Candidate tree reuse rate (default 1.0 [0.0 - 1.0])</li>
+ * <li>-y : The reuse window size (default 100000)</li>
  * </ul>
  *
+ * BEST values for parameters are not available in the
  * @version $Revision: 1 $
  */
 public class PEARL extends AbstractClassifier implements MultiClassClassifier,
@@ -70,22 +92,22 @@ public class PEARL extends AbstractClassifier implements MultiClassClassifier,
     }
 
     private static final long serialVersionUID = 1L;
-
+//  ##### START of ARF parameters (unchanged for fair comparission with ARF)
     public ClassOption treeLearnerOption = new ClassOption("treeLearner", 'l',
-            "PEARL Tree.", ARFHoeffdingTree.class,
+            "Random Forest Tree.", ARFHoeffdingTree.class,
             "ARFHoeffdingTree -e 2000000 -g 50 -c 0.01");
 
     public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
-        "The number of trees.", 10, 1, Integer.MAX_VALUE);
+        "The number of trees.", 100, 1, Integer.MAX_VALUE);
 
     public MultiChoiceOption mFeaturesModeOption = new MultiChoiceOption("mFeaturesMode", 'o',
         "Defines how m, defined by mFeaturesPerTreeSize, is interpreted. M represents the total number of features.",
         new String[]{"Specified m (integer value)", "sqrt(M)+1", "M-(sqrt(M)+1)",
             "Percentage (M * (m / 100))"},
-        new String[]{"SpecifiedM", "SqrtM1", "MSqrtM1", "Percentage"}, 1);
+        new String[]{"SpecifiedM", "SqrtM1", "MSqrtM1", "Percentage"}, 3);
 
     public IntOption mFeaturesPerTreeSizeOption = new IntOption("mFeaturesPerTreeSize", 'm',
-        "Number of features allowed considered for each split. Negative values corresponds to M - m", 2, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        "Number of features allowed considered for each split. Negative values corresponds to M - m", 60, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
     public FloatOption lambdaOption = new FloatOption("lambda", 'a',
         "The lambda parameter for bagging.", 6.0, 1.0, Float.MAX_VALUE);
@@ -94,10 +116,10 @@ public class PEARL extends AbstractClassifier implements MultiClassClassifier,
         "Total number of concurrent jobs used for processing (-1 = as much as possible, 0 = do not use multithreading)", 1, -1, Integer.MAX_VALUE);
 
     public ClassOption driftDetectionMethodOption = new ClassOption("driftDetectionMethod", 'x',
-        "Change detector for drifts and its parameters", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-5");
+        "Change detector for drifts and its parameters", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-3");
 
     public ClassOption warningDetectionMethodOption = new ClassOption("warningDetectionMethod", 'p',
-        "Change detector for warnings (start training bkg learner)", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-4");
+        "Change detector for warnings (start training bkg learner)", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-2");
 
     public FlagOption disableWeightedVote = new FlagOption("disableWeightedVote", 'w',
             "Should use weighted voting?");
@@ -107,6 +129,7 @@ public class PEARL extends AbstractClassifier implements MultiClassClassifier,
 
     public FlagOption disableBackgroundLearnerOption = new FlagOption("disableBackgroundLearner", 'q',
         "Should use bkg learner? If disabled then reset tree immediately.");
+//  ##### END of ARF parameters (unchanged for fair comparission with ARF)
 
     public IntOption treeRepoSizeOption = new IntOption("treeRepoSize", 'r',
             "The number of trees in tree pool.", 100000, 60, Integer.MAX_VALUE);
@@ -130,10 +153,12 @@ public class PEARL extends AbstractClassifier implements MultiClassClassifier,
             "Is lossy state graph enabled");
 
     public IntOption lossyWindowSizeSizeOption = new IntOption("lossyWindowSize", 'd',
-            "The number of trees in tree pool.", 100000, 100, Integer.MAX_VALUE);
+            "Lossy window size", 100000, 100, Integer.MAX_VALUE);
 
+    // according to the paper though v does not have a significan effect on predictive capability of the model
+    // using the default used in the Agrawal experiments https://github.com/ingako/PEARL/blob/master/run/run-agrawal-3.sh
     public FloatOption candidateTreeReuseRate = new FloatOption("candidateTreeReuseRate", 'v',
-            "The kappa parameter for tree swapping.", 1.0, 0.0, 1.0);
+            "Candidate tree reuse rate.", 0.4, 0.0, 1.0);
 
     public IntOption reuseWindowSizeOption = new IntOption("reuseWindowSize", 'y',
             "The reuse window size",100000, 1, Integer.MAX_VALUE);
