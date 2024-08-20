@@ -171,8 +171,8 @@ public class DBScan extends AbstractMacroClusterer {
 					noise++;
 				}
 			}
-			System.out.println("microclusters which are not clustered:: "
-					+ noise);
+//			System.out.println("microclusters which are not clustered:: "
+//					+ noise);
 			Clustering result = new Clustering(res);
 			setClusterIDs(result);
 			// int i = 0;
