@@ -1,0 +1,52 @@
+{
+
+  "windowSize" :  1000,
+  "ensembleSize" : 10,
+  "newConfigurations" : 10,
+  "keepCurrentModel" : true,
+  "lambda" : 0.05,
+  "preventAlgorithmDeath" : true,
+  "keepGlobalIncumbent" : true,
+  "keepAlgorithmIncumbents" : true,
+  "keepInitialConfigurations" : true,
+  "useTestEnsemble" : true,
+  "resetProbability" : 0.01,
+  "numberOfCores" : 1,
+  "performanceMeasureMaximisation": true,
+
+  "algorithms": [
+    {
+      "algorithm": "lazy.kNN",
+      "parameters": [
+        {"parameter": "k", "type":"integer", "value":10, "range":[2,30]}
+       // {"parameter": "w", "type":"integer", "value":1000, "range":[500,2000]}
+      ]
+    }
+  ,
+    {
+      "algorithm": "trees.HoeffdingTree",
+      "parameters": [
+        {"parameter": "g", "type":"integer", "value":200, "range":[10, 200]},
+       {"parameter": "c", "type":"float", "value":0.01, "range":[0, 1]}
+      ]
+    }
+  ,
+    {
+      "algorithm": "lazy.kNNwithPAWandADWIN",
+      "parameters": [
+        {"parameter": "k", "type":"integer", "value":10, "range":[2,30]}
+        // {"parameter": "w", "type":"numeric", "value":1000, "range":[1000,5000]},
+        //{"parameter": "m", "type":"boolean", "value":"false"}
+      ]
+    }
+    ,
+    {
+      "algorithm": "trees.HoeffdingAdaptiveTree",
+      "parameters": [
+        {"parameter": "g", "type":"integer", "value":200, "range":[10, 200]},
+        {"parameter": "c", "type":"float", "value":0.01, "range":[0, 1]}
+      ]
+    }
+
+  ]
+}
