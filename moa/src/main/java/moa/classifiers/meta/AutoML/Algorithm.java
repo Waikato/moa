@@ -163,7 +163,7 @@ public class Algorithm {
             // these changes do not transfer over directly since all algorithms cache the
             // option values. Therefore we try to adjust the cached values if possible
             try {
-                ((AbstractClassifier) this.classifier).adjustParameters();
+//                ((AbstractClassifier) this.classifier).adjustParameters();
                 if (verbose >= 2) {
                     System.out.println("Changed: " + this.classifier.getCLICreationString(Classifier.class));
                 }
