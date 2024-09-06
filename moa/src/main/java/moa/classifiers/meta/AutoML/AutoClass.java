@@ -256,7 +256,8 @@ import java.util.concurrent.Executors;
                             + "\t => \t performance: " + performance);
                 }
 
-                String algorithm = this.ensemble.get(i).classifier.getPurposeString();
+//                String algorithm = this.ensemble.get(i).classifier.getPurposeString();
+                String algorithm = this.ensemble.get(i).classifier.getClass().getName();
                 if (!bestPerformanceIdxMap.containsKey(algorithm) || performance > bestPerformanceValMap.get(algorithm)) {
                     bestPerformanceValMap.put(algorithm, performance); // best performance per algorithm
                     bestPerformanceIdxMap.put(algorithm, i); // index of best performance per algorithm
@@ -695,3 +696,5 @@ import java.util.concurrent.Executors;
                 return 0;
             }
         }
+    } // Close the EnsembleRunnable class
+

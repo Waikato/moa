@@ -1,6 +1,7 @@
 package moa.classifiers.meta.AutoML;
 
-import umontreal.iro.lecuyer.probdist.NormalDist;
+import org.apache.commons.math3.distribution.NormalDistribution;
+//import umontreal.iro.lecuyer.probdist.NormalDist;
 import java.util.Random;
 
 public class TruncatedNormal {
@@ -11,16 +12,22 @@ public class TruncatedNormal {
 		double ub;
 		double cdf_a;
 		double Z;
-		
+
+	private NormalDistribution normalDist;
+
 		// https://en.wikipedia.org/wiki/Truncated_normal_distribution
 		TruncatedNormal(double mean, double sd, double lb, double ub){
 			this.mean = mean;
 			this.sd = sd;
 			this.lb = lb;
 			this.ub = ub;
-			
-			this.cdf_a = NormalDist.cdf01((lb - mean)/sd);
-			double cdf_b = NormalDist.cdf01((ub - mean)/sd);
+
+
+			normalDist = new NormalDistribution(0, 1); // Standard normal distribution
+			this.cdf_a = normalDist.cumulativeProbability((lb - mean) / sd);
+			double cdf_b = normalDist.cumulativeProbability((ub - mean) / sd);
+//			this.cdf_a = NormalDist.cdf01((lb - mean)/sd);
+//			double cdf_b = NormalDist.cdf01((ub - mean)/sd);
 			this.Z = cdf_b - cdf_a;
 		}
 			
@@ -28,7 +35,8 @@ public class TruncatedNormal {
 			//TODO This is the simple sampling strategy. Faster approaches are available
 			Random random = new Random();
 			double val = random.nextDouble() * Z + cdf_a;
-			return mean + sd * NormalDist.inverseF01(val);
+			return mean + sd * normalDist.inverseCumulativeProbability(val);
+//			return mean + sd * NormalDistribution.inverseF01(val);
 		}
 	
 
