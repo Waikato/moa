@@ -84,7 +84,7 @@ public abstract class HeterogeneousEnsembleAbstract extends AbstractClassifier i
 			',');
 
 	public IntOption gracePerionOption = new IntOption("gracePeriod", 'g',
-			"How many instances before we reevalate the best classifier", 1, 1,
+			"How many instances before we re-evaluate the best classifier", 1, 1,
 			Integer.MAX_VALUE);
 
 	public IntOption activeClassifiersOption = new IntOption("activeClassifiers",
@@ -143,10 +143,12 @@ public abstract class HeterogeneousEnsembleAbstract extends AbstractClassifier i
 	@Override
 	public void setModelContext(InstancesHeader ih) {
 		super.setModelContext(ih);
-
-		for (int i = 0; i < this.ensemble.length; ++i) {
-			this.ensemble[i].setModelContext(ih);
-		}
+// This will cause issues in case setModelContext is invoked before the ensemble has been created.
+//		It is likely safe to not perform this action due to how the context can be acquired later by the learners.
+//		However, it is worth reviewing this in the future. See also AutoClass.setModelContext
+//		for (int i = 0; i < this.ensemble.length; ++i) {
+//			this.ensemble[i].setModelContext(ih);
+//		}
 	}
 
 	@Override
