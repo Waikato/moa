@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.meta.AdaptiveRandomForestRegressor;
@@ -43,6 +44,13 @@ import java.util.concurrent.Executors;
         // the file option dialogue in the UI
         public FileOption fileOption = new FileOption("ConfigurationFile", 'f', "Configuration file in json format.",
                 "/Users/mbahri/Desktop/Dell/moa/src/main/java/moa/classifiers/meta/AutoML/settings.json", ".json", false);
+
+        @Override
+        public String getPurposeString() {
+            return "Autoclass: Automl for data stream classification. "+
+                    "Bahri, Maroua, and Nikolaos Georgantas. " +
+                    "2023 IEEE International Conference on Big Data (BigData). IEEE, 2023.";
+        }
 
         public void init() {
             this.fileOption.getFile();
@@ -631,6 +639,19 @@ import java.util.concurrent.Executors;
         public void getModelDescription(StringBuilder out, int indent) {
             // TODO Auto-generated method stub
         }
+
+        @Override
+        public void setModelContext(InstancesHeader ih) {
+            super.setModelContext(ih);
+
+// This will cause issues in case setModelContext is invoked before the ensemble has been created.
+//		It is likely safe to not perform this action due to how the context can be acquired later by the learners.
+//		However, it is worth reviewing this in the future. See also HeterogeneousEnsembleAbstract.setModelContext
+//            for (int i = 0; i < this.ensemble.size(); ++i) {
+//                this.ensemble.get(i).classifier.setModelContext(ih);
+//            }
+        }
+
         @Override
         public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 
