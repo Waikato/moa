@@ -425,6 +425,17 @@ CapabilitiesHandler {
 
 		@Override
 		public void learnFromInstance(Instance inst, LAST ht) {
+			int trueClass = (int) inst.classValue();
+			int prediction = Utils.maxIndex(this.getClassVotes(inst, ht));
+			if (prediction == trueClass) {
+				this.detector.input(0);
+			}else {
+				this.detector.input(1);
+			}
+			this.updateAttributeClass(inst, ht);
+		}
+		
+		public void updateAttributeClass(Instance inst, LAST ht) {
 			if (this.isInitialized == false) {
 				this.attributeObservers = new AutoExpandVector<AttributeClassObserver>(inst.numAttributes());
 				this.isInitialized = true;
@@ -874,6 +885,11 @@ CapabilitiesHandler {
 		public LearningNodeNB(double[] initialClassObservations, ChangeDetector detector, boolean monitorDistributionPurity) {
 			super(initialClassObservations, detector, monitorDistributionPurity);
 		}
+		
+		@Override
+		public void learnFromInstance(Instance inst, LAST ht) {
+            super.learnFromInstance(inst, ht);
+		}
 
 		@Override
 		public double[] getClassVotes(Instance inst, LAST ht) {
@@ -942,7 +958,7 @@ CapabilitiesHandler {
 					this.detector.input(purity); 
 				}
 			}
-			super.learnFromInstance(inst, ht);
+			this.updateAttributeClass(inst, ht);
 		}
 
 		@Override
@@ -963,9 +979,9 @@ CapabilitiesHandler {
 		LearningNode ret;
 		int predictionOption = this.leafpredictionOption.getChosenIndex();
 		if (predictionOption == 0) { //MC
-			ret = new ActiveLearningNode(initialClassObservations);
+			ret = new ActiveLearningNode(initialClassObservations,((ChangeDetector) getPreparedClassOption(this.changeDetectionMethodOption)).copy() , this.distributionOption.isSet());
 		} else if (predictionOption == 1) { //NB
-			ret = new LearningNodeNB(initialClassObservations);
+			ret = new LearningNodeNB(initialClassObservations,((ChangeDetector) getPreparedClassOption(this.changeDetectionMethodOption)).copy() , this.distributionOption.isSet());
 		} else { //NBAdaptive
 			ret = new LearningNodeNBAdaptive(initialClassObservations,((ChangeDetector) getPreparedClassOption(this.changeDetectionMethodOption)).copy() , this.distributionOption.isSet());
 		}
