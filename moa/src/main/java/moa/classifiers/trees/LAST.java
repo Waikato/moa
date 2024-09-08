@@ -1,9 +1,5 @@
 package moa.classifiers.trees;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -28,6 +24,7 @@ import moa.classifiers.core.attributeclassobservers.NumericAttributeClassObserve
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.classifiers.core.driftdetection.ADWINChangeDetector;
 import moa.classifiers.core.driftdetection.ChangeDetector;
+import moa.classifiers.core.splitcriteria.GiniSplitCriterion;
 import moa.classifiers.core.splitcriteria.InfoGainSplitCriterion;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.core.AutoExpandVector;
@@ -43,13 +40,15 @@ import com.yahoo.labs.samoa.instances.Instance;
  * Local Adaptive Streaming Tree
  *	
  *	Local Adaptive Streaming Tree (LAST) is an incremental decision tree with
- *	adaptive splitting mechanisms. At each leaf, LAST maintains a change detector, 
- *	that in case of a change detection in error or the data distribution of the leaf,
- *	it performs a split.
- *  
+ * 	adaptive splitting mechanisms. LAST maintains a change detector at each leaf and splits
+ * 	this node if a change is detected in the error or the leaf`s data distribution.
+ * 
+ * 	LAST is still not suitable for use as a base classifier in ensembles due to the change detectors.
+ * 	The authors of the paper are working on a version of LAST that overcomes this limitation.
+ * 
  *  <p>D. N. Assis, J. P. Barddal, and F. Enembreck. 2024. 
  *  Just Change on Change: Adaptive Splitting Time for Decision Trees in Data Stream Classification.
- *   In Proceedings of the 39th ACM/SIGAPP Symposium on Applied Computing (SAC '24).</p>
+ *  In Proceedings of the 39th ACM/SIGAPP Symposium on Applied Computing (SAC '24).</p>
  *	
  * <p>Parameters:</p> <ul> <li> -m : Maximum memory consumed by the tree</li>
  * <li> -n : Numeric estimator to use : <ul> <li>Gaussian approximation
@@ -872,8 +871,8 @@ CapabilitiesHandler {
 			super(initialClassObservations);
 		}
 
-		public LearningNodeNB(double[] initialClassObservations, ChangeDetector copy, boolean i) {
-			super(initialClassObservations, copy, i);
+		public LearningNodeNB(double[] initialClassObservations, ChangeDetector detector, boolean monitorDistributionPurity) {
+			super(initialClassObservations, detector, monitorDistributionPurity);
 		}
 
 		@Override
@@ -904,8 +903,8 @@ CapabilitiesHandler {
 			super(initialClassObservations);
 		}
 
-		public LearningNodeNBAdaptive(double[] initialClassObservations, ChangeDetector copy, boolean b) {
-			super(initialClassObservations, copy, b);
+		public LearningNodeNBAdaptive(double[] initialClassObservations, ChangeDetector detector, boolean monitorDistributionPurity) {
+			super(initialClassObservations, detector, monitorDistributionPurity);
 		}
 
 		@Override
@@ -933,7 +932,12 @@ CapabilitiesHandler {
 					}
 				}
 			}else {
-				double purity = InfoGainSplitCriterion.computeEntropy(this.observedClassDistribution.getArrayRef());
+				double purity = 0.0;
+				if(ht.splitCriterionOption.getValueAsCLIString().equals("InfoGainSplitCriterion")) {
+					purity = InfoGainSplitCriterion.computeEntropy(this.observedClassDistribution.getArrayRef());
+				}else {
+					purity = GiniSplitCriterion.computeGini(this.observedClassDistribution.getArrayRef());
+				}
 				for (int i = 0; i < inst.weight(); i++) {
 					this.detector.input(purity); 
 				}
