@@ -14,7 +14,7 @@
  */
 
 /**
- * HoeffdingTreeTest.java
+ * LASTTest.java
  * Copyright (C) 2013 University of Waikato, Hamilton, New Zealand
  */
 package moa.classifiers.trees;
@@ -27,8 +27,8 @@ import moa.classifiers.Classifier;
 /**
  * Tests the HoeffdingTree classifier.
  * 
- * @author  fracpete (fracpete at waikato dot ac dot nz)
- * @version $Revision$
+ * @author  Daniel Nowak Assis (daniel dot nowak dot assis at gmail dot com)
+ * @version $Revision 1$ 
  */
 public class LASTTest
   extends AbstractMultipleClassifierTestCase {
@@ -55,7 +55,9 @@ public class LASTTest
     result    = new LAST[2];
     result[0] = new LAST();
     result[1] = new LAST();
-    result[1].changeDetectionMethodOption.setValueViaCLIString("DDM");
+    result[0].changeDetectionMethodOption.setValueViaCLIString("RDDM -y 300");
+    	
+    //result[1].distributionOption.setValue(true);
     return result;
   }
   
