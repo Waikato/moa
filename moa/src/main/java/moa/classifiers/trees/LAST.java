@@ -427,11 +427,7 @@ CapabilitiesHandler {
 		public void learnFromInstance(Instance inst, LAST ht) {
 			int trueClass = (int) inst.classValue();
 			int prediction = Utils.maxIndex(this.getClassVotes(inst, ht));
-			if (prediction == trueClass) {
-				this.detector.input(0);
-			}else {
-				this.detector.input(1);
-			}
+			this.detector.input(prediction == trueClass ? 0 : 1);
 			this.updateAttributeClass(inst, ht);
 		}
 		
@@ -885,11 +881,6 @@ CapabilitiesHandler {
 		public LearningNodeNB(double[] initialClassObservations, ChangeDetector detector, boolean monitorDistributionPurity) {
 			super(initialClassObservations, detector, monitorDistributionPurity);
 		}
-		
-		@Override
-		public void learnFromInstance(Instance inst, LAST ht) {
-            super.learnFromInstance(inst, ht);
-		}
 
 		@Override
 		public double[] getClassVotes(Instance inst, LAST ht) {
@@ -939,13 +930,9 @@ CapabilitiesHandler {
 			}
 			if (!this.monitorDistributionPurity) {
 				if (this.mcCorrectWeight > this.nbCorrectWeight) {
-					for (int i = 0; i < inst.weight(); i++) {
-						this.detector.input(mcRight);
-					}
+					this.detector.input(mcRight);
 				}else {
-					for (int i = 0; i < inst.weight(); i++) {
-						this.detector.input(nbRight);
-					}
+					this.detector.input(nbRight);
 				}
 			}else {
 				double purity = 0.0;
@@ -954,9 +941,7 @@ CapabilitiesHandler {
 				}else {
 					purity = GiniSplitCriterion.computeGini(this.observedClassDistribution.getArrayRef());
 				}
-				for (int i = 0; i < inst.weight(); i++) {
-					this.detector.input(purity); 
-				}
+				this.detector.input(purity); 
 			}
 			this.updateAttributeClass(inst, ht);
 		}
