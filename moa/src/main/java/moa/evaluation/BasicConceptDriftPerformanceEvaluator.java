@@ -113,9 +113,8 @@ public class BasicConceptDriftPerformanceEvaluator extends AbstractMOAObject
                 }
             }
             //Compute error prediction
-            if (classVotes.length > 1) {
-                this.errorPrediction += Math.abs(classVotes[3] - inst.value(0));
-            }
+            this.errorPrediction += Math.abs(classVotes[3] - inst.value(0));
+            
         }
     }
 
