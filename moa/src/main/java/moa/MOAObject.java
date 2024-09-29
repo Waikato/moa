@@ -36,7 +36,7 @@ public interface MOAObject extends Serializable {
      *
      * @return the memory size of this object
      */
-    public int measureByteSize();
+    public long measureByteSize();
 
     /**
      * This method produces a copy of this object.

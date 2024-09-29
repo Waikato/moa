@@ -37,7 +37,37 @@
    ```
    mvn help:effective-settings
    ```
-   
+   ```xml
+  <settings xmlns="http://maven.apache.org/SETTINGS/1.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 http://maven.apache.org/xsd/settings-1.2.0.xsd">
+    <localRepository>~/.m2/repository</localRepository>
+    <servers>
+      <server>
+        <username>XXXXXX</username>
+        <password>***</password>
+        <id>sonatype-nexus-staging</id>
+      </server>
+    </servers>
+    <profiles>
+      <profile>
+        <properties>
+          <gpg.keyname>gpg_key_name</gpg.keyname>
+          <gpg.passphrase></gpg.passphrase>
+        </properties>
+        <id>gpg</id>
+      </profile>
+    </profiles>
+    <activeProfiles>
+      <activeProfile>gpg</activeProfile>
+    </activeProfiles>
+    <pluginGroups>
+      <pluginGroup>org.apache.maven.plugins</pluginGroup>
+      <pluginGroup>org.codehaus.mojo</pluginGroup>
+    </pluginGroups>
+  </settings>
+   ```
+  The output should include your ``gpg_key_name`` and ``sonatype-nexus-staging`` credentials. gpg should be an active profile.
+
+*  You need your use the access token credentials for ``sonatype-nexus-staging`` due to [recent changes](https://central.sonatype.org/publish/generate-token/).   
 * For more information, follow the instructions at the following pages:
   
   https://blog.sonatype.com/2010/01/how-to-generate-pgp-signatures-with-maven/
@@ -130,3 +160,21 @@
   and `update_libs.xml`; the automatic increment will strip a leading zero.
   
 * commit/push all changes
+* Upload moa-release-XXXX.YY.Z-bin.zip to [MOA package repository on Sourceforge.net](https://sourceforge.net/projects/moa-datastream/)
+* Update [MOA downloads page](https://moa.cms.waikato.ac.nz/downloads/) with the new link and latest Maven integration settings
+* Create a new post about the latest release (use the old release template)
+  ```
+  New Release of MOA XX.YY
+  
+  We’ve made a new release of MOA XX.YY
+  
+  The new features of this release are:
+    :
+    :
+  You can find the download link for this release on the MOA homepage (link to home page).
+  
+  Cheers,
+  
+  The MOA Team
+  
+  ```
