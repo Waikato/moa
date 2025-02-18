@@ -25,6 +25,7 @@ import java.io.PrintStream;
 
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
+import moa.classifiers.AbstractClassifierMiniBatch;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.Example;
@@ -216,6 +217,9 @@ public class EvaluateInterleavedTestThenTrain extends ClassificationMainTask {
         }
         if (immediateResultStream != null) {
             immediateResultStream.close();
+        }
+        if (learner instanceof AbstractClassifierMiniBatch) {
+            ((AbstractClassifierMiniBatch) learner).trainingHasEnded();
         }
         return learningCurve;
     }
