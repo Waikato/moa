@@ -287,6 +287,7 @@ public class StreamingRandomPatchesMB extends AbstractClassifierMiniBatch implem
                     break;
                 case StreamingRandomPatchesMB.TRAIN_RANDOM_SUBSPACES:
                 case StreamingRandomPatchesMB.TRAIN_RANDOM_PATCHES:
+                    if (this.subspaces.isEmpty()) break;
                     int selectedValue = this.classifierRandom.nextInt(subspaces.size());
                     ArrayList<Integer> subsetOfFeatures = this.subspaces.get(selectedValue);
                     subsetOfFeatures.add(instance.classIndex());
