@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core.attributeclassobservers;
 
@@ -68,7 +68,7 @@ public class NominalAttributeClassObserver extends AbstractOptionHandler impleme
 
     @Override
     public double probabilityOfAttributeValueGivenClass(double attVal,
-            int classVal) {
+                                                        int classVal) {
         DoubleVector obs = this.attValDistPerClass.get(classVal);
         return obs != null ? (obs.getValue((int) attVal) + 1.0)
                 / (obs.sumOfValues() + obs.numValues()) : 0.0;
@@ -106,6 +106,33 @@ public class NominalAttributeClassObserver extends AbstractOptionHandler impleme
                         postSplitDists, merit);
             }
         }
+        return bestSuggestion;
+    }
+
+    /* Used by PLASTIC during restructuring when forcing a leaf split becomes necessary */
+    public AttributeSplitSuggestion forceSplit(
+            SplitCriterion criterion, double[] preSplitDist, int attIndex, boolean binary, Double splitValue) {
+        AttributeSplitSuggestion bestSuggestion;
+        int maxAttValsObserved = getMaxAttValsObserved();
+        if (!binary) {
+            double[][] postSplitDists = getClassDistsResultingFromMultiwaySplit(maxAttValsObserved);
+            double merit = criterion.getMeritOfSplit(preSplitDist,
+                    postSplitDists);
+            bestSuggestion = new AttributeSplitSuggestion(
+                    new NominalAttributeMultiwayTest(attIndex), postSplitDists,
+                    merit);
+            return bestSuggestion;
+        }
+        assert splitValue != null: "Split value is null";
+        if (splitValue >= maxAttValsObserved) {
+            return null;
+        }
+        double[][] postSplitDists = getClassDistsResultingFromBinarySplit(splitValue.intValue());
+        double merit = criterion.getMeritOfSplit(preSplitDist,
+                postSplitDists);
+        bestSuggestion = new AttributeSplitSuggestion(
+                new NominalAttributeBinaryTest(attIndex, splitValue.intValue()),
+                postSplitDists, merit);
         return bestSuggestion;
     }
 
@@ -157,7 +184,7 @@ public class NominalAttributeClassObserver extends AbstractOptionHandler impleme
             }
         }
         return new double[][]{equalsDist.getArrayRef(),
-                    notEqualDist.getArrayRef()};
+                notEqualDist.getArrayRef()};
     }
 
     @Override
