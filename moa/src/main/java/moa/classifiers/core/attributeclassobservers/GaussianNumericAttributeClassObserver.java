@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core.attributeclassobservers;
 
@@ -81,7 +81,7 @@ public class GaussianNumericAttributeClassObserver extends AbstractOptionHandler
 
     @Override
     public double probabilityOfAttributeValueGivenClass(double attVal,
-            int classVal) {
+                                                        int classVal) {
         GaussianEstimator obs = this.attValDistPerClass.get(classVal);
         return obs != null ? obs.probabilityDensity(attVal) : 0.0;
     }
@@ -99,9 +99,21 @@ public class GaussianNumericAttributeClassObserver extends AbstractOptionHandler
             if ((bestSuggestion == null) || (merit > bestSuggestion.merit)) {
                 bestSuggestion = new AttributeSplitSuggestion(
                         new NumericAttributeBinaryTest(attIndex, splitValue,
-                        true), postSplitDists, merit);
+                                true), postSplitDists, merit);
             }
         }
+        return bestSuggestion;
+    }
+
+    /* Used by PLASTIC during restructuring when forcing a leaf split becomes necessary */
+    public AttributeSplitSuggestion forceSplit(
+            SplitCriterion criterion, double[] preSplitDist, int attIndex, double threshold) {
+        AttributeSplitSuggestion bestSuggestion = null;
+        double[][] postSplitDists = getClassDistsResultingFromBinarySplit(threshold);
+        double merit = criterion.getMeritOfSplit(preSplitDist,
+                postSplitDists);
+        bestSuggestion = new AttributeSplitSuggestion(
+                new NumericAttributeBinaryTest(attIndex, threshold, true), postSplitDists, merit);
         return bestSuggestion;
     }
 
