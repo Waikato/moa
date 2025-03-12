@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core.conditionaltests;
 
@@ -39,16 +39,20 @@ public class NumericAttributeBinaryTest extends InstanceConditionalBinaryTest {
     protected boolean equalsPassesTest;
 
     public NumericAttributeBinaryTest(int attIndex, double attValue,
-            boolean equalsPassesTest) {
+                                      boolean equalsPassesTest) {
         this.attIndex = attIndex;
         this.attValue = attValue;
         this.equalsPassesTest = equalsPassesTest;
     }
 
+    public double getValue() {
+        return attValue;
+    }
+
     @Override
     public int branchForInstance(Instance inst) {
         int instAttIndex = this.attIndex ; // < inst.classIndex() ? this.attIndex
-               // : this.attIndex + 1;
+        // : this.attIndex + 1;
         if (inst.isMissing(instAttIndex)) {
             return -1;
         }
