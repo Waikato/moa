@@ -19,24 +19,23 @@
  */
 package moa.tasks;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
 import com.opencsv.*;
-
+import com.opencsv.exceptions.CsvValidationException;
 import moa.clusterers.AbstractClusterer;
 import moa.core.ObjectRepository;
 import moa.gui.visualization.RunVisualizer;
 import moa.options.ClassOption;
 import moa.streams.clustering.ClusteringStream;
 import moa.streams.clustering.FileStream;
+
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Task for evaluating a clusterer on multiple (related) streams.
@@ -200,7 +199,7 @@ public class EvaluateMultipleClusterings extends AuxiliarMainTask {
 				nextLine = reader.readNext();
 			}
 		}
-		catch (IOException ex)
+		catch (IOException | CsvValidationException ex)
 		{
 			Logger.getLogger(RunVisualizer.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -208,8 +207,10 @@ public class EvaluateMultipleClusterings extends AuxiliarMainTask {
 		{
 			try
 			{
-				writer.close();
-				reader.close();
+				if (writer != null)
+					writer.close();
+				if (reader != null)
+					reader.close();
 			}
 			catch (IOException e)
 			{
@@ -310,7 +311,7 @@ public class EvaluateMultipleClusterings extends AuxiliarMainTask {
 				}
 			}
 		}
-		catch (IOException ex)
+		catch (IOException | CsvValidationException ex)
 		{
 			Logger.getLogger(RunVisualizer.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -318,9 +319,12 @@ public class EvaluateMultipleClusterings extends AuxiliarMainTask {
 		{
 			try
 			{
-				writer.close();
-				reader1.close();
-				reader2.close();
+				if (writer != null)
+					writer.close();
+				if (reader1 != null)
+					reader1.close();
+				if (reader2 != null)
+					reader2.close();
 			}
 			catch (IOException e)
 			{
