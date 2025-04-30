@@ -27,9 +27,9 @@
   </licenses>
 
   <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>7</version>
+    <groupId>com.github.fracpete</groupId>
+    <artifactId>central-portal-parent</artifactId>
+    <version>0.0.2</version>
   </parent>
 
   <developers>
@@ -255,6 +255,7 @@
             <!-- avoids "-SNAPSHOT" in title when using the release.xml configuration -->
             <doctitle>${project.name}</doctitle>
             <additionalparam>-Xdoclint:none</additionalparam>
+            <additionalJOption>--no-module-directories</additionalJOption>
           </configuration>
         </plugin>
 

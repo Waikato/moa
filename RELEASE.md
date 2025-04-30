@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
-* use Java 9+ for making release. Make sure the JAVA_HOME environment
-  variable is set to the correct JDK directory and exported in your
-  terminal
+* use Java 11+ for making release (Java 9 has outdated certificates). 
+  Make sure the JAVA_HOME environment variable is set to the correct 
+  JDK directory and exported in your terminal
   
 * make sure the `pdflatex` program is installed:
 
@@ -30,8 +30,8 @@
 
 ## Deploy to Maven Central
 
-* Ensure your GPG signing key and Sonatype credentials are available in your
-  Maven settings.xml file (found at either ~/.m2/ or /usr/share/maven/conf/).
+* Ensure your GPG signing key and Sonatype Central access token (`server` with ID `central`) 
+  are available in your Maven settings.xml file (found at either ~/.m2/ or /usr/share/maven/conf/).
   You can check the settings have been applied correctly by running the command:
   
    ```
@@ -42,9 +42,9 @@
     <localRepository>~/.m2/repository</localRepository>
     <servers>
       <server>
+        <id>central</id>
         <username>XXXXXX</username>
         <password>***</password>
-        <id>sonatype-nexus-staging</id>
       </server>
     </servers>
     <profiles>
@@ -65,13 +65,15 @@
     </pluginGroups>
   </settings>
    ```
-  The output should include your ``gpg_key_name`` and ``sonatype-nexus-staging`` credentials. gpg should be an active profile.
+  The output should include your ``gpg_key_name`` and ``central`` credentials. gpg should be an active profile.
 
-*  You need your use the access token credentials for ``sonatype-nexus-staging`` due to [recent changes](https://central.sonatype.org/publish/generate-token/).   
-* For more information, follow the instructions at the following pages:
-  
+* For more information, follow these instructions:
+
   https://blog.sonatype.com/2010/01/how-to-generate-pgp-signatures-with-maven/
-  https://blog.sonatype.com/2010/11/what-to-do-when-nexus-returns-401/
+
+* You can generate your access token for publishing artifacts on Sonatype Central here:
+
+  https://central.sonatype.com/account
   
 * Publish your public GPG signing key to the keyserver at keyserver.ubuntu.com
 
@@ -83,22 +85,15 @@
     mvn --batch-mode release:prepare release:perform
     ```
 
-* Log into [https://oss.sonatype.org](https://oss.sonatype.org)
+* Log into [https://central.sonatype.com/publishing/deployments](https://central.sonatype.com/publishing/deployments)
 
-* Select **Staging Repositories**, scroll right to the bottom of the list
-  and look for a repository called something like *nzacwaikatocmsmoa-XYZ*.
-  Select this repository via the check-box.
-
-* Subsequently **Close** and then **Release** the artifacts. NB: It may take a
-  few minutes before the *Release* button becomes available, as the system
-  is flagging all the artifacts from the staging repo. When releasing, leave
-  the **Drop Repository** check-box ticked.
+* If deployment was successful, click on **Publish** otherwise on **Drop**.
 
 * Perform a `git push`
 
 * Check the following URL after 15-20min (sync with Maven Central only happens 
   every 15min or so) to see whether they artifacts are indeed available from 
-  Maven Central (the search index at https://search.maven.org/ only gets updated
+  Maven Central (the search index at https://central.sonatype.com/ only gets updated
   every few hours):
   
   https://repo1.maven.org/maven2/nz/ac/waikato/cms/moa/
