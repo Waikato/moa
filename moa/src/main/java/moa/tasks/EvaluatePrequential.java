@@ -59,7 +59,9 @@ public class EvaluatePrequential extends ClassificationMainTask implements Capab
 
     @Override
     public String getPurposeString() {
-        return "Evaluates a classifier on a stream by testing then training with each example in sequence.";
+        return 
+            "Evaluates a classifier on a stream by testing then training with each example in sequence."
+            + "\n`outputPredictionFile` has been replaced with the `PredictionLoggerEvaluator`";
     }
 
     private static final long serialVersionUID = 1L;
@@ -96,9 +98,6 @@ public class EvaluatePrequential extends ClassificationMainTask implements Capab
 
     public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
             "File to append intermediate csv results to.", null, "csv", true);
-
-    public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
-            "File to append output predictions to.", null, "pred", true);
 
     //New for prequential method DEPRECATED
     public IntOption widthOption = new IntOption("width",
@@ -168,23 +167,6 @@ public class EvaluatePrequential extends ClassificationMainTask implements Capab
                         "Unable to open immediate result file: " + dumpFile, ex);
             }
         }
-        //File for output predictions
-        File outputPredictionFile = this.outputPredictionFileOption.getFile();
-        PrintStream outputPredictionResultStream = null;
-        if (outputPredictionFile != null) {
-            try {
-                if (outputPredictionFile.exists()) {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile, true), true);
-                } else {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile), true);
-                }
-            } catch (Exception ex) {
-                throw new RuntimeException(
-                        "Unable to open prediction result file: " + outputPredictionFile, ex);
-            }
-        }
         boolean firstDump = true;
         boolean preciseCPUTiming = TimingUtils.enablePreciseTiming();
         long evaluateStartTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
@@ -194,20 +176,14 @@ public class EvaluatePrequential extends ClassificationMainTask implements Capab
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))
                 && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
             Example trainInst = stream.nextInstance();
-            Example testInst = (Example) trainInst; //.copy();
-            //testInst.setClassMissing();
-            double[] prediction = learner.getVotesForInstance(testInst);
-            // Output prediction
-            if (outputPredictionFile != null) {
-                int trueClass = (int) ((Instance) trainInst.getData()).classValue();
-                outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," + (
-                 ((Instance) testInst.getData()).classIsMissing() == true ? " ? " : trueClass));
-            }
+            Example testInst = (Example) trainInst;
 
-            //evaluator.addClassificationAttempt(trueClass, prediction, testInst.weight());
+            double[] prediction = learner.getVotesForInstance(testInst);
             evaluator.addResult(testInst, prediction);
+
             learner.trainOnInstance(trainInst);
             instancesProcessed++;
+
             if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0
                     || stream.hasMoreInstances() == false) {
                 long evaluateTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
@@ -267,8 +243,10 @@ public class EvaluatePrequential extends ClassificationMainTask implements Capab
         if (immediateResultStream != null) {
             immediateResultStream.close();
         }
-        if (outputPredictionResultStream != null) {
-            outputPredictionResultStream.close();
+        try {
+            evaluator.close();
+        } catch (Exception ex) {
+            throw new RuntimeException("Exception closing evaluator", ex);
         }
         return learningCurve;
     }

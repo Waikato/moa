@@ -152,6 +152,11 @@ public class EvaluateModelMultiTarget extends MultiTargetMainTask {
         if (outputPredictionResultStream != null) {
             outputPredictionResultStream.close();
         }
+        try {
+            evaluator.close();
+        } catch (Exception ex) {
+            throw new RuntimeException("Exception closing evaluator", ex);
+        }
         return new LearningEvaluation(evaluator, model);
     }
 }
