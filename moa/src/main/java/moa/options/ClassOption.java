@@ -68,6 +68,10 @@ public class ClassOption extends AbstractClassOption {
         }
     }
 
+    public void setDefaultCLIString(String s) {
+        this.defaultCLIString = s;
+    }
+
     public static String objectToCLIString(Object obj, Class<?> requiredType) {
         if (obj == null) {
             return "";

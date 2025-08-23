@@ -63,6 +63,20 @@ public class IntOption extends AbstractOption {
         this.currentVal = v;
     }
 
+    public void setDefaultValue(int v) {
+        if (v < this.minVal) {
+            throw new IllegalArgumentException("Option " + getName()
+                    + " cannot be less than " + this.minVal
+                    + ", out of range: " + v);
+        }
+        if (v > this.maxVal) {
+            throw new IllegalArgumentException("Option " + getName()
+                    + " cannot be greater than " + this.maxVal
+                    + ", out of range: " + v);
+        }
+        this.defaultVal = v;
+    }
+
     public int getValue() {
         return this.currentVal;
     }
