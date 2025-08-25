@@ -50,12 +50,12 @@ public class StreamingGradientBoostedRegression extends StreamingGradientBoosted
     public StreamingGradientBoostedRegression(){
         super();
         // initializ object with correct default values
-        super.baseLearnerOption.setDefaultCLIString("meta.OzaBag -s 10 -l (trees.FIMTDD -s VarianceReductionSplitCriterion -g 50 -c 0.01 -e)");
+        super.baseLearnerOption.setValueViaCLIString("meta.OzaBag -s 10 -l (trees.FIMTDD -s VarianceReductionSplitCriterion -g 50 -c 0.01 -e)");
         super.learningRateOption.setValue(1.0);
         super.numberOfboostingIterations.setValue(10);
 
         // to support reset to defaults in GUI
-        super.baseLearnerOption.setValueViaCLIString("meta.OzaBag -s 10 -l (trees.FIMTDD -s VarianceReductionSplitCriterion -g 50 -c 0.01 -e)");
+        super.baseLearnerOption.setDefaultCLIString("meta.OzaBag -s 10 -l (trees.FIMTDD -s VarianceReductionSplitCriterion -g 50 -c 0.01 -e)");
         super.learningRateOption.setDefault(1.0);
         super.numberOfboostingIterations.setDefaultValue(10);
 
