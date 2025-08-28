@@ -27,6 +27,7 @@ import moa.classifiers.Classifier;
 import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.MultiClassClassifier;
+import moa.classifiers.Regressor;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
@@ -54,7 +55,7 @@ import com.github.javacliparser.IntOption;
  * @version $Revision: 7 $
  */
 public class OzaBag extends AbstractClassifier implements MultiClassClassifier,
-                                                          CapabilitiesHandler {
+                                                          CapabilitiesHandler, Regressor {
 
     @Override
     public String getPurposeString() {
@@ -96,14 +97,25 @@ public class OzaBag extends AbstractClassifier implements MultiClassClassifier,
     @Override
     public double[] getVotesForInstance(Instance inst) {
         DoubleVector combinedVote = new DoubleVector();
-        for (int i = 0; i < this.ensemble.length; i++) {
-            DoubleVector vote = new DoubleVector(this.ensemble[i].getVotesForInstance(inst));
-            if (vote.sumOfValues() > 0.0) {
-                vote.normalize();
-                combinedVote.addValues(vote);
+
+        if (inst.classAttribute().isNumeric()){ //regression
+            double sumOfPredictions = 0;
+            int length = this.ensemble.length;
+            for (int i = 0; i <  length; i++) {
+                // getVotesForInstance returns an array with one element from each regressor
+                sumOfPredictions += this.ensemble[i].getVotesForInstance(inst)[0];
             }
+            return new double[]{sumOfPredictions/length};
+        }else { // classification
+            for (int i = 0; i < this.ensemble.length; i++) {
+                DoubleVector vote = new DoubleVector(this.ensemble[i].getVotesForInstance(inst));
+                if (vote.sumOfValues() > 0.0) {
+                    vote.normalize();
+                    combinedVote.addValues(vote);
+                }
+            }
+            return combinedVote.getArrayRef();
         }
-        return combinedVote.getArrayRef();
     }
 
     @Override
