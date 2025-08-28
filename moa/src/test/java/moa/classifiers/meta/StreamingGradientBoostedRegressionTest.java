@@ -19,7 +19,7 @@ package moa.classifiers.meta;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import moa.classifiers.AbstractMultipleClassifierTestCase;
+import moa.classifiers.AbstractMultipleRegressorTestCase;
 import moa.classifiers.Classifier;
 
 /**
@@ -29,7 +29,7 @@ import moa.classifiers.Classifier;
  * @version $Revision$
  */
 public class StreamingGradientBoostedRegressionTest
-  extends AbstractMultipleClassifierTestCase {
+  extends AbstractMultipleRegressorTestCase {
 
   /**
    * Constructs the test case. Called by subclasses.

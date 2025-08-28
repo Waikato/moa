@@ -102,6 +102,7 @@ public class OzaBag extends AbstractClassifier implements MultiClassClassifier,
             double sumOfPredictions = 0;
             int length = this.ensemble.length;
             for (int i = 0; i <  length; i++) {
+                // getVotesForInstance returns an array with one element from each regressor
                 sumOfPredictions += this.ensemble[i].getVotesForInstance(inst)[0];
             }
             return new double[]{sumOfPredictions/length};
