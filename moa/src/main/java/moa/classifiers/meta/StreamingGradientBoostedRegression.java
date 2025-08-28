@@ -49,7 +49,7 @@ public class StreamingGradientBoostedRegression extends StreamingGradientBoosted
 
     public StreamingGradientBoostedRegression(){
         super();
-        // initializ object with correct default values
+        // initialise an object with correct default values
         super.baseLearnerOption.setValueViaCLIString("meta.OzaBag -s 10 -l (trees.FIMTDD -s VarianceReductionSplitCriterion -g 50 -c 0.01 -e)");
         super.learningRateOption.setValue(1.0);
         super.numberOfboostingIterations.setValue(10);
