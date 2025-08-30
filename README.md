@@ -15,6 +15,7 @@ http://moa.cms.waikato.ac.nz/
 ## Using MOA
 
 * [Getting Started](http://moa.cms.waikato.ac.nz/getting-started/)
+* [Building from the source](https://moa.cms.waikato.ac.nz/tutorial-6-building-moa-from-the-source/)
 * [Documentation](http://moa.cms.waikato.ac.nz/documentation/)
 * [About MOA](http://moa.cms.waikato.ac.nz/details/)
 
