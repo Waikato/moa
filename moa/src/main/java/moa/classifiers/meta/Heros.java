@@ -104,10 +104,6 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
     protected int[] lastAction;
     protected float resourceNormFactor;
 
-
-    public Heros() {
-    }
-
     @Override
     public String getPurposeString() {
         return "Heterogeneous Online Ensemble method with resource-efficient training.";
