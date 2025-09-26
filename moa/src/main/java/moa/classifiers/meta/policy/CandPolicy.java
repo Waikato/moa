@@ -1,6 +1,6 @@
 package moa.classifiers.meta.policy;
 
-import moa.classifiers.meta.PoolItem;
+import moa.classifiers.meta.Heros.PoolItem;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;

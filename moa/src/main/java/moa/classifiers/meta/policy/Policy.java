@@ -9,8 +9,20 @@ import java.util.stream.IntStream;
 
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import moa.classifiers.meta.PoolItem;
+import moa.classifiers.meta.Heros.PoolItem;
 
+/**
+ * <b>Policy </b><br>
+ *
+ * A policy decides which k models to choose for training in Heros.
+
+ *  <p>Parameters:</p> <ul>
+ *      <li>-k : Number of models to train</li>
+ *      <li>-e : Probability to choose a random k models</li>
+ *  </ul>
+
+ *
+ */
 public interface Policy {
 
     IntOption numModelsToTrainOption = new IntOption("numModelsToTrain", 'k', "Number of models to train.", 1, 0, Integer.MAX_VALUE);

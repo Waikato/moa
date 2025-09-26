@@ -1,6 +1,6 @@
 package moa.classifiers.meta.policy;
 
-import moa.classifiers.meta.PoolItem;
+import moa.classifiers.meta.Heros.PoolItem;
 
 import java.util.List;
 import java.util.stream.Collectors;
