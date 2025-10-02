@@ -4,3 +4,5 @@
 *~
 *.bak
 
+# MacOS folder metadata
+.DS_Store
