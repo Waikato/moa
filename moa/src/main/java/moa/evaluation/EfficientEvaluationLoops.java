@@ -4,8 +4,8 @@ import com.yahoo.labs.samoa.instances.Instance;
 import moa.classifiers.SemiSupervisedLearner;
 import moa.classifiers.semisupervised.ClusterAndLabelClassifier;
 import moa.core.Example;
-import moa.core.InstanceExample;
 import moa.core.Measurement;
+import moa.core.Utils;
 import moa.learners.Learner;
 import moa.streams.ArffFileStream;
 import moa.streams.ExampleStream;
@@ -26,30 +26,39 @@ public class EfficientEvaluationLoops {
     public static class PrequentialResult {
         public ArrayList<double[]> windowedResults;
         public double[] cumulativeResults;
-        public ArrayList<Double> targets;
-        public ArrayList<Double> predictions;
-
+        public ArrayList<Integer> targets;
+        public ArrayList<Integer> predictions;
         public HashMap<String, Double> otherMeasurements;
 
-        public PrequentialResult(ArrayList<double[]> windowedResults, double[] cumulativeResults) {
-            this.windowedResults = windowedResults;
-            this.cumulativeResults = cumulativeResults;
-            this.targets = null;
-            this.predictions = null;
-        }
-
-        public PrequentialResult(ArrayList<double[]> windowedResults, double[] cumulativeResults,
-                                 ArrayList<Double> targets, ArrayList<Double> predictions) {
+        public PrequentialResult(
+            ArrayList<double[]> windowedResults,
+            double[] cumulativeResults,
+            ArrayList<Integer> targets,
+            ArrayList<Integer> predictions,
+            HashMap<String, Double> otherMeasurements
+        ) {
             this.windowedResults = windowedResults;
             this.cumulativeResults = cumulativeResults;
             this.targets = targets;
             this.predictions = predictions;
+            this.otherMeasurements = otherMeasurements;
         }
 
-        public PrequentialResult(ArrayList<double[]> windowedResults, double[] cumulativeResults,
-                                 HashMap<String, Double> otherMeasurements) {
-            this(windowedResults, cumulativeResults);
-            this.otherMeasurements = otherMeasurements;
+        public PrequentialResult(
+            ArrayList<double[]> windowedResults,
+            double[] cumulativeResults,
+            ArrayList<Integer> targets,
+            ArrayList<Integer> predictions
+        ) {
+            this(windowedResults, cumulativeResults, targets, predictions, null);
+        }
+
+        public PrequentialResult(
+            ArrayList<double[]> windowedResults,
+            double[] cumulativeResults,
+            HashMap<String, Double> otherMeasurements
+        ) {
+            this(windowedResults, cumulativeResults, null, null, otherMeasurements);
         }
     }
 
@@ -65,11 +74,13 @@ public class EfficientEvaluationLoops {
      * @param windowedEvaluator
      * @param maxInstances
      * @param windowSize
+     * @param storeY
+     * @param storePredictions
      * @return the return has to be an ArrayList because we don't know ahead of time how many windows will be produced
      */
     public static PrequentialResult PrequentialEvaluation(ExampleStream stream, Learner learner,
-                                                          LearningPerformanceEvaluator basicEvaluator,
-                                                          LearningPerformanceEvaluator windowedEvaluator,
+                                                          LearningPerformanceEvaluator<Example<Instance>> basicEvaluator,
+                                                          LearningPerformanceEvaluator<Example<Instance>> windowedEvaluator,
                                                           long maxInstances, long windowSize,
                                                           boolean storeY, boolean storePredictions) {
         int instancesProcessed = 0;
@@ -78,30 +89,31 @@ public class EfficientEvaluationLoops {
             stream.restart();
 
         ArrayList<double[]> windowed_results = new ArrayList<>();
-        ArrayList<Double> targetValues = new ArrayList<>();
-        ArrayList<Double> predictions = new ArrayList<>();
+        ArrayList<Integer> targetValues = new ArrayList<>();
+        ArrayList<Integer> predictions = new ArrayList<>();
 
 
         while (stream.hasMoreInstances() &&
                 (maxInstances == -1 || instancesProcessed < maxInstances)) {
 
             Example<Instance> instance = stream.nextInstance();
-            if (storeY)
-                targetValues.add(instance.getData().classValue());
 
             double[] prediction = learner.getVotesForInstance(instance);
+
+            // Update evaluators and store predictions if requested
             if (basicEvaluator != null)
                 basicEvaluator.addResult(instance, prediction);
             if (windowedEvaluator != null)
                 windowedEvaluator.addResult(instance, prediction);
-
             if (storePredictions)
-                predictions.add(prediction.length == 0? 0 : prediction[0]);
+                predictions.add(Utils.maxIndex(prediction));
+            if (storeY)
+                targetValues.add((int)Math.round(instance.getData().classValue()));
 
             learner.trainOnInstance(instance);
-
             instancesProcessed++;
 
+            // Store windowed results if requested
             if (windowedEvaluator != null)
                 if (instancesProcessed % windowSize == 0) {
                     Measurement[] measurements = windowedEvaluator.getPerformanceMeasurements();
@@ -128,22 +140,30 @@ public class EfficientEvaluationLoops {
             for (int i = 0; i < cumulative_results.length; ++i)
                 cumulative_results[i] = measurements[i].getValue();
         }
-        if (!storePredictions && !storeY)
-            return new PrequentialResult(windowed_results, cumulative_results);
-        else
-            return new PrequentialResult(windowed_results, cumulative_results, targetValues, predictions);
+
+        return new PrequentialResult(
+            windowed_results,
+            cumulative_results,
+            targetValues,
+            predictions
+        );
     }
 
-    public static PrequentialResult PrequentialSSLEvaluation(ExampleStream stream, Learner learner,
-                                                             LearningPerformanceEvaluator basicEvaluator,
-                                                             LearningPerformanceEvaluator windowedEvaluator,
-                                                             long maxInstances,
-                                                             long windowSize,
-                                                             long initialWindowSize,
-                                                             long delayLength,
-                                                             double labelProbability,
-                                                             int randomSeed,
-                                                             boolean debugPseudoLabels) {
+    public static PrequentialResult PrequentialSSLEvaluation(
+            ExampleStream<Example<Instance>> stream,
+            Learner learner,
+            LearningPerformanceEvaluator basicEvaluator,
+            LearningPerformanceEvaluator windowedEvaluator,
+            long maxInstances,
+            long windowSize,
+            long initialWindowSize,
+            long delayLength,
+            double labelProbability,
+            int randomSeed,
+            boolean debugPseudoLabels,
+            boolean storeY,
+            boolean storePredictions
+        ) {
 //        int delayLength = this.delayLengthOption.getValue();
 //        double labelProbability = this.labelProbabilityOption.getValue();
 
@@ -161,11 +181,13 @@ public class EfficientEvaluationLoops {
 
         ArrayList<double[]> windowed_results = new ArrayList<>();
 
+        ArrayList<Integer> targetValues = new ArrayList<>();
+        ArrayList<Integer> predictions = new ArrayList<>();
         HashMap<String, Double> other_measures = new HashMap<>();
 
         // The buffer is a list of tuples. The first element is the index when
         // it should be emitted. The second element is the instance itself.
-        List<Pair<Long, Example>> delayBuffer = new ArrayList<Pair<Long, Example>>();
+        List<Pair<Long, Example<Instance>>> delayBuffer = new ArrayList<Pair<Long, Example<Instance>>>();
 
         while (stream.hasMoreInstances() &&
                 (maxInstances == -1 || instancesProcessed < maxInstances)) {
@@ -178,8 +200,8 @@ public class EfficientEvaluationLoops {
                 learner.trainOnInstance(delayedExample);
             }
 
-            Example instance = stream.nextInstance();
-            Example unlabeledExample = instance.copy();
+            Example<Instance> instance = stream.nextInstance();
+            Example<Instance> unlabeledExample = instance.copy();
             int trueClass = (int) ((Instance) instance.getData()).classValue();
 
             // In case it is set, then the label is not removed. We want to pass the
@@ -218,6 +240,10 @@ public class EfficientEvaluationLoops {
                 basicEvaluator.addResult(instance, prediction);
             if (windowedEvaluator != null)
                 windowedEvaluator.addResult(instance, prediction);
+            if (storeY)
+                targetValues.add((int)Math.round(instance.getData().classValue()));
+            if (storePredictions)
+                predictions.add(Utils.maxIndex(prediction));
 
             int pseudoLabel = -1;
             // TRAIN
@@ -227,7 +253,7 @@ public class EfficientEvaluationLoops {
 //                    System.out.println("[TRAIN_UNLABELED][DELAYED] " + unlabeledExample.getData().toString());
                     pseudoLabel = ((SemiSupervisedLearner) learner).trainOnUnlabeledInstance((Instance) unlabeledExample.getData());
                 }
-                delayBuffer.add(new MutablePair<Long, Example>(1 + instancesProcessed + delayLength, instance));
+                delayBuffer.add(new MutablePair<>(1 + instancesProcessed + delayLength, instance));
             } else if (is_labeled) {
 //                System.out.println("[TRAIN] " + instance.getData().toString());
                 // The instance will be labeled and is not delayed e.g delayLength = -1
@@ -276,7 +302,15 @@ public class EfficientEvaluationLoops {
         other_measures.put("num_correct_pseudo_labeled", (double) numCorrectPseudoLabeled);
         other_measures.put("num_instances_tested", (double) numInstancesTested);
         other_measures.put("pseudo_label_accuracy", (double) numCorrectPseudoLabeled/numInstancesTested);
-        return new PrequentialResult(windowed_results, cumulative_results, other_measures);
+
+
+        return new PrequentialResult(
+            windowed_results,
+            cumulative_results,
+            targetValues,
+            predictions,
+            other_measures
+        );
     }
 
     /******************************************************************************************************************/
@@ -320,7 +354,12 @@ public class EfficientEvaluationLoops {
                 windowSize,
                 initialWindowSize,
                 delayLength,
-                labelProbability, 1, true);
+                labelProbability,
+                1,
+                true,
+                false,
+                false
+        );
 
         // Record the end time
         long endTime = System.currentTimeMillis();
