@@ -34,6 +34,8 @@ If you want to refer to MOA in a publication, please cite the following JMLR pap
 
 ## Building MOA for CapyMOA
 
+You can now upload the build artifact from the GitHub Actions workflow. **Make sure to unzip it!**
+
 > These steps assume you have Java installed and maven installed. If you don't
 > have maven installed, you can download it from
 > [here](https://maven.apache.org/download.cgi). You can achieve the same

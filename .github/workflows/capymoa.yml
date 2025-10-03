@@ -1,0 +1,35 @@
+name: Package Jar for CapyMOA
+
+on:
+  push:
+    branches: [ master, capymoa ]
+  pull_request:
+    branches: [ master, capymoa ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build with Maven
+      working-directory: ./moa
+      # no tests
+      run: mvn -B package --file pom.xml -DskipTests
+
+    # Upload jar file as artifact
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: moa-jar
+        path: ./moa/target/moa-*-jar-with-dependencies.jar
+        if-no-files-found: error
+        retention-days: 7
