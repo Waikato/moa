@@ -22,15 +22,9 @@ jobs:
         distribution: 'zulu'
         cache: maven
 
-    - name: Version
-      working-directory: ./moa
-      run: mvn -v
-
     - name: Unit Tests
       working-directory: ./moa
-      # -B: non-interactive (batch) mode
-      # -q: quiet output
-      run: mvn -B -q test 
+      run: mvn -B test
 
     - name: Package Jar
       working-directory: ./moa

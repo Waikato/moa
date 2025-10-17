@@ -46,12 +46,8 @@ public class ClustreamKernel extends CFCluster {
 //        Avoid situations where the instance header hasn't been defined and runtime errors.
         if(instance.dataset() != null) {
             this.classObserver = new double[instance.numClasses()];
-//        instance.numAttributes() <= instance.classIndex() -> edge case where the class index is equal the
-//        number of attributes (i.e. there is no class value in the attributes array).
-            if (instance.numAttributes() > instance.classIndex() &&
-                    !instance.classIsMissing() &&
-                    instance.classValue() >= 0 &&
-                    instance.classValue() < instance.numClasses()) {
+//        
+            if (this.instanceHasClass(instance)) {
                 this.classObserver[(int) instance.classValue()]++;
             }
         }
@@ -72,12 +68,22 @@ public class ClustreamKernel extends CFCluster {
         this.classObserver = cluster.classObserver;
     }
 
+    private boolean instanceHasClass(Instance instance) {
+        // TODO: Why is this check necessary? Shouldn't classIsMissing() be enough?
+        // Edge case where the class index is out of bounds. number of attributes
+        // (i.e. there is no class value in the attributes array).
+        return instance.numAttributes() > instance.classIndex() &&
+                !instance.classIsMissing() && // Also check for missing class.
+                instance.classValue() >= 0 && // Or invalid class values.
+                instance.classValue() < instance.numClasses();
+    }
+
     public void insert( Instance instance, long timestamp ) {
         if(this.classObserver == null)
             this.classObserver = new double[instance.numClasses()];
-        if(!instance.classIsMissing() &&
-                instance.classValue() >= 0 &&
-                instance.classValue() < instance.numClasses()) {
+        System.out.println(instance.classIndex());
+
+        if(this.instanceHasClass(instance)) {
             this.classObserver[(int)instance.classValue()]++;
         }
         N++;

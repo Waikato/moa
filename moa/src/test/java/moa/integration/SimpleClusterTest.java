@@ -23,27 +23,34 @@ public class SimpleClusterTest extends TestCase {
 	final static String [] Clusterers = new String[]{"ClusterGenerator", "CobWeb", "KMeans", 
 		"clustream.Clustream", "clustree.ClusTree", "denstream.WithDBSCAN -i 1000", "streamkm.StreamKM"};
 	
-	@Test
-	public void testClusterGenerator(){testClusterer(Clusterers[0]);}
-//	@Test
-//	public void testCobWeb(){testClusterer(Clusterers[1]);}
-	@Ignore("Disabled: ArrayIndexOutOfBoundsException: Index 2 out of bounds for length 2 in Clustream")
-	@Test
-	public void testClustream(){testClusterer(Clusterers[3]);}
-	@Test
-	public void testClusTree(){testClusterer(Clusterers[4]);}
-	@Test
-	public void testDenStream(){testClusterer(Clusterers[5]);}
-	@Test
-	public void testStreamKM(){testClusterer(Clusterers[6]);}
+    @Test
+    public void testClusterGenerator() throws Exception {
+        testClusterer(Clusterers[0]);
+    }
+
+    @Test
+    public void testClustream() throws Exception {
+        testClusterer(Clusterers[3]);
+    }
+
+    @Test
+    public void testClusTree() throws Exception {
+        testClusterer(Clusterers[4]);
+    }
+
+    @Test
+    public void testDenStream() throws Exception {
+        testClusterer(Clusterers[5]);
+    }
+
+    @Test
+    public void testStreamKM() throws Exception {
+        testClusterer(Clusterers[6]);
+    }
 	
-	void testClusterer(String clusterer) {
+	void testClusterer(String clusterer) throws Exception {
 		System.out.println("Processing: " + clusterer);
-		try {
-			doTask(new String[]{"EvaluateClustering -l " + clusterer});
-		} catch (Exception e) {
-			assertTrue("Failed on clusterer " + clusterer + ": " + e.getMessage(), false);
-		}
+        doTask(new String[]{"EvaluateClustering -l " + clusterer});
 	}
 	
 	// code copied from moa.DoTask.main, to allow exceptions to be thrown in case of failure
