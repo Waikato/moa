@@ -1,0 +1,175 @@
+--> regression-out0.arff
+moa.classifiers.trees.StochasticGradientTree -D StochasticGradientTree$EqualWidthDiscretizer
+
+Index
+  100
+Votes
+  0: 0
+Measurements
+  classified instances: 99
+  mean absolute error: 56028.18181818
+  root mean squared error: 85137.43790751
+  relative mean absolute error: 1.61061305
+  relative root mean squared error: 1.30966942
+  coefficient of determination: -0.715234
+  adjusted coefficient of determination: -0.88868463
+Model measurements
+  model training instances: 99
+  leaf nodes: 1
+  nodes: 1
+
+Index
+  200
+Votes
+  0: 0
+Measurements
+  classified instances: 199
+  mean absolute error: 47265.18090452
+  root mean squared error: 69817.86786721
+  relative mean absolute error: 1.48110092
+  relative root mean squared error: 1.34292938
+  coefficient of determination: -0.80345932
+  adjusted coefficient of determination: -0.88933834
+Model measurements
+  model training instances: 199
+  leaf nodes: 1
+  nodes: 1
+
+Index
+  300
+Votes
+  0: 0
+Measurements
+  classified instances: 299
+  mean absolute error: 48236.32107023
+  root mean squared error: 69375.92808845
+  relative mean absolute error: 1.56928896
+  relative root mean squared error: 1.37901758
+  coefficient of determination: -0.90168948
+  adjusted coefficient of determination: -0.96091164
+Model measurements
+  model training instances: 299
+  leaf nodes: 1
+  nodes: 1
+
+Index
+  400
+Votes
+  0: 0
+Measurements
+  classified instances: 399
+  mean absolute error: 50673.56140351
+  root mean squared error: 73529.32444959
+  relative mean absolute error: 1.55890396
+  relative root mean squared error: 1.37130925
+  coefficient of determination: -0.88048906
+  adjusted coefficient of determination: -0.92399652
+Model measurements
+  model training instances: 399
+  leaf nodes: 1
+  nodes: 1
+
+Index
+  500
+Votes
+  0: 0
+Measurements
+  classified instances: 499
+  mean absolute error: 50025.93386774
+  root mean squared error: 71468.82022708
+  relative mean absolute error: 1.57002198
+  relative root mean squared error: 1.39228533
+  coefficient of determination: -0.93845844
+  adjusted coefficient of determination: -0.97413559
+Model measurements
+  model training instances: 499
+  leaf nodes: 1
+  nodes: 1
+
+Index
+  600
+Votes
+  0: 0
+Measurements
+  classified instances: 599
+  mean absolute error: 49782.51252087
+  root mean squared error: 72120.41961195
+  relative mean absolute error: 1.5681514
+  relative root mean squared error: 1.3755696
+  coefficient of determination: -0.89219172
+  adjusted coefficient of determination: -0.92110467
+Model measurements
+  model training instances: 599
+  leaf nodes: 1
+  nodes: 1
+
+Index
+  700
+Votes
+  0: 0
+Measurements
+  classified instances: 699
+  mean absolute error: 49547.66094421
+  root mean squared error: 70804.7753262
+  relative mean absolute error: 1.5754911
+  relative root mean squared error: 1.39375271
+  coefficient of determination: -0.94254662
+  adjusted coefficient of determination: -0.96792096
+Model measurements
+  model training instances: 699
+  leaf nodes: 1
+  nodes: 1
+
+Index
+  800
+Votes
+  0: 0
+Measurements
+  classified instances: 799
+  mean absolute error: 49418.14893617
+  root mean squared error: 70390.85249711
+  relative mean absolute error: 1.56804791
+  relative root mean squared error: 1.39869244
+  coefficient of determination: -0.95634053
+  adjusted coefficient of determination: -0.97865621
+Model measurements
+  model training instances: 799
+  leaf nodes: 1
+  nodes: 1
+
+Index
+  900
+Votes
+  0: 0
+Measurements
+  classified instances: 899
+  mean absolute error: 48734.02558398
+  root mean squared error: 68844.83141194
+  relative mean absolute error: 1.57316979
+  relative root mean squared error: 1.41042876
+  coefficient of determination: -0.98930928
+  adjusted coefficient of determination: -1.00944852
+Model measurements
+  model training instances: 899
+  leaf nodes: 1
+  nodes: 1
+
+Index
+  1000
+Votes
+  0: 0
+Measurements
+  classified instances: 999
+  mean absolute error: 48551.11711712
+  root mean squared error: 68542.68567758
+  relative mean absolute error: 1.56310398
+  relative root mean squared error: 1.4117509
+  coefficient of determination: -0.99304059
+  adjusted coefficient of determination: -1.01117747
+Model measurements
+  model training instances: 999
+  leaf nodes: 1
+  nodes: 1
+
+
+
