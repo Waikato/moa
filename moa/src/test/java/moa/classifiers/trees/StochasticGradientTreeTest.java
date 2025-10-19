@@ -26,9 +26,9 @@ import moa.classifiers.Classifier;
 import static moa.test.MoaTestCase.runTest;
 
 /**
- * Tests the FIMTDD classifier.
+ * Tests the StochasticGradientTree classifier.
  * 
- * @author  fracpete (fracpete at waikato dot ac dot nz)
+ * @author  henrygouk (henry dot gouk at ed dot ac dot uk)
  * @version $Revision$
  */
 public class StochasticGradientTreeTest
