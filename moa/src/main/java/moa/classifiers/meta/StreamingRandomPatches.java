@@ -150,14 +150,14 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
             this.ensemble[i].evaluator.addResult(example, vote.getArrayRef());
             // Train using random subspaces without resampling, i.e. all instances are used for training.
             if(this.trainingMethodOption.getChosenIndex() == TRAIN_RANDOM_SUBSPACES) {
-                this.ensemble[i].trainOnInstance(instance,1, this.instancesSeen, this.classifierRandom);
+                this.ensemble[i].trainOnInstance(instance,1, this.instancesSeen, this.classifierRandom, true);
             }
             // Train using random patches or resampling, thus we simulate online bagging with poisson(lambda=...)
             else {
                 int k = MiscUtils.poisson(this.lambdaOption.getValue(), this.classifierRandom);
                 if (k > 0) {
                     double weight = k;
-                    this.ensemble[i].trainOnInstance(instance, weight, this.instancesSeen, this.classifierRandom);
+                    this.ensemble[i].trainOnInstance(instance, weight, this.instancesSeen, this.classifierRandom, true);
                 }
             }
         }
@@ -202,7 +202,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
         return null;
     }
 
-    protected void initEnsemble(Instance instance) {
+    public void initEnsemble(Instance instance) {
         // Init the ensemble.
         int ensembleSize = this.ensembleSizeOption.getValue();
         this.ensemble = new StreamingRandomPatchesClassifier[ensembleSize];
@@ -326,7 +326,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
     }
 
     public static ArrayList<ArrayList<Integer>> localRandomKCombinations(int k, int length,
-                                                                          int nCombinations, Random random) {
+                                                                         int nCombinations, Random random) {
         ArrayList<ArrayList<Integer>> combinations = new ArrayList<>();
         for(int i = 0 ; i < nCombinations ; ++i) {
             ArrayList<Integer> combination = new ArrayList<>();
@@ -364,7 +364,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
     }
 
     // Inner class representing the base learner of SRP.
-    protected class StreamingRandomPatchesClassifier {
+    public class StreamingRandomPatchesClassifier {
         public int indexOriginal;
         public long createdOn;
         public Classifier classifier;
@@ -512,7 +512,8 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
                 this.classifier.resetLearning();
                 this.evaluator.reset();
                 this.createdOn = instancesSeen;
-                this.driftDetectionMethod = ((ChangeDetector) getPreparedClassOption(this.driftOption)).copy();
+                if(this.driftOption != null)
+                    this.driftDetectionMethod = ((ChangeDetector) getPreparedClassOption(this.driftOption)).copy();
 
                 if(this.subset != null) {
                     ArrayList<Integer> fIndexes = this.applySubsetResetStrategy(instance, random);
@@ -530,7 +531,8 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
             }
         }
 
-        public void trainOnInstance(Instance instance, double weight, long instancesSeen, Random random) {
+        public void trainOnInstance(Instance instance, double weight, long instancesSeen,
+                                    Random random, boolean updateDriftDetector) {
             boolean correctlyClassifies;
             // The subset object will be null if we are training with all features
             if(this.subset != null) {
@@ -541,7 +543,7 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
                 this.classifier.trainOnInstance(this.subset.get(0));
                 correctlyClassifies = this.classifier.correctlyClassifies(this.subset.get(0));
                 if(this.bkgLearner != null)
-                    this.bkgLearner.trainOnInstance(instance, weight, instancesSeen, random);
+                    this.bkgLearner.trainOnInstance(instance, weight, instancesSeen, random, updateDriftDetector);
             }
             else {
                 Instance weightedInstance = instance.copy();
@@ -549,10 +551,10 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
                 this.classifier.trainOnInstance(weightedInstance);
                 correctlyClassifies = this.classifier.correctlyClassifies(instance);
                 if(this.bkgLearner != null)
-                    this.bkgLearner.trainOnInstance(instance, weight, instancesSeen, random);
+                    this.bkgLearner.trainOnInstance(instance, weight, instancesSeen, random, updateDriftDetector);
             }
 
-            if(!this.disableDriftDetector && !this.isBackgroundLearner) {
+            if(!this.disableDriftDetector && !this.isBackgroundLearner && updateDriftDetector) {
 
                 // Check for warning only if useBkgLearner is active
                 if (!this.disableBkgLearner) {
@@ -612,5 +614,9 @@ public class StreamingRandomPatches extends AbstractClassifier implements MultiC
             DoubleVector vote = new DoubleVector(this.classifier.getVotesForInstance(instance));
             return vote.getArrayRef();
         }
+    }
+
+    public StreamingRandomPatchesClassifier[] getEnsembleMembers() {
+        return this.ensemble;
     }
 }
