@@ -1062,7 +1062,7 @@ public class EFDT extends AbstractClassifier implements MultiClassClassifier {
       if (deltaG > hoeffdingBound
 	|| (hoeffdingBound < tieThreshold && deltaG > tieThreshold / 2)) {
 
-	System.err.println(numInstances);
+	//System.err.println(numInstances);
 
 	AttributeSplitSuggestion splitDecision = bestSuggestion;
 
