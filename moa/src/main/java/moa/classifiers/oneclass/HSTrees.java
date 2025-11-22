@@ -228,7 +228,7 @@ public class HSTrees extends AbstractClassifier implements Classifier, OneClassC
 
 			accumulatedScore = accumulatedScore / (((double) this.numTrees));
 
-			return 0.5 - accumulatedScore + this.anomalyThreshold;
+			return accumulatedScore;
 		}
 	}
 
