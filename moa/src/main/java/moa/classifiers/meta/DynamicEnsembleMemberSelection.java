@@ -177,14 +177,14 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
             this.ensemble = null;
             this.subspaces = null;
             this.performances = null;
-            this.infos = null;
+            if (this.infos == null) this.infos = new ArrayList<>();
             this.bestK = 0;
         } else { // AdaptiveRandomForest
             this.arfEnsemble = null;
             this.subspaceSize = 0;
             this.arfEvaluator = new BasicClassificationPerformanceEvaluator();
             this.performances = null;
-            this.informations = null;
+            if (this.infos == null) this.infos = new ArrayList<>();
 
             // initialise executor for ARF
             int numberOfJobs;
@@ -259,6 +259,12 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         } else { // AdaptiveRandomForest
             if (this.arfEnsemble == null)
                 initARFEnsemble(instance);
+
+            this.informations = new ArrayList<>();
+
+            for (int i = 0; i < this.arfEnsemble.length; i++) {
+                this.informations.add(new SortingInformationForDEMS(this.arfEnsemble[i].evaluator.getTotalWeightObserved() == 0 ? 0 : this.arfEnsemble[i].evaluator.getFractionCorrectlyClassified(), this.arfEnsemble[i].classifier.getTreeRoot() == null ? new double[]{0} : this.arfEnsemble[i].classifier.getTreeRoot().filterInstanceToLeaf(instance, null, -1).node == null ? new double[]{0} : this.arfEnsemble[i].classifier.getTreeRoot().filterInstanceToLeaf(instance, null, -1).node.getObservedClassDistribution(), i));
+            }
 
             if (!this.disableSelfOptimisingOption.isSet() && this.performances == null)
                 this.performances = new int[this.ensembleSizeOption.getValue()];

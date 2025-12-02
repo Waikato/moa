@@ -28,9 +28,9 @@ import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
 
 /**
- * Tests the StreamingRandomPatches classifier.
+ * Tests the DynamicEnsembleMemberSelection classifier.
  *
- * @author  Heitor Murilo Gomes (heitor dot gomes at waikato dot ac dot nz)
+ * @author  Yibin Sun (y dot sun at waikato dot ac dot nz)
  * @version $Revision$
  */
 public class DynamicEnsembleMemberSelectionTest
@@ -54,7 +54,7 @@ public class DynamicEnsembleMemberSelectionTest
     @Override
     protected Classifier[] getRegressionClassifierSetups() {
         DynamicEnsembleMemberSelection DEMSTest = new DynamicEnsembleMemberSelection();
-        DEMSTest.ensembleClassOption.setChosenIndex(1);
+        DEMSTest.ensembleClassOption.setChosenIndex(0);
         DEMSTest.ensembleSizeOption.setValue(5);
         DEMSTest.subspaceModeOption.setChosenIndex(0);
         DEMSTest.subspaceSizeOption.setValue(2);
@@ -70,7 +70,7 @@ public class DynamicEnsembleMemberSelectionTest
      * @return		the test suite
      */
     public static Test suite() {
-        return new TestSuite(StreamingRandomPatchesTest.class);
+        return new TestSuite(DynamicEnsembleMemberSelectionTest.class);
     }
 
     /**
