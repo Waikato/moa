@@ -34,8 +34,6 @@ import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 import moa.classifiers.trees.HoeffdingTree;
 import moa.classifiers.lazy.kNN;
-import moa.classifiers.deeplearning.MLP;
-
 import java.util.*;
 
 /**
@@ -273,8 +271,12 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
             resourceCost = (float) ((kNN) model).kOption.getValue();
         }
         // MLP: number of neurons
-        else if (model instanceof MLP) {
-            resourceCost = (float) (((MLP) model).numberOfNeuronsInEachLayerInLog2.getValue() * ((MLP) model).numberOfLayers.getValue());
+//        else if (model instanceof MLP) {
+//            resourceCost = (float) (((MLP) model).numberOfNeuronsInEachLayerInLog2.getValue() * ((MLP) model).numberOfLayers.getValue());
+//        }
+        // If the model is not one of the types checked above, use dynamic resource costs instead.
+        else {
+            dynamicResourceCosts.setValue(true);
         }
         return resourceCost;
     }
