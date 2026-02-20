@@ -43,9 +43,11 @@ import moa.classifiers.meta.heros.Heros.PoolItem;
  */
 public interface Policy {
 
-    IntOption numModelsToTrainOption = new IntOption("numModelsToTrain", 'k', "Number of models to train.", 1, 0, Integer.MAX_VALUE);
+    IntOption numModelsToTrainOption = new IntOption("numModelsToTrain", 'k', "Number of models to train.", 5, 0, Integer.MAX_VALUE);
     FloatOption epsilonOption = new FloatOption("epsilon", 'e', "Probability to choose a random action.", 0.1, 0.0, 1.0);
-    Random random = new Random();
+    IntOption randomSeedOption = new IntOption("randomSeed", 'r', "Seed for random behaviour of the epsilon greedy parameter.", 1);
+
+    Random random = new Random(randomSeedOption.getValue());
 
     default int[] pull(PoolItem[] pool) {
         if (this.numModelsToTrainOption.getValue() <= 0 | this.numModelsToTrainOption.getValue() > pool.length) {
