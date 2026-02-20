@@ -118,6 +118,9 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
     protected int[] lastAction;
     protected float resourceNormFactor;
 
+    private static final long serialVersionUID = 1L;
+
+
     @Override
     public String getPurposeString() {
         return "Heterogeneous Online Ensemble method with resource-efficient training.";
@@ -281,7 +284,6 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
         return resourceCost;
     }
 
-
     public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         this.samplesSeen = 0;
         this.policy = (Policy) this.getPreparedClassOption(this.policyOption);
@@ -322,6 +324,7 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
         for (int i = 0; i < this.pool.length; i++) {
             this.pool[i].model.resetLearning();
         }
+        this.lastAction = null;
     }
 
     @Override
@@ -387,12 +390,16 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
 
     @Override
     public boolean isRandomizable() {
-        return false;
+        return true;
     }
 
     @Override
     public Capabilities getCapabilities() {
         return super.getCapabilities();
+    }
+
+    public String toString() {
+        return "HEROS ensemble method using a pool of size " + this.pool.length;
     }
 
     public float[] getResourceCostsOfEachModel() {
@@ -416,6 +423,8 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
         private final boolean dynamicResources;
         protected float resourceNormFactor;
         private boolean resetLearnerAfterDrift;
+
+        private static final long serialVersionUID = 1L;
 
         public PoolItem(Classifier model, ADWIN estimator, float resourceCost, boolean dynamicResources,
                         boolean resetLearnerAfterDrift) {

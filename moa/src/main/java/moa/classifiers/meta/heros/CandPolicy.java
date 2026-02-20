@@ -41,6 +41,9 @@ public class CandPolicy extends AbstractOptionHandler implements Policy {
         super();
     }
 
+    private static final long serialVersionUID = 1L;
+
+    @Override
     protected void prepareForUseImpl(TaskMonitor taskMonitor, ObjectRepository objectRepository) {
     }
 
@@ -76,6 +79,7 @@ public class CandPolicy extends AbstractOptionHandler implements Policy {
         return action;
     }
 
+    @Override
     public void getDescription(StringBuilder stringBuilder, int i) {
 
     }
