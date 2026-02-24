@@ -1,10 +1,9 @@
-package moa.classifiers.meta;
+package moa.classifiers.meta.heros;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
-import moa.classifiers.meta.heros.Heros;
 
 /**
  * Tests the Heros classifier.
@@ -17,7 +16,15 @@ public class HerosTest extends AbstractMultipleClassifierTestCase {
 
     @Override
     protected Classifier[] getRegressionClassifierSetups() {
-        return new Classifier[] { new Heros(), };
+        Heros HTest = new Heros();
+        HTest.dynamicResourceCosts.setValue(false);
+        HTest.aggregationOption.setValue(1);
+        HTest.numInstancesToTrainAllModelsOption.setValue(100);
+        HTest.policyOption.setValueViaCLIString("ZetaPolicy -e 0.0");
+
+        return new Classifier[] {
+                HTest,
+        };
     }
 
     public static Test suite() {
