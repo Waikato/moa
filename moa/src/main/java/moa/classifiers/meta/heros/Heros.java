@@ -34,8 +34,6 @@ import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 import moa.classifiers.trees.HoeffdingTree;
 import moa.classifiers.lazy.kNN;
-import moa.classifiers.deeplearning.MLP;
-
 import java.util.*;
 
 /**
@@ -119,6 +117,9 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
     protected int samplesSeen;
     protected int[] lastAction;
     protected float resourceNormFactor;
+
+    private static final long serialVersionUID = 1L;
+
 
     @Override
     public String getPurposeString() {
@@ -273,12 +274,15 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
             resourceCost = (float) ((kNN) model).kOption.getValue();
         }
         // MLP: number of neurons
-        else if (model instanceof MLP) {
-            resourceCost = (float) (((MLP) model).numberOfNeuronsInEachLayerInLog2.getValue() * ((MLP) model).numberOfLayers.getValue());
+//        else if (model instanceof MLP) {
+//            resourceCost = (float) (((MLP) model).numberOfNeuronsInEachLayerInLog2.getValue() * ((MLP) model).numberOfLayers.getValue());
+//        }
+        // If the model is not one of the types checked above, use dynamic resource costs instead.
+        else {
+            dynamicResourceCosts.setValue(true);
         }
         return resourceCost;
     }
-
 
     public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         this.samplesSeen = 0;
@@ -320,6 +324,7 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
         for (int i = 0; i < this.pool.length; i++) {
             this.pool[i].model.resetLearning();
         }
+        this.lastAction = null;
     }
 
     @Override
@@ -385,12 +390,16 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
 
     @Override
     public boolean isRandomizable() {
-        return false;
+        return true;
     }
 
     @Override
     public Capabilities getCapabilities() {
         return super.getCapabilities();
+    }
+
+    public String toString() {
+        return "HEROS ensemble method using a pool of size " + this.pool.length;
     }
 
     public float[] getResourceCostsOfEachModel() {
@@ -414,6 +423,8 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
         private final boolean dynamicResources;
         protected float resourceNormFactor;
         private boolean resetLearnerAfterDrift;
+
+        private static final long serialVersionUID = 1L;
 
         public PoolItem(Classifier model, ADWIN estimator, float resourceCost, boolean dynamicResources,
                         boolean resetLearnerAfterDrift) {

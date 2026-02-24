@@ -47,9 +47,9 @@ public class ZetaPolicy extends AbstractOptionHandler implements Policy {
 
     public FloatOption zetaOption = new FloatOption("zeta", 'z', "Maximum predictive performance loss to save resources while training.", 0.01, 0.0, 1.0);
 
-    public ZetaPolicy() {
-    }
+    private static final long serialVersionUID = 1L;
 
+    @Override
     protected void prepareForUseImpl(TaskMonitor taskMonitor, ObjectRepository objectRepository) {
 
     }
@@ -95,6 +95,7 @@ public class ZetaPolicy extends AbstractOptionHandler implements Policy {
         return action;
     }
 
+    @Override
     public void getDescription(StringBuilder stringBuilder, int i) {
 
     }
