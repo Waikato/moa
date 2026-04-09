@@ -1,10 +1,10 @@
-name: Package Jar for CapyMOA
+name: CapyMOA Test and Package
 
 on:
   push:
-    branches: [ master, capymoa ]
+    branches: [ master, capymoa, main ]
   pull_request:
-    branches: [ master, capymoa ]
+    branches: [ master, capymoa, main ]
 
 jobs:
   build:
@@ -13,20 +13,35 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up JDK 17
+
+    # TODO: moa tests are sensitive to java versions https://github.com/Waikato/moa/issues/273
+    - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
-        distribution: 'temurin'
+        java-version: '21'
+        distribution: 'zulu'
         cache: maven
 
-    - name: Build with Maven
+    - name: Version
       working-directory: ./moa
-      # no tests
-      run: mvn -B package --file pom.xml -DskipTests
+      run: mvn -v
+
+    - name: Unit Tests
+      working-directory: ./moa
+      # -B: non-interactive (batch) mode
+      # -q: quiet output
+      run: mvn -B -q test 
+
+    - name: Package Jar
+      working-directory: ./moa
+      # -B: non-interactive (batch) mode
+      # -DskipTests: skip tests (they were run earlier)
+      # -Dmaven.javadoc.skip=true: skip javadoc generation
+      # -Dlatex.skipBuild=true: skip latex documentation build this needs extra dependencies
+      run: mvn -B package -DskipTests -Dmaven.javadoc.skip=true -Dlatex.skipBuild=true
 
     # Upload jar file as artifact
-    - name: Upload artifact
+    - name: Upload Jar
       uses: actions/upload-artifact@v4
       with:
         name: moa-jar
