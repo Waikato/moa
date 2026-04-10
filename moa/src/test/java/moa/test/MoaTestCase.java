@@ -71,21 +71,11 @@ public class MoaTestCase
    * @return		the class that is being tested or null if none could
    * 			be determined
    */
-  protected Class getTestedClass() {
-    Class	result;
-
-    result = null;
-
-    if (getClass().getName().endsWith("Test")) {
-      try {
-	result = Class.forName(getClass().getName().replaceAll("Test$", ""));
-      }
-      catch (Exception e) {
-	result = null;
-      }
+  protected Class getTestedClass() throws ClassNotFoundException {
+    if (!getClass().getName().endsWith("Test")) {
+      throw new IllegalStateException("Class name must end with 'Test': " + getClass().getName());
     }
-
-    return result;
+    return Class.forName(getClass().getName().replaceAll("Test$", ""));
   }
   
   /**
@@ -105,14 +95,9 @@ public class MoaTestCase
    */
   @Override
   protected void setUp() throws Exception {
-    Class	cls;
-
     super.setUp();
-    
-    cls = getTestedClass();
-    if (cls != null)
-      m_Regression = new Regression(cls);
 
+    m_Regression       = new Regression(getTestedClass());
     m_TestHelper       = newTestHelper();
     m_Headless         = Boolean.getBoolean(PROPERTY_HEADLESS);
     m_NoRegressionTest = Boolean.getBoolean(PROPERTY_NOREGRESSION);
