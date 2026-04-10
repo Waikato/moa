@@ -14,23 +14,16 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # TODO: moa tests are sensitive to java versions https://github.com/Waikato/moa/issues/273
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
         java-version: '21'
-        distribution: 'zulu'
+        distribution: 'microsoft'
         cache: maven
-
-    - name: Version
-      working-directory: ./moa
-      run: mvn -v
 
     - name: Unit Tests
       working-directory: ./moa
-      # -B: non-interactive (batch) mode
-      # -q: quiet output
-      run: mvn -B -q test 
+      run: mvn -B test
 
     - name: Package Jar
       working-directory: ./moa
