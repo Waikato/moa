@@ -69,7 +69,7 @@
       <dependency>
         <groupId>nz.ac.waikato.cms.weka</groupId>
         <artifactId>weka-dev</artifactId>
-        <version>3.9.6</version>
+        <version>3.9.7</version>
         <exclusions>
           <exclusion>
             <groupId>com.googlecode.jfilechooser-bookmarks</groupId>
