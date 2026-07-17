@@ -1,10 +1,9 @@
-package moa.classifiers.meta;
+package moa.classifiers.meta.heros;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
-import moa.classifiers.meta.heros.Heros;
 
 /**
  * Tests the Heros classifier.
