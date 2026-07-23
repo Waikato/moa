@@ -21,6 +21,7 @@
 package moa.evaluation;
 
 import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.core.Example;
@@ -35,6 +36,7 @@ import moa.tasks.TaskMonitor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 /**
  * Classification evaluator that performs basic incremental evaluation.
@@ -46,7 +48,8 @@ import java.util.ArrayList;
  * @author Jean Karax (karaxjr@gmail.com)
  * @author Jean Paul Barddal (jean.barddal@ppgia.pucpr.br)
  * @author Wilson Sasaki Jr (sasaki.wilson.jr@gmail.com)
- * Updates in July 23rd 2026 to fix precision, recall and F1 scores zero handling and macro (per class) and micro statistics.
+ * Updates in July 23rd 2026 to fix precision, recall and F1 scores zero handling and macro (per class) and micro statistics,
+ * and to add log loss and the binary prequential ROC AUC.
  * @author Daniel Nowak Assis (daniel dot nowak-assis at lip6 dot fr)
  * @version $Revision: 8 $
  */
@@ -64,6 +67,14 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
     protected Estimator[] precision;
 
     protected Estimator[] recall;
+
+    protected Estimator logLoss;
+
+    /** Prequential AUC; null while it is not being reported. */
+    protected AucEstimator auc;
+
+    /** Class index treated as positive by the ROC AUC. */
+    protected int positiveClass;
 
     protected int numClasses;
 
@@ -90,6 +101,26 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
     public FlagOption f1PerClassOption = new FlagOption("f1PerClass", 'f',
             "Report F1 per class.");
 
+    public FlagOption logLossOption = new FlagOption("logLoss", 'l',
+            "Report logarithmic loss (cross-entropy) of the predicted class distribution.");
+
+    public FlagOption rocAucOption = new FlagOption("rocAUC", 'a',
+            "Report the prequential ROC AUC. Binary problems only; reported as "
+                    + "NaN otherwise. Every score seen has to be remembered, so "
+                    + "setting this option for large streams can cause substantial "
+                    + "memory usage.");
+
+    public IntOption positiveClassOption = new IntOption("positiveClass", 'c',
+            "Index of the class treated as positive by the ROC AUC.",
+            1, 0, 1);
+
+    /**
+     * Predicted probabilities are clamped to this floor before taking the
+     * logarithm, so that a confident-and-wrong prediction contributes a large
+     * but finite loss instead of infinity.
+     */
+    protected static final double MIN_PROBABILITY = 1e-15;
+
     @Override
     public void reset() {
         reset(this.numClasses);
@@ -107,7 +138,10 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
             this.precision[i] = newEstimator();
             this.recall[i] = newEstimator();
         }
+        this.positiveClass = this.positiveClassOption.getValue();
+        this.auc = this.rocAucOption.isSet() ? new AucEstimator() : null;
         this.weightCorrect = newEstimator();
+        this.logLoss = newEstimator();
         this.weightCorrectNoChangeClassifier = newEstimator();
         this.weightMajorityClassifier = newEstimator();
         this.lastSeenClass = 0;
@@ -127,6 +161,7 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
                 }
                 this.totalWeightObserved += weight;
                 this.weightCorrect.add(predictedClass == trueClass ? weight : 0);
+                this.logLoss.add(weight * -Math.log(getProbabilityOfTrueClass(classVotes, trueClass)));
                 for (int i = 0; i < this.numClasses; i++) {
                     this.rowKappa[i].add(predictedClass == i ? weight : 0);
                     this.columnKappa[i].add(trueClass == i ? weight : 0);
@@ -139,11 +174,58 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
                         recall[i].add(predictedClass == trueClass ? weight : 0.0);
                     } else recall[i].add(Double.NaN);
                 }
+                addAucResult(classVotes, trueClass, weight);
             }
             this.weightCorrectNoChangeClassifier.add(this.lastSeenClass == trueClass ? weight : 0);
             this.weightMajorityClassifier.add(getMajorityClass() == trueClass ? weight : 0);
             this.lastSeenClass = trueClass;
         }
+    }
+
+    /**
+     * Probability the learner assigned to the given class.
+     *
+     * Vote arrays in MOA are not required to be normalised, nor to cover every
+     * class: a learner may return a shorter array, all-zero votes, or scores
+     * that do not sum to one. Votes are therefore normalised here, negative
+     * entries are clipped away, and a degenerate (empty or non-positive) vote
+     * array falls back to the uniform distribution, which is what an
+     * abstaining learner effectively predicts. The result is clamped to
+     * {@link #MIN_PROBABILITY} so that the log loss stays finite.
+     */
+    protected double getNormalizedProbability(double[] classVotes, int classIndex) {
+        double sum = 0.0;
+        for (double vote : classVotes) {
+            if (vote > 0.0) {
+                sum += vote;
+            }
+        }
+        double p;
+        if (sum > 0.0) {
+            p = classIndex < classVotes.length && classVotes[classIndex] > 0.0
+                    ? classVotes[classIndex] / sum : 0.0;
+        } else {
+            p = this.numClasses > 0 ? 1.0 / this.numClasses : 0.0;
+        }
+        return Math.max(p, MIN_PROBABILITY);
+    }
+
+    /** Probability the learner assigned to the true class, used by the log loss. */
+    protected double getProbabilityOfTrueClass(double[] classVotes, int trueClass) {
+        return getNormalizedProbability(classVotes, trueClass);
+    }
+
+    /**
+     * Feeds one prediction to the AUC estimator. AUC is a binary measure, so
+     * nothing is recorded on a multi-class stream and {@link #getROCAUC()}
+     * reports NaN there.
+     */
+    protected void addAucResult(double[] classVotes, int trueClass, double weight) {
+        if (this.auc == null || this.numClasses != 2) {
+            return;
+        }
+        this.auc.add(getNormalizedProbability(classVotes, this.positiveClass),
+                trueClass == this.positiveClass);
     }
 
     private int getMajorityClass() {
@@ -200,6 +282,12 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
             }
         }
 
+        if (logLossOption.isSet())
+            measurements.add(new Measurement("Log Loss", this.getLogLoss()));
+
+        if (rocAucOption.isSet())
+            measurements.add(new Measurement("ROC AUC (cumulative)", this.getROCAUC()));
+
         Measurement[] result = new Measurement[measurements.size()];
 
         return measurements.toArray(result);
@@ -216,6 +304,16 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
 
     public double getFractionIncorrectlyClassified() {
         return 1.0 - getFractionCorrectlyClassified();
+    }
+
+    /**
+     * Mean logarithmic loss (cross-entropy) of the predicted class
+     * distributions. Like every other measure here it is produced by an
+     * {@link Estimator}, so subclasses that decay or window their estimators
+     * report a decayed or windowed log loss without further work.
+     */
+    public double getLogLoss() {
+        return this.getTotalWeightObserved() > 0.0 ? this.logLoss.estimation() : 0.0;
     }
 
     public double getKappaStatistic() {
@@ -337,6 +435,26 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
         return getFractionCorrectlyClassified();
     }
 
+    /**
+     * ROC AUC, computed from every score seen as in D. Brzezinski and
+     * J. Stefanowski, "Prequential AUC: Properties of the Area Under the ROC
+     * Curve for Data Streams with Concept Drift", Knowledge and Information
+     * Systems, 2017, and as implemented by
+     * {@link BasicAUCImbalancedPerformanceEvaluator}.
+     *
+     * Unlike every other measure here this one does not go through
+     * {@link Estimator}: it is always cumulative over the whole stream, so a
+     * windowed or fading subclass still reports the all-time AUC. Use
+     * {@link WindowAUCImbalancedPerformanceEvaluator} for a windowed one.
+     * Instance weights are ignored, as in the reference implementation.
+     * Returns NaN unless the problem is binary, the measure is switched on,
+     * and both classes have been seen.
+     */
+    public double getROCAUC() {
+        return this.auc == null || this.numClasses != 2
+                ? Double.NaN : this.auc.getAUC();
+    }
+
     @Override
     public void getDescription(StringBuilder sb, int indent) {
         Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
@@ -384,6 +502,100 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
 
     protected Estimator newEstimator() {
         return new BasicEstimator();
+    }
+
+    /**
+     * ROC AUC over every score seen so far. The scores are kept sorted
+     * descending, and a single sweep counts, for each negative, how many
+     * positives outrank it, ties counted as half; that count over all
+     * positive-negative pairs is the AUC.
+     */
+    public static class AucEstimator implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        /** One scored instance, ordered by descending score. */
+        protected static class Score implements Comparable<Score>, Serializable {
+
+            private static final long serialVersionUID = 1L;
+
+            protected final double value;
+
+            /** Position in the stream, kept so that equal scores stay distinct. */
+            protected final int position;
+
+            protected final boolean isPositive;
+
+            public Score(double value, int position, boolean isPositive) {
+                this.value = value;
+                this.position = position;
+                this.isPositive = isPositive;
+            }
+
+            @Override
+            public int compareTo(Score o) {
+                if (o.value != this.value) {
+                    return o.value < this.value ? -1 : 1;
+                }
+                // on a tie, positives come first so that the sweep below can
+                // recognise the tied block, then the stream order breaks the rest
+                if (o.isPositive != this.isPositive) {
+                    return this.isPositive ? -1 : 1;
+                }
+                return Integer.compare(this.position, o.position);
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                return (o instanceof Score) && ((Score) o).position == this.position;
+            }
+
+            @Override
+            public int hashCode() {
+                return this.position;
+            }
+        }
+
+        protected final TreeSet<Score> sortedScores = new TreeSet<Score>();
+
+        protected int position;
+
+        protected double numPos;
+
+        protected double numNeg;
+
+        public void add(double score, boolean isPositive) {
+            this.sortedScores.add(new Score(score, this.position++, isPositive));
+            if (isPositive) {
+                this.numPos++;
+            } else {
+                this.numNeg++;
+            }
+        }
+
+        public double getAUC() {
+            if (this.numPos == 0 || this.numNeg == 0) {
+                return Double.NaN;
+            }
+            double auc = 0.0;
+            double positivesSoFar = 0.0;
+            double positivesBeforeTie = 0.0;
+            double lastPositiveScore = Double.MAX_VALUE;
+            for (Score s : this.sortedScores) {
+                if (s.isPositive) {
+                    if (s.value != lastPositiveScore) {
+                        positivesBeforeTie = positivesSoFar;
+                        lastPositiveScore = s.value;
+                    }
+                    positivesSoFar += 1.0;
+                } else if (s.value == lastPositiveScore) {
+                    auc += (positivesSoFar + positivesBeforeTie) / 2.0;
+                } else {
+                    auc += positivesSoFar;
+                }
+            }
+            return auc / (this.numPos * this.numNeg);
+        }
     }
 
 
