@@ -164,30 +164,36 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
         measurements.add(new Measurement("Kappa Statistic (percent)", this.getKappaStatistic() * 100.0));
         measurements.add(new Measurement("Kappa Temporal Statistic (percent)", this.getKappaTemporalStatistic() * 100.0));
         measurements.add(new Measurement("Kappa M Statistic (percent)", this.getKappaMStatistic() * 100.0));
-        if (precisionRecallOutputOption.isSet()) 
-            measurements.add(new Measurement("F1 Score (percent)", 
-                    this.getF1Statistic() * 100.0));
+        if (precisionRecallOutputOption.isSet())
+            measurements.add(new Measurement("F1 Score (percent)",
+                    this.getMicroF1Statistic() * 100.0));
         if (f1PerClassOption.isSet()) {
+            measurements.add(new Measurement("F1 Score macro (percent)",
+                    this.getF1Statistic() * 100.0));
             for (int i = 0; i < this.numClasses; i++) {
-                measurements.add(new Measurement("F1 Score for class " + i + 
+                measurements.add(new Measurement("F1 Score for class " + i +
                         " (percent)", 100.0 * this.getF1Statistic(i)));
             }
         }
         if (precisionRecallOutputOption.isSet())
-            measurements.add(new Measurement("Precision (percent)", 
-                this.getPrecisionStatistic() * 100.0));               
+            measurements.add(new Measurement("Precision (percent)",
+                this.getMicroPrecisionStatistic() * 100.0));
         if (precisionPerClassOption.isSet()) {
+            measurements.add(new Measurement("Precision macro (percent)",
+                    this.getPrecisionStatistic() * 100.0));
             for (int i = 0; i < this.numClasses; i++) {
-                measurements.add(new Measurement("Precision for class " + i + 
+                measurements.add(new Measurement("Precision for class " + i +
                         " (percent)", 100.0 * this.getPrecisionStatistic(i)));
             }
         }
         if (precisionRecallOutputOption.isSet())
-            measurements.add(new Measurement("Recall (percent)", 
-                this.getRecallStatistic() * 100.0));
+            measurements.add(new Measurement("Recall (percent)",
+                this.getMicroRecallStatistic() * 100.0));
         if (recallPerClassOption.isSet()) {
+            measurements.add(new Measurement("Recall macro (percent)",
+                    this.getRecallStatistic() * 100.0));
             for (int i = 0; i < this.numClasses; i++) {
-                measurements.add(new Measurement("Recall for class " + i + 
+                measurements.add(new Measurement("Recall for class " + i +
                         " (percent)", 100.0 * this.getRecallStatistic(i)));
             }
         }
@@ -246,38 +252,87 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
         }
     }
 
+    /**
+     * Macro-averaged precision: the unweighted mean of the per-class precisions.
+     * A class that was never predicted has an undefined precision; as in
+     * scikit-learn's default zero_division it counts as 0 and still occupies a
+     * slot in the average, so the denominator is always the full label set.
+     */
     public double getPrecisionStatistic() {
         double total = 0;
-        for (Estimator ck : this.precision) {
-            total += ck.estimation();
+        for (int i = 0; i < this.numClasses; i++) {
+            total += getPrecisionStatistic(i);
         }
-        return total / this.precision.length;
+        return this.numClasses == 0 ? 0.0 : total / this.numClasses;
     }
 
     public double getPrecisionStatistic(int numClass) {
-        return this.precision[numClass].estimation();
+        double v = this.precision[numClass].estimation();
+        return Double.isNaN(v) ? 0.0 : v;
     }
 
+    /**
+     * Macro-averaged recall, with undefined classes handled as in
+     * {@link #getPrecisionStatistic()}.
+     */
     public double getRecallStatistic() {
         double total = 0;
-        for (Estimator ck : this.recall) {
-            total += ck.estimation();
+        for (int i = 0; i < this.numClasses; i++) {
+            total += getRecallStatistic(i);
         }
-        return total / this.recall.length;
+        return this.numClasses == 0 ? 0.0 : total / this.numClasses;
     }
 
     public double getRecallStatistic(int numClass) {
-        return this.recall[numClass].estimation();
+        double v = this.recall[numClass].estimation();
+        return Double.isNaN(v) ? 0.0 : v;
     }
 
     public double getF1Statistic() {
-        return 2 * ((this.getPrecisionStatistic() * this.getRecallStatistic())
-                / (this.getPrecisionStatistic() + this.getRecallStatistic()));
+        double total = 0;
+        for (int i = 0; i < this.numClasses; i++) {
+            total += getF1Statistic(i);
+        }
+        return total / this.numClasses;
     }
 
     public double getF1Statistic(int numClass) {
-        return 2 * ((this.getPrecisionStatistic(numClass) * this.getRecallStatistic(numClass))
-                / (this.getPrecisionStatistic(numClass) + this.getRecallStatistic(numClass)));
+        double p = this.getPrecisionStatistic(numClass);
+        double r = this.getRecallStatistic(numClass);
+        if (Double.isNaN(p)) p = 0.0;
+        if (Double.isNaN(r)) r = 0.0;
+        double denom = p + r;
+        return denom == 0.0 ? 0.0 : 2.0 * p * r / denom;
+    }
+
+    /**
+     * Micro-averaged precision, recall and F1: sum the true/false positives and
+     * negatives over all classes first, then divide.
+     *
+     * micro precision = sum(TP) / sum(TP + FP)
+     * micro recall    = sum(TP) / sum(TP + FN)
+     * micro F1        = 2*sum(TP) / (2*sum(TP) + sum(FP) + sum(FN))
+     *
+     * This evaluator scores single-label predictions over the full label set, so
+     * every instance contributes exactly one entry to sum(TP)+sum(FP) (the class
+     * it was predicted as) and exactly one to sum(TP)+sum(FN) (its true class).
+     * Both denominators therefore equal the total weight seen, all three measures
+     * collapse to sum(TP)/total, and each equals the accuracy. Deriving them from
+     * weightCorrect keeps that identity exact under every weighting scheme
+     * (cumulative, sliding window, EWMA, fading factor), which pooling the
+     * per-class estimator ratios could not: Estimator exposes only the ratio, and
+     * the decayed estimators hold no counts to pool.
+     */
+    public double getMicroPrecisionStatistic() {
+        return getFractionCorrectlyClassified();
+    }
+
+    public double getMicroRecallStatistic() {
+        return getFractionCorrectlyClassified();
+    }
+
+    public double getMicroF1Statistic() {
+        return getFractionCorrectlyClassified();
     }
 
     @Override
