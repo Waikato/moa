@@ -46,6 +46,8 @@ import java.util.ArrayList;
  * @author Jean Karax (karaxjr@gmail.com)
  * @author Jean Paul Barddal (jean.barddal@ppgia.pucpr.br)
  * @author Wilson Sasaki Jr (sasaki.wilson.jr@gmail.com)
+ * Updates in July 23rd 2026 to fix precision, recall and F1 scores zero handling and macro (per class) and micro statistics.
+ * @author Daniel Nowak Assis (daniel dot nowak-assis at lip6 dot fr)
  * @version $Revision: 8 $
  */
 public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandler
