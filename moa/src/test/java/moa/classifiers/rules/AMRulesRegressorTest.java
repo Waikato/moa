@@ -13,64 +13,62 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * AMRulesTest.java
- * Copyright (C) 2013 University of Waikato, Hamilton, New Zealand
- */
+/** AMRulesTest.java Copyright (C) 2013 University of Waikato, Hamilton, New Zealand */
 package moa.classifiers.rules;
+
+import static moa.test.MoaTestCase.runTest;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleRegressorTestCase;
 import moa.classifiers.Classifier;
-import static moa.test.MoaTestCase.runTest;
 
 /**
  * Tests the AMRulesRegressor classifier.
- * 
- * @author  fracpete (fracpete at waikato dot ac dot nz)
+ *
+ * @author fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class AMRulesRegressorTest
-  extends AbstractMultipleRegressorTestCase {
+public class AMRulesRegressorTest extends AbstractMultipleRegressorTestCase {
 
-  /**
-   * Constructs the test case. Called by subclasses.
-   *
-   * @param name 	the name of the test
-   */
-  public AMRulesRegressorTest(String name) {
-    super(name);
-    this.setNumberTests(1);
-  }
+    /**
+     * Constructs the test case. Called by subclasses.
+     *
+     * @param name the name of the test
+     */
+    public AMRulesRegressorTest(String name) {
+        super(name);
+        this.setNumberTests(1);
+    }
 
-  /**
-   * Returns the classifier setups to use in the regression test.
-   *
-   * @return		the setups
-   */
-  @Override
-  protected Classifier[] getRegressionClassifierSetups() {
-    return new Classifier[]{
-	new AMRulesRegressor(),
-    };
-  }
-  
-  /**
-   * Returns a test suite.
-   *
-   * @return		the test suite
-   */
-  public static Test suite() {
-    return new TestSuite(AMRulesRegressorTest.class);
-  }
+    /**
+     * Returns the classifier setups to use in the regression test.
+     *
+     * @return the setups
+     */
+    @Override
+    protected Classifier[] getRegressionClassifierSetups() {
+        return new Classifier[] {
+            new AMRulesRegressor(),
+        };
+    }
 
-  /**
-   * Runs the test from commandline.
-   *
-   * @param args	ignored
-   */
-  public static void main(String[] args) {
-    runTest(suite());
-  }
+    /**
+     * Returns a test suite.
+     *
+     * @return the test suite
+     */
+    public static Test suite() {
+        return new TestSuite(AMRulesRegressorTest.class);
+    }
+
+    /**
+     * Runs the test from commandline.
+     *
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        runTest(suite());
+    }
 }

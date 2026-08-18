@@ -15,12 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.trees;
 
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.AttributeSplitSuggestion;
@@ -32,19 +34,18 @@ import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.options.ClassOption;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
- * Decision trees of one level.<br />
+ * Decision trees of one level.<br>
+ * Parameters:
  *
- * Parameters:</p>
  * <ul>
- * <li>-g : The number of instances to observe between model changes</li>
- * <li>-b : Only allow binary splits</li>
- * <li>-c : Split criterion to use. Example : InfoGainSplitCriterion</li>
- * <li>-r : Seed for random behaviour of the classifier</li>
+ *   <li>-g : The number of instances to observe between model changes
+ *   <li>-b : Only allow binary splits
+ *   <li>-c : Split criterion to use. Example : InfoGainSplitCriterion
+ *   <li>-r : Seed for random behaviour of the classifier
  * </ul>
- * 
+ *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
@@ -56,17 +57,26 @@ public class DecisionStump extends AbstractClassifier implements MultiClassClass
     public String getPurposeString() {
         return "Decision trees of one level.";
     }
-    
-    public IntOption gracePeriodOption = new IntOption("gracePeriod", 'g',
-            "The number of instances to observe between model changes.", 1000,
-            0, Integer.MAX_VALUE);
 
-    public FlagOption binarySplitsOption = new FlagOption("binarySplits", 'b',
-            "Only allow binary splits.");
+    public IntOption gracePeriodOption =
+            new IntOption(
+                    "gracePeriod",
+                    'g',
+                    "The number of instances to observe between model changes.",
+                    1000,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public ClassOption splitCriterionOption = new ClassOption("splitCriterion",
-            'c', "Split criterion to use.", SplitCriterion.class,
-            "InfoGainSplitCriterion");
+    public FlagOption binarySplitsOption =
+            new FlagOption("binarySplits", 'b', "Only allow binary splits.");
+
+    public ClassOption splitCriterionOption =
+            new ClassOption(
+                    "splitCriterion",
+                    'c',
+                    "Split criterion to use.",
+                    SplitCriterion.class,
+                    "InfoGainSplitCriterion");
 
     protected AttributeSplitSuggestion bestSplit;
 
@@ -101,14 +111,20 @@ public class DecisionStump extends AbstractClassifier implements MultiClassClass
             int instAttIndex = modelAttIndexToInstanceAttIndex(i, inst);
             AttributeClassObserver obs = this.attributeObservers.get(i);
             if (obs == null) {
-                obs = inst.attribute(instAttIndex).isNominal() ? newNominalClassObserver()
-                        : newNumericClassObserver();
+                obs =
+                        inst.attribute(instAttIndex).isNominal()
+                                ? newNominalClassObserver()
+                                : newNumericClassObserver();
                 this.attributeObservers.set(i, obs);
             }
-            obs.observeAttributeClass(inst.value(instAttIndex), (int) inst.classValue(), inst.weight());
+            obs.observeAttributeClass(
+                    inst.value(instAttIndex), (int) inst.classValue(), inst.weight());
         }
-        if (this.trainingWeightSeenByModel - this.weightSeenAtLastSplit >= this.gracePeriodOption.getValue()) {
-            this.bestSplit = findBestSplit((SplitCriterion) getPreparedClassOption(this.splitCriterionOption));
+        if (this.trainingWeightSeenByModel - this.weightSeenAtLastSplit
+                >= this.gracePeriodOption.getValue()) {
+            this.bestSplit =
+                    findBestSplit(
+                            (SplitCriterion) getPreparedClassOption(this.splitCriterionOption));
             this.weightSeenAtLastSplit = this.trainingWeightSeenByModel;
         }
     }
@@ -144,8 +160,9 @@ public class DecisionStump extends AbstractClassifier implements MultiClassClass
         for (int i = 0; i < this.attributeObservers.size(); i++) {
             AttributeClassObserver obs = this.attributeObservers.get(i);
             if (obs != null) {
-                AttributeSplitSuggestion suggestion = obs.getBestEvaluatedSplitSuggestion(criterion,
-                        preSplitDist, i, this.binarySplitsOption.isSet());
+                AttributeSplitSuggestion suggestion =
+                        obs.getBestEvaluatedSplitSuggestion(
+                                criterion, preSplitDist, i, this.binarySplitsOption.isSet());
                 if (suggestion != null && suggestion.merit > bestMerit) {
                     bestMerit = suggestion.merit;
                     bestFound = suggestion;

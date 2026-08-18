@@ -2,7 +2,7 @@
  *    HDDM_A_Test.java
  *
  *    @author Isvani Frias-Blanco (ifriasb@udg.co.cu)
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
@@ -14,52 +14,53 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
- 
- 
+
 package moa.classifiers.core.driftdetection;
 
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.MultiChoiceOption;
+
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
 
 /**
- * <p>Online drift detection method based on Hoeffding's bounds. 
- * HDDM<sub><i>A</i>-test</sub> uses the average as estimator.
- * It receives as input a stream of real values and returns the estimated status
- * of the stream: STABLE, WARNING or DRIFT.</p>
+ * Online drift detection method based on Hoeffding's bounds. HDDM<sub><i>A</i>-test</sub> uses the
+ * average as estimator. It receives as input a stream of real values and returns the estimated
+ * status of the stream: STABLE, WARNING or DRIFT.
  *
- * <p>I. Frias-Blanco, J. del Campo-Avila, G. Ramos-Jimenez, R. Morales-Bueno, 
- * A. Ortiz-Diaz, and Y. Caballero-Mota, Online and non-parametric drift 
- * detection methods based on Hoeffding's bound, IEEE Transactions on Knowledge
- * and Data Engineering, 2014. DOI 10.1109/TKDE.2014.2345382.</p>
+ * <p>I. Frias-Blanco, J. del Campo-Avila, G. Ramos-Jimenez, R. Morales-Bueno, A. Ortiz-Diaz, and Y.
+ * Caballero-Mota, Online and non-parametric drift detection methods based on Hoeffding's bound,
+ * IEEE Transactions on Knowledge and Data Engineering, 2014. DOI 10.1109/TKDE.2014.2345382.
  *
- * <p>Parameters:</p> <ul> <li>-d : Confidence to the drift</li><li>-w : 
- * Confidence to the warning</li><li>-t : Option to monitor error increments and
- * decrements (two-sided) or only increments (one-sided)</li>
+ * <p>Parameters:
+ *
+ * <ul>
+ *   <li>-d : Confidence to the drift
+ *   <li>-w : Confidence to the warning
+ *   <li>-t : Option to monitor error increments and decrements (two-sided) or only increments
+ *       (one-sided)
  * </ul>
  *
  * @author Isvani Frias-Blanco (ifriasb@udg.co.cu)
- *
  */
-
 public class HDDM_A_Test extends AbstractChangeDetector {
-    
-    public FloatOption driftConfidenceOption = new FloatOption("driftConfidence", 'd',
-            "Confidence to the drift",
-            0.001, 0, 1);
-    public FloatOption warningConfidenceOption = new FloatOption("warningConfidence", 'w',
-            "Confidence to the warning",
-            0.005, 0, 1);
-    public MultiChoiceOption oneSidedTestOption = new MultiChoiceOption(
-            "typeOfTest", 't',
-            "Monitors error increments and decrements (two-sided) or only increments (one-sided)", new String[]{
-        "One-sided", "Two-sided"}, new String[]{
-        "One-sided", "Two-sided"},
-            1);
+
+    public FloatOption driftConfidenceOption =
+            new FloatOption("driftConfidence", 'd', "Confidence to the drift", 0.001, 0, 1);
+    public FloatOption warningConfidenceOption =
+            new FloatOption("warningConfidence", 'w', "Confidence to the warning", 0.005, 0, 1);
+    public MultiChoiceOption oneSidedTestOption =
+            new MultiChoiceOption(
+                    "typeOfTest",
+                    't',
+                    "Monitors error increments and decrements (two-sided) or only increments"
+                            + " (one-sided)",
+                    new String[] {"One-sided", "Two-sided"},
+                    new String[] {"One-sided", "Two-sided"},
+                    1);
 
     protected int n_min = 0;
     protected double c_min = 0;
@@ -87,8 +88,17 @@ public class HDDM_A_Test extends AbstractChangeDetector {
             c_max = total_c;
         }
 
-        double cota = Math.sqrt(1.0 / (2 * n_min) * Math.log(1.0 / driftConfidenceOption.getValue())),
-                cota1 = Math.sqrt(1.0 / (2 * total_n) * Math.log(1.0 / driftConfidenceOption.getValue()));
+        double
+                cota =
+                        Math.sqrt(
+                                1.0
+                                        / (2 * n_min)
+                                        * Math.log(1.0 / driftConfidenceOption.getValue())),
+                cota1 =
+                        Math.sqrt(
+                                1.0
+                                        / (2 * total_n)
+                                        * Math.log(1.0 / driftConfidenceOption.getValue()));
         if (c_min / n_min + cota >= total_c / total_n + cota1) {
             c_min = total_c;
             n_min = total_n;
@@ -113,7 +123,7 @@ public class HDDM_A_Test extends AbstractChangeDetector {
             this.isChangeDetected = false;
             this.isWarningZone = false;
         }
-        if (this.oneSidedTestOption.getChosenIndex() == 1 
+        if (this.oneSidedTestOption.getChosenIndex() == 1
                 && meanDecr(c_max, n_max, total_c, total_n)) {
             nEstimacion = total_n - n_max;
             cEstimacion = total_c - c_max;
@@ -123,7 +133,8 @@ public class HDDM_A_Test extends AbstractChangeDetector {
         updateEstimations();
     }
 
-    private boolean meanIncr(double c_min, int n_min, double total_c, int total_n, double confianzaCambio) {
+    private boolean meanIncr(
+            double c_min, int n_min, double total_c, int total_n, double confianzaCambio) {
         if (n_min == total_n) {
             return false;
         }
@@ -171,8 +182,7 @@ public class HDDM_A_Test extends AbstractChangeDetector {
     }
 
     @Override
-    public void getDescription(StringBuilder sb, int indent) {
-    }
+    public void getDescription(StringBuilder sb, int indent) {}
 
     @Override
     protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {

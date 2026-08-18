@@ -36,10 +36,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Class for discovering classes via reflection in the java class path.
- * <br>
- * If analyzing of classpath fails, it falls back on reading class names
- * from file list {@link #CLASS_LIST} as resource stream.
+ * Class for discovering classes via reflection in the java class path. <br>
+ * If analyzing of classpath fails, it falls back on reading class names from file list {@link
+ * #CLASS_LIST} as resource stream.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  */
@@ -49,11 +48,9 @@ public class AutoClassDiscovery {
 
     protected static ClassCache m_Cache;
 
-    public final static String CLASS_LIST = "moa.classes";
+    public static final String CLASS_LIST = "moa.classes";
 
-    /**
-     * Initializes the class cache
-     */
+    /** Initializes the class cache */
     protected static synchronized void initCache() {
         if (m_Cache == null) {
             m_Cache = new ClassCache();
@@ -62,19 +59,20 @@ public class AutoClassDiscovery {
             if (m_Cache.getClassnames("moa.classifiers.trees").isEmpty()) {
                 InputStream inputStream = null;
                 try {
-                    inputStream = m_Cache.getClass().getClassLoader().getResourceAsStream(CLASS_LIST);
+                    inputStream =
+                            m_Cache.getClass().getClassLoader().getResourceAsStream(CLASS_LIST);
                     m_Cache = new ClassCache(new FixedClassListTraversal(inputStream));
-                }
-                catch (Exception e) {
-                    System.err.println("Failed to initialize class cache from fixed list (" + CLASS_LIST + ")!");
+                } catch (Exception e) {
+                    System.err.println(
+                            "Failed to initialize class cache from fixed list ("
+                                    + CLASS_LIST
+                                    + ")!");
                     e.printStackTrace();
-                }
-                finally {
+                } finally {
                     if (inputStream != null) {
                         try {
                             inputStream.close();
-                        }
-                        catch (Exception e) {
+                        } catch (Exception e) {
                             // ignored
                         }
                     }
@@ -85,6 +83,7 @@ public class AutoClassDiscovery {
 
     /**
      * Returns all class names stored in the cache.
+     *
      * @return the class names
      */
     public static List<String> getAllClassNames() {
@@ -119,8 +118,7 @@ public class AutoClassDiscovery {
         return cached;
     }
 
-    public static Class[] findClassesOfType(String packageNameToSearch,
-                                            Class<?> typeDesired) {
+    public static Class[] findClassesOfType(String packageNameToSearch, Class<?> typeDesired) {
         ArrayList<Class<?>> classesFound = new ArrayList<>();
         String[] classNames = findClassNames(packageNameToSearch);
         for (String className : classNames) {
@@ -135,8 +133,7 @@ public class AutoClassDiscovery {
         return classesFound.toArray(new Class[classesFound.size()]);
     }
 
-    public static boolean isPublicConcreteClassOfType(String className,
-                                                      Class<?> typeDesired) {
+    public static boolean isPublicConcreteClassOfType(String className, Class<?> typeDesired) {
         Class<?> testClass = null;
         try {
             testClass = Class.forName(className);
@@ -145,8 +142,9 @@ public class AutoClassDiscovery {
         }
         int classModifiers = testClass.getModifiers();
         return (java.lang.reflect.Modifier.isPublic(classModifiers)
-            && !java.lang.reflect.Modifier.isAbstract(classModifiers)
-            && typeDesired.isAssignableFrom(testClass) && hasEmptyConstructor(testClass));
+                && !java.lang.reflect.Modifier.isAbstract(classModifiers)
+                && typeDesired.isAssignableFrom(testClass)
+                && hasEmptyConstructor(testClass));
     }
 
     public static boolean hasEmptyConstructor(Class<?> type) {
@@ -159,8 +157,8 @@ public class AutoClassDiscovery {
     }
 
     /**
-     * Outputs all class names below "moa" either to stdout or to the
-     * file provided as first argument.
+     * Outputs all class names below "moa" either to stdout or to the file provided as first
+     * argument.
      *
      * @param args optional file for storing the classnames
      * @throws Exception if writing to file fails
@@ -169,13 +167,10 @@ public class AutoClassDiscovery {
         initCache();
         List<String> allClassnames = getAllClassNames();
         PrintStream out = System.out;
-        if (args.length > 0)
-            out = new PrintStream(new File(args[0]));
+        if (args.length > 0) out = new PrintStream(new File(args[0]));
         Collections.sort(allClassnames);
-        for (String clsname: allClassnames)
-            out.println(clsname);
+        for (String clsname : allClassnames) out.println(clsname);
         out.flush();
-        if (args.length > 0)
-            out.close();
+        if (args.length > 0) out.close();
     }
 }

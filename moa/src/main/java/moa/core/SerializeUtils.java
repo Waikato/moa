@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
@@ -66,19 +66,19 @@ public class SerializeUtils {
         }
     }
 
-    public static void writeToFile(File file, Serializable obj)
-            throws IOException {
-        ObjectOutputStream out = new ObjectOutputStream(new GZIPOutputStream(
-                new BufferedOutputStream(new FileOutputStream(file))));
+    public static void writeToFile(File file, Serializable obj) throws IOException {
+        ObjectOutputStream out =
+                new ObjectOutputStream(
+                        new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(file))));
         out.writeObject(obj);
         out.flush();
         out.close();
     }
 
-    public static Object readFromFile(File file) throws IOException,
-            ClassNotFoundException {
-        ObjectInputStream in = new ObjectInputStream(new GZIPInputStream(
-                new BufferedInputStream(new FileInputStream(file))));
+    public static Object readFromFile(File file) throws IOException, ClassNotFoundException {
+        ObjectInputStream in =
+                new ObjectInputStream(
+                        new GZIPInputStream(new BufferedInputStream(new FileInputStream(file))));
         Object obj = in.readObject();
         in.close();
         return obj;
@@ -86,14 +86,13 @@ public class SerializeUtils {
 
     public static Object copyObject(Serializable obj) throws Exception {
         ByteArrayOutputStream baoStream = new ByteArrayOutputStream();
-        ObjectOutputStream out = new ObjectOutputStream(
-                new BufferedOutputStream(baoStream));
+        ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(baoStream));
         out.writeObject(obj);
         out.flush();
         out.close();
         byte[] byteArray = baoStream.toByteArray();
-        ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(
-                new ByteArrayInputStream(byteArray)));
+        ObjectInputStream in =
+                new ObjectInputStream(new BufferedInputStream(new ByteArrayInputStream(byteArray)));
         Object copy = in.readObject();
         in.close();
         return copy;
@@ -101,8 +100,7 @@ public class SerializeUtils {
 
     public static int measureObjectByteSize(Serializable obj) throws Exception {
         ByteCountingOutputStream bcoStream = new ByteCountingOutputStream();
-        ObjectOutputStream out = new ObjectOutputStream(
-                new BufferedOutputStream(bcoStream));
+        ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(bcoStream));
         out.writeObject(obj);
         out.flush();
         out.close();

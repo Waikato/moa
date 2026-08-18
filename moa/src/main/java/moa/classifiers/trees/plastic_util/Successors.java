@@ -28,12 +28,9 @@ class Successors extends AbstractMOAObject {
     private final boolean isBinarySplit;
     private final boolean isNumericSplit;
 
-
     protected boolean addSuccessor(CustomEFDTNode node, SuccessorIdentifier key) {
-        if (node == null)
-            return false;
-        if (isNumericSplit != key.isNumeric())
-            return false;
+        if (node == null) return false;
+        if (isNumericSplit != key.isNumeric()) return false;
         if (successors.size() >= 2 && isBinary()) {
             return false;
         }
@@ -44,47 +41,42 @@ class Successors extends AbstractMOAObject {
         return true;
     }
 
-
     public boolean addSuccessorNumeric(Double attValue, CustomEFDTNode n, boolean isLower) {
-        if (n == null)
-            return false;
-        if (!isNumericSplit)
-            return false;
-        if (successors.size() >= 2)
-            return false;
-        if (referenceValue != null && !referenceValue.equals(attValue))
-            return false;
+        if (n == null) return false;
+        if (!isNumericSplit) return false;
+        if (successors.size() >= 2) return false;
+        if (referenceValue != null && !referenceValue.equals(attValue)) return false;
 
         SuccessorIdentifier id = new SuccessorIdentifier(true, attValue, attValue, isLower);
-        if (successors.containsKey(id))
-            return false;
+        if (successors.containsKey(id)) return false;
 
         referenceValue = attValue;
         successors.put(id, n);
         return true;
     }
 
-
     public boolean addSuccessorNominalBinary(Double attValue, CustomEFDTNode n) {
-        if (n == null)
-            return false;
-        if (isNumericSplit)
-            return false;
-        if (!isBinarySplit)
-            return false;
-        if (successors.size() >= 2)
-            return false;
+        if (n == null) return false;
+        if (isNumericSplit) return false;
+        if (!isBinarySplit) return false;
+        if (successors.size() >= 2) return false;
         if (successors.size() == 1) {
-            SuccessorIdentifier key = (SuccessorIdentifier) successors.keySet().toArray()[0];  // get key of existing successor
-            if (key.getValue() == SuccessorIdentifier.DEFAULT_NOMINAL_VALUE) { // check if the key is the default key for nominal values
-                if (!referenceValue.equals(attValue)) // if the key is the default key, only add the successor if the referenceValue of the split matches the provided value
+            SuccessorIdentifier key =
+                    (SuccessorIdentifier)
+                            successors.keySet().toArray()[0]; // get key of existing successor
+            if (key.getValue()
+                    == SuccessorIdentifier
+                            .DEFAULT_NOMINAL_VALUE) { // check if the key is the default key for
+                // nominal values
+                if (!referenceValue.equals(
+                        attValue)) // if the key is the default key, only add the successor if the
+                    // referenceValue of the split matches the provided value
                     return false;
             }
         }
 
         SuccessorIdentifier id = new SuccessorIdentifier(false, attValue, attValue, false);
-        if (successors.containsKey(id))
-            return false;
+        if (successors.containsKey(id)) return false;
 
         referenceValue = attValue;
         successors.put(id, n);
@@ -92,34 +84,27 @@ class Successors extends AbstractMOAObject {
     }
 
     public boolean addDefaultSuccessorNominalBinary(CustomEFDTNode n) {
-        if (n == null)
-            return false;
-        if (isNumericSplit)
-            return false;
-        if (!isBinarySplit)
-            return false;
-        if (successors.size() >= 2)
-            return false;
+        if (n == null) return false;
+        if (isNumericSplit) return false;
+        if (!isBinarySplit) return false;
+        if (successors.size() >= 2) return false;
 
-        SuccessorIdentifier id = new SuccessorIdentifier(false, referenceValue, SuccessorIdentifier.DEFAULT_NOMINAL_VALUE, false);
-        if (successors.containsKey(id))
-            return false;
+        SuccessorIdentifier id =
+                new SuccessorIdentifier(
+                        false, referenceValue, SuccessorIdentifier.DEFAULT_NOMINAL_VALUE, false);
+        if (successors.containsKey(id)) return false;
 
         successors.put(id, n);
         return true;
     }
 
     public boolean addSuccessorNominalMultiway(Double attValue, CustomEFDTNode n) {
-        if (n == null)
-            return false;
-        if (isNumericSplit)
-            return false;
-        if (isBinarySplit)
-            return false;
+        if (n == null) return false;
+        if (isNumericSplit) return false;
+        if (isBinarySplit) return false;
 
         SuccessorIdentifier id = new SuccessorIdentifier(false, attValue, attValue, false);
-        if (successors.containsKey(id))
-            return false;
+        if (successors.containsKey(id)) return false;
 
         successors.put(id, n);
         return true;
@@ -131,14 +116,13 @@ class Successors extends AbstractMOAObject {
 
     public CustomEFDTNode getSuccessorNode(Double attributeValue) {
         for (SuccessorIdentifier s : successors.keySet()) {
-            if (s.equals(attributeValue))
-                return successors.get(s);
+            if (s.equals(attributeValue)) return successors.get(s);
         }
         return null;
     }
 
     public SuccessorIdentifier getSuccessorKey(Object key) {
-        //TODO: Looping over a set is probably not the best way to do this.
+        // TODO: Looping over a set is probably not the best way to do this.
         for (SuccessorIdentifier successorKey : successors.keySet()) {
             if (successorKey.equals(key)) {
                 return successorKey;
@@ -168,30 +152,28 @@ class Successors extends AbstractMOAObject {
     }
 
     public SuccessorIdentifier getMissingKey() {
-        if (successors.size() > 1)
-            return null;
+        if (successors.size() > 1) return null;
         SuccessorIdentifier someKey = (SuccessorIdentifier) successors.keySet().toArray()[0];
         return someKey.getOther();
     }
 
     public boolean lowerIsMissing() {
         SuccessorIdentifier key = getMissingKey();
-        if (key == null)
-            return false;
+        if (key == null) return false;
         return key.isLower();
     }
 
     public boolean upperIsMissing() {
         SuccessorIdentifier key = getMissingKey();
-        if (key == null)
-            return false;
+        if (key == null) return false;
         return !key.isLower();
     }
 
     public void adjustThreshold(double newThreshold) {
         HashMap<SuccessorIdentifier, CustomEFDTNode> newSuccessors = new HashMap<>();
-        for (SuccessorIdentifier oldId: successors.keySet()) {
-            SuccessorIdentifier newId = new SuccessorIdentifier(true, newThreshold, newThreshold, oldId.isLower());
+        for (SuccessorIdentifier oldId : successors.keySet()) {
+            SuccessorIdentifier newId =
+                    new SuccessorIdentifier(true, newThreshold, newThreshold, oldId.isLower());
             newSuccessors.put(newId, successors.get(oldId));
         }
         referenceValue = newThreshold;
@@ -215,7 +197,5 @@ class Successors extends AbstractMOAObject {
     }
 
     @Override
-    public void getDescription(StringBuilder sb, int indent) {
-
-    }
+    public void getDescription(StringBuilder sb, int indent) {}
 }

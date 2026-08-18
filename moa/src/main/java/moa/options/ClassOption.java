@@ -15,15 +15,16 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.options;
 
-import java.io.File;
 import com.github.javacliparser.Option;
 import com.github.javacliparser.Options;
-import moa.options.OptionHandler;
+
 import moa.tasks.Task;
+
+import java.io.File;
 
 /**
  * Class option.
@@ -35,13 +36,22 @@ public class ClassOption extends AbstractClassOption {
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption(String name, char cliChar, String purpose,
-            Class<?> requiredType, String defaultCLIString) {
+    public ClassOption(
+            String name,
+            char cliChar,
+            String purpose,
+            Class<?> requiredType,
+            String defaultCLIString) {
         super(name, cliChar, purpose, requiredType, defaultCLIString);
     }
 
-    public ClassOption(String name, char cliChar, String purpose,
-            Class<?> requiredType, String defaultCLIString, String nullString) {
+    public ClassOption(
+            String name,
+            char cliChar,
+            String purpose,
+            Class<?> requiredType,
+            String defaultCLIString,
+            String nullString) {
         super(name, cliChar, purpose, requiredType, defaultCLIString, nullString);
     }
 
@@ -60,8 +70,7 @@ public class ClassOption extends AbstractClassOption {
             this.currentValue = null;
         } else {
             try {
-                this.currentValue = cliStringToObject(s, this.requiredType,
-                        null);
+                this.currentValue = cliStringToObject(s, this.requiredType, null);
             } catch (Exception e) {
                 throw new IllegalArgumentException("Problems with option: " + getName(), e);
             }
@@ -92,8 +101,8 @@ public class ClassOption extends AbstractClassOption {
         return className;
     }
 
-    public static Object cliStringToObject(String cliString,
-            Class<?> requiredType, Option[] externalOptions) throws Exception {
+    public static Object cliStringToObject(
+            String cliString, Class<?> requiredType, Option[] externalOptions) throws Exception {
         if (cliString.startsWith(FILE_PREFIX_STRING)) {
             return new File(cliString.substring(FILE_PREFIX_STRING.length()));
         }
@@ -118,13 +127,12 @@ public class ClassOption extends AbstractClassOption {
         } catch (Throwable t1) {
             try {
                 // try prepending default package
-                classObject = Class.forName(requiredType.getPackage().getName()
-                        + "." + className);
+                classObject = Class.forName(requiredType.getPackage().getName() + "." + className);
             } catch (Throwable t2) {
                 try {
                     // try prepending task package
-                    classObject = Class.forName(Task.class.getPackage().getName()
-                            + "." + className);
+                    classObject =
+                            Class.forName(Task.class.getPackage().getName() + "." + className);
                 } catch (Throwable t3) {
                     throw new Exception("Class not found: " + className);
                 }
@@ -134,11 +142,12 @@ public class ClassOption extends AbstractClassOption {
         try {
             classInstance = classObject.newInstance();
         } catch (Exception ex) {
-            throw new Exception("Problem creating instance of class: "
-                    + className, ex);
+            throw new Exception("Problem creating instance of class: " + className, ex);
         }
         if (requiredType.isInstance(classInstance)
-                || ((classInstance instanceof Task) && requiredType.isAssignableFrom(((Task) classInstance).getTaskResultType()))) {
+                || ((classInstance instanceof Task)
+                        && requiredType.isAssignableFrom(
+                                ((Task) classInstance).getTaskResultType()))) {
             Options options = new Options();
             if (externalOptions != null) {
                 for (Option option : externalOptions) {
@@ -146,7 +155,8 @@ public class ClassOption extends AbstractClassOption {
                 }
             }
             if (classInstance instanceof OptionHandler) {
-                Option[] objectOptions = ((OptionHandler) classInstance).getOptions().getOptionArray();
+                Option[] objectOptions =
+                        ((OptionHandler) classInstance).getOptions().getOptionArray();
                 for (Option option : objectOptions) {
                     options.addOption(option);
                 }
@@ -154,25 +164,31 @@ public class ClassOption extends AbstractClassOption {
             try {
                 options.setViaCLIString(classOptions);
             } catch (Exception ex) {
-                throw new Exception("Problem with options to '"
-                        + className
-                        + "'."
-                        + "\n\nValid options for "
-                        + className
-                        + ":\n"
-                        + ((OptionHandler) classInstance).getOptions().getHelpString(), ex);
+                throw new Exception(
+                        "Problem with options to '"
+                                + className
+                                + "'."
+                                + "\n\nValid options for "
+                                + className
+                                + ":\n"
+                                + ((OptionHandler) classInstance).getOptions().getHelpString(),
+                        ex);
             } finally {
                 options.removeAllOptions(); // clean up listener refs
             }
         } else {
-            throw new Exception("Class named '" + className
-                    + "' is not an instance of " + requiredType.getName() + ".");
+            throw new Exception(
+                    "Class named '"
+                            + className
+                            + "' is not an instance of "
+                            + requiredType.getName()
+                            + ".");
         }
         return classInstance;
     }
 
-    //@Override
-    //public JComponent getEditComponent() {
+    // @Override
+    // public JComponent getEditComponent() {
     //    return new ClassOptionEditComponent(this);
-    //}
+    // }
 }

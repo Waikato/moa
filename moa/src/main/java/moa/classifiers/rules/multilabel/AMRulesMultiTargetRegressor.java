@@ -19,8 +19,6 @@
  */
 package moa.classifiers.rules.multilabel;
 
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.rules.multilabel.core.MultiLabelRule;
@@ -35,72 +33,81 @@ import moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor;
 import moa.options.ClassOption;
 
 /**
- * AMRules Algorithm  for multitarget
+ * AMRules Algorithm for multitarget
  *
- * splitCriterionOption- Split criterion used to assess the merit of a split
+ * <p>splitCriterionOption- Split criterion used to assess the merit of a split
  *
- * weightedVoteOption - Weighted vote type
+ * <p>weightedVoteOption - Weighted vote type
  *
- * learnerOption - Learner selection
+ * <p>learnerOption - Learner selection
  *
- * errorMeasurerOption -  Measure of error for deciding which learner should predict
+ * <p>errorMeasurerOption - Measure of error for deciding which learner should predict
  *
- * changeDetector  - Change selection
+ * <p>changeDetector - Change selection
  *
- * João Duarte, João Gama, Albert Bifet, Adaptive Model Rules From High-Speed Data Streams. TKDD 10(3): 30:1-30:22 (2016)
-
+ * <p>João Duarte, João Gama, Albert Bifet, Adaptive Model Rules From High-Speed Data Streams. TKDD
+ * 10(3): 30:1-30:22 (2016)
  */
+public class AMRulesMultiTargetRegressor extends AMRulesMultiLabelLearner
+        implements MultiTargetRegressor {
 
+    /** */
+    private static final long serialVersionUID = 1L;
 
+    public AMRulesMultiTargetRegressor() {
+        splitCriterionOption =
+                new ClassOption(
+                        "splitCriterionOption",
+                        'S',
+                        "Split criterion used to assess the merit of a split",
+                        MultiLabelSplitCriterion.class,
+                        MultiTargetVarianceRatio.class.getName());
 
+        weightedVoteOption =
+                new ClassOption(
+                        "weightedVoteOption",
+                        'w',
+                        "Weighted vote type",
+                        ErrorWeightedVoteMultiLabel.class,
+                        InverseErrorWeightedVoteMultiLabel.class.getName());
 
+        learnerOption =
+                new ClassOption(
+                        "learnerOption",
+                        'L',
+                        "Learner",
+                        MultiTargetRegressor.class,
+                        AdaptiveMultiTargetRegressor.class.getName());
 
-public class AMRulesMultiTargetRegressor extends AMRulesMultiLabelLearner implements MultiTargetRegressor{
+        errorMeasurerOption =
+                new ClassOption(
+                        "errorMeasurer",
+                        'e',
+                        "Measure of error for deciding which learner should predict.",
+                        MultiLabelErrorMeasurer.class,
+                        RelativeMeanAbsoluteDeviationMT.class.getName());
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	public  AMRulesMultiTargetRegressor(){
-		splitCriterionOption = new ClassOption("splitCriterionOption", 'S',
-				"Split criterion used to assess the merit of a split", MultiLabelSplitCriterion.class, MultiTargetVarianceRatio.class.getName()) ;
+        changeDetector =
+                new ClassOption(
+                        "changeDetector",
+                        'H',
+                        "Change Detector.",
+                        ChangeDetector.class,
+                        "PageHinkleyDM -d 0.05 -l 35.0");
+    }
 
-		 weightedVoteOption = new ClassOption("weightedVoteOption",
-					'w', "Weighted vote type", 
-					ErrorWeightedVoteMultiLabel.class,
-					InverseErrorWeightedVoteMultiLabel.class.getName());
-		 
-		 learnerOption = new ClassOption("learnerOption",
-					'L', "Learner", 
-					MultiTargetRegressor.class,
-					AdaptiveMultiTargetRegressor.class.getName());
-		 
-		 errorMeasurerOption = new ClassOption("errorMeasurer", 'e',
-					"Measure of error for deciding which learner should predict.", MultiLabelErrorMeasurer.class, RelativeMeanAbsoluteDeviationMT.class.getName()) ;
+    @Override
+    public ErrorWeightedVoteMultiLabel newErrorWeightedVote() {
+        return (ErrorWeightedVoteMultiLabel)
+                ((ErrorWeightedVoteMultiLabel) getPreparedClassOption(weightedVoteOption)).copy();
+    }
 
-	
-		 changeDetector = new ClassOption("changeDetector",
-					'H', "Change Detector.", 
-					ChangeDetector.class,
-					"PageHinkleyDM -d 0.05 -l 35.0");
-	}
-	
-	@Override
-	public ErrorWeightedVoteMultiLabel newErrorWeightedVote(){
-		return (ErrorWeightedVoteMultiLabel)((ErrorWeightedVoteMultiLabel) getPreparedClassOption(weightedVoteOption)).copy();
-		
-	}
+    @Override
+    protected MultiLabelRule newDefaultRule() {
+        return new MultiLabelRuleRegression(1);
+    }
 
-	@Override
-	protected MultiLabelRule newDefaultRule() {
-		return new MultiLabelRuleRegression(1);
-	}
-
-	public AMRulesMultiTargetRegressor(double attributesPercentage) {
-		super(attributesPercentage);
-	}
-
-
-	
+    public AMRulesMultiTargetRegressor(double attributesPercentage) {
+        super(attributesPercentage);
+    }
 }

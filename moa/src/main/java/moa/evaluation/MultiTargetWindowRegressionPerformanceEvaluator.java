@@ -15,23 +15,20 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
+
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-
-import com.github.javacliparser.IntOption;
-
 import moa.tasks.TaskMonitor;
-
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Multi-target regression evaluator that updates evaluation results using a sliding window.
@@ -40,12 +37,11 @@ import com.yahoo.labs.samoa.instances.Prediction;
  * @version $Revision: 7 $
  */
 public class MultiTargetWindowRegressionPerformanceEvaluator extends AbstractOptionHandler
-implements MultiTargetPerformanceEvaluator, RegressionPerformanceEvaluator {
+        implements MultiTargetPerformanceEvaluator, RegressionPerformanceEvaluator {
 
     private static final long serialVersionUID = 1L;
 
-    public IntOption widthOption = new IntOption("width",
-            'w', "Size of Window", 1000);
+    public IntOption widthOption = new IntOption("width", 'w', "Size of Window", 1000);
 
     protected double TotalweightObserved = 0;
 
@@ -56,7 +52,7 @@ implements MultiTargetPerformanceEvaluator, RegressionPerformanceEvaluator {
     protected Estimator averageError;
 
     protected int numClasses;
-    
+
     protected int numberOutputs;
 
     public class Estimator {
@@ -110,18 +106,15 @@ implements MultiTargetPerformanceEvaluator, RegressionPerformanceEvaluator {
     }
 
     @Override
-    public void addResult(Example<Instance> example, double[] prediction) {
-    }
+    public void addResult(Example<Instance> example, double[] prediction) {}
 
     @Override
     public Measurement[] getPerformanceMeasurements() {
-        return new Measurement[]{
-                    new Measurement("classified instances",
-                    getTotalWeightObserved()),
-                    new Measurement("mean absolute error",
-                    getMeanError()),
-                    new Measurement("root mean squared error",
-                    getSquareError())};
+        return new Measurement[] {
+            new Measurement("classified instances", getTotalWeightObserved()),
+            new Measurement("mean absolute error", getMeanError()),
+            new Measurement("root mean squared error", getSquareError())
+        };
     }
 
     public double getTotalWeightObserved() {
@@ -129,33 +122,33 @@ implements MultiTargetPerformanceEvaluator, RegressionPerformanceEvaluator {
     }
 
     public double getMeanError() {
-        return this.weightObserved.total() > 0.0 ? this.averageError.total()
-                / (this.weightObserved.total()*this.numberOutputs) : 0.0;
+        return this.weightObserved.total() > 0.0
+                ? this.averageError.total() / (this.weightObserved.total() * this.numberOutputs)
+                : 0.0;
     }
 
     public double getSquareError() {
-        return Math.sqrt(this.weightObserved.total() > 0.0 ? this.squareError.total()
-                / (this.weightObserved.total()*this.numberOutputs) : 0.0);
+        return Math.sqrt(
+                this.weightObserved.total() > 0.0
+                        ? this.squareError.total()
+                                / (this.weightObserved.total() * this.numberOutputs)
+                        : 0.0);
     }
 
     @Override
     public void getDescription(StringBuilder sb, int indent) {
-        Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
-                sb, indent);
+        Measurement.getMeasurementsDescription(getPerformanceMeasurements(), sb, indent);
     }
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
-    }
-    
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {}
 
-	@Override
-	public void addResult(Example<Instance> testInst, Prediction prediction) {
-		MultiLabelInstance inst=(MultiLabelInstance) testInst.getData();
-       double weight = inst.weight();
+    @Override
+    public void addResult(Example<Instance> testInst, Prediction prediction) {
+        MultiLabelInstance inst = (MultiLabelInstance) testInst.getData();
+        double weight = inst.weight();
         if (numberOutputs == 0) {
-        	numberOutputs = inst.numberOutputTargets();
+            numberOutputs = inst.numberOutputTargets();
         }
         if (weight > 0.0) {
             if (TotalweightObserved == 0) {
@@ -164,15 +157,14 @@ implements MultiTargetPerformanceEvaluator, RegressionPerformanceEvaluator {
             this.TotalweightObserved += weight;
             this.weightObserved.add(weight);
 
-            if (prediction!=null) {
-            	for (int i = 0; i< numberOutputs;i++){
-	            	double error=(inst.valueOutputAttribute(i) - prediction.getVote(i, 0));
-	                this.squareError.add( error*error);
-	                this.averageError.add(Math.abs(error));
-            	}
+            if (prediction != null) {
+                for (int i = 0; i < numberOutputs; i++) {
+                    double error = (inst.valueOutputAttribute(i) - prediction.getVote(i, 0));
+                    this.squareError.add(error * error);
+                    this.averageError.add(Math.abs(error));
+                }
             }
-            //System.out.println(inst.classValue()+", "+prediction[0]);
+            // System.out.println(inst.classValue()+", "+prediction[0]);
         }
-		
-	}
+    }
 }

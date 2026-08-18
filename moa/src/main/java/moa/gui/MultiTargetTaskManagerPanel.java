@@ -16,7 +16,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
@@ -27,24 +27,9 @@ import moa.tasks.EvaluatePrequentialMultiTarget;
 import moa.tasks.MultiTargetMainTask;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
+
 import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -64,6 +49,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+
 /**
  * This panel displays the running tasks.
  *
@@ -77,8 +79,7 @@ public class MultiTargetTaskManagerPanel extends JPanel {
 
     public static String exportFileExtension = "log";
 
-    public class ProgressCellRenderer extends JProgressBar implements
-            TableCellRenderer {
+    public class ProgressCellRenderer extends JProgressBar implements TableCellRenderer {
 
         private static final long serialVersionUID = 1L;
 
@@ -88,9 +89,13 @@ public class MultiTargetTaskManagerPanel extends JPanel {
             setStringPainted(true);
         }
 
-         @Override
-        public Component getTableCellRendererComponent(JTable table,
-                Object value, boolean isSelected, boolean hasFocus, int row,
+        @Override
+        public Component getTableCellRendererComponent(
+                JTable table,
+                Object value,
+                boolean isSelected,
+                boolean hasFocus,
+                int row,
                 int column) {
             double frac = -1.0;
             if (value instanceof Double) {
@@ -102,29 +107,23 @@ public class MultiTargetTaskManagerPanel extends JPanel {
                 setString(StringUtils.doubleToString(frac * 100.0, 2, 2));
             } else {
                 setValue(0);
-                //setIndeterminate(true);
-                //setString("?");
+                // setIndeterminate(true);
+                // setString("?");
             }
             return this;
         }
 
         @Override
-        public void validate() {
-        }
+        public void validate() {}
 
         @Override
-        public void revalidate() {
-        }
+        public void revalidate() {}
 
         @Override
-        protected void firePropertyChange(String propertyName, Object oldValue,
-                Object newValue) {
-        }
+        protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {}
 
         @Override
-        public void firePropertyChange(String propertyName, boolean oldValue,
-                boolean newValue) {
-        }
+        public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {}
     }
 
     protected class TaskTableModel extends AbstractTableModel {
@@ -163,7 +162,8 @@ public class MultiTargetTaskManagerPanel extends JPanel {
             TaskThread thread = MultiTargetTaskManagerPanel.this.taskList.get(row);
             switch (col) {
                 case 0:
-                    return ((OptionHandler) thread.getTask()).getCLICreationString(MultiTargetMainTask.class);
+                    return ((OptionHandler) thread.getTask())
+                            .getCLICreationString(MultiTargetMainTask.class);
                 case 1:
                     return thread.getCurrentStatusString();
                 case 2:
@@ -182,7 +182,8 @@ public class MultiTargetTaskManagerPanel extends JPanel {
         }
     }
 
-    protected MultiTargetMainTask currentTask = new EvaluatePrequentialMultiTarget();//LearnModel();
+    protected MultiTargetMainTask currentTask =
+            new EvaluatePrequentialMultiTarget(); // LearnModel();
 
     protected List<TaskThread> taskList = new ArrayList<TaskThread>();
 
@@ -207,71 +208,76 @@ public class MultiTargetTaskManagerPanel extends JPanel {
     protected PreviewPanel previewPanel;
 
     private Preferences prefs;
-    
+
     private final String PREF_NAME = "currentTask";
-    
+
     public MultiTargetTaskManagerPanel() {
         // Read current task preference
         prefs = Preferences.userRoot().node(this.getClass().getName());
         currentTask = new EvaluatePrequentialMultiTarget();
         String taskText = this.currentTask.getCLICreationString(MultiTargetMainTask.class);
         String propertyValue = prefs.get(PREF_NAME, taskText);
-        //this.taskDescField.setText(propertyValue);
-        setTaskString(propertyValue, false); //Not store preference
+        // this.taskDescField.setText(propertyValue);
+        setTaskString(propertyValue, false); // Not store preference
         this.taskDescField.setEditable(false);
-        
+
         final Component comp = this.taskDescField;
-        this.taskDescField.addMouseListener(new MouseAdapter() {
+        this.taskDescField.addMouseListener(
+                new MouseAdapter() {
 
-            @Override
-            public void mouseClicked(MouseEvent evt) {
-                if (evt.getClickCount() == 1) {
-                    if ((evt.getButton() == MouseEvent.BUTTON3)
-                            || ((evt.getButton() == MouseEvent.BUTTON1) && evt.isAltDown() && evt.isShiftDown())) {
-                        JPopupMenu menu = new JPopupMenu();
-                        JMenuItem item;
+                    @Override
+                    public void mouseClicked(MouseEvent evt) {
+                        if (evt.getClickCount() == 1) {
+                            if ((evt.getButton() == MouseEvent.BUTTON3)
+                                    || ((evt.getButton() == MouseEvent.BUTTON1)
+                                            && evt.isAltDown()
+                                            && evt.isShiftDown())) {
+                                JPopupMenu menu = new JPopupMenu();
+                                JMenuItem item;
 
-                        item = new JMenuItem("Copy configuration to clipboard");
-                        item.addActionListener(new ActionListener() {
+                                item = new JMenuItem("Copy configuration to clipboard");
+                                item.addActionListener(
+                                        new ActionListener() {
 
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                copyClipBoardConfiguration();
+                                            @Override
+                                            public void actionPerformed(ActionEvent e) {
+                                                copyClipBoardConfiguration();
+                                            }
+                                        });
+                                menu.add(item);
+
+                                item = new JMenuItem("Save selected tasks to file");
+                                item.addActionListener(
+                                        new ActionListener() {
+
+                                            @Override
+                                            public void actionPerformed(ActionEvent arg0) {
+                                                saveLogSelectedTasks();
+                                            }
+                                        });
+                                menu.add(item);
+
+                                item = new JMenuItem("Enter configuration...");
+                                item.addActionListener(
+                                        new ActionListener() {
+
+                                            @Override
+                                            public void actionPerformed(ActionEvent arg0) {
+                                                String newTaskString =
+                                                        JOptionPane.showInputDialog(
+                                                                "Insert command line");
+                                                if (newTaskString != null) {
+                                                    setTaskString(newTaskString);
+                                                }
+                                            }
+                                        });
+                                menu.add(item);
+
+                                menu.show(comp, evt.getX(), evt.getY());
                             }
-                        });
-                        menu.add(item);
-
-
-
-                        item = new JMenuItem("Save selected tasks to file");
-                        item.addActionListener(new ActionListener() {
-
-                            @Override
-                            public void actionPerformed(ActionEvent arg0) {
-                                saveLogSelectedTasks();
-                            }
-                        });
-                        menu.add(item);
-
-
-                        item = new JMenuItem("Enter configuration...");
-                        item.addActionListener(new ActionListener() {
-
-                            @Override
-                            public void actionPerformed(ActionEvent arg0) {
-                                String newTaskString = JOptionPane.showInputDialog("Insert command line");
-                                if (newTaskString != null) {
-                                    setTaskString(newTaskString);
-                                }
-                            }
-                        });
-                        menu.add(item);
-
-                        menu.show(comp, evt.getX(), evt.getY());
+                        }
                     }
-                }
-            }
-        });
+                });
 
         JPanel configPanel = new JPanel();
         configPanel.setLayout(new BorderLayout());
@@ -282,12 +288,9 @@ public class MultiTargetTaskManagerPanel extends JPanel {
         this.taskTable = new JTable(this.taskTableModel);
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        this.taskTable.getColumnModel().getColumn(1).setCellRenderer(
-                centerRenderer);
-        this.taskTable.getColumnModel().getColumn(2).setCellRenderer(
-                centerRenderer);
-        this.taskTable.getColumnModel().getColumn(4).setCellRenderer(
-                new ProgressCellRenderer());
+        this.taskTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+        this.taskTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+        this.taskTable.getColumnModel().getColumn(4).setCellRenderer(new ProgressCellRenderer());
         JPanel controlPanel = new JPanel();
         controlPanel.add(this.pauseTaskButton);
         controlPanel.add(this.resumeTaskButton);
@@ -297,69 +300,83 @@ public class MultiTargetTaskManagerPanel extends JPanel {
         add(configPanel, BorderLayout.NORTH);
         add(new JScrollPane(this.taskTable), BorderLayout.CENTER);
         add(controlPanel, BorderLayout.SOUTH);
-        this.taskTable.getSelectionModel().addListSelectionListener(
-                new ListSelectionListener() {
+        this.taskTable
+                .getSelectionModel()
+                .addListSelectionListener(
+                        new ListSelectionListener() {
+
+                            @Override
+                            public void valueChanged(ListSelectionEvent arg0) {
+                                taskSelectionChanged();
+                            }
+                        });
+        this.configureTaskButton.addActionListener(
+                new ActionListener() {
 
                     @Override
-                    public void valueChanged(ListSelectionEvent arg0) {
-                        taskSelectionChanged();
+                    public void actionPerformed(ActionEvent arg0) {
+                        String newTaskString =
+                                ClassOptionSelectionPanel.showSelectClassDialog(
+                                        MultiTargetTaskManagerPanel.this,
+                                        "Configure task",
+                                        MultiTargetMainTask.class,
+                                        MultiTargetTaskManagerPanel.this.currentTask
+                                                .getCLICreationString(MultiTargetMainTask.class),
+                                        null);
+                        setTaskString(newTaskString);
                     }
                 });
-        this.configureTaskButton.addActionListener(new ActionListener() {
+        this.runTaskButton.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                String newTaskString = ClassOptionSelectionPanel.showSelectClassDialog(MultiTargetTaskManagerPanel.this,
-                        "Configure task", MultiTargetMainTask.class,
-                        MultiTargetTaskManagerPanel.this.currentTask.getCLICreationString(MultiTargetMainTask.class),
-                        null);
-                setTaskString(newTaskString);
-            }
-        });
-        this.runTaskButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        runTask((Task) MultiTargetTaskManagerPanel.this.currentTask.copy());
+                    }
+                });
+        this.pauseTaskButton.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                runTask((Task) MultiTargetTaskManagerPanel.this.currentTask.copy());
-            }
-        });
-        this.pauseTaskButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        pauseSelectedTasks();
+                    }
+                });
+        this.resumeTaskButton.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                pauseSelectedTasks();
-            }
-        });
-        this.resumeTaskButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        resumeSelectedTasks();
+                    }
+                });
+        this.cancelTaskButton.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                resumeSelectedTasks();
-            }
-        });
-        this.cancelTaskButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        cancelSelectedTasks();
+                    }
+                });
+        this.deleteTaskButton.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                cancelSelectedTasks();
-            }
-        });
-        this.deleteTaskButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        deleteSelectedTasks();
+                    }
+                });
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                deleteSelectedTasks();
-            }
-        });
+        javax.swing.Timer updateListTimer =
+                new javax.swing.Timer(
+                        MILLISECS_BETWEEN_REFRESH,
+                        new ActionListener() {
 
-        javax.swing.Timer updateListTimer = new javax.swing.Timer(
-                MILLISECS_BETWEEN_REFRESH, new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MultiTargetTaskManagerPanel.this.taskTable.repaint();
-            }
-        });
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                MultiTargetTaskManagerPanel.this.taskTable.repaint();
+                            }
+                        });
         updateListTimer.start();
         setPreferredSize(new Dimension(0, 200));
     }
@@ -371,16 +388,18 @@ public class MultiTargetTaskManagerPanel extends JPanel {
     public void setTaskString(String cliString) {
         setTaskString(cliString, true);
     }
-    
-    public void setTaskString(String cliString, boolean storePreference) {    
+
+    public void setTaskString(String cliString, boolean storePreference) {
         try {
-            this.currentTask = (MultiTargetMainTask) ClassOption.cliStringToObject(
-                    cliString, MultiTargetMainTask.class, null);
+            this.currentTask =
+                    (MultiTargetMainTask)
+                            ClassOption.cliStringToObject(
+                                    cliString, MultiTargetMainTask.class, null);
             String taskText = this.currentTask.getCLICreationString(MultiTargetMainTask.class);
             this.taskDescField.setText(taskText);
-            if (storePreference == true){
-            //Save task text as a preference
-            prefs.put(PREF_NAME, taskText);
+            if (storePreference == true) {
+                // Save task text as a preference
+                prefs.put(PREF_NAME, taskText);
             }
         } catch (Exception ex) {
             GUIUtils.showExceptionDialog(this, "Problem with task", ex);
@@ -398,7 +417,9 @@ public class MultiTargetTaskManagerPanel extends JPanel {
     public void taskSelectionChanged() {
         TaskThread[] selectedTasks = getSelectedTasks();
         if (selectedTasks.length == 1) {
-            setTaskString(((OptionHandler) selectedTasks[0].getTask()).getCLICreationString(MultiTargetMainTask.class));
+            setTaskString(
+                    ((OptionHandler) selectedTasks[0].getTask())
+                            .getCLICreationString(MultiTargetMainTask.class));
             if (this.previewPanel != null) {
                 this.previewPanel.setTaskThreadToPreview(selectedTasks[0]);
             }
@@ -451,36 +472,33 @@ public class MultiTargetTaskManagerPanel extends JPanel {
         StringSelection selection = new StringSelection(this.taskDescField.getText().trim());
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, selection);
-
     }
 
     public void saveLogSelectedTasks() {
         String tasksLog = "";
         TaskThread[] selectedTasks = getSelectedTasks();
         for (TaskThread thread : selectedTasks) {
-            tasksLog += ((OptionHandler) thread.getTask()).getCLICreationString(MultiTargetMainTask.class) + "\n";
+            tasksLog +=
+                    ((OptionHandler) thread.getTask())
+                                    .getCLICreationString(MultiTargetMainTask.class)
+                            + "\n";
         }
 
         BaseFileChooser fileChooser = new BaseFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(true);
-        fileChooser.addChoosableFileFilter(new FileExtensionFilter(
-                exportFileExtension));
+        fileChooser.addChoosableFileFilter(new FileExtensionFilter(exportFileExtension));
         if (fileChooser.showSaveDialog(this) == BaseFileChooser.APPROVE_OPTION) {
             File chosenFile = fileChooser.getSelectedFile();
             String fileName = chosenFile.getPath();
-            if (!chosenFile.exists()
-                    && !fileName.endsWith(exportFileExtension)) {
+            if (!chosenFile.exists() && !fileName.endsWith(exportFileExtension)) {
                 fileName = fileName + "." + exportFileExtension;
             }
             try {
-                PrintWriter out = new PrintWriter(new BufferedWriter(
-                        new FileWriter(fileName)));
+                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
                 out.write(tasksLog);
                 out.close();
             } catch (IOException ioe) {
-                GUIUtils.showExceptionDialog(
-                        this,
-                        "Problem saving file " + fileName, ioe);
+                GUIUtils.showExceptionDialog(this, "Problem saving file " + fileName, ioe);
             }
         }
     }
@@ -505,13 +523,14 @@ public class MultiTargetTaskManagerPanel extends JPanel {
     public static void main(String[] args) {
         try {
             LookAndFeel.install();
-            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            javax.swing.SwingUtilities.invokeLater(
+                    new Runnable() {
 
-                @Override
-                public void run() {
-                    createAndShowGUI();
-                }
-            });
+                        @Override
+                        public void run() {
+                            createAndShowGUI();
+                        }
+                    });
         } catch (Exception e) {
             e.printStackTrace();
         }

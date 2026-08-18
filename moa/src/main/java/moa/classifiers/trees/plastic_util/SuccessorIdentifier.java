@@ -20,25 +20,22 @@ class SuccessorIdentifier extends AbstractMOAObject implements Comparable<Succes
         hashCode = toString().hashCode();
     }
 
-    public SuccessorIdentifier(boolean isNumeric, Double referenceValue, Double selectorValue, boolean isLower) {
+    public SuccessorIdentifier(
+            boolean isNumeric, Double referenceValue, Double selectorValue, boolean isLower) {
         this.isNumeric = isNumeric;
         this.isLower = isLower;
         this.selectorValue = selectorValue;
 
-        if (referenceValue == null)
-            this.referenceValue = selectorValue;
-        else
-            this.referenceValue = referenceValue;
+        if (referenceValue == null) this.referenceValue = selectorValue;
+        else this.referenceValue = referenceValue;
 
         hashCode = toString().hashCode();
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null)
-            return false;
+        if (this == o) return true;
+        if (o == null) return false;
         if (getClass() == o.getClass()) {
             SuccessorIdentifier that = (SuccessorIdentifier) o;
             boolean equal = isNumeric() == that.isNumeric();
@@ -50,13 +47,15 @@ class SuccessorIdentifier extends AbstractMOAObject implements Comparable<Succes
             return equal;
         }
         Double that = (Double) o;
-        if (isNumeric)
-            return containsNumericAttribute(that);
+        if (isNumeric) return containsNumericAttribute(that);
         else {
             boolean result = Objects.equals(selectorValue, that);
             if (!result) {
-                // use the default successor if the reference value is not `that` and the selector value is the selectorvalue of the default successor
-                result = Objects.equals(selectorValue, DEFAULT_NOMINAL_VALUE) && !Objects.equals(referenceValue, that);
+                // use the default successor if the reference value is not `that` and the selector
+                // value is the selectorvalue of the default successor
+                result =
+                        Objects.equals(selectorValue, DEFAULT_NOMINAL_VALUE)
+                                && !Objects.equals(referenceValue, that);
             }
             return result;
         }
@@ -69,24 +68,21 @@ class SuccessorIdentifier extends AbstractMOAObject implements Comparable<Succes
 
     @Override
     public int compareTo(SuccessorIdentifier other) {
-        if (isNumeric != other.isNumeric)
-            return 0;
+        if (isNumeric != other.isNumeric) return 0;
         if (isNumeric) {
-            if (!Objects.equals(referenceValue, other.referenceValue))
-                return 0;
-            if (isLower == other.isLower)
-                return 0;
+            if (!Objects.equals(referenceValue, other.referenceValue)) return 0;
+            if (isLower == other.isLower) return 0;
             return isLower ? -1 : 1;
-        }
-        else {
-            if (selectorValue == null) // this can only happen in the case of a dummy split (which will be pruned after reordering)
+        } else {
+            if (selectorValue
+                    == null) // this can only happen in the case of a dummy split (which will be
+                // pruned after reordering)
                 return 0;
-            if (selectorValue == DEFAULT_NOMINAL_VALUE || other.selectorValue == DEFAULT_NOMINAL_VALUE)
+            if (selectorValue == DEFAULT_NOMINAL_VALUE
+                    || other.selectorValue == DEFAULT_NOMINAL_VALUE)
                 return referenceValue == DEFAULT_NOMINAL_VALUE ? 1 : -1;
-            if (selectorValue.equals(other.selectorValue))
-                return 0;
-            if (selectorValue < other.selectorValue)
-                return -1;
+            if (selectorValue.equals(other.selectorValue)) return 0;
+            if (selectorValue < other.selectorValue) return -1;
             return 1;
         }
     }
@@ -100,20 +96,17 @@ class SuccessorIdentifier extends AbstractMOAObject implements Comparable<Succes
     }
 
     private boolean matchesCategoricalValue(double attValue) {
-        if (isNumeric)
-            return false;
+        if (isNumeric) return false;
         return selectorValue == attValue;
     }
 
     private boolean containsNumericAttribute(double attValue) {
-        if (!isNumeric)
-            return false;
+        if (!isNumeric) return false;
         return isLower ? attValue <= selectorValue : attValue > selectorValue;
     }
 
     public SuccessorIdentifier getOther() {
-        if (!isNumeric)
-            return null;
+        if (!isNumeric) return null;
         return new SuccessorIdentifier(isNumeric, selectorValue, selectorValue, !isLower);
     }
 
@@ -122,8 +115,7 @@ class SuccessorIdentifier extends AbstractMOAObject implements Comparable<Succes
     }
 
     public boolean isLower() {
-        if (!isNumeric)
-            return false;
+        if (!isNumeric) return false;
         return isLower;
     }
 
@@ -135,15 +127,12 @@ class SuccessorIdentifier extends AbstractMOAObject implements Comparable<Succes
         if (isNumeric) {
             String s = "%b%f%f%b";
             return String.format(s, true, referenceValue, selectorValue, isLower);
-        }
-        else {
+        } else {
             String s = "%b%f%f";
             return String.format(s, false, referenceValue, selectorValue);
         }
     }
 
     @Override
-    public void getDescription(StringBuilder sb, int indent) {
-
-    }
+    public void getDescription(StringBuilder sb, int indent) {}
 }

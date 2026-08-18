@@ -15,50 +15,50 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.clusterers;
 
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.MOAObject;
 import moa.cluster.Clustering;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.Measurement;
 import moa.gui.AWTRenderable;
 import moa.options.OptionHandler;
-import com.yahoo.labs.samoa.instances.Instance;
 
 public interface Clusterer extends MOAObject, OptionHandler, AWTRenderable {
 
-	public void setModelContext(InstancesHeader ih);
+    public void setModelContext(InstancesHeader ih);
 
-	public InstancesHeader getModelContext();
+    public InstancesHeader getModelContext();
 
-	public boolean isRandomizable();
+    public boolean isRandomizable();
 
-	public void setRandomSeed(int s);
+    public void setRandomSeed(int s);
 
-	public boolean trainingHasStarted();
+    public boolean trainingHasStarted();
 
-	public double trainingWeightSeenByModel();
+    public double trainingWeightSeenByModel();
 
-	public void resetLearning();
+    public void resetLearning();
 
-	public void trainOnInstance(Instance inst);
+    public void trainOnInstance(Instance inst);
 
-	public double[] getVotesForInstance(Instance inst);
+    public double[] getVotesForInstance(Instance inst);
 
-	public Measurement[] getModelMeasurements();
+    public Measurement[] getModelMeasurements();
 
-	public Clusterer[] getSubClusterers();
+    public Clusterer[] getSubClusterers();
 
-	public Clusterer copy();
+    public Clusterer copy();
 
     public Clustering getClusteringResult();
 
     public boolean implementsMicroClusterer();
 
     public Clustering getMicroClusteringResult();
-    
-    public boolean keepClassLabel();
 
+    public boolean keepClassLabel();
 }

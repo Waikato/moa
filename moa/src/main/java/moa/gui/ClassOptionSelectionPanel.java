@@ -15,11 +15,19 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
 import com.github.javacliparser.gui.OptionsConfigurationPanel;
+
+import moa.capabilities.CapabilityRequirement;
+import moa.core.AutoClassDiscovery;
+import moa.core.AutoExpandVector;
+import moa.options.ClassOption;
+import moa.options.OptionHandler;
+import moa.tasks.Task;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Window;
@@ -32,17 +40,8 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import moa.capabilities.CapabilityRequirement;
-import moa.core.AutoClassDiscovery;
-import moa.core.AutoExpandVector;
-import moa.options.ClassOption;
-import moa.options.OptionHandler;
-import moa.tasks.Task;
-
 /**
- * Creates a panel that displays the classes available, letting the user select
- * a class.
- *
+ * Creates a panel that displays the classes available, letting the user select a class.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
@@ -61,7 +60,7 @@ public class ClassOptionSelectionPanel extends JPanel {
     /**
      * Sets the capability requirement of listed classes.
      *
-     * @param requirements	The capability requirements.
+     * @param requirements The capability requirements.
      */
     public static void setRequiredCapabilities(CapabilityRequirement requirements) {
         requiredCapabilities = requirements;
@@ -73,8 +72,8 @@ public class ClassOptionSelectionPanel extends JPanel {
 
     protected Object chosenObject;
 
-    public ClassOptionSelectionPanel(Class<?> requiredType,
-            String initialCLIString, String nullString) {
+    public ClassOptionSelectionPanel(
+            Class<?> requiredType, String initialCLIString, String nullString) {
         // Class<?>[] classesFound = AutoClassDiscovery.findClassesOfType("moa",
         // requiredType);
         Class<?>[] classesFound = findSuitableClasses(requiredType);
@@ -83,8 +82,7 @@ public class ClassOptionSelectionPanel extends JPanel {
         add(this.classChoiceBox, BorderLayout.NORTH);
         Object initialObject = null;
         try {
-            initialObject = ClassOption.cliStringToObject(initialCLIString,
-                    requiredType, null);
+            initialObject = ClassOption.cliStringToObject(initialCLIString, requiredType, null);
         } catch (Exception ignored) {
             // ignore exception
         }
@@ -93,48 +91,51 @@ public class ClassOptionSelectionPanel extends JPanel {
             classChoiceChanged(initialObject);
         } else {
             try {
-                Object chosen = ((Class<?>) ClassOptionSelectionPanel.this.classChoiceBox.getSelectedItem()).newInstance();
+                Object chosen =
+                        ((Class<?>) ClassOptionSelectionPanel.this.classChoiceBox.getSelectedItem())
+                                .newInstance();
                 classChoiceChanged(chosen);
             } catch (Exception ex) {
-                GUIUtils.showExceptionDialog(ClassOptionSelectionPanel.this,
-                        "Problem", ex);
+                GUIUtils.showExceptionDialog(ClassOptionSelectionPanel.this, "Problem", ex);
             }
         }
-        this.classChoiceBox.addActionListener(new ActionListener() {
+        this.classChoiceBox.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                try {
-                    Object chosen = ((Class<?>) ClassOptionSelectionPanel.this.classChoiceBox.getSelectedItem()).newInstance();
-                    classChoiceChanged(chosen);
-                } catch (Exception ex) {
-                    GUIUtils.showExceptionDialog(
-                            ClassOptionSelectionPanel.this, "Problem", ex);
-                }
-            }
-        });
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        try {
+                            Object chosen =
+                                    ((Class<?>)
+                                                    ClassOptionSelectionPanel.this.classChoiceBox
+                                                            .getSelectedItem())
+                                            .newInstance();
+                            classChoiceChanged(chosen);
+                        } catch (Exception ex) {
+                            GUIUtils.showExceptionDialog(
+                                    ClassOptionSelectionPanel.this, "Problem", ex);
+                        }
+                    }
+                });
     }
 
     public Class<?>[] findSuitableClasses(Class<?> requiredType) {
         AutoExpandVector<Class<?>> finalClasses = new AutoExpandVector<Class<?>>();
-        Class<?>[] classesFound = AutoClassDiscovery.findClassesOfType("moa",
-                requiredType);
+        Class<?>[] classesFound = AutoClassDiscovery.findClassesOfType("moa", requiredType);
         for (Class<?> foundClass : classesFound) {
             // Skip this class if it doesn't meet the capabilities requirement
-            if (requiredCapabilities != null && !requiredCapabilities.isMetBy(foundClass))
-                continue;
+            if (requiredCapabilities != null && !requiredCapabilities.isMetBy(foundClass)) continue;
 
             finalClasses.add(foundClass);
         }
-        Class<?>[] tasksFound = AutoClassDiscovery.findClassesOfType("moa",
-                Task.class);
+        Class<?>[] tasksFound = AutoClassDiscovery.findClassesOfType("moa", Task.class);
         for (Class<?> foundTask : tasksFound) {
             try {
                 Task task = (Task) foundTask.newInstance();
                 if (requiredType.isAssignableFrom(task.getTaskResultType())) {
-		    // Skip this task if its result type doesn't meet the capabilities requirement
-                    if (requiredCapabilities != null && !requiredCapabilities.isMetBy(task.getTaskResultType()))
-                        continue;
+                    // Skip this task if its result type doesn't meet the capabilities requirement
+                    if (requiredCapabilities != null
+                            && !requiredCapabilities.isMetBy(task.getTaskResultType())) continue;
 
                     finalClasses.add(foundTask);
                 }
@@ -145,13 +146,24 @@ public class ClassOptionSelectionPanel extends JPanel {
         return finalClasses.toArray(new Class<?>[finalClasses.size()]);
     }
 
-    public static String showSelectClassDialog(Component parent, String title,
-            Class<?> requiredType, String initialCLIString, String nullString) {
-        ClassOptionSelectionPanel panel = new ClassOptionSelectionPanel(
-                requiredType, initialCLIString, nullString);
-        if (JOptionPane.showOptionDialog(parent, panel, title,
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null,
-                null, null) == JOptionPane.OK_OPTION) {
+    public static String showSelectClassDialog(
+            Component parent,
+            String title,
+            Class<?> requiredType,
+            String initialCLIString,
+            String nullString) {
+        ClassOptionSelectionPanel panel =
+                new ClassOptionSelectionPanel(requiredType, initialCLIString, nullString);
+        if (JOptionPane.showOptionDialog(
+                        parent,
+                        panel,
+                        title,
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        null,
+                        null)
+                == JOptionPane.OK_OPTION) {
             return panel.getChosenObjectCLIString(requiredType);
         }
         return initialCLIString;
@@ -169,8 +181,10 @@ public class ClassOptionSelectionPanel extends JPanel {
         JComponent newChosenObjectEditor = null;
         if (this.chosenObject instanceof OptionHandler) {
             OptionHandler chosenOptionHandler = (OptionHandler) this.chosenObject;
-            newChosenObjectEditor = new OptionsConfigurationPanel(
-                    chosenOptionHandler.getPurposeString(), chosenOptionHandler.getOptions());
+            newChosenObjectEditor =
+                    new OptionsConfigurationPanel(
+                            chosenOptionHandler.getPurposeString(),
+                            chosenOptionHandler.getOptions());
         }
         if (this.chosenObjectEditor != null) {
             remove(this.chosenObjectEditor);

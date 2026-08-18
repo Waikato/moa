@@ -2,6 +2,7 @@ package moa.learners.featureanalysis;
 
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.capabilities.CapabilitiesHandler;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
@@ -12,37 +13,48 @@ import moa.core.Utils;
 import moa.options.ClassOption;
 
 /**
- * HoeffdingTree Feature Importance extends the traditional HoeffdingTree classifier to also yield feature importances.
+ * HoeffdingTree Feature Importance extends the traditional HoeffdingTree classifier to also yield
+ * feature importances.
  *
- * <p>This class uses the HoeffdingTree structure to produce feature importances.
- * This class does not interfere with the training algorithm of the underlying HoeffdingTree model.
- * Any subclass of the HoeffdingTree class can be set as the treeLearnerOption.</p>
+ * <p>This class uses the HoeffdingTree structure to produce feature importances. This class does
+ * not interfere with the training algorithm of the underlying HoeffdingTree model. Any subclass of
+ * the HoeffdingTree class can be set as the treeLearnerOption.
  *
- * <p>See details in:<br> Heitor Murilo Gomes, Rodrigo Fernandes de Mello, Bernhard Pfahringer, Albert Bifet.
- * Feature Scoring using Tree-Based Ensembles for Evolving Data Streams.
- * IEEE International Conference on Big Data (pp. 761-769), 2019</p>
- * </p>
+ * <p>See details in:<br>
+ * Heitor Murilo Gomes, Rodrigo Fernandes de Mello, Bernhard Pfahringer, Albert Bifet. Feature
+ * Scoring using Tree-Based Ensembles for Evolving Data Streams. IEEE International Conference on
+ * Big Data (pp. 761-769), 2019
  *
- * <p>Parameters:</p> <ul>
- * <li>-l : HoeffdingTree or subclass to train and to be analyzed. </li>
- * <li>-s : The feature importance estimation metric: MDI (Mean Decrease in Impurity) and COVER. </li>
+ * <p>Parameters:
+ *
+ * <ul>
+ *   <li>-l : HoeffdingTree or subclass to train and to be analyzed.
+ *   <li>-s : The feature importance estimation metric: MDI (Mean Decrease in Impurity) and COVER.
  * </ul>
  *
  * @author Heitor Murilo Gomes (heitor dot gomes at waikato dot ac dot nz)
  * @version $Revision: 1 $
  */
-public class FeatureImportanceHoeffdingTree extends AbstractClassifier implements MultiClassClassifier,
-        CapabilitiesHandler, FeatureImportanceClassifier {
+public class FeatureImportanceHoeffdingTree extends AbstractClassifier
+        implements MultiClassClassifier, CapabilitiesHandler, FeatureImportanceClassifier {
 
-    public ClassOption treeLearnerOption = new ClassOption("treeLearner", 'l',
-            "Decision Tree learner.", HoeffdingTree.class,
-            "HoeffdingTree");
+    public ClassOption treeLearnerOption =
+            new ClassOption(
+                    "treeLearner",
+                    'l',
+                    "Decision Tree learner.",
+                    HoeffdingTree.class,
+                    "HoeffdingTree");
 
     // MDI: Mean Decrease in Impurity, COVER: Number of instances reaching a node.
-    public MultiChoiceOption featureImportanceOption = new MultiChoiceOption("featureImportance", 'o',
-            "Which method to use for feature importance estimations.",
-            new String[]{"MDI", "COVER"},
-            new String[]{"MDI", "COVER"}, 0);
+    public MultiChoiceOption featureImportanceOption =
+            new MultiChoiceOption(
+                    "featureImportance",
+                    'o',
+                    "Which method to use for feature importance estimations.",
+                    new String[] {"MDI", "COVER"},
+                    new String[] {"MDI", "COVER"},
+                    0);
 
     // The internal tree learner object
     protected HoeffdingTree treeLearner = null;
@@ -51,11 +63,10 @@ public class FeatureImportanceHoeffdingTree extends AbstractClassifier implement
     protected double[] featureImportances;
     protected int nodeCountAtLastFeatureImportanceInquiry = 0;
 
-
     protected int featureImportancesInquiries = 0;
 
     protected static final int FEATURE_IMPORTANCE_MDI = 0;
-    protected static final int FEATURE_IMPORTANCE_COVER  = 1;
+    protected static final int FEATURE_IMPORTANCE_COVER = 1;
 
     @Override
     public double[] getFeatureImportances(boolean normalize) {
@@ -71,7 +82,7 @@ public class FeatureImportanceHoeffdingTree extends AbstractClassifier implement
                 this.nodeCountAtLastFeatureImportanceInquiry = this.treeLearner.getNodeCount();
 
                 // If there was a split, then recalculate scores.
-                switch(this.featureImportanceOption.getChosenIndex()) {
+                switch (this.featureImportanceOption.getChosenIndex()) {
                     case FEATURE_IMPORTANCE_MDI:
                         this.calcMeanDecreaseImpurity(this.treeLearner.getTreeRoot());
                         break;
@@ -94,8 +105,7 @@ public class FeatureImportanceHoeffdingTree extends AbstractClassifier implement
 
     @Override
     public int[] getTopKFeatures(int k, boolean normalize) {
-        if (this.getFeatureImportances(normalize) == null)
-            return null;
+        if (this.getFeatureImportances(normalize) == null) return null;
         if (k > this.getFeatureImportances(normalize).length)
             k = this.getFeatureImportances(normalize).length;
 
@@ -113,7 +123,8 @@ public class FeatureImportanceHoeffdingTree extends AbstractClassifier implement
         return topK;
     }
 
-    // TODO: Merge this method and calcMeanDecreaseImpurity as they are very similar in their structure.
+    // TODO: Merge this method and calcMeanDecreaseImpurity as they are very similar in their
+    // structure.
     private void calcMeanCover(HoeffdingTree.Node node) {
         if (node instanceof HoeffdingTree.SplitNode) {
             HoeffdingTree.SplitNode splitNode = (HoeffdingTree.SplitNode) node;
@@ -121,21 +132,20 @@ public class FeatureImportanceHoeffdingTree extends AbstractClassifier implement
 
             if (this.featureImportances.length <= attributeIndex) {
                 System.out.println("Error with attributeIndex");
-                assert(this.featureImportances.length <= attributeIndex);
+                assert (this.featureImportances.length <= attributeIndex);
             }
 
             this.featureImportances[attributeIndex] += calcNodeCover(splitNode);
 
             for (HoeffdingTree.Node childNode : splitNode.getChildren()) {
-                if (childNode != null)
-                    calcMeanCover(childNode);
+                if (childNode != null) calcMeanCover(childNode);
             }
         }
     }
 
     public double calcNodeCover(HoeffdingTree.SplitNode splitNode) {
-        double[] thisNodeClassDistributionAtLeaves = splitNode
-                .getObservedClassDistributionAtLeavesReachableThroughThisNode();
+        double[] thisNodeClassDistributionAtLeaves =
+                splitNode.getObservedClassDistributionAtLeavesReachableThroughThisNode();
         return Utils.sum(thisNodeClassDistributionAtLeaves);
     }
 
@@ -146,40 +156,44 @@ public class FeatureImportanceHoeffdingTree extends AbstractClassifier implement
 
             if (this.featureImportances.length <= attributeIndex) {
                 System.out.println("Error with attributeIndex");
-                assert(this.featureImportances.length <= attributeIndex);
+                assert (this.featureImportances.length <= attributeIndex);
             }
 
             this.featureImportances[attributeIndex] += calcNodeDecreaseImpurity(splitNode);
 
             for (HoeffdingTree.Node childNode : splitNode.getChildren()) {
-                if (childNode != null)
-                    calcMeanDecreaseImpurity(childNode);
+                if (childNode != null) calcMeanDecreaseImpurity(childNode);
             }
         }
     }
 
     public double calcNodeDecreaseImpurity(HoeffdingTree.SplitNode splitNode) {
-        double[] thisNodeClassDistributionAtLeaves = splitNode
-                .getObservedClassDistributionAtLeavesReachableThroughThisNode();
-        double thisNodeEntropy = InfoGainSplitCriterion.computeEntropy(thisNodeClassDistributionAtLeaves);
+        double[] thisNodeClassDistributionAtLeaves =
+                splitNode.getObservedClassDistributionAtLeavesReachableThroughThisNode();
+        double thisNodeEntropy =
+                InfoGainSplitCriterion.computeEntropy(thisNodeClassDistributionAtLeaves);
         double sumChildrenImpurityDecrease = 0;
         double thisNodeWeight = Utils.sum(thisNodeClassDistributionAtLeaves);
 
         for (HoeffdingTree.Node childNode : splitNode.getChildren()) {
             if (childNode != null) {
-                int childNumInstances = (int) Utils.sum(childNode
-                        .getObservedClassDistributionAtLeavesReachableThroughThisNode());
+                int childNumInstances =
+                        (int)
+                                Utils.sum(
+                                        childNode
+                                                .getObservedClassDistributionAtLeavesReachableThroughThisNode());
 
-                double childEntropy = InfoGainSplitCriterion.computeEntropy(childNode
-                        .getObservedClassDistributionAtLeavesReachableThroughThisNode());
+                double childEntropy =
+                        InfoGainSplitCriterion.computeEntropy(
+                                childNode
+                                        .getObservedClassDistributionAtLeavesReachableThroughThisNode());
 
-                sumChildrenImpurityDecrease += (childNumInstances/thisNodeWeight) * childEntropy;
+                sumChildrenImpurityDecrease += (childNumInstances / thisNodeWeight) * childEntropy;
             }
         }
         double DI = thisNodeEntropy - sumChildrenImpurityDecrease;
         return DI;
     }
-
 
     @Override
     public double[] getVotesForInstance(Instance instance) {
@@ -216,8 +230,7 @@ public class FeatureImportanceHoeffdingTree extends AbstractClassifier implement
 
     @Override
     public boolean isRandomizable() {
-        if(this.treeLearner == null)
-            return false;
+        if (this.treeLearner == null) return false;
         return this.treeLearner.isRandomizable();
     }
 }

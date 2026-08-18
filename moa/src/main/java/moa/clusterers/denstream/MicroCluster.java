@@ -14,13 +14,14 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.clusterers.denstream;
 
-import moa.cluster.CFCluster;
 import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.cluster.CFCluster;
 
 public class MicroCluster extends CFCluster {
 
@@ -29,7 +30,12 @@ public class MicroCluster extends CFCluster {
     private double lambda;
     private Timestamp currentTimestamp;
 
-    public MicroCluster(double[] center, int dimensions, long creationTimestamp, double lambda, Timestamp currentTimestamp) {
+    public MicroCluster(
+            double[] center,
+            int dimensions,
+            long creationTimestamp,
+            double lambda,
+            Timestamp currentTimestamp) {
         super(center, dimensions);
         this.creationTimestamp = creationTimestamp;
         this.lastEditT = creationTimestamp;
@@ -37,7 +43,12 @@ public class MicroCluster extends CFCluster {
         this.currentTimestamp = currentTimestamp;
     }
 
-    public MicroCluster(Instance instance, int dimensions, long timestamp, double lambda, Timestamp currentTimestamp) {
+    public MicroCluster(
+            Instance instance,
+            int dimensions,
+            long timestamp,
+            double lambda,
+            Timestamp currentTimestamp) {
         this(instance.toDoubleArray(), dimensions, timestamp, lambda, currentTimestamp);
     }
 
@@ -105,7 +116,7 @@ public class MicroCluster extends CFCluster {
 
     @Override
     public double getRadius() {
-        return getRadius(currentTimestamp.getTimestamp())*radiusFactor;
+        return getRadius(currentTimestamp.getTimestamp()) * radiusFactor;
     }
 
     public double getRadius(long timestamp) {
@@ -118,7 +129,7 @@ public class MicroCluster extends CFCluster {
         for (int i = 0; i < SS.length; i++) {
             double x1 = cf2[i] / w;
             double x2 = Math.pow(cf1[i] / w, 2);
-            //sum += Math.pow(x1 - x2,2);
+            // sum += Math.pow(x1 - x2,2);
             sum += (x1 - x2);
             if (Math.sqrt(x1 - x2) > max) {
                 max = Math.sqrt(x1 - x2);
@@ -129,7 +140,13 @@ public class MicroCluster extends CFCluster {
 
     @Override
     public MicroCluster copy() {
-        MicroCluster copy = new MicroCluster(this.LS.clone(), this.LS.length, this.getCreationTime(), this.lambda, this.currentTimestamp);
+        MicroCluster copy =
+                new MicroCluster(
+                        this.LS.clone(),
+                        this.LS.length,
+                        this.getCreationTime(),
+                        this.lambda,
+                        this.currentTimestamp);
         copy.setWeight(this.N + 1);
         copy.N = this.N;
         copy.SS = this.SS.clone();
@@ -147,7 +164,7 @@ public class MicroCluster extends CFCluster {
     }
 
     @Override
-    public CFCluster getCF(){
+    public CFCluster getCF() {
         CFCluster cf = copy();
         double w = getWeight();
         cf.setN(w);

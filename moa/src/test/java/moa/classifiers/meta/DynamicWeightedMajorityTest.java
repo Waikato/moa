@@ -13,16 +13,18 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * DynamicWeightedMajorityTest.java
- * Copyright (C) 2016 Instituto Federal de Pernambuco, Recife, Brazil
+ * DynamicWeightedMajorityTest.java Copyright (C) 2016 Instituto Federal de Pernambuco, Recife,
+ * Brazil
  */
 package moa.classifiers.meta;
 
+import static moa.test.MoaTestCase.runTest;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
-import static moa.test.MoaTestCase.runTest;
 
 /**
  * Tests the Dynamic Weighted Majority classifier.
@@ -30,8 +32,7 @@ import static moa.test.MoaTestCase.runTest;
  * @author Paulo Gonçalves (paulogoncalves at recife dot ifpe dot edu dot br)
  * @version $Revision$
  */
-public class DynamicWeightedMajorityTest
-        extends AbstractMultipleClassifierTestCase {
+public class DynamicWeightedMajorityTest extends AbstractMultipleClassifierTestCase {
 
     /**
      * Constructs the test case. Called by subclasses.
@@ -46,18 +47,19 @@ public class DynamicWeightedMajorityTest
     /**
      * Returns the classifier setups to use in the regression test.
      *
-     * @return	the setups
+     * @return the setups
      */
     @Override
     protected Classifier[] getRegressionClassifierSetups() {
-        return new Classifier[]{
-            new DynamicWeightedMajority(),};
+        return new Classifier[] {
+            new DynamicWeightedMajority(),
+        };
     }
 
     /**
      * Returns a test suite.
      *
-     * @return	the test suite
+     * @return the test suite
      */
     public static Test suite() {
         return new TestSuite(DynamicWeightedMajorityTest.class);
@@ -66,7 +68,7 @@ public class DynamicWeightedMajorityTest
     /**
      * Runs the test from command line.
      *
-     * @param args	ignored
+     * @param args ignored
      */
     public static void main(String[] args) {
         runTest(suite());

@@ -16,18 +16,19 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.generators;
+
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.core.InstanceExample;
-import com.yahoo.labs.samoa.instances.DenseInstance;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
-import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 
 /**
@@ -40,8 +41,14 @@ public class WaveformGeneratorDrift extends WaveformGenerator {
 
     private static final long serialVersionUID = 1L;
 
-    public IntOption numberAttributesDriftOption = new IntOption("numberAttributesDrift",
-            'd', "Number of attributes with drift.", 0, 0, TOTAL_ATTRIBUTES_INCLUDING_NOISE);
+    public IntOption numberAttributesDriftOption =
+            new IntOption(
+                    "numberAttributesDrift",
+                    'd',
+                    "Number of attributes with drift.",
+                    0,
+                    0,
+                    TOTAL_ATTRIBUTES_INCLUDING_NOISE);
 
     protected int[] numberAttribute;
 
@@ -51,22 +58,24 @@ public class WaveformGeneratorDrift extends WaveformGenerator {
     }
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         super.prepareForUseImpl(monitor, repository);
-        int numAtts = this.addNoiseOption.isSet() ? TOTAL_ATTRIBUTES_INCLUDING_NOISE
-                : NUM_BASE_ATTRIBUTES;
+        int numAtts =
+                this.addNoiseOption.isSet()
+                        ? TOTAL_ATTRIBUTES_INCLUDING_NOISE
+                        : NUM_BASE_ATTRIBUTES;
         this.numberAttribute = new int[numAtts];
         for (int i = 0; i < numAtts; i++) {
             this.numberAttribute[i] = i;
         }
-        //Change atributes
+        // Change atributes
         int randomInt = this.instanceRandom.nextInt(numAtts);
         int offset = this.instanceRandom.nextInt(numAtts);
         int swap;
         for (int i = 0; i < this.numberAttributesDriftOption.getValue(); i++) {
             swap = this.numberAttribute[(i + randomInt) % numAtts];
-            this.numberAttribute[(i + randomInt) % numAtts] = this.numberAttribute[(i + offset) % numAtts];
+            this.numberAttribute[(i + randomInt) % numAtts] =
+                    this.numberAttribute[(i + offset) % numAtts];
             this.numberAttribute[(i + offset) % numAtts] = swap;
         }
     }
@@ -91,14 +100,15 @@ public class WaveformGeneratorDrift extends WaveformGenerator {
                 choiceA = 1;
                 choiceB = 2;
                 break;
-
         }
         double multiplierA = this.instanceRandom.nextDouble();
         double multiplierB = 1.0 - multiplierA;
         for (int i = 0; i < NUM_BASE_ATTRIBUTES; i++) {
-            inst.setValue(this.numberAttribute[i], (multiplierA * hFunctions[choiceA][i])
-                    + (multiplierB * hFunctions[choiceB][i])
-                    + this.instanceRandom.nextGaussian());
+            inst.setValue(
+                    this.numberAttribute[i],
+                    (multiplierA * hFunctions[choiceA][i])
+                            + (multiplierB * hFunctions[choiceB][i])
+                            + this.instanceRandom.nextGaussian());
         }
         if (this.addNoiseOption.isSet()) {
             for (int i = NUM_BASE_ATTRIBUTES; i < TOTAL_ATTRIBUTES_INCLUDING_NOISE; i++) {
@@ -118,7 +128,6 @@ public class WaveformGeneratorDrift extends WaveformGenerator {
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == WaveformGeneratorDrift.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

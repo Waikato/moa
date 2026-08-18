@@ -20,15 +20,15 @@
 
 package moa.gui;
 
-import javax.swing.UIManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.UIManager;
+
 /**
- * Manages setting the look and feel.
- * Uses the {@link #KEY_LOOKANDFEEL} property from {@link GUIDefaults} to
- * determine what Look'n'Feel to use. See examples in the GUI.props file
- * for more details.
+ * Manages setting the look and feel. Uses the {@link #KEY_LOOKANDFEEL} property from {@link
+ * GUIDefaults} to determine what Look'n'Feel to use. See examples in the GUI.props file for more
+ * details.
  *
  * @author FracPete (fracpete at waikato dot ac dot nz)
  */
@@ -51,11 +51,11 @@ public class LookAndFeel {
 
     /** for logging output. */
     protected static Logger LOGGER;
+
     static {
         LOGGER = Logger.getLogger(LookAndFeel.class.getName());
         LOGGER.setLevel(Level.INFO);
     }
-
 
     /**
      * Attempts to install the specified Java Look'n'Feel.
@@ -70,12 +70,10 @@ public class LookAndFeel {
                 LOGGER.info("Using built-in strategy for setting Look'n'Feel...");
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                }
-                catch (Throwable t) {
+                } catch (Throwable t) {
                     try {
                         UIManager.setLookAndFeel(WINDOWS_LNF);
-                    }
-                    catch (Throwable th) {
+                    } catch (Throwable th) {
                         result = false;
                     }
                 }
@@ -85,8 +83,7 @@ public class LookAndFeel {
                 LOGGER.info("Using system Look'n'Feel...");
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                }
-                catch (Throwable t) {
+                } catch (Throwable t) {
                     result = false;
                 }
                 break;
@@ -95,8 +92,7 @@ public class LookAndFeel {
                 LOGGER.info("Using cross-platform Look'n'Feel...");
                 try {
                     UIManager.setLookAndFeel(CROSSPLATFORM_LNF);
-                }
-                catch (Throwable t) {
+                } catch (Throwable t) {
                     result = false;
                 }
                 break;
@@ -105,8 +101,7 @@ public class LookAndFeel {
                 LOGGER.info("Using Look'n'Feel class: " + lnf);
                 try {
                     UIManager.setLookAndFeel(lnf);
-                }
-                catch (Throwable t) {
+                } catch (Throwable t) {
                     LOGGER.severe("Failed to instantiate Look'n'Feel class: " + lnf);
                     result = false;
                 }
@@ -116,8 +111,8 @@ public class LookAndFeel {
     }
 
     /**
-     * Attempts to install the specified Look'n'Feel, but falls back on
-     * cross-platform look if it fails.
+     * Attempts to install the specified Look'n'Feel, but falls back on cross-platform look if it
+     * fails.
      *
      * @param lnf the look'n'feel classname
      * @return true if successful
@@ -129,20 +124,21 @@ public class LookAndFeel {
             LOGGER.info("Falling back on cross-platform Look'n'Feel...");
             result = installJavaLookAndFeel(CROSSPLATFORM_LNF);
             if (!result)
-                LOGGER.severe("Failed to set cross-platform Look'n'Feel (" + CROSSPLATFORM_LNF + "), which should always succeed!");
+                LOGGER.severe(
+                        "Failed to set cross-platform Look'n'Feel ("
+                                + CROSSPLATFORM_LNF
+                                + "), which should always succeed!");
         }
         return result;
     }
 
-    /**
-     * Installs the look and feel.
-     */
+    /** Installs the look and feel. */
     public static void install() {
         String lnf;
         boolean success;
 
         // Java
-        lnf     = GUIDefaults.get(KEY_LOOKANDFEEL, "").trim();
+        lnf = GUIDefaults.get(KEY_LOOKANDFEEL, "").trim();
         success = attemptInstallJavaLookAndFeel(lnf);
         LOGGER.info("Setting Java Look'n'Feel: " + success);
     }

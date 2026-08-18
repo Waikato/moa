@@ -15,17 +15,15 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers;
 
 /**
- * Multiclass classifier interface for incremental classifier models. It
- * is used only to filter which classifiers appear in the GUI Classification Tab.
+ * Multiclass classifier interface for incremental classifier models. It is used only to filter
+ * which classifiers appear in the GUI Classification Tab.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public interface MultiClassClassifier {
-    
-}
+public interface MultiClassClassifier {}

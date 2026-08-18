@@ -3,9 +3,7 @@ package moa.classifiers.semisupervised.attributeSimilarity;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
 
-/**
- * Does nothing, just ignores the categorical attributes
- */
+/** Does nothing, just ignores the categorical attributes */
 public class IgnoreSimilarityCalculator extends AttributeSimilarityCalculator {
 
     @Override

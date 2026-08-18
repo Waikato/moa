@@ -11,14 +11,13 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.gui.visualization;
 
 /**
- *
  * @author mits
  */
 class OutlierEvent implements Comparable<OutlierEvent> {
@@ -31,26 +30,22 @@ class OutlierEvent implements Comparable<OutlierEvent> {
         this.outlier = outlier;
         this.timestamp = timestamp;
     }
-    
+
     @Override
-    public int compareTo(OutlierEvent o) { 
-        if (this.timestamp > o.timestamp)
-            return 1;
-        else if (this.timestamp < o.timestamp)
-            return -1;
+    public int compareTo(OutlierEvent o) {
+        if (this.timestamp > o.timestamp) return 1;
+        else if (this.timestamp < o.timestamp) return -1;
         else {
-            if (this.point.timestamp > o.point.timestamp)
-                return 1;
-            else if (this.point.timestamp < o.point.timestamp)
-                return -1;
+            if (this.point.timestamp > o.point.timestamp) return 1;
+            else if (this.point.timestamp < o.point.timestamp) return -1;
         }
-            
+
         return 0;
     }
 
     @Override
     public boolean equals(Object o) {
-        return ( (this.timestamp == ((OutlierEvent) o).timestamp) && 
-                 (this.point.timestamp == ((OutlierEvent) o).point.timestamp) );
+        return ((this.timestamp == ((OutlierEvent) o).timestamp)
+                && (this.point.timestamp == ((OutlierEvent) o).point.timestamp));
     }
 }

@@ -15,50 +15,50 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams;
 
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.core.FastVector;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
-
-import java.util.Random;
 import moa.core.InstanceExample;
-
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 
+import java.util.Random;
+
 /**
- * Stream generator that adds concept drift to examples in a stream with
- * different classes and attributes. Example: real datasets.
- *<br/><br/>
- * Example:
- *<br/><br/>
+ * Stream generator that adds concept drift to examples in a stream with different classes and
+ * attributes. Example: real datasets. <br>
+ * <br>
+ * Example: <br>
+ * <br>
  * <code>ConceptDriftRealStream -s (ArffFileStream -f covtype.arff) \ <br/>
  *    -d (ConceptDriftRealStream -s (ArffFileStream -f PokerOrig.arff) \<br/>
- *    -d (ArffFileStream -f elec.arff) -w 5000 -p 1000000 ) -w 5000 -p 581012</code>
- *<br/><br/>
- * s : Stream <br/>
- * d : Concept drift Stream<br/>
- * p : Central position of concept drift change<br/>
- * w : Width of concept drift change<br/>
+ *    -d (ArffFileStream -f elec.arff) -w 5000 -p 1000000 ) -w 5000 -p 581012</code> <br>
+ * <br>
+ * s : Stream <br>
+ * d : Concept drift Stream<br>
+ * p : Central position of concept drift change<br>
+ * w : Width of concept drift change<br>
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class ConceptDriftRealStream extends AbstractOptionHandler implements
-        InstanceStream, CapabilitiesHandler {
+public class ConceptDriftRealStream extends AbstractOptionHandler
+        implements InstanceStream, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -67,25 +67,33 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to add concept drift.", ExampleStream.class,
-            "generators.RandomTreeGenerator");
+    public ClassOption streamOption =
+            new ClassOption(
+                    "stream",
+                    's',
+                    "Stream to add concept drift.",
+                    ExampleStream.class,
+                    "generators.RandomTreeGenerator");
 
-    public ClassOption driftstreamOption = new ClassOption("driftstream", 'd',
-            "Concept drift Stream.", ExampleStream.class,
-            "generators.RandomTreeGenerator");
+    public ClassOption driftstreamOption =
+            new ClassOption(
+                    "driftstream",
+                    'd',
+                    "Concept drift Stream.",
+                    ExampleStream.class,
+                    "generators.RandomTreeGenerator");
 
-    public FloatOption alphaOption = new FloatOption("alpha",
-            'a', "Angle alpha of change grade.", 0.0, 0.0, 90.0);
+    public FloatOption alphaOption =
+            new FloatOption("alpha", 'a', "Angle alpha of change grade.", 0.0, 0.0, 90.0);
 
-    public IntOption positionOption = new IntOption("position",
-            'p', "Central position of concept drift change.", 0);
+    public IntOption positionOption =
+            new IntOption("position", 'p', "Central position of concept drift change.", 0);
 
-    public IntOption widthOption = new IntOption("width",
-            'w', "Width of concept drift change.", 1000);
+    public IntOption widthOption =
+            new IntOption("width", 'w', "Width of concept drift change.", 1000);
 
-    public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
-            "Seed for random noise.", 1);
+    public IntOption randomSeedOption =
+            new IntOption("randomSeed", 'r', "Seed for random noise.", 1);
 
     protected InstanceStream inputStream;
 
@@ -102,15 +110,15 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
     protected Instance driftInstance;
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 
         this.inputStream = (InstanceStream) getPreparedClassOption(this.streamOption);
         this.driftStream = (InstanceStream) getPreparedClassOption(this.driftstreamOption);
         this.random = new Random(this.randomSeedOption.getValue());
         numberInstanceStream = 0;
         if (this.alphaOption.getValue() != 0.0) {
-            this.widthOption.setValue((int) (1 / Math.tan(this.alphaOption.getValue() * Math.PI / 180)));
+            this.widthOption.setValue(
+                    (int) (1 / Math.tan(this.alphaOption.getValue() * Math.PI / 180)));
         }
 
         // generate header
@@ -124,7 +132,6 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
             newAttributes.addElement(second.attribute(i));
         }
 
-
         Attribute classLabels;
         if (first.numClasses() < second.numClasses()) {
             classLabels = second.classAttribute();
@@ -133,11 +140,12 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
         }
         newAttributes.addElement(classLabels);
 
-        this.streamHeader = new InstancesHeader(new Instances(
-                getCLICreationString(InstanceStream.class), newAttributes, 0));
+        this.streamHeader =
+                new InstancesHeader(
+                        new Instances(
+                                getCLICreationString(InstanceStream.class), newAttributes, 0));
         this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
         restart();
-
     }
 
     @Override
@@ -164,7 +172,10 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
     public InstanceExample nextInstance() {
         numberInstanceStream++;
         double numclass = 0.0;
-        double x = -4.0 * (double) (numberInstanceStream - this.positionOption.getValue()) / (double) this.widthOption.getValue();
+        double x =
+                -4.0
+                        * (double) (numberInstanceStream - this.positionOption.getValue())
+                        / (double) this.widthOption.getValue();
         double probabilityDrift = 1.0 / (1.0 + Math.exp(x));
         if (this.random.nextDouble() > probabilityDrift) {
             if (this.inputStream.hasMoreInstances() == false) {
@@ -180,7 +191,11 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
             numclass = this.driftInstance.classValue();
         }
         int m = 0;
-        double[] newVals = new double[this.inputInstance.numAttributes() + this.driftInstance.numAttributes() - 1];
+        double[] newVals =
+                new double
+                        [this.inputInstance.numAttributes()
+                                + this.driftInstance.numAttributes()
+                                - 1];
         for (int j = 0; j < this.inputInstance.numAttributes() - 1; j++, m++) {
             newVals[m] = this.inputInstance.value(j);
         }
@@ -188,12 +203,11 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
             newVals[m] = this.driftInstance.value(j);
         }
         newVals[m] = numclass;
-        //return new Instance(1.0, newVals);
+        // return new Instance(1.0, newVals);
         Instance inst = new DenseInstance(1.0, newVals);
         inst.setDataset(this.getHeader());
         inst.setClassValue(numclass);
         return new InstanceExample(inst);
-
     }
 
     @Override
@@ -214,7 +228,6 @@ public class ConceptDriftRealStream extends AbstractOptionHandler implements
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == ConceptDriftRealStream.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

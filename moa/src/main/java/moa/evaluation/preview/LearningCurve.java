@@ -15,17 +15,17 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation.preview;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
 import moa.evaluation.LearningEvaluation;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class that stores and keeps the history of evaluation measurements.
@@ -42,11 +42,11 @@ public class LearningCurve extends Preview {
     protected List<double[]> measurementValues = new ArrayList<double[]>();
 
     Class<?> taskClass = null;
-    
+
     public LearningCurve(String orderingMeasurementName) {
         this.measurementNames.add(orderingMeasurementName);
     }
-    
+
     public LearningCurve(String orderingMeasurementName, Class<?> taskClass) {
         this.measurementNames.add(orderingMeasurementName);
         this.taskClass = taskClass;
@@ -55,29 +55,25 @@ public class LearningCurve extends Preview {
     public String getOrderingMeasurementName() {
         return this.measurementNames.get(0);
     }
-    
-    public void setData(
-    		List<String> measurementNames, 
-    		List<double[]> measurementValues) 
-    {
-    	this.measurementNames.clear();
-    	this.measurementValues.clear();
-    	
-    	this.measurementNames.addAll(measurementNames);
-    	this.measurementValues.addAll(measurementValues);
+
+    public void setData(List<String> measurementNames, List<double[]> measurementValues) {
+        this.measurementNames.clear();
+        this.measurementValues.clear();
+
+        this.measurementNames.addAll(measurementNames);
+        this.measurementValues.addAll(measurementValues);
     }
 
     public void insertEntry(LearningEvaluation learningEvaluation) {
         Measurement[] measurements = learningEvaluation.getMeasurements();
-        Measurement orderMeasurement = Measurement.getMeasurementNamed(
-                getOrderingMeasurementName(), measurements);
+        Measurement orderMeasurement =
+                Measurement.getMeasurementNamed(getOrderingMeasurementName(), measurements);
         if (orderMeasurement == null) {
             throw new IllegalArgumentException();
         }
         DoubleVector entryVals = new DoubleVector();
         for (Measurement measurement : measurements) {
-            entryVals.setValue(addMeasurementName(measurement.getName()),
-                    measurement.getValue());
+            entryVals.setValue(addMeasurementName(measurement.getName()), measurement.getValue());
         }
         double orderVal = orderMeasurement.getValue();
         int index = 0;
@@ -155,31 +151,27 @@ public class LearningCurve extends Preview {
         return this.measurementValues.get(entryIdx).length;
     }
 
-	@Override
-	public Class<?> getTaskClass() {
-		return taskClass;
-	}
+    @Override
+    public Class<?> getTaskClass() {
+        return taskClass;
+    }
 
-	@Override
-	public double[] getEntryData(int entryIndex) {
-		// get the number of measurements
-		int numMeasurements = getMeasurementNameCount();
+    @Override
+    public double[] getEntryData(int entryIndex) {
+        // get the number of measurements
+        int numMeasurements = getMeasurementNameCount();
 
-		int numEntryMeasurements = getEntryMeasurementCount(entryIndex);
-		// preallocate the array to store all measurements
-		double[] data = new double[numMeasurements];
-		// get measuements from the learning curve
-		for(int measurementIdx = 0; measurementIdx < numMeasurements; ++measurementIdx)
-		{
-			if(measurementIdx < numEntryMeasurements)
-			{
-				data[measurementIdx] = getMeasurement(entryIndex, measurementIdx);	
-			}
-			else
-			{
-				data[measurementIdx] = Double.NaN;
-			}
-		}
-		return data;
-	}
+        int numEntryMeasurements = getEntryMeasurementCount(entryIndex);
+        // preallocate the array to store all measurements
+        double[] data = new double[numMeasurements];
+        // get measuements from the learning curve
+        for (int measurementIdx = 0; measurementIdx < numMeasurements; ++measurementIdx) {
+            if (measurementIdx < numEntryMeasurements) {
+                data[measurementIdx] = getMeasurement(entryIndex, measurementIdx);
+            } else {
+                data[measurementIdx] = Double.NaN;
+            }
+        }
+        return data;
+    }
 }

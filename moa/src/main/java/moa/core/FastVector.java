@@ -31,8 +31,7 @@ import java.util.ArrayList;
 public class FastVector<E> extends ArrayList<E> {
 
     /**
-     * Adds an element to this vector. Increases its capacity if its not large
-     * enough.
+     * Adds an element to this vector. Increases its capacity if its not large enough.
      *
      * @param element the element to add
      */

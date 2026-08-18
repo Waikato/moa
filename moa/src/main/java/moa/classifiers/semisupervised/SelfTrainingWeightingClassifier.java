@@ -2,6 +2,7 @@ package moa.classifiers.semisupervised;
 
 import com.github.javacliparser.FlagOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.SemiSupervisedLearner;
@@ -12,25 +13,33 @@ import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 
 /**
- * Variance of Self-training: all instances are used to self-train the learner, but each has a weight, depending
- * on the confidence of their prediction
+ * Variance of Self-training: all instances are used to self-train the learner, but each has a
+ * weight, depending on the confidence of their prediction
  */
-public class SelfTrainingWeightingClassifier extends AbstractClassifier implements SemiSupervisedLearner {
-
+public class SelfTrainingWeightingClassifier extends AbstractClassifier
+        implements SemiSupervisedLearner {
 
     @Override
     public String getPurposeString() {
-        return "Self-training classifier that weights instances by confidence score (threshold not used)";
+        return "Self-training classifier that weights instances by confidence score (threshold not"
+                + " used)";
     }
 
-    public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Any learner to be self-trained", AbstractClassifier.class,
-            "moa.classifiers.trees.HoeffdingTree");
+    public ClassOption learnerOption =
+            new ClassOption(
+                    "learner",
+                    'l',
+                    "Any learner to be self-trained",
+                    AbstractClassifier.class,
+                    "moa.classifiers.trees.HoeffdingTree");
 
-    public FlagOption equalWeightOption = new FlagOption("equalWeight", 'w',
-            "Assigns to all instances a weight equal to 1");
+    public FlagOption equalWeightOption =
+            new FlagOption("equalWeight", 'w', "Assigns to all instances a weight equal to 1");
 
-    /** If set to True, all instances have weight 1; otherwise, the weights are based on the confidence score */
+    /**
+     * If set to True, all instances have weight 1; otherwise, the weights are based on the
+     * confidence score
+     */
     private boolean equalWeight;
 
     /** The learner to be self-trained */
@@ -65,18 +74,20 @@ public class SelfTrainingWeightingClassifier extends AbstractClassifier implemen
     public void trainOnInstanceImpl(Instance inst) {
         ++this.instancesSeen;
 
-        if (/*!inst.classIsMasked() &&*/ !inst.classIsMissing()) {
+        if (
+        /*!inst.classIsMasked() &&*/ !inst.classIsMissing()) {
             learner.trainOnInstance(inst);
         } else {
             Instance instCopy = inst.copy();
             int pseudoLabel = Utils.maxIndex(learner.getVotesForInstance(instCopy));
             instCopy.setClassValue(pseudoLabel);
-            if (!equalWeight) instCopy.setWeight(learner.getConfidenceForPrediction(instCopy, pseudoLabel));
+            if (!equalWeight)
+                instCopy.setWeight(learner.getConfidenceForPrediction(instCopy, pseudoLabel));
             learner.trainOnInstance(instCopy);
 
-//            if(pseudoLabel == inst.maskedClassValue()) {
-//                ++this.instancesCorrectPseudoLabeled;
-//            }
+            //            if(pseudoLabel == inst.maskedClassValue()) {
+            //                ++this.instancesCorrectPseudoLabeled;
+            //            }
             ++this.instancesPseudoLabeled;
         }
     }
@@ -96,14 +107,15 @@ public class SelfTrainingWeightingClassifier extends AbstractClassifier implemen
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
         // instances seen * the number of ensemble members
-        return new Measurement[]{
-                new Measurement("#pseudo-labeled", -1), // this.instancesPseudoLabeled),
-                new Measurement("#correct pseudo-labeled", -1), //this.instancesCorrectPseudoLabeled),
-                new Measurement("accuracy pseudo-labeled", -1) //this.instancesCorrectPseudoLabeled / (double) this.instancesPseudoLabeled * 100)
+        return new Measurement[] {
+            new Measurement("#pseudo-labeled", -1), // this.instancesPseudoLabeled),
+            new Measurement("#correct pseudo-labeled", -1), // this.instancesCorrectPseudoLabeled),
+            new Measurement(
+                    "accuracy pseudo-labeled",
+                    -1) // this.instancesCorrectPseudoLabeled / (double) this.instancesPseudoLabeled
+            // * 100)
         };
     }
-
-
 
     @Override
     public void getModelDescription(StringBuilder out, int indent) {}

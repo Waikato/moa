@@ -15,67 +15,65 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * 
- */
+/** */
 package moa.classifiers.meta.imbalanced;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
 
 /**
  * Tests the OnlineAdaC2 classifier.
- * 
- * @author Alessio Bernardo (alessio dot bernardo at polimi dot com) 
+ *
+ * @author Alessio Bernardo (alessio dot bernardo at polimi dot com)
  * @version $Revision$
  */
-public class OnlineAdaC2Test
-  extends AbstractMultipleClassifierTestCase {
+public class OnlineAdaC2Test extends AbstractMultipleClassifierTestCase {
 
-  /**
-   * Constructs the test case. Called by subclasses.
-   *
-   * @param name 	the name of the test
-   */
-  public OnlineAdaC2Test(String name) {
-    super(name);
-    this.setNumberTests(1);
-  }
+    /**
+     * Constructs the test case. Called by subclasses.
+     *
+     * @param name the name of the test
+     */
+    public OnlineAdaC2Test(String name) {
+        super(name);
+        this.setNumberTests(1);
+    }
 
-  /**
-   * Returns the classifier setups to use in the regression test.
-   *
-   * @return		the setups
-   */
-  @Override
-  protected Classifier[] getRegressionClassifierSetups() {	  
-	  OnlineAdaC2 OnlineAdaC2Test = new OnlineAdaC2();
-	  OnlineAdaC2Test.ensembleSizeOption.setValue(1);	  
-	  OnlineAdaC2Test.disableDriftDetectionOption.setValue(true);
-	  OnlineAdaC2Test.baseLearnerOption.setValueViaCLIString("bayes.NaiveBayes");
+    /**
+     * Returns the classifier setups to use in the regression test.
+     *
+     * @return the setups
+     */
+    @Override
+    protected Classifier[] getRegressionClassifierSetups() {
+        OnlineAdaC2 OnlineAdaC2Test = new OnlineAdaC2();
+        OnlineAdaC2Test.ensembleSizeOption.setValue(1);
+        OnlineAdaC2Test.disableDriftDetectionOption.setValue(true);
+        OnlineAdaC2Test.baseLearnerOption.setValueViaCLIString("bayes.NaiveBayes");
 
-    return new Classifier[]{
-    		OnlineAdaC2Test,
-    };
-  }
-  
-  /**
-   * Returns a test suite.
-   *
-   * @return		the test suite
-   */
-  public static Test suite() {
-    return new TestSuite(OnlineAdaC2Test.class);
-  }
+        return new Classifier[] {
+            OnlineAdaC2Test,
+        };
+    }
 
-  /**
-   * Runs the test from commandline.
-   *
-   * @param args	ignored
-   */
-  public static void main(String[] args) {
-    runTest(suite());
-  }
+    /**
+     * Returns a test suite.
+     *
+     * @return the test suite
+     */
+    public static Test suite() {
+        return new TestSuite(OnlineAdaC2Test.class);
+    }
+
+    /**
+     * Runs the test from commandline.
+     *
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        runTest(suite());
+    }
 }

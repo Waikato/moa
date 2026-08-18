@@ -15,13 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core.conditionaltests;
 
-import moa.AbstractMOAObject;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
+import moa.AbstractMOAObject;
 
 /**
  * Abstract conditional test for instances to use to split nodes in Hoeffding trees.
@@ -32,7 +33,7 @@ import com.yahoo.labs.samoa.instances.Instance;
 public abstract class InstanceConditionalTest extends AbstractMOAObject {
 
     /**
-     *  Returns the number of the branch for an instance, -1 if unknown.
+     * Returns the number of the branch for an instance, -1 if unknown.
      *
      * @param inst the instance to be used
      * @return the number of the branch for an instance, -1 if unknown.
@@ -63,13 +64,12 @@ public abstract class InstanceConditionalTest extends AbstractMOAObject {
      * @param context the context or header of the data stream
      * @return the text that describes the condition of the branch
      */
-    public abstract String describeConditionForBranch(int branch,
-            InstancesHeader context);
+    public abstract String describeConditionForBranch(int branch, InstancesHeader context);
 
     /**
      * Returns an array with the attributes that the test depends on.
      *
-     * @return  an array with the attributes that the test depends on
+     * @return an array with the attributes that the test depends on
      */
     public abstract int[] getAttsTestDependsOn();
 }

@@ -15,13 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
-import java.util.ArrayList;
 import moa.cluster.Clustering;
 import moa.gui.visualization.DataPoint;
+
+import java.util.ArrayList;
 
 public class Accuracy extends MeasureCollection implements ClassificationMeasureCollection {
 
@@ -43,8 +44,6 @@ public class Accuracy extends MeasureCollection implements ClassificationMeasure
         return defaults;
     }
 
-    public void evaluateClustering(Clustering clustering, Clustering trueClsutering, ArrayList<DataPoint> points) {
-
-    }
-
+    public void evaluateClustering(
+            Clustering clustering, Clustering trueClsutering, ArrayList<DataPoint> points) {}
 }

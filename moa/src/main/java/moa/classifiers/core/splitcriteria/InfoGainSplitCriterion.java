@@ -15,38 +15,39 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core.splitcriteria;
 
 import com.github.javacliparser.FloatOption;
+
 import moa.core.ObjectRepository;
 import moa.core.Utils;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
 /**
- * Class for computing splitting criteria using information gain
- * with respect to distributions of class values.
- * The split criterion is used as a parameter on
- * decision trees and decision stumps.
+ * Class for computing splitting criteria using information gain with respect to distributions of
+ * class values. The split criterion is used as a parameter on decision trees and decision stumps.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class InfoGainSplitCriterion extends AbstractOptionHandler implements
-        SplitCriterion {
+public class InfoGainSplitCriterion extends AbstractOptionHandler implements SplitCriterion {
 
     private static final long serialVersionUID = 1L;
 
-    public FloatOption minBranchFracOption = new FloatOption("minBranchFrac",
-            'f',
-            "Minimum fraction of weight required down at least two branches.",
-            0.01, 0.0, 0.5);
+    public FloatOption minBranchFracOption =
+            new FloatOption(
+                    "minBranchFrac",
+                    'f',
+                    "Minimum fraction of weight required down at least two branches.",
+                    0.01,
+                    0.0,
+                    0.5);
 
     @Override
-    public double getMeritOfSplit(double[] preSplitDist,
-            double[][] postSplitDists) {
+    public double getMeritOfSplit(double[] preSplitDist, double[][] postSplitDists) {
         if (numSubsetsGreaterThanFrac(postSplitDists, this.minBranchFracOption.getValue()) < 2) {
             return Double.NEGATIVE_INFINITY;
         }
@@ -85,8 +86,7 @@ public class InfoGainSplitCriterion extends AbstractOptionHandler implements
         return entropy / totalWeight;
     }
 
-    public static int numSubsetsGreaterThanFrac(double[][] distributions,
-            double minFrac) {
+    public static int numSubsetsGreaterThanFrac(double[][] distributions, double minFrac) {
         double totalWeight = 0.0;
         double[] distSums = new double[distributions.length];
         for (int i = 0; i < distSums.length; i++) {
@@ -111,8 +111,7 @@ public class InfoGainSplitCriterion extends AbstractOptionHandler implements
     }
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
     }
 }

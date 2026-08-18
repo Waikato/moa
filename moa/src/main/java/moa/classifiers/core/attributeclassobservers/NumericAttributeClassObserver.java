@@ -15,19 +15,16 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core.attributeclassobservers;
 
 /**
- * Interface for observing the class data distribution for a numeric attribute.
- * This observer monitors the class distribution of a given attribute.
- * Used in naive Bayes and decision trees to monitor data statistics on leaves.
+ * Interface for observing the class data distribution for a numeric attribute. This observer
+ * monitors the class distribution of a given attribute. Used in naive Bayes and decision trees to
+ * monitor data statistics on leaves.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $ 
+ * @version $Revision: 7 $
  */
-public interface NumericAttributeClassObserver extends AttributeClassObserver {
-
-   
-}
+public interface NumericAttributeClassObserver extends AttributeClassObserver {}

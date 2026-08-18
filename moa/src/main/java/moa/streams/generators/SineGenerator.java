@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.generators;
 
@@ -26,56 +26,57 @@ import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import moa.core.InstanceExample;
 
+import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 /**
- * 1.SINE1. Abrupt concept drift, noise-free examples. It has two relevant 
- * attributes. Each attributes has values uniformly distributed in [0; 1]. In 
- * the first context all points below the curve y = sin(x) are classified as 
- * positive. After the context change the classification is reversed.
- * 2.SINE2. The same two relevant attributes. The classification function is 
- * y &lt; 0.5 + 0.3 sin(3 * PI * x). After the context change the classification 
- * is reversed.
- * 3.SINIRREL1. Presence of irrelevant attributes. The same classification
- * function of SINE1 but the examples have two more random attributes
- * with no influence on the classification function.
- * 4.SINIRREL2. The same classification function of SINE2 but the examples
- * have two more random attributes with no influence on the classification
- * function.
- * Based on proposal by "Gama, Joao, et al. "Learning with drift 
- * detection." Advances in artificial intelligence–SBIA 2004. Springer Berlin 
- * Heidelberg, 2004. 286-295."
+ * 1.SINE1. Abrupt concept drift, noise-free examples. It has two relevant attributes. Each
+ * attributes has values uniformly distributed in [0; 1]. In the first context all points below the
+ * curve y = sin(x) are classified as positive. After the context change the classification is
+ * reversed. 2.SINE2. The same two relevant attributes. The classification function is y &lt; 0.5 +
+ * 0.3 sin(3 * PI * x). After the context change the classification is reversed. 3.SINIRREL1.
+ * Presence of irrelevant attributes. The same classification function of SINE1 but the examples
+ * have two more random attributes with no influence on the classification function. 4.SINIRREL2.
+ * The same classification function of SINE2 but the examples have two more random attributes with
+ * no influence on the classification function. Based on proposal by "Gama, Joao, et al. "Learning
+ * with drift detection." Advances in artificial intelligence–SBIA 2004. Springer Berlin Heidelberg,
+ * 2004. 286-295."
  *
  * @author Paulo Gonçalves (paulogoncalves@recife.ifpe.edu.br)
  * @version $Revision: 1 $
  */
-public class SineGenerator extends AbstractOptionHandler implements
-        InstanceStream {
+public class SineGenerator extends AbstractOptionHandler implements InstanceStream {
 
     public static final int NUM_IRRELEVANT_ATTRIBUTES = 2;
 
-    public IntOption instanceRandomSeedOption = new IntOption(
-            "instanceRandomSeed", 'i',
-            "Seed for random generation of instances.", 1);
+    public IntOption instanceRandomSeedOption =
+            new IntOption("instanceRandomSeed", 'i', "Seed for random generation of instances.", 1);
 
-    public IntOption functionOption = new IntOption("function", 'f',
-            "Classification function used, as defined in the original paper.",
-            1, 1, 4);
+    public IntOption functionOption =
+            new IntOption(
+                    "function",
+                    'f',
+                    "Classification function used, as defined in the original paper.",
+                    1,
+                    1,
+                    4);
 
-    public FlagOption suppressIrrelevantAttributesOption = new FlagOption(
-            "suppressIrrelevantAttributes", 's',
-            "Reduce the data to only contain 2 relevant numeric attributes.");
+    public FlagOption suppressIrrelevantAttributesOption =
+            new FlagOption(
+                    "suppressIrrelevantAttributes",
+                    's',
+                    "Reduce the data to only contain 2 relevant numeric attributes.");
 
-    public FlagOption balanceClassesOption = new FlagOption("balanceClasses",
-            'b', "Balance the number of instances of each class.");
+    public FlagOption balanceClassesOption =
+            new FlagOption("balanceClasses", 'b', "Balance the number of instances of each class.");
 
     protected InstancesHeader streamHeader;
 
@@ -120,12 +121,11 @@ public class SineGenerator extends AbstractOptionHandler implements
             public int determineClass(double x, double y) {
                 return (y >= 0.5 + 0.3 * Math.sin(3 * Math.PI * x)) ? 0 : 1;
             }
-        },};
+        },
+    };
 
     @Override
-    public void getDescription(StringBuilder sb, int indent) {
-
-    }
+    public void getDescription(StringBuilder sb, int indent) {}
 
     @Override
     public InstancesHeader getHeader() {
@@ -150,7 +150,9 @@ public class SineGenerator extends AbstractOptionHandler implements
         while (!desiredClassFound) {
             a1 = this.instanceRandom.nextDouble();
             a2 = this.instanceRandom.nextDouble();
-            group = classificationFunctions[this.functionOption.getValue() - 1].determineClass(a1, a2);
+            group =
+                    classificationFunctions[this.functionOption.getValue() - 1].determineClass(
+                            a1, a2);
             if (!this.balanceClassesOption.isSet()) {
                 desiredClassFound = true;
             } else {
@@ -184,14 +186,12 @@ public class SineGenerator extends AbstractOptionHandler implements
 
     @Override
     public void restart() {
-        this.instanceRandom = new Random(
-                this.instanceRandomSeedOption.getValue());
+        this.instanceRandom = new Random(this.instanceRandomSeedOption.getValue());
         this.nextClassShouldBeZero = false;
     }
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         ArrayList<Attribute> attributes = new ArrayList();
 
         int numAtts = 2;
@@ -208,8 +208,9 @@ public class SineGenerator extends AbstractOptionHandler implements
         Attribute classAtt = new Attribute("class", classLabels);
         attributes.add(classAtt);
 
-        this.streamHeader = new InstancesHeader(new Instances(
-                getCLICreationString(InstanceStream.class), attributes, 0));
+        this.streamHeader =
+                new InstancesHeader(
+                        new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
         this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
         restart();
     }

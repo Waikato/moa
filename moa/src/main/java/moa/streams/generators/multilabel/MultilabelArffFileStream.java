@@ -15,18 +15,16 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.generators.multilabel;
 
-import moa.streams.ArffFileStream;
-import moa.streams.MultiTargetInstanceStream;
-
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.core.MultilabelInstancesHeader;
-
-import com.github.javacliparser.IntOption;
+import moa.streams.ArffFileStream;
+import moa.streams.MultiTargetInstanceStream;
 
 /**
  * Stream reader for ARFF files of multilabel data.
@@ -34,7 +32,7 @@ import com.github.javacliparser.IntOption;
  * @author Jesse Read (jmr30@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class MultilabelArffFileStream extends ArffFileStream implements MultiTargetInstanceStream{
+public class MultilabelArffFileStream extends ArffFileStream implements MultiTargetInstanceStream {
 
     @Override
     public String getPurposeString() {
@@ -43,11 +41,17 @@ public class MultilabelArffFileStream extends ArffFileStream implements MultiTar
 
     private static final long serialVersionUID = 1L;
 
-    public IntOption numLabelsOption = new IntOption("numLabels", 'l',
-            "The number of labels. e.g. n = 10 : the first 10 binary attributes are the labels; n = -10 the last 10 binary attributes are the labels.", -1, -1, Integer.MAX_VALUE);
+    public IntOption numLabelsOption =
+            new IntOption(
+                    "numLabels",
+                    'l',
+                    "The number of labels. e.g. n = 10 : the first 10 binary attributes are the"
+                            + " labels; n = -10 the last 10 binary attributes are the labels.",
+                    -1,
+                    -1,
+                    Integer.MAX_VALUE);
 
-    public MultilabelArffFileStream() {
-    }
+    public MultilabelArffFileStream() {}
 
     public MultilabelArffFileStream(String arffFileName, int numLabels) {
         this.arffFileOption.setValue(arffFileName);

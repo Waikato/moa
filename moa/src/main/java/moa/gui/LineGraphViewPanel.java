@@ -15,9 +15,11 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
+
+import moa.evaluation.preview.LearningCurve;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -30,8 +32,6 @@ import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.table.AbstractTableModel;
-
-import moa.evaluation.preview.LearningCurve;
 
 /**
  * This panel displays an evaluation learning curve.
@@ -74,12 +74,13 @@ public class LineGraphViewPanel extends JPanel {
         public Shape getShapeToPlot() {
             GeneralPath path = new GeneralPath();
             if (this.curve.numEntries() > 0) {
-                path.moveTo(convertX(this.curve.getMeasurement(0,
-                        this.xAxisIndex)), convertY(this.curve.getMeasurement(
-                        0, this.yAxisIndex)));
+                path.moveTo(
+                        convertX(this.curve.getMeasurement(0, this.xAxisIndex)),
+                        convertY(this.curve.getMeasurement(0, this.yAxisIndex)));
                 for (int i = 1; i < this.curve.numEntries(); i++) {
-                    path.lineTo(convertX(this.curve.getMeasurement(i,
-                            this.xAxisIndex)), convertY(this.curve.getMeasurement(i, this.yAxisIndex)));
+                    path.lineTo(
+                            convertX(this.curve.getMeasurement(i, this.xAxisIndex)),
+                            convertY(this.curve.getMeasurement(i, this.yAxisIndex)));
                 }
             }
             return path;

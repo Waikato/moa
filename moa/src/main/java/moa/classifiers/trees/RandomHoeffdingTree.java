@@ -15,14 +15,15 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.trees;
+
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.bayes.NaiveBayes;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.core.Utils;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Random decision trees for data streams.
@@ -53,15 +54,15 @@ public class RandomHoeffdingTree extends HoeffdingTree {
 
         @Override
         public void learnFromInstance(Instance inst, HoeffdingTree ht) {
-            this.observedClassDistribution.addToValue((int) inst.classValue(),
-                    inst.weight());
+            this.observedClassDistribution.addToValue((int) inst.classValue(), inst.weight());
             if (this.listAttributes == null) {
                 this.numAttributes = (int) Math.floor(Math.sqrt(inst.numAttributes()));
                 this.listAttributes = new int[this.numAttributes];
                 for (int j = 0; j < this.numAttributes; j++) {
                     boolean isUnique = false;
                     while (isUnique == false) {
-                        this.listAttributes[j] = ht.classifierRandom.nextInt(inst.numAttributes() - 1);
+                        this.listAttributes[j] =
+                                ht.classifierRandom.nextInt(inst.numAttributes() - 1);
                         isUnique = true;
                         for (int i = 0; i < j; i++) {
                             if (this.listAttributes[j] == this.listAttributes[i]) {
@@ -70,7 +71,6 @@ public class RandomHoeffdingTree extends HoeffdingTree {
                             }
                         }
                     }
-
                 }
             }
             for (int j = 0; j < this.numAttributes - 1; j++) {
@@ -78,10 +78,14 @@ public class RandomHoeffdingTree extends HoeffdingTree {
                 int instAttIndex = modelAttIndexToInstanceAttIndex(i, inst);
                 AttributeClassObserver obs = this.attributeObservers.get(i);
                 if (obs == null) {
-                    obs = inst.attribute(instAttIndex).isNominal() ? ht.newNominalClassObserver() : ht.newNumericClassObserver();
+                    obs =
+                            inst.attribute(instAttIndex).isNominal()
+                                    ? ht.newNominalClassObserver()
+                                    : ht.newNumericClassObserver();
                     this.attributeObservers.set(i, obs);
                 }
-                obs.observeAttributeClass(inst.value(instAttIndex), (int) inst.classValue(), inst.weight());
+                obs.observeAttributeClass(
+                        inst.value(instAttIndex), (int) inst.classValue(), inst.weight());
             }
         }
     }
@@ -97,9 +101,8 @@ public class RandomHoeffdingTree extends HoeffdingTree {
         @Override
         public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
             if (getWeightSeen() >= ht.nbThresholdOption.getValue()) {
-                return NaiveBayes.doNaiveBayesPrediction(inst,
-                        this.observedClassDistribution,
-                        this.attributeObservers);
+                return NaiveBayes.doNaiveBayesPrediction(
+                        inst, this.observedClassDistribution, this.attributeObservers);
             }
             return super.getClassVotes(inst, ht);
         }
@@ -128,8 +131,10 @@ public class RandomHoeffdingTree extends HoeffdingTree {
             if (this.observedClassDistribution.maxIndex() == trueClass) {
                 this.mcCorrectWeight += inst.weight();
             }
-            if (Utils.maxIndex(NaiveBayes.doNaiveBayesPrediction(inst,
-                    this.observedClassDistribution, this.attributeObservers)) == trueClass) {
+            if (Utils.maxIndex(
+                            NaiveBayes.doNaiveBayesPrediction(
+                                    inst, this.observedClassDistribution, this.attributeObservers))
+                    == trueClass) {
                 this.nbCorrectWeight += inst.weight();
             }
             super.learnFromInstance(inst, ht);
@@ -140,8 +145,8 @@ public class RandomHoeffdingTree extends HoeffdingTree {
             if (this.mcCorrectWeight > this.nbCorrectWeight) {
                 return this.observedClassDistribution.getArrayCopy();
             }
-            return NaiveBayes.doNaiveBayesPrediction(inst,
-                    this.observedClassDistribution, this.attributeObservers);
+            return NaiveBayes.doNaiveBayesPrediction(
+                    inst, this.observedClassDistribution, this.attributeObservers);
         }
     }
 
@@ -153,11 +158,11 @@ public class RandomHoeffdingTree extends HoeffdingTree {
     protected LearningNode newLearningNode(double[] initialClassObservations) {
         LearningNode ret;
         int predictionOption = this.leafpredictionOption.getChosenIndex();
-        if (predictionOption == 0) { //MC
+        if (predictionOption == 0) { // MC
             ret = new RandomLearningNode(initialClassObservations);
-        } else if (predictionOption == 1) { //NB
+        } else if (predictionOption == 1) { // NB
             ret = new LearningNodeNB(initialClassObservations);
-        } else { //NBAdaptive
+        } else { // NBAdaptive
             ret = new LearningNodeNBAdaptive(initialClassObservations);
         }
         return ret;

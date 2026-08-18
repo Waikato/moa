@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.rules.multilabel.attributeclassobservers;
 
@@ -25,25 +25,22 @@ import moa.core.DoubleVector;
 import moa.options.OptionHandler;
 
 /**
- * Interface for observing the statistics for an attribute.
- * This observer monitors the statistics for a given attribute.
- * Used in AMRulesMultiLabelLearners
+ * Interface for observing the statistics for an attribute. This observer monitors the statistics
+ * for a given attribute. Used in AMRulesMultiLabelLearners
  *
  * @author João Duarte (joaomaiaduarte@gmail.com)
- * @version $Revision: 1 $ 
+ * @version $Revision: 1 $
  */
 public interface AttributeStatisticsObserver extends OptionHandler {
 
     /**
-     * Updates statistics of this observer given an attribute value, the index of the statistic
-     * and the weight of the instance observed
+     * Updates statistics of this observer given an attribute value, the index of the statistic and
+     * the weight of the instance observed
      *
      * @param inputAttributeValue the value for the attribute attribute
      * @param statistics numOutputs x numStatistics the index of the statistic to store
      */
-    public void observeAttribute(double inputAttributeValue, DoubleVector [] statistics);
-
-
+    public void observeAttribute(double inputAttributeValue, DoubleVector[] statistics);
 
     /**
      * Gets the best split suggestion given a criterion and a class distribution
@@ -54,6 +51,7 @@ public interface AttributeStatisticsObserver extends OptionHandler {
      * @return suggestion of best attribute split
      */
     public AttributeExpansionSuggestion getBestEvaluatedSplitSuggestion(
-            MultiLabelSplitCriterion criterion, DoubleVector [] preSplitStatistics, int inputAttributeIndex);
-    
+            MultiLabelSplitCriterion criterion,
+            DoubleVector[] preSplitStatistics,
+            int inputAttributeIndex);
 }

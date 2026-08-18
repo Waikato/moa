@@ -15,69 +15,67 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * 
- */
+/** */
 package moa.classifiers.meta.imbalanced;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
 
 /**
  * Tests the RebalanceStream classifier.
- * 
- * @author Alessio Bernardo (alessio dot bernardo at polimi dot com) 
+ *
+ * @author Alessio Bernardo (alessio dot bernardo at polimi dot com)
  * @version $Revision$
  */
-public class RebalanceStreamTest
-  extends AbstractMultipleClassifierTestCase {
+public class RebalanceStreamTest extends AbstractMultipleClassifierTestCase {
 
-  /**
-   * Constructs the test case. Called by subclasses.
-   *
-   * @param name 	the name of the test
-   */
-  public RebalanceStreamTest(String name) {
-    super(name);
-    this.setNumberTests(1);
-  }
+    /**
+     * Constructs the test case. Called by subclasses.
+     *
+     * @param name the name of the test
+     */
+    public RebalanceStreamTest(String name) {
+        super(name);
+        this.setNumberTests(1);
+    }
 
-  /**
-   * Returns the classifier setups to use in the regression test.
-   *
-   * @return		the setups
-   */
-  @Override
-  protected Classifier[] getRegressionClassifierSetups() {
-	  RebalanceStream RBTest = new RebalanceStream();
-	  RBTest.minInstanceLimitBatchOption.setValue(100001);
-	  RBTest.maxInstanceLimitBatchOption.setValue(100001);
-	  RBTest.minInstanceLimitResetBatchOption.setValue(100001);
-	  RBTest.maxInstanceLimitResetBatchOption.setValue(100001);
-	  RBTest.baseLearnerOption.setValueViaCLIString("bayes.NaiveBayes");
+    /**
+     * Returns the classifier setups to use in the regression test.
+     *
+     * @return the setups
+     */
+    @Override
+    protected Classifier[] getRegressionClassifierSetups() {
+        RebalanceStream RBTest = new RebalanceStream();
+        RBTest.minInstanceLimitBatchOption.setValue(100001);
+        RBTest.maxInstanceLimitBatchOption.setValue(100001);
+        RBTest.minInstanceLimitResetBatchOption.setValue(100001);
+        RBTest.maxInstanceLimitResetBatchOption.setValue(100001);
+        RBTest.baseLearnerOption.setValueViaCLIString("bayes.NaiveBayes");
 
-    return new Classifier[]{
-    		RBTest,
-    };
-  }
-  
-  /**
-   * Returns a test suite.
-   *
-   * @return		the test suite
-   */
-  public static Test suite() {
-    return new TestSuite(RebalanceStreamTest.class);
-  }
+        return new Classifier[] {
+            RBTest,
+        };
+    }
 
-  /**
-   * Runs the test from commandline.
-   *
-   * @param args	ignored
-   */
-  public static void main(String[] args) {
-    runTest(suite());
-  }
+    /**
+     * Returns a test suite.
+     *
+     * @return the test suite
+     */
+    public static Test suite() {
+        return new TestSuite(RebalanceStreamTest.class);
+    }
+
+    /**
+     * Runs the test from commandline.
+     *
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        runTest(suite());
+    }
 }

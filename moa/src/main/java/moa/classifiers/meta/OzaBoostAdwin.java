@@ -15,22 +15,23 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.meta;
 
-import moa.classifiers.MultiClassClassifier;
-import moa.classifiers.core.driftdetection.ADWIN;
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
-import moa.core.DoubleVector;
-import moa.core.Measurement;
-import moa.core.MiscUtils;
-import moa.options.ClassOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
+import moa.classifiers.core.driftdetection.ADWIN;
+import moa.core.DoubleVector;
+import moa.core.Measurement;
+import moa.core.MiscUtils;
+import moa.options.ClassOption;
 
 /**
  * Boosting for evolving data streams using ADWIN.
@@ -46,24 +47,34 @@ public class OzaBoostAdwin extends AbstractClassifier implements MultiClassClass
     public String getPurposeString() {
         return "Boosting for evolving data streams using ADWIN.";
     }
-        
-    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
 
-    public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
-            "The number of models to boost.", 10, 1, Integer.MAX_VALUE);
+    public ClassOption baseLearnerOption =
+            new ClassOption(
+                    "baseLearner",
+                    'l',
+                    "Classifier to train.",
+                    Classifier.class,
+                    "trees.HoeffdingTree");
 
-    public FlagOption pureBoostOption = new FlagOption("pureBoost", 'p',
-            "Boost with weights only; no poisson.");
+    public IntOption ensembleSizeOption =
+            new IntOption(
+                    "ensembleSize",
+                    's',
+                    "The number of models to boost.",
+                    10,
+                    1,
+                    Integer.MAX_VALUE);
 
-    public FloatOption deltaAdwinOption = new FloatOption("deltaAdwin", 'a',
-            "Delta of Adwin change detection", 0.002, 0.0, 1.0);
+    public FlagOption pureBoostOption =
+            new FlagOption("pureBoost", 'p', "Boost with weights only; no poisson.");
 
-    public FlagOption outputCodesOption = new FlagOption("outputCodes", 'o',
-            "Use Output Codes to use binary classifiers.");
+    public FloatOption deltaAdwinOption =
+            new FloatOption("deltaAdwin", 'a', "Delta of Adwin change detection", 0.002, 0.0, 1.0);
 
-    public FlagOption sammeOption = new FlagOption("same", 'e',
-            "Use Samme Algorithm.");
+    public FlagOption outputCodesOption =
+            new FlagOption("outputCodes", 'o', "Use Output Codes to use binary classifiers.");
+
+    public FlagOption sammeOption = new FlagOption("same", 'e', "Use Samme Algorithm.");
 
     protected Classifier[] ensemble;
 
@@ -106,7 +117,6 @@ public class OzaBoostAdwin extends AbstractClassifier implements MultiClassClass
         if (this.sammeOption.isSet()) {
             this.initKm1 = true;
         }
-
     }
 
     @Override
@@ -118,7 +128,7 @@ public class OzaBoostAdwin extends AbstractClassifier implements MultiClassClass
             this.logKm1 = Math.log(this.Km1);
             this.initKm1 = false;
         }
-        //Output Codes
+        // Output Codes
         if (this.initMatrixCodes == true) {
 
             this.matrixCodes = new int[this.ensemble.length][inst.numClasses()];
@@ -143,21 +153,24 @@ public class OzaBoostAdwin extends AbstractClassifier implements MultiClassClass
                             numberZeros++;
                         }
                     }
-                } while ((numberOnes - numberZeros) * (numberOnes - numberZeros) > (this.ensemble.length % 2));
-
+                } while ((numberOnes - numberZeros) * (numberOnes - numberZeros)
+                        > (this.ensemble.length % 2));
             }
             this.initMatrixCodes = false;
         }
-
 
         boolean Change = false;
         double lambda_d = 1.0;
         Instance weightedInst = (Instance) inst.copy();
         for (int i = 0; i < this.ensemble.length; i++) {
-            double k = this.pureBoostOption.isSet() ? lambda_d : MiscUtils.poisson(lambda_d * this.Km1, this.classifierRandom);
+            double k =
+                    this.pureBoostOption.isSet()
+                            ? lambda_d
+                            : MiscUtils.poisson(lambda_d * this.Km1, this.classifierRandom);
             if (k > 0.0) {
                 if (this.outputCodesOption.isSet()) {
-                    weightedInst.setClassValue((double) this.matrixCodes[i][(int) inst.classValue()]);
+                    weightedInst.setClassValue(
+                            (double) this.matrixCodes[i][(int) inst.classValue()]);
                 }
                 weightedInst.setWeight(inst.weight() * k);
                 this.ensemble[i].trainOnInstance(weightedInst);
@@ -190,7 +203,7 @@ public class OzaBoostAdwin extends AbstractClassifier implements MultiClassClass
             }
             if (imax != -1) {
                 this.ensemble[imax].resetLearning();
-                //this.ensemble[imax].trainOnInstance(inst);
+                // this.ensemble[imax].trainOnInstance(inst);
                 this.ADError[imax] = new ADWIN((double) this.deltaAdwinOption.getValue());
                 this.scms[imax] = 0;
                 this.swms[imax] = 0;
@@ -233,17 +246,17 @@ public class OzaBoostAdwin extends AbstractClassifier implements MultiClassClass
         Instance weightedInst = (Instance) inst.copy();
         if (this.initMatrixCodes == false) {
             for (int i = 0; i < this.ensemble.length; i++) {
-                //Replace class by OC
+                // Replace class by OC
                 weightedInst.setClassValue((double) this.matrixCodes[i][(int) inst.classValue()]);
 
                 double vote[];
                 vote = this.ensemble[i].getVotesForInstance(weightedInst);
-                //Binary Case
+                // Binary Case
                 int voteClass = 0;
                 if (vote.length == 2) {
                     voteClass = (vote[1] > vote[0] ? 1 : 0);
                 }
-                //Update votes
+                // Update votes
                 for (int j = 0; j < inst.numClasses(); j++) {
                     if (this.matrixCodes[i][j] == voteClass) {
                         combinedVote[j] += getEnsembleMemberWeight(i);
@@ -266,10 +279,10 @@ public class OzaBoostAdwin extends AbstractClassifier implements MultiClassClass
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        return new Measurement[]{new Measurement("ensemble size",
-                    this.ensemble != null ? this.ensemble.length : 0),
-                    new Measurement("change detections", this.numberOfChangesDetected)
-                };
+        return new Measurement[] {
+            new Measurement("ensemble size", this.ensemble != null ? this.ensemble.length : 0),
+            new Measurement("change detections", this.numberOfChangesDetected)
+        };
     }
 
     @Override

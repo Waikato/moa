@@ -15,62 +15,74 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.meta;
 
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import java.util.ArrayList;
-import java.util.List;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
 import moa.options.ClassOption;
+
 import weka.core.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Dynamic weighted majority algorithm.
  *
- * Extends the Weighted Majority Algorithm to add and remove experts based on
- * local and global accuracy.
+ * <p>Extends the Weighted Majority Algorithm to add and remove experts based on local and global
+ * accuracy.
  *
- * <p>
- * J. Zico Kolter and Marcus A. Maloof. Dynamic weighted majority: An ensemble
- * method for drifting concepts. The Journal of Machine Learning Research,
- * 8:2755-2790, December 2007. ISSN 1532-4435. URL
- * http://dl.acm.org/citation.cfm?id=1314498.1390333.
- * </p>
+ * <p>J. Zico Kolter and Marcus A. Maloof. Dynamic weighted majority: An ensemble method for
+ * drifting concepts. The Journal of Machine Learning Research, 8:2755-2790, December 2007. ISSN
+ * 1532-4435. URL http://dl.acm.org/citation.cfm?id=1314498.1390333.
  *
- * <p>
- * Based on the source code provided by the author at
- * <a href="http://people.cs.georgetown.edu/~maloof/pubs/jmlr07.php">
- * http://people.cs.georgetown.edu/~maloof/pubs/jmlr07.php</a></p>
+ * <p>Based on the source code provided by the author at <a
+ * href="http://people.cs.georgetown.edu/~maloof/pubs/jmlr07.php">
+ * http://people.cs.georgetown.edu/~maloof/pubs/jmlr07.php</a>
  *
  * @author Paulo Goncalves (paulogoncalves at recife dot ifpe dot edu dot br)
- *
  */
 public class DynamicWeightedMajority extends AbstractClassifier implements MultiClassClassifier {
 
-    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Base classifiers to train.", Classifier.class, "bayes.NaiveBayes");
+    public ClassOption baseLearnerOption =
+            new ClassOption(
+                    "baseLearner",
+                    'l',
+                    "Base classifiers to train.",
+                    Classifier.class,
+                    "bayes.NaiveBayes");
 
-    public IntOption periodOption = new IntOption("period", 'p',
-            "Period between expert removal, creation, and weight update.", 50,
-            1, Integer.MAX_VALUE);
+    public IntOption periodOption =
+            new IntOption(
+                    "period",
+                    'p',
+                    "Period between expert removal, creation, and weight update.",
+                    50,
+                    1,
+                    Integer.MAX_VALUE);
 
-    public FloatOption betaOption = new FloatOption("beta", 'b',
-            "Factor to punish mistakes by.", 0.5, 0.0, 1.0);
+    public FloatOption betaOption =
+            new FloatOption("beta", 'b', "Factor to punish mistakes by.", 0.5, 0.0, 1.0);
 
-    public FloatOption thetaOption = new FloatOption("theta", 't',
-            "Minimum fraction of weight per model.", 0.01, 0.0, 1.0);
+    public FloatOption thetaOption =
+            new FloatOption("theta", 't', "Minimum fraction of weight per model.", 0.01, 0.0, 1.0);
 
-    public IntOption maxExpertsOption = new IntOption("maxExperts", 'e',
-            "Maximum number of allowed experts.", Integer.MAX_VALUE, 2,
-            Integer.MAX_VALUE);
+    public IntOption maxExpertsOption =
+            new IntOption(
+                    "maxExperts",
+                    'e',
+                    "Maximum number of allowed experts.",
+                    Integer.MAX_VALUE,
+                    2,
+                    Integer.MAX_VALUE);
 
     protected List<Classifier> experts;
     protected List<Double> weights;
@@ -79,7 +91,8 @@ public class DynamicWeightedMajority extends AbstractClassifier implements Multi
     @Override
     public void resetLearningImpl() {
         this.experts = new ArrayList<>(50);
-        Classifier classifier = ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
+        Classifier classifier =
+                ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
         classifier.resetLearning();
         this.experts.add(classifier);
         this.weights = new ArrayList<>(50);
@@ -121,8 +134,7 @@ public class DynamicWeightedMajority extends AbstractClassifier implements Multi
             int yHat = Utils.maxIndex(pr);
             if ((yHat != (int) inst.classValue())
                     && this.epochs % this.periodOption.getValue() == 0) {
-                this.weights.set(i,
-                        this.weights.get(i) * this.betaOption.getValue());
+                this.weights.set(i, this.weights.get(i) * this.betaOption.getValue());
             }
             Pr[yHat] += this.weights.get(i);
             maxWeight = Math.max(maxWeight, this.weights.get(i));
@@ -139,7 +151,8 @@ public class DynamicWeightedMajority extends AbstractClassifier implements Multi
                 if (experts.size() == this.maxExpertsOption.getValue()) {
                     removeWeakestExpert(weakestExpertIndex);
                 }
-                Classifier classifier = ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
+                Classifier classifier =
+                        ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
                 classifier.resetLearning();
                 this.experts.add(classifier);
                 this.weights.add(1.0);
@@ -179,7 +192,5 @@ public class DynamicWeightedMajority extends AbstractClassifier implements Multi
     }
 
     @Override
-    public void getModelDescription(StringBuilder out, int indent) {
-
-    }
+    public void getModelDescription(StringBuilder out, int indent) {}
 }

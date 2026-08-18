@@ -15,67 +15,65 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * 
- */
+/** */
 package moa.classifiers.meta;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
 
 /**
  * Tests the StreamingRandomPatches classifier.
- * 
- * @author  Heitor Murilo Gomes (heitor dot gomes at waikato dot ac dot nz)
+ *
+ * @author Heitor Murilo Gomes (heitor dot gomes at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class StreamingRandomPatchesTest
-  extends AbstractMultipleClassifierTestCase {
+public class StreamingRandomPatchesTest extends AbstractMultipleClassifierTestCase {
 
-  /**
-   * Constructs the test case. Called by subclasses.
-   *
-   * @param name 	the name of the test
-   */
-  public StreamingRandomPatchesTest(String name) {
-    super(name);
-    this.setNumberTests(1);
-  }
+    /**
+     * Constructs the test case. Called by subclasses.
+     *
+     * @param name the name of the test
+     */
+    public StreamingRandomPatchesTest(String name) {
+        super(name);
+        this.setNumberTests(1);
+    }
 
-  /**
-   * Returns the classifier setups to use in the regression test.
-   *
-   * @return		the setups
-   */
-  @Override
-  protected Classifier[] getRegressionClassifierSetups() {
-    StreamingRandomPatches SRPTest = new StreamingRandomPatches();
-    SRPTest.ensembleSizeOption.setValue(5);
-    SRPTest.subspaceModeOption.setChosenIndex(0);
-    SRPTest.subspaceSizeOption.setValue(2);
+    /**
+     * Returns the classifier setups to use in the regression test.
+     *
+     * @return the setups
+     */
+    @Override
+    protected Classifier[] getRegressionClassifierSetups() {
+        StreamingRandomPatches SRPTest = new StreamingRandomPatches();
+        SRPTest.ensembleSizeOption.setValue(5);
+        SRPTest.subspaceModeOption.setChosenIndex(0);
+        SRPTest.subspaceSizeOption.setValue(2);
 
-    return new Classifier[]{
+        return new Classifier[] {
             SRPTest,
-    };
-  }
-  
-  /**
-   * Returns a test suite.
-   *
-   * @return		the test suite
-   */
-  public static Test suite() {
-    return new TestSuite(StreamingRandomPatchesTest.class);
-  }
+        };
+    }
 
-  /**
-   * Runs the test from commandline.
-   *
-   * @param args	ignored
-   */
-  public static void main(String[] args) {
-    runTest(suite());
-  }
+    /**
+     * Returns a test suite.
+     *
+     * @return the test suite
+     */
+    public static Test suite() {
+        return new TestSuite(StreamingRandomPatchesTest.class);
+    }
+
+    /**
+     * Runs the test from commandline.
+     *
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        runTest(suite());
+    }
 }

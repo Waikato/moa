@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams;
 
@@ -23,13 +23,6 @@ import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
 
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
@@ -42,14 +35,22 @@ import moa.streams.clustering.ClusterEvent;
 import moa.streams.generators.cd.ConceptDriftGenerator;
 import moa.tasks.TaskMonitor;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+
 /**
  * Stream reader of ARFF files.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class ArffFileStream extends AbstractOptionHandler implements
-        InstanceStream, ConceptDriftGenerator, CapabilitiesHandler {
+public class ArffFileStream extends AbstractOptionHandler
+        implements InstanceStream, ConceptDriftGenerator, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -58,14 +59,17 @@ public class ArffFileStream extends AbstractOptionHandler implements
 
     private static final long serialVersionUID = 1L;
 
-    public FileOption arffFileOption = new FileOption("arffFile", 'f',
-            "ARFF file to load.", null, "arff", false);
+    public FileOption arffFileOption =
+            new FileOption("arffFile", 'f', "ARFF file to load.", null, "arff", false);
 
-    public IntOption classIndexOption = new IntOption(
-            "classIndex",
-            'c',
-            "Class index of data. 0 for none or -1 for last attribute in file.",
-            -1, -1, Integer.MAX_VALUE);
+    public IntOption classIndexOption =
+            new IntOption(
+                    "classIndex",
+                    'c',
+                    "Class index of data. 0 for none or -1 for last attribute in file.",
+                    -1,
+                    -1,
+                    Integer.MAX_VALUE);
 
     protected Instances instances;
 
@@ -79,8 +83,7 @@ public class ArffFileStream extends AbstractOptionHandler implements
 
     protected InputStreamProgressMonitor fileProgressMonitor;
 
-    public ArffFileStream() {
-    }
+    public ArffFileStream() {}
 
     public ArffFileStream(String arffFileName, int classIndex) {
         this.arffFileOption.setValue(arffFileName);
@@ -89,8 +92,7 @@ public class ArffFileStream extends AbstractOptionHandler implements
     }
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         restart();
     }
 
@@ -132,17 +134,15 @@ public class ArffFileStream extends AbstractOptionHandler implements
                 this.fileReader.close();
             }
             InputStream fileStream = new FileInputStream(this.arffFileOption.getFile());
-            this.fileProgressMonitor = new InputStreamProgressMonitor(
-                    fileStream);
-            this.fileReader = new BufferedReader(new InputStreamReader(
-                    this.fileProgressMonitor));
+            this.fileProgressMonitor = new InputStreamProgressMonitor(fileStream);
+            this.fileReader = new BufferedReader(new InputStreamReader(this.fileProgressMonitor));
             int classIndex = this.classIndexOption.getValue();
             this.instances = new Instances(this.fileReader, 1, classIndex);
             if (classIndex < 0) {
-		this.instances.setClassIndex(this.instances.numAttributes() - 1);
+                this.instances.setClassIndex(this.instances.numAttributes() - 1);
             } else if (this.classIndexOption.getValue() > 0) {
                 this.instances.setClassIndex(this.classIndexOption.getValue() - 1);
-				}
+            }
             this.numInstancesRead = 0;
             this.lastInstanceRead = null;
             this.hitEndOfFile = !readNextInstanceFromFile();
@@ -166,8 +166,7 @@ public class ArffFileStream extends AbstractOptionHandler implements
             }
             return false;
         } catch (IOException ioe) {
-            throw new RuntimeException(
-                    "ArffFileStream failed to read instance from stream.", ioe);
+            throw new RuntimeException("ArffFileStream failed to read instance from stream.", ioe);
         }
     }
 
@@ -180,7 +179,7 @@ public class ArffFileStream extends AbstractOptionHandler implements
 
     @Override
     public ArrayList<ClusterEvent> getEventsList() {
-        //This is used only in the CD Tab
+        // This is used only in the CD Tab
         return this.clusterEvents;
     }
 
@@ -188,7 +187,6 @@ public class ArffFileStream extends AbstractOptionHandler implements
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == ArffFileStream.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

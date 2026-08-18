@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.gui.clustertab;
@@ -24,18 +24,20 @@ import moa.gui.FileExtensionFilter;
 import moa.gui.visualization.GraphCanvas;
 import moa.gui.visualization.RunVisualizer;
 import moa.gui.visualization.StreamPanel;
+
 import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.ToolTipManager;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-public class ClusteringVisualTab extends javax.swing.JPanel implements ActionListener{
-	private RunVisualizer visualizer = null;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.ToolTipManager;
+
+public class ClusteringVisualTab extends javax.swing.JPanel implements ActionListener {
+    private RunVisualizer visualizer = null;
     private Thread visualizerThread = null;
     private Boolean running = false;
     private ClusteringSetupTab clusteringSetupTab = null;
@@ -47,111 +49,105 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         resetComponents();
     }
 
-    private void resetComponents(){
+    private void resetComponents() {
         initComponents();
         comboY.setSelectedIndex(1);
         graphCanvas.setViewport(graphScrollPanel.getViewport());
 
-        //TODO this needs to only affect the visual Panel
+        // TODO this needs to only affect the visual Panel
         ToolTipManager.sharedInstance().setDismissDelay(20000);
         ToolTipManager.sharedInstance().setInitialDelay(100);
     }
 
-    public void setClusteringSetupTab(ClusteringSetupTab clusteringSetupTab){
+    public void setClusteringSetupTab(ClusteringSetupTab clusteringSetupTab) {
         this.clusteringSetupTab = clusteringSetupTab;
     }
 
-
-    private void createVisualiterThread(){
+    private void createVisualiterThread() {
         visualizer = new RunVisualizer(this, clusteringSetupTab);
         visualizerThread = new Thread(visualizer);
     }
 
-    public void setDimensionComobBoxes(int numDimensions){
+    public void setDimensionComobBoxes(int numDimensions) {
         String[] dimensions = new String[numDimensions];
         for (int i = 0; i < dimensions.length; i++) {
-            dimensions[i] = "Dim "+(i+1);
-
+            dimensions[i] = "Dim " + (i + 1);
         }
         comboX.setModel(new javax.swing.DefaultComboBoxModel(dimensions));
         comboY.setModel(new javax.swing.DefaultComboBoxModel(dimensions));
         comboY.setSelectedIndex(1);
     }
 
-    public StreamPanel getLeftStreamPanel(){
+    public StreamPanel getLeftStreamPanel() {
         return streamPanel0;
     }
 
-    public StreamPanel getRightStreamPanel(){
+    public StreamPanel getRightStreamPanel() {
         return streamPanel1;
     }
 
-    public GraphCanvas getGraphCanvas(){
+    public GraphCanvas getGraphCanvas() {
         return graphCanvas;
     }
 
-    public ClusteringVisualEvalPanel getEvalPanel(){
+    public ClusteringVisualEvalPanel getEvalPanel() {
         return clusteringVisualEvalPanel1;
     }
 
-    public boolean isEnabledDrawPoints(){
+    public boolean isEnabledDrawPoints() {
         return checkboxDrawPoints.isSelected();
     }
 
-    public boolean isEnabledDrawGroundTruth(){
+    public boolean isEnabledDrawGroundTruth() {
         return checkboxDrawGT.isSelected();
     }
 
-    public boolean isEnabledDrawMicroclustering(){
+    public boolean isEnabledDrawMicroclustering() {
         return checkboxDrawMicro.isSelected();
     }
-    public boolean isEnabledDrawClustering(){
+
+    public boolean isEnabledDrawClustering() {
         return checkboxDrawClustering.isSelected();
     }
 
-    public void setProcessedPointsCounter(int value){
+    public void setProcessedPointsCounter(int value) {
         label_processed_points_value.setText(Integer.toString(value));
     }
 
-    public int getPauseInterval(){
+    public int getPauseInterval() {
         return Integer.parseInt(numPauseAfterPoints.getText());
     }
 
-    public void setPauseInterval(int pause){
+    public void setPauseInterval(int pause) {
         numPauseAfterPoints.setText(Integer.toString(pause));
     }
 
     @Override
     public void repaint() {
-        if(splitVisual!=null)
-            splitVisual.setDividerLocation(splitVisual.getWidth()/2);
+        if (splitVisual != null) splitVisual.setDividerLocation(splitVisual.getWidth() / 2);
         super.repaint();
     }
 
-    public void toggleVisualizer(boolean internal){
-        if(visualizer == null)
-            createVisualiterThread();
+    public void toggleVisualizer(boolean internal) {
+        if (visualizer == null) createVisualiterThread();
 
-        if(!visualizerThread.isAlive()){
+        if (!visualizerThread.isAlive()) {
             visualizerThread.start();
-
         }
-        //pause
-        if(running){
+        // pause
+        if (running) {
             running = false;
             visualizer.pause();
             buttonRun.setText("Resume");
-        }
-        else{
+        } else {
             running = true;
             visualizer.resume();
             buttonRun.setText("Pause");
         }
-        if(internal)
-            clusteringSetupTab.toggleRunMode();
+        if (internal) clusteringSetupTab.toggleRunMode();
     }
 
-    public void stopVisualizer(){
+    public void stopVisualizer() {
         visualizer.stop();
         running = false;
         visualizer = null;
@@ -160,11 +156,9 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         resetComponents();
     }
 
-
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
+    /**
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT
+     * modify this code. The content of this method is always regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -218,7 +212,8 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         topWrapper.setPreferredSize(new java.awt.Dimension(688, 500));
         topWrapper.setLayout(new java.awt.GridBagLayout());
 
-        panelVisualWrapper.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        panelVisualWrapper.setBorder(
+                javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         panelVisualWrapper.setLayout(new java.awt.BorderLayout());
 
         splitVisual.setDividerLocation(403);
@@ -229,36 +224,37 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         javax.swing.GroupLayout streamPanel1Layout = new javax.swing.GroupLayout(streamPanel1);
         streamPanel1.setLayout(streamPanel1Layout);
         streamPanel1Layout.setHorizontalGroup(
-            streamPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 428, Short.MAX_VALUE)
-        );
+                streamPanel1Layout
+                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 428, Short.MAX_VALUE));
         streamPanel1Layout.setVerticalGroup(
-            streamPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 339, Short.MAX_VALUE)
-        );
+                streamPanel1Layout
+                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 339, Short.MAX_VALUE));
 
         scrollPane1.setViewportView(streamPanel1);
 
         splitVisual.setRightComponent(scrollPane1);
 
-        scrollPane0.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
-            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
-                scrollPane0MouseWheelMoved(evt);
-            }
-        });
+        scrollPane0.addMouseWheelListener(
+                new java.awt.event.MouseWheelListener() {
+                    public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+                        scrollPane0MouseWheelMoved(evt);
+                    }
+                });
 
         streamPanel0.setPreferredSize(new java.awt.Dimension(400, 250));
 
         javax.swing.GroupLayout streamPanel0Layout = new javax.swing.GroupLayout(streamPanel0);
         streamPanel0.setLayout(streamPanel0Layout);
         streamPanel0Layout.setHorizontalGroup(
-            streamPanel0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
+                streamPanel0Layout
+                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 400, Short.MAX_VALUE));
         streamPanel0Layout.setVerticalGroup(
-            streamPanel0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 339, Short.MAX_VALUE)
-        );
+                streamPanel0Layout
+                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 339, Short.MAX_VALUE));
 
         scrollPane0.setViewportView(streamPanel0);
 
@@ -284,16 +280,18 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
 
         buttonRun.setText("Start");
         buttonRun.setPreferredSize(new java.awt.Dimension(70, 33));
-        buttonRun.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                buttonRunMouseClicked(evt);
-            }
-        });
-        buttonRun.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonRunActionPerformed(evt);
-            }
-        });
+        buttonRun.addMouseListener(
+                new java.awt.event.MouseAdapter() {
+                    public void mouseClicked(java.awt.event.MouseEvent evt) {
+                        buttonRunMouseClicked(evt);
+                    }
+                });
+        buttonRun.addActionListener(
+                new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        buttonRunActionPerformed(evt);
+                    }
+                });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -302,11 +300,12 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
 
         buttonStop.setText("Stop");
         buttonStop.setPreferredSize(new java.awt.Dimension(70, 33));
-        buttonStop.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonStopActionPerformed(evt);
-            }
-        });
+        buttonStop.addActionListener(
+                new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        buttonStopActionPerformed(evt);
+                    }
+                });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -315,11 +314,12 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
 
         buttonScreenshot.setText("Screenshot");
         buttonScreenshot.setPreferredSize(new java.awt.Dimension(90, 23));
-        buttonScreenshot.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                buttonScreenshotMouseClicked(evt);
-            }
-        });
+        buttonScreenshot.addMouseListener(
+                new java.awt.event.MouseAdapter() {
+                    public void mouseClicked(java.awt.event.MouseEvent evt) {
+                        buttonScreenshotMouseClicked(evt);
+                    }
+                });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -330,11 +330,12 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         speedSlider.setBorder(javax.swing.BorderFactory.createTitledBorder("Visualisation Speed"));
         speedSlider.setMinimumSize(new java.awt.Dimension(150, 68));
         speedSlider.setPreferredSize(new java.awt.Dimension(160, 68));
-        speedSlider.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseDragged(java.awt.event.MouseEvent evt) {
-                speedSliderMouseDragged(evt);
-            }
-        });
+        speedSlider.addMouseMotionListener(
+                new java.awt.event.MouseMotionAdapter() {
+                    public void mouseDragged(java.awt.event.MouseEvent evt) {
+                        speedSliderMouseDragged(evt);
+                    }
+                });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 6;
         gridBagConstraints.gridy = 0;
@@ -347,14 +348,17 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        panelControl.add(jLabel1, gridBagConstraints);        
+        panelControl.add(jLabel1, gridBagConstraints);
 
-        comboX.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Dim 1", "Dim 2", "Dim 3", "Dim 4" }));
-        comboX.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                comboXActionPerformed(evt);
-            }
-        });
+        comboX.setModel(
+                new javax.swing.DefaultComboBoxModel(
+                        new String[] {"Dim 1", "Dim 2", "Dim 3", "Dim 4"}));
+        comboX.addActionListener(
+                new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        comboXActionPerformed(evt);
+                    }
+                });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 0;
@@ -368,12 +372,15 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         gridBagConstraints.insets = new java.awt.Insets(0, 14, 0, 5);
         panelControl.add(labelX, gridBagConstraints);
 
-        comboY.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Dim 1", "Dim 2", "Dim 3", "Dim 4" }));
-        comboY.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                comboYActionPerformed(evt);
-            }
-        });
+        comboY.setModel(
+                new javax.swing.DefaultComboBoxModel(
+                        new String[] {"Dim 1", "Dim 2", "Dim 3", "Dim 4"}));
+        comboY.addActionListener(
+                new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        comboYActionPerformed(evt);
+                    }
+                });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
@@ -390,11 +397,12 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         checkboxDrawPoints.setSelected(true);
         checkboxDrawPoints.setText("Points");
         checkboxDrawPoints.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        checkboxDrawPoints.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkboxDrawPointsActionPerformed(evt);
-            }
-        });
+        checkboxDrawPoints.addActionListener(
+                new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        checkboxDrawPointsActionPerformed(evt);
+                    }
+                });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 0;
@@ -405,11 +413,12 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         checkboxDrawGT.setSelected(true);
         checkboxDrawGT.setText("Ground truth");
         checkboxDrawGT.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        checkboxDrawGT.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkboxDrawGTActionPerformed(evt);
-            }
-        });
+        checkboxDrawGT.addActionListener(
+                new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        checkboxDrawGTActionPerformed(evt);
+                    }
+                });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 0;
@@ -420,11 +429,12 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         checkboxDrawMicro.setSelected(true);
         checkboxDrawMicro.setText("Microclustering");
         checkboxDrawMicro.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        checkboxDrawMicro.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkboxDrawMicroActionPerformed(evt);
-            }
-        });
+        checkboxDrawMicro.addActionListener(
+                new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        checkboxDrawMicroActionPerformed(evt);
+                    }
+                });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 4;
         gridBagConstraints.gridy = 1;
@@ -435,11 +445,12 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         checkboxDrawClustering.setSelected(true);
         checkboxDrawClustering.setText("Clustering");
         checkboxDrawClustering.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        checkboxDrawClustering.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                checkboxDrawClusteringActionPerformed(evt);
-            }
-        });
+        checkboxDrawClustering.addActionListener(
+                new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        checkboxDrawClusteringActionPerformed(evt);
+                    }
+                });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 5;
         gridBagConstraints.gridy = 1;
@@ -480,7 +491,7 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         panelControl.add(numPauseAfterPoints, gridBagConstraints);
-        
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -511,21 +522,23 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         graphPanelControlTop.setLayout(new java.awt.GridBagLayout());
 
         buttonZoomInY.setText("Zoom in Y");
-        buttonZoomInY.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonZoomInYActionPerformed(evt);
-            }
-        });
+        buttonZoomInY.addActionListener(
+                new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        buttonZoomInYActionPerformed(evt);
+                    }
+                });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
         graphPanelControlTop.add(buttonZoomInY, gridBagConstraints);
 
         buttonZoomOutY.setText("Zoom out Y");
-        buttonZoomOutY.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonZoomOutYActionPerformed(evt);
-            }
-        });
+        buttonZoomOutY.addActionListener(
+                new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        buttonZoomOutYActionPerformed(evt);
+                    }
+                });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 2);
         graphPanelControlTop.add(buttonZoomOutY, gridBagConstraints);
@@ -550,13 +563,13 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         javax.swing.GroupLayout graphCanvasLayout = new javax.swing.GroupLayout(graphCanvas);
         graphCanvas.setLayout(graphCanvasLayout);
         graphCanvasLayout.setHorizontalGroup(
-            graphCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 515, Short.MAX_VALUE)
-        );
+                graphCanvasLayout
+                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 515, Short.MAX_VALUE));
         graphCanvasLayout.setVerticalGroup(
-            graphCanvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 128, Short.MAX_VALUE)
-        );
+                graphCanvasLayout
+                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 128, Short.MAX_VALUE));
 
         graphScrollPanel.setViewportView(graphCanvas);
 
@@ -571,19 +584,21 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         graphPanel.add(graphScrollPanel, gridBagConstraints);
 
         buttonZoomInX.setText("Zoom in X");
-        buttonZoomInX.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonZoomInXActionPerformed(evt);
-            }
-        });
+        buttonZoomInX.addActionListener(
+                new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        buttonZoomInXActionPerformed(evt);
+                    }
+                });
         graphPanelControlBottom.add(buttonZoomInX);
 
         buttonZoomOutX.setText("Zoom out X");
-        buttonZoomOutX.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonZoomOutXActionPerformed(evt);
-            }
-        });
+        buttonZoomOutX.addActionListener(
+                new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+                        buttonZoomOutXActionPerformed(evt);
+                    }
+                });
         graphPanelControlBottom.add(buttonZoomOutX);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -606,98 +621,119 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         add(jSplitPane1, gridBagConstraints);
-    }// </editor-fold>//GEN-END:initComponents
+    } // </editor-fold>//GEN-END:initComponents
 
-    private void buttonScreenshotMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonScreenshotMouseClicked
+    private void buttonScreenshotMouseClicked(
+            java.awt.event.MouseEvent evt) { // GEN-FIRST:event_buttonScreenshotMouseClicked
         BaseFileChooser fileChooser = new BaseFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(true);
-        if(screenshotFilebase!=null)
-            fileChooser.setSelectedFile(new File(screenshotFilebase));
+        if (screenshotFilebase != null) fileChooser.setSelectedFile(new File(screenshotFilebase));
         if (fileChooser.showSaveDialog(this) == BaseFileChooser.APPROVE_OPTION) {
-        	screenshotFilebase = fileChooser.getSelectedFile().getPath();
-        	streamPanel0.screenshot(screenshotFilebase+"_"+label_processed_points_value.getText()+"_0", true, true);
-            streamPanel1.screenshot(screenshotFilebase+"_"+label_processed_points_value.getText()+"_1", true, true);
+            screenshotFilebase = fileChooser.getSelectedFile().getPath();
+            streamPanel0.screenshot(
+                    screenshotFilebase + "_" + label_processed_points_value.getText() + "_0",
+                    true,
+                    true);
+            streamPanel1.screenshot(
+                    screenshotFilebase + "_" + label_processed_points_value.getText() + "_1",
+                    true,
+                    true);
         }
+    } // GEN-LAST:event_buttonScreenshotMouseClicked
 
-    }//GEN-LAST:event_buttonScreenshotMouseClicked
-
-    private void buttonRunMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_buttonRunMouseClicked
+    private void buttonRunMouseClicked(
+            java.awt.event.MouseEvent evt) { // GEN-FIRST:event_buttonRunMouseClicked
         toggleVisualizer(true);
-    }//GEN-LAST:event_buttonRunMouseClicked
+    } // GEN-LAST:event_buttonRunMouseClicked
 
-    private void speedSliderMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_speedSliderMouseDragged
-        visualizer.setSpeed((int)(speedSlider.getValue()/(100.0/15.0)));
+    private void speedSliderMouseDragged(
+            java.awt.event.MouseEvent evt) { // GEN-FIRST:event_speedSliderMouseDragged
+        visualizer.setSpeed((int) (speedSlider.getValue() / (100.0 / 15.0)));
+    } // GEN-LAST:event_speedSliderMouseDragged
 
-    }//GEN-LAST:event_speedSliderMouseDragged
+    private void scrollPane0MouseWheelMoved(
+            java.awt.event.MouseWheelEvent evt) { // GEN-FIRST:event_scrollPane0MouseWheelMoved
+        streamPanel0.setZoom(evt.getX(), evt.getY(), (-1) * evt.getWheelRotation(), scrollPane0);
+    } // GEN-LAST:event_scrollPane0MouseWheelMoved
 
-    private void scrollPane0MouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_scrollPane0MouseWheelMoved
-        streamPanel0.setZoom(evt.getX(),evt.getY(),(-1)*evt.getWheelRotation(),scrollPane0);
-    }//GEN-LAST:event_scrollPane0MouseWheelMoved
-
-    private void buttonZoomInXActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonZoomInXActionPerformed
+    private void buttonZoomInXActionPerformed(
+            java.awt.event.ActionEvent evt) { // GEN-FIRST:event_buttonZoomInXActionPerformed
         graphCanvas.scaleXResolution(false);
-    }//GEN-LAST:event_buttonZoomInXActionPerformed
+    } // GEN-LAST:event_buttonZoomInXActionPerformed
 
-    private void buttonZoomOutYActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonZoomOutYActionPerformed
-        graphCanvas.setSize(new Dimension(graphCanvas.getWidth(), (int)(graphCanvas.getHeight()*0.8)));
-        graphCanvas.setPreferredSize(new Dimension(graphCanvas.getWidth(), (int)(graphCanvas.getHeight()*0.8)));
-    }//GEN-LAST:event_buttonZoomOutYActionPerformed
+    private void buttonZoomOutYActionPerformed(
+            java.awt.event.ActionEvent evt) { // GEN-FIRST:event_buttonZoomOutYActionPerformed
+        graphCanvas.setSize(
+                new Dimension(graphCanvas.getWidth(), (int) (graphCanvas.getHeight() * 0.8)));
+        graphCanvas.setPreferredSize(
+                new Dimension(graphCanvas.getWidth(), (int) (graphCanvas.getHeight() * 0.8)));
+    } // GEN-LAST:event_buttonZoomOutYActionPerformed
 
-    private void buttonZoomOutXActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonZoomOutXActionPerformed
+    private void buttonZoomOutXActionPerformed(
+            java.awt.event.ActionEvent evt) { // GEN-FIRST:event_buttonZoomOutXActionPerformed
         graphCanvas.scaleXResolution(true);
-    }//GEN-LAST:event_buttonZoomOutXActionPerformed
+    } // GEN-LAST:event_buttonZoomOutXActionPerformed
 
-    private void buttonZoomInYActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonZoomInYActionPerformed
-        graphCanvas.setSize(new Dimension(graphCanvas.getWidth(), (int)(graphCanvas.getHeight()*1.2)));
-        graphCanvas.setPreferredSize(new Dimension(graphCanvas.getWidth(), (int)(graphCanvas.getHeight()*1.2)));
-    }//GEN-LAST:event_buttonZoomInYActionPerformed
+    private void buttonZoomInYActionPerformed(
+            java.awt.event.ActionEvent evt) { // GEN-FIRST:event_buttonZoomInYActionPerformed
+        graphCanvas.setSize(
+                new Dimension(graphCanvas.getWidth(), (int) (graphCanvas.getHeight() * 1.2)));
+        graphCanvas.setPreferredSize(
+                new Dimension(graphCanvas.getWidth(), (int) (graphCanvas.getHeight() * 1.2)));
+    } // GEN-LAST:event_buttonZoomInYActionPerformed
 
-    private void checkboxDrawPointsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkboxDrawPointsActionPerformed
+    private void checkboxDrawPointsActionPerformed(
+            java.awt.event.ActionEvent evt) { // GEN-FIRST:event_checkboxDrawPointsActionPerformed
         visualizer.setPointLayerVisibility(checkboxDrawPoints.isSelected());
-    }//GEN-LAST:event_checkboxDrawPointsActionPerformed
+    } // GEN-LAST:event_checkboxDrawPointsActionPerformed
 
-    private void checkboxDrawMicroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkboxDrawMicroActionPerformed
-        //visualizer.redrawClusterings();
+    private void checkboxDrawMicroActionPerformed(
+            java.awt.event.ActionEvent evt) { // GEN-FIRST:event_checkboxDrawMicroActionPerformed
+        // visualizer.redrawClusterings();
         visualizer.setMicroLayerVisibility(checkboxDrawMicro.isSelected());
-    }//GEN-LAST:event_checkboxDrawMicroActionPerformed
+    } // GEN-LAST:event_checkboxDrawMicroActionPerformed
 
-    private void checkboxDrawGTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkboxDrawGTActionPerformed
-        //visualizer.redrawClusterings();
+    private void checkboxDrawGTActionPerformed(
+            java.awt.event.ActionEvent evt) { // GEN-FIRST:event_checkboxDrawGTActionPerformed
+        // visualizer.redrawClusterings();
         visualizer.setGroundTruthVisibility(checkboxDrawGT.isSelected());
-    }//GEN-LAST:event_checkboxDrawGTActionPerformed
+    } // GEN-LAST:event_checkboxDrawGTActionPerformed
 
-    private void checkboxDrawClusteringActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkboxDrawClusteringActionPerformed
-        //visualizer.redrawClusterings();
+    private void checkboxDrawClusteringActionPerformed(
+            java.awt.event.ActionEvent
+                    evt) { // GEN-FIRST:event_checkboxDrawClusteringActionPerformed
+        // visualizer.redrawClusterings();
         visualizer.setMacroVisibility(checkboxDrawClustering.isSelected());
-    }//GEN-LAST:event_checkboxDrawClusteringActionPerformed
+    } // GEN-LAST:event_checkboxDrawClusteringActionPerformed
 
-    private void comboXActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboXActionPerformed
-        JComboBox cb = (JComboBox)evt.getSource();
+    private void comboXActionPerformed(
+            java.awt.event.ActionEvent evt) { // GEN-FIRST:event_comboXActionPerformed
+        JComboBox cb = (JComboBox) evt.getSource();
         int dim = cb.getSelectedIndex();
         streamPanel0.setActiveXDim(dim);
         streamPanel1.setActiveXDim(dim);
-        if(visualizer!=null)
-            visualizer.redraw();
-    }//GEN-LAST:event_comboXActionPerformed
+        if (visualizer != null) visualizer.redraw();
+    } // GEN-LAST:event_comboXActionPerformed
 
-    private void comboYActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboYActionPerformed
-        JComboBox cb = (JComboBox)evt.getSource();
+    private void comboYActionPerformed(
+            java.awt.event.ActionEvent evt) { // GEN-FIRST:event_comboYActionPerformed
+        JComboBox cb = (JComboBox) evt.getSource();
         int dim = cb.getSelectedIndex();
         streamPanel0.setActiveYDim(dim);
         streamPanel1.setActiveYDim(dim);
-        if(visualizer!=null)
-            visualizer.redraw();
-    }//GEN-LAST:event_comboYActionPerformed
+        if (visualizer != null) visualizer.redraw();
+    } // GEN-LAST:event_comboYActionPerformed
 
-    private void buttonStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStopActionPerformed
+    private void buttonStopActionPerformed(
+            java.awt.event.ActionEvent evt) { // GEN-FIRST:event_buttonStopActionPerformed
         stopVisualizer();
         clusteringSetupTab.stopRun();
-    }//GEN-LAST:event_buttonStopActionPerformed
+    } // GEN-LAST:event_buttonStopActionPerformed
 
-    private void buttonRunActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRunActionPerformed
+    private void buttonRunActionPerformed(
+            java.awt.event.ActionEvent evt) { // GEN-FIRST:event_buttonRunActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_buttonRunActionPerformed
-
+    } // GEN-LAST:event_buttonRunActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonRun;
@@ -738,25 +774,24 @@ public class ClusteringVisualTab extends javax.swing.JPanel implements ActionLis
     private moa.gui.visualization.StreamPanel streamPanel0;
     private moa.gui.visualization.StreamPanel streamPanel1;
     private javax.swing.JPanel topWrapper;
+
     // End of variables declaration//GEN-END:variables
 
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() instanceof JButton){
-            if(e.getActionCommand().equals("csv export")){
+        if (e.getSource() instanceof JButton) {
+            if (e.getActionCommand().equals("csv export")) {
                 BaseFileChooser fileChooser = new BaseFileChooser();
                 fileChooser.setAcceptAllFileFilterUsed(true);
                 fileChooser.addChoosableFileFilter(new FileExtensionFilter("csv"));
-                if(exportFile!=null)
-                    fileChooser.setSelectedFile(new File(exportFile));
+                if (exportFile != null) fileChooser.setSelectedFile(new File(exportFile));
                 if (fileChooser.showSaveDialog(this) == BaseFileChooser.APPROVE_OPTION) {
                     exportFile = fileChooser.getSelectedFile().getPath();
                     visualizer.exportCSV(exportFile);
                 }
             }
-            if(e.getActionCommand().equals("weka export")){
+            if (e.getActionCommand().equals("weka export")) {
                 visualizer.weka();
             }
         }
     }
-
 }

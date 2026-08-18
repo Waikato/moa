@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.gui.visualization;
 
@@ -28,9 +28,9 @@ import javax.swing.JPanel;
 
 /**
  * AbstractGraphAxes is an abstract class offering functionality to draw axes.
- * 
- * This class is partially based on GraphAxes.
- * 
+ *
+ * <p>This class is partially based on GraphAxes.
+ *
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
  * @see GraphAxes
@@ -57,10 +57,7 @@ public abstract class AbstractGraphAxes extends JPanel {
     protected double upper_x_value;
     protected double upper_y_value;
 
-    /**
-     * Initialises a AbstractGraphAxes by setting the initial values and the
-     * layout.
-     */
+    /** Initialises a AbstractGraphAxes by setting the initial values and the layout. */
     public AbstractGraphAxes() {
         this.min_x_value = 0;
         this.max_x_value = 1;
@@ -71,19 +68,18 @@ public abstract class AbstractGraphAxes extends JPanel {
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
-        layout.setHorizontalGroup(layout
-                .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGap(0, 400, Short.MAX_VALUE));
-        layout.setVerticalGroup(layout
-                .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGap(0, 300, Short.MAX_VALUE));
+        layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 400, Short.MAX_VALUE));
+        layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 300, Short.MAX_VALUE));
     }
 
     /**
      * Sets the x resolution.
-     * 
-     * @param resolution
-     *            new x resolution
+     *
+     * @param resolution new x resolution
      */
     public void setXResolution(double resolution) {
         x_resolution = resolution;
@@ -91,9 +87,8 @@ public abstract class AbstractGraphAxes extends JPanel {
 
     /**
      * Sets the y resolution
-     * 
-     * @param resolution
-     *            new y resolution
+     *
+     * @param resolution new y resolution
      */
     public void setYResolution(double resolution) {
         y_resolution = resolution;
@@ -122,9 +117,8 @@ public abstract class AbstractGraphAxes extends JPanel {
 
     /**
      * Draws the x axis, containing of the axis line and the labels.
-     * 
-     * @param g
-     *            the Graphics context in which to paint
+     *
+     * @param g the Graphics context in which to paint
      */
     protected void xAxis(Graphics g) {
         g.setColor(Color.BLACK);
@@ -137,18 +131,15 @@ public abstract class AbstractGraphAxes extends JPanel {
 
     /**
      * Draws the x labels onto the x axis. Must be overridden by subclasses.
-     * 
-     * @param g
-     *            the Graphics context in which to paint
+     *
+     * @param g the Graphics context in which to paint
      */
     protected abstract void drawXLabels(Graphics g);
 
     /**
-     * Draws the y axis, containing og the axis line, the horizontal helping
-     * line and the labels.
-     * 
-     * @param g
-     *            the Graphics context in which to paint
+     * Draws the y axis, containing og the axis line, the horizontal helping line and the labels.
+     *
+     * @param g the Graphics context in which to paint
      */
     private void yAxis(Graphics g) {
         // y-axis
@@ -157,8 +148,7 @@ public abstract class AbstractGraphAxes extends JPanel {
 
         // center horizontal line
         g.setColor(new Color(220, 220, 220));
-        g.drawLine(X_OFFSET_LEFT, height / 2 + Y_OFFSET_TOP, getWidth(),
-                height / 2 + Y_OFFSET_TOP);
+        g.drawLine(X_OFFSET_LEFT, height / 2 + Y_OFFSET_TOP, getWidth(), height / 2 + Y_OFFSET_TOP);
 
         g.setColor(Color.BLACK);
 
@@ -175,21 +165,19 @@ public abstract class AbstractGraphAxes extends JPanel {
         for (int i = 0; i <= numLabels; i++) {
             double fraction = i / numLabels;
             double value = fraction * upper_y_value;
-            g.drawString(d.format(value), 1,
-                    (int) ((1 - fraction) * height) + Y_OFFSET_TOP + 5);
-            g.drawLine(X_OFFSET_LEFT - 5,
+            g.drawString(d.format(value), 1, (int) ((1 - fraction) * height) + Y_OFFSET_TOP + 5);
+            g.drawLine(
+                    X_OFFSET_LEFT - 5,
                     (int) ((1 - fraction) * height) + Y_OFFSET_TOP,
                     X_OFFSET_LEFT,
                     (int) ((1 - fraction) * height) + Y_OFFSET_TOP);
         }
-
     }
-    
+
     /**
      * Sets the minimum x value
-     * 
-     * @param min
-     *            minimum x value
+     *
+     * @param min minimum x value
      */
     public void setMinXValue(double min) {
         this.min_x_value = min;
@@ -197,29 +185,26 @@ public abstract class AbstractGraphAxes extends JPanel {
 
     /**
      * Sets the maximum x value
-     * 
-     * @param max
-     *            maximum x value
+     *
+     * @param max maximum x value
      */
     public void setMaxXValue(double max) {
         this.max_x_value = max;
     }
-    
+
     /**
      * Sets the maximum y value
-     * 
-     * @param max
-     *            maximum y value
+     *
+     * @param max maximum y value
      */
     public void setMaxYValue(double max) {
         this.max_y_value = max;
     }
-    
+
     /**
      * Sets the lower value for the x-axis.
-     * 
-     * @param value
-     *            lower x value
+     *
+     * @param value lower x value
      */
     public void setLowerXValue(double value) {
         this.lower_x_value = value;
@@ -227,9 +212,8 @@ public abstract class AbstractGraphAxes extends JPanel {
 
     /**
      * Sets the upper value for the x-axis.
-     * 
-     * @param value
-     *            upper x value
+     *
+     * @param value upper x value
      */
     public void setUpperXValue(double value) {
         this.upper_x_value = value;
@@ -237,9 +221,8 @@ public abstract class AbstractGraphAxes extends JPanel {
 
     /**
      * Sets the upper value for the y-axis.
-     * 
-     * @param value
-     *            upper y value
+     *
+     * @param value upper y value
      */
     public void setUpperYValue(double value) {
         this.upper_y_value = value;
@@ -247,13 +230,11 @@ public abstract class AbstractGraphAxes extends JPanel {
 
     /**
      * Calculates the position on the y axis for a given value.
-     * 
-     * @param value
-     *            value the y position has to be computed for
+     *
+     * @param value value the y position has to be computed for
      * @return position on the y axis
      */
     private int calcY(double value) {
         return (int) (height - (value / max_y_value) * height) + Y_OFFSET_TOP;
     }
-
 }

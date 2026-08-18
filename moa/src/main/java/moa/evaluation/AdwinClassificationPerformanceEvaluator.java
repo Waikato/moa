@@ -15,21 +15,20 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
-import com.github.javacliparser.IntOption;
 import moa.classifiers.core.driftdetection.ADWIN;
 
 /**
- * Classification evaluator that updates evaluation results using an adaptive sliding
- * window.
+ * Classification evaluator that updates evaluation results using an adaptive sliding window.
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class AdwinClassificationPerformanceEvaluator extends BasicClassificationPerformanceEvaluator {
+public class AdwinClassificationPerformanceEvaluator
+        extends BasicClassificationPerformanceEvaluator {
 
     private static final long serialVersionUID = 1L;
 
@@ -55,7 +54,5 @@ public class AdwinClassificationPerformanceEvaluator extends BasicClassification
         public double estimation() {
             return this.adwin.getEstimation();
         }
-
     }
-
 }

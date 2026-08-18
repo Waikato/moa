@@ -5,17 +5,12 @@
  */
 package moa.gui.experimentertab.tasks;
 
-
-import moa.core.ObjectRepository;
 import moa.tasks.AbstractTask;
-import moa.tasks.TaskMonitor;
 
 /**
- *
  * @author Alberto
  */
 public abstract class ExperimenterTask extends AbstractTask {
 
     private static final long serialVersionUID = 1L;
-
 }

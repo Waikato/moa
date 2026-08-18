@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
@@ -44,8 +44,7 @@ public class StandardTaskMonitor implements TaskMonitor {
     protected volatile ResultPreviewListener resultPreviewer = null;
 
     @Override
-    public void setCurrentActivity(String activityDescription,
-            double fracComplete) {
+    public void setCurrentActivity(String activityDescription, double fracComplete) {
         setCurrentActivityDescription(activityDescription);
         setCurrentActivityFractionComplete(fracComplete);
     }

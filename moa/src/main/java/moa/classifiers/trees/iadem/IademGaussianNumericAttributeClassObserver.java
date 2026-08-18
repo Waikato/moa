@@ -2,7 +2,7 @@
  *    IademGaussianNumericAttributeClassObserver.java
  *
  *    @author Isvani Frias-Blanco
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
@@ -14,23 +14,23 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.classifiers.trees.iadem;
 
-import java.util.Arrays;
-
-import java.util.ArrayList;
 import moa.classifiers.core.attributeclassobservers.GaussianNumericAttributeClassObserver;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.GaussianEstimator;
+
 import weka.core.Utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class IademGaussianNumericAttributeClassObserver
-        extends GaussianNumericAttributeClassObserver
-        implements IademNumericAttributeObserver {
+        extends GaussianNumericAttributeClassObserver implements IademNumericAttributeObserver {
 
     private static final long serialVersionUID = 1L;
     private int valueCount = 0;
@@ -85,7 +85,8 @@ public class IademGaussianNumericAttributeClassObserver
                 } else if (cutValue >= this.maxValueObservedPerClass.getValue(i)) {
                     lhsDist[i] = (long) estimator.getTotalWeightObserved();
                 } else {
-                    double[] weightDist = estimator.estimatedWeight_LessThan_EqualTo_GreaterThan_Value(cutValue);
+                    double[] weightDist =
+                            estimator.estimatedWeight_LessThan_EqualTo_GreaterThan_Value(cutValue);
                     lhsDist[i] = (long) (weightDist[0] + weightDist[1]);
                 }
             }
@@ -99,15 +100,15 @@ public class IademGaussianNumericAttributeClassObserver
     }
 
     @Override
-    public void computeClassDistProbabilities(double[][][] cut_value_classDist_lower,
+    public void computeClassDistProbabilities(
+            double[][][] cut_value_classDist_lower,
             double[][][] cut_value_classDist_upper,
             double[][] counts_cut_value,
             boolean withIntervalEstimates) {
         ArrayList<Double> cuts = cutPointSuggestion(-1);
         long[] totalDist = getClassDist();
         for (int i = 0; i < cuts.size(); i++) {
-            long[] lDist = getLeftClassDist(cuts.get(i)),
-                    rDist = new long[lDist.length];
+            long[] lDist = getLeftClassDist(cuts.get(i)), rDist = new long[lDist.length];
             long leftTotal = sum(lDist);
             long total = sum(totalDist);
             counts_cut_value[i][0] = leftTotal;
@@ -120,7 +121,9 @@ public class IademGaussianNumericAttributeClassObserver
                 }
                 double leftError = 0.0;
                 if (withIntervalEstimates) {
-                    leftError = IademCommonProcedures.getIADEM_HoeffdingBound(leftEst, counts_cut_value[i][0]);
+                    leftError =
+                            IademCommonProcedures.getIADEM_HoeffdingBound(
+                                    leftEst, counts_cut_value[i][0]);
                 }
                 cut_value_classDist_lower[i][0][j] = Math.max(0.0, leftEst - leftError);
                 cut_value_classDist_upper[i][0][j] = Math.min(1.0, leftEst + leftError);
@@ -130,7 +133,9 @@ public class IademGaussianNumericAttributeClassObserver
                 }
                 double rightError = 0.0;
                 if (withIntervalEstimates) {
-                    rightError = IademCommonProcedures.getIADEM_HoeffdingBound(rightEst, counts_cut_value[i][1]);
+                    rightError =
+                            IademCommonProcedures.getIADEM_HoeffdingBound(
+                                    rightEst, counts_cut_value[i][1]);
                 }
                 cut_value_classDist_lower[i][1][j] = Math.max(0.0, rightEst - rightError);
                 cut_value_classDist_upper[i][1][j] = Math.min(1.0, rightEst + rightError);
@@ -189,7 +194,7 @@ public class IademGaussianNumericAttributeClassObserver
         this.classDist = new DoubleVector();
     }
 
-    //***********************************************************************
+    // ***********************************************************************
     // probably deprecated
     @Override
     public long getMaxOfValues() {
@@ -198,7 +203,9 @@ public class IademGaussianNumericAttributeClassObserver
 
     @Override
     public IademNumericAttributeObserver getCopy() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+                "Not supported yet."); // To change body of generated methods, choose Tools |
+        // Templates.
     }
 
     @Override
@@ -211,8 +218,7 @@ public class IademGaussianNumericAttributeClassObserver
         ArrayList<Double> cuts = cutPointSuggestion(-1);
         long[] totalDist = getClassDist();
         for (int i = 0; i < cuts.size(); i++) {
-            long[] lDist = getLeftClassDist(cuts.get(i)),
-                    rDist = new long[lDist.length];
+            long[] lDist = getLeftClassDist(cuts.get(i)), rDist = new long[lDist.length];
             for (int j = 0; j < totalDist.length; j++) {
                 rDist[j] = totalDist[j] - lDist[j];
                 cutClassDist[i][0][j] = lDist[j];

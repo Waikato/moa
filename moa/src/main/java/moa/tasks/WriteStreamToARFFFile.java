@@ -15,23 +15,22 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
+
+import com.github.javacliparser.FileOption;
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
+
+import moa.core.ObjectRepository;
+import moa.options.ClassOption;
+import moa.streams.InstanceStream;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
-
-import moa.core.ObjectRepository;
-import moa.options.ClassOption;
-import com.github.javacliparser.FileOption;
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.InstanceImpl;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import moa.streams.InstanceStream;
 
 /**
  * Task to output a stream to an ARFF file
@@ -48,19 +47,28 @@ public class WriteStreamToARFFFile extends AuxiliarMainTask {
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to write.", InstanceStream.class,
-            "generators.RandomTreeGenerator");
+    public ClassOption streamOption =
+            new ClassOption(
+                    "stream",
+                    's',
+                    "Stream to write.",
+                    InstanceStream.class,
+                    "generators.RandomTreeGenerator");
 
-    public FileOption arffFileOption = new FileOption("arffFile", 'f',
-            "Destination ARFF file.", null, "arff", true);
+    public FileOption arffFileOption =
+            new FileOption("arffFile", 'f', "Destination ARFF file.", null, "arff", true);
 
-    public IntOption maxInstancesOption = new IntOption("maxInstances", 'm',
-            "Maximum number of instances to write to file.", 10000000, 0,
-            Integer.MAX_VALUE);
+    public IntOption maxInstancesOption =
+            new IntOption(
+                    "maxInstances",
+                    'm',
+                    "Maximum number of instances to write to file.",
+                    10000000,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public FlagOption suppressHeaderOption = new FlagOption("suppressHeader",
-            'h', "Suppress header from output.");
+    public FlagOption suppressHeaderOption =
+            new FlagOption("suppressHeader", 'h', "Suppress header from output.");
 
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
@@ -83,8 +91,7 @@ public class WriteStreamToARFFFile extends AuxiliarMainTask {
                 }
                 w.close();
             } catch (Exception ex) {
-                throw new RuntimeException(
-                        "Failed writing to file " + destFile, ex);
+                throw new RuntimeException("Failed writing to file " + destFile, ex);
             }
             return "Stream written to ARFF file " + destFile;
         }

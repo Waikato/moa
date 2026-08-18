@@ -15,54 +15,51 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.generators;
 
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.core.FastVector;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
-
-import java.util.Random;
-
 import moa.core.InstanceExample;
-
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
+import java.util.Random;
+
 /**
- * Stream generator for Agrawal dataset.
- * Generator described in paper:<br/>
- *   Rakesh Agrawal, Tomasz Imielinksi, and Arun Swami,
- *    "Database Mining: A Performance Perspective",
- *     IEEE Transactions on Knowledge and Data Engineering,
- *      5(6), December 1993. <br/><br/>
- * 
- * Public C source code available at:<br/>
- *   <a href="http://www.almaden.ibm.com/cs/projects/iis/hdb/Projects/data_mining/datasets/syndata.html">
- * http://www.almaden.ibm.com/cs/projects/iis/hdb/Projects/data_mining/datasets/syndata.html</a><br/><br/>
+ * Stream generator for Agrawal dataset. Generator described in paper:<br>
+ * Rakesh Agrawal, Tomasz Imielinksi, and Arun Swami, "Database Mining: A Performance Perspective",
+ * IEEE Transactions on Knowledge and Data Engineering, 5(6), December 1993. <br>
+ * <br>
+ * Public C source code available at:<br>
+ * <a
+ * href="http://www.almaden.ibm.com/cs/projects/iis/hdb/Projects/data_mining/datasets/syndata.html">
+ * http://www.almaden.ibm.com/cs/projects/iis/hdb/Projects/data_mining/datasets/syndata.html</a><br>
+ * <br>
+ * Notes:<br>
+ * The built in functions are based on the paper (page 924), which turn out to be functions pred20
+ * thru pred29 in the public C implementation. Perturbation function works like C implementation
+ * rather than description in paper.
  *
- * Notes:<br/>
- * The built in functions are based on the paper (page 924),
- *  which turn out to be functions pred20 thru pred29 in the public C implementation.
- * Perturbation function works like C implementation rather than description in paper.
- * 
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class AgrawalGenerator extends AbstractOptionHandler implements
-        InstanceStream, CapabilitiesHandler {
+public class AgrawalGenerator extends AbstractOptionHandler
+        implements InstanceStream, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -71,26 +68,41 @@ public class AgrawalGenerator extends AbstractOptionHandler implements
 
     private static final long serialVersionUID = 1L;
 
-    public IntOption functionOption = new IntOption("function", 'f',
-            "Classification function used, as defined in the original paper.",
-            1, 1, 10);
+    public IntOption functionOption =
+            new IntOption(
+                    "function",
+                    'f',
+                    "Classification function used, as defined in the original paper.",
+                    1,
+                    1,
+                    10);
 
-    public IntOption instanceRandomSeedOption = new IntOption(
-            "instanceRandomSeed", 'i',
-            "Seed for random generation of instances.", 1);
+    public IntOption instanceRandomSeedOption =
+            new IntOption("instanceRandomSeed", 'i', "Seed for random generation of instances.", 1);
 
-    public FloatOption peturbFractionOption = new FloatOption("peturbFraction",
-            'p',
-            "The amount of peturbation (noise) introduced to numeric values.",
-            0.05, 0.0, 1.0);
+    public FloatOption peturbFractionOption =
+            new FloatOption(
+                    "peturbFraction",
+                    'p',
+                    "The amount of peturbation (noise) introduced to numeric values.",
+                    0.05,
+                    0.0,
+                    1.0);
 
-    public FlagOption balanceClassesOption = new FlagOption("balanceClasses",
-            'b', "Balance the number of instances of each class.");
+    public FlagOption balanceClassesOption =
+            new FlagOption("balanceClasses", 'b', "Balance the number of instances of each class.");
 
     protected interface ClassFunction {
 
-        public int determineClass(double salary, double commission, int age,
-                int elevel, int car, int zipcode, double hvalue, int hyears,
+        public int determineClass(
+                double salary,
+                double commission,
+                int age,
+                int elevel,
+                int car,
+                int zipcode,
+                double hvalue,
+                int hyears,
                 double loan);
     }
 
@@ -98,179 +110,239 @@ public class AgrawalGenerator extends AbstractOptionHandler implements
         // function 1
         new ClassFunction() {
 
-    @Override
-    public int determineClass(double salary, double commission,
-            int age, int elevel, int car, int zipcode,
-            double hvalue, int hyears, double loan) {
-        return ((age < 40) || (60 <= age)) ? 0 : 1;
-    }
-},
+            @Override
+            public int determineClass(
+                    double salary,
+                    double commission,
+                    int age,
+                    int elevel,
+                    int car,
+                    int zipcode,
+                    double hvalue,
+                    int hyears,
+                    double loan) {
+                return ((age < 40) || (60 <= age)) ? 0 : 1;
+            }
+        },
         // function 2
         new ClassFunction() {
 
-    @Override
-    public int determineClass(double salary, double commission,
-            int age, int elevel, int car, int zipcode,
-            double hvalue, int hyears, double loan) {
-        if (age < 40) {
-            return ((50000 <= salary) && (salary <= 100000)) ? 0
-                    : 1;
-        } else if (age < 60) {// && age >= 40
-            return ((75000 <= salary) && (salary <= 125000)) ? 0
-                    : 1;
-        } else {// age >= 60
-            return ((25000 <= salary) && (salary <= 75000)) ? 0 : 1;
-        }
-    }
-},
+            @Override
+            public int determineClass(
+                    double salary,
+                    double commission,
+                    int age,
+                    int elevel,
+                    int car,
+                    int zipcode,
+                    double hvalue,
+                    int hyears,
+                    double loan) {
+                if (age < 40) {
+                    return ((50000 <= salary) && (salary <= 100000)) ? 0 : 1;
+                } else if (age < 60) { // && age >= 40
+                    return ((75000 <= salary) && (salary <= 125000)) ? 0 : 1;
+                } else { // age >= 60
+                    return ((25000 <= salary) && (salary <= 75000)) ? 0 : 1;
+                }
+            }
+        },
         // function 3
         new ClassFunction() {
 
-    @Override
-    public int determineClass(double salary, double commission,
-            int age, int elevel, int car, int zipcode,
-            double hvalue, int hyears, double loan) {
-        if (age < 40) {
-            return ((elevel == 0) || (elevel == 1)) ? 0 : 1;
-        } else if (age < 60) { // && age >= 40
-            return ((elevel == 1) || (elevel == 2) || (elevel == 3)) ? 0
-                    : 1;
-        } else { // age >= 60
-            return ((elevel == 2) || (elevel == 3) || (elevel == 4)) ? 0
-                    : 1;
-        }
-    }
-},
+            @Override
+            public int determineClass(
+                    double salary,
+                    double commission,
+                    int age,
+                    int elevel,
+                    int car,
+                    int zipcode,
+                    double hvalue,
+                    int hyears,
+                    double loan) {
+                if (age < 40) {
+                    return ((elevel == 0) || (elevel == 1)) ? 0 : 1;
+                } else if (age < 60) { // && age >= 40
+                    return ((elevel == 1) || (elevel == 2) || (elevel == 3)) ? 0 : 1;
+                } else { // age >= 60
+                    return ((elevel == 2) || (elevel == 3) || (elevel == 4)) ? 0 : 1;
+                }
+            }
+        },
         // function 4
         new ClassFunction() {
 
-    @Override
-    public int determineClass(double salary, double commission,
-            int age, int elevel, int car, int zipcode,
-            double hvalue, int hyears, double loan) {
-        if (age < 40) {
-            if ((elevel == 0) || (elevel == 1)) {
-                return ((25000 <= salary) && (salary <= 75000)) ? 0
-                        : 1;
+            @Override
+            public int determineClass(
+                    double salary,
+                    double commission,
+                    int age,
+                    int elevel,
+                    int car,
+                    int zipcode,
+                    double hvalue,
+                    int hyears,
+                    double loan) {
+                if (age < 40) {
+                    if ((elevel == 0) || (elevel == 1)) {
+                        return ((25000 <= salary) && (salary <= 75000)) ? 0 : 1;
+                    }
+                    return ((50000 <= salary) && (salary <= 100000)) ? 0 : 1;
+                } else if (age < 60) { // && age >= 40
+                    if ((elevel == 1) || (elevel == 2) || (elevel == 3)) {
+                        return ((50000 <= salary) && (salary <= 100000)) ? 0 : 1;
+                    }
+                    return ((75000 <= salary) && (salary <= 125000)) ? 0 : 1;
+                } else { // age >= 60
+                    if ((elevel == 2) || (elevel == 3) || (elevel == 4)) {
+                        return ((50000 <= salary) && (salary <= 100000)) ? 0 : 1;
+                    }
+                    return ((25000 <= salary) && (salary <= 75000)) ? 0 : 1;
+                }
             }
-            return ((50000 <= salary) && (salary <= 100000)) ? 0
-                    : 1;
-        } else if (age < 60) {// && age >= 40
-            if ((elevel == 1) || (elevel == 2) || (elevel == 3)) {
-                return ((50000 <= salary) && (salary <= 100000)) ? 0
-                        : 1;
-            }
-            return ((75000 <= salary) && (salary <= 125000)) ? 0
-                    : 1;
-        } else {// age >= 60
-            if ((elevel == 2) || (elevel == 3) || (elevel == 4)) {
-                return ((50000 <= salary) && (salary <= 100000)) ? 0
-                        : 1;
-            }
-            return ((25000 <= salary) && (salary <= 75000)) ? 0 : 1;
-        }
-    }
-},
+        },
         // function 5
         new ClassFunction() {
 
-    @Override
-    public int determineClass(double salary, double commission,
-            int age, int elevel, int car, int zipcode,
-            double hvalue, int hyears, double loan) {
-        if (age < 40) {
-            if ((50000 <= salary) && (salary <= 100000)) {
-                return ((100000 <= loan) && (loan <= 300000)) ? 0
-                        : 1;
+            @Override
+            public int determineClass(
+                    double salary,
+                    double commission,
+                    int age,
+                    int elevel,
+                    int car,
+                    int zipcode,
+                    double hvalue,
+                    int hyears,
+                    double loan) {
+                if (age < 40) {
+                    if ((50000 <= salary) && (salary <= 100000)) {
+                        return ((100000 <= loan) && (loan <= 300000)) ? 0 : 1;
+                    }
+                    return ((200000 <= loan) && (loan <= 400000)) ? 0 : 1;
+                } else if (age < 60) { // && age >= 40
+                    if ((75000 <= salary) && (salary <= 125000)) {
+                        return ((200000 <= loan) && (loan <= 400000)) ? 0 : 1;
+                    }
+                    return ((300000 <= loan) && (loan <= 500000)) ? 0 : 1;
+                } else { // age >= 60
+                    if ((25000 <= salary) && (salary <= 75000)) {
+                        return ((300000 <= loan) && (loan <= 500000)) ? 0 : 1;
+                    }
+                    return ((100000 <= loan) && (loan <= 300000)) ? 0 : 1;
+                }
             }
-            return ((200000 <= loan) && (loan <= 400000)) ? 0 : 1;
-        } else if (age < 60) {// && age >= 40
-            if ((75000 <= salary) && (salary <= 125000)) {
-                return ((200000 <= loan) && (loan <= 400000)) ? 0
-                        : 1;
-            }
-            return ((300000 <= loan) && (loan <= 500000)) ? 0 : 1;
-        } else {// age >= 60
-            if ((25000 <= salary) && (salary <= 75000)) {
-                return ((300000 <= loan) && (loan <= 500000)) ? 0
-                        : 1;
-            }
-            return ((100000 <= loan) && (loan <= 300000)) ? 0 : 1;
-        }
-    }
-},
+        },
         // function 6
         new ClassFunction() {
 
-    @Override
-    public int determineClass(double salary, double commission,
-            int age, int elevel, int car, int zipcode,
-            double hvalue, int hyears, double loan) {
-        double totalSalary = salary + commission;
-        if (age < 40) {
-            return ((50000 <= totalSalary) && (totalSalary <= 100000)) ? 0
-                    : 1;
-        } else if (age < 60) {// && age >= 40
-            return ((75000 <= totalSalary) && (totalSalary <= 125000)) ? 0
-                    : 1;
-        } else {// age >= 60
-            return ((25000 <= totalSalary) && (totalSalary <= 75000)) ? 0
-                    : 1;
-        }
-    }
-},
+            @Override
+            public int determineClass(
+                    double salary,
+                    double commission,
+                    int age,
+                    int elevel,
+                    int car,
+                    int zipcode,
+                    double hvalue,
+                    int hyears,
+                    double loan) {
+                double totalSalary = salary + commission;
+                if (age < 40) {
+                    return ((50000 <= totalSalary) && (totalSalary <= 100000)) ? 0 : 1;
+                } else if (age < 60) { // && age >= 40
+                    return ((75000 <= totalSalary) && (totalSalary <= 125000)) ? 0 : 1;
+                } else { // age >= 60
+                    return ((25000 <= totalSalary) && (totalSalary <= 75000)) ? 0 : 1;
+                }
+            }
+        },
         // function 7
         new ClassFunction() {
 
-    @Override
-    public int determineClass(double salary, double commission,
-            int age, int elevel, int car, int zipcode,
-            double hvalue, int hyears, double loan) {
-        double disposable = (2.0 * (salary + commission) / 3.0
-                - loan / 5.0 - 20000.0);
-        return disposable > 0 ? 0 : 1;
-    }
-},
+            @Override
+            public int determineClass(
+                    double salary,
+                    double commission,
+                    int age,
+                    int elevel,
+                    int car,
+                    int zipcode,
+                    double hvalue,
+                    int hyears,
+                    double loan) {
+                double disposable = (2.0 * (salary + commission) / 3.0 - loan / 5.0 - 20000.0);
+                return disposable > 0 ? 0 : 1;
+            }
+        },
         // function 8
         new ClassFunction() {
 
-    @Override
-    public int determineClass(double salary, double commission,
-            int age, int elevel, int car, int zipcode,
-            double hvalue, int hyears, double loan) {
-        double disposable = (2.0 * (salary + commission) / 3.0
-                - 5000.0 * elevel - 20000.0);
-        return disposable > 0 ? 0 : 1;
-    }
-},
+            @Override
+            public int determineClass(
+                    double salary,
+                    double commission,
+                    int age,
+                    int elevel,
+                    int car,
+                    int zipcode,
+                    double hvalue,
+                    int hyears,
+                    double loan) {
+                double disposable = (2.0 * (salary + commission) / 3.0 - 5000.0 * elevel - 20000.0);
+                return disposable > 0 ? 0 : 1;
+            }
+        },
         // function 9
         new ClassFunction() {
 
-    @Override
-    public int determineClass(double salary, double commission,
-            int age, int elevel, int car, int zipcode,
-            double hvalue, int hyears, double loan) {
-        double disposable = (2.0 * (salary + commission) / 3.0
-                - 5000.0 * elevel - loan / 5.0 - 10000.0);
-        return disposable > 0 ? 0 : 1;
-    }
-},
+            @Override
+            public int determineClass(
+                    double salary,
+                    double commission,
+                    int age,
+                    int elevel,
+                    int car,
+                    int zipcode,
+                    double hvalue,
+                    int hyears,
+                    double loan) {
+                double disposable =
+                        (2.0 * (salary + commission) / 3.0
+                                - 5000.0 * elevel
+                                - loan / 5.0
+                                - 10000.0);
+                return disposable > 0 ? 0 : 1;
+            }
+        },
         // function 10
         new ClassFunction() {
 
-    @Override
-    public int determineClass(double salary, double commission,
-            int age, int elevel, int car, int zipcode,
-            double hvalue, int hyears, double loan) {
-        double equity = 0.0;
-        if (hyears >= 20) {
-            equity = hvalue * (hyears - 20.0) / 10.0;
+            @Override
+            public int determineClass(
+                    double salary,
+                    double commission,
+                    int age,
+                    int elevel,
+                    int car,
+                    int zipcode,
+                    double hvalue,
+                    int hyears,
+                    double loan) {
+                double equity = 0.0;
+                if (hyears >= 20) {
+                    equity = hvalue * (hyears - 20.0) / 10.0;
+                }
+                double disposable =
+                        (2.0 * (salary + commission) / 3.0
+                                - 5000.0 * elevel
+                                + equity / 5.0
+                                - 10000.0);
+                return disposable > 0 ? 0 : 1;
+            }
         }
-        double disposable = (2.0 * (salary + commission) / 3.0
-                - 5000.0 * elevel + equity / 5.0 - 10000.0);
-        return disposable > 0 ? 0 : 1;
-    }
-}};
+    };
 
     protected InstancesHeader streamHeader;
 
@@ -279,8 +351,7 @@ public class AgrawalGenerator extends AbstractOptionHandler implements
     protected boolean nextClassShouldBeZero;
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // generate header
         FastVector attributes = new FastVector();
         attributes.addElement(new Attribute("salary"));
@@ -308,8 +379,9 @@ public class AgrawalGenerator extends AbstractOptionHandler implements
         classLabels.addElement("groupA");
         classLabels.addElement("groupB");
         attributes.addElement(new Attribute("class", classLabels));
-        this.streamHeader = new InstancesHeader(new Instances(
-                getCLICreationString(InstanceStream.class), attributes, 0));
+        this.streamHeader =
+                new InstancesHeader(
+                        new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
         this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
         restart();
     }
@@ -342,8 +414,10 @@ public class AgrawalGenerator extends AbstractOptionHandler implements
         while (!desiredClassFound) {
             // generate attributes
             salary = 20000.0 + 130000.0 * this.instanceRandom.nextDouble();
-            commission = (salary >= 75000.0) ? 0
-                    : (10000.0 + 65000.0 * this.instanceRandom.nextDouble());
+            commission =
+                    (salary >= 75000.0)
+                            ? 0
+                            : (10000.0 + 65000.0 * this.instanceRandom.nextDouble());
             // true to c implementation:
             // if (instanceRandom.nextDouble() < 0.5 && salary < 75000.0)
             // commission = 10000.0 + 65000.0 * instanceRandom.nextDouble();
@@ -351,13 +425,13 @@ public class AgrawalGenerator extends AbstractOptionHandler implements
             elevel = this.instanceRandom.nextInt(5);
             car = this.instanceRandom.nextInt(20);
             zipcode = this.instanceRandom.nextInt(9);
-            hvalue = (9.0 - zipcode) * 100000.0
-                    * (0.5 + this.instanceRandom.nextDouble());
+            hvalue = (9.0 - zipcode) * 100000.0 * (0.5 + this.instanceRandom.nextDouble());
             hyears = 1 + this.instanceRandom.nextInt(30);
             loan = this.instanceRandom.nextDouble() * 500000.0;
             // determine class
-            group = classificationFunctions[this.functionOption.getValue() - 1].determineClass(salary, commission, age, elevel, car,
-                    zipcode, hvalue, hyears, loan);
+            group =
+                    classificationFunctions[this.functionOption.getValue() - 1].determineClass(
+                            salary, commission, age, elevel, car, zipcode, hvalue, hyears, loan);
             if (!this.balanceClassesOption.isSet()) {
                 desiredClassFound = true;
             } else {
@@ -401,10 +475,11 @@ public class AgrawalGenerator extends AbstractOptionHandler implements
         return perturbValue(val, max - min, min, max);
     }
 
-    protected double perturbValue(double val, double range, double min,
-            double max) {
-        val += range * (2.0 * (this.instanceRandom.nextDouble() - 0.5))
-                * this.peturbFractionOption.getValue();
+    protected double perturbValue(double val, double range, double min, double max) {
+        val +=
+                range
+                        * (2.0 * (this.instanceRandom.nextDouble() - 0.5))
+                        * this.peturbFractionOption.getValue();
         if (val < min) {
             val = min;
         } else if (val > max) {
@@ -428,7 +503,6 @@ public class AgrawalGenerator extends AbstractOptionHandler implements
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == AgrawalGenerator.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

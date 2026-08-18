@@ -15,13 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.meta;
 
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
@@ -29,15 +30,17 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.options.ClassOption;
 
-
 /**
- * Incremental on-line boosting with Theoretical Justifications of Shang-Tse Chen,
- * Hsuan-Tien Lin and Chi-Jen Lu.
+ * Incremental on-line boosting with Theoretical Justifications of Shang-Tse Chen, Hsuan-Tien Lin
+ * and Chi-Jen Lu.
  *
- * <p>See details in:<br /> </p>
+ * <p>See details in:<br>
  *
- * <p>Parameters:</p> <ul> <li>-l : Classiﬁer to train</li> <li>-s : The number
- * of models to boost</li> 
+ * <p>Parameters:
+ *
+ * <ul>
+ *   <li>-l : Classiﬁer to train
+ *   <li>-s : The number of models to boost
  * </ul>
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
@@ -52,26 +55,35 @@ public class OnlineSmoothBoost extends AbstractClassifier implements MultiClassC
         return "Incremental on-line boosting of Shang-Tse Chen, Hsuan-Tien Lin and Chi-Jen Lu.";
     }
 
-    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
+    public ClassOption baseLearnerOption =
+            new ClassOption(
+                    "baseLearner",
+                    'l',
+                    "Classifier to train.",
+                    Classifier.class,
+                    "trees.HoeffdingTree");
 
-    public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
-            "The number of models to boost.", 10, 1, Integer.MAX_VALUE);
+    public IntOption ensembleSizeOption =
+            new IntOption(
+                    "ensembleSize",
+                    's',
+                    "The number of models to boost.",
+                    10,
+                    1,
+                    Integer.MAX_VALUE);
 
-    //public FlagOption pureBoostOption = new FlagOption("pureBoost", 'p',
+    // public FlagOption pureBoostOption = new FlagOption("pureBoost", 'p',
     //        "Boost with weights only; no poisson.");
-    
-        public FloatOption gammaOption = new FloatOption("gamma",
-            'g',
-            "The value of the gamma parameter.",
-            0.1, 0.0, 1.0);
+
+    public FloatOption gammaOption =
+            new FloatOption("gamma", 'g', "The value of the gamma parameter.", 0.1, 0.0, 1.0);
 
     protected Classifier[] ensemble;
 
     protected double[] alpha;
-    
+
     protected double gamma;
-    
+
     protected double theta;
 
     @Override
@@ -82,10 +94,10 @@ public class OnlineSmoothBoost extends AbstractClassifier implements MultiClassC
         this.alpha = new double[this.ensemble.length];
         for (int i = 0; i < this.ensemble.length; i++) {
             this.ensemble[i] = baseLearner.copy();
-            this.alpha[i] = 1.0/ (double) this.ensemble.length;
+            this.alpha[i] = 1.0 / (double) this.ensemble.length;
         }
         this.gamma = this.gammaOption.getValue();
-       this.theta = this.gamma/(2.0+this.gamma);
+        this.theta = this.gamma / (2.0 + this.gamma);
     }
 
     @Override
@@ -94,13 +106,12 @@ public class OnlineSmoothBoost extends AbstractClassifier implements MultiClassC
         double weight = 1.0;
         for (int i = 0; i < this.ensemble.length; i++) {
             zt += (this.ensemble[i].correctlyClassifies(inst) ? 1 : -1) - theta;
-                    //normalized_predict(ex.x) * ex.y - theta;
+            // normalized_predict(ex.x) * ex.y - theta;
             Instance weightedInst = (Instance) inst.copy();
             weightedInst.setWeight(weight);
             this.ensemble[i].trainOnInstance(weightedInst);
-            weight = (zt<=0)? 1.0 : Math.pow(1.0-gamma, zt/2.0);
+            weight = (zt <= 0) ? 1.0 : Math.pow(1.0 - gamma, zt / 2.0);
         }
-
     }
 
     protected double getEnsembleMemberWeight(int i) {
@@ -108,7 +119,7 @@ public class OnlineSmoothBoost extends AbstractClassifier implements MultiClassC
     }
 
     public double[] getVotesForInstance(Instance inst) {
-               
+
         DoubleVector combinedVote = new DoubleVector();
         for (int i = 0; i < this.ensemble.length; i++) {
             double memberWeight = getEnsembleMemberWeight(i);
@@ -137,8 +148,9 @@ public class OnlineSmoothBoost extends AbstractClassifier implements MultiClassC
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        return new Measurement[]{new Measurement("ensemble size",
-                    this.ensemble != null ? this.ensemble.length : 0)};
+        return new Measurement[] {
+            new Measurement("ensemble size", this.ensemble != null ? this.ensemble.length : 0)
+        };
     }
 
     @Override

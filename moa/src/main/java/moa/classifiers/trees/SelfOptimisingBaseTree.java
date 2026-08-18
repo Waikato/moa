@@ -4,6 +4,7 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.AbstractMOAObject;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Regressor;
@@ -18,16 +19,15 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
+ * See details in: <br>
+ * Yibin Sun, Bernhard Pfahringer, Heitor Murilo Gomes, Albert Bifet. </br> SOKNL: a novel way of
+ * integrating K nearest neighbours with adaptive random forest regression for data streams. In
+ * European Conference on Machine Learning and Principle and Practice of Knowledge Discovery in
+ * Databases (ECML-PKDD), 2022. https://doi.org/10.1007/s10618-022-00858-9
  *
- * <p> See details in: <br> Yibin Sun, Bernhard Pfahringer, Heitor Murilo Gomes, Albert Bifet. </br>
- * SOKNL: a novel way of integrating K nearest neighbours with adaptive random forest regression for data streams.
- * In European Conference on Machine Learning and Principle and Practice of Knowledge Discovery in Databases (ECML-PKDD), 2022.
- * https://doi.org/10.1007/s10618-022-00858-9 </p>
- *
- *
- * <p>FIMT-DD:<br> Ikonomovska, Elena, João Gama, and Sašo Džeroski.
- * Learning model trees from evolving data streams.
- * Data mining and knowledge discovery 23.1 (2011): 128-168.</p>
+ * <p>FIMT-DD:<br>
+ * Ikonomovska, Elena, João Gama, and Sašo Džeroski. Learning model trees from evolving data
+ * streams. Data mining and knowledge discovery 23.1 (2011): 128-168.
  */
 public class SelfOptimisingBaseTree extends AbstractClassifier implements Regressor {
 
@@ -49,63 +49,124 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
 
     public ArrayList<LeafNode> leafNodes;
 
-    public IntOption subspaceSizeOption = new IntOption("subspaceSizeSize", 'k',
-            "Number of features per subset for each node split. Negative values = #features - k",
-            2, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    public IntOption subspaceSizeOption =
+            new IntOption(
+                    "subspaceSizeSize",
+                    'k',
+                    "Number of features per subset for each node split. Negative values = #features"
+                            + " - k",
+                    2,
+                    Integer.MIN_VALUE,
+                    Integer.MAX_VALUE);
 
-    //region ================ OPTIONS ================
+    // region ================ OPTIONS ================
 
-    public ClassOption splitCriterionOption = new ClassOption(
-            "splitCriterion", 's', "Split criterion to use.",
-            SplitCriterion.class, "moa.classifiers.core.splitcriteria.VarianceReductionSplitCriterion");
+    public ClassOption splitCriterionOption =
+            new ClassOption(
+                    "splitCriterion",
+                    's',
+                    "Split criterion to use.",
+                    SplitCriterion.class,
+                    "moa.classifiers.core.splitcriteria.VarianceReductionSplitCriterion");
 
-    public IntOption gracePeriodOption = new IntOption(
-            "gracePeriod", 'g', "Number of instances a leaf should observe between split attempts.",
-            200, 0, Integer.MAX_VALUE);
+    public IntOption gracePeriodOption =
+            new IntOption(
+                    "gracePeriod",
+                    'g',
+                    "Number of instances a leaf should observe between split attempts.",
+                    200,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public FloatOption splitConfidenceOption = new FloatOption(
-            "splitConfidence", 'c', "Allowed error in split decision, values close to 0 will take long to decide.",
-            0.0000001, 0.0, 1.0);
+    public FloatOption splitConfidenceOption =
+            new FloatOption(
+                    "splitConfidence",
+                    'c',
+                    "Allowed error in split decision, values close to 0 will take long to decide.",
+                    0.0000001,
+                    0.0,
+                    1.0);
 
-    public FloatOption tieThresholdOption = new FloatOption(
-            "tieThreshold", 't', "Threshold below which a split will be forced to break ties.",
-            0.05, 0.0, 1.0);
+    public FloatOption tieThresholdOption =
+            new FloatOption(
+                    "tieThreshold",
+                    't',
+                    "Threshold below which a split will be forced to break ties.",
+                    0.05,
+                    0.0,
+                    1.0);
 
-    public FloatOption PageHinckleyAlphaOption = new FloatOption(
-            "PageHinckleyAlpha", 'a', "Alpha value to use in the Page Hinckley change detection tests.",
-            0.005, 0.0, 1.0);
+    public FloatOption PageHinckleyAlphaOption =
+            new FloatOption(
+                    "PageHinckleyAlpha",
+                    'a',
+                    "Alpha value to use in the Page Hinckley change detection tests.",
+                    0.005,
+                    0.0,
+                    1.0);
 
-    public IntOption PageHinckleyThresholdOption = new IntOption(
-            "PageHinckleyThreshold", 'h', "Threshold value used in the Page Hinckley change detection tests.",
-            50, 0, Integer.MAX_VALUE);
+    public IntOption PageHinckleyThresholdOption =
+            new IntOption(
+                    "PageHinckleyThreshold",
+                    'h',
+                    "Threshold value used in the Page Hinckley change detection tests.",
+                    50,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public FloatOption alternateTreeFadingFactorOption = new FloatOption(
-            "alternateTreeFadingFactor", 'f', "Fading factor used to decide if an alternate tree should replace an original.",
-            0.995, 0.0, 1.0);
+    public FloatOption alternateTreeFadingFactorOption =
+            new FloatOption(
+                    "alternateTreeFadingFactor",
+                    'f',
+                    "Fading factor used to decide if an alternate tree should replace an original.",
+                    0.995,
+                    0.0,
+                    1.0);
 
-    public IntOption alternateTreeTMinOption = new IntOption(
-            "alternateTreeTMin", 'y', "Tmin value used to decide if an alternate tree should replace an original.",
-            150, 0, Integer.MAX_VALUE);
+    public IntOption alternateTreeTMinOption =
+            new IntOption(
+                    "alternateTreeTMin",
+                    'y',
+                    "Tmin value used to decide if an alternate tree should replace an original.",
+                    150,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public IntOption alternateTreeTimeOption = new IntOption(
-            "alternateTreeTime", 'u', "The number of instances used to decide if an alternate tree should be discarded.",
-            1500, 0, Integer.MAX_VALUE);
+    public IntOption alternateTreeTimeOption =
+            new IntOption(
+                    "alternateTreeTime",
+                    'u',
+                    "The number of instances used to decide if an alternate tree should be"
+                            + " discarded.",
+                    1500,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public FloatOption learningRatioOption = new FloatOption(
-            "learningRatio", 'l', "Learning ratio to used for training the Perceptrons in the leaves.",
-            0.02, 0, 1.00);
+    public FloatOption learningRatioOption =
+            new FloatOption(
+                    "learningRatio",
+                    'l',
+                    "Learning ratio to used for training the Perceptrons in the leaves.",
+                    0.02,
+                    0,
+                    1.00);
 
-    public FloatOption learningRateDecayFactorOption = new FloatOption(
-            "learningRatioDecayFactor", 'd', "Learning rate decay factor (not used when learning rate is constant).",
-            0.001, 0, 1.00);
+    public FloatOption learningRateDecayFactorOption =
+            new FloatOption(
+                    "learningRatioDecayFactor",
+                    'd',
+                    "Learning rate decay factor (not used when learning rate is constant).",
+                    0.001,
+                    0,
+                    1.00);
 
-    public FlagOption learningRatioConstOption = new FlagOption(
-            "learningRatioConst", 'p', "Keep learning rate constant instead of decaying.");
+    public FlagOption learningRatioConstOption =
+            new FlagOption(
+                    "learningRatioConst", 'p', "Keep learning rate constant instead of decaying.");
 
+    // endregion ================ OPTIONS ================
 
-    //endregion ================ OPTIONS ================
-
-    //region ================ CLASSES ================
+    // region ================ CLASSES ================
 
     public abstract static class Node extends AbstractMOAObject {
 
@@ -148,16 +209,12 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
             return (int) SizeOf.fullSizeOf(this);
         }
 
-        /**
-         * Set the parent node
-         */
+        /** Set the parent node */
         public void setParent(Node parent) {
             this.parent = parent;
         }
 
-        /**
-         * Return the parent node
-         */
+        /** Return the parent node */
         public Node getParent() {
             return parent;
         }
@@ -170,9 +227,7 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
             changeDetection = true;
         }
 
-        public void getDescription(StringBuilder sb, int indent) {
-
-        }
+        public void getDescription(StringBuilder sb, int indent) {}
 
         public double getPrediction(Instance inst) {
             return 0;
@@ -200,8 +255,7 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
             }
         }
 
-        public void setChild(int parentBranch, Node node) {
-        }
+        public void setChild(int parentBranch, Node node) {}
 
         public int getChildIndex(Node child) {
             return -1;
@@ -223,7 +277,8 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
         // Perceptron model that carries out the actual learning in each node
         public FIMTDDPerceptron learningModel;
 
-        protected AutoExpandVector<FIMTDDNumericAttributeClassObserver> attributeObservers = new AutoExpandVector<FIMTDDNumericAttributeClassObserver>();
+        protected AutoExpandVector<FIMTDDNumericAttributeClassObserver> attributeObservers =
+                new AutoExpandVector<FIMTDDNumericAttributeClassObserver>();
 
         protected double examplesSeenAtLastSplitEvaluation = 0;
 
@@ -234,9 +289,7 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
         public double[] sumsForAllAttrs;
         public double learntInstances;
 
-        /**
-         * Create a new LeafNode
-         */
+        /** Create a new LeafNode */
         public LeafNode(SelfOptimisingBaseTree tree, int subspaceSize) {
             super(tree);
             examplesSeen = 0;
@@ -249,8 +302,7 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
             this.sumsForAllAttrs = null;
         }
 
-        public void setChild(int parentBranch, Node node) {
-        }
+        public void setChild(int parentBranch, Node node) {}
 
         public int getChildIndex(Node child) {
             return -1;
@@ -269,8 +321,13 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
          * and also prevents the class value from being truncated to an int when it is passed to the
          * attribute observer
          */
-        public void learnFromInstance(Instance inst, boolean growthAllowed, SelfOptimisingBaseTree selfOptimisingBaseTree, LeafNode node) {
-            //The prediction must be calculated here -- it may be different from the tree's prediction due to alternate trees
+        public void learnFromInstance(
+                Instance inst,
+                boolean growthAllowed,
+                SelfOptimisingBaseTree selfOptimisingBaseTree,
+                LeafNode node) {
+            // The prediction must be calculated here -- it may be different from the tree's
+            // prediction due to alternate trees
 
             // Update the statistics for this node
             // number of instances passing through the node
@@ -283,13 +340,19 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
             sumOfSquares += inst.weight() * inst.classValue() * inst.classValue();
 
             // sum of absolute errors
-            sumOfAbsErrors += inst.weight() * Math.abs(tree.normalizeTargetValue(Math.abs(inst.classValue() - getPrediction(inst))));
+            sumOfAbsErrors +=
+                    inst.weight()
+                            * Math.abs(
+                                    tree.normalizeTargetValue(
+                                            Math.abs(inst.classValue() - getPrediction(inst))));
 
-            // prevent from endless loop when the user-specified subspace is larger than the feature space
+            // prevent from endless loop when the user-specified subspace is larger than the feature
+            // space
             this.numAttributes = Math.min(this.numAttributes, inst.numAttributes() - 1);
 
             // Update the centroid statistics
-            if (node.sumsForAllAttrs == null) node.sumsForAllAttrs = new double[inst.numAttributes()];
+            if (node.sumsForAllAttrs == null)
+                node.sumsForAllAttrs = new double[inst.numAttributes()];
             learntInstances++;
             for (int i = 0; i < inst.numAttributes(); i++) {
                 node.sumsForAllAttrs[i] += inst.value(i);
@@ -300,7 +363,9 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
                 for (int j = 0; j < this.numAttributes; j++) {
                     boolean isUnique = false;
                     while (isUnique == false) {
-                        this.listAttributes[j] = selfOptimisingBaseTree.classifierRandom.nextInt(inst.numAttributes() - 1);
+                        this.listAttributes[j] =
+                                selfOptimisingBaseTree.classifierRandom.nextInt(
+                                        inst.numAttributes() - 1);
                         isUnique = true;
                         for (int i = 0; i < j; i++) {
                             if (this.listAttributes[j] == this.listAttributes[i]) {
@@ -312,7 +377,7 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
                 }
             }
 
-            for (int j = 0; j < this.listAttributes.length ; j++) {
+            for (int j = 0; j < this.listAttributes.length; j++) {
                 int i = this.listAttributes[j];
                 int instAttIndex = modelAttIndexToInstanceAttIndex(i, inst);
                 FIMTDDNumericAttributeClassObserver obs = attributeObservers.get(i);
@@ -324,7 +389,8 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
                     }
                 }
                 if (obs != null) {
-                    obs.observeAttributeClass(inst.value(instAttIndex), inst.classValue(), inst.weight());
+                    obs.observeAttributeClass(
+                            inst.value(instAttIndex), inst.classValue(), inst.weight());
                 }
             }
 
@@ -333,14 +399,14 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
             }
         }
 
-        /**
-         * Return the best split suggestions for this node using the given split criteria
-         */
+        /** Return the best split suggestions for this node using the given split criteria */
         public AttributeSplitSuggestion[] getBestSplitSuggestions(SplitCriterion criterion) {
 
-            List<AttributeSplitSuggestion> bestSuggestions = new LinkedList<AttributeSplitSuggestion>();
+            List<AttributeSplitSuggestion> bestSuggestions =
+                    new LinkedList<AttributeSplitSuggestion>();
 
-            // Set the nodeStatistics up as the preSplitDistribution, rather than the observedClassDistribution
+            // Set the nodeStatistics up as the preSplitDistribution, rather than the
+            // observedClassDistribution
             double[] nodeSplitDist = new double[] {examplesSeen, sumOfValues, sumOfSquares};
 
             for (int i = 0; i < this.attributeObservers.size(); i++) {
@@ -350,7 +416,9 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
                     // AT THIS STAGE NON-NUMERIC ATTRIBUTES ARE IGNORED
                     AttributeSplitSuggestion bestSuggestion = null;
                     if (obs instanceof FIMTDDNumericAttributeClassObserver) {
-                        bestSuggestion = obs.getBestEvaluatedSplitSuggestion(criterion, nodeSplitDist, i, true);
+                        bestSuggestion =
+                                obs.getBestEvaluatedSplitSuggestion(
+                                        criterion, nodeSplitDist, i, true);
                     }
 
                     if (bestSuggestion != null) {
@@ -361,9 +429,7 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
             return bestSuggestions.toArray(new AttributeSplitSuggestion[bestSuggestions.size()]);
         }
 
-        /**
-         * Retrieve the class votes using the perceptron learner
-         */
+        /** Retrieve the class votes using the perceptron learner */
         public double getPredictionModel(Instance inst) {
             return learningModel.prediction(inst);
         }
@@ -377,19 +443,25 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
         }
 
         public void checkForSplit(SelfOptimisingBaseTree tree) {
-            // If it has seen Nmin examples since it was last tested for splitting, attempt a split of this node
-            if (examplesSeen - examplesSeenAtLastSplitEvaluation >= tree.gracePeriodOption.getValue()) {
+            // If it has seen Nmin examples since it was last tested for splitting, attempt a split
+            // of this node
+            if (examplesSeen - examplesSeenAtLastSplitEvaluation
+                    >= tree.gracePeriodOption.getValue()) {
                 int index = (parent != null) ? parent.getChildIndex(this) : 0;
                 tree.attemptToSplit(this, parent, index);
 
-                // Take note of how many instances were seen when this split evaluation was made, so we know when to perform the next split evaluation
+                // Take note of how many instances were seen when this split evaluation was made, so
+                // we know when to perform the next split evaluation
                 examplesSeenAtLastSplitEvaluation = examplesSeen;
             }
         }
 
         public void describeSubtree(StringBuilder out, int indent) {
             StringUtils.appendIndented(out, indent, "Leaf ");
-            out.append(tree.getClassNameString() + " = " + String.format("%.4f", (sumOfValues / examplesSeen)));
+            out.append(
+                    tree.getClassNameString()
+                            + " = "
+                            + String.format("%.4f", (sumOfValues / examplesSeen)));
             StringUtils.appendNewline(out);
         }
     }
@@ -446,21 +518,18 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
                 changeDetection = true;
                 PHsum = 0;
                 PHmin = Integer.MAX_VALUE;
-                for (Node child : children)
-                    child.restartChangeDetection();
+                for (Node child : children) child.restartChangeDetection();
             }
         }
 
-        /**
-         * Check to see if the tree needs updating
-         */
+        /** Check to see if the tree needs updating */
         public boolean PageHinckleyTest(double error, double threshold) {
             // Update the cumulative mT sum
             PHsum += error;
 
             // Update the minimum mT value if the new mT is
             // smaller than the current minimum
-            if(PHsum < PHmin) {
+            if (PHsum < PHmin) {
                 PHmin = PHsum;
             }
             // Return true if the cumulative value - the current minimum is
@@ -500,6 +569,7 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
 
         /**
          * Create a new SplitNode
+         *
          * @param tree
          */
         public SplitNode(InstanceConditionalTest splitTest, SelfOptimisingBaseTree tree) {
@@ -520,8 +590,9 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
                 Node child = getChild(branch);
                 if (child != null) {
                     StringUtils.appendIndented(out, indent, "if ");
-                    out.append(this.splitTest.describeConditionForBranch(branch,
-                            tree.getModelContext()));
+                    out.append(
+                            this.splitTest.describeConditionForBranch(
+                                    branch, tree.getModelContext()));
                     out.append(": ");
                     StringUtils.appendNewline(out);
                     child.describeSubtree(out, indent + 2);
@@ -567,14 +638,11 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
             reset = true;
         }
 
-
         public DoubleVector getWeights() {
             return weightAttribute;
         }
 
-        /**
-         * Update the model using the provided instance
-         */
+        /** Update the model using the provided instance */
         public void updatePerceptron(Instance inst) {
 
             // Initialize perceptron if necessary
@@ -582,7 +650,9 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
                 reset = false;
                 weightAttribute = new DoubleVector();
                 instancesSeen = 0;
-                for (int j = 0; j < inst.numAttributes(); j++) { // The last index corresponds to the constant b
+                for (int j = 0;
+                        j < inst.numAttributes();
+                        j++) { // The last index corresponds to the constant b
                     weightAttribute.setValue(j, 2 * tree.classifierRandom.nextDouble() - 1);
                 }
             }
@@ -595,7 +665,11 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
             if (tree.learningRatioConstOption.isSet()) {
                 learningRatio = learningRatioOption.getValue();
             } else {
-                learningRatio = learningRatioOption.getValue() / (1 + instancesSeen * tree.learningRateDecayFactorOption.getValue());
+                learningRatio =
+                        learningRatioOption.getValue()
+                                / (1
+                                        + instancesSeen
+                                                * tree.learningRateDecayFactorOption.getValue());
             }
 
             sumOfValues += inst.weight() * inst.classValue();
@@ -624,22 +698,24 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
             for (int j = 0; j < inst.numAttributes() - 1; j++) {
                 int instAttIndex = modelAttIndexToInstanceAttIndex(j, inst);
                 double mean = tree.sumOfAttrValues.getValue(j) / tree.examplesSeen;
-                double sd = computeSD(tree.sumOfAttrSquares.getValue(j), tree.sumOfAttrValues.getValue(j), tree.examplesSeen);
+                double sd =
+                        computeSD(
+                                tree.sumOfAttrSquares.getValue(j),
+                                tree.sumOfAttrValues.getValue(j),
+                                tree.examplesSeen);
                 if (inst.attribute(instAttIndex).isNumeric() && tree.examplesSeen > 1 && sd > 0)
                     normalizedInstance.setValue(j, (inst.value(instAttIndex) - mean) / (3 * sd));
-                else
-                    normalizedInstance.setValue(j, 0);
+                else normalizedInstance.setValue(j, 0);
             }
             if (tree.examplesSeen > 1)
-                normalizedInstance.setValue(inst.numAttributes() - 1, 1.0); // Value to be multiplied with the constant factor
-            else
-                normalizedInstance.setValue(inst.numAttributes() - 1, 0.0);
+                normalizedInstance.setValue(
+                        inst.numAttributes() - 1,
+                        1.0); // Value to be multiplied with the constant factor
+            else normalizedInstance.setValue(inst.numAttributes() - 1, 0.0);
             return normalizedInstance;
         }
 
-        /**
-         * Output the prediction made by this perceptron on the given instance
-         */
+        /** Output the prediction made by this perceptron on the given instance */
         public double prediction(DoubleVector instanceValues) {
             return scalarProduct(weightAttribute, instanceValues);
         }
@@ -650,13 +726,12 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
             return denormalizePrediction(normalizedPrediction, tree);
         }
 
-        private double denormalizePrediction(double normalizedPrediction, SelfOptimisingBaseTree tree) {
+        private double denormalizePrediction(
+                double normalizedPrediction, SelfOptimisingBaseTree tree) {
             double mean = tree.sumOfValues / tree.examplesSeen;
             double sd = computeSD(tree.sumOfSquares, tree.sumOfValues, tree.examplesSeen);
-            if (examplesSeen > 1)
-                return normalizedPrediction * sd * 3 + mean;
-            else
-                return 0.0;
+            if (examplesSeen > 1) return normalizedPrediction * sd * 3 + mean;
+            else return 0.0;
         }
 
         public void getModelDescription(StringBuilder out, int indent) {
@@ -670,16 +745,16 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
                         out.append(getAttributeNameString(j));
                     }
                 }
-                out.append(" + " + weightAttribute.getValue((getModelContext().numAttributes() - 1)));
+                out.append(
+                        " + " + weightAttribute.getValue((getModelContext().numAttributes() - 1)));
             }
             StringUtils.appendNewline(out);
         }
     }
 
+    // endregion ================ CLASSES ================
 
-    //endregion ================ CLASSES ================
-
-    //region ================ METHODS ================
+    // region ================ METHODS ================
 
     // region --- Regressor methods
 
@@ -700,7 +775,6 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
         this.sumOfAttrSquares = new DoubleVector();
 
         this.leafNodes = new ArrayList<>();
-
     }
 
     public boolean isRandomizable() {
@@ -712,9 +786,7 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
     }
 
     protected Measurement[] getModelMeasurementsImpl() {
-        return new Measurement[]{
-                new Measurement("tree size (leaves)", this.leafNodeCount)
-        };
+        return new Measurement[] {new Measurement("tree size (leaves)", this.leafNodeCount)};
     }
 
     public int calcByteSize() {
@@ -728,18 +800,18 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
 
         double prediction = treeRoot.getPrediction(inst);
 
-
         return new double[] {prediction};
     }
 
     public double normalizeTargetValue(double value) {
         if (examplesSeen > 1) {
-            double sd = Math.sqrt((sumOfSquares - ((sumOfValues * sumOfValues)/examplesSeen))/examplesSeen);
+            double sd =
+                    Math.sqrt(
+                            (sumOfSquares - ((sumOfValues * sumOfValues) / examplesSeen))
+                                    / examplesSeen);
             double average = sumOfValues / examplesSeen;
-            if (sd > 0 && examplesSeen > 1)
-                return (value - average) / (3 * sd);
-            else
-                return 0.0;
+            if (sd > 0 && examplesSeen > 1) return (value - average) / (3 * sd);
+            else return 0.0;
         }
         return 0.0;
     }
@@ -750,10 +822,7 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
         return Math.abs(normalValue - normalPrediction);
     }
 
-
-    /**
-     * Method for updating (training) the model using a new instance
-     */
+    /** Method for updating (training) the model using a new instance */
     public void trainOnInstanceImpl(Instance inst) {
         checkRoot();
 
@@ -768,14 +837,22 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
         }
 
         double prediction = treeRoot.getPrediction(inst);
-        processInstance(inst, treeRoot, prediction, getNormalizedError(inst, prediction), true, false);
+        processInstance(
+                inst, treeRoot, prediction, getNormalizedError(inst, prediction), true, false);
     }
 
-    public void processInstance(Instance inst, Node node, double prediction, double normalError, boolean growthAllowed, boolean inAlternate) {
+    public void processInstance(
+            Instance inst,
+            Node node,
+            double prediction,
+            double normalError,
+            boolean growthAllowed,
+            boolean inAlternate) {
         Node currentNode = node;
         while (true) {
             if (currentNode instanceof LeafNode) {
-                ((LeafNode) currentNode).learnFromInstance(inst, growthAllowed, this, (LeafNode)currentNode);
+                ((LeafNode) currentNode)
+                        .learnFromInstance(inst, growthAllowed, this, (LeafNode) currentNode);
                 break;
             } else {
                 currentNode.examplesSeen += inst.weight();
@@ -784,23 +861,36 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
                 if (!inAlternate && iNode.alternateTree != null) {
                     boolean altTree = true;
                     double lossO = Math.pow(inst.classValue() - prediction, 2);
-                    double lossA = Math.pow(inst.classValue() - iNode.alternateTree.getPrediction(inst), 2);
+                    double lossA =
+                            Math.pow(
+                                    inst.classValue() - iNode.alternateTree.getPrediction(inst), 2);
 
                     // Loop for compatibility with bagging methods
                     for (int i = 0; i < inst.weight(); i++) {
-                        iNode.lossFadedSumOriginal = lossO + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumOriginal;
-                        iNode.lossFadedSumAlternate = lossA + alternateTreeFadingFactorOption.getValue() * iNode.lossFadedSumAlternate;
+                        iNode.lossFadedSumOriginal =
+                                lossO
+                                        + alternateTreeFadingFactorOption.getValue()
+                                                * iNode.lossFadedSumOriginal;
+                        iNode.lossFadedSumAlternate =
+                                lossA
+                                        + alternateTreeFadingFactorOption.getValue()
+                                                * iNode.lossFadedSumAlternate;
                         iNode.lossExamplesSeen++;
 
-                        double Qi = Math.log((iNode.lossFadedSumOriginal) / (iNode.lossFadedSumAlternate));
+                        double Qi =
+                                Math.log(
+                                        (iNode.lossFadedSumOriginal)
+                                                / (iNode.lossFadedSumAlternate));
                         iNode.lossSumQi += Qi;
                         iNode.lossNumQiTests += 1;
                     }
-                    double Qi = Math.log((iNode.lossFadedSumOriginal) / (iNode.lossFadedSumAlternate));
+                    double Qi =
+                            Math.log((iNode.lossFadedSumOriginal) / (iNode.lossFadedSumAlternate));
                     double previousQiAverage = iNode.lossSumQi / iNode.lossNumQiTests;
                     double QiAverage = iNode.lossSumQi / iNode.lossNumQiTests;
 
-                    if (iNode.lossExamplesSeen - iNode.previousWeight >= alternateTreeTMinOption.getValue()) {
+                    if (iNode.lossExamplesSeen - iNode.previousWeight
+                            >= alternateTreeTMinOption.getValue()) {
                         iNode.previousWeight = iNode.lossExamplesSeen;
                         if (Qi > 0) {
                             // Switch the subtrees
@@ -818,10 +908,10 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
                             currentNode = iNode.alternateTree;
                             currentNode.originalNode = null;
                             altTree = false;
-                        } else if (
-                                (QiAverage < previousQiAverage && iNode.lossExamplesSeen >= (10 * this.gracePeriodOption.getValue()))
-                                        || iNode.lossExamplesSeen >= alternateTreeTimeOption.getValue()
-                        ) {
+                        } else if ((QiAverage < previousQiAverage
+                                        && iNode.lossExamplesSeen
+                                                >= (10 * this.gracePeriodOption.getValue()))
+                                || iNode.lossExamplesSeen >= alternateTreeTimeOption.getValue()) {
                             // Remove the alternate tree
                             iNode.alternateTree = null;
                             if (growthAllowed) iNode.restartChangeDetection();
@@ -831,12 +921,17 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
 
                     if (altTree) {
                         growthAllowed = false;
-                        processInstance(inst, iNode.alternateTree, prediction, normalError, true, true);
+                        processInstance(
+                                inst, iNode.alternateTree, prediction, normalError, true, true);
                     }
                 }
 
                 if (iNode.changeDetection && !inAlternate) {
-                    if (iNode.PageHinckleyTest(normalError - iNode.sumOfAbsErrors / iNode.examplesSeen - PageHinckleyAlphaOption.getValue(), PageHinckleyThresholdOption.getValue())) {
+                    if (iNode.PageHinckleyTest(
+                            normalError
+                                    - iNode.sumOfAbsErrors / iNode.examplesSeen
+                                    - PageHinckleyAlphaOption.getValue(),
+                            PageHinckleyThresholdOption.getValue())) {
                         iNode.initializeAlternateTree();
                     }
                 }
@@ -869,7 +964,7 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
         return new FIMTDDPerceptron(this);
     }
 
-    //endregion --- Object instatiation methods
+    // endregion --- Object instatiation methods
 
     // region --- Processing methods
 
@@ -882,15 +977,18 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
     }
 
     public static double computeHoeffdingBound(double range, double confidence, double n) {
-        return Math.sqrt(( (range * range) * Math.log(1 / confidence)) / (2.0 * n));
+        return Math.sqrt(((range * range) * Math.log(1 / confidence)) / (2.0 * n));
     }
 
     protected void attemptToSplit(LeafNode node, Node parent, int parentIndex) {
-        // Set the split criterion to use to the SDR split criterion as described by Ikonomovska et al.
-        SplitCriterion splitCriterion = (SplitCriterion) getPreparedClassOption(this.splitCriterionOption);
+        // Set the split criterion to use to the SDR split criterion as described by Ikonomovska et
+        // al.
+        SplitCriterion splitCriterion =
+                (SplitCriterion) getPreparedClassOption(this.splitCriterionOption);
 
         // Using this criterion, find the best split per attribute and rank the results
-        AttributeSplitSuggestion[] bestSplitSuggestions = node.getBestSplitSuggestions(splitCriterion);
+        AttributeSplitSuggestion[] bestSplitSuggestions =
+                node.getBestSplitSuggestions(splitCriterion);
         Arrays.sort(bestSplitSuggestions);
 
         // Declare a variable to determ
@@ -902,38 +1000,58 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
             shouldSplit = bestSplitSuggestions.length > 0;
         } else { // Otherwise, consider which of the splits proposed may be worth trying
 
-            // Determine the Hoeffding bound value, used to select how many instances should be used to make a test decision
-            // to feel reasonably confident that the test chosen by this sample is the same as what would be chosen using infinite examples
-            double hoeffdingBound = computeHoeffdingBound(1, this.splitConfidenceOption.getValue(), node.examplesSeen);
+            // Determine the Hoeffding bound value, used to select how many instances should be used
+            // to make a test decision
+            // to feel reasonably confident that the test chosen by this sample is the same as what
+            // would be chosen using infinite examples
+            double hoeffdingBound =
+                    computeHoeffdingBound(
+                            1, this.splitConfidenceOption.getValue(), node.examplesSeen);
             // Determine the top two ranked splitting suggestions
-            AttributeSplitSuggestion bestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1];
-            AttributeSplitSuggestion secondBestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 2];
+            AttributeSplitSuggestion bestSuggestion =
+                    bestSplitSuggestions[bestSplitSuggestions.length - 1];
+            AttributeSplitSuggestion secondBestSuggestion =
+                    bestSplitSuggestions[bestSplitSuggestions.length - 2];
 
-            // If the upper bound of the sample mean for the ratio of SDR(best suggestion) to SDR(second best suggestion),
-            // as determined using the Hoeffding bound, is less than 1, then the true mean is also less than 1, and thus at this
-            // particular moment of observation the bestSuggestion is indeed the best split option with confidence 1-delta, and
+            // If the upper bound of the sample mean for the ratio of SDR(best suggestion) to
+            // SDR(second best suggestion),
+            // as determined using the Hoeffding bound, is less than 1, then the true mean is also
+            // less than 1, and thus at this
+            // particular moment of observation the bestSuggestion is indeed the best split option
+            // with confidence 1-delta, and
             // splitting should occur.
-            // Alternatively, if two or more splits are very similar or identical in terms of their splits, then a threshold limit
-            // (default 0.05) is applied to the Hoeffding bound; if the Hoeffding bound is smaller than this limit then the two
-            // competing attributes are equally good, and the split will be made on the one with the higher SDR value.
-            if ((secondBestSuggestion.merit / bestSuggestion.merit < 1 - hoeffdingBound) || (hoeffdingBound < this.tieThresholdOption.getValue())) {
+            // Alternatively, if two or more splits are very similar or identical in terms of their
+            // splits, then a threshold limit
+            // (default 0.05) is applied to the Hoeffding bound; if the Hoeffding bound is smaller
+            // than this limit then the two
+            // competing attributes are equally good, and the split will be made on the one with the
+            // higher SDR value.
+            if ((secondBestSuggestion.merit / bestSuggestion.merit < 1 - hoeffdingBound)
+                    || (hoeffdingBound < this.tieThresholdOption.getValue())) {
                 shouldSplit = true;
             }
-            // If the splitting criterion was not met, initiate pruning of the E-BST structures in each attribute observer
+            // If the splitting criterion was not met, initiate pruning of the E-BST structures in
+            // each attribute observer
             else {
                 for (int i = 0; i < node.attributeObservers.size(); i++) {
                     FIMTDDNumericAttributeClassObserver obs = node.attributeObservers.get(i);
                     if (obs != null) {
-                        obs.removeBadSplits(splitCriterion, secondBestSuggestion.merit / bestSuggestion.merit, bestSuggestion.merit, hoeffdingBound);
+                        obs.removeBadSplits(
+                                splitCriterion,
+                                secondBestSuggestion.merit / bestSuggestion.merit,
+                                bestSuggestion.merit,
+                                hoeffdingBound);
                     }
                 }
             }
         }
 
-        // If the splitting criterion were met, split the current node using the chosen attribute test, and
+        // If the splitting criterion were met, split the current node using the chosen attribute
+        // test, and
         // make two new branches leading to (empty) leaves
         if (shouldSplit) {
-            AttributeSplitSuggestion splitDecision = bestSplitSuggestions[bestSplitSuggestions.length - 1];
+            AttributeSplitSuggestion splitDecision =
+                    bestSplitSuggestions[bestSplitSuggestions.length - 1];
 
             SplitNode newSplit = newSplitNode(splitDecision.splitTest);
             newSplit.copyStatistics(node);
@@ -948,7 +1066,7 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
                 leafNodeCount++;
                 this.leafNodes.add(newChild);
             }
-            if(leafNodes.contains(node)) this.leafNodes.remove(node);
+            if (leafNodes.contains(node)) this.leafNodes.remove(node);
             if (parent == null && node.originalNode == null) {
                 treeRoot = newSplit;
             } else if (parent == null && node.originalNode != null) {
@@ -963,10 +1081,8 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
     }
 
     public double computeSD(double squaredVal, double val, double size) {
-        if (size > 1)
-            return Math.sqrt((squaredVal - ((val * val) / size)) / size);
-        else
-            return 0.0;
+        if (size > 1) return Math.sqrt((squaredVal - ((val * val) / size)) / size);
+        else return 0.0;
     }
 
     public double scalarProduct(DoubleVector u, DoubleVector v) {
@@ -976,20 +1092,22 @@ public class SelfOptimisingBaseTree extends AbstractClassifier implements Regres
         }
         return ret;
     }
-    //endregion --- Processing method
 
-    public Node getLeafForInstance(Instance inst, Node node){
-        if(node == null) return null;
+    // endregion --- Processing method
 
-        if(node instanceof LeafNode) return node;
-        else{
-            SplitNode currentNode = (SplitNode)node;
-            return getLeafForInstance(inst,currentNode.children.get(currentNode.splitTest.branchForInstance(inst)));
+    public Node getLeafForInstance(Instance inst, Node node) {
+        if (node == null) return null;
+
+        if (node instanceof LeafNode) return node;
+        else {
+            SplitNode currentNode = (SplitNode) node;
+            return getLeafForInstance(
+                    inst, currentNode.children.get(currentNode.splitTest.branchForInstance(inst)));
         }
     }
 
-    public Node getTreeRoot(){
+    public Node getTreeRoot() {
         return this.treeRoot;
     }
-    //endregion ================ METHODS ================
+    // endregion ================ METHODS ================
 }

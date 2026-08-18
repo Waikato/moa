@@ -27,28 +27,25 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 /**
- * Kafka serialiser for Java objects. Uses Java's serialisation tools
- * internally.
+ * Kafka serialiser for Java objects. Uses Java's serialisation tools internally.
  *
  * @author Corey Sterling (csterlin at waikato dot ac dot nz)
  */
-public class ObjectSerializer<T>
-  implements Serializer<T> {
+public class ObjectSerializer<T> implements Serializer<T> {
 
-  @Override
-  public byte[] serialize(String topic, T data) {
-    // Null serialises to null
-    if (data == null)
-      return null;
+    @Override
+    public byte[] serialize(String topic, T data) {
+        // Null serialises to null
+        if (data == null) return null;
 
-    try {
-      ByteArrayOutputStream streamSerialiser = new ByteArrayOutputStream();
-      ObjectOutputStream objectStream = new ObjectOutputStream(streamSerialiser);
-      objectStream.writeObject(data);
-      objectStream.flush();
-      return streamSerialiser.toByteArray();
-    } catch (IOException e) {
-      throw new RuntimeException("Failed to serialise instance for Kafka", e);
+        try {
+            ByteArrayOutputStream streamSerialiser = new ByteArrayOutputStream();
+            ObjectOutputStream objectStream = new ObjectOutputStream(streamSerialiser);
+            objectStream.writeObject(data);
+            objectStream.flush();
+            return streamSerialiser.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to serialise instance for Kafka", e);
+        }
     }
-  }
 }

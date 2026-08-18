@@ -15,9 +15,17 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.experimentertab;
+
+import moa.core.StringUtils;
+import moa.evaluation.Accuracy;
+import moa.evaluation.ChangeDetectionMeasures;
+import moa.evaluation.MeasureCollection;
+import moa.evaluation.RegressionAccuracy;
+import moa.gui.conceptdrift.CDTaskManagerPanel;
+import moa.tasks.ResultPreviewListener;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -27,14 +35,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import moa.core.StringUtils;
-import moa.evaluation.Accuracy;
-import moa.evaluation.ChangeDetectionMeasures;
-import moa.evaluation.MeasureCollection;
-import moa.evaluation.RegressionAccuracy;
-import moa.gui.conceptdrift.CDTaskManagerPanel;
-import moa.tasks.ResultPreviewListener;
 
 /**
  * This panel displays the running task preview text and buttons.
@@ -46,9 +46,14 @@ public class ExpPreviewPanel extends JPanel implements ResultPreviewListener {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String[] autoFreqStrings = {"never", "every second",
-        "every 5 seconds", "every 10 seconds", "every 30 seconds",
-        "every minute"};
+    public static final String[] autoFreqStrings = {
+        "never",
+        "every second",
+        "every 5 seconds",
+        "every 10 seconds",
+        "every 30 seconds",
+        "every minute"
+    };
 
     public static final int[] autoFreqTimeSecs = {0, 1, 5, 10, 30, 60};
 
@@ -65,18 +70,19 @@ public class ExpPreviewPanel extends JPanel implements ResultPreviewListener {
     protected TaskTextViewerPanel textViewerPanel; // = new TaskTextViewerPanel();
 
     protected javax.swing.Timer autoRefreshTimer;
-    
+
     public enum TypePanel {
         CLASSIFICATION(new Accuracy()),
         REGRESSION(new RegressionAccuracy()),
         CONCEPT_DRIFT(new ChangeDetectionMeasures());
         private final MeasureCollection measureCollection;
-        //Constructor
-        TypePanel(MeasureCollection measureCollection){
+
+        // Constructor
+        TypePanel(MeasureCollection measureCollection) {
             this.measureCollection = measureCollection;
         }
-        
-        public MeasureCollection getMeasureCollection(){
+
+        public MeasureCollection getMeasureCollection() {
             return (MeasureCollection) this.measureCollection.copy();
         }
     }
@@ -84,13 +90,13 @@ public class ExpPreviewPanel extends JPanel implements ResultPreviewListener {
     public ExpPreviewPanel() {
         this(TypePanel.CLASSIFICATION, null);
     }
-    
+
     public ExpPreviewPanel(TypePanel typePanel) {
         this(typePanel, null);
     }
-    
+
     public ExpPreviewPanel(TypePanel typePanel, CDTaskManagerPanel taskManagerPanel) {
-        this.textViewerPanel = new TaskTextViewerPanel(typePanel,taskManagerPanel); 
+        this.textViewerPanel = new TaskTextViewerPanel(typePanel, taskManagerPanel);
         this.autoRefreshComboBox.setSelectedIndex(1); // default to 1 sec
         JPanel controlPanel = new JPanel();
         controlPanel.add(this.previewLabel);
@@ -100,28 +106,32 @@ public class ExpPreviewPanel extends JPanel implements ResultPreviewListener {
         setLayout(new BorderLayout());
         add(controlPanel, BorderLayout.NORTH);
         add(this.textViewerPanel, BorderLayout.CENTER);
-        this.refreshButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                refresh();
-            }
-        });
-        this.autoRefreshTimer = new javax.swing.Timer(1000,
+        this.refreshButton.addActionListener(
                 new ActionListener() {
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(ActionEvent arg0) {
                         refresh();
                     }
                 });
-        this.autoRefreshComboBox.addActionListener(new ActionListener() {
+        this.autoRefreshTimer =
+                new javax.swing.Timer(
+                        1000,
+                        new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                updateAutoRefreshTimer();
-            }
-        });
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                refresh();
+                            }
+                        });
+        this.autoRefreshComboBox.addActionListener(
+                new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        updateAutoRefreshTimer();
+                    }
+                });
         setTaskThreadToPreview(null);
     }
 
@@ -138,8 +148,7 @@ public class ExpPreviewPanel extends JPanel implements ResultPreviewListener {
 
     public void setTaskThreadToPreview(ExpTaskThread thread) {
         this.previewedThread = thread;
-        setLatestPreview(thread != null ? thread.getLatestResultPreview()
-                : null);
+        setLatestPreview(thread != null ? thread.getLatestResultPreview() : null);
         if (thread == null) {
             disableRefresh();
         } else if (!thread.isComplete()) {
@@ -154,12 +163,13 @@ public class ExpPreviewPanel extends JPanel implements ResultPreviewListener {
             this.textViewerPanel.setText(finalResult != null ? finalResult.toString() : null);
             disableRefresh();
         } else {
-            double grabTime = this.previewedThread != null ? this.previewedThread.getLatestPreviewGrabTimeSeconds()
-                    : 0.0;
-            String grabString = grabTime > 0.0 ? (" ("
-                    + StringUtils.secondsToDHMSString(grabTime) + ")") : "";
-            this.textViewerPanel.setText(preview != null ? preview.toString()
-                    : null);
+            double grabTime =
+                    this.previewedThread != null
+                            ? this.previewedThread.getLatestPreviewGrabTimeSeconds()
+                            : 0.0;
+            String grabString =
+                    grabTime > 0.0 ? (" (" + StringUtils.secondsToDHMSString(grabTime) + ")") : "";
+            this.textViewerPanel.setText(preview != null ? preview.toString() : null);
             if (preview == null) {
                 this.previewLabel.setText("No preview available" + grabString);
             } else {

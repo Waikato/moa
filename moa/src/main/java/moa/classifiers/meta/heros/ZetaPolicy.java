@@ -19,40 +19,42 @@
  */
 package moa.classifiers.meta.heros;
 
+import com.github.javacliparser.FloatOption;
+
 import moa.classifiers.meta.heros.Heros.PoolItem;
+import moa.core.ObjectRepository;
+import moa.options.AbstractOptionHandler;
+import moa.tasks.TaskMonitor;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.github.javacliparser.FloatOption;
-import moa.core.ObjectRepository;
-import moa.options.AbstractOptionHandler;
-import moa.tasks.TaskMonitor;
-
-
 /**
  * <b>ZetaPolicy </b><br>
+ * The zeta policy chooses the k models with lowest resource cost and at most $\zeta$ worse in their
+ * estimated performance for training in Heros.
  *
- * The zeta policy chooses the k models with lowest resource cost and at most $\zeta$
- * worse in their estimated performance for training in Heros.
-
- *  <p>Parameters:</p> <ul>
- *      <li>-z : $\zeta$ parameter</li>
- *  </ul>
-
+ * <p>Parameters:
  *
+ * <ul>
+ *   <li>-z : $\zeta$ parameter
+ * </ul>
  */
 public class ZetaPolicy extends AbstractOptionHandler implements Policy {
 
-    public FloatOption zetaOption = new FloatOption("zeta", 'z', "Maximum predictive performance loss to save resources while training.", 0.01, 0.0, 1.0);
+    public FloatOption zetaOption =
+            new FloatOption(
+                    "zeta",
+                    'z',
+                    "Maximum predictive performance loss to save resources while training.",
+                    0.01,
+                    0.0,
+                    1.0);
 
-    public ZetaPolicy() {
-    }
+    public ZetaPolicy() {}
 
-    protected void prepareForUseImpl(TaskMonitor taskMonitor, ObjectRepository objectRepository) {
-
-    }
+    protected void prepareForUseImpl(TaskMonitor taskMonitor, ObjectRepository objectRepository) {}
 
     @Override
     public int[] pullWithPolicy(PoolItem[] pool) {
@@ -62,10 +64,14 @@ public class ZetaPolicy extends AbstractOptionHandler implements Policy {
             performances[i] = pool[i].getEstimation();
         }
         // Sort performances in descending order
-        List<Integer> performanceSortedIndices = IntStream.range(0, performances.length)
-                .boxed()
-                .sorted((i, j) -> Double.compare(performances[j], performances[i])) // descending
-                .collect(Collectors.toList());
+        List<Integer> performanceSortedIndices =
+                IntStream.range(0, performances.length)
+                        .boxed()
+                        .sorted(
+                                (i, j) ->
+                                        Double.compare(
+                                                performances[j], performances[i])) // descending
+                        .collect(Collectors.toList());
 
         for (int i = 0; i < this.numModelsToTrainOption.getValue(); i++) {
             // 1. Select model with highest performance
@@ -73,29 +79,31 @@ public class ZetaPolicy extends AbstractOptionHandler implements Policy {
             int poolItemIndexLowerRes = poolItemIndexBestPerf;
             int poolItemSortedIndexTrain = 0;
             int jIndex = 0;
-            //for (int j : performanceSortedIndices) {
+            // for (int j : performanceSortedIndices) {
             for (int ij = 1; ij < performanceSortedIndices.size(); ij++) {
                 int j = performanceSortedIndices.get(ij);
                 // 2. Select model with lower resource costs but within performance range
-                if (performances[j] >= (1. - this.zetaOption.getValue()) * performances[poolItemIndexBestPerf]) {
+                if (performances[j]
+                        >= (1. - this.zetaOption.getValue())
+                                * performances[poolItemIndexBestPerf]) {
                     if (pool[j].getResourceCost() < pool[poolItemIndexBestPerf].getResourceCost()) {
                         poolItemIndexLowerRes = j;
                         poolItemSortedIndexTrain = jIndex + 1;
                     }
-                } else {    // Since list is sorted, there cannot be a model with a performance in this range anymore
+                } else { // Since list is sorted, there cannot be a model with a performance in this
+                    // range anymore
                     break;
                 }
                 jIndex += 1;
             }
             // 3. Select model and remove index from performanceSortedIndices
             action[poolItemIndexLowerRes] = 1;
-            // After a model is selected for training, it will be removed from performanceSortedIndices
+            // After a model is selected for training, it will be removed from
+            // performanceSortedIndices
             performanceSortedIndices.remove(poolItemSortedIndexTrain);
         }
         return action;
     }
 
-    public void getDescription(StringBuilder stringBuilder, int i) {
-
-    }
+    public void getDescription(StringBuilder stringBuilder, int i) {}
 }

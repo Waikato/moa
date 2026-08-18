@@ -16,16 +16,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
@@ -35,78 +33,114 @@ import moa.evaluation.LearningPerformanceEvaluator;
 import moa.evaluation.preview.LearningCurve;
 import moa.learners.ChangeDetectorLearner;
 import moa.options.ClassOption;
-
 import moa.streams.clustering.ClusterEvent;
 import moa.streams.generators.cd.ConceptDriftGenerator;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 /**
- * Task for evaluating a classifier on a stream by testing then training with each example in sequence.
+ * Task for evaluating a classifier on a stream by testing then training with each example in
+ * sequence.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class EvaluateConceptDrift extends ConceptDriftMainTask{
+public class EvaluateConceptDrift extends ConceptDriftMainTask {
 
-   
     @Override
     public String getPurposeString() {
-        return "Evaluates a classifier on a stream by testing then training with each example in sequence.";
+        return "Evaluates a classifier on a stream by testing then training with each example in"
+                + " sequence.";
     }
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Change detector to train.", ChangeDetectorLearner.class, "ChangeDetectorLearner");
+    public ClassOption learnerOption =
+            new ClassOption(
+                    "learner",
+                    'l',
+                    "Change detector to train.",
+                    ChangeDetectorLearner.class,
+                    "ChangeDetectorLearner");
 
-    public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", ConceptDriftGenerator.class,
-            "GradualChangeGenerator");
+    public ClassOption streamOption =
+            new ClassOption(
+                    "stream",
+                    's',
+                    "Stream to learn from.",
+                    ConceptDriftGenerator.class,
+                    "GradualChangeGenerator");
 
-    public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
-            "Classification performance evaluation method.",
-            LearningPerformanceEvaluator.class,
-            "BasicConceptDriftPerformanceEvaluator");
+    public ClassOption evaluatorOption =
+            new ClassOption(
+                    "evaluator",
+                    'e',
+                    "Classification performance evaluation method.",
+                    LearningPerformanceEvaluator.class,
+                    "BasicConceptDriftPerformanceEvaluator");
 
-    public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
-            "Maximum number of instances to test/train on  (-1 = no limit).",
-            1000, -1, Integer.MAX_VALUE);
+    public IntOption instanceLimitOption =
+            new IntOption(
+                    "instanceLimit",
+                    'i',
+                    "Maximum number of instances to test/train on  (-1 = no limit).",
+                    1000,
+                    -1,
+                    Integer.MAX_VALUE);
 
-    public IntOption timeLimitOption = new IntOption("timeLimit", 't',
-            "Maximum number of seconds to test/train for (-1 = no limit).", -1,
-            -1, Integer.MAX_VALUE);
+    public IntOption timeLimitOption =
+            new IntOption(
+                    "timeLimit",
+                    't',
+                    "Maximum number of seconds to test/train for (-1 = no limit).",
+                    -1,
+                    -1,
+                    Integer.MAX_VALUE);
 
-    public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
-            'f',
-            "How many instances between samples of the learning performance.",
-            10, 0, Integer.MAX_VALUE);
+    public IntOption sampleFrequencyOption =
+            new IntOption(
+                    "sampleFrequency",
+                    'f',
+                    "How many instances between samples of the learning performance.",
+                    10,
+                    0,
+                    Integer.MAX_VALUE);
 
     /*public IntOption memCheckFrequencyOption = new IntOption(
-            "memCheckFrequency", 'q',
-            "How many instances between memory bound checks.", 100000, 0,
-            Integer.MAX_VALUE);*/
+    "memCheckFrequency", 'q',
+    "How many instances between memory bound checks.", 100000, 0,
+    Integer.MAX_VALUE);*/
 
-    public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
-            "File to append intermediate csv results to.", null, "csv", true);
+    public FileOption dumpFileOption =
+            new FileOption(
+                    "dumpFile",
+                    'd',
+                    "File to append intermediate csv results to.",
+                    null,
+                    "csv",
+                    true);
 
     /*public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
-            "File to append output predictions to.", null, "pred", true);*/
+    "File to append output predictions to.", null, "pred", true);*/
 
     @Override
     public Class<?> getTaskResultType() {
         return LearningCurve.class;
     }
 
-    
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-        ChangeDetectorLearner learner = (ChangeDetectorLearner) getPreparedClassOption(this.learnerOption);
-        ConceptDriftGenerator stream = (ConceptDriftGenerator) getPreparedClassOption(this.streamOption);
+        ChangeDetectorLearner learner =
+                (ChangeDetectorLearner) getPreparedClassOption(this.learnerOption);
+        ConceptDriftGenerator stream =
+                (ConceptDriftGenerator) getPreparedClassOption(this.streamOption);
         this.setEventsList(stream.getEventsList());
-        LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
-        LearningCurve learningCurve = new LearningCurve(
-                "learning evaluation instances");
+        LearningPerformanceEvaluator evaluator =
+                (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
+        LearningCurve learningCurve = new LearningCurve("learning evaluation instances");
 
         learner.setModelContext(stream.getHeader());
         int maxInstances = this.instanceLimitOption.getValue();
@@ -120,19 +154,17 @@ public class EvaluateConceptDrift extends ConceptDriftMainTask{
         if (dumpFile != null) {
             try {
                 if (dumpFile.exists()) {
-                    immediateResultStream = new PrintStream(
-                            new FileOutputStream(dumpFile, true), true);
+                    immediateResultStream =
+                            new PrintStream(new FileOutputStream(dumpFile, true), true);
                 } else {
-                    immediateResultStream = new PrintStream(
-                            new FileOutputStream(dumpFile), true);
+                    immediateResultStream = new PrintStream(new FileOutputStream(dumpFile), true);
                 }
             } catch (Exception ex) {
-                throw new RuntimeException(
-                        "Unable to open immediate result file: " + dumpFile, ex);
+                throw new RuntimeException("Unable to open immediate result file: " + dumpFile, ex);
             }
         }
-        //File for output predictions
-      /*  File outputPredictionFile = this.outputPredictionFileOption.getFile();
+        // File for output predictions
+        /*  File outputPredictionFile = this.outputPredictionFileOption.getFile();
         PrintStream outputPredictionResultStream = null;
         if (outputPredictionFile != null) {
             try {
@@ -157,15 +189,18 @@ public class EvaluateConceptDrift extends ConceptDriftMainTask{
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))
                 && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
             Example trainInst = (Example) stream.nextInstance();
-            Example testInst = trainInst; 
-            int trueClass = (int) ((Instance)trainInst.getData()).classValue();
-            //testInst.setClassMissing();
+            Example testInst = trainInst;
+            int trueClass = (int) ((Instance) trainInst.getData()).classValue();
+            // testInst.setClassMissing();
             double[] prediction = learner.getVotesForInstance(testInst);
-            if (prediction[0] ==1 ){ //Change detected
-                this.getEventsList().add(new ClusterEvent(this, instancesProcessed, "Detected Change", "Drift"));
+            if (prediction[0] == 1) { // Change detected
+                this.getEventsList()
+                        .add(
+                                new ClusterEvent(
+                                        this, instancesProcessed, "Detected Change", "Drift"));
             }
             // Output prediction
-           /* if (outputPredictionFile != null) {
+            /* if (outputPredictionFile != null) {
                 outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," + trueClass);
             }*/
 
@@ -176,33 +211,35 @@ public class EvaluateConceptDrift extends ConceptDriftMainTask{
                     || stream.hasMoreInstances() == false) {
                 long evaluateTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
                 double time = TimingUtils.nanoTimeToSeconds(evaluateTime - evaluateStartTime);
-                double timeIncrement = TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);
-                double RAMHoursIncrement = learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); //GBs
-                RAMHoursIncrement *= (timeIncrement / 3600.0); //Hours
+                double timeIncrement =
+                        TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);
+                double RAMHoursIncrement =
+                        learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); // GBs
+                RAMHoursIncrement *= (timeIncrement / 3600.0); // Hours
                 RAMHours += RAMHoursIncrement;
                 lastEvaluateStartTime = evaluateTime;
-                learningCurve.insertEntry(new LearningEvaluation(
-                        new Measurement[]{
-                            new Measurement(
-                            "learning evaluation instances",
-                            instancesProcessed),
-                            new Measurement(
-                            "evaluation time ("
-                            + (preciseCPUTiming ? "cpu "
-                            : "") + "seconds)",
-                            time),
-                            new Measurement(
-                            "model cost (RAM-Hours)",
-                            RAMHours)
-                        },
-                        evaluator, learner));
+                learningCurve.insertEntry(
+                        new LearningEvaluation(
+                                new Measurement[] {
+                                    new Measurement(
+                                            "learning evaluation instances", instancesProcessed),
+                                    new Measurement(
+                                            "evaluation time ("
+                                                    + (preciseCPUTiming ? "cpu " : "")
+                                                    + "seconds)",
+                                            time),
+                                    new Measurement("model cost (RAM-Hours)", RAMHours)
+                                },
+                                evaluator,
+                                learner));
 
                 if (immediateResultStream != null) {
                     if (firstDump) {
                         immediateResultStream.println(learningCurve.headerToString());
                         firstDump = false;
                     }
-                    immediateResultStream.println(learningCurve.entryToString(learningCurve.numEntries() - 1));
+                    immediateResultStream.println(
+                            learningCurve.entryToString(learningCurve.numEntries() - 1));
                     immediateResultStream.flush();
                 }
             }
@@ -218,20 +255,26 @@ public class EvaluateConceptDrift extends ConceptDriftMainTask{
                         estimatedRemainingInstances = maxRemaining;
                     }
                 }
-                monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
-                        : (double) instancesProcessed
-                        / (double) (instancesProcessed + estimatedRemainingInstances));
+                monitor.setCurrentActivityFractionComplete(
+                        estimatedRemainingInstances < 0
+                                ? -1.0
+                                : (double) instancesProcessed
+                                        / (double)
+                                                (instancesProcessed + estimatedRemainingInstances));
                 if (monitor.resultPreviewRequested()) {
                     monitor.setLatestResultPreview(learningCurve.copy());
                 }
-                secondsElapsed = (int) TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread()
-                        - evaluateStartTime);
+                secondsElapsed =
+                        (int)
+                                TimingUtils.nanoTimeToSeconds(
+                                        TimingUtils.getNanoCPUTimeOfCurrentThread()
+                                                - evaluateStartTime);
             }
         }
         if (immediateResultStream != null) {
             immediateResultStream.close();
         }
-       /* if (outputPredictionResultStream != null) {
+        /* if (outputPredictionResultStream != null) {
             outputPredictionResultStream.close();
         }*/
         return learningCurve;

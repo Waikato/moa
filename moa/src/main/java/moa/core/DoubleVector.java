@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
@@ -114,7 +114,7 @@ public class DoubleVector extends AbstractMOAObject {
         }
         return sum;
     }
-    
+
     public double sumOfAbsoluteValues() {
         double sum = 0.0;
         for (double element : this.array) {

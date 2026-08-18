@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
@@ -23,8 +23,8 @@ import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
- * Class for storing the header or context of a multilabel data stream.
- * It allows to know the number of attributes and class labels.
+ * Class for storing the header or context of a multilabel data stream. It allows to know the number
+ * of attributes and class labels.
  *
  * @author Jesse Read (jmr30@cs.waikato.ac.nz)
  * @version $Revision: 7 $

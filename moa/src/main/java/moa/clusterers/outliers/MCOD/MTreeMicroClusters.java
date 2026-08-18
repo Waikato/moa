@@ -14,13 +14,12 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.clusterers.outliers.MCOD;
 
-import java.util.Set;
 import moa.clusterers.outliers.utils.mtree.ComposedSplitFunction;
 import moa.clusterers.outliers.utils.mtree.DistanceFunction;
 import moa.clusterers.outliers.utils.mtree.DistanceFunctions;
@@ -30,21 +29,28 @@ import moa.clusterers.outliers.utils.mtree.PromotionFunction;
 import moa.clusterers.outliers.utils.mtree.utils.Pair;
 import moa.clusterers.outliers.utils.mtree.utils.Utils;
 
+import java.util.Set;
+
 class MTreeMicroClusters extends MTree<MicroCluster> {
 
-    private static final PromotionFunction<MicroCluster> nonRandomPromotion = new PromotionFunction<MicroCluster>() {
+    private static final PromotionFunction<MicroCluster> nonRandomPromotion =
+            new PromotionFunction<MicroCluster>() {
 
-        @Override
-        public Pair<MicroCluster> process(Set<MicroCluster> dataSet, DistanceFunction<? super MicroCluster> distanceFunction) {
-            return Utils.minMax(dataSet);
-        }
-    };
+                @Override
+                public Pair<MicroCluster> process(
+                        Set<MicroCluster> dataSet,
+                        DistanceFunction<? super MicroCluster> distanceFunction) {
+                    return Utils.minMax(dataSet);
+                }
+            };
 
     MTreeMicroClusters() {
-        super(2, DistanceFunctions.EUCLIDEAN,
+        super(
+                2,
+                DistanceFunctions.EUCLIDEAN,
                 new ComposedSplitFunction<MicroCluster>(
-                nonRandomPromotion,
-                new PartitionFunctions.BalancedPartition<MicroCluster>()));
+                        nonRandomPromotion,
+                        new PartitionFunctions.BalancedPartition<MicroCluster>()));
     }
 
     public void add(MicroCluster data) {
@@ -61,4 +67,5 @@ class MTreeMicroClusters extends MTree<MicroCluster> {
     DistanceFunction<? super MicroCluster> getDistanceFunction() {
         return distanceFunction;
     }
-};
+}
+;

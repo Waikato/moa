@@ -15,38 +15,42 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.meta;
 
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.IntOption;
 
 /**
  * Incremental on-line boosting of Oza and Russell.
  *
- * <p>See details in:<br /> N. Oza and S. Russell. Online bagging and boosting.
- * In Artiﬁcial Intelligence and Statistics 2001, pages 105–112. Morgan
- * Kaufmann, 2001.</p> <p>For the boosting method, Oza and Russell note that the
- * weighting procedure of AdaBoost actually divides the total example weight
- * into two halves – half of the weight is assigned to the correctly classiﬁed
- * examples, and the other half goes to the misclassiﬁed examples. They use the
- * Poisson distribution for deciding the random probability that an example is
- * used for training, only this time the parameter changes according to the
- * boosting weight of the example as it is passed through each model in
- * sequence.</p>
+ * <p>See details in:<br>
+ * N. Oza and S. Russell. Online bagging and boosting. In Artiﬁcial Intelligence and Statistics
+ * 2001, pages 105–112. Morgan Kaufmann, 2001.
  *
- * <p>Parameters:</p> <ul> <li>-l : Classiﬁer to train</li> <li>-s : The number
- * of models to boost</li> <li>-p : Boost with weights only; no poisson</li>
+ * <p>For the boosting method, Oza and Russell note that the weighting procedure of AdaBoost
+ * actually divides the total example weight into two halves – half of the weight is assigned to the
+ * correctly classiﬁed examples, and the other half goes to the misclassiﬁed examples. They use the
+ * Poisson distribution for deciding the random probability that an example is used for training,
+ * only this time the parameter changes according to the boosting weight of the example as it is
+ * passed through each model in sequence.
+ *
+ * <p>Parameters:
+ *
+ * <ul>
+ *   <li>-l : Classiﬁer to train
+ *   <li>-s : The number of models to boost
+ *   <li>-p : Boost with weights only; no poisson
  * </ul>
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
@@ -61,14 +65,25 @@ public class OzaBoost extends AbstractClassifier implements MultiClassClassifier
         return "Incremental on-line boosting of Oza and Russell.";
     }
 
-    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
+    public ClassOption baseLearnerOption =
+            new ClassOption(
+                    "baseLearner",
+                    'l',
+                    "Classifier to train.",
+                    Classifier.class,
+                    "trees.HoeffdingTree");
 
-    public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
-            "The number of models to boost.", 10, 1, Integer.MAX_VALUE);
+    public IntOption ensembleSizeOption =
+            new IntOption(
+                    "ensembleSize",
+                    's',
+                    "The number of models to boost.",
+                    10,
+                    1,
+                    Integer.MAX_VALUE);
 
-    public FlagOption pureBoostOption = new FlagOption("pureBoost", 'p',
-            "Boost with weights only; no poisson.");
+    public FlagOption pureBoostOption =
+            new FlagOption("pureBoost", 'p', "Boost with weights only; no poisson.");
 
     protected Classifier[] ensemble;
 
@@ -92,7 +107,10 @@ public class OzaBoost extends AbstractClassifier implements MultiClassClassifier
     public void trainOnInstanceImpl(Instance inst) {
         double lambda_d = 1.0;
         for (int i = 0; i < this.ensemble.length; i++) {
-            double k = this.pureBoostOption.isSet() ? lambda_d : MiscUtils.poisson(lambda_d, this.classifierRandom);
+            double k =
+                    this.pureBoostOption.isSet()
+                            ? lambda_d
+                            : MiscUtils.poisson(lambda_d, this.classifierRandom);
             if (k > 0.0) {
                 Instance weightedInst = (Instance) inst.copy();
                 weightedInst.setWeight(inst.weight() * k);
@@ -146,8 +164,9 @@ public class OzaBoost extends AbstractClassifier implements MultiClassClassifier
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        return new Measurement[]{new Measurement("ensemble size",
-                    this.ensemble != null ? this.ensemble.length : 0)};
+        return new Measurement[] {
+            new Measurement("ensemble size", this.ensemble != null ? this.ensemble.length : 0)
+        };
     }
 
     @Override

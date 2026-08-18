@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.filters;
 
@@ -25,7 +25,6 @@ import moa.core.Example;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.streams.ExampleStream;
-import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
 /**
@@ -47,8 +46,7 @@ public abstract class AbstractMultiLabelStreamFilter extends AbstractOptionHandl
     }
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         restartImpl();
     }
 
@@ -74,9 +72,9 @@ public abstract class AbstractMultiLabelStreamFilter extends AbstractOptionHandl
     }
 
     /**
-     * Restarts this filter. All instances that extends from
-     * <code>AbstractStreamFilter</code> must implement <code>restartImpl</code>.
-     * <code>restart</code> uses <code>restartImpl</code> in <code>AbstractStreamFilter</code>.
+     * Restarts this filter. All instances that extends from <code>AbstractStreamFilter</code> must
+     * implement <code>restartImpl</code>. <code>restart</code> uses <code>restartImpl</code> in
+     * <code>AbstractStreamFilter</code>.
      */
     protected abstract void restartImpl();
 }

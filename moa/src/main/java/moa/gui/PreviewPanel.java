@@ -15,9 +15,16 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
+
+import moa.core.StringUtils;
+import moa.evaluation.*;
+import moa.evaluation.preview.Preview;
+import moa.gui.conceptdrift.CDTaskManagerPanel;
+import moa.tasks.ResultPreviewListener;
+import moa.tasks.TaskThread;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -27,14 +34,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import moa.core.StringUtils;
-import moa.evaluation.*;
-import moa.evaluation.preview.Preview;
-import moa.gui.conceptdrift.CDTaskManagerPanel;
-import moa.tasks.FailedTaskReport;
-import moa.tasks.ResultPreviewListener;
-import moa.tasks.TaskThread;
 
 /**
  * This panel displays the running task preview text and buttons.
@@ -46,9 +45,14 @@ public class PreviewPanel extends JPanel implements ResultPreviewListener {
 
     private static final long serialVersionUID = 1L;
 
-    public static final String[] autoFreqStrings = {"never", "every second",
-        "every 5 seconds", "every 10 seconds", "every 30 seconds",
-        "every minute"};
+    public static final String[] autoFreqStrings = {
+        "never",
+        "every second",
+        "every 5 seconds",
+        "every 10 seconds",
+        "every 30 seconds",
+        "every minute"
+    };
 
     public static final int[] autoFreqTimeSecs = {0, 1, 5, 10, 30, 60};
 
@@ -65,19 +69,20 @@ public class PreviewPanel extends JPanel implements ResultPreviewListener {
     protected TaskTextViewerPanel textViewerPanel; // = new TaskTextViewerPanel();
 
     protected javax.swing.Timer autoRefreshTimer;
-    
+
     public enum TypePanel {
         CLASSIFICATION(new Accuracy()),
         REGRESSION(new RegressionAccuracy()),
         CONCEPT_DRIFT(new ChangeDetectionMeasures()),
         PREDICTIONINTERVAL(new PredictionIntervalAccuracy());
         private final MeasureCollection measureCollection;
-        //Constructor
-        TypePanel(MeasureCollection measureCollection){
+
+        // Constructor
+        TypePanel(MeasureCollection measureCollection) {
             this.measureCollection = measureCollection;
         }
-        
-        public MeasureCollection getMeasureCollection(){
+
+        public MeasureCollection getMeasureCollection() {
             return (MeasureCollection) this.measureCollection.copy();
         }
     }
@@ -85,13 +90,13 @@ public class PreviewPanel extends JPanel implements ResultPreviewListener {
     public PreviewPanel() {
         this(TypePanel.CLASSIFICATION, null);
     }
-    
+
     public PreviewPanel(TypePanel typePanel) {
         this(typePanel, null);
     }
-    
+
     public PreviewPanel(TypePanel typePanel, CDTaskManagerPanel taskManagerPanel) {
-        this.textViewerPanel = new TaskTextViewerPanel(typePanel,taskManagerPanel); 
+        this.textViewerPanel = new TaskTextViewerPanel(typePanel, taskManagerPanel);
         this.autoRefreshComboBox.setSelectedIndex(1); // default to 1 sec
         JPanel controlPanel = new JPanel();
         controlPanel.add(this.previewLabel);
@@ -101,28 +106,32 @@ public class PreviewPanel extends JPanel implements ResultPreviewListener {
         setLayout(new BorderLayout());
         add(controlPanel, BorderLayout.NORTH);
         add(this.textViewerPanel, BorderLayout.CENTER);
-        this.refreshButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                refresh();
-            }
-        });
-        this.autoRefreshTimer = new javax.swing.Timer(1000,
+        this.refreshButton.addActionListener(
                 new ActionListener() {
 
                     @Override
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(ActionEvent arg0) {
                         refresh();
                     }
                 });
-        this.autoRefreshComboBox.addActionListener(new ActionListener() {
+        this.autoRefreshTimer =
+                new javax.swing.Timer(
+                        1000,
+                        new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                updateAutoRefreshTimer();
-            }
-        });
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                refresh();
+                            }
+                        });
+        this.autoRefreshComboBox.addActionListener(
+                new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        updateAutoRefreshTimer();
+                    }
+                });
         setTaskThreadToPreview(null);
     }
 
@@ -147,45 +156,39 @@ public class PreviewPanel extends JPanel implements ResultPreviewListener {
         }
     }
 
-    /**
-     * Requests the latest preview and sends it to the TextViewerPanel to
-     * display it.
-     */
+    /** Requests the latest preview and sends it to the TextViewerPanel to display it. */
     private void setLatestPreview() {
-    	Object previewObject = null;
-    	if (this.previewedThread != null) {
-    	    if (this.previewedThread.isFailed()) {
+        Object previewObject = null;
+        if (this.previewedThread != null) {
+            if (this.previewedThread.isFailed()) {
                 previewObject = this.previewedThread.getFinalResult();
                 this.previewLabel.setText("Error");
                 disableRefresh();
-            }
-            else if (this.previewedThread.isComplete()) {
+            } else if (this.previewedThread.isComplete()) {
                 // cancelled or completed task
                 previewObject = this.previewedThread.getFinalResult();
                 this.previewLabel.setText("Final result");
                 disableRefresh();
-            }
-            else {
+            } else {
                 // running task
                 previewObject = this.previewedThread.getLatestResultPreview();
                 double grabTime = this.previewedThread.getLatestPreviewGrabTimeSeconds();
                 String grabString = " (" + StringUtils.secondsToDHMSString(grabTime) + ")";
                 this.previewLabel.setText("Preview" + grabString);
             }
-	}
+        }
 
-	if (previewObject == null){
+        if (previewObject == null) {
             // no thread
             this.previewLabel.setText("No preview available");
-	}
+        }
 
-	this.textViewerPanel.setText(previewObject);
-	if (previewObject instanceof Preview)
-	    this.textViewerPanel.setGraph(previewObject.toString());
-	else
-	    this.textViewerPanel.setGraph(null);
+        this.textViewerPanel.setText(previewObject);
+        if (previewObject instanceof Preview)
+            this.textViewerPanel.setGraph(previewObject.toString());
+        else this.textViewerPanel.setGraph(null);
     }
-    
+
     public void updateAutoRefreshTimer() {
         int autoDelay = autoFreqTimeSecs[this.autoRefreshComboBox.getSelectedIndex()];
         if (autoDelay > 0) {

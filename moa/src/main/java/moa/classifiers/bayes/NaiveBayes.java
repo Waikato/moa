@@ -15,9 +15,11 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.bayes;
+
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
@@ -31,32 +33,36 @@ import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Naive Bayes incremental learner.
  *
- * <p>Performs classic bayesian prediction while making naive assumption that
- * all inputs are independent.<br /> Naive Bayes is a classiﬁer algorithm known
- * for its simplicity and low computational cost. Given n different classes, the
- * trained Naive Bayes classiﬁer predicts for every unlabelled instance I the
- * class C to which it belongs with high accuracy.</p>
+ * <p>Performs classic bayesian prediction while making naive assumption that all inputs are
+ * independent.<br>
+ * Naive Bayes is a classiﬁer algorithm known for its simplicity and low computational cost. Given n
+ * different classes, the trained Naive Bayes classiﬁer predicts for every unlabelled instance I the
+ * class C to which it belongs with high accuracy.
  *
- * <p>Parameters:</p> <ul> <li>-r : Seed for random behaviour of the
- * classifier</li> </ul>
+ * <p>Parameters:
+ *
+ * <ul>
+ *   <li>-r : Seed for random behaviour of the classifier
+ * </ul>
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class NaiveBayes extends AbstractClassifier  implements MultiClassClassifier,
-                                                               CapabilitiesHandler {
+public class NaiveBayes extends AbstractClassifier
+        implements MultiClassClassifier, CapabilitiesHandler {
 
     private static final long serialVersionUID = 1L;
 
     @Override
     public String getPurposeString() {
-        return "Naive Bayes classifier: performs classic bayesian prediction while making naive assumption that all inputs are independent.";
+        return "Naive Bayes classifier: performs classic bayesian prediction while making naive"
+                + " assumption that all inputs are independent.";
     }
+
     protected DoubleVector observedClassDistribution;
 
     protected AutoExpandVector<AttributeClassObserver> attributeObservers;
@@ -74,18 +80,21 @@ public class NaiveBayes extends AbstractClassifier  implements MultiClassClassif
             int instAttIndex = modelAttIndexToInstanceAttIndex(i, inst);
             AttributeClassObserver obs = this.attributeObservers.get(i);
             if (obs == null) {
-                obs = inst.attribute(instAttIndex).isNominal() ? newNominalClassObserver()
-                        : newNumericClassObserver();
+                obs =
+                        inst.attribute(instAttIndex).isNominal()
+                                ? newNominalClassObserver()
+                                : newNumericClassObserver();
                 this.attributeObservers.set(i, obs);
             }
-            obs.observeAttributeClass(inst.value(instAttIndex), (int) inst.classValue(), inst.weight());
+            obs.observeAttributeClass(
+                    inst.value(instAttIndex), (int) inst.classValue(), inst.weight());
         }
     }
 
     @Override
     public double[] getVotesForInstance(Instance inst) {
-        return doNaiveBayesPrediction(inst, this.observedClassDistribution,
-                this.attributeObservers);
+        return doNaiveBayesPrediction(
+                inst, this.observedClassDistribution, this.attributeObservers);
     }
 
     @Override
@@ -101,15 +110,14 @@ public class NaiveBayes extends AbstractClassifier  implements MultiClassClassif
             out.append(" = ");
             out.append(getClassLabelString(i));
             out.append(":");
-            StringUtils.appendNewlineIndented(out, indent + 1,
-                    "Total observed weight = ");
+            StringUtils.appendNewlineIndented(out, indent + 1, "Total observed weight = ");
             out.append(this.observedClassDistribution.getValue(i));
             out.append(" / prob = ");
-            out.append(this.observedClassDistribution.getValue(i)
-                    / this.observedClassDistribution.sumOfValues());
+            out.append(
+                    this.observedClassDistribution.getValue(i)
+                            / this.observedClassDistribution.sumOfValues());
             for (int j = 0; j < this.attributeObservers.size(); j++) {
-                StringUtils.appendNewlineIndented(out, indent + 1,
-                        "Observations for ");
+                StringUtils.appendNewlineIndented(out, indent + 1, "Observations for ");
                 out.append(getAttributeNameString(j));
                 out.append(": ");
                 // TODO: implement observer output
@@ -132,20 +140,21 @@ public class NaiveBayes extends AbstractClassifier  implements MultiClassClassif
         return new GaussianNumericAttributeClassObserver();
     }
 
-    public static double[] doNaiveBayesPrediction(Instance inst,
+    public static double[] doNaiveBayesPrediction(
+            Instance inst,
             DoubleVector observedClassDistribution,
             AutoExpandVector<AttributeClassObserver> attributeObservers) {
         double[] votes = new double[observedClassDistribution.numValues()];
         double observedClassSum = observedClassDistribution.sumOfValues();
         for (int classIndex = 0; classIndex < votes.length; classIndex++) {
-            votes[classIndex] = observedClassDistribution.getValue(classIndex)
-                    / observedClassSum;
+            votes[classIndex] = observedClassDistribution.getValue(classIndex) / observedClassSum;
             for (int attIndex = 0; attIndex < inst.numAttributes() - 1; attIndex++) {
-                int instAttIndex = modelAttIndexToInstanceAttIndex(attIndex,
-                        inst);
+                int instAttIndex = modelAttIndexToInstanceAttIndex(attIndex, inst);
                 AttributeClassObserver obs = attributeObservers.get(attIndex);
                 if ((obs != null) && !inst.isMissing(instAttIndex)) {
-                    votes[classIndex] *= obs.probabilityOfAttributeValueGivenClass(inst.value(instAttIndex), classIndex);
+                    votes[classIndex] *=
+                            obs.probabilityOfAttributeValueGivenClass(
+                                    inst.value(instAttIndex), classIndex);
                 }
             }
         }
@@ -153,19 +162,20 @@ public class NaiveBayes extends AbstractClassifier  implements MultiClassClassif
         return votes;
     }
 
-    // Naive Bayes Prediction using log10 for VFDR rules 
-    public static double[] doNaiveBayesPredictionLog(Instance inst,
+    // Naive Bayes Prediction using log10 for VFDR rules
+    public static double[] doNaiveBayesPredictionLog(
+            Instance inst,
             DoubleVector observedClassDistribution,
-            AutoExpandVector<AttributeClassObserver> observers, AutoExpandVector<AttributeClassObserver> observers2) {
+            AutoExpandVector<AttributeClassObserver> observers,
+            AutoExpandVector<AttributeClassObserver> observers2) {
         AttributeClassObserver obs;
         double[] votes = new double[observedClassDistribution.numValues()];
         double observedClassSum = observedClassDistribution.sumOfValues();
         for (int classIndex = 0; classIndex < votes.length; classIndex++) {
-            votes[classIndex] = Math.log10(observedClassDistribution.getValue(classIndex)
-                    / observedClassSum);
+            votes[classIndex] =
+                    Math.log10(observedClassDistribution.getValue(classIndex) / observedClassSum);
             for (int attIndex = 0; attIndex < inst.numAttributes() - 1; attIndex++) {
-                int instAttIndex = modelAttIndexToInstanceAttIndex(attIndex,
-                        inst);
+                int instAttIndex = modelAttIndexToInstanceAttIndex(attIndex, inst);
                 if (inst.attribute(instAttIndex).isNominal()) {
                     obs = observers.get(attIndex);
                 } else {
@@ -173,13 +183,14 @@ public class NaiveBayes extends AbstractClassifier  implements MultiClassClassif
                 }
 
                 if ((obs != null) && !inst.isMissing(instAttIndex)) {
-                    votes[classIndex] += Math.log10(obs.probabilityOfAttributeValueGivenClass(inst.value(instAttIndex), classIndex));
-
+                    votes[classIndex] +=
+                            Math.log10(
+                                    obs.probabilityOfAttributeValueGivenClass(
+                                            inst.value(instAttIndex), classIndex));
                 }
             }
         }
         return votes;
-
     }
 
     public void manageMemory(int currentByteSize, int maxByteSize) {
@@ -190,7 +201,6 @@ public class NaiveBayes extends AbstractClassifier  implements MultiClassClassif
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == NaiveBayes.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

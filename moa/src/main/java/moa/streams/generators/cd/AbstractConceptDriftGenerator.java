@@ -26,8 +26,7 @@ import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import java.util.ArrayList;
-import java.util.Random;
+
 import moa.core.FastVector;
 import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
@@ -36,29 +35,39 @@ import moa.streams.InstanceStream;
 import moa.streams.clustering.ClusterEvent;
 import moa.tasks.TaskMonitor;
 
-public abstract class AbstractConceptDriftGenerator extends AbstractOptionHandler implements
-        ConceptDriftGenerator {
+import java.util.ArrayList;
+import java.util.Random;
+
+public abstract class AbstractConceptDriftGenerator extends AbstractOptionHandler
+        implements ConceptDriftGenerator {
 
     @Override
     public String getPurposeString() {
         return "Generates a stream problem of predicting concept drift.";
     }
+
     protected ArrayList<ClusterEvent> clusterEvents;
 
     public ArrayList<ClusterEvent> getEventsList() {
         return this.clusterEvents;
     }
+
     private static final long serialVersionUID = 1L;
 
-    public IntOption instanceRandomSeedOption = new IntOption(
-            "instanceRandomSeed", 'i',
-            "Seed for random generation of instances.", 1);
+    public IntOption instanceRandomSeedOption =
+            new IntOption("instanceRandomSeed", 'i', "Seed for random generation of instances.", 1);
 
-    public FlagOption notBinaryStreamOption = new FlagOption("notBinaryStream",
-            'b', "Don't convert to a binary stream of 0 and 1.");
+    public FlagOption notBinaryStreamOption =
+            new FlagOption("notBinaryStream", 'b', "Don't convert to a binary stream of 0 and 1.");
 
-    public IntOption numInstancesConceptOption = new IntOption("numInstancesConcept", 'p',
-            "The number of instances for each concept.", 500, 0, Integer.MAX_VALUE);
+    public IntOption numInstancesConceptOption =
+            new IntOption(
+                    "numInstancesConcept",
+                    'p',
+                    "The number of instances for each concept.",
+                    500,
+                    0,
+                    Integer.MAX_VALUE);
 
     protected InstancesHeader streamHeader;
 
@@ -71,8 +80,7 @@ public abstract class AbstractConceptDriftGenerator extends AbstractOptionHandle
     protected boolean change;
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 
         restart();
 
@@ -96,14 +104,15 @@ public abstract class AbstractConceptDriftGenerator extends AbstractOptionHandle
         attributes.addElement(new Attribute("change", binaryLabels));
         attributes.addElement(new Attribute("ground truth input"));
 
-        this.streamHeader = new InstancesHeader(new Instances(
-                getCLICreationString(InstanceStream.class), attributes, 0));
+        this.streamHeader =
+                new InstancesHeader(
+                        new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
         this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
 
         this.clusterEvents = new ArrayList<ClusterEvent>();
 
-        //this.clusterEvents.add(new ClusterEvent(this,100,"Change", "Drift"));
-        //this.clusterEvents.add(new ClusterEvent(this,200,"Change2", "Drift2"));
+        // this.clusterEvents.add(new ClusterEvent(this,100,"Change", "Drift"));
+        // this.clusterEvents.add(new ClusterEvent(this,200,"Change2", "Drift2"));
 
     }
 
@@ -125,7 +134,7 @@ public abstract class AbstractConceptDriftGenerator extends AbstractOptionHandle
 
     protected abstract double nextValue();
 
-    private int nextbinaryValue( double num) {
+    private int nextbinaryValue(double num) {
         int res = 0;
         if (this.instanceRandom.nextDouble() <= num) {
             res = 1;
@@ -144,16 +153,16 @@ public abstract class AbstractConceptDriftGenerator extends AbstractOptionHandle
         inst.setDataset(header);
         double nextValue = this.nextValue();
         if (this.notBinaryStreamOption.isSet()) {
-            inst.setValue(0,  nextValue);
+            inst.setValue(0, nextValue);
         } else {
             inst.setValue(0, this.nextbinaryValue(nextValue));
         }
-        //Ground truth
+        // Ground truth
         inst.setValue(1, this.getChange() ? 1 : 0);
         if (this.getChange() == true) {
-            //this.clusterEvents.add(new ClusterEvent(this, this.numInstances, "Change", "Drift"));
+            // this.clusterEvents.add(new ClusterEvent(this, this.numInstances, "Change", "Drift"));
         }
-        inst.setValue(2,  nextValue);
+        inst.setValue(2, nextValue);
         return new InstanceExample(inst);
     }
 

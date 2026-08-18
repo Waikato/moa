@@ -15,33 +15,45 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 
 package moa.classifiers;
 
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.*;
+
 import moa.capabilities.CapabilitiesHandler;
+
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public abstract class AbstractClassifierMiniBatch extends AbstractClassifier
-        implements Classifier, CapabilitiesHandler { //Learner<Example<Instance>> {
+        implements Classifier, CapabilitiesHandler { // Learner<Example<Instance>> {
 
     @Override
     public String getPurposeString() {
         return "MOA Parallel Classifier with MiniBatch: " + getClass().getCanonicalName();
     }
 
-    public IntOption numberOfCoresOption = new IntOption("numCores", 'c',
-            "The amount of CPU Cores used for multi-threading", 1,
-            -1, Runtime.getRuntime().availableProcessors());
+    public IntOption numberOfCoresOption =
+            new IntOption(
+                    "numCores",
+                    'c',
+                    "The amount of CPU Cores used for multi-threading",
+                    1,
+                    -1,
+                    Runtime.getRuntime().availableProcessors());
 
-    public IntOption batchSizeOption = new IntOption("batchSize", 'b',
-            "The amount of instances the classifier should buffer before training.",
-            1, 1, Integer.MAX_VALUE);
+    public IntOption batchSizeOption =
+            new IntOption(
+                    "batchSize",
+                    'b',
+                    "The amount of instances the classifier should buffer before training.",
+                    1,
+                    1,
+                    Integer.MAX_VALUE);
 
     // The amount of CPU cores to be run in parallel
     public int numOfCores;
@@ -52,24 +64,25 @@ public abstract class AbstractClassifierMiniBatch extends AbstractClassifier
 
     public AbstractClassifierMiniBatch() {
         if (isRandomizable()) {
-            this.randomSeedOption = new IntOption("randomSeed", 'r',
-                    "Seed for random behaviour of the classifier.", 1);
+            this.randomSeedOption =
+                    new IntOption(
+                            "randomSeed", 'r', "Seed for random behaviour of the classifier.", 1);
         }
     }
 
     /**
-     * Trains this classifier "incrementally" using the given instance.<br><br>
-     *
-     * The reason for ...Impl methods: ease programmer burden by not requiring
-     * them to remember calls to super in overridden methods.
-     * Note that this will produce compiler errors if not overridden.
+     * Trains this classifier "incrementally" using the given instance.<br>
+     * <br>
+     * The reason for ...Impl methods: ease programmer burden by not requiring them to remember
+     * calls to super in overridden methods. Note that this will produce compiler errors if not
+     * overridden.
      *
      * @param inst the instance to be used for training
      */
     public void trainOnInstanceImpl(Instance inst) {
         if (myBatch != null) {
             this.myBatch.add(inst);
-            if (this.myBatch.size() == this.batchSizeOption.getValue()){
+            if (this.myBatch.size() == this.batchSizeOption.getValue()) {
                 this.trainOnInstances(this.myBatch);
                 this.myBatch.clear();
             }
@@ -78,10 +91,8 @@ public abstract class AbstractClassifierMiniBatch extends AbstractClassifier
 
     public abstract void trainOnInstances(ArrayList<Instance> instances);
 
-
     public void trainingHasEnded() {
-        if (this.threadpool != null)
-            this.threadpool.shutdown();
+        if (this.threadpool != null) this.threadpool.shutdown();
         this.myBatch = null;
     }
 

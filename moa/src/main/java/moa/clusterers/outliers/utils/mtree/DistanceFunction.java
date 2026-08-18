@@ -11,7 +11,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 
 package moa.clusterers.outliers.utils.mtree;
@@ -22,7 +22,6 @@ package moa.clusterers.outliers.utils.mtree;
  * @param <DATA> The type of the data objects.
  */
 public interface DistanceFunction<DATA> {
-	
-	double calculate(DATA data1, DATA data2);
-	
+
+    double calculate(DATA data1, DATA data2);
 }

@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core.attributeclassobservers;
 
@@ -24,18 +24,18 @@ import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.options.OptionHandler;
 
 /**
- * Interface for observing the class data distribution for an attribute.
- * This observer monitors the class distribution of a given attribute.
- * Used in naive Bayes and decision trees to monitor data statistics on leaves.
+ * Interface for observing the class data distribution for an attribute. This observer monitors the
+ * class distribution of a given attribute. Used in naive Bayes and decision trees to monitor data
+ * statistics on leaves.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $ 
+ * @version $Revision: 7 $
  */
 public interface AttributeClassObserver extends OptionHandler {
 
     /**
-     * Updates statistics of this observer given an attribute value, a class
-     * and the weight of the instance observed
+     * Updates statistics of this observer given an attribute value, a class and the weight of the
+     * instance observed
      *
      * @param attVal the value of the attribute
      * @param classVal the class
@@ -50,8 +50,7 @@ public interface AttributeClassObserver extends OptionHandler {
      * @param classVal the class
      * @return probability for an attribute value given a class
      */
-    public double probabilityOfAttributeValueGivenClass(double attVal,
-            int classVal);
+    public double probabilityOfAttributeValueGivenClass(double attVal, int classVal);
 
     /**
      * Gets the best split suggestion given a criterion and a class distribution
@@ -63,10 +62,7 @@ public interface AttributeClassObserver extends OptionHandler {
      * @return suggestion of best attribute split
      */
     public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(
-            SplitCriterion criterion, double[] preSplitDist, int attIndex,
-            boolean binaryOnly);
-
+            SplitCriterion criterion, double[] preSplitDist, int attIndex, boolean binaryOnly);
 
     public void observeAttributeTarget(double attVal, double target);
-    
 }

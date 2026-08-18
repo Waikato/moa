@@ -15,85 +15,81 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation.preview;
 
 /**
- * Class used to wrap LearningCurve so that it can be used in 
- * conjunction with a PreviewCollection
+ * Class used to wrap LearningCurve so that it can be used in conjunction with a PreviewCollection
  *
  * @author Tuan Pham Minh (tuan.pham@ovgu.de)
  * @version $Revision: 1 $
  */
 public class PreviewCollectionLearningCurveWrapper extends Preview {
 
-	private static final long serialVersionUID = 1L;
-	
-	// the learning curve which should be wrapped
-	LearningCurve learningCurveToBeWrapped;
-	Class<?> taskClass;
-	
-	public PreviewCollectionLearningCurveWrapper(LearningCurve learningCurveToBeWrapped, Class<?> taskClass)
-	{
-		this.learningCurveToBeWrapped = learningCurveToBeWrapped;	
-		this.taskClass = taskClass;
-	}
-	
-	@Override
-	public void getDescription(StringBuilder sb, int indent) {
-		learningCurveToBeWrapped.getDescription(sb, indent);
-	}
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public int getMeasurementNameCount() {
-		return learningCurveToBeWrapped.getMeasurementNameCount();
-	}
+    // the learning curve which should be wrapped
+    LearningCurve learningCurveToBeWrapped;
+    Class<?> taskClass;
 
-	@Override
-	public String getMeasurementName(int measurementIndex) {
-		return learningCurveToBeWrapped.getMeasurementName(measurementIndex);
-	}
+    public PreviewCollectionLearningCurveWrapper(
+            LearningCurve learningCurveToBeWrapped, Class<?> taskClass) {
+        this.learningCurveToBeWrapped = learningCurveToBeWrapped;
+        this.taskClass = taskClass;
+    }
 
-	@Override
-	public int numEntries() {
-		return learningCurveToBeWrapped.numEntries();
-	}
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {
+        learningCurveToBeWrapped.getDescription(sb, indent);
+    }
 
-	@Override
-	public String entryToString(int entryIndex) {
-		return learningCurveToBeWrapped.entryToString(entryIndex);
-	}
+    @Override
+    public int getMeasurementNameCount() {
+        return learningCurveToBeWrapped.getMeasurementNameCount();
+    }
 
-	public LearningCurve getLearningCurve( ) {
-		return learningCurveToBeWrapped;
-	}
+    @Override
+    public String getMeasurementName(int measurementIndex) {
+        return learningCurveToBeWrapped.getMeasurementName(measurementIndex);
+    }
 
-	@Override
-	public Class<?> getTaskClass() {
-		return taskClass;
-	}
+    @Override
+    public int numEntries() {
+        return learningCurveToBeWrapped.numEntries();
+    }
 
-	@Override
-	public double[] getEntryData(int entryIndex) {
-		// get the number of measurements
-		int numMeasurements = getMeasurementNameCount();
+    @Override
+    public String entryToString(int entryIndex) {
+        return learningCurveToBeWrapped.entryToString(entryIndex);
+    }
 
-		int numEntryMeasurements = learningCurveToBeWrapped.getEntryMeasurementCount(entryIndex);
-		// preallocate the array to store all measurements
-		double[] data = new double[numMeasurements];
-		// get measuements from the learning curve
-		for(int measurementIdx = 0; measurementIdx < numMeasurements; ++measurementIdx)
-		{
-			if(measurementIdx < numEntryMeasurements)
-			{
-				data[measurementIdx] = learningCurveToBeWrapped.getMeasurement(entryIndex, measurementIdx);	
-			}
-			else
-			{
-				data[measurementIdx] = Double.NaN;
-			}
-		}
-		return data;
-	}
+    public LearningCurve getLearningCurve() {
+        return learningCurveToBeWrapped;
+    }
+
+    @Override
+    public Class<?> getTaskClass() {
+        return taskClass;
+    }
+
+    @Override
+    public double[] getEntryData(int entryIndex) {
+        // get the number of measurements
+        int numMeasurements = getMeasurementNameCount();
+
+        int numEntryMeasurements = learningCurveToBeWrapped.getEntryMeasurementCount(entryIndex);
+        // preallocate the array to store all measurements
+        double[] data = new double[numMeasurements];
+        // get measuements from the learning curve
+        for (int measurementIdx = 0; measurementIdx < numMeasurements; ++measurementIdx) {
+            if (measurementIdx < numEntryMeasurements) {
+                data[measurementIdx] =
+                        learningCurveToBeWrapped.getMeasurement(entryIndex, measurementIdx);
+            } else {
+                data[measurementIdx] = Double.NaN;
+            }
+        }
+        return data;
+    }
 }

@@ -15,30 +15,30 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.generators;
 
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.core.FastVector;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
-
-import java.io.Serializable;
-import java.util.Random;
 import moa.core.InstanceExample;
-
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.MiscUtils;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import com.github.javacliparser.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
+
+import java.io.Serializable;
+import java.util.Random;
 
 /**
  * Stream generator for a random radial basis function stream.
@@ -46,8 +46,8 @@ import moa.tasks.TaskMonitor;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class RandomRBFGenerator extends AbstractOptionHandler implements
-        InstanceStream, CapabilitiesHandler {
+public class RandomRBFGenerator extends AbstractOptionHandler
+        implements InstanceStream, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -56,21 +56,38 @@ public class RandomRBFGenerator extends AbstractOptionHandler implements
 
     private static final long serialVersionUID = 1L;
 
-    public IntOption modelRandomSeedOption = new IntOption("modelRandomSeed",
-            'r', "Seed for random generation of model.", 1);
+    public IntOption modelRandomSeedOption =
+            new IntOption("modelRandomSeed", 'r', "Seed for random generation of model.", 1);
 
-    public IntOption instanceRandomSeedOption = new IntOption(
-            "instanceRandomSeed", 'i',
-            "Seed for random generation of instances.", 1);
+    public IntOption instanceRandomSeedOption =
+            new IntOption("instanceRandomSeed", 'i', "Seed for random generation of instances.", 1);
 
-    public IntOption numClassesOption = new IntOption("numClasses", 'c',
-            "The number of classes to generate.", 2, 2, Integer.MAX_VALUE);
+    public IntOption numClassesOption =
+            new IntOption(
+                    "numClasses",
+                    'c',
+                    "The number of classes to generate.",
+                    2,
+                    2,
+                    Integer.MAX_VALUE);
 
-    public IntOption numAttsOption = new IntOption("numAtts", 'a',
-            "The number of attributes to generate.", 10, 0, Integer.MAX_VALUE);
+    public IntOption numAttsOption =
+            new IntOption(
+                    "numAtts",
+                    'a',
+                    "The number of attributes to generate.",
+                    10,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public IntOption numCentroidsOption = new IntOption("numCentroids", 'n',
-            "The number of centroids in the model.", 50, 1, Integer.MAX_VALUE);
+    public IntOption numCentroidsOption =
+            new IntOption(
+                    "numCentroids",
+                    'n',
+                    "The number of centroids in the model.",
+                    50,
+                    1,
+                    Integer.MAX_VALUE);
 
     protected static class Centroid implements Serializable {
 
@@ -92,8 +109,7 @@ public class RandomRBFGenerator extends AbstractOptionHandler implements
     protected Random instanceRandom;
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         monitor.setCurrentActivity("Preparing random RBF...", -1.0);
         generateHeader();
         generateCentroids();
@@ -127,8 +143,10 @@ public class RandomRBFGenerator extends AbstractOptionHandler implements
 
     @Override
     public InstanceExample nextInstance() {
-        Centroid centroid = this.centroids[MiscUtils.chooseRandomIndexBasedOnWeights(this.centroidWeights,
-                this.instanceRandom)];
+        Centroid centroid =
+                this.centroids[
+                        MiscUtils.chooseRandomIndexBasedOnWeights(
+                                this.centroidWeights, this.instanceRandom)];
         int numAtts = this.numAttsOption.getValue();
         double[] attVals = new double[numAtts + 1];
         for (int i = 0; i < numAtts; i++) {
@@ -139,8 +157,7 @@ public class RandomRBFGenerator extends AbstractOptionHandler implements
             magnitude += attVals[i] * attVals[i];
         }
         magnitude = Math.sqrt(magnitude);
-        double desiredMag = this.instanceRandom.nextGaussian()
-                * centroid.stdDev;
+        double desiredMag = this.instanceRandom.nextGaussian() * centroid.stdDev;
         double scale = desiredMag / magnitude;
         for (int i = 0; i < numAtts; i++) {
             attVals[i] = centroid.centre[i] + attVals[i] * scale;
@@ -161,8 +178,9 @@ public class RandomRBFGenerator extends AbstractOptionHandler implements
             classLabels.addElement("class" + (i + 1));
         }
         attributes.addElement(new Attribute("class", classLabels));
-        this.streamHeader = new InstancesHeader(new Instances(
-                getCLICreationString(InstanceStream.class), attributes, 0));
+        this.streamHeader =
+                new InstancesHeader(
+                        new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
         this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
     }
 
@@ -192,7 +210,6 @@ public class RandomRBFGenerator extends AbstractOptionHandler implements
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == RandomRBFGenerator.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

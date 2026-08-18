@@ -15,12 +15,13 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams;
 
-import moa.core.Example;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
+import moa.core.Example;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
@@ -34,8 +35,7 @@ import moa.tasks.TaskMonitor;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class FilteredStream extends AbstractOptionHandler implements
-        ExampleStream {
+public class FilteredStream extends AbstractOptionHandler implements ExampleStream {
 
     @Override
     public String getPurposeString() {
@@ -44,37 +44,44 @@ public class FilteredStream extends AbstractOptionHandler implements
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to filter.", ExampleStream.class,
-            "generators.RandomTreeGenerator");
+    public ClassOption streamOption =
+            new ClassOption(
+                    "stream",
+                    's',
+                    "Stream to filter.",
+                    ExampleStream.class,
+                    "generators.RandomTreeGenerator");
 
-    public ClassOption filtersOption = new ClassOption("filters", 'f',
-            "Filters to apply.", StreamFilter.class, 
-            "AddNoiseFilter");
+    public ClassOption filtersOption =
+            new ClassOption(
+                    "filters", 'f', "Filters to apply.", StreamFilter.class, "AddNoiseFilter");
 
     protected ExampleStream filterChain;
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
-        StreamFilter filters; 
-            monitor.setCurrentActivity("Materializing filter " //+ (i + 1)
-                    + "...", -1.0);
-            filters = (StreamFilter) getPreparedClassOption(this.filtersOption);
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
+        StreamFilter filters;
+        monitor.setCurrentActivity(
+                "Materializing filter " // + (i + 1)
+                        + "...",
+                -1.0);
+        filters = (StreamFilter) getPreparedClassOption(this.filtersOption);
+        if (monitor.taskShouldAbort()) {
+            return;
+        }
+        if (filters instanceof OptionHandler) {
+            monitor.setCurrentActivity(
+                    "Preparing filter " // + (i + 1)
+                            + "...",
+                    -1.0);
+            ((OptionHandler) filters).prepareForUse(monitor, repository);
             if (monitor.taskShouldAbort()) {
                 return;
             }
-            if (filters instanceof OptionHandler) {
-                monitor.setCurrentActivity("Preparing filter " //+ (i + 1)
-                        + "...", -1.0);
-                ((OptionHandler) filters).prepareForUse(monitor, repository);
-                if (monitor.taskShouldAbort()) {
-                    return;
-                }
-            }
+        }
         ExampleStream chain = (ExampleStream) getPreparedClassOption(this.streamOption);
-            filters.setInputStream(chain);
-            chain = filters;
+        filters.setInputStream(chain);
+        chain = filters;
         this.filterChain = chain;
     }
 

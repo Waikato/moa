@@ -15,17 +15,17 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.github.javacliparser.gui;
 
 import com.github.javacliparser.Option;
 
 /**
- * Interface representing a component to edit an option. 
+ * Interface representing a component to edit an option.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $ 
+ * @version $Revision: 7 $
  */
 public interface OptionEditComponent {
 
@@ -43,9 +43,6 @@ public interface OptionEditComponent {
      */
     public void setEditState(String cliString);
 
-    /**
-     * This method applies the state
-     *
-     */
+    /** This method applies the state */
     public void applyState();
 }

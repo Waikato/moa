@@ -1,46 +1,40 @@
 /*
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * 	        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the
- * License.  
+ * License.
  */
 package com.yahoo.labs.samoa.instances;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class for storing the information of the attributes.
- * It stores only information about discrete attributes and suppose that
- * the default attribute is numeric.
+ * Class for storing the information of the attributes. It stores only information about discrete
+ * attributes and suppose that the default attribute is numeric.
  *
  * @version $Revision: 7 $
  */
 public class AttributesInformation implements Serializable {
 
-    /**
-     * The attribute information.
-     */
+    /** The attribute information. */
     protected Attribute[] attributes;
+
     protected int[] indexValues;
-    /**
-     * The number of attributes.
-     */
+
+    /** The number of attributes. */
     protected int numberAttributes;
 
-    /**
-     * The attribute used for default for numerical values
-     */
+    /** The attribute used for default for numerical values */
     protected Attribute defaultNumericAttribute;
 
     public AttributesInformation(AttributesInformation chunk) {
@@ -59,7 +53,7 @@ public class AttributesInformation implements Serializable {
         this.attributes = v;
         this.indexValues = new int[numberAttributes];
         for (int i = 0; i < numberAttributes; i++) {
-            this.indexValues[i]=i;
+            this.indexValues[i] = i;
         }
         this.numberAttributes = numberAttributes;
     }
@@ -68,8 +62,8 @@ public class AttributesInformation implements Serializable {
         this.attributes = new Attribute[numberAttributes];
         this.indexValues = new int[numberAttributes];
         for (int i = 0; i < numberAttributes; i++) {
-            this.indexValues[i]=i;
-            this.attributes[i]= v.get(i);
+            this.indexValues[i] = i;
+            this.attributes[i] = v.get(i);
         }
         this.numberAttributes = numberAttributes;
     }
@@ -89,12 +83,12 @@ public class AttributesInformation implements Serializable {
      */
     public Attribute attribute(int indexAttribute) {
         if (this.attributes == null) {
-            //All attributes are numeric
+            // All attributes are numeric
             return defaultNumericAttribute();
         }
         int location = locateIndex(indexAttribute);
         if (location == -1) {
-            //if there is not attribute information, it is numeric
+            // if there is not attribute information, it is numeric
             return defaultNumericAttribute();
         }
         return attributes[location];
@@ -112,18 +106,18 @@ public class AttributesInformation implements Serializable {
      */
     public void setAttributes(Attribute[] v) {
         this.attributes = v;
-        this.numberAttributes=v.length;
+        this.numberAttributes = v.length;
         this.indexValues = new int[numberAttributes];
         for (int i = 0; i < numberAttributes; i++) {
-            this.indexValues[i]=i;
+            this.indexValues[i] = i;
         }
     }
 
     /**
      * Locates the greatest index that is not greater than the given index.
      *
-     * @return the internal index of the attribute index. Returns -1 if no index
-     * with this property could be found
+     * @return the internal index of the attribute index. Returns -1 if no index with this property
+     *     could be found
      */
     public int locateIndex(int index) {
 
@@ -159,11 +153,11 @@ public class AttributesInformation implements Serializable {
         return this.defaultNumericAttribute;
     }
 
-	public void setAttributes(Attribute[] v, int[] indexValues) {
-	        this.attributes = v;
-	        this.numberAttributes=v.length;
-	        this.indexValues=indexValues;
-	}
+    public void setAttributes(Attribute[] v, int[] indexValues) {
+        this.attributes = v;
+        this.numberAttributes = v.length;
+        this.indexValues = indexValues;
+    }
 
     public void deleteAttributeAt(int position) {
 
@@ -196,9 +190,8 @@ public class AttributesInformation implements Serializable {
     }
 
     public void insertAttributeAt(Attribute attribute, int position) {
-        if ((position< 0) || (position > this.numberAttributes)) {
-            throw new IllegalArgumentException("Can't insert attribute: index out "
-                    + "of range");
+        if ((position < 0) || (position > this.numberAttributes)) {
+            throw new IllegalArgumentException("Can't insert attribute: index out " + "of range");
         }
         int index = locateIndex(position);
 
@@ -209,7 +202,7 @@ public class AttributesInformation implements Serializable {
             System.arraycopy(indexValues, 0, tempIndices, 0, index);
             System.arraycopy(attributes, 0, tempValues, 0, index);
             tempIndices[index] = position;
-            tempValues[index] =  attribute;
+            tempValues[index] = attribute;
             for (int i = index; i < indexValues.length; i++) {
                 tempIndices[i + 1] = indexValues[i] + 1;
                 tempValues[i + 1] = attributes[i];
@@ -222,7 +215,7 @@ public class AttributesInformation implements Serializable {
             System.arraycopy(indexValues, 0, tempIndices, 0, index + 1);
             System.arraycopy(attributes, 0, tempValues, 0, index + 1);
             tempIndices[index + 1] = position;
-            tempValues[index + 1] =  attribute;
+            tempValues[index + 1] = attribute;
             for (int i = index + 1; i < indexValues.length; i++) {
                 tempIndices[i + 1] = indexValues[i] + 1;
                 tempValues[i + 1] = attributes[i];

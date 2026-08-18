@@ -16,14 +16,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
-import moa.classifiers.Classifier;
+
 import moa.classifiers.MultiClassClassifier;
 import moa.core.*;
 import moa.evaluation.*;
@@ -41,11 +41,11 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Task for prequential cross-validation evaluation of a classifier on a stream by testing then training with each
- * example in sequence and doing cross-validation at the same time.
+ * Task for prequential cross-validation evaluation of a classifier on a stream by testing then
+ * training with each example in sequence and doing cross-validation at the same time.
  *
- * <p>Albert Bifet, Gianmarco De Francisci Morales, Jesse Read, Geoff Holmes, Bernhard Pfahringer: Efficient Online
- * Evaluation of Big Data Stream Classifiers. KDD 2015: 59-68</p>
+ * <p>Albert Bifet, Gianmarco De Francisci Morales, Jesse Read, Geoff Holmes, Bernhard Pfahringer:
+ * Efficient Online Evaluation of Big Data Stream Classifiers. KDD 2015: 59-68
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
@@ -55,59 +55,105 @@ public class EvaluatePrequentialCV extends ClassificationMainTask {
 
     @Override
     public String getPurposeString() {
-        return "Evaluates a classifier on a stream by doing prequential evaluation (testing then training with each" +
-                " example in sequence) and doing cross-validation.";
+        return "Evaluates a classifier on a stream by doing prequential evaluation (testing then"
+                + " training with each example in sequence) and doing cross-validation.";
     }
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Learner to train.", MultiClassClassifier.class, "moa.classifiers.bayes.NaiveBayes");
+    public ClassOption learnerOption =
+            new ClassOption(
+                    "learner",
+                    'l',
+                    "Learner to train.",
+                    MultiClassClassifier.class,
+                    "moa.classifiers.bayes.NaiveBayes");
 
-    public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", ExampleStream.class,
-            "generators.RandomTreeGenerator");
+    public ClassOption streamOption =
+            new ClassOption(
+                    "stream",
+                    's',
+                    "Stream to learn from.",
+                    ExampleStream.class,
+                    "generators.RandomTreeGenerator");
 
-    public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
-            "Classification performance evaluation method.",
-            LearningPerformanceEvaluator.class,
-            "WindowClassificationPerformanceEvaluator");
+    public ClassOption evaluatorOption =
+            new ClassOption(
+                    "evaluator",
+                    'e',
+                    "Classification performance evaluation method.",
+                    LearningPerformanceEvaluator.class,
+                    "WindowClassificationPerformanceEvaluator");
 
-    public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
-            "Maximum number of instances to test/train on  (-1 = no limit).",
-            100000000, -1, Integer.MAX_VALUE);
+    public IntOption instanceLimitOption =
+            new IntOption(
+                    "instanceLimit",
+                    'i',
+                    "Maximum number of instances to test/train on  (-1 = no limit).",
+                    100000000,
+                    -1,
+                    Integer.MAX_VALUE);
 
-    public IntOption timeLimitOption = new IntOption("timeLimit", 't',
-            "Maximum number of seconds to test/train for (-1 = no limit).", -1,
-            -1, Integer.MAX_VALUE);
+    public IntOption timeLimitOption =
+            new IntOption(
+                    "timeLimit",
+                    't',
+                    "Maximum number of seconds to test/train for (-1 = no limit).",
+                    -1,
+                    -1,
+                    Integer.MAX_VALUE);
 
-    public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
-            'f',
-            "How many instances between samples of the learning performance.",
-            100000, 0, Integer.MAX_VALUE);
+    public IntOption sampleFrequencyOption =
+            new IntOption(
+                    "sampleFrequency",
+                    'f',
+                    "How many instances between samples of the learning performance.",
+                    100000,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public IntOption memCheckFrequencyOption = new IntOption(
-            "memCheckFrequency", 'q',
-            "How many instances between memory bound checks.", 100000, 0,
-            Integer.MAX_VALUE);
+    public IntOption memCheckFrequencyOption =
+            new IntOption(
+                    "memCheckFrequency",
+                    'q',
+                    "How many instances between memory bound checks.",
+                    100000,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
-            "File to append intermediate csv results to.", null, "csv", true);
+    public FileOption dumpFileOption =
+            new FileOption(
+                    "dumpFile",
+                    'd',
+                    "File to append intermediate csv results to.",
+                    null,
+                    "csv",
+                    true);
 
-    public IntOption numFoldsOption = new IntOption("numFolds", 'w',
-            "The number of folds (e.g. distributed models) to be used.", 10, 1, Integer.MAX_VALUE);
+    public IntOption numFoldsOption =
+            new IntOption(
+                    "numFolds",
+                    'w',
+                    "The number of folds (e.g. distributed models) to be used.",
+                    10,
+                    1,
+                    Integer.MAX_VALUE);
 
-    public MultiChoiceOption validationMethodologyOption = new MultiChoiceOption(
-            "validationMethodology", 'a', "Validation methodology to use.", new String[]{
-            "Cross-Validation", "Bootstrap-Validation", "Split-Validation"},
-            new String[]{"k-fold distributed Cross Validation",
-                    "k-fold distributed Bootstrap Validation",
-                    "k-fold distributed Split Validation"
-            }, 0);
+    public MultiChoiceOption validationMethodologyOption =
+            new MultiChoiceOption(
+                    "validationMethodology",
+                    'a',
+                    "Validation methodology to use.",
+                    new String[] {"Cross-Validation", "Bootstrap-Validation", "Split-Validation"},
+                    new String[] {
+                        "k-fold distributed Cross Validation",
+                        "k-fold distributed Bootstrap Validation",
+                        "k-fold distributed Split Validation"
+                    },
+                    0);
 
-    public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
-            "Seed for random behaviour of the task.", 1);
-
+    public IntOption randomSeedOption =
+            new IntOption("randomSeed", 'r', "Seed for random behaviour of the task.", 1);
 
     @Override
     public Class<?> getTaskResultType() {
@@ -124,16 +170,17 @@ public class EvaluatePrequentialCV extends ClassificationMainTask {
         Learner baseLearner = (Learner) getPreparedClassOption(this.learnerOption);
         baseLearner.resetLearning();
 
-        LearningPerformanceEvaluator[] evaluators = new LearningPerformanceEvaluator[this.numFoldsOption.getValue()];
-        LearningPerformanceEvaluator baseEvaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
+        LearningPerformanceEvaluator[] evaluators =
+                new LearningPerformanceEvaluator[this.numFoldsOption.getValue()];
+        LearningPerformanceEvaluator baseEvaluator =
+                (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         for (int i = 0; i < learners.length; i++) {
             learners[i] = (Learner) baseLearner.copy();
             learners[i].setModelContext(stream.getHeader());
             evaluators[i] = (LearningPerformanceEvaluator) baseEvaluator.copy();
         }
 
-        LearningCurve learningCurve = new LearningCurve(
-                "learning evaluation instances");
+        LearningCurve learningCurve = new LearningCurve("learning evaluation instances");
         int maxInstances = this.instanceLimitOption.getValue();
         long instancesProcessed = 0;
         int maxSeconds = this.timeLimitOption.getValue();
@@ -145,15 +192,13 @@ public class EvaluatePrequentialCV extends ClassificationMainTask {
         if (dumpFile != null) {
             try {
                 if (dumpFile.exists()) {
-                    immediateResultStream = new PrintStream(
-                            new FileOutputStream(dumpFile, true), true);
+                    immediateResultStream =
+                            new PrintStream(new FileOutputStream(dumpFile, true), true);
                 } else {
-                    immediateResultStream = new PrintStream(
-                            new FileOutputStream(dumpFile), true);
+                    immediateResultStream = new PrintStream(new FileOutputStream(dumpFile), true);
                 }
             } catch (Exception ex) {
-                throw new RuntimeException(
-                        "Unable to open immediate result file: " + dumpFile, ex);
+                throw new RuntimeException("Unable to open immediate result file: " + dumpFile, ex);
             }
         }
 
@@ -166,8 +211,8 @@ public class EvaluatePrequentialCV extends ClassificationMainTask {
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))
                 && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
             Example trainInst = stream.nextInstance();
-            Example testInst = (Example) trainInst; //.copy();
-            //testInst.setClassMissing();
+            Example testInst = (Example) trainInst; // .copy();
+            // testInst.setClassMissing();
 
             for (int i = 0; i < learners.length; i++) {
                 evaluators[i].addResult(testInst, learners[i].getVotesForInstance(testInst));
@@ -176,14 +221,17 @@ public class EvaluatePrequentialCV extends ClassificationMainTask {
             for (int i = 0; i < learners.length; i++) {
                 int k = 1;
                 switch (this.validationMethodologyOption.getChosenIndex()) {
-                    case 0: //Cross-Validation;
-                        k = instancesProcessed % learners.length == i ? 0: 1; //Test all except one
+                    case 0: // Cross-Validation;
+                        k =
+                                instancesProcessed % learners.length == i
+                                        ? 0
+                                        : 1; // Test all except one
                         break;
-                    case 1: //Bootstrap;
+                    case 1: // Bootstrap;
                         k = MiscUtils.poisson(1, random);
                         break;
-                    case 2: //Split-Validation;
-                        k = instancesProcessed % learners.length == i ? 1: 0; //Test only one
+                    case 2: // Split-Validation;
+                        k = instancesProcessed % learners.length == i ? 1 : 0; // Test only one
                         break;
                 }
                 if (k > 0) {
@@ -198,37 +246,40 @@ public class EvaluatePrequentialCV extends ClassificationMainTask {
                     || stream.hasMoreInstances() == false) {
                 long evaluateTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
                 double time = TimingUtils.nanoTimeToSeconds(evaluateTime - evaluateStartTime);
-                double timeIncrement = TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);
+                double timeIncrement =
+                        TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);
 
                 for (int i = 0; i < learners.length; i++) {
-                    double RAMHoursIncrement = learners[i].measureByteSize() / (1024.0 * 1024.0 * 1024.0); //GBs
-                    RAMHoursIncrement *= (timeIncrement / 3600.0); //Hours
+                    double RAMHoursIncrement =
+                            learners[i].measureByteSize() / (1024.0 * 1024.0 * 1024.0); // GBs
+                    RAMHoursIncrement *= (timeIncrement / 3600.0); // Hours
                     RAMHours += RAMHoursIncrement;
                 }
 
                 lastEvaluateStartTime = evaluateTime;
-                learningCurve.insertEntry(new LearningEvaluation(
-                        getEvaluationMeasurements(
-                        new Measurement[]{
-                                new Measurement(
-                                        "learning evaluation instances",
-                                        instancesProcessed),
-                                new Measurement(
-                                        "evaluation time ("
-                                                + (preciseCPUTiming ? "cpu "
-                                                : "") + "seconds)",
-                                        time),
-                                new Measurement(
-                                        "model cost (RAM-Hours)",
-                                        RAMHours)
-                        }, evaluators)));
+                learningCurve.insertEntry(
+                        new LearningEvaluation(
+                                getEvaluationMeasurements(
+                                        new Measurement[] {
+                                            new Measurement(
+                                                    "learning evaluation instances",
+                                                    instancesProcessed),
+                                            new Measurement(
+                                                    "evaluation time ("
+                                                            + (preciseCPUTiming ? "cpu " : "")
+                                                            + "seconds)",
+                                                    time),
+                                            new Measurement("model cost (RAM-Hours)", RAMHours)
+                                        },
+                                        evaluators)));
 
                 if (immediateResultStream != null) {
                     if (firstDump) {
                         immediateResultStream.println(learningCurve.headerToString());
                         firstDump = false;
                     }
-                    immediateResultStream.println(learningCurve.entryToString(learningCurve.numEntries() - 1));
+                    immediateResultStream.println(
+                            learningCurve.entryToString(learningCurve.numEntries() - 1));
                     immediateResultStream.flush();
                 }
             }
@@ -244,14 +295,20 @@ public class EvaluatePrequentialCV extends ClassificationMainTask {
                         estimatedRemainingInstances = maxRemaining;
                     }
                 }
-                monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
-                        : (double) instancesProcessed
-                        / (double) (instancesProcessed + estimatedRemainingInstances));
+                monitor.setCurrentActivityFractionComplete(
+                        estimatedRemainingInstances < 0
+                                ? -1.0
+                                : (double) instancesProcessed
+                                        / (double)
+                                                (instancesProcessed + estimatedRemainingInstances));
                 if (monitor.resultPreviewRequested()) {
                     monitor.setLatestResultPreview(learningCurve.copy());
                 }
-                secondsElapsed = (int) TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread()
-                        - evaluateStartTime);
+                secondsElapsed =
+                        (int)
+                                TimingUtils.nanoTimeToSeconds(
+                                        TimingUtils.getNanoCPUTimeOfCurrentThread()
+                                                - evaluateStartTime);
             }
         }
         if (immediateResultStream != null) {
@@ -260,8 +317,8 @@ public class EvaluatePrequentialCV extends ClassificationMainTask {
         return learningCurve;
     }
 
-
-    public Measurement[] getEvaluationMeasurements(Measurement[] modelMeasurements, LearningPerformanceEvaluator[] subEvaluators) {
+    public Measurement[] getEvaluationMeasurements(
+            Measurement[] modelMeasurements, LearningPerformanceEvaluator[] subEvaluators) {
         List<Measurement> measurementList = new LinkedList<Measurement>();
         if (modelMeasurements != null) {
             measurementList.addAll(Arrays.asList(modelMeasurements));
@@ -274,7 +331,9 @@ public class EvaluatePrequentialCV extends ClassificationMainTask {
                     subMeasurements.add(subEvaluator.getPerformanceMeasurements());
                 }
             }
-            Measurement[] avgMeasurements = Measurement.averageMeasurements(subMeasurements.toArray(new Measurement[subMeasurements.size()][]));
+            Measurement[] avgMeasurements =
+                    Measurement.averageMeasurements(
+                            subMeasurements.toArray(new Measurement[subMeasurements.size()][]));
             measurementList.addAll(Arrays.asList(avgMeasurements));
         }
         return measurementList.toArray(new Measurement[measurementList.size()]);

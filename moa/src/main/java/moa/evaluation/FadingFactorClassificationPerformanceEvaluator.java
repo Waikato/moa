@@ -15,14 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
+import com.github.javacliparser.FloatOption;
+
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
-
-import com.github.javacliparser.FloatOption;
 
 /**
  * Classification evaluator that updates evaluation results using a fading factor.
@@ -30,12 +30,13 @@ import com.github.javacliparser.FloatOption;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class FadingFactorClassificationPerformanceEvaluator extends BasicClassificationPerformanceEvaluator {
+public class FadingFactorClassificationPerformanceEvaluator
+        extends BasicClassificationPerformanceEvaluator {
 
     private static final long serialVersionUID = 1L;
 
-    public FloatOption alphaOption = new FloatOption("alpha",
-            'a', "Fading factor or exponential smoothing factor", .999);
+    public FloatOption alphaOption =
+            new FloatOption("alpha", 'a', "Fading factor or exponential smoothing factor", .999);
 
     @Override
     protected Estimator newEstimator() {
@@ -46,8 +47,7 @@ public class FadingFactorClassificationPerformanceEvaluator extends BasicClassif
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == FadingFactorClassificationPerformanceEvaluator.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 
     public class FadingFactorEstimator implements Estimator {
@@ -66,17 +66,15 @@ public class FadingFactorClassificationPerformanceEvaluator extends BasicClassif
 
         @Override
         public void add(double value) {
-          if (!Double.isNaN(value)) {
-            estimation = alpha * estimation + value;
-            b = alpha * b + 1.0;
-          }
+            if (!Double.isNaN(value)) {
+                estimation = alpha * estimation + value;
+                b = alpha * b + 1.0;
+            }
         }
 
         @Override
         public double estimation() {
             return b > 0.0 ? estimation / b : 0;
         }
-
     }
-
 }

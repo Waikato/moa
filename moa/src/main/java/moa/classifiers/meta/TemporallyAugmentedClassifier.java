@@ -15,18 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.meta;
 
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.IntOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.yahoo.labs.samoa.instances.*;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
@@ -34,41 +30,65 @@ import moa.core.Measurement;
 import moa.core.Utils;
 import moa.options.ClassOption;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Include labels of previous instances into the training data
  *
  * <p>This enables a classifier to exploit potentially present auto-correlation
- * </p>
  *
- * <p>Parameters:</p> <ul> <li>-l : Classiﬁer to train</li> <li>-n : The number
- * of old labels to include</li> </ul>
+ * <p>Parameters:
+ *
+ * <ul>
+ *   <li>-l : Classiﬁer to train
+ *   <li>-n : The number of old labels to include
+ * </ul>
  *
  * @author Bernhard Pfahringer (bernhard@cs.waikato.ac.nz)
  * @version $Revision: 1 $
  */
-public class TemporallyAugmentedClassifier extends AbstractClassifier implements MultiClassClassifier {
+public class TemporallyAugmentedClassifier extends AbstractClassifier
+        implements MultiClassClassifier {
 
     @Override
     public String getPurposeString() {
         return "Add some old labels to every instance";
     }
+
     private static final long serialVersionUID = 1L;
-    
-    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
-    
-    public IntOption numOldLabelsOption = new IntOption("numOldLabels", 'n',
-            "The number of old labels to add to each example.", 1, 0, Integer.MAX_VALUE);
-    
+
+    public ClassOption baseLearnerOption =
+            new ClassOption(
+                    "baseLearner",
+                    'l',
+                    "Classifier to train.",
+                    Classifier.class,
+                    "trees.HoeffdingTree");
+
+    public IntOption numOldLabelsOption =
+            new IntOption(
+                    "numOldLabels",
+                    'n',
+                    "The number of old labels to add to each example.",
+                    1,
+                    0,
+                    Integer.MAX_VALUE);
+
     protected Classifier baseLearner;
-    
+
     protected double[] oldLabels;
-    
+
     protected Instances header;
 
-    public FlagOption labelDelayOption = new FlagOption("labelDelay", 'd',
-        "Labels arrive with Delay. Use predictions instead of true Labels.");
-    
+    public FlagOption labelDelayOption =
+            new FlagOption(
+                    "labelDelay",
+                    'd',
+                    "Labels arrive with Delay. Use predictions instead of true Labels.");
+
     @Override
     public void resetLearningImpl() {
         this.baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
@@ -92,7 +112,7 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier implements
             for (int i = 1; i < numLabels; i++) {
                 this.oldLabels[i - 1] = this.oldLabels[i];
             }
-            this.oldLabels[ numLabels - 1] = newPrediction;
+            this.oldLabels[numLabels - 1] = newPrediction;
         }
     }
 
@@ -141,7 +161,7 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier implements
         System.arraycopy(x, 0, x2, numLabels, x.length);
         Instance extendedInstance = new DenseInstance(instance.weight(), x2);
         extendedInstance.setDataset(this.header);
-        //System.out.println( extendedInstance);
+        // System.out.println( extendedInstance);
         return extendedInstance;
     }
 
@@ -163,7 +183,8 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier implements
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
         List<Measurement> measurementList = new LinkedList<Measurement>();
-        Measurement[] modelMeasurements = ((AbstractClassifier) this.baseLearner).getModelMeasurements();
+        Measurement[] modelMeasurements =
+                ((AbstractClassifier) this.baseLearner).getModelMeasurements();
         if (modelMeasurements != null) {
             for (Measurement measurement : modelMeasurements) {
                 measurementList.add(measurement);
@@ -178,6 +199,9 @@ public class TemporallyAugmentedClassifier extends AbstractClassifier implements
     }
 
     public String toString() {
-        return "TemporallyAugmentedClassifier using " + this.numOldLabelsOption.getValue() + " labels\n" + this.baseLearner;
+        return "TemporallyAugmentedClassifier using "
+                + this.numOldLabelsOption.getValue()
+                + " labels\n"
+                + this.baseLearner;
     }
 }

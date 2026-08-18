@@ -1,6 +1,6 @@
 /*
  *    Buffer.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand 
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.experimentertab;
 
@@ -32,7 +32,8 @@ public class Buffer {
     int cantTask = 0;
 
     /**
-     * Buffer Constructor 
+     * Buffer Constructor
+     *
      * @param tasks
      */
     public Buffer(MainTask tasks[]) {
@@ -68,5 +69,4 @@ public class Buffer {
     synchronized int getSize() {
         return this.tasks.length;
     }
-
 }

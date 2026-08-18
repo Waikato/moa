@@ -15,12 +15,13 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
-import java.awt.BorderLayout;
 import moa.gui.PreviewPanel.TypePanel;
+
+import java.awt.BorderLayout;
 
 /**
  * This panel allows the user to select and configure a task, and run it.
@@ -30,34 +31,30 @@ import moa.gui.PreviewPanel.TypePanel;
  */
 public class MultiTargetTabPanel extends AbstractTabPanel {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected MultiTargetTaskManagerPanel taskManagerPanel;
+    protected MultiTargetTaskManagerPanel taskManagerPanel;
 
-	protected PreviewPanel previewPanel;
+    protected PreviewPanel previewPanel;
 
-	public MultiTargetTabPanel() {
-		this.taskManagerPanel = new MultiTargetTaskManagerPanel();
-		this.previewPanel = new PreviewPanel(TypePanel.REGRESSION);
-		this.taskManagerPanel.setPreviewPanel(this.previewPanel);
-		setLayout(new BorderLayout());
-		add(this.taskManagerPanel, BorderLayout.NORTH);
-		add(this.previewPanel, BorderLayout.CENTER);
-	}
+    public MultiTargetTabPanel() {
+        this.taskManagerPanel = new MultiTargetTaskManagerPanel();
+        this.previewPanel = new PreviewPanel(TypePanel.REGRESSION);
+        this.taskManagerPanel.setPreviewPanel(this.previewPanel);
+        setLayout(new BorderLayout());
+        add(this.taskManagerPanel, BorderLayout.NORTH);
+        add(this.previewPanel, BorderLayout.CENTER);
+    }
 
-	//returns the string to display as title of the tab
+    // returns the string to display as title of the tab
     @Override
-	public String getTabTitle() {
-		return "MultiTarget"; // "Learning";
-	}
+    public String getTabTitle() {
+        return "MultiTarget"; // "Learning";
+    }
 
-	//a short description (can be used as tool tip) of the tab, or contributor, etc.
+    // a short description (can be used as tool tip) of the tab, or contributor, etc.
     @Override
-	public String getDescription(){
-		return "MOA MultiTarget Learning";
-	}
-
+    public String getDescription() {
+        return "MOA MultiTarget Learning";
+    }
 }
-
-
-

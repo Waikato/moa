@@ -1,19 +1,21 @@
 /*
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * 	        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the
- * License.  
+ * License.
  */
 package com.yahoo.labs.samoa.instances;
+
+import moa.core.Utils;
 
 import java.io.Reader;
 import java.io.Serializable;
@@ -22,7 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import moa.core.Utils;
 
 /**
  * The Class Instances.
@@ -31,44 +32,30 @@ import moa.core.Utils;
  */
 public class Instances implements Serializable {
 
-    /**
-     * The keyword used to denote the start of an arff header
-     */
-    public final static String ARFF_RELATION = "@relation";
+    /** The keyword used to denote the start of an arff header */
+    public static final String ARFF_RELATION = "@relation";
 
-    /**
-     * The keyword used to denote the start of the arff data section
-     */
-    public final static String ARFF_DATA = "@data";
+    /** The keyword used to denote the start of the arff data section */
+    public static final String ARFF_DATA = "@data";
 
     private static final long serialVersionUID = 8110510475535581577L;
-    /**
-     * The instance information.
-     */
+
+    /** The instance information. */
     protected InstanceInformation instanceInformation;
-    /**
-     * The instances.
-     */
+
+    /** The instances. */
     protected List<Instance> instances;
 
-    /**
-     * The arff.
-     */
+    /** The arff. */
     protected ArffLoader arff;
 
-    /**
-     * A Hash that stores the indices of features.
-     */
+    /** A Hash that stores the indices of features. */
     protected HashMap<String, Integer> hsAttributesIndices;
 
-    /**
-     * Indices of relevant features.
-     */
+    /** Indices of relevant features. */
     protected int[] indicesRelevants;
 
-    /**
-     * Indices of irrelevant features.
-     */
+    /** Indices of irrelevant features. */
     protected int[] indicesIrrelevants;
 
     /**
@@ -80,17 +67,14 @@ public class Instances implements Serializable {
         this(chunk, chunk.numInstances());
         chunk.copyInstances(0, this, chunk.numInstances());
         this.computeAttributesIndices();
-        if(chunk.indicesRelevants != null) {
+        if (chunk.indicesRelevants != null) {
             this.indicesRelevants = chunk.indicesRelevants.clone();
             this.indicesIrrelevants = chunk.indicesIrrelevants.clone();
         }
     }
 
-    /**
-     * Instantiates a new instances.
-     */
-    public Instances() {
-    }
+    /** Instantiates a new instances. */
+    public Instances() {}
 
     /**
      * Instantiates a new instances.
@@ -132,7 +116,7 @@ public class Instances implements Serializable {
         }
         this.instances = new ArrayList<Instance>(capacity);
         this.computeAttributesIndices();
-        if(chunk.indicesRelevants != null) {
+        if (chunk.indicesRelevants != null) {
             this.indicesRelevants = chunk.indicesRelevants.clone();
             this.indicesIrrelevants = chunk.indicesIrrelevants.clone();
         }
@@ -161,7 +145,7 @@ public class Instances implements Serializable {
     public Instances(String st, List<Attribute> v, int capacity) {
         Attribute[] attributes = new Attribute[v.size()];
         for (int i = 0; i < v.size(); i++) {
-            attributes[i]= v.get(i);
+            attributes[i] = v.get(i);
         }
         this.instanceInformation = new InstanceInformation(st, attributes);
         this.instances = new ArrayList<Instance>(capacity);
@@ -180,8 +164,7 @@ public class Instances implements Serializable {
         this(chunk, toCopy);
 
         if ((first < 0) || ((first + toCopy) > chunk.numInstances())) {
-            throw new IllegalArgumentException("Parameters first and/or toCopy out "
-                    + "of range");
+            throw new IllegalArgumentException("Parameters first and/or toCopy out " + "of range");
         }
         chunk.copyInstances(first, this, toCopy);
         this.computeAttributesIndices();
@@ -198,7 +181,7 @@ public class Instances implements Serializable {
         this.computeAttributesIndices();
     }
 
-    //Information Instances
+    // Information Instances
     /**
      * Sets the relation name.
      *
@@ -304,7 +287,7 @@ public class Instances implements Serializable {
         }
     }
 
-    //List of Instances
+    // List of Instances
     /**
      * Instance.
      *
@@ -360,8 +343,7 @@ public class Instances implements Serializable {
                 for (int j = index; j < numInstances(); j++) {
                     Instance instance2 = instance(j);
                     if ((instance1.classValue() == instance2.classValue())
-                            || (instance1.classIsMissing()
-                            && instance2.classIsMissing())) {
+                            || (instance1.classIsMissing() && instance2.classIsMissing())) {
                         swap(index, j);
                         index++;
                     }
@@ -416,8 +398,7 @@ public class Instances implements Serializable {
         train = new Instances(this, numInstances() - numInstForFold);
         first = numFold * (numInstances() / numFolds) + offset;
         copyInstances(0, train, first);
-        copyInstances(first + numInstForFold, train,
-                numInstances() - first - numInstForFold);
+        copyInstances(first + numInstForFold, train, numInstances() - first - numInstForFold);
         return train;
     }
 
@@ -453,8 +434,8 @@ public class Instances implements Serializable {
     }
 
     /*  public Instances dataset() {
-     throw new UnsupportedOperationException("Not yet implemented");
-     }*/
+    throw new UnsupportedOperationException("Not yet implemented");
+    }*/
     /**
      * Mean or mode.
      *
@@ -462,7 +443,7 @@ public class Instances implements Serializable {
      * @return the double
      */
     public double meanOrMode(int j) {
-        throw new UnsupportedOperationException("Not yet implemented"); //CobWeb
+        throw new UnsupportedOperationException("Not yet implemented"); // CobWeb
     }
 
     /**
@@ -473,7 +454,7 @@ public class Instances implements Serializable {
      */
     public boolean readInstance(Reader fileReader) {
 
-        //ArffReader arff = new ArffReader(reader, this, m_Lines, 1);
+        // ArffReader arff = new ArffReader(reader, this, m_Lines, 1);
         Instance inst = arff.readInstance();
         if (inst != null) {
             inst.setDataset(this);
@@ -484,16 +465,12 @@ public class Instances implements Serializable {
         }
     }
 
-    /**
-     * Delete.
-     */
+    /** Delete. */
     public void delete() {
         this.instances = new ArrayList<Instance>();
     }
 
-    /**
-     * Delete.
-     */
+    /** Delete. */
     public void delete(int index) {
         this.instances.remove(index);
     }
@@ -543,7 +520,6 @@ public class Instances implements Serializable {
 
     public void setRangeOutputIndices(Range range) {
         this.instanceInformation.setRangeOutputIndices(range);
-
     }
 
     public void setAttributes(Attribute[] v) {
@@ -559,20 +535,20 @@ public class Instances implements Serializable {
         }
         this.instanceInformation.setAttributes(v, indexValues);
     }
+
     public void setAttributes(List<Attribute> v, List<Integer> indexValues) {
         int[] ret = new int[indexValues.size()];
-        for(int i = 0;i < ret.length;i++)
-            ret[i] = indexValues.get(i);
+        for (int i = 0; i < ret.length; i++) ret[i] = indexValues.get(i);
         Attribute[] attributes = new Attribute[v.size()];
         for (int i = 0; i < v.size(); i++) {
-            attributes[i]= v.get(i);
+            attributes[i] = v.get(i);
         }
-       setAttributes(attributes, ret);
+        setAttributes(attributes, ret);
     }
 
     /**
-     * Returns the dataset as a string in ARFF format. Strings are quoted if
-     * they contain whitespace characters, or if they are a question mark.
+     * Returns the dataset as a string in ARFF format. Strings are quoted if they contain whitespace
+     * characters, or if they are a question mark.
      *
      * @return the dataset in ARFF format as a string
      */
@@ -580,8 +556,10 @@ public class Instances implements Serializable {
 
         StringBuffer text = new StringBuffer();
 
-        text.append(ARFF_RELATION).append(" ").
-                append(Utils.quote(this.instanceInformation.getRelationName())).append("\n\n");
+        text.append(ARFF_RELATION)
+                .append(" ")
+                .append(Utils.quote(this.instanceInformation.getRelationName()))
+                .append("\n\n");
         for (int i = 0; i < numAttributes(); i++) {
             text.append(attribute(i).toString()).append("\n");
         }
@@ -592,9 +570,8 @@ public class Instances implements Serializable {
     }
 
     /**
-     * Returns the instances in the dataset as a string in ARFF format. Strings
-     * are quoted if they contain whitespace characters, or if they are a
-     * question mark.
+     * Returns the instances in the dataset as a string in ARFF format. Strings are quoted if they
+     * contain whitespace characters, or if they are a question mark.
      *
      * @return the dataset in ARFF format as a string
      */
@@ -609,7 +586,6 @@ public class Instances implements Serializable {
             }
         }
         return text.toString();
-
     }
 
     /**
@@ -621,12 +597,10 @@ public class Instances implements Serializable {
         return this.hsAttributesIndices.get(att.name());
     }
 
-    /**
-     * Completes the hashset with attributes indices.
-     */
+    /** Completes the hashset with attributes indices. */
     private void computeAttributesIndices() {
         this.hsAttributesIndices = new HashMap<String, Integer>();
-        // iterates through all existing attributes 
+        // iterates through all existing attributes
         // and sets an unique identifier for each one of them
         for (int i = 0; i < this.numAttributes(); i++) {
             hsAttributesIndices.put(this.attribute(i).name(), i);
@@ -635,6 +609,7 @@ public class Instances implements Serializable {
 
     /**
      * Returns the indices of the relevant features indicesRelevants.
+     *
      * @return indicesRelevants
      */
     public int[] getIndicesRelevants() {
@@ -643,6 +618,7 @@ public class Instances implements Serializable {
 
     /**
      * Returns the indices of the irrelevant features indicesIrrelevants.
+     *
      * @return indicesIrrelevants
      */
     public int[] getIndicesIrrelevants() {
@@ -650,9 +626,8 @@ public class Instances implements Serializable {
     }
 
     /**
-     * Sets the indices of relevant features.
-     * This method also sets the irrelevant ones since
-     * it is the set complement.
+     * Sets the indices of relevant features. This method also sets the irrelevant ones since it is
+     * the set complement.
      *
      * @param indicesRelevants
      */
@@ -665,11 +640,11 @@ public class Instances implements Serializable {
         // Infers and sets the set of irrelevant features
         int index = 0;
         int indexRel = 0;
-        for(int i = 0; i < numAttributes(); i++){
-            if(i != classIndex()) {
-                while (indexRel < indicesRelevants.length - 1 &&
-                        i > indicesRelevants[indexRel]) indexRel++;
-                if (indicesRelevants[indexRel] != i){
+        for (int i = 0; i < numAttributes(); i++) {
+            if (i != classIndex()) {
+                while (indexRel < indicesRelevants.length - 1 && i > indicesRelevants[indexRel])
+                    indexRel++;
+                if (indicesRelevants[indexRel] != i) {
                     indicesIrrelevants[index] = i;
                     index++;
                 }

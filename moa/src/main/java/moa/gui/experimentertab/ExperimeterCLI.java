@@ -5,10 +5,6 @@
  */
 package moa.gui.experimentertab;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -16,12 +12,16 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FilenameUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @author Alberto
  */
 public class ExperimeterCLI {
-    
+
     private String algorithms[];
     private String algorithmsID[];
     private String streams[];
@@ -31,15 +31,15 @@ public class ExperimeterCLI {
     private String saveExperimentsPath;
     private String args[];
     private int threads = 1;
-    
+
     public int[] measures = null;
     public String[] types = null;
     Options options = new Options();
     Options optionsm = new Options();
-    
+
     public ExperimeterCLI(String[] args) {
         this.args = args;
-        //Config the options
+        // Config the options
 
         options.addOption("ls", true, "The names of the algorithms separated by commas");
         options.addOption("lss", true, "ID of the algorithms separated by commas");
@@ -49,17 +49,20 @@ public class ExperimeterCLI {
         options.addOption("th", true, "Number of threads");
         options.addOption("ts", true, "Task");
         options.addOption("h", "help", false, "Prints the help message");
-        
+
         optionsm.addOption("h", "help", false, "Prints the help message");
         optionsm.addOption("m", true, "The number of measures separated by commas");
-        optionsm.addOption("tm", true, "The types of measures separated by commas, the types are Mean and Last");
+        optionsm.addOption(
+                "tm",
+                true,
+                "The types of measures separated by commas, the types are Mean and Last");
     }
-    
+
     public boolean summary1CMD(String[] args) {
-        
+
         CommandLineParser parser = null;
         CommandLine cmdLine = null;
-        
+
         try {
             parser = new BasicParser();
             cmdLine = parser.parse(optionsm, args);
@@ -82,7 +85,7 @@ public class ExperimeterCLI {
                 measures = new int[1];
                 measures[0] = Integer.parseInt(measure);
             }
-            
+
             if (cmdLine.hasOption("tm")) {
                 String type = cmdLine.getOptionValue("tm");
                 if (type.contains(",")) {
@@ -99,15 +102,21 @@ public class ExperimeterCLI {
             }
         } catch (org.apache.commons.cli.ParseException ex) {
             System.out.println(ex.getMessage());
-            
-            new HelpFormatter().printHelp(ExperimeterCLI.class.getCanonicalName(), optionsm);    // Error, imprimimos la ayuda  
+
+            new HelpFormatter()
+                    .printHelp(
+                            ExperimeterCLI.class.getCanonicalName(),
+                            optionsm); // Error, imprimimos la ayuda
         } catch (java.lang.NumberFormatException ex) {
-            new HelpFormatter().printHelp(ExperimeterCLI.class.getCanonicalName(), optionsm);    // Error, imprimimos la ayuda  
+            new HelpFormatter()
+                    .printHelp(
+                            ExperimeterCLI.class.getCanonicalName(),
+                            optionsm); // Error, imprimimos la ayuda
         }
         return true;
     }
-    
-    public boolean proccesCMD(){
+
+    public boolean proccesCMD() {
         int threads = 1;
         String algNames = null;
         String algShortNames = null;
@@ -115,36 +124,37 @@ public class ExperimeterCLI {
         String streamShortNames = null;
         String task = null;
         String resultsFolder = null;
-        
+
         CommandLineParser parser = null;
         CommandLine cmdLine = null;
-        
+
         try {
-            //Parse the input with the set configuration
+            // Parse the input with the set configuration
             parser = new BasicParser();
             cmdLine = parser.parse(options, args);
             if (cmdLine.hasOption("h")) {
                 new HelpFormatter().printHelp(ExperimeterCLI.class.getCanonicalName(), options);
                 return false;
             }
-            
+
             if (cmdLine.hasOption("th")) {
                 threads = Integer.parseInt(cmdLine.getOptionValue("th"));
                 this.setThreads(threads);
             }
-            
+
             task = cmdLine.getOptionValue("ts");
             if (task == null) {
                 throw new org.apache.commons.cli.ParseException("The task is required");
             }
             this.setTask(task);
-            //Algorithms names
+            // Algorithms names
             algNames = cmdLine.getOptionValue("ls");
-            
+
             if (algNames == null) {
-                throw new org.apache.commons.cli.ParseException("The name of the algorithms are required");
+                throw new org.apache.commons.cli.ParseException(
+                        "The name of the algorithms are required");
             }
-            
+
             try {
                 if (algNames.contains(",")) {
                     this.setAlgorithms(algNames.split(","));
@@ -153,15 +163,15 @@ public class ExperimeterCLI {
                     alg[0] = algNames;
                     this.setAlgorithms(alg);
                 }
-                
+
             } catch (Exception e) {
                 System.out.println("Problems with algortihms ls options");
                 new HelpFormatter().printHelp(ExperimeterCLI.class.getCanonicalName(), options);
             }
 
-            //Agorithms ID 
+            // Agorithms ID
             if (cmdLine.hasOption("lss")) {
-                
+
                 algShortNames = cmdLine.getOptionValue("lss");
                 if (algShortNames.contains(",")) {
                     this.setAlgorithmsID(algShortNames.split(","));
@@ -170,17 +180,18 @@ public class ExperimeterCLI {
                     ash[0] = algShortNames;
                     this.setAlgorithmsID(ash);
                 }
-                
+
             } else {
                 this.setAlgorithmsID(this.getAlgorithms());
             }
-            //Streams names
+            // Streams names
             streamNames = cmdLine.getOptionValue("ds");
-            
+
             if (streamNames == null) {
-                throw new org.apache.commons.cli.ParseException("The name of the streams are required");
+                throw new org.apache.commons.cli.ParseException(
+                        "The name of the streams are required");
             }
-            
+
             if (streamNames.contains(",")) {
                 this.setStreams(streamNames.split(","));
                 for (int i = 0; i < this.getStreams().length; i++) {
@@ -192,17 +203,15 @@ public class ExperimeterCLI {
                             ds = dir + ":" + ds.split(":")[1];
                             this.setStreamIndex(i, ds);
                         }
-                        
                     }
                 }
             } else {
                 String str[] = new String[1];
                 str[0] = FilenameUtils.separatorsToSystem(streamNames);
                 this.setStreams(str);
-                
             }
 
-            //stream ID 
+            // stream ID
             if (cmdLine.hasOption("dss")) {
                 streamShortNames = cmdLine.getOptionValue("dss");
                 if (streamShortNames.contains(",")) {
@@ -212,15 +221,16 @@ public class ExperimeterCLI {
                     strh[0] = streamShortNames;
                     this.setStreamsID(strh);
                 }
-                
+
             } else {
                 this.setStreamsID(this.getStreams());
             }
-            //Results folder
+            // Results folder
             resultsFolder = cmdLine.getOptionValue("rf");
-            
+
             if (resultsFolder == null) {
-                //throw new org.apache.commons.cli.ParseException("The resuts folder are required");
+                // throw new org.apache.commons.cli.ParseException("The resuts folder are
+                // required");
                 File excPath = new File(".");
                 try {
                     resultsFolder = excPath.getCanonicalPath();
@@ -236,97 +246,102 @@ public class ExperimeterCLI {
                 }
             }
             this.setResultsFolder(FilenameUtils.separatorsToSystem(resultsFolder));
-            // System.out.println("OK");  
+            // System.out.println("OK");
             // System.out.println(task);
             // System.out.println(algNames);
             // System.out.println(streamNames);
 
         } catch (org.apache.commons.cli.ParseException ex) {
             System.out.println(ex.getMessage());
-            new HelpFormatter().printHelp(ExperimeterCLI.class.getCanonicalName(), options);    // Error, print help
+            new HelpFormatter()
+                    .printHelp(
+                            ExperimeterCLI.class.getCanonicalName(), options); // Error, print help
             return false;
         } catch (java.lang.NumberFormatException ex) {
-            new HelpFormatter().printHelp(ExperimeterCLI.class.getCanonicalName(), options);    // Error, print help 
+            new HelpFormatter()
+                    .printHelp(
+                            ExperimeterCLI.class.getCanonicalName(), options); // Error, print help
             return false;
         }
         return true;
     }
-    
+
     public String[] getAlgorithms() {
         return algorithms;
     }
-    
+
     public String[] getAlgorithmsID() {
         return algorithmsID;
     }
-    
+
     public String[] getArgs() {
         return args;
     }
-    
+
     public String getResultsFolder() {
         return resultsFolder;
     }
-    
+
     public String getSaveExperimentsPath() {
         return saveExperimentsPath;
     }
-    
+
     public String[] getStreams() {
         return streams;
     }
-    
+
     public String[] getStreamsID() {
         return streamsID;
     }
-    
+
     public String getTask() {
         return task;
     }
-    
+
     public int getThreads() {
         return threads;
     }
-    
+
     public void setAlgorithms(String[] algorithms) {
         this.algorithms = algorithms;
     }
-    
+
     public void setAlgorithmsID(String[] algorithmsID) {
         this.algorithmsID = algorithmsID;
     }
-    
+
     public void setArgs(String[] args) {
         this.args = args;
     }
-    
+
     public void setResultsFolder(String resultsFolder) {
         this.resultsFolder = resultsFolder;
     }
-    
+
     public void setSaveExperimentsPath(String saveExperimentsPath) {
         this.saveExperimentsPath = saveExperimentsPath;
     }
-    
+
     public void setStreams(String[] streams) {
-        for(int i = 0; i < streams.length; i++){
-            streams[i] =  FilenameUtils.separatorsToSystem(streams[i]);
+        for (int i = 0; i < streams.length; i++) {
+            streams[i] = FilenameUtils.separatorsToSystem(streams[i]);
         }
         this.streams = streams;
     }
-    
+
     public void setStreamsID(String[] streamsID) {
         this.streamsID = streamsID;
     }
-     public void setStreamIndex(int index, String streamID) {
+
+    public void setStreamIndex(int index, String streamID) {
         this.streams[index] = streamID;
     }
+
     public void setTask(String task) {
         this.task = task;
     }
-    
+
     public void setThreads(int threads) {
         this.threads = threads;
     }
-    
 }

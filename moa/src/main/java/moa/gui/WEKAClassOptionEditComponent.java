@@ -16,15 +16,19 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
+import com.github.javacliparser.Option;
 import com.github.javacliparser.gui.OptionEditComponent;
+
 import moa.core.Utils;
+import moa.options.WEKAClassOption;
+
 import weka.gui.GenericObjectEditor;
-import weka.gui.PropertyDialog;
 import weka.gui.GenericObjectEditor.GOEPanel;
+import weka.gui.PropertyDialog;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -34,9 +38,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.github.javacliparser.Option;
-import moa.options.WEKAClassOption;
-
 /**
  * An OptionEditComponent that lets the user edit a WEKA class option.
  *
@@ -44,9 +45,7 @@ import moa.options.WEKAClassOption;
  * @author FracPete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class WEKAClassOptionEditComponent
-        extends JPanel
-        implements OptionEditComponent {
+public class WEKAClassOptionEditComponent extends JPanel implements OptionEditComponent {
 
     private static final long serialVersionUID = 1L;
 
@@ -63,13 +62,14 @@ public class WEKAClassOptionEditComponent
         setLayout(new BorderLayout());
         add(this.textField, BorderLayout.CENTER);
         add(this.editButton, BorderLayout.EAST);
-        this.editButton.addActionListener(new ActionListener() {
+        this.editButton.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                editObject();
-            }
-        });
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        editObject();
+                    }
+                });
         setEditState(this.editedOption.getValueAsCLIString());
     }
 
@@ -100,18 +100,24 @@ public class WEKAClassOptionEditComponent
                 ((weka.core.OptionHandler) obj).setOptions(options);
             }
             goe.setValue(obj);
-            ((GOEPanel) goe.getCustomEditor()).addOkListener(new ActionListener() {
+            ((GOEPanel) goe.getCustomEditor())
+                    .addOkListener(
+                            new ActionListener() {
 
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Object obj = goe.getValue();
-                    String s = obj.getClass().getName();
-                    if (obj instanceof weka.core.OptionHandler) {
-                        s += " " + Utils.joinOptions(((weka.core.OptionHandler) obj).getOptions());
-                    }
-                    setEditState(s.trim());
-                }
-            });
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    Object obj = goe.getValue();
+                                    String s = obj.getClass().getName();
+                                    if (obj instanceof weka.core.OptionHandler) {
+                                        s +=
+                                                " "
+                                                        + Utils.joinOptions(
+                                                                ((weka.core.OptionHandler) obj)
+                                                                        .getOptions());
+                                    }
+                                    setEditState(s.trim());
+                                }
+                            });
             PropertyDialog dialog;
             if (PropertyDialog.getParentDialog(this) != null) {
                 dialog = new PropertyDialog(PropertyDialog.getParentDialog(this), goe);

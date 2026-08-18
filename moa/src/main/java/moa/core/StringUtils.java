@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
@@ -35,8 +35,8 @@ public class StringUtils {
         return doubleToString(value, 0, fractionDigits);
     }
 
-    public static String doubleToString(double value, int minFractionDigits,
-            int maxFractionDigits) {
+    public static String doubleToString(
+            double value, int minFractionDigits, int maxFractionDigits) {
         DecimalFormat numberFormat = new DecimalFormat();
         numberFormat.setMinimumFractionDigits(minFractionDigits);
         numberFormat.setMaximumFractionDigits(maxFractionDigits);
@@ -58,8 +58,7 @@ public class StringUtils {
         out.append(s);
     }
 
-    public static void appendNewlineIndented(StringBuilder out, int indent,
-            String s) {
+    public static void appendNewlineIndented(StringBuilder out, int indent, String s) {
         appendNewline(out);
         appendIndented(out, indent, s);
     }

@@ -1,19 +1,19 @@
 package moa.classifiers;
 
-import moa.core.Example;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
-public abstract class AbstractMultiLabelLearner extends AbstractClassifier implements MultiLabelLearner {
+import moa.core.Example;
 
-    /**
-     *
-     */
+public abstract class AbstractMultiLabelLearner extends AbstractClassifier
+        implements MultiLabelLearner {
+
+    /** */
     private static final long serialVersionUID = 1L;
 
     @Override
-    abstract public void trainOnInstanceImpl(MultiLabelInstance instance);
+    public abstract void trainOnInstanceImpl(MultiLabelInstance instance);
 
     @Override
     public void trainOnInstanceImpl(Instance instance) {
@@ -30,7 +30,7 @@ public abstract class AbstractMultiLabelLearner extends AbstractClassifier imple
         return getPredictionForInstance((MultiLabelInstance) inst);
     }
 
-    abstract public Prediction getPredictionForInstance(MultiLabelInstance inst);
+    public abstract Prediction getPredictionForInstance(MultiLabelInstance inst);
 
     @Override
     public double[] getVotesForInstance(Instance inst) {
@@ -38,8 +38,7 @@ public abstract class AbstractMultiLabelLearner extends AbstractClassifier imple
         if (pred != null) {
             return pred.getVotes();
         } else {
-            return new double[]{0}; //for compatibility with single target code
+            return new double[] {0}; // for compatibility with single target code
         }
     }
-
 }

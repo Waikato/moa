@@ -20,6 +20,7 @@
 package moa.classifiers.predictioninterval;
 
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.core.Example;
 import moa.learners.Learner;
 
@@ -32,41 +33,35 @@ import moa.learners.Learner;
 public interface PredictionIntervalLearner extends Learner<Example<Instance>> {
 
     /**
-     * Gets the classifiers of this ensemble. Returns null if this learner is a
-     * single learner.
+     * Gets the classifiers of this ensemble. Returns null if this learner is a single learner.
      *
      * @return an array of the learners of the ensemble
      */
-//    public PredictionIntervalLearner[] getSubClassifiers();
+    //    public PredictionIntervalLearner[] getSubClassifiers();
 
     /**
      * Produces a copy of this learner.
      *
      * @return the copy of this learner
      */
-//    public PredictionIntervalLearner copy();
+    //    public PredictionIntervalLearner copy();
 
     /**
-     * Gets whether this classifier correctly classifies an instance. Uses
-     * getVotesForInstance to obtain the prediction and the instance to obtain
-     * its true class.
-     *
+     * Gets whether this classifier correctly classifies an instance. Uses getVotesForInstance to
+     * obtain the prediction and the instance to obtain its true class.
      *
      * @param inst the instance to be classified
      * @return true if the instance is correctly classified
      */
-
     public void trainOnInstance(Instance inst);
 
     /**
-     * Predicts the class memberships for a given instance. If an instance is
-     * unclassified, the returned array elements must be all zero.
+     * Predicts the class memberships for a given instance. If an instance is unclassified, the
+     * returned array elements must be all zero.
      *
      * @param inst the instance to be classified
-     * @return an array containing the estimated membership probabilities of the
-     * test instance in each class
+     * @return an array containing the estimated membership probabilities of the test instance in
+     *     each class
      */
     public double[] getVotesForInstance(Instance inst);
-
-
 }

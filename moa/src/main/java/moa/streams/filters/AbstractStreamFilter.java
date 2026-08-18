@@ -15,16 +15,16 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.filters;
 
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.streams.ExampleStream;
-import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
 /**
@@ -33,8 +33,7 @@ import moa.tasks.TaskMonitor;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public abstract class AbstractStreamFilter extends AbstractOptionHandler
-        implements StreamFilter {
+public abstract class AbstractStreamFilter extends AbstractOptionHandler implements StreamFilter {
 
     /** The input stream to this filter. */
     protected ExampleStream inputStream;
@@ -46,8 +45,7 @@ public abstract class AbstractStreamFilter extends AbstractOptionHandler
     }
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         restartImpl();
     }
 
@@ -73,18 +71,18 @@ public abstract class AbstractStreamFilter extends AbstractOptionHandler
     }
 
     /**
-     * Restarts this filter. All instances that extends from
-     * <code>AbstractStreamFilter</code> must implement <code>restartImpl</code>.
-     * <code>restart</code> uses <code>restartImpl</code> in <code>AbstractStreamFilter</code>.
+     * Restarts this filter. All instances that extends from <code>AbstractStreamFilter</code> must
+     * implement <code>restartImpl</code>. <code>restart</code> uses <code>restartImpl</code> in
+     * <code>AbstractStreamFilter</code>.
      */
     protected abstract void restartImpl();
-    
+
     @Override
     public InstanceExample nextInstance() {
-         Instance inst = (Instance) ((Instance) this.inputStream.nextInstance().getData()).copy();
-         return new InstanceExample(filterInstance(inst));
+        Instance inst = (Instance) ((Instance) this.inputStream.nextInstance().getData()).copy();
+        return new InstanceExample(filterInstance(inst));
     }
-    
+
     @Override
     public Instance filterInstance(Instance inst) {
         return inst;

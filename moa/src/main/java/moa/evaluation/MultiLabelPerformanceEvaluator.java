@@ -15,22 +15,20 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
-import moa.core.Example;
 import com.yahoo.labs.samoa.instances.Instance;
 
+import moa.core.Example;
 
 /**
- * Interface implemented by learner evaluators to monitor
- * the results of the regression learning process.
+ * Interface implemented by learner evaluators to monitor the results of the regression learning
+ * process.
  *
  * @author João Duarte (joaomaiaduarte@gmail.com)
  * @version $Revision: 7 $
  */
-public interface MultiLabelPerformanceEvaluator extends LearningPerformanceEvaluator<Example<Instance>> {
-
-    
-}
+public interface MultiLabelPerformanceEvaluator
+        extends LearningPerformanceEvaluator<Example<Instance>> {}

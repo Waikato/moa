@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
@@ -29,11 +29,10 @@ import weka.core.Version;
  */
 public class WekaUtils {
 
- /**
-     * Checks if the Weka version is recent enough to run MOA.
-     * For example, if the Weka version is not recent, there may be problems
-     * due to the fact that <code>Instance</code> was a class before 3.7.1 and
-     * now is an interface.
+    /**
+     * Checks if the Weka version is recent enough to run MOA. For example, if the Weka version is
+     * not recent, there may be problems due to the fact that <code>Instance</code> was a class
+     * before 3.7.1 and now is an interface.
      *
      * @return true if the Weka version is recent.
      */
@@ -57,4 +56,3 @@ public class WekaUtils {
         }
     }
 }
-

@@ -15,12 +15,11 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
- *    
+ *
+ *
  */
 package moa.classifiers.core.attributeclassobservers;
 
-import java.io.Serializable;
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
@@ -29,10 +28,12 @@ import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
+import java.io.Serializable;
+
 /**
- * Class for observing the class data distribution for a numeric attribute using a binary tree.
- * This observer monitors the class distribution of a given attribute.
- * Used in naive Bayes and decision trees to monitor data statistics on leaves.
+ * Class for observing the class data distribution for a numeric attribute using a binary tree. This
+ * observer monitors the class distribution of a given attribute. Used in naive Bayes and decision
+ * trees to monitor data statistics on leaves.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
@@ -86,7 +87,7 @@ public class BinaryTreeNumericAttributeClassObserver extends AbstractOptionHandl
 
     @Override
     public void observeAttributeClass(double attVal, int classVal, double weight) {
-        if (Double.isNaN(attVal)) { //Instance.isMissingValue(attVal)
+        if (Double.isNaN(attVal)) { // Instance.isMissingValue(attVal)
         } else {
             if (this.root == null) {
                 this.root = new Node(attVal, classVal, weight);
@@ -97,25 +98,28 @@ public class BinaryTreeNumericAttributeClassObserver extends AbstractOptionHandl
     }
 
     @Override
-    public double probabilityOfAttributeValueGivenClass(double attVal,
-            int classVal) {
+    public double probabilityOfAttributeValueGivenClass(double attVal, int classVal) {
         // TODO: NaiveBayes broken until implemented
         return 0.0;
     }
 
     @Override
     public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(
-            SplitCriterion criterion, double[] preSplitDist, int attIndex,
-            boolean binaryOnly) {
-        return searchForBestSplitOption(this.root, null, null, null, null, false,
-                criterion, preSplitDist, attIndex);
+            SplitCriterion criterion, double[] preSplitDist, int attIndex, boolean binaryOnly) {
+        return searchForBestSplitOption(
+                this.root, null, null, null, null, false, criterion, preSplitDist, attIndex);
     }
 
     protected AttributeSplitSuggestion searchForBestSplitOption(
-            Node currentNode, AttributeSplitSuggestion currentBestOption,
+            Node currentNode,
+            AttributeSplitSuggestion currentBestOption,
             double[] actualParentLeft,
-            double[] parentLeft, double[] parentRight, boolean leftChild,
-            SplitCriterion criterion, double[] preSplitDist, int attIndex) {
+            double[] parentLeft,
+            double[] parentRight,
+            boolean leftChild,
+            SplitCriterion criterion,
+            double[] preSplitDist,
+            int attIndex) {
         if (currentNode == null) {
             return currentBestOption;
         }
@@ -128,7 +132,7 @@ public class BinaryTreeNumericAttributeClassObserver extends AbstractOptionHandl
             leftDist.addValues(parentLeft);
             rightDist.addValues(parentRight);
             if (leftChild) {
-                //get the exact statistics of the parent value
+                // get the exact statistics of the parent value
                 DoubleVector exactParentDist = new DoubleVector();
                 exactParentDist.addValues(actualParentLeft);
                 exactParentDist.subtractValues(currentNode.classCountsLeft);
@@ -147,21 +151,38 @@ public class BinaryTreeNumericAttributeClassObserver extends AbstractOptionHandl
                 rightDist.subtractValues(currentNode.classCountsLeft);
             }
         }
-        double[][] postSplitDists = new double[][]{leftDist.getArrayRef(),
-            rightDist.getArrayRef()};
+        double[][] postSplitDists =
+                new double[][] {leftDist.getArrayRef(), rightDist.getArrayRef()};
         double merit = criterion.getMeritOfSplit(preSplitDist, postSplitDists);
         if ((currentBestOption == null) || (merit > currentBestOption.merit)) {
-            currentBestOption = new AttributeSplitSuggestion(
-                    new NumericAttributeBinaryTest(attIndex,
-                    currentNode.cut_point, true), postSplitDists, merit);
-
+            currentBestOption =
+                    new AttributeSplitSuggestion(
+                            new NumericAttributeBinaryTest(attIndex, currentNode.cut_point, true),
+                            postSplitDists,
+                            merit);
         }
-        currentBestOption = searchForBestSplitOption(currentNode.left,
-                currentBestOption, currentNode.classCountsLeft.getArrayRef(), postSplitDists[0], postSplitDists[1], true,
-                criterion, preSplitDist, attIndex);
-        currentBestOption = searchForBestSplitOption(currentNode.right,
-                currentBestOption, currentNode.classCountsLeft.getArrayRef(), postSplitDists[0], postSplitDists[1], false,
-                criterion, preSplitDist, attIndex);
+        currentBestOption =
+                searchForBestSplitOption(
+                        currentNode.left,
+                        currentBestOption,
+                        currentNode.classCountsLeft.getArrayRef(),
+                        postSplitDists[0],
+                        postSplitDists[1],
+                        true,
+                        criterion,
+                        preSplitDist,
+                        attIndex);
+        currentBestOption =
+                searchForBestSplitOption(
+                        currentNode.right,
+                        currentBestOption,
+                        currentNode.classCountsLeft.getArrayRef(),
+                        postSplitDists[0],
+                        postSplitDists[1],
+                        false,
+                        criterion,
+                        preSplitDist,
+                        attIndex);
         return currentBestOption;
     }
 
@@ -174,10 +195,9 @@ public class BinaryTreeNumericAttributeClassObserver extends AbstractOptionHandl
     protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
     }
-    
+
     @Override
     public void observeAttributeTarget(double attVal, double target) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-   
 }

@@ -15,12 +15,12 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core.conditionaltests;
 
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Nominal multi way conditional test for instances to use to split nodes in Hoeffding trees.
@@ -40,8 +40,8 @@ public class NominalAttributeMultiwayTest extends InstanceConditionalTest {
 
     @Override
     public int branchForInstance(Instance inst) {
-        int instAttIndex = this.attIndex  ; //< inst.classIndex() ? this.attIndex
-                //: this.attIndex + 1;
+        int instAttIndex = this.attIndex; // < inst.classIndex() ? this.attIndex
+        // : this.attIndex + 1;
         return inst.isMissing(instAttIndex) ? -1 : (int) inst.value(instAttIndex);
     }
 
@@ -49,8 +49,7 @@ public class NominalAttributeMultiwayTest extends InstanceConditionalTest {
     public String describeConditionForBranch(int branch, InstancesHeader context) {
         return InstancesHeader.getAttributeNameString(context, this.attIndex)
                 + " = "
-                + InstancesHeader.getNominalValueString(context, this.attIndex,
-                branch);
+                + InstancesHeader.getNominalValueString(context, this.attIndex, branch);
     }
 
     @Override
@@ -65,6 +64,6 @@ public class NominalAttributeMultiwayTest extends InstanceConditionalTest {
 
     @Override
     public int[] getAttsTestDependsOn() {
-        return new int[]{this.attIndex};
+        return new int[] {this.attIndex};
     }
 }

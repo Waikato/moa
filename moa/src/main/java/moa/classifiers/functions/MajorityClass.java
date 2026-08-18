@@ -15,9 +15,11 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.functions;
+
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
@@ -26,7 +28,6 @@ import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Majority class learner. This is the simplest classifier.
@@ -40,7 +41,8 @@ public class MajorityClass extends AbstractClassifier implements MultiClassClass
 
     @Override
     public String getPurposeString() {
-        return "Majority class classifier: always predicts the class that has been observed most frequently the in the training data.";
+        return "Majority class classifier: always predicts the class that has been observed most"
+                + " frequently the in the training data.";
     }
 
     protected DoubleVector observedClassDistribution;
@@ -88,7 +90,6 @@ public class MajorityClass extends AbstractClassifier implements MultiClassClass
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == MajorityClass.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

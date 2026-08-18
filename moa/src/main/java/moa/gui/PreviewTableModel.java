@@ -15,16 +15,16 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
+
+import moa.evaluation.preview.Preview;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
-
-import moa.evaluation.preview.Preview;
 
 /**
  * Class to display the latest preview in a table
@@ -33,94 +33,88 @@ import moa.evaluation.preview.Preview;
  * @version $Revision: 1 $
  */
 public class PreviewTableModel extends AbstractTableModel {
-	// TODO add implementation
-	private static final long serialVersionUID = 1L;
-	
-	List<String> names;
-	List<double[]> data;
-	Preview latestPreview;
-	boolean structureChangeFlag;
-	
-	public PreviewTableModel()
-	{
-		names = new ArrayList<>();
-		data = new ArrayList<>();
-		latestPreview = null;
-		structureChangeFlag = false;
-	}
-	
-	@Override
-	public String getColumnName(int column) {
-		return names.get(column);
-	}
-	
-	@Override
-	public int getColumnCount() {
-		return names.size();
-	}
+    // TODO add implementation
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public int getRowCount() {
-		return data.size();
-	}
+    List<String> names;
+    List<double[]> data;
+    Preview latestPreview;
+    boolean structureChangeFlag;
 
-	@Override
-	public Object getValueAt(int row, int column) {
-		if(row >= data.size() || column >= data.get(row).length)
-		{
-			return 0.0;
-		}
-		return data.get(row)[column];
-	}
-	
-	public void setPreview(Preview preview)
-	{
-		structureChangeFlag = false;
-		
-		if(preview == null)
-		{
-			if(latestPreview != null)
-			{
-				names = new ArrayList<>();
-				data = new ArrayList<>();
-				structureChangeFlag = true;
-			}
-		}
-		else
-		{
-			structureChangeFlag |= latestPreview == null;
-			structureChangeFlag |= latestPreview != null && latestPreview.numEntries() == 0 && preview.numEntries() > 0;
-			structureChangeFlag |= latestPreview != null && latestPreview.getTaskClass() != preview.getTaskClass();
-		}
-		latestPreview = preview;
-		if(preview != null)
-		{
-			data = preview.getData();
-			
-			if(structureChangeFlag)
-			{
-				copyMeasurementNames(preview);
-			}
-		}
-	}
-	
-	@Override
-	public String toString() {
-		return latestPreview == null? "" : latestPreview.toString();
-	}
-	
-	public boolean structureChanged()
-	{
-		return structureChangeFlag;
-	}
-	
-	private void copyMeasurementNames(Preview preview)
-	{
-		names = new ArrayList<>();
-		int newMeasurementNameCount = preview.getMeasurementNameCount();
-		for(int measurementNameIdx = 0; measurementNameIdx < newMeasurementNameCount; ++measurementNameIdx)
-		{
-			names.add(preview.getMeasurementName(measurementNameIdx));
-		}
-	}
+    public PreviewTableModel() {
+        names = new ArrayList<>();
+        data = new ArrayList<>();
+        latestPreview = null;
+        structureChangeFlag = false;
+    }
+
+    @Override
+    public String getColumnName(int column) {
+        return names.get(column);
+    }
+
+    @Override
+    public int getColumnCount() {
+        return names.size();
+    }
+
+    @Override
+    public int getRowCount() {
+        return data.size();
+    }
+
+    @Override
+    public Object getValueAt(int row, int column) {
+        if (row >= data.size() || column >= data.get(row).length) {
+            return 0.0;
+        }
+        return data.get(row)[column];
+    }
+
+    public void setPreview(Preview preview) {
+        structureChangeFlag = false;
+
+        if (preview == null) {
+            if (latestPreview != null) {
+                names = new ArrayList<>();
+                data = new ArrayList<>();
+                structureChangeFlag = true;
+            }
+        } else {
+            structureChangeFlag |= latestPreview == null;
+            structureChangeFlag |=
+                    latestPreview != null
+                            && latestPreview.numEntries() == 0
+                            && preview.numEntries() > 0;
+            structureChangeFlag |=
+                    latestPreview != null && latestPreview.getTaskClass() != preview.getTaskClass();
+        }
+        latestPreview = preview;
+        if (preview != null) {
+            data = preview.getData();
+
+            if (structureChangeFlag) {
+                copyMeasurementNames(preview);
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return latestPreview == null ? "" : latestPreview.toString();
+    }
+
+    public boolean structureChanged() {
+        return structureChangeFlag;
+    }
+
+    private void copyMeasurementNames(Preview preview) {
+        names = new ArrayList<>();
+        int newMeasurementNameCount = preview.getMeasurementNameCount();
+        for (int measurementNameIdx = 0;
+                measurementNameIdx < newMeasurementNameCount;
+                ++measurementNameIdx) {
+            names.add(preview.getMeasurementName(measurementNameIdx));
+        }
+    }
 }

@@ -2,7 +2,7 @@
  *    IADEM2cTree.java
  *
  *    @author José del Campo-Ávila
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
@@ -14,72 +14,125 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.classifiers.trees.iadem;
 
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
-import java.util.Arrays;
-
-import moa.classifiers.MultiClassClassifier;
-import moa.classifiers.core.driftdetection.AbstractChangeDetector;
-
 import com.yahoo.labs.samoa.instances.Instance;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.classifiers.core.conditionaltests.NominalAttributeBinaryTest;
+import moa.classifiers.core.driftdetection.AbstractChangeDetector;
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.Utils;
 import moa.options.ClassOption;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
-    public ClassOption numericEstimatorOption = new ClassOption("numericEstimator",
-            'z', "Numeric estimator to use.", IademNumericAttributeObserver.class,
-            "IademGaussianNumericAttributeClassObserver");
-    public IntOption gracePeriodOption = new IntOption("gracePeriod", 'n',
-            "The number of instances the tree should observe between splitting attempts.",
-            100, 1, Integer.MAX_VALUE);
-    public MultiChoiceOption splitCriterionOption = new MultiChoiceOption("splitCriterion", 's',
-            "Split criterion to use.", new String[]{
-                "entropy", "entropy_logVar", "entropy_logVar+Peso", "entropy_Peso", "beta1", "gamma1", "beta2", "gamma2", "beta4", "gamma4"}, new String[]{
-                "entropy", "entropy_logVar", "entropy_logVar+Peso", "entropy_Peso", "beta1", "gamma1", "beta2", "gamma2", "beta4", "gamma4"}, 0);
-    public FloatOption splitConfidenceOption = new FloatOption("splitConfidence", 'c',
-            "The allowable error in split decision, values closer to 0 will take longer to decide.",
-            0.01, 0.0, 1.0);
-    public MultiChoiceOption splitTestsOption = new MultiChoiceOption("splitChoice", 'i',
-            "Methods for splitting leaf nodes.",
-            new String[]{
-                "onlyBinarySplit", "onlyMultiwaySplit", "bestSplit"}, new String[]{
-                "onlyBinary", "onlyMultiway", "bestSplit"},
-            2);
+    public ClassOption numericEstimatorOption =
+            new ClassOption(
+                    "numericEstimator",
+                    'z',
+                    "Numeric estimator to use.",
+                    IademNumericAttributeObserver.class,
+                    "IademGaussianNumericAttributeClassObserver");
+    public IntOption gracePeriodOption =
+            new IntOption(
+                    "gracePeriod",
+                    'n',
+                    "The number of instances the tree should observe between splitting attempts.",
+                    100,
+                    1,
+                    Integer.MAX_VALUE);
+    public MultiChoiceOption splitCriterionOption =
+            new MultiChoiceOption(
+                    "splitCriterion",
+                    's',
+                    "Split criterion to use.",
+                    new String[] {
+                        "entropy",
+                        "entropy_logVar",
+                        "entropy_logVar+Peso",
+                        "entropy_Peso",
+                        "beta1",
+                        "gamma1",
+                        "beta2",
+                        "gamma2",
+                        "beta4",
+                        "gamma4"
+                    },
+                    new String[] {
+                        "entropy",
+                        "entropy_logVar",
+                        "entropy_logVar+Peso",
+                        "entropy_Peso",
+                        "beta1",
+                        "gamma1",
+                        "beta2",
+                        "gamma2",
+                        "beta4",
+                        "gamma4"
+                    },
+                    0);
+    public FloatOption splitConfidenceOption =
+            new FloatOption(
+                    "splitConfidence",
+                    'c',
+                    "The allowable error in split decision, values closer to 0 will take longer to"
+                            + " decide.",
+                    0.01,
+                    0.0,
+                    1.0);
+    public MultiChoiceOption splitTestsOption =
+            new MultiChoiceOption(
+                    "splitChoice",
+                    'i',
+                    "Methods for splitting leaf nodes.",
+                    new String[] {"onlyBinarySplit", "onlyMultiwaySplit", "bestSplit"},
+                    new String[] {"onlyBinary", "onlyMultiway", "bestSplit"},
+                    2);
 
-    public MultiChoiceOption leafPredictionOption = new MultiChoiceOption("leafPrediction", 'b',
-            "Leaf prediction to use.", new String[]{
-                "MC", "NB", "NBKirkby", "WeightedVote"},
-            new String[]{"MC: Majority class.",
-                "NB: Naïve Bayes.",
-                "NBKirkby.",
-                "WeightedVote: Weighted vote between NB and MC."},
-            1);
-    public ClassOption driftDetectionMethodOption = new ClassOption("driftDetectionMethod", 'd',
-            "Drift detection method to use.", AbstractChangeDetector.class, "HDDM_A_Test");
+    public MultiChoiceOption leafPredictionOption =
+            new MultiChoiceOption(
+                    "leafPrediction",
+                    'b',
+                    "Leaf prediction to use.",
+                    new String[] {"MC", "NB", "NBKirkby", "WeightedVote"},
+                    new String[] {
+                        "MC: Majority class.",
+                        "NB: Naïve Bayes.",
+                        "NBKirkby.",
+                        "WeightedVote: Weighted vote between NB and MC."
+                    },
+                    1);
+    public ClassOption driftDetectionMethodOption =
+            new ClassOption(
+                    "driftDetectionMethod",
+                    'd',
+                    "Drift detection method to use.",
+                    AbstractChangeDetector.class,
+                    "HDDM_A_Test");
 
     // fixed option...
-    public FloatOption attributeDiferentiation = new FloatOption("attritubeDiferentiation", 'a',
-            "Attribute differenciation",
-            0.1, 0.0, 1.0);
+    public FloatOption attributeDiferentiation =
+            new FloatOption(
+                    "attritubeDiferentiation", 'a', "Attribute differenciation", 0.1, 0.0, 1.0);
 
     public final int naiveBayesLimit = 0;
     public final double percentInCommon = 0.75;
@@ -100,7 +153,11 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
     public void trainOnInstanceImpl(Instance inst) {
         if (this.treeRoot == null) {
             IademCommonProcedures.setConfidence(this.splitConfidenceOption.getValue());
-            this.estimator = (AbstractChangeDetector) ((AbstractChangeDetector) getPreparedClassOption(this.driftDetectionMethodOption)).copy();
+            this.estimator =
+                    (AbstractChangeDetector)
+                            ((AbstractChangeDetector)
+                                            getPreparedClassOption(this.driftDetectionMethodOption))
+                                    .copy();
             createRoot(inst);
         }
         try {
@@ -111,21 +168,21 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
     }
 
     protected IademNumericAttributeObserver newNumericClassObserver() {
-        IademNumericAttributeObserver numericClassObserver = (IademNumericAttributeObserver) getPreparedClassOption(this.numericEstimatorOption);
+        IademNumericAttributeObserver numericClassObserver =
+                (IademNumericAttributeObserver) getPreparedClassOption(this.numericEstimatorOption);
         return (IademNumericAttributeObserver) numericClassObserver.copy();
     }
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        return new Measurement[]{
+        return new Measurement[] {
             new Measurement("tree size (nodes)", this.getNumberOfNodes()),
             new Measurement("tree size (leaves)", this.getNumberOfLeaves())
         };
     }
 
     @Override
-    public void getModelDescription(StringBuilder out, int indent) {
-    }
+    public void getModelDescription(StringBuilder out, int indent) {}
 
     @Override
     public double[] getVotesForInstance(Instance inst) {
@@ -136,20 +193,17 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                 classVotes.addToValue(i, estimation);
             }
             return classVotes.getArrayCopy();
-
         }
         DoubleVector predicciones = new DoubleVector(this.treeRoot.getClassVotes(inst));
         return predicciones.getArrayCopy();
-
     }
 
-    final public static double ERROR_MARGIN = 1.0e-9;
+    public static final double ERROR_MARGIN = 1.0e-9;
     protected Node treeRoot;
-    
+
     protected AbstractChangeDetector estimator;
 
-    public int numberOfNodes = 1,
-            numberOfLeaves = 1;
+    public int numberOfNodes = 1, numberOfLeaves = 1;
 
     public AbstractChangeDetector newEstimator() {
         return (AbstractChangeDetector) this.estimator.copy();
@@ -174,61 +228,78 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
         return numberOfInstancesProcessed;
     }
 
-    public LeafNode newLeafNode(Node parent,
+    public LeafNode newLeafNode(
+            Node parent,
             long instTreeCountSinceVirtual,
             long instNodeCountSinceVirtual,
             double[] classDist,
             Instance instance) {
         switch (this.leafPredictionOption.getChosenIndex()) {
-            case 0: {
-                return new LeafNode(this,
-                        parent,
-                        instTreeCountSinceVirtual,
-                        instNodeCountSinceVirtual,
-                        classDist,
-                        newNumericClassObserver(),
-                        this.splitTestsOption.getChosenIndex() == 2,
-                        this.splitTestsOption.getChosenIndex() == 0,
-                        instance);
-            }
-            case 1: {
-                return new LeafNodeNB(this,
-                        parent,
-                        instTreeCountSinceVirtual,
-                        instNodeCountSinceVirtual,
-                        classDist,
-                        newNumericClassObserver(),
-                        this.naiveBayesLimit,
-                        this.splitTestsOption.getChosenIndex() == 2,
-                        this.splitTestsOption.getChosenIndex() == 0,
-                        instance);
-            }
-            case 2: {
-                return new LeafNodeNBKirkby(this,
-                        parent,
-                        instTreeCountSinceVirtual,
-                        instNodeCountSinceVirtual,
-                        classDist,
-                        newNumericClassObserver(),
-                        this.naiveBayesLimit,
-                        this.splitTestsOption.getChosenIndex() == 2,
-                        this.splitTestsOption.getChosenIndex() == 0,
-                        (AbstractChangeDetector) ((AbstractChangeDetector) getPreparedClassOption(this.driftDetectionMethodOption)).copy(),
-                        instance);
-            }
-            default: {
-                return new LeafNodeWeightedVote(this,
-                        parent,
-                        instTreeCountSinceVirtual,
-                        instNodeCountSinceVirtual,
-                        classDist,
-                        newNumericClassObserver(),
-                        this.naiveBayesLimit,
-                        this.splitTestsOption.getChosenIndex() == 2,
-                        this.splitTestsOption.getChosenIndex() == 0,
-                        (AbstractChangeDetector) ((AbstractChangeDetector) getPreparedClassOption(this.driftDetectionMethodOption)).copy(),
-                        instance);
-            }
+            case 0:
+                {
+                    return new LeafNode(
+                            this,
+                            parent,
+                            instTreeCountSinceVirtual,
+                            instNodeCountSinceVirtual,
+                            classDist,
+                            newNumericClassObserver(),
+                            this.splitTestsOption.getChosenIndex() == 2,
+                            this.splitTestsOption.getChosenIndex() == 0,
+                            instance);
+                }
+            case 1:
+                {
+                    return new LeafNodeNB(
+                            this,
+                            parent,
+                            instTreeCountSinceVirtual,
+                            instNodeCountSinceVirtual,
+                            classDist,
+                            newNumericClassObserver(),
+                            this.naiveBayesLimit,
+                            this.splitTestsOption.getChosenIndex() == 2,
+                            this.splitTestsOption.getChosenIndex() == 0,
+                            instance);
+                }
+            case 2:
+                {
+                    return new LeafNodeNBKirkby(
+                            this,
+                            parent,
+                            instTreeCountSinceVirtual,
+                            instNodeCountSinceVirtual,
+                            classDist,
+                            newNumericClassObserver(),
+                            this.naiveBayesLimit,
+                            this.splitTestsOption.getChosenIndex() == 2,
+                            this.splitTestsOption.getChosenIndex() == 0,
+                            (AbstractChangeDetector)
+                                    ((AbstractChangeDetector)
+                                                    getPreparedClassOption(
+                                                            this.driftDetectionMethodOption))
+                                            .copy(),
+                            instance);
+                }
+            default:
+                {
+                    return new LeafNodeWeightedVote(
+                            this,
+                            parent,
+                            instTreeCountSinceVirtual,
+                            instNodeCountSinceVirtual,
+                            classDist,
+                            newNumericClassObserver(),
+                            this.naiveBayesLimit,
+                            this.splitTestsOption.getChosenIndex() == 2,
+                            this.splitTestsOption.getChosenIndex() == 0,
+                            (AbstractChangeDetector)
+                                    ((AbstractChangeDetector)
+                                                    getPreparedClassOption(
+                                                            this.driftDetectionMethodOption))
+                                            .copy(),
+                            instance);
+                }
         }
     }
 
@@ -244,8 +315,7 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
         this.treeRoot = newRoot;
     }
 
-    public void learnFromInstance(Instance instance)
-            throws IademException {
+    public void learnFromInstance(Instance instance) throws IademException {
         this.numberOfInstancesProcessed++;
         this.treeRoot.learnFromInstance(instance);
     }
@@ -333,9 +403,7 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
             this.tree = tree;
         }
 
-        public Node(Iadem2 tree,
-                Node parent,
-                double[] initialClassCount) {
+        public Node(Iadem2 tree, Node parent, double[] initialClassCount) {
             this.tree = tree;
             this.parent = parent;
             this.classValueDist = new DoubleVector(initialClassCount);
@@ -377,7 +445,8 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
 
         protected boolean split;
 
-        public LeafNode(Iadem2 tree,
+        public LeafNode(
+                Iadem2 tree,
                 Node parent,
                 long instTreeCountSinceVirtual,
                 long instNodeCountSinceVirtual,
@@ -391,10 +460,7 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
             this.instTreeCountSinceReal = 0;
             this.instNodeCountSinceReal = 0;
             this.split = true;
-            createVirtualNodes(numericAttClassObserver,
-                    onlyMultiwayTest,
-                    onlyBinaryTest,
-                    instance);
+            createVirtualNodes(numericAttClassObserver, onlyMultiwayTest, onlyBinaryTest, instance);
         }
 
         public double getInstSeenSinceLastSplitAttempt() {
@@ -413,37 +479,33 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
             this.virtualChildren = virtualChildren;
         }
 
-        protected void createVirtualNodes(IademNumericAttributeObserver numericObserver,
+        protected void createVirtualNodes(
+                IademNumericAttributeObserver numericObserver,
                 boolean onlyMultiwayTest,
                 boolean onlyBinaryTest,
                 Instance instance) {
             for (int i = 0; i < instance.numAttributes(); i++) {
-                if (instance.classIndex() != i
-                        && instance.attribute(i).isNominal()) {
-                    this.virtualChildren.set(i, new NominalVirtualNode(this.tree,
-                            this,
+                if (instance.classIndex() != i && instance.attribute(i).isNominal()) {
+                    this.virtualChildren.set(
                             i,
-                            onlyMultiwayTest,
-                            onlyBinaryTest));
-                } else if (instance.classIndex() != i
-                        && instance.attribute(i).isNumeric()) {
-                    this.virtualChildren.set(i, new NumericVirtualNode(this.tree,
-                            this,
-                            i,
-                            numericObserver));
+                            new NominalVirtualNode(
+                                    this.tree, this, i, onlyMultiwayTest, onlyBinaryTest));
+                } else if (instance.classIndex() != i && instance.attribute(i).isNumeric()) {
+                    this.virtualChildren.set(
+                            i, new NumericVirtualNode(this.tree, this, i, numericObserver));
 
                 } else { // class attribute
                     this.virtualChildren.set(i, null);
                 }
             }
-
         }
 
         protected ArrayList<Integer> nominalAttUsed(Instance instance) {
             SplitNode currentNode = (SplitNode) this.parent;
             ArrayList<Integer> nomAttUsed = new ArrayList<Integer>();
             while (currentNode != null) {
-                if (instance.attribute(currentNode.splitTest.getAttsTestDependsOn()[0]).isNominal()) {
+                if (instance.attribute(currentNode.splitTest.getAttsTestDependsOn()[0])
+                        .isNominal()) {
                     nomAttUsed.add(currentNode.splitTest.getAttsTestDependsOn()[0]);
                 }
                 currentNode = (SplitNode) currentNode.parent;
@@ -508,7 +570,8 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
             return this;
         }
 
-        protected IademAttributeSplitSuggestion getFastSplitSuggestion(Instance instance) throws IademException {
+        protected IademAttributeSplitSuggestion getFastSplitSuggestion(Instance instance)
+                throws IademException {
             int bestAttIndex = -1;
             double bestAttValue = Double.MAX_VALUE;
             for (int i = 0; i < virtualChildren.size(); i++) {
@@ -517,9 +580,10 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                     try {
                         currentVirtualChild.updateHeuristicMeasure(instance);
                     } catch (IademException e) {
-                        throw new IademException("LeafNode", "getFastSplitSuggestion",
-                                "Problems when updating measures: \n"
-                                + e.getMessage());
+                        throw new IademException(
+                                "LeafNode",
+                                "getFastSplitSuggestion",
+                                "Problems when updating measures: \n" + e.getMessage());
                     }
                     if (currentVirtualChild.getHeuristicMeasureUpper(instance) >= 0) {
                         if (currentVirtualChild.getHeuristicMeasureUpper(instance) < bestAttValue) {
@@ -536,16 +600,20 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
             }
         }
 
-        public IademAttributeSplitSuggestion getBestSplitSuggestion(Instance instance) throws IademException {
+        public IademAttributeSplitSuggestion getBestSplitSuggestion(Instance instance)
+                throws IademException {
             return getBestSplitSuggestionIADEM(instance);
         }
 
         public LeafNode[] doSplit(IademAttributeSplitSuggestion bestSuggestion, Instance instance) {
-            SplitNode splitNode = virtualChildren.get(bestSuggestion.splitTest.getAttsTestDependsOn()[0]).getNewSplitNode(
-                    this.instTreeCountSinceReal,
-                    this.parent,
-                    bestSuggestion,
-                    instance);
+            SplitNode splitNode =
+                    virtualChildren
+                            .get(bestSuggestion.splitTest.getAttsTestDependsOn()[0])
+                            .getNewSplitNode(
+                                    this.instTreeCountSinceReal,
+                                    this.parent,
+                                    bestSuggestion,
+                                    instance);
             splitNode.setParent(this.parent);
 
             if (this.parent == null) {
@@ -581,7 +649,9 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                     if (count > 0) {
                         for (LeafNode currentSibling : siblingWithInfo) {
                             double[] sibVotes = currentSibling.getMajorityClassVotes(instance);
-                            double weight = (double) currentSibling.getInstNodeCountSinceVirtual() / (double) count;
+                            double weight =
+                                    (double) currentSibling.getInstNodeCountSinceVirtual()
+                                            / (double) count;
                             for (int i = 0; i < votes.length; i++) {
                                 votes[i] += weight * sibVotes[i];
                             }
@@ -614,8 +684,8 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
             return instNodeCountSinceVirtual;
         }
 
-        private double percentInCommon(double A_upper, double A_lower, double B_upper,
-                double B_lower) {
+        private double percentInCommon(
+                double A_upper, double A_lower, double B_upper, double B_lower) {
             double percent;
 
             // nothing in common
@@ -647,7 +717,8 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
             return this.instSeenSinceLastSplitAttempt >= this.tree.gracePeriodOption.getValue();
         }
 
-        public IademAttributeSplitSuggestion getBestSplitSuggestionIADEM(Instance instance) throws IademException {
+        public IademAttributeSplitSuggestion getBestSplitSuggestionIADEM(Instance instance)
+                throws IademException {
             int bestAtt;
 
             int bestAttIndex = -1;
@@ -665,15 +736,18 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                     try {
                         currentVirtualChild.updateHeuristicMeasure(instance);
                     } catch (IademException e) {
-                        throw new IademException("LeafNode", "getBestSplitSuggestion7",
-                                "Problems when updating measures: \n"
-                                + e.getMessage());
+                        throw new IademException(
+                                "LeafNode",
+                                "getBestSplitSuggestion7",
+                                "Problems when updating measures: \n" + e.getMessage());
                     }
                     // find the best and second-best attributes
                     if (currentVirtualChild.getHeuristicMeasureUpper(instance) >= 0) {
                         if ((currentVirtualChild.getHeuristicMeasureUpper(instance) < bestAtt_upper)
-                                || ((currentVirtualChild.getHeuristicMeasureUpper(instance) == bestAtt_upper)
-                                && (currentVirtualChild.getHeuristicMeasureLower(instance) < bestAtt_lower))) {
+                                || ((currentVirtualChild.getHeuristicMeasureUpper(instance)
+                                                == bestAtt_upper)
+                                        && (currentVirtualChild.getHeuristicMeasureLower(instance)
+                                                < bestAtt_lower))) {
 
                             secondBestAttIndex = bestAttIndex;
                             secondBestAtt_upper = bestAtt_upper;
@@ -682,17 +756,25 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                             bestAttIndex = i;
                             bestAtt_upper = currentVirtualChild.getHeuristicMeasureUpper(instance);
                             bestAtt_lower = currentVirtualChild.getHeuristicMeasureLower(instance);
-                        } else if ((currentVirtualChild.getHeuristicMeasureUpper(instance) < secondBestAtt_upper)
-                                || ((currentVirtualChild.getHeuristicMeasureUpper(instance) == secondBestAtt_upper)
-                                && (currentVirtualChild.getHeuristicMeasureLower(instance) < secondBestAtt_lower))) {
+                        } else if ((currentVirtualChild.getHeuristicMeasureUpper(instance)
+                                        < secondBestAtt_upper)
+                                || ((currentVirtualChild.getHeuristicMeasureUpper(instance)
+                                                == secondBestAtt_upper)
+                                        && (currentVirtualChild.getHeuristicMeasureLower(instance)
+                                                < secondBestAtt_lower))) {
                             secondBestAttIndex = i;
-                            secondBestAtt_upper = currentVirtualChild.getHeuristicMeasureUpper(instance);
-                            secondBestAtt_lower = currentVirtualChild.getHeuristicMeasureLower(instance);
+                            secondBestAtt_upper =
+                                    currentVirtualChild.getHeuristicMeasureUpper(instance);
+                            secondBestAtt_lower =
+                                    currentVirtualChild.getHeuristicMeasureLower(instance);
                         }
                         // find the worst attribute
-                        if ((currentVirtualChild.getHeuristicMeasureUpper(instance) > worstAtt_upper)
-                                || ((currentVirtualChild.getHeuristicMeasureUpper(instance) == worstAtt_upper)
-                                && (currentVirtualChild.getHeuristicMeasureLower(instance) > worstAtt_lower))) {
+                        if ((currentVirtualChild.getHeuristicMeasureUpper(instance)
+                                        > worstAtt_upper)
+                                || ((currentVirtualChild.getHeuristicMeasureUpper(instance)
+                                                == worstAtt_upper)
+                                        && (currentVirtualChild.getHeuristicMeasureLower(instance)
+                                                > worstAtt_lower))) {
                             worstAtt_upper = currentVirtualChild.getHeuristicMeasureUpper(instance);
                             worstAtt_lower = currentVirtualChild.getHeuristicMeasureLower(instance);
                         }
@@ -703,24 +785,22 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
             if (secondBestAttIndex != -1) {
                 // percents in common
                 // best and worst
-                double best_worst = percentInCommon(bestAtt_upper,
-                        bestAtt_lower,
-                        worstAtt_upper,
-                        worstAtt_lower);
-                double worst_best = percentInCommon(worstAtt_upper, worstAtt_lower,
-                        bestAtt_upper,
-                        bestAtt_lower);
+                double best_worst =
+                        percentInCommon(
+                                bestAtt_upper, bestAtt_lower, worstAtt_upper, worstAtt_lower);
+                double worst_best =
+                        percentInCommon(
+                                worstAtt_upper, worstAtt_lower, bestAtt_upper, bestAtt_lower);
 
                 double d = tree.getAttributeDifferentiation();
 
-                boolean similarityBestWorst = (best_worst >= (1.0 - d))
-                        && (worst_best >= (1.0 - d));
+                boolean similarityBestWorst =
+                        (best_worst >= (1.0 - d)) && (worst_best >= (1.0 - d));
 
-                boolean similarityWithConfidenceBestWorst = similarityBestWorst
-                        && ((bestAtt_upper - bestAtt_lower) <= d);
+                boolean similarityWithConfidenceBestWorst =
+                        similarityBestWorst && ((bestAtt_upper - bestAtt_lower) <= d);
 
-                boolean differenceBestWorst = (best_worst <= d)
-                        || (worst_best <= d);
+                boolean differenceBestWorst = (best_worst <= d) || (worst_best <= d);
                 if (!similarityWithConfidenceBestWorst && !differenceBestWorst) {
                     bestAtt = -1;
                 }
@@ -759,7 +839,8 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
         private static final long serialVersionUID = 1L;
         protected int naiveBayesLimit;
 
-        public LeafNodeNB(Iadem2 tree,
+        public LeafNodeNB(
+                Iadem2 tree,
                 Node parent,
                 long instTreeCountSinceVirtual,
                 long instNodeCountSinceVirtual,
@@ -769,7 +850,8 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                 boolean onlyMultiwayTest,
                 boolean onlyBinaryTest,
                 Instance instance) {
-            super(tree,
+            super(
+                    tree,
                     parent,
                     instTreeCountSinceVirtual,
                     instNodeCountSinceVirtual,
@@ -828,10 +910,10 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
     public class LeafNodeNBKirkby extends LeafNodeNB {
 
         private static final long serialVersionUID = 1L;
-        protected int naiveBayesError,
-                majorityClassError;
+        protected int naiveBayesError, majorityClassError;
 
-        public LeafNodeNBKirkby(Iadem2 tree,
+        public LeafNodeNBKirkby(
+                Iadem2 tree,
                 Node parent,
                 long instancesProcessedByTheTree,
                 long instancesProcessedByThisLeaf,
@@ -842,7 +924,8 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                 boolean onlyBinaryTest,
                 AbstractChangeDetector estimator,
                 Instance instance) {
-            super(tree,
+            super(
+                    tree,
                     parent,
                     instancesProcessedByTheTree,
                     instancesProcessedByThisLeaf,
@@ -883,10 +966,10 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
     public class LeafNodeWeightedVote extends LeafNodeNB {
 
         private static final long serialVersionUID = 1L;
-        protected AbstractChangeDetector naiveBayesError,
-                majorityClassError;
+        protected AbstractChangeDetector naiveBayesError, majorityClassError;
 
-        public LeafNodeWeightedVote(Iadem2 tree,
+        public LeafNodeWeightedVote(
+                Iadem2 tree,
                 Node parent,
                 long instancesProcessedByTheTree,
                 long instancesProcessedByThisLeaf,
@@ -897,7 +980,8 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                 boolean onlyBinaryTest,
                 AbstractChangeDetector estimator,
                 Instance instance) {
-            super(tree,
+            super(
+                    tree,
                     parent,
                     instancesProcessedByTheTree,
                     instancesProcessedByThisLeaf,
@@ -971,7 +1055,8 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
             return new ArrayList<LeafNode>();
         }
 
-        public abstract SplitNode getNewSplitNode(long newInstancesSeen,
+        public abstract SplitNode getNewSplitNode(
+                long newInstancesSeen,
                 Node parent,
                 IademAttributeSplitSuggestion bestSuggestion,
                 Instance instance);
@@ -1014,13 +1099,15 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
 
         private static final long serialVersionUID = 1L;
 
-        protected AutoExpandVector<DoubleVector> nominalAttClassObserver = new AutoExpandVector<DoubleVector>();
+        protected AutoExpandVector<DoubleVector> nominalAttClassObserver =
+                new AutoExpandVector<DoubleVector>();
 
         protected DoubleVector attValueDist;
         protected boolean onlyMultiwayTest = false;
         protected boolean onlyBinaryTest = false;
 
-        public NominalVirtualNode(Iadem2 tree,
+        public NominalVirtualNode(
+                Iadem2 tree,
                 Node parent,
                 int attIndex,
                 boolean onlyMultiwayTest,
@@ -1060,41 +1147,45 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
         }
 
         @Override
-        public SplitNode getNewSplitNode(long newTotal,
+        public SplitNode getNewSplitNode(
+                long newTotal,
                 Node parent,
                 IademAttributeSplitSuggestion bestSuggestion,
                 Instance instance) {
-            SplitNode splitNode = new SplitNode(this.tree,
-                    parent,
-                    null,
-                    ((LeafNode) this.parent).getMajorityClassVotes(instance),
-                    bestSuggestion.splitTest);
+            SplitNode splitNode =
+                    new SplitNode(
+                            this.tree,
+                            parent,
+                            null,
+                            ((LeafNode) this.parent).getMajorityClassVotes(instance),
+                            bestSuggestion.splitTest);
 
             Node[] children;
             if (bestSuggestion.splitTest instanceof IademNominalAttributeMultiwayTest) {
                 children = new Node[instance.attribute(this.attIndex).numValues()];
                 for (int i = 0; i < children.length; i++) {
                     long count = 0;
-                    double[] tmpClassDist = new double[instance.attribute(instance.classIndex()).numValues()];
+                    double[] tmpClassDist =
+                            new double[instance.attribute(instance.classIndex()).numValues()];
                     Arrays.fill(tmpClassDist, 0);
                     for (int j = 0; j < tmpClassDist.length; j++) {
 
                         DoubleVector classCount = nominalAttClassObserver.get(i);
-                        double contadorAtributoClase = classCount != null ? classCount.getValue(j) : 0.0;
+                        double contadorAtributoClase =
+                                classCount != null ? classCount.getValue(j) : 0.0;
                         tmpClassDist[j] = contadorAtributoClase;
                         count += tmpClassDist[j];
                     }
-                    children[i] = tree.newLeafNode(splitNode,
-                            newTotal,
-                            count,
-                            tmpClassDist,
-                            instance);
+                    children[i] =
+                            tree.newLeafNode(splitNode, newTotal, count, tmpClassDist, instance);
                 }
             } else { // binary split
                 children = new Node[2];
-                IademNominalAttributeBinaryTest binarySplit = (IademNominalAttributeBinaryTest) bestSuggestion.splitTest;
+                IademNominalAttributeBinaryTest binarySplit =
+                        (IademNominalAttributeBinaryTest) bestSuggestion.splitTest;
                 // to the left
-                double[] tmpClassDist = new double[instance.attribute(instance.classIndex()).numValues()];
+                double[] tmpClassDist =
+                        new double[instance.attribute(instance.classIndex()).numValues()];
                 // total de valores
                 double tmpCount = 0;
                 Arrays.fill(tmpClassDist, 0);
@@ -1105,22 +1196,17 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                         tmpCount += classDist.getValue(i);
                     }
                 }
-                children[0] = tree.newLeafNode(splitNode,
-                        newTotal,
-                        (int) tmpCount,
-                        tmpClassDist,
-                        instance);
+                children[0] =
+                        tree.newLeafNode(
+                                splitNode, newTotal, (int) tmpCount, tmpClassDist, instance);
                 // to the right
                 tmpCount = this.classValueDist.sumOfValues() - tmpCount;
                 for (int i = 0; i < tmpClassDist.length; i++) {
                     tmpClassDist[i] = this.classValueDist.getValue(i) - tmpClassDist[i];
                 }
-                children[1] = tree.newLeafNode(splitNode,
-                        newTotal,
-                        (int) tmpCount,
-                        tmpClassDist,
-                        instance);
-
+                children[1] =
+                        tree.newLeafNode(
+                                splitNode, newTotal, (int) tmpCount, tmpClassDist, instance);
             }
             splitNode.setChildren(children);
             return splitNode;
@@ -1141,7 +1227,7 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
 
         @Override
         public void updateHeuristicMeasure(Instance instance) throws IademException {
-            if (moreThanOneAttValueObserved()/**/) {
+            if (moreThanOneAttValueObserved() /**/) {
                 if (!this.onlyBinaryTest) {
                     updateHeuristicMeasureMultiwayTest(instance);
                 }
@@ -1159,18 +1245,22 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                 double measureLower, measureUpper;
                 IademSplitCriterion measure = tree.getMeasure();
                 if (this.bestSplitSuggestion != null
-                        && this.bestSplitSuggestion.splitTest instanceof NominalAttributeBinaryTest) {
+                        && this.bestSplitSuggestion.splitTest
+                                instanceof NominalAttributeBinaryTest) {
                     this.bestSplitSuggestion = null;
                 }
 
                 int numberOfSplits = 2, // binary test
-                        numberOfTests = this.tree.getValuesOfNominalAttributes(this.attIndex, instance);
+                        numberOfTests =
+                                this.tree.getValuesOfNominalAttributes(this.attIndex, instance);
                 int numberOfClasses = instance.attribute(instance.classIndex()).numValues();
 
-                double[][][] classDistPerTestAndSplit_lower = new double[numberOfTests][numberOfSplits][numberOfClasses];
-                double[][][] classDistPerTestAndSplit_upper = new double[numberOfTests][numberOfSplits][numberOfClasses];
-                computeClassDistBinaryTest(classDistPerTestAndSplit_lower,
-                        classDistPerTestAndSplit_upper);
+                double[][][] classDistPerTestAndSplit_lower =
+                        new double[numberOfTests][numberOfSplits][numberOfClasses];
+                double[][][] classDistPerTestAndSplit_upper =
+                        new double[numberOfTests][numberOfSplits][numberOfClasses];
+                computeClassDistBinaryTest(
+                        classDistPerTestAndSplit_lower, classDistPerTestAndSplit_upper);
 
                 for (int k = 0; k < numberOfTests; k++) {
                     double[] sumPerSplit_lower = new double[numberOfSplits];
@@ -1186,7 +1276,9 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                             if (Math.abs(availableErrorPerSplit[i]) < Iadem2.ERROR_MARGIN) {
                                 availableErrorPerSplit[i] = 0.0;
                             } else {
-                                throw new IademException("NominalVirtualNode", "updateHeuristicMeasureBinaryTest",
+                                throw new IademException(
+                                        "NominalVirtualNode",
+                                        "updateHeuristicMeasureBinaryTest",
                                         "Problems when calculating measures");
                             }
                         }
@@ -1203,17 +1295,27 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                         ArrayList<Integer> hole = new ArrayList<Integer>();
                         hole.add(0);
                         for (int j = 0; j < numberOfClasses; j++) {
-                            IademCommonProcedures.insertLotsHoles(lot, hole, classDistPerTestAndSplit_lower[k][i][j],
+                            IademCommonProcedures.insertLotsHoles(
+                                    lot,
+                                    hole,
+                                    classDistPerTestAndSplit_lower[k][i][j],
                                     classDistPerTestAndSplit_upper[k][i][j]);
                         }
-                        valueLevels[i] = IademCommonProcedures.computeLevel(lot, hole,
-                                availableErrorPerSplit[i]);
+                        valueLevels[i] =
+                                IademCommonProcedures.computeLevel(
+                                        lot, hole, availableErrorPerSplit[i]);
                     }
                     for (int i = 0; i < numberOfSplits; i++) {
                         ArrayList<Double> vectorToMeasure = new ArrayList<Double>();
                         for (int j = 0; j < numberOfClasses; j++) {
-                            double measureProb_uppper = Math.max(valueLevels[i], classDistPerTestAndSplit_lower[k][i][j]);
-                            measureProb_uppper = Math.min(classDistPerTestAndSplit_upper[k][i][j], measureProb_uppper);
+                            double measureProb_uppper =
+                                    Math.max(
+                                            valueLevels[i],
+                                            classDistPerTestAndSplit_lower[k][i][j]);
+                            measureProb_uppper =
+                                    Math.min(
+                                            classDistPerTestAndSplit_upper[k][i][j],
+                                            measureProb_uppper);
                             vectorToMeasure.add(measureProb_uppper);
                         }
                         measurePerSplit_upper[i] = measure.doMeasure(vectorToMeasure);
@@ -1237,18 +1339,27 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                                 if (Math.abs(auxAvailable) < Iadem2.ERROR_MARGIN) {
                                     auxAvailable = 0.0;
                                 } else {
-                                    throw new IademException("NominalVirtualNode", "updateHeuristicMeasureBinaryTest",
+                                    throw new IademException(
+                                            "NominalVirtualNode",
+                                            "updateHeuristicMeasureBinaryTest",
                                             "Problems when calculating measures");
                                 }
                             }
-                            int classIndex = getClassProbabilities(i, unusedClasses,
-                                    classDistPerTestAndSplit_lower[k],
-                                    classDistPerTestAndSplit_upper[k],
-                                    auxAvailable);
-                            double probUp = Math.min(classDistPerTestAndSplit_upper[k][i][classIndex],
-                                    classDistPerTestAndSplit_lower[k][i][classIndex] + auxAvailable);
+                            int classIndex =
+                                    getClassProbabilities(
+                                            i,
+                                            unusedClasses,
+                                            classDistPerTestAndSplit_lower[k],
+                                            classDistPerTestAndSplit_upper[k],
+                                            auxAvailable);
+                            double probUp =
+                                    Math.min(
+                                            classDistPerTestAndSplit_upper[k][i][classIndex],
+                                            classDistPerTestAndSplit_lower[k][i][classIndex]
+                                                    + auxAvailable);
 
-                            auxAvailable -= (probUp - classDistPerTestAndSplit_lower[k][i][classIndex]);
+                            auxAvailable -=
+                                    (probUp - classDistPerTestAndSplit_lower[k][i][classIndex]);
 
                             unusedClasses.remove(new Integer(classIndex));
                             decOrderClassDist_upper.add(new Integer(classIndex));
@@ -1262,13 +1373,19 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                                 if (Math.abs(tmpAvailable) < Iadem2.ERROR_MARGIN) {
                                     tmpAvailable = 0.0;
                                 } else {
-                                    throw new IademException("NominalVirtualNode", "updateHeuristicMeasureBinaryTest",
+                                    throw new IademException(
+                                            "NominalVirtualNode",
+                                            "updateHeuristicMeasureBinaryTest",
                                             "Problems when calculating measures");
                                 }
                             }
-                            double probUp = Math.min(classDistPerTestAndSplit_upper[k][i][classIndex],
-                                    classDistPerTestAndSplit_lower[k][i][classIndex] + tmpAvailable);
-                            tmpAvailable -= (probUp - classDistPerTestAndSplit_lower[k][i][classIndex]);
+                            double probUp =
+                                    Math.min(
+                                            classDistPerTestAndSplit_upper[k][i][classIndex],
+                                            classDistPerTestAndSplit_lower[k][i][classIndex]
+                                                    + tmpAvailable);
+                            tmpAvailable -=
+                                    (probUp - classDistPerTestAndSplit_lower[k][i][classIndex]);
                             vectorToMeasure.add(probUp);
                         }
 
@@ -1293,48 +1410,59 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                         if (this.bestSplitSuggestion == null) {
                             DoubleVector tmpClassDist = this.nominalAttClassObserver.get(k);
                             if (tmpClassDist != null) { // is it a useful split?
-                                NominalAttributeBinaryTest test = new IademNominalAttributeBinaryTest(this.attIndex, k);
-                                this.bestSplitSuggestion = new IademAttributeSplitSuggestion(test,
-                                        new double[0][0],
-                                        measureUpper,
-                                        measureLower);
+                                NominalAttributeBinaryTest test =
+                                        new IademNominalAttributeBinaryTest(this.attIndex, k);
+                                this.bestSplitSuggestion =
+                                        new IademAttributeSplitSuggestion(
+                                                test, new double[0][0], measureUpper, measureLower);
                             }
-                        } // compete with multiway test 
+                        } // compete with multiway test
                         else if (!this.onlyBinaryTest) {
                             if ((measureUpper < this.bestSplitSuggestion.merit)
                                     || (measureUpper == this.bestSplitSuggestion.merit
-                                    && measureLower < this.bestSplitSuggestion.getMeritLowerBound())) {
+                                            && measureLower
+                                                    < this.bestSplitSuggestion
+                                                            .getMeritLowerBound())) {
                                 DoubleVector tmpClassDist = this.nominalAttClassObserver.get(k);
                                 if (tmpClassDist != null) { // is it a useful split?
-                                    NominalAttributeBinaryTest test = new IademNominalAttributeBinaryTest(this.attIndex, k);
-                                    this.bestSplitSuggestion = new IademAttributeSplitSuggestion(test,
-                                            new double[0][0],
-                                            measureUpper,
-                                            measureLower);
+                                    NominalAttributeBinaryTest test =
+                                            new IademNominalAttributeBinaryTest(this.attIndex, k);
+                                    this.bestSplitSuggestion =
+                                            new IademAttributeSplitSuggestion(
+                                                    test,
+                                                    new double[0][0],
+                                                    measureUpper,
+                                                    measureLower);
                                 }
                             }
                         }
                     }
                 }
-
             }
         }
 
-        protected void computeClassDistBinaryTest(double[][][] classDistPerTestAndSplit_lower,
+        protected void computeClassDistBinaryTest(
+                double[][][] classDistPerTestAndSplit_lower,
                 double[][][] classDistPerTestAndSplit_upper) {
             int numberOfClasses = classDistPerTestAndSplit_lower[0][0].length;
             double estimator, bound;
             double leftTotal = this.classValueDist.sumOfValues();
-            for (int currentAttIndex = 0; currentAttIndex < classDistPerTestAndSplit_lower.length; currentAttIndex++) {
+            for (int currentAttIndex = 0;
+                    currentAttIndex < classDistPerTestAndSplit_lower.length;
+                    currentAttIndex++) {
                 for (int j = 0; j < numberOfClasses; j++) {
                     // compute probabilities in the left branch
                     DoubleVector classCounter = nominalAttClassObserver.get(currentAttIndex);
                     double attClassCounter = classCounter != null ? classCounter.getValue(j) : 0.0;
                     if (attValueDist.getValue(currentAttIndex) != 0) {
                         estimator = attClassCounter / attValueDist.getValue(currentAttIndex);
-                        bound = IademCommonProcedures.getIADEM_HoeffdingBound(estimator, attValueDist.getValue(currentAttIndex));
-                        classDistPerTestAndSplit_lower[currentAttIndex][0][j] = Math.max(0.0, estimator - bound);
-                        classDistPerTestAndSplit_upper[currentAttIndex][0][j] = Math.min(1.0, estimator + bound);
+                        bound =
+                                IademCommonProcedures.getIADEM_HoeffdingBound(
+                                        estimator, attValueDist.getValue(currentAttIndex));
+                        classDistPerTestAndSplit_lower[currentAttIndex][0][j] =
+                                Math.max(0.0, estimator - bound);
+                        classDistPerTestAndSplit_upper[currentAttIndex][0][j] =
+                                Math.min(1.0, estimator + bound);
                     } else {
                         classDistPerTestAndSplit_lower[currentAttIndex][0][j] = 0.0;
                         classDistPerTestAndSplit_upper[currentAttIndex][0][j] = 1.0;
@@ -1344,9 +1472,13 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                     double rightTotal = leftTotal - attValueDist.getValue(currentAttIndex);
                     if (rightTotal != 0) {
                         estimator = attClassCounter / rightTotal;
-                        bound = IademCommonProcedures.getIADEM_HoeffdingBound(estimator, rightTotal);
-                        classDistPerTestAndSplit_lower[currentAttIndex][1][j] = Math.max(0.0, estimator - bound);
-                        classDistPerTestAndSplit_upper[currentAttIndex][1][j] = Math.min(1.0, estimator + bound);
+                        bound =
+                                IademCommonProcedures.getIADEM_HoeffdingBound(
+                                        estimator, rightTotal);
+                        classDistPerTestAndSplit_lower[currentAttIndex][1][j] =
+                                Math.max(0.0, estimator - bound);
+                        classDistPerTestAndSplit_upper[currentAttIndex][1][j] =
+                                Math.min(1.0, estimator + bound);
                     } else {
                         classDistPerTestAndSplit_lower[currentAttIndex][1][j] = 0.0;
                         classDistPerTestAndSplit_upper[currentAttIndex][1][j] = 1.0;
@@ -1381,7 +1513,9 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                         if (Math.abs(availableErrorPerValue[i]) < Iadem2.ERROR_MARGIN) {
                             availableErrorPerValue[i] = 0.0;
                         } else {
-                            throw new IademException("NominalVirtualNode", "updateHeuristicMeasureMultiwayTest",
+                            throw new IademException(
+                                    "NominalVirtualNode",
+                                    "updateHeuristicMeasureMultiwayTest",
                                     "Problems when calculating measures");
                         }
                     }
@@ -1398,12 +1532,13 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                     ArrayList<Integer> hole = new ArrayList<Integer>();
                     hole.add(0);
                     for (int j = 0; j < numberOfClasses; j++) {
-                        IademCommonProcedures.insertLotsHoles(lot, hole, classDist_lower[i][j],
-                                classDist_upper[i][j]);
+                        IademCommonProcedures.insertLotsHoles(
+                                lot, hole, classDist_lower[i][j], classDist_upper[i][j]);
                     }
 
-                    valueLevels[i] = IademCommonProcedures.computeLevel(lot, hole,
-                            availableErrorPerValue[i]);
+                    valueLevels[i] =
+                            IademCommonProcedures.computeLevel(
+                                    lot, hole, availableErrorPerValue[i]);
                 }
 
                 for (int i = 0; i < numberOfValues; i++) {
@@ -1432,15 +1567,24 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                             if (Math.abs(auxAvailable) < Iadem2.ERROR_MARGIN) {
                                 auxAvailable = 0.0;
                             } else {
-                                throw new IademException("NominalVirtualNode", "updateHeuristicMeasureMultiwayTest",
+                                throw new IademException(
+                                        "NominalVirtualNode",
+                                        "updateHeuristicMeasureMultiwayTest",
                                         "Problems when calculating measures");
                             }
                         }
 
-                        int classID = getClassProbabilities(i, unusedClasses, classDist_lower,
-                                classDist_upper, auxAvailable);
-                        double probUp = Math.min(classDist_upper[i][classID],
-                                classDist_lower[i][classID] + auxAvailable);
+                        int classID =
+                                getClassProbabilities(
+                                        i,
+                                        unusedClasses,
+                                        classDist_lower,
+                                        classDist_upper,
+                                        auxAvailable);
+                        double probUp =
+                                Math.min(
+                                        classDist_upper[i][classID],
+                                        classDist_lower[i][classID] + auxAvailable);
 
                         auxAvailable -= (probUp - classDist_lower[i][classID]);
 
@@ -1456,12 +1600,16 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                             if (Math.abs(availableError) < Iadem2.ERROR_MARGIN) {
                                 availableError = 0.0;
                             } else {
-                                throw new IademException("NominalVirtualNode", "updateHeuristicMeasureMultiwayTest",
+                                throw new IademException(
+                                        "NominalVirtualNode",
+                                        "updateHeuristicMeasureMultiwayTest",
                                         "Problems when calculating measures");
                             }
                         }
-                        double probUp = Math.min(classDist_upper[i][classID],
-                                classDist_lower[i][classID] + availableError);
+                        double probUp =
+                                Math.min(
+                                        classDist_upper[i][classID],
+                                        classDist_lower[i][classID] + availableError);
                         availableError -= (probUp - classDist_lower[i][classID]);
                         vectorToMeasure.add(probUp);
                     }
@@ -1482,16 +1630,16 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                 measureUpper = dividendUpper / divisor;
 
                 int maxBranches = instance.attribute(attIndex).numValues();
-                IademNominalAttributeMultiwayTest test = new IademNominalAttributeMultiwayTest(this.attIndex, maxBranches);
-                bestSplitSuggestion = new IademAttributeSplitSuggestion(test,
-                        new double[0][0],
-                        measureUpper,
-                        measureLower);
+                IademNominalAttributeMultiwayTest test =
+                        new IademNominalAttributeMultiwayTest(this.attIndex, maxBranches);
+                bestSplitSuggestion =
+                        new IademAttributeSplitSuggestion(
+                                test, new double[0][0], measureUpper, measureLower);
             }
         }
 
-        private void computeClassDistPerValue(double[][] classDistLower,
-                double[][] classDistUpper) {
+        private void computeClassDistPerValue(
+                double[][] classDistLower, double[][] classDistUpper) {
             double estimator, classDistError;
 
             int numberOfValues = classDistLower.length;
@@ -1504,9 +1652,12 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                         classDistUpper[i][j] = 1.0;
                     } else {
                         DoubleVector classCounter = nominalAttClassObserver.get(i);
-                        double attValuePerClassCounter = classCounter != null ? classCounter.getValue(j) : 0.0;
+                        double attValuePerClassCounter =
+                                classCounter != null ? classCounter.getValue(j) : 0.0;
                         estimator = attValuePerClassCounter / attValueDist.getValue(i);
-                        classDistError = IademCommonProcedures.getIADEM_HoeffdingBound(estimator, attValueDist.getValue(i));
+                        classDistError =
+                                IademCommonProcedures.getIADEM_HoeffdingBound(
+                                        estimator, attValueDist.getValue(i));
                         classDistLower[i][j] = Math.max(0.0, estimator - classDistError);
                         classDistUpper[i][j] = Math.min(1.0, estimator + classDistError);
                     }
@@ -1514,8 +1665,11 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
             }
         }
 
-        private int getClassProbabilities(int attributeValue, ArrayList<Integer> attValueList,
-                double[][] classDistPerValueLower, double[][] classDistPerValueUpper,
+        private int getClassProbabilities(
+                int attributeValue,
+                ArrayList<Integer> attValueList,
+                double[][] classDistPerValueLower,
+                double[][] classDistPerValueUpper,
                 double available) {
             int max, tmp;
             double maxProbUp, newProbUp;
@@ -1523,13 +1677,17 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                 return -1;
             } else {
                 max = attValueList.get(0);
-                maxProbUp = Math.min(classDistPerValueUpper[attributeValue][max],
-                        classDistPerValueLower[attributeValue][max] + available);
+                maxProbUp =
+                        Math.min(
+                                classDistPerValueUpper[attributeValue][max],
+                                classDistPerValueLower[attributeValue][max] + available);
 
                 for (int i = 1; i < attValueList.size(); i++) {
                     tmp = attValueList.get(i);
-                    newProbUp = Math.min(classDistPerValueUpper[attributeValue][tmp],
-                            classDistPerValueLower[attributeValue][tmp] + available);
+                    newProbUp =
+                            Math.min(
+                                    classDistPerValueUpper[attributeValue][tmp],
+                                    classDistPerValueLower[attributeValue][tmp] + available);
                     if (newProbUp > maxProbUp) {
                         max = tmp;
                         maxProbUp = newProbUp;
@@ -1557,7 +1715,8 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
             for (int i = 0; i < sumsPerClass.numValues(); i++) {
                 if (sumsPerClass.getValue(i) != 0.0) {
                     DoubleVector contadorClase = nominalAttClassObserver.get((int) valor);
-                    double attClassCounter = contadorClase != null ? contadorClase.getValue(i) : 0.0;
+                    double attClassCounter =
+                            contadorClase != null ? contadorClase.getValue(i) : 0.0;
                     conditionalProbability.setValue(i, attClassCounter / sumsPerClass.getValue(i));
                 }
             }
@@ -1597,13 +1756,15 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
         protected IademNumericAttributeObserver numericAttClassObserver;
         protected double bestCutPoint;
 
-        public NumericVirtualNode(Iadem2 tree,
+        public NumericVirtualNode(
+                Iadem2 tree,
                 Node parent,
                 int attIndex,
                 IademNumericAttributeObserver numericAttClassObs) {
             super(tree, parent, attIndex);
             int numIntervalos = this.tree.getMaxNumberOfBins();
-            this.numericAttClassObserver = (IademNumericAttributeObserver) numericAttClassObs.copy();
+            this.numericAttClassObserver =
+                    (IademNumericAttributeObserver) numericAttClassObs.copy();
             this.numericAttClassObserver.setMaxBins(numIntervalos);
             this.bestCutPoint = 0.0;
         }
@@ -1614,10 +1775,12 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
 
         @Override
         public Node learnFromInstance(Instance instance) {
-            this.numericAttClassObserver.addValue(instance.value(this.attIndex),
+            this.numericAttClassObserver.addValue(
+                    instance.value(this.attIndex),
                     (int) instance.value(instance.classIndex()),
                     instance.weight());
-            this.classValueDist.addToValue((int) instance.value(instance.classIndex()), instance.weight());
+            this.classValueDist.addToValue(
+                    (int) instance.value(instance.classIndex()), instance.weight());
             this.heuristicMeasureUpdated = false;
             return this;
         }
@@ -1631,15 +1794,17 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
         }
 
         @Override
-        public SplitNode getNewSplitNode(long newTotal,
+        public SplitNode getNewSplitNode(
+                long newTotal,
                 Node parent,
                 IademAttributeSplitSuggestion bestSuggestion,
                 Instance instance) {
-            double[] cut = new double[]{this.bestCutPoint};
+            double[] cut = new double[] {this.bestCutPoint};
 
             Node[] children = new Node[2]; // a traditional binary split test for numeric attributes
 
-            long[] newClassVotesAndTotal = this.numericAttClassObserver.getLeftClassDist(this.bestCutPoint);
+            long[] newClassVotesAndTotal =
+                    this.numericAttClassObserver.getLeftClassDist(this.bestCutPoint);
             long totalLeft = arrSum(newClassVotesAndTotal);
 
             long total = this.numericAttClassObserver.getValueCount();
@@ -1648,18 +1813,21 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
             if (this.numericAttClassObserver instanceof IademVFMLNumericAttributeClassObserver) {
                 equalsPassesTest = false;
             }
-            SplitNode splitNode = new SplitNode(this.tree,
-                    parent,
-                    null,
-                    ((LeafNode) this.parent).getMajorityClassVotes(instance),
-                    new IademNumericAttributeBinaryTest(this.attIndex,
-                            cut[0],
-                            equalsPassesTest));
+            SplitNode splitNode =
+                    new SplitNode(
+                            this.tree,
+                            parent,
+                            null,
+                            ((LeafNode) this.parent).getMajorityClassVotes(instance),
+                            new IademNumericAttributeBinaryTest(
+                                    this.attIndex, cut[0], equalsPassesTest));
 
             long newTotalLeft = totalLeft;
             long newTotalRight = total - newTotalLeft;
-            double[] newClassVotesLeft = new double[instance.attribute(instance.classIndex()).numValues()];
-            double[] newClassVotesRight = new double[instance.attribute(instance.classIndex()).numValues()];
+            double[] newClassVotesLeft =
+                    new double[instance.attribute(instance.classIndex()).numValues()];
+            double[] newClassVotesRight =
+                    new double[instance.attribute(instance.classIndex()).numValues()];
 
             Arrays.fill(newClassVotesLeft, 0);
             Arrays.fill(newClassVotesRight, 0);
@@ -1670,8 +1838,12 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
             }
 
             splitNode.setChildren((Node[]) null);
-            children[0] = this.tree.newLeafNode(splitNode, newTotal, newTotalLeft, newClassVotesLeft, instance);
-            children[1] = this.tree.newLeafNode(splitNode, newTotal, newTotalRight, newClassVotesRight, instance);
+            children[0] =
+                    this.tree.newLeafNode(
+                            splitNode, newTotal, newTotalLeft, newClassVotesLeft, instance);
+            children[1] =
+                    this.tree.newLeafNode(
+                            splitNode, newTotal, newTotalRight, newClassVotesRight, instance);
 
             splitNode.setChildren(children);
 
@@ -1693,13 +1865,18 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                     double[] measureLower = new double[numberOfCuts];
                     double[] measureUpper = new double[numberOfCuts];
 
-                    double[][][] classVotesPerCutAndSplit_lower = new double[numberOfCuts][numberOfSplits][numberOfClasses];
-                    double[][][] classVotesPerCutAndSplit_upper = new double[numberOfCuts][numberOfSplits][numberOfClasses];
+                    double[][][] classVotesPerCutAndSplit_lower =
+                            new double[numberOfCuts][numberOfSplits][numberOfClasses];
+                    double[][][] classVotesPerCutAndSplit_upper =
+                            new double[numberOfCuts][numberOfSplits][numberOfClasses];
 
                     double[][] totalPerCutAndSplit = new double[numberOfCuts][numberOfSplits];
 
-                    computeClassVoteBounds(classVotesPerCutAndSplit_lower, classVotesPerCutAndSplit_upper,
-                            totalPerCutAndSplit, true);
+                    computeClassVoteBounds(
+                            classVotesPerCutAndSplit_lower,
+                            classVotesPerCutAndSplit_upper,
+                            totalPerCutAndSplit,
+                            true);
 
                     for (int k = 0; k < numberOfCuts; k++) {
                         double[] countPerSplit_lower = new double[numberOfSplits];
@@ -1715,7 +1892,9 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                                 if (Math.abs(availableErrorPerSplit[i]) < Iadem2.ERROR_MARGIN) {
                                     availableErrorPerSplit[i] = 0.0;
                                 } else {
-                                    throw new IademException("NumericVirtualNode", "updateHeuristicMeasure",
+                                    throw new IademException(
+                                            "NumericVirtualNode",
+                                            "updateHeuristicMeasure",
                                             "Problems when calculating measures");
                                 }
                             }
@@ -1732,21 +1911,28 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                             ArrayList<Integer> hole = new ArrayList<Integer>();
                             hole.add(0);
                             for (int j = 0; j < numberOfClasses; j++) {
-                                IademCommonProcedures.insertLotsHoles(lot, hole,
+                                IademCommonProcedures.insertLotsHoles(
+                                        lot,
+                                        hole,
                                         classVotesPerCutAndSplit_lower[k][i][j],
                                         classVotesPerCutAndSplit_upper[k][i][j]);
                             }
-                            splitLevels[i] = IademCommonProcedures.computeLevel(lot, hole,
-                                    availableErrorPerSplit[i]);
+                            splitLevels[i] =
+                                    IademCommonProcedures.computeLevel(
+                                            lot, hole, availableErrorPerSplit[i]);
                         }
 
                         for (int i = 0; i < numberOfSplits; i++) {
                             ArrayList<Double> vectorToMeasure = new ArrayList<Double>();
                             for (int j = 0; j < numberOfClasses; j++) {
-                                double tmpMeasureUpper = Math.max(splitLevels[i],
-                                        classVotesPerCutAndSplit_lower[k][i][j]);
-                                tmpMeasureUpper = Math.min(classVotesPerCutAndSplit_upper[k][i][j],
-                                        tmpMeasureUpper);
+                                double tmpMeasureUpper =
+                                        Math.max(
+                                                splitLevels[i],
+                                                classVotesPerCutAndSplit_lower[k][i][j]);
+                                tmpMeasureUpper =
+                                        Math.min(
+                                                classVotesPerCutAndSplit_upper[k][i][j],
+                                                tmpMeasureUpper);
                                 vectorToMeasure.add(tmpMeasureUpper);
                             }
                             measurePerSplit_upper[i] = measure.doMeasure(vectorToMeasure);
@@ -1770,19 +1956,29 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                                     if (Math.abs(auxAvailable) < Iadem2.ERROR_MARGIN) {
                                         auxAvailable = 0.0;
                                     } else {
-                                        throw new IademException("NodoVirtualContinuo", "actualizaMedida",
+                                        throw new IademException(
+                                                "NodoVirtualContinuo",
+                                                "actualizaMedida",
                                                 "Problems calculating measure");
                                     }
                                 }
 
-                                int classIndex = getClassValueProbabilities(i, unusedClasses,
-                                        classVotesPerCutAndSplit_lower[k],
-                                        classVotesPerCutAndSplit_upper[k], auxAvailable);
-                                double probUpper = Math.min(classVotesPerCutAndSplit_upper[k][i][classIndex],
-                                        classVotesPerCutAndSplit_lower[k][i][classIndex]
-                                        + auxAvailable);
+                                int classIndex =
+                                        getClassValueProbabilities(
+                                                i,
+                                                unusedClasses,
+                                                classVotesPerCutAndSplit_lower[k],
+                                                classVotesPerCutAndSplit_upper[k],
+                                                auxAvailable);
+                                double probUpper =
+                                        Math.min(
+                                                classVotesPerCutAndSplit_upper[k][i][classIndex],
+                                                classVotesPerCutAndSplit_lower[k][i][classIndex]
+                                                        + auxAvailable);
 
-                                auxAvailable -= (probUpper - classVotesPerCutAndSplit_lower[k][i][classIndex]);
+                                auxAvailable -=
+                                        (probUpper
+                                                - classVotesPerCutAndSplit_lower[k][i][classIndex]);
 
                                 unusedClasses.remove(new Integer(classIndex));
                                 decOrderClassVotes_upper.add(new Integer(classIndex));
@@ -1796,14 +1992,20 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                                     if (Math.abs(availableProb) < Iadem2.ERROR_MARGIN) {
                                         availableProb = 0.0;
                                     } else {
-                                        throw new IademException("NumericVirtualNode", "updateMeasure",
+                                        throw new IademException(
+                                                "NumericVirtualNode",
+                                                "updateMeasure",
                                                 "Problems when calculating measures");
                                     }
                                 }
-                                double probUpper = Math.min(classVotesPerCutAndSplit_upper[k][i][classIndex],
-                                        classVotesPerCutAndSplit_lower[k][i][classIndex]
-                                        + availableProb);
-                                availableProb -= (probUpper - classVotesPerCutAndSplit_lower[k][i][classIndex]);
+                                double probUpper =
+                                        Math.min(
+                                                classVotesPerCutAndSplit_upper[k][i][classIndex],
+                                                classVotesPerCutAndSplit_lower[k][i][classIndex]
+                                                        + availableProb);
+                                availableProb -=
+                                        (probUpper
+                                                - classVotesPerCutAndSplit_lower[k][i][classIndex]);
                                 vectorToMeasure.add(probUpper);
                             }
 
@@ -1853,33 +2055,38 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
 
                     this.bestCutPoint = this.numericAttClassObserver.getCut(minMeasureLowerIndex);
                     boolean equalsPassesTest = true;
-                    if (this.numericAttClassObserver instanceof IademVFMLNumericAttributeClassObserver) {
+                    if (this.numericAttClassObserver
+                            instanceof IademVFMLNumericAttributeClassObserver) {
                         equalsPassesTest = false;
                     }
-                    IademNumericAttributeBinaryTest test = new IademNumericAttributeBinaryTest(this.attIndex,
-                            this.bestCutPoint,
-                            equalsPassesTest);
-                    this.bestSplitSuggestion = new IademAttributeSplitSuggestion(test,
-                            new double[0][0],
-                            minSupMedida,
-                            minMeasureLower);
+                    IademNumericAttributeBinaryTest test =
+                            new IademNumericAttributeBinaryTest(
+                                    this.attIndex, this.bestCutPoint, equalsPassesTest);
+                    this.bestSplitSuggestion =
+                            new IademAttributeSplitSuggestion(
+                                    test, new double[0][0], minSupMedida, minMeasureLower);
                 }
                 this.heuristicMeasureUpdated = true;
             }
         }
 
-        private void computeClassVoteBounds(double[][][] classVotesPerCutAndSplit_lower,
+        private void computeClassVoteBounds(
+                double[][][] classVotesPerCutAndSplit_lower,
                 double[][][] classVotesPerCutAndSplit_upper,
                 double[][] totalPerCutAndSplit,
                 boolean withIntervalEstimates) {
-            this.numericAttClassObserver.computeClassDistProbabilities(classVotesPerCutAndSplit_lower,
+            this.numericAttClassObserver.computeClassDistProbabilities(
+                    classVotesPerCutAndSplit_lower,
                     classVotesPerCutAndSplit_upper,
                     totalPerCutAndSplit,
                     withIntervalEstimates);
         }
 
-        private int getClassValueProbabilities(int value, ArrayList<Integer> valueList,
-                double[][] classValuePerSplitLower, double[][] classValuePerSplitUpper,
+        private int getClassValueProbabilities(
+                int value,
+                ArrayList<Integer> valueList,
+                double[][] classValuePerSplitLower,
+                double[][] classValuePerSplitUpper,
                 double availableProb) {
             int max, newValue;
             double max_up, newValue_up;
@@ -1887,13 +2094,17 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
                 return -1;
             } else {
                 max = valueList.get(0);
-                max_up = Math.min(classValuePerSplitUpper[value][max],
-                        classValuePerSplitLower[value][max] + availableProb);
+                max_up =
+                        Math.min(
+                                classValuePerSplitUpper[value][max],
+                                classValuePerSplitLower[value][max] + availableProb);
 
                 for (int i = 1; i < valueList.size(); i++) {
                     newValue = valueList.get(i);
-                    newValue_up = Math.min(classValuePerSplitUpper[value][newValue],
-                            classValuePerSplitLower[value][newValue] + availableProb);
+                    newValue_up =
+                            Math.min(
+                                    classValuePerSplitUpper[value][newValue],
+                                    classValuePerSplitLower[value][newValue] + availableProb);
                     if (newValue_up > max_up) {
                         max = newValue;
                         max_up = newValue_up;
@@ -1914,7 +2125,8 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
 
         @Override
         public double getPercent() {
-            long[] classVotesLeft = this.numericAttClassObserver.getLeftClassDist(this.bestCutPoint);
+            long[] classVotesLeft =
+                    this.numericAttClassObserver.getLeftClassDist(this.bestCutPoint);
 
             double leftCount = (double) arrSum(classVotesLeft);
             double total = (double) this.numericAttClassObserver.getValueCount();
@@ -1932,7 +2144,8 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
         @Override
         public DoubleVector computeConditionalProbability(double value) {
             ArrayList<Double> cut = getCuts();
-            return new DoubleVector(this.numericAttClassObserver.computeConditionalProb(cut, value));
+            return new DoubleVector(
+                    this.numericAttClassObserver.computeConditionalProb(cut, value));
         }
 
         @Override
@@ -1949,7 +2162,8 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
 
         public AutoExpandVector<Node> children = new AutoExpandVector<Node>();
 
-        public SplitNode(Iadem2 tree,
+        public SplitNode(
+                Iadem2 tree,
                 Node parent,
                 Node[] children,
                 double[] initialClassCount,
@@ -1964,8 +2178,7 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
         }
 
         public void setChild(Node child, int index) {
-            if ((this.splitTest.maxBranches() >= 0)
-                    && (index >= this.splitTest.maxBranches())) {
+            if ((this.splitTest.maxBranches() >= 0) && (index >= this.splitTest.maxBranches())) {
                 throw new IndexOutOfBoundsException();
             }
             this.children.set(index, child);
@@ -1989,8 +2202,7 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
             return leaves;
         }
 
-        public void changeChildren(Node oldChild,
-                Node newChild) {
+        public void changeChildren(Node oldChild, Node newChild) {
             boolean found = false;
             int pos = 0;
             while ((!found) && (pos < this.children.size())) {
@@ -2010,7 +2222,7 @@ public class Iadem2 extends AbstractClassifier implements MultiClassClassifier {
             return this.children.get(index);
         }
 
-        final public void setChildren(Node[] children) {
+        public final void setChildren(Node[] children) {
             this.children.clear();
             if (children != null) {
                 this.children.addAll(Arrays.asList(children));

@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
@@ -31,7 +31,8 @@ public class Globals {
 
     public static final String versionString = " 24.07 July 2024";
 
-    public static final String copyrightNotice = "(C) 2007-2024 University of Waikato, Hamilton, New Zealand";
+    public static final String copyrightNotice =
+            "(C) 2007-2024 University of Waikato, Hamilton, New Zealand";
 
     public static final String webAddress = "http://moa.cms.waikato.ac.nz/";
 

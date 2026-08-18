@@ -14,43 +14,42 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.clusterers.outliers.SimpleCOD;
 
-import moa.streams.ArffFileStream;
 import com.yahoo.labs.samoa.instances.Instance;
 
+import moa.streams.ArffFileStream;
 
-public class Test {    
-    public static void main(String[] args) throws Exception 
-    {
-        //if (true) return;
-        
+public class Test {
+    public static void main(String[] args) throws Exception {
+        // if (true) return;
+
         int numInstances = 30;
         moa.streams.ArffFileStream stream = new ArffFileStream("./datasets/debug_1.txt", -1);
-        //RandomRBFGeneratorEvents stream = new RandomRBFGeneratorEvents();
+        // RandomRBFGeneratorEvents stream = new RandomRBFGeneratorEvents();
         stream.prepareForUse();
-        
-        SimpleCOD myOutlierDetector= new SimpleCOD();
+
+        SimpleCOD myOutlierDetector = new SimpleCOD();
         myOutlierDetector.kOption.setValue(3);
         myOutlierDetector.radiusOption.setValue(5);
         myOutlierDetector.windowSizeOption.setValue(6);
         myOutlierDetector.setModelContext(stream.getHeader());
-        myOutlierDetector.prepareForUse(); 
-        
+        myOutlierDetector.prepareForUse();
+
         Long tmStart = System.currentTimeMillis();
-        
-        int numberSamples = 0;   
+
+        int numberSamples = 0;
         int w = myOutlierDetector.windowSizeOption.getValue();
         while (stream.hasMoreInstances() && (numberSamples < numInstances)) {
             Instance newInst = stream.nextInstance().getData();
-            myOutlierDetector.processNewInstanceImpl(newInst);            
+            myOutlierDetector.processNewInstanceImpl(newInst);
             numberSamples++;
-        }        
-        //myOutlierDetector.PrintOutliers();
+        }
+        // myOutlierDetector.PrintOutliers();
         System.out.println("Total time = " + (System.currentTimeMillis() - tmStart) + " ms");
     }
 }

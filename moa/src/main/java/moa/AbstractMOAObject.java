@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa;
 
@@ -23,8 +23,8 @@ import moa.core.SerializeUtils;
 import moa.core.SizeOf;
 
 /**
- * Abstract MOA Object. All classes that are serializable, copiable,
- * can measure its size, and can give a description, extend this class.
+ * Abstract MOA Object. All classes that are serializable, copiable, can measure its size, and can
+ * give a description, extend this class.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $

@@ -15,13 +15,11 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.trees;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
@@ -31,22 +29,24 @@ import moa.classifiers.core.driftdetection.ADWIN;
 import moa.core.DoubleVector;
 import moa.core.MiscUtils;
 import moa.core.Utils;
-import com.yahoo.labs.samoa.instances.Instance;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Hoeffding Adaptive Tree for evolving data streams.
  *
- * <p>This adaptive Hoeffding Tree uses ADWIN to monitor performance of
- * branches on the tree and to replace them with new branches when their
- * accuracy decreases if the new branches are more accurate.</p>
- * See details in:</p>
- * <p>Adaptive Learning from Evolving Data Streams. Albert Bifet, Ricard Gavaldà.
- * IDA 2009</p>
+ * <p>This adaptive Hoeffding Tree uses ADWIN to monitor performance of branches on the tree and to
+ * replace them with new branches when their accuracy decreases if the new branches are more
+ * accurate. See details in:
+ *
+ * <p>Adaptive Learning from Evolving Data Streams. Albert Bifet, Ricard Gavaldà. IDA 2009
  *
  * <ul>
- * <li> Same parameters as <code>HoeffdingTreeNBAdaptive</code></li>
- * <li> -l : Leaf prediction to use: MajorityClass (MC), Naive Bayes (NB) or NaiveBayes
- * adaptive (NBAdaptive).
+ *   <li>Same parameters as <code>HoeffdingTreeNBAdaptive</code>
+ *   <li>-l : Leaf prediction to use: MajorityClass (MC), Naive Bayes (NB) or NaiveBayes adaptive
+ *       (NBAdaptive).
  * </ul>
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
@@ -58,20 +58,21 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
 
     @Override
     public String getPurposeString() {
-        return "Hoeffding Adaptive Tree for evolving data streams that uses ADWIN to replace branches for new ones.";
+        return "Hoeffding Adaptive Tree for evolving data streams that uses ADWIN to replace"
+                + " branches for new ones.";
     }
-    
- /*   public MultiChoiceOption leafpredictionOption = new MultiChoiceOption(
-            "leafprediction", 'l', "Leaf prediction to use.", new String[]{
-                "MC", "NB", "NBAdaptive"}, new String[]{
-                "Majority class",
-                "Naive Bayes",
-                "Naive Bayes Adaptive"}, 2);*/
+
+    /*   public MultiChoiceOption leafpredictionOption = new MultiChoiceOption(
+    "leafprediction", 'l', "Leaf prediction to use.", new String[]{
+        "MC", "NB", "NBAdaptive"}, new String[]{
+        "Majority class",
+        "Naive Bayes",
+        "Naive Bayes Adaptive"}, 2);*/
 
     public interface NewNode {
 
         // Change for adwin
-        //public boolean getErrorChange();
+        // public boolean getErrorChange();
         public int numberLeaves();
 
         public double getErrorEstimation();
@@ -82,9 +83,14 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
 
         public void killTreeChilds(HoeffdingAdaptiveTree ht);
 
-        public void learnFromInstance(Instance inst, HoeffdingAdaptiveTree ht, SplitNode parent, int parentBranch);
+        public void learnFromInstance(
+                Instance inst, HoeffdingAdaptiveTree ht, SplitNode parent, int parentBranch);
 
-        public void filterInstanceToLeaves(Instance inst, SplitNode myparent, int parentBranch, List<FoundNode> foundNodes,
+        public void filterInstanceToLeaves(
+                Instance inst,
+                SplitNode myparent,
+                int parentBranch,
+                List<FoundNode> foundNodes,
                 boolean updateSplitterCounts);
     }
 
@@ -95,7 +101,7 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
         protected Node alternateTree;
 
         protected ADWIN estimationErrorWeight;
-        //public boolean isAlternateTree = false;
+        // public boolean isAlternateTree = false;
 
         public boolean ErrorChange = false;
 
@@ -103,9 +109,9 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
 
         protected Random classifierRandom;
 
-        //public boolean getErrorChange() {
+        // public boolean getErrorChange() {
         //		return ErrorChange;
-        //}
+        // }
         @Override
         public long calcByteSizeIncludingSubtree() {
             long byteSize = calcByteSize();
@@ -122,15 +128,14 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
             }
             return byteSize;
         }
-        
-        public AdaSplitNode(InstanceConditionalTest splitTest,
-                double[] classObservations, int size) {
+
+        public AdaSplitNode(
+                InstanceConditionalTest splitTest, double[] classObservations, int size) {
             super(splitTest, classObservations, size);
             this.classifierRandom = new Random(this.randomSeed);
         }
-        
-        public AdaSplitNode(InstanceConditionalTest splitTest,
-                double[] classObservations) {
+
+        public AdaSplitNode(InstanceConditionalTest splitTest, double[] classObservations) {
             super(splitTest, classObservations);
             this.classifierRandom = new Random(this.randomSeed);
         }
@@ -169,19 +174,25 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
         // LearningNodes can split, but SplitNodes can't
         // Parent nodes are allways SplitNodes
         @Override
-        public void learnFromInstance(Instance inst, HoeffdingAdaptiveTree ht, SplitNode parent, int parentBranch) {
+        public void learnFromInstance(
+                Instance inst, HoeffdingAdaptiveTree ht, SplitNode parent, int parentBranch) {
             int trueClass = (int) inst.classValue();
-            //New option vore
+            // New option vore
             int k = MiscUtils.poisson(1.0, this.classifierRandom);
             Instance weightedInst = (Instance) inst.copy();
             if (k > 0) {
-                //weightedInst.setWeight(inst.weight() * k);
+                // weightedInst.setWeight(inst.weight() * k);
             }
-            //Compute ClassPrediction using filterInstanceToLeaf
-            //int ClassPrediction = Utils.maxIndex(filterInstanceToLeaf(inst, null, -1).node.getClassVotes(inst, ht));
+            // Compute ClassPrediction using filterInstanceToLeaf
+            // int ClassPrediction = Utils.maxIndex(filterInstanceToLeaf(inst, null,
+            // -1).node.getClassVotes(inst, ht));
             int ClassPrediction = 0;
             if (filterInstanceToLeaf(inst, parent, parentBranch).node != null) {
-                ClassPrediction = Utils.maxIndex(filterInstanceToLeaf(inst, parent, parentBranch).node.getClassVotes(inst, ht));
+                ClassPrediction =
+                        Utils.maxIndex(
+                                filterInstanceToLeaf(inst, parent, parentBranch)
+                                        .node
+                                        .getClassVotes(inst, ht));
             }
 
             boolean blCorrect = (trueClass == ClassPrediction);
@@ -192,26 +203,37 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
             double oldError = this.getErrorEstimation();
             this.ErrorChange = this.estimationErrorWeight.setInput(blCorrect == true ? 0.0 : 1.0);
             if (this.ErrorChange == true && oldError > this.getErrorEstimation()) {
-                //if error is decreasing, don't do anything
+                // if error is decreasing, don't do anything
                 this.ErrorChange = false;
             }
 
             // Check condition to build a new alternate tree
-            //if (this.isAlternateTree == false) {
-            if (this.ErrorChange == true) {//&& this.alternateTree == null) {
-                //Start a new alternative tree : learning node
+            // if (this.isAlternateTree == false) {
+            if (this.ErrorChange == true) { // && this.alternateTree == null) {
+                // Start a new alternative tree : learning node
                 this.alternateTree = ht.newLearningNode();
-                //this.alternateTree.isAlternateTree = true;
+                // this.alternateTree.isAlternateTree = true;
                 ht.alternateTrees++;
             } // Check condition to replace tree
-            else if (this.alternateTree != null && ((NewNode) this.alternateTree).isNullError() == false) {
-                if (this.getErrorWidth() > 300 && ((NewNode) this.alternateTree).getErrorWidth() > 300) {
+            else if (this.alternateTree != null
+                    && ((NewNode) this.alternateTree).isNullError() == false) {
+                if (this.getErrorWidth() > 300
+                        && ((NewNode) this.alternateTree).getErrorWidth() > 300) {
                     double oldErrorRate = this.getErrorEstimation();
                     double altErrorRate = ((NewNode) this.alternateTree).getErrorEstimation();
                     double fDelta = .05;
-                    //if (gNumAlts>0) fDelta=fDelta/gNumAlts;
-                    double fN = 1.0 / ((double) ((NewNode) this.alternateTree).getErrorWidth()) + 1.0 / ((double) this.getErrorWidth());
-                    double Bound = (double) Math.sqrt((double) 2.0 * oldErrorRate * (1.0 - oldErrorRate) * Math.log(2.0 / fDelta) * fN);
+                    // if (gNumAlts>0) fDelta=fDelta/gNumAlts;
+                    double fN =
+                            1.0 / ((double) ((NewNode) this.alternateTree).getErrorWidth())
+                                    + 1.0 / ((double) this.getErrorWidth());
+                    double Bound =
+                            (double)
+                                    Math.sqrt(
+                                            (double) 2.0
+                                                    * oldErrorRate
+                                                    * (1.0 - oldErrorRate)
+                                                    * Math.log(2.0 / fDelta)
+                                                    * fN);
                     if (Bound < oldErrorRate - altErrorRate) {
                         // Switch alternate tree
                         ht.activeLeafNodeCount -= this.numberLeaves();
@@ -219,7 +241,7 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
                         killTreeChilds(ht);
                         if (parent != null) {
                             parent.setChild(parentBranch, this.alternateTree);
-                            //((AdaSplitNode) parent.getChild(parentBranch)).alternateTree = null;
+                            // ((AdaSplitNode) parent.getChild(parentBranch)).alternateTree = null;
                         } else {
                             // Switch root tree
                             ht.treeRoot = ((AdaSplitNode) ht.treeRoot).alternateTree;
@@ -229,10 +251,10 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
                         // Erase alternate tree
                         if (this.alternateTree instanceof ActiveLearningNode) {
                             this.alternateTree = null;
-                            //ht.activeLeafNodeCount--;
+                            // ht.activeLeafNodeCount--;
                         } else if (this.alternateTree instanceof InactiveLearningNode) {
                             this.alternateTree = null;
-                            //ht.inactiveLeafNodeCount--;
+                            // ht.inactiveLeafNodeCount--;
                         } else {
                             ((AdaSplitNode) this.alternateTree).killTreeChilds(ht);
                         }
@@ -240,10 +262,11 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
                     }
                 }
             }
-            //}
-            //learnFromInstance alternate Tree and Child nodes
+            // }
+            // learnFromInstance alternate Tree and Child nodes
             if (this.alternateTree != null) {
-                ((NewNode) this.alternateTree).learnFromInstance(weightedInst, ht, parent, parentBranch);
+                ((NewNode) this.alternateTree)
+                        .learnFromInstance(weightedInst, ht, parent, parentBranch);
             }
             int childBranch = this.instanceChildIndex(inst);
             Node child = this.getChild(childBranch);
@@ -256,12 +279,13 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
         public void killTreeChilds(HoeffdingAdaptiveTree ht) {
             for (Node child : this.children) {
                 if (child != null) {
-                    //Delete alternate tree if it exists
-                    if (child instanceof AdaSplitNode && ((AdaSplitNode) child).alternateTree != null) {
+                    // Delete alternate tree if it exists
+                    if (child instanceof AdaSplitNode
+                            && ((AdaSplitNode) child).alternateTree != null) {
                         ((NewNode) ((AdaSplitNode) child).alternateTree).killTreeChilds(ht);
                         ht.prunedAlternateTrees++;
                     }
-                    //Recursive delete of SplitNodes
+                    // Recursive delete of SplitNodes
                     if (child instanceof AdaSplitNode) {
                         ((NewNode) child).killTreeChilds(ht);
                     }
@@ -276,10 +300,13 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
             }
         }
 
-        //New for option votes
-        //@Override
-        public void filterInstanceToLeaves(Instance inst, SplitNode myparent,
-                int parentBranch, List<FoundNode> foundNodes,
+        // New for option votes
+        // @Override
+        public void filterInstanceToLeaves(
+                Instance inst,
+                SplitNode myparent,
+                int parentBranch,
+                List<FoundNode> foundNodes,
                 boolean updateSplitterCounts) {
             if (updateSplitterCounts) {
                 this.observedClassDistribution.addToValue((int) inst.classValue(), inst.weight());
@@ -288,15 +315,16 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
             if (childIndex >= 0) {
                 Node child = getChild(childIndex);
                 if (child != null) {
-                    ((NewNode) child).filterInstanceToLeaves(inst, this, childIndex,
-                            foundNodes, updateSplitterCounts);
+                    ((NewNode) child)
+                            .filterInstanceToLeaves(
+                                    inst, this, childIndex, foundNodes, updateSplitterCounts);
                 } else {
                     foundNodes.add(new FoundNode(null, this, childIndex));
                 }
             }
             if (this.alternateTree != null) {
-                ((NewNode) this.alternateTree).filterInstanceToLeaves(inst, this, -999,
-                        foundNodes, updateSplitterCounts);
+                ((NewNode) this.alternateTree)
+                        .filterInstanceToLeaves(inst, this, -999, foundNodes, updateSplitterCounts);
             }
         }
     }
@@ -352,19 +380,19 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
         }
 
         @Override
-        public void killTreeChilds(HoeffdingAdaptiveTree ht) {
-        }
+        public void killTreeChilds(HoeffdingAdaptiveTree ht) {}
 
         @Override
-        public void learnFromInstance(Instance inst, HoeffdingAdaptiveTree ht, SplitNode parent, int parentBranch) {
+        public void learnFromInstance(
+                Instance inst, HoeffdingAdaptiveTree ht, SplitNode parent, int parentBranch) {
             int trueClass = (int) inst.classValue();
-            //New option vore
+            // New option vore
             int k = MiscUtils.poisson(1.0, this.classifierRandom);
             Instance weightedInst = (Instance) inst.copy();
             if (k > 0) {
                 weightedInst.setWeight(inst.weight() * k);
             }
-            //Compute ClassPrediction using filterInstanceToLeaf
+            // Compute ClassPrediction using filterInstanceToLeaf
             int ClassPrediction = Utils.maxIndex(this.getClassVotes(inst, ht));
 
             boolean blCorrect = (trueClass == ClassPrediction);
@@ -378,21 +406,19 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
                 this.ErrorChange = false;
             }
 
-            //Update statistics
-            learnFromInstance(weightedInst, ht);	//inst
+            // Update statistics
+            learnFromInstance(weightedInst, ht); // inst
 
-            //Check for Split condition
+            // Check for Split condition
             double weightSeen = this.getWeightSeen();
-            if (weightSeen
-                    - this.getWeightSeenAtLastSplitEvaluation() >= ht.gracePeriodOption.getValue()) {
-                ht.attemptToSplit(this, parent,
-                        parentBranch);
+            if (weightSeen - this.getWeightSeenAtLastSplitEvaluation()
+                    >= ht.gracePeriodOption.getValue()) {
+                ht.attemptToSplit(this, parent, parentBranch);
                 this.setWeightSeenAtLastSplitEvaluation(weightSeen);
             }
 
-
-            //learnFromInstance alternate Tree and Child nodes
-			/*if (this.alternateTree != null)  {
+            // learnFromInstance alternate Tree and Child nodes
+            /*if (this.alternateTree != null)  {
             this.alternateTree.learnFromInstance(inst,ht);
             }
             for (Node child : this.children) {
@@ -405,33 +431,43 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
         @Override
         public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
             double[] dist;
-            int predictionOption = ((HoeffdingAdaptiveTree) ht).leafpredictionOption.getChosenIndex();
-            if (predictionOption == 0) { //MC
+            int predictionOption =
+                    ((HoeffdingAdaptiveTree) ht).leafpredictionOption.getChosenIndex();
+            if (predictionOption == 0) { // MC
                 dist = this.observedClassDistribution.getArrayCopy();
-            } else if (predictionOption == 1) { //NB
-                dist = NaiveBayes.doNaiveBayesPrediction(inst,
-                        this.observedClassDistribution, this.attributeObservers);
-            } else { //NBAdaptive
+            } else if (predictionOption == 1) { // NB
+                dist =
+                        NaiveBayes.doNaiveBayesPrediction(
+                                inst, this.observedClassDistribution, this.attributeObservers);
+            } else { // NBAdaptive
                 if (this.mcCorrectWeight > this.nbCorrectWeight) {
                     dist = this.observedClassDistribution.getArrayCopy();
                 } else {
-                    dist = NaiveBayes.doNaiveBayesPrediction(inst,
-                            this.observedClassDistribution, this.attributeObservers);
+                    dist =
+                            NaiveBayes.doNaiveBayesPrediction(
+                                    inst, this.observedClassDistribution, this.attributeObservers);
                 }
             }
-            //New for option votes
+            // New for option votes
             double distSum = Utils.sum(dist);
             if (distSum * this.getErrorEstimation() * this.getErrorEstimation() > 0.0) {
-                Utils.normalize(dist, distSum * this.getErrorEstimation() * this.getErrorEstimation()); //Adding weight
+                Utils.normalize(
+                        dist,
+                        distSum
+                                * this.getErrorEstimation()
+                                * this.getErrorEstimation()); // Adding weight
             }
             return dist;
         }
 
-        //New for option votes
+        // New for option votes
         @Override
-        public void filterInstanceToLeaves(Instance inst,
-                SplitNode splitparent, int parentBranch,
-                List<FoundNode> foundNodes, boolean updateSplitterCounts) {
+        public void filterInstanceToLeaves(
+                Instance inst,
+                SplitNode splitparent,
+                int parentBranch,
+                List<FoundNode> foundNodes,
+                boolean updateSplitterCounts) {
             foundNodes.add(new FoundNode(this, splitparent, parentBranch));
         }
     }
@@ -448,15 +484,15 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
         return new AdaLearningNode(initialClassObservations);
     }
 
-   @Override
-    protected SplitNode newSplitNode(InstanceConditionalTest splitTest,
-            double[] classObservations, int size) {
+    @Override
+    protected SplitNode newSplitNode(
+            InstanceConditionalTest splitTest, double[] classObservations, int size) {
         return new AdaSplitNode(splitTest, classObservations, size);
     }
-   
+
     @Override
-    protected SplitNode newSplitNode(InstanceConditionalTest splitTest,
-            double[] classObservations) {
+    protected SplitNode newSplitNode(
+            InstanceConditionalTest splitTest, double[] classObservations) {
         return new AdaSplitNode(splitTest, classObservations);
     }
 
@@ -469,20 +505,19 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
         ((NewNode) this.treeRoot).learnFromInstance(inst, this, null, -1);
     }
 
-    //New for options vote
-    public FoundNode[] filterInstanceToLeaves(Instance inst,
-            SplitNode parent, int parentBranch, boolean updateSplitterCounts) {
+    // New for options vote
+    public FoundNode[] filterInstanceToLeaves(
+            Instance inst, SplitNode parent, int parentBranch, boolean updateSplitterCounts) {
         List<FoundNode> nodes = new LinkedList<FoundNode>();
-        ((NewNode) this.treeRoot).filterInstanceToLeaves(inst, parent, parentBranch, nodes,
-                updateSplitterCounts);
+        ((NewNode) this.treeRoot)
+                .filterInstanceToLeaves(inst, parent, parentBranch, nodes, updateSplitterCounts);
         return nodes.toArray(new FoundNode[nodes.size()]);
     }
 
     @Override
     public double[] getVotesForInstance(Instance inst) {
         if (this.treeRoot != null) {
-            FoundNode[] foundNodes = filterInstanceToLeaves(inst,
-                    null, -1, false);
+            FoundNode[] foundNodes = filterInstanceToLeaves(inst, null, -1, false);
             DoubleVector result = new DoubleVector();
             int predictionPaths = 0;
             for (FoundNode foundNode : foundNodes) {
@@ -492,18 +527,18 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
                         leafNode = foundNode.parent;
                     }
                     double[] dist = leafNode.getClassVotes(inst, this);
-                    //Albert: changed for weights
-                    //double distSum = Utils.sum(dist);
-                    //if (distSum > 0.0) {
+                    // Albert: changed for weights
+                    // double distSum = Utils.sum(dist);
+                    // if (distSum > 0.0) {
                     //	Utils.normalize(dist, distSum);
-                    //}
+                    // }
                     result.addValues(dist);
-                    //predictionPaths++;
+                    // predictionPaths++;
                 }
             }
-            //if (predictionPaths > this.maxPredictionPaths) {
+            // if (predictionPaths > this.maxPredictionPaths) {
             //	this.maxPredictionPaths++;
-            //}
+            // }
             return result.getArrayRef();
         }
         return new double[0];
@@ -513,7 +548,6 @@ public class HoeffdingAdaptiveTree extends HoeffdingTree {
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == HoeffdingAdaptiveTree.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

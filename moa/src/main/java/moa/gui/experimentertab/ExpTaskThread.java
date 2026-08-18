@@ -15,11 +15,10 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.experimentertab;
 
-import java.util.concurrent.CopyOnWriteArraySet;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
 import moa.tasks.MainTask;
@@ -29,23 +28,30 @@ import moa.tasks.Task;
 import moa.tasks.TaskCompletionListener;
 import moa.tasks.TaskMonitor;
 
+import java.util.concurrent.CopyOnWriteArraySet;
+
 /**
  * Task Thread.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @modified Alberto Verdecia (averdeciac@gmail.com)  
+ * @modified Alberto Verdecia (averdeciac@gmail.com)
  */
 public class ExpTaskThread extends Thread {
 
     Buffer tasks;
 
     public static enum Status {
-
-        NOT_STARTED, RUNNING, PAUSED, CANCELLING, CANCELLED, COMPLETED, FAILED
+        NOT_STARTED,
+        RUNNING,
+        PAUSED,
+        CANCELLING,
+        CANCELLED,
+        COMPLETED,
+        FAILED
     }
 
     protected MainTask runningTask;
-    
+
     protected volatile Status currentStatus;
 
     protected TaskMonitor taskMonitor;
@@ -59,17 +65,17 @@ public class ExpTaskThread extends Thread {
     protected long taskEndTime;
 
     protected double latestPreviewGrabTime = 0.0;
-    
+
     public boolean isCompleted = false;
 
-    CopyOnWriteArraySet<TaskCompletionListener> completionListeners = new CopyOnWriteArraySet<TaskCompletionListener>();
+    CopyOnWriteArraySet<TaskCompletionListener> completionListeners =
+            new CopyOnWriteArraySet<TaskCompletionListener>();
 
     public ExpTaskThread(Buffer buf) {
         this.tasks = buf;
         this.currentStatus = ExpTaskThread.Status.NOT_STARTED;
         this.taskMonitor = new StandardTaskMonitor();
-        this.repository =null;
-       
+        this.repository = null;
     }
 
     @Override
@@ -81,38 +87,46 @@ public class ExpTaskThread extends Thread {
             this.currentStatus = ExpTaskThread.Status.RUNNING;
             this.taskMonitor.setCurrentActivityDescription("Running task " + this.runningTask);
             this.finalResult = this.runningTask.doTask(this.taskMonitor, this.repository);
-            this.currentStatus = this.taskMonitor.isCancelled() ? ExpTaskThread.Status.CANCELLED
-                    : ExpTaskThread.Status.COMPLETED;
-            //System.out.println(this.taskMonitor.getCurrentActivityFractionComplete()*100); 
+            this.currentStatus =
+                    this.taskMonitor.isCancelled()
+                            ? ExpTaskThread.Status.CANCELLED
+                            : ExpTaskThread.Status.COMPLETED;
+            // System.out.println(this.taskMonitor.getCurrentActivityFractionComplete()*100);
         }
         this.isCompleted = true;
     }
-   public String getCurrentActivityString() {
-        return (isComplete() || (this.currentStatus == ExpTaskThread.Status.NOT_STARTED)) ? ""
+
+    public String getCurrentActivityString() {
+        return (isComplete() || (this.currentStatus == ExpTaskThread.Status.NOT_STARTED))
+                ? ""
                 : this.taskMonitor.getCurrentActivityDescription();
     }
-       
+
     public boolean isComplete() {
         return ((this.currentStatus == ExpTaskThread.Status.CANCELLED)
-                || (this.currentStatus == ExpTaskThread.Status.COMPLETED) || (this.currentStatus == ExpTaskThread.Status.FAILED));
+                || (this.currentStatus == ExpTaskThread.Status.COMPLETED)
+                || (this.currentStatus == ExpTaskThread.Status.FAILED));
     }
+
     public double getCPUSecondsElapsed() {
         double secondsElapsed = 0.0;
         if (this.currentStatus == ExpTaskThread.Status.NOT_STARTED) {
             secondsElapsed = 0.0;
         } else if (isComplete()) {
-            secondsElapsed = TimingUtils.nanoTimeToSeconds(this.taskEndTime
-                    - this.taskStartTime);
+            secondsElapsed = TimingUtils.nanoTimeToSeconds(this.taskEndTime - this.taskStartTime);
         } else {
-            secondsElapsed = TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfThread(getId())
-                    - this.taskStartTime);
+            secondsElapsed =
+                    TimingUtils.nanoTimeToSeconds(
+                            TimingUtils.getNanoCPUTimeOfThread(getId()) - this.taskStartTime);
         }
         return secondsElapsed > 0.0 ? secondsElapsed : 0.0;
     }
+
     public Task getTask() {
         return this.runningTask;
     }
-     public String getCurrentStatusString() {
+
+    public String getCurrentStatusString() {
         switch (this.currentStatus) {
             case NOT_STARTED:
                 return "not started";
@@ -131,7 +145,8 @@ public class ExpTaskThread extends Thread {
         }
         return "unknown";
     }
-     public double getCurrentActivityFracComplete() {
+
+    public double getCurrentActivityFracComplete() {
         switch (this.currentStatus) {
             case NOT_STARTED:
                 return 0.0;
@@ -146,7 +161,8 @@ public class ExpTaskThread extends Thread {
         }
         return 0.0;
     }
-      public Object getFinalResult() {
+
+    public Object getFinalResult() {
         return this.finalResult;
     }
 
@@ -157,7 +173,7 @@ public class ExpTaskThread extends Thread {
     public void removeTaskCompletionListener(TaskCompletionListener tcl) {
         this.completionListeners.remove(tcl);
     }
-   
+
     public void getPreview(ResultPreviewListener previewer) {
         this.taskMonitor.requestResultPreview(previewer);
         this.latestPreviewGrabTime = getCPUSecondsElapsed();
@@ -170,7 +186,8 @@ public class ExpTaskThread extends Thread {
     public double getLatestPreviewGrabTimeSeconds() {
         return this.latestPreviewGrabTime;
     }
-     public synchronized void pauseTask() {
+
+    public synchronized void pauseTask() {
         if (this.currentStatus == Status.RUNNING) {
             this.taskMonitor.requestPause();
             this.currentStatus = Status.PAUSED;
@@ -185,11 +202,9 @@ public class ExpTaskThread extends Thread {
     }
 
     public synchronized void cancelTask() {
-        if ((this.currentStatus == Status.RUNNING)
-                || (this.currentStatus == Status.PAUSED)) {
+        if ((this.currentStatus == Status.RUNNING) || (this.currentStatus == Status.PAUSED)) {
             this.taskMonitor.requestCancel();
             this.currentStatus = Status.CANCELLING;
         }
     }
-   
 }

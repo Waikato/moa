@@ -15,28 +15,18 @@
  */
 package moa.streams.filters;
 
-import com.github.javacliparser.FileOption;
-import com.github.javacliparser.FlagOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import meka.core.F;
-import moa.capabilities.CapabilitiesHandler;
-import moa.capabilities.Capability;
-import moa.capabilities.ImmutableCapabilities;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.Writer;
 
 /**
  * Filter for standardising and normalising instances in a stream.
  *
- * <p>Normalisation is a scaling technique in which values are shifted and rescaled so that they end up ranging between 0 and 1.
- * It is also known as Min-Max scaling.</p>
+ * <p>Normalisation is a scaling technique in which values are shifted and rescaled so that they end
+ * up ranging between 0 and 1. It is also known as Min-Max scaling.
  *
- * <p>For further information about the scaling technique included in this filter, please view the following website:
- * https://www.analyticsvidhya.com/blog/2020/04/feature-scaling-machine-learning-normalization-standardization/</p>
+ * <p>For further information about the scaling technique included in this filter, please view the
+ * following website:
+ * https://www.analyticsvidhya.com/blog/2020/04/feature-scaling-machine-learning-normalization-standardization/
  *
  * @author Yibin Sun (ys388@students.waikato.ac.nz)
  * @version 03.2021
@@ -54,10 +44,9 @@ public class NormalisationFilter extends AbstractStreamFilter {
     double[] maximums;
     double[] minimums;
 
-
     @Override
     protected void restartImpl() {
-        //reset all variables
+        // reset all variables
         this.maximums = null;
         this.minimums = null;
     }
@@ -67,14 +56,13 @@ public class NormalisationFilter extends AbstractStreamFilter {
         return this.inputStream.getHeader();
     }
 
-
     public Instance filterInstance(Instance inst) {
 
-        /** For normalisation
-         *  Scale every numeric feature's values to the range between 0 and 1.
-         *  The formula used here is :    X' = (X - X_min) / (X_max - X_min)
-         *  NOTE: Similar to the standardisation, the information is evolving over time in a stream.
-         *        We can only scale the instances with the most current information instead of the overall information.
+        /**
+         * For normalisation Scale every numeric feature's values to the range between 0 and 1. The
+         * formula used here is : X' = (X - X_min) / (X_max - X_min) NOTE: Similar to the
+         * standardisation, the information is evolving over time in a stream. We can only scale the
+         * instances with the most current information instead of the overall information.
          */
 
         // Initiate the variables when first arrive
@@ -99,10 +87,11 @@ public class NormalisationFilter extends AbstractStreamFilter {
 
                 // Assign new values if it's not infinity
                 if (this.maximums[i] - this.minimums[i] != 0)
-                    normalisedInstance.setValue(i,
-                            (inst.value(i) - this.minimums[i]) / (this.maximums[i] - this.minimums[i]));
+                    normalisedInstance.setValue(
+                            i,
+                            (inst.value(i) - this.minimums[i])
+                                    / (this.maximums[i] - this.minimums[i]));
                 else normalisedInstance.setValue(i, 0);
-
             }
         }
         return normalisedInstance;
@@ -112,5 +101,4 @@ public class NormalisationFilter extends AbstractStreamFilter {
     public void getDescription(StringBuilder sb, int indent) {
         // TODO Auto-generated method stub
     }
-
 }

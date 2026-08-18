@@ -15,16 +15,15 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers;
 
 /**
- * MultiTargetRegressor interface for incremental MultiTarget regression models. It is used only in the GUI MultiTargetRegression Tab. 
+ * MultiTargetRegressor interface for incremental MultiTarget regression models. It is used only in
+ * the GUI MultiTargetRegression Tab.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public interface MultiTargetRegressor extends MultiLabelLearner {
-    
-}
+public interface MultiTargetRegressor extends MultiLabelLearner {}

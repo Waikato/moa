@@ -15,13 +15,18 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.generators;
 
-import java.util.Random;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Attribute;
+import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
@@ -31,11 +36,8 @@ import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
-import com.yahoo.labs.samoa.instances.Attribute;
-import com.yahoo.labs.samoa.instances.DenseInstance;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
+
+import java.util.Random;
 
 /**
  * Stream generator for Hyperplane data stream.
@@ -43,8 +45,8 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class HyperplaneGenerator extends AbstractOptionHandler implements
-        InstanceStream, CapabilitiesHandler {
+public class HyperplaneGenerator extends AbstractOptionHandler
+        implements InstanceStream, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -53,27 +55,52 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
 
     private static final long serialVersionUID = 1L;
 
-    public IntOption instanceRandomSeedOption = new IntOption(
-            "instanceRandomSeed", 'i',
-            "Seed for random generation of instances.", 1);
+    public IntOption instanceRandomSeedOption =
+            new IntOption("instanceRandomSeed", 'i', "Seed for random generation of instances.", 1);
 
-    public IntOption numClassesOption = new IntOption("numClasses", 'c',
-            "The number of classes to generate.", 2, 2, Integer.MAX_VALUE);
+    public IntOption numClassesOption =
+            new IntOption(
+                    "numClasses",
+                    'c',
+                    "The number of classes to generate.",
+                    2,
+                    2,
+                    Integer.MAX_VALUE);
 
-    public IntOption numAttsOption = new IntOption("numAtts", 'a',
-            "The number of attributes to generate.", 10, 0, Integer.MAX_VALUE);
+    public IntOption numAttsOption =
+            new IntOption(
+                    "numAtts",
+                    'a',
+                    "The number of attributes to generate.",
+                    10,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public IntOption numDriftAttsOption = new IntOption("numDriftAtts", 'k',
-            "The number of attributes with drift.", 2, 0, Integer.MAX_VALUE);
+    public IntOption numDriftAttsOption =
+            new IntOption(
+                    "numDriftAtts",
+                    'k',
+                    "The number of attributes with drift.",
+                    2,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public FloatOption magChangeOption = new FloatOption("magChange", 't',
-            "Magnitude of the change for every example", 0.0, 0.0, 1.0);
+    public FloatOption magChangeOption =
+            new FloatOption(
+                    "magChange", 't', "Magnitude of the change for every example", 0.0, 0.0, 1.0);
 
-    public IntOption noisePercentageOption = new IntOption("noisePercentage",
-            'n', "Percentage of noise to add to the data.", 5, 0, 100);
+    public IntOption noisePercentageOption =
+            new IntOption(
+                    "noisePercentage", 'n', "Percentage of noise to add to the data.", 5, 0, 100);
 
-    public IntOption sigmaPercentageOption = new IntOption("sigmaPercentage",
-            's', "Percentage of probability that the direction of change is reversed.", 10, 0, 100);
+    public IntOption sigmaPercentageOption =
+            new IntOption(
+                    "sigmaPercentage",
+                    's',
+                    "Percentage of probability that the direction of change is reversed.",
+                    10,
+                    0,
+                    100);
 
     protected InstancesHeader streamHeader;
 
@@ -86,8 +113,7 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
     public int numberInstance;
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         monitor.setCurrentActivity("Preparing hyperplane...", -1.0);
         generateHeader();
         restart();
@@ -104,8 +130,9 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
             classLabels.addElement("class" + (i + 1));
         }
         attributes.addElement(new Attribute("class", classLabels));
-        this.streamHeader = new InstancesHeader(new Instances(
-                getCLICreationString(InstanceStream.class), attributes, 0));
+        this.streamHeader =
+                new InstancesHeader(
+                        new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
         this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
     }
 
@@ -147,7 +174,7 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
         } else {
             classLabel = 0;
         }
-        //Add Noise
+        // Add Noise
         if ((1 + (this.instanceRandom.nextInt(100))) <= this.noisePercentageOption.getValue()) {
             classLabel = (classLabel == 0 ? 1 : 0);
         }
@@ -161,9 +188,10 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
 
     private void addDrift() {
         for (int i = 0; i < this.numDriftAttsOption.getValue(); i++) {
-            this.weights[i] += (double) ((double) sigma[i]) * ((double) this.magChangeOption.getValue());
-            if (//this.weights[i] >= 1.0 || this.weights[i] <= 0.0 ||
-                    (1 + (this.instanceRandom.nextInt(100))) <= this.sigmaPercentageOption.getValue()) {
+            this.weights[i] +=
+                    (double) ((double) sigma[i]) * ((double) this.magChangeOption.getValue());
+            if ( // this.weights[i] >= 1.0 || this.weights[i] <= 0.0 ||
+            (1 + (this.instanceRandom.nextInt(100))) <= this.sigmaPercentageOption.getValue()) {
                 this.sigma[i] *= -1;
             }
         }
@@ -189,7 +217,6 @@ public class HyperplaneGenerator extends AbstractOptionHandler implements
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == HyperplaneGenerator.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

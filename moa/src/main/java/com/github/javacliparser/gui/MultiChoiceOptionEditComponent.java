@@ -15,14 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.github.javacliparser.gui;
 
-import javax.swing.JComboBox;
-
 import com.github.javacliparser.MultiChoiceOption;
 import com.github.javacliparser.Option;
+
+import javax.swing.JComboBox;
 
 /**
  * An OptionEditComponent that lets the user edit a multi choice option.
@@ -30,8 +30,8 @@ import com.github.javacliparser.Option;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class MultiChoiceOptionEditComponent extends JComboBox<String> implements
-        OptionEditComponent {
+public class MultiChoiceOptionEditComponent extends JComboBox<String>
+        implements OptionEditComponent {
 
     private static final long serialVersionUID = 1L;
 

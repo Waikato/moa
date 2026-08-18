@@ -24,11 +24,13 @@ class PlasticTreeElement {
 
     public String getDescription() {
         String blueprint = "%s%s -- %s";
-        return String.format(blueprint,
+        return String.format(
+                blueprint,
                 node.splitAttribute != null ? node.splitAttribute.toString() : "L",
                 node.isArtificial() ? "*" : "",
-                key != null ? Double.toString(key.getReferencevalue()) : (node.isLeaf() ? "X" : "...")
-        );
+                key != null
+                        ? Double.toString(key.getReferencevalue())
+                        : (node.isLeaf() ? "X" : "..."));
     }
 
     public PlasticTreeElement copy() {

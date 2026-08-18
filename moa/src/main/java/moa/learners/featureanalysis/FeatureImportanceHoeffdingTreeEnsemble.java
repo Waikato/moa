@@ -1,6 +1,7 @@
 package moa.learners.featureanalysis;
 
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.capabilities.CapabilitiesHandler;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
@@ -14,34 +15,44 @@ import moa.options.ClassOption;
  * HoeffdingTree Ensemble Feature Importance.
  *
  * <p>This produce feature importances from ensembles of HoeffdingTree models and its subclasses.
- * This class does not interfere with the training algorithm of the underlying ensemble model.
- * The base learner of the ensemble model must be either a HoeffdingTree or one of its subclasses. </p>
+ * This class does not interfere with the training algorithm of the underlying ensemble model. The
+ * base learner of the ensemble model must be either a HoeffdingTree or one of its subclasses.
  *
- * <p>See details in:<br> Heitor Murilo Gomes, Rodrigo Fernandes de Mello, Bernhard Pfahringer, Albert Bifet.
- * Feature Scoring using Tree-Based Ensembles for Evolving Data Streams.
- * IEEE International Conference on Big Data (pp. 761-769), 2019</p>
- * </p>
+ * <p>See details in:<br>
+ * Heitor Murilo Gomes, Rodrigo Fernandes de Mello, Bernhard Pfahringer, Albert Bifet. Feature
+ * Scoring using Tree-Based Ensembles for Evolving Data Streams. IEEE International Conference on
+ * Big Data (pp. 761-769), 2019
  *
- * <p>Parameters:</p> <ul>
- * <li>-l : The ensemble classifier used to train and to be analyzed. </li>
- * <li>-t : HoeffdingTree FeatureImportance object. Important: the learner option of the HoeffdingTreeFeatureImportance
- * object is overridden by the ensemble base tree model. </li>
+ * <p>Parameters:
+ *
+ * <ul>
+ *   <li>-l : The ensemble classifier used to train and to be analyzed.
+ *   <li>-t : HoeffdingTree FeatureImportance object. Important: the learner option of the
+ *       HoeffdingTreeFeatureImportance object is overridden by the ensemble base tree model.
  * </ul>
  *
  * @author Heitor Murilo Gomes (heitor dot gomes at waikato dot ac dot nz)
  * @version $Revision: 1 $
  */
-public class FeatureImportanceHoeffdingTreeEnsemble extends AbstractClassifier implements MultiClassClassifier,
-        CapabilitiesHandler, FeatureImportanceClassifier {
+public class FeatureImportanceHoeffdingTreeEnsemble extends AbstractClassifier
+        implements MultiClassClassifier, CapabilitiesHandler, FeatureImportanceClassifier {
 
-    public ClassOption ensembleLearnerOption = new ClassOption("ensembleLearner", 'l',
-            "Ensemble learner to train and analyze.", Classifier.class,
-            "moa.classifiers.meta.AdaptiveRandomForest");
+    public ClassOption ensembleLearnerOption =
+            new ClassOption(
+                    "ensembleLearner",
+                    'l',
+                    "Ensemble learner to train and analyze.",
+                    Classifier.class,
+                    "moa.classifiers.meta.AdaptiveRandomForest");
 
-    public ClassOption hoeffdingTreeFeatureImportanceOption = new ClassOption("hoeffdingTreeFeatureImportance", 't',
-            "Hoeffding Tree object to use. Its learner option is overridden by the ensemble base tree model.",
-            FeatureImportanceHoeffdingTree.class,
-            "FeatureImportanceHoeffdingTree");
+    public ClassOption hoeffdingTreeFeatureImportanceOption =
+            new ClassOption(
+                    "hoeffdingTreeFeatureImportance",
+                    't',
+                    "Hoeffding Tree object to use. Its learner option is overridden by the ensemble"
+                            + " base tree model.",
+                    FeatureImportanceHoeffdingTree.class,
+                    "FeatureImportanceHoeffdingTree");
 
     protected Classifier ensemble;
     protected FeatureImportanceHoeffdingTree htFeatureImportanceBase;
@@ -53,18 +64,22 @@ public class FeatureImportanceHoeffdingTreeEnsemble extends AbstractClassifier i
         /* We assume the subClassifiers are instances of HoeffdingTree */
         Classifier[] subClassifiers = (Classifier[]) this.ensemble.getSublearners();
 
-        if(subClassifiers != null) {
-            FeatureImportanceHoeffdingTree[] subFeatureImportanceWrapper = new FeatureImportanceHoeffdingTree[subClassifiers.length];
+        if (subClassifiers != null) {
+            FeatureImportanceHoeffdingTree[] subFeatureImportanceWrapper =
+                    new FeatureImportanceHoeffdingTree[subClassifiers.length];
 
-            for(int i = 0 ; i < subClassifiers.length ; ++i) {
-                subFeatureImportanceWrapper[i] = (FeatureImportanceHoeffdingTree) this.htFeatureImportanceBase.copy();
+            for (int i = 0; i < subClassifiers.length; ++i) {
+                subFeatureImportanceWrapper[i] =
+                        (FeatureImportanceHoeffdingTree) this.htFeatureImportanceBase.copy();
                 subFeatureImportanceWrapper[i].treeLearner = (HoeffdingTree) subClassifiers[i];
-                if(subFeatureImportanceWrapper[i].featureImportances == null) {
+                if (subFeatureImportanceWrapper[i].featureImportances == null) {
                     if (this.featureImportances != null)
-                        subFeatureImportanceWrapper[i].featureImportances = new double[this.featureImportances.length];
+                        subFeatureImportanceWrapper[i].featureImportances =
+                                new double[this.featureImportances.length];
                     else {
-                        System.err.println("Unable to infer the number of features. " +
-                                "trainOnInstance() must be invoked prior to getFeatureImportances()");
+                        System.err.println(
+                                "Unable to infer the number of features. trainOnInstance() must be"
+                                        + " invoked prior to getFeatureImportances()");
                     }
                 }
             }
@@ -72,16 +87,18 @@ public class FeatureImportanceHoeffdingTreeEnsemble extends AbstractClassifier i
             if (this.featureImportances != null)
                 this.featureImportances = new double[this.featureImportances.length];
 
-            for(int i = 0 ; i < subClassifiers.length ; ++i) {
-                double[] treeFeatureImportances = subFeatureImportanceWrapper[i].getFeatureImportances(normalize);
+            for (int i = 0; i < subClassifiers.length; ++i) {
+                double[] treeFeatureImportances =
+                        subFeatureImportanceWrapper[i].getFeatureImportances(normalize);
 
-                for(int j = 0 ; j < this.featureImportances.length ; ++j)
-                    this.featureImportances[j] += Double.isNaN(treeFeatureImportances[j]) ? 0 : treeFeatureImportances[j];
+                for (int j = 0; j < this.featureImportances.length; ++j)
+                    this.featureImportances[j] +=
+                            Double.isNaN(treeFeatureImportances[j]) ? 0 : treeFeatureImportances[j];
             }
 
             // normalize the featureImportances
             // TODO: Double check if we should not sum after storing the new featureImportances[i]
-            if(normalize) {
+            if (normalize) {
                 double sumFeatureImportances = Utils.sum(this.featureImportances);
                 for (int i = 0; i < this.featureImportances.length; ++i) {
                     this.featureImportances[i] /= sumFeatureImportances;
@@ -89,23 +106,22 @@ public class FeatureImportanceHoeffdingTreeEnsemble extends AbstractClassifier i
             }
         }
 
-
         return this.featureImportances;
     }
 
     @Override
     public int[] getTopKFeatures(int k, boolean normalize) {
-        if(this.getFeatureImportances(normalize) == null)
-            return null;
-        if(k > this.getFeatureImportances(normalize).length)
+        if (this.getFeatureImportances(normalize) == null) return null;
+        if (k > this.getFeatureImportances(normalize).length)
             k = this.getFeatureImportances(normalize).length;
 
         int[] topK = new int[k];
-        double[] currentFeatureImportances = new double[this.getFeatureImportances(normalize).length];
-        for(int i = 0 ; i < currentFeatureImportances.length ; ++i)
+        double[] currentFeatureImportances =
+                new double[this.getFeatureImportances(normalize).length];
+        for (int i = 0; i < currentFeatureImportances.length; ++i)
             currentFeatureImportances[i] = this.getFeatureImportances(normalize)[i];
 
-        for(int i = 0 ; i < k ; ++i) {
+        for (int i = 0; i < k; ++i) {
             int currentTop = Utils.maxIndex(currentFeatureImportances);
             topK[i] = currentTop;
             currentFeatureImportances[currentTop] = -1;
@@ -118,12 +134,15 @@ public class FeatureImportanceHoeffdingTreeEnsemble extends AbstractClassifier i
         this.ensemble = (Classifier) getPreparedClassOption(this.ensembleLearnerOption);
         this.ensemble.resetLearning();
 
-        this.htFeatureImportanceBase = (FeatureImportanceHoeffdingTree) getPreparedClassOption(this.hoeffdingTreeFeatureImportanceOption);
+        this.htFeatureImportanceBase =
+                (FeatureImportanceHoeffdingTree)
+                        getPreparedClassOption(this.hoeffdingTreeFeatureImportanceOption);
 
-        if(this.ensemble.getSubClassifiers() == null) {
-            System.err.println("The classifier is not an ensemble or does not implement the getSubClassifiers() method. ");
+        if (this.ensemble.getSubClassifiers() == null) {
+            System.err.println(
+                    "The classifier is not an ensemble or does not implement the"
+                            + " getSubClassifiers() method. ");
         }
-
     }
 
     @Override
@@ -146,8 +165,7 @@ public class FeatureImportanceHoeffdingTreeEnsemble extends AbstractClassifier i
     }
 
     @Override
-    public void getModelDescription(StringBuilder out, int indent) {
-    }
+    public void getModelDescription(StringBuilder out, int indent) {}
 
     @Override
     public boolean isRandomizable() {

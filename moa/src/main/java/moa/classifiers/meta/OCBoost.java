@@ -15,62 +15,75 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.meta;
 
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
-import com.yahoo.labs.samoa.instances.Instance;
-import moa.classifiers.MultiClassClassifier;
-import moa.core.Utils;
-
-import moa.core.Measurement;
-import moa.options.ClassOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
+import moa.core.Measurement;
+import moa.core.Utils;
+import moa.options.ClassOption;
 
 /**
- * Online Coordinate boosting for two classes evolving data streams. 
+ * Online Coordinate boosting for two classes evolving data streams.
  *
- * <p>Pelossof et al. presented Online Coordinate Boosting, a new online
- * boosting algorithm for adapting the weights of a boosted classiﬁer,
- * which yields a closer approximation to Freund and Schapire’s AdaBoost
- * algorithm. The weight update procedure is derived by minimizing AdaBoost’s
- * loss when viewed in an incremental form. This boosting method may be reduced
- * to a form similar to Oza and Russell’s algorithm.</p>
+ * <p>Pelossof et al. presented Online Coordinate Boosting, a new online boosting algorithm for
+ * adapting the weights of a boosted classiﬁer, which yields a closer approximation to Freund and
+ * Schapire’s AdaBoost algorithm. The weight update procedure is derived by minimizing AdaBoost’s
+ * loss when viewed in an incremental form. This boosting method may be reduced to a form similar to
+ * Oza and Russell’s algorithm.
  *
- * <p>See details in:<br />
- * Raphael Pelossof, Michael Jones, Ilia Vovsha, and Cynthia Rudin.
- * Online coordinate boosting. 2008.</p>
- * <p>Example:</p>
- * <code>OCBoost -l HoeffdingTreeNBAdaptive -e 0.5</code>
- * <p>Parameters:</p><ul>
- * <li>-l : Classiﬁer to train</li>
- * <li>-s : The number of models to boost</li>
- * <li>-e : Smoothing parameter</li></ul>
- * 
+ * <p>See details in:<br>
+ * Raphael Pelossof, Michael Jones, Ilia Vovsha, and Cynthia Rudin. Online coordinate boosting.
+ * 2008.
+ *
+ * <p>Example: <code>OCBoost -l HoeffdingTreeNBAdaptive -e 0.5</code>
+ *
+ * <p>Parameters:
+ *
+ * <ul>
+ *   <li>-l : Classiﬁer to train
+ *   <li>-s : The number of models to boost
+ *   <li>-e : Smoothing parameter
+ * </ul>
+ *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-
 public class OCBoost extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Override
     public String getPurposeString() {
         return "Online Coordinate boosting for two classes evolving data streams.";
     }
-        
-    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
 
-    public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
-            "The number of models to boost.", 10, 1, Integer.MAX_VALUE);
+    public ClassOption baseLearnerOption =
+            new ClassOption(
+                    "baseLearner",
+                    'l',
+                    "Classifier to train.",
+                    Classifier.class,
+                    "trees.HoeffdingTree");
 
-    public FloatOption smoothingOption = new FloatOption("smoothingParameter", 'e',
-            "Smoothing parameter.", 0.5, 0.0, 100.0);
+    public IntOption ensembleSizeOption =
+            new IntOption(
+                    "ensembleSize",
+                    's',
+                    "The number of models to boost.",
+                    10,
+                    1,
+                    Integer.MAX_VALUE);
+
+    public FloatOption smoothingOption =
+            new FloatOption("smoothingParameter", 'e', "Smoothing parameter.", 0.5, 0.0, 100.0);
 
     protected Classifier[] ensemble;
 
@@ -114,7 +127,7 @@ public class OCBoost extends AbstractClassifier implements MultiClassClassifier 
         double d = 1.0;
         int[] m = new int[this.ensemble.length];
         for (int j = 0; j < this.ensemble.length; j++) {
-            int j0 = 0; //max(0,j-K)
+            int j0 = 0; // max(0,j-K)
             pipos[j] = 1.0;
             pineg[j] = 1.0;
             m[j] = -1;
@@ -122,14 +135,17 @@ public class OCBoost extends AbstractClassifier implements MultiClassClassifier 
                 m[j] = 1;
             }
             for (int k = j0; k <= j - 1; k++) {
-                pipos[j] *= wpos[j][k] / wpos[j][j] * Math.exp(-alphainc[k])
-                        + (1.0 - wpos[j][k] / wpos[j][j]) * Math.exp(alphainc[k]);
-                pineg[j] *= wneg[j][k] / wneg[j][j] * Math.exp(-alphainc[k])
-                        + (1.0 - wneg[j][k] / wneg[j][j]) * Math.exp(alphainc[k]);
+                pipos[j] *=
+                        wpos[j][k] / wpos[j][j] * Math.exp(-alphainc[k])
+                                + (1.0 - wpos[j][k] / wpos[j][j]) * Math.exp(alphainc[k]);
+                pineg[j] *=
+                        wneg[j][k] / wneg[j][j] * Math.exp(-alphainc[k])
+                                + (1.0 - wneg[j][k] / wneg[j][j]) * Math.exp(alphainc[k]);
             }
             for (int k = 0; k <= j; k++) {
                 wpos[j][k] = wpos[j][k] * pipos[j] + d * (m[k] == 1 ? 1 : 0) * (m[j] == 1 ? 1 : 0);
-                wneg[j][k] = wneg[j][k] * pineg[j] + d * (m[k] == -1 ? 1 : 0) * (m[j] == -1 ? 1 : 0);
+                wneg[j][k] =
+                        wneg[j][k] * pineg[j] + d * (m[k] == -1 ? 1 : 0) * (m[j] == -1 ? 1 : 0);
             }
             alphainc[j] = -alpha[j];
             alpha[j] = 0.5 * Math.log(wpos[j][j] / wneg[j][j]);
@@ -179,8 +195,9 @@ public class OCBoost extends AbstractClassifier implements MultiClassClassifier 
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        return new Measurement[]{new Measurement("ensemble size",
-                    this.ensemble != null ? this.ensemble.length : 0)};
+        return new Measurement[] {
+            new Measurement("ensemble size", this.ensemble != null ? this.ensemble.length : 0)
+        };
     }
 
     @Override

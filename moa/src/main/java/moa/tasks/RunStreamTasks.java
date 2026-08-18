@@ -16,12 +16,13 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.StringOption;
+
 import moa.MOAObject;
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
@@ -42,20 +43,23 @@ public class RunStreamTasks extends ConceptDriftMainTask {
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption taskOption = new ClassOption("task", 't',
-            "Task to do.", Task.class, "EvaluatePrequential -l active.ALUncertainty -i 1000000 -d temp.txt");
+    public ClassOption taskOption =
+            new ClassOption(
+                    "task",
+                    't',
+                    "Task to do.",
+                    Task.class,
+                    "EvaluatePrequential -l active.ALUncertainty -i 1000000 -d temp.txt");
 
-    public StringOption streamParameterOption = new StringOption("streamParameter", 'p',
-            "Stream parameter to vary.", "b");
+    public StringOption streamParameterOption =
+            new StringOption("streamParameter", 'p', "Stream parameter to vary.", "b");
 
-    public FloatOption firstValueOption = new FloatOption("firstValue",
-            'f', "First value", 0.0);
+    public FloatOption firstValueOption = new FloatOption("firstValue", 'f', "First value", 0.0);
 
-    public FloatOption lastValueOption = new FloatOption("lastValue",
-            'l', "Last value", 1.0);
+    public FloatOption lastValueOption = new FloatOption("lastValue", 'l', "Last value", 1.0);
 
-    public FloatOption incrementValueOption = new FloatOption("incrementValue",
-            'i', "Increment value", 0.1);
+    public FloatOption incrementValueOption =
+            new FloatOption("incrementValue", 'i', "Increment value", 0.1);
 
     @Override
     public Class<?> getTaskResultType() {
@@ -67,21 +71,29 @@ public class RunStreamTasks extends ConceptDriftMainTask {
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Object result = null;
-        Task taskBase = (Task) getPreparedClassOption(this.taskOption); 
+        Task taskBase = (Task) getPreparedClassOption(this.taskOption);
         String commandString = this.taskOption.getValueAsCLIString();
-        //for each possible value of the parameter
+        // for each possible value of the parameter
         for (int valueParameter = (int) this.firstValueOption.getValue();
                 valueParameter <= this.lastValueOption.getValue();
                 valueParameter += (int) this.incrementValueOption.getValue()) {
-            //Add parameter
+            // Add parameter
             this.task = (Task) ((MOAObject) taskBase).copy();
             if (this.task instanceof EvaluateConceptDrift) {
-                String stream = ((EvaluateConceptDrift) this.task).streamOption.getValueAsCLIString();
-                ((EvaluateConceptDrift) this.task).streamOption.setValueViaCLIString(stream + " -" + streamParameterOption.getValue() + " " + valueParameter);
+                String stream =
+                        ((EvaluateConceptDrift) this.task).streamOption.getValueAsCLIString();
+                ((EvaluateConceptDrift) this.task)
+                        .streamOption.setValueViaCLIString(
+                                stream
+                                        + " -"
+                                        + streamParameterOption.getValue()
+                                        + " "
+                                        + valueParameter);
             }
-            //Run task
+            // Run task
             result = this.task.doTask(monitor, repository);
-            //System.out.println(((AbstractOptionHandler) this.task).getCLICreationString(Task.class));
+            // System.out.println(((AbstractOptionHandler)
+            // this.task).getCLICreationString(Task.class));
         }
         return result;
     }

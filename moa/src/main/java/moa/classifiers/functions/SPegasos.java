@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 
 /*
@@ -25,25 +25,30 @@
  */
 package moa.classifiers.functions;
 
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.MultiChoiceOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
 import moa.core.StringUtils;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.MultiChoiceOption;
-import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.Utils;
 
 /**
- * <!-- globalinfo-start --> Implements the stochastic variant of the Pegasos
- * (Primal Estimated sub-GrAdient SOlver for SVM) method of Shalev-Shwartz et
- * al. (2007). For more information, see<br/> <br/> S. Shalev-Shwartz, Y.
- * Singer, N. Srebro: Pegasos: Primal Estimated sub-GrAdient SOlver for SVM. In:
- * 24th International Conference on MachineLearning, 807-814, 2007.
- * <p/>
+ * <!-- globalinfo-start -->
+ * Implements the stochastic variant of the Pegasos (Primal Estimated sub-GrAdient SOlver for SVM)
+ * method of Shalev-Shwartz et al. (2007). For more information, see<br>
+ * <br>
+ * S. Shalev-Shwartz, Y. Singer, N. Srebro: Pegasos: Primal Estimated sub-GrAdient SOlver for SVM.
+ * In: 24th International Conference on MachineLearning, 807-814, 2007.
+ *
+ * <p>
  * <!-- globalinfo-end -->
- * * 
-<!-- technical-bibtex-start --> BibTeX:
+ * *
+ * <!-- technical-bibtex-start -->
+ * BibTeX:
+ *
  * <pre>
  * &#64;inproceedings{Shalev-Shwartz2007,
  *    author = {S. Shalev-Shwartz and Y. Singer and N. Srebro},
@@ -53,54 +58,53 @@ import moa.core.Utils;
  *    year = {2007}
  * }
  * </pre>
- * <p/>
- * <!-- technical-bibtex-end -->
  *
+ * <p>
+ * <!-- technical-bibtex-end -->
  */
 public class SPegasos extends AbstractClassifier implements MultiClassClassifier {
 
-    /**
-     * For serialization
-     */
+    /** For serialization */
     private static final long serialVersionUID = -3732968666673530290L;
 
     @Override
     public String getPurposeString() {
-        return "Stochastic variant of the Pegasos (Primal Estimated sub-GrAdient SOlver for SVM) method of Shalev-Shwartz et al. (2007).";
+        return "Stochastic variant of the Pegasos (Primal Estimated sub-GrAdient SOlver for SVM)"
+                + " method of Shalev-Shwartz et al. (2007).";
     }
 
-    /**
-     * The regularization parameter
-     */
+    /** The regularization parameter */
     protected double m_lambda = 0.0001;
 
-    public FloatOption lambdaRegularizationOption = new FloatOption("lambdaRegularization",
-            'l', "Lambda regularization parameter .",
-            0.0001, 0.00, Integer.MAX_VALUE);
+    public FloatOption lambdaRegularizationOption =
+            new FloatOption(
+                    "lambdaRegularization",
+                    'l',
+                    "Lambda regularization parameter .",
+                    0.0001,
+                    0.00,
+                    Integer.MAX_VALUE);
 
     protected static final int HINGE = 0;
 
     protected static final int LOGLOSS = 1;
 
-    /**
-     * The current loss function to minimize
-     */
+    /** The current loss function to minimize */
     protected int m_loss = HINGE;
 
-    public MultiChoiceOption lossFunctionOption = new MultiChoiceOption(
-            "lossFunction", 'o', "The loss function to use.", new String[]{
-                "HINGE", "LOGLOSS"}, new String[]{
-                "Hinge loss (SVM)",
-                "Log loss (logistic regression)"}, 0);
+    public MultiChoiceOption lossFunctionOption =
+            new MultiChoiceOption(
+                    "lossFunction",
+                    'o',
+                    "The loss function to use.",
+                    new String[] {"HINGE", "LOGLOSS"},
+                    new String[] {"Hinge loss (SVM)", "Log loss (logistic regression)"},
+                    0);
 
-    /**
-     * Stores the weights (+ bias in the last element)
-     */
+    /** Stores the weights (+ bias in the last element) */
     protected double[] m_weights;
 
-    /**
-     * Holds the current iteration number
-     */
+    /** Holds the current iteration number */
     protected double m_t;
 
     /**
@@ -139,9 +143,7 @@ public class SPegasos extends AbstractClassifier implements MultiClassClassifier
         return m_loss;
     }
 
-    /**
-     * Reset the classifier.
-     */
+    /** Reset the classifier. */
     public void reset() {
         m_t = 2;
         m_weights = null;
@@ -153,7 +155,7 @@ public class SPegasos extends AbstractClassifier implements MultiClassClassifier
         int n1 = inst1.numValues();
         int n2 = weights.length - 1;
 
-        for (int p1 = 0, p2 = 0; p1 < n1 && p2 < n2;) {
+        for (int p1 = 0, p2 = 0; p1 < n1 && p2 < n2; ) {
             int ind1 = inst1.index(p1);
             int ind2 = p2;
             if (ind1 == ind2) {
@@ -206,7 +208,7 @@ public class SPegasos extends AbstractClassifier implements MultiClassClassifier
         if (!instance.classIsMissing()) {
 
             double learningRate = 1.0 / (m_lambda * m_t);
-            //double scale = 1.0 - learningRate * m_lambda;
+            // double scale = 1.0 - learningRate * m_lambda;
             double scale = 1.0 - 1.0 / m_t;
             double y = (instance.classValue() == 0) ? -1 : 1;
             double wx = dotProd(instance, m_weights, instance.classIndex());
@@ -254,8 +256,7 @@ public class SPegasos extends AbstractClassifier implements MultiClassClassifier
     }
 
     /**
-     * Calculates the class membership probabilities for the given test
-     * instance.
+     * Calculates the class membership probabilities for the given test instance.
      *
      * @param inst the instance to be classified
      * @return predicted class probability distribution
@@ -269,9 +270,9 @@ public class SPegasos extends AbstractClassifier implements MultiClassClassifier
 
         double[] result = new double[2];
 
-        double wx = dotProd(inst, m_weights, inst.classIndex());// * m_wScale;
+        double wx = dotProd(inst, m_weights, inst.classIndex()); // * m_wScale;
         double z = (wx + m_weights[m_weights.length - 1]);
-        //System.out.print("" + z + ": ");
+        // System.out.print("" + z + ": ");
         // System.out.println(1.0 / (1.0 + Math.exp(-z)));
         if (z <= 0) {
             //  z = 0;
@@ -325,13 +326,15 @@ public class SPegasos extends AbstractClassifier implements MultiClassClassifier
                 buff.append("   ");
             }
 
-            buff.append(Utils.doubleToString(m_weights[i], 12, 4) + " "
-                    //+ m_data.attribute(i).name()
-                    + "\n");
+            buff.append(
+                    Utils.doubleToString(m_weights[i], 12, 4)
+                            + " "
+                            // + m_data.attribute(i).name()
+                            + "\n");
 
             printed++;
         }
-        //}
+        // }
 
         if (m_weights[m_weights.length - 1] > 0) {
             buff.append(" + " + Utils.doubleToString(m_weights[m_weights.length - 1], 12, 4));

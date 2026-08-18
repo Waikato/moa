@@ -15,41 +15,42 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.clusterers.outliers.Angiulli;
+
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.clusterers.outliers.Angiulli.ISBIndex.ISBNode;
+import moa.clusterers.outliers.Angiulli.ISBIndex.ISBSearchResult;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Vector;
-import moa.clusterers.outliers.Angiulli.ISBIndex.ISBNode;
-import moa.clusterers.outliers.Angiulli.ISBIndex.ISBSearchResult;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.Instance;
 
+// The algorithm is presented in "Distance-based outlier queries in data streams: the novel task and
+// algorithms.
+// Data Mining and Knowledge Discovery, 20(2):290–324,2010.
 
-// The algorithm is presented in "Distance-based outlier queries in data streams: the novel task and algorithms.
-//Data Mining and Knowledge Discovery, 20(2):290–324,2010.
-
-
-public class ExactSTORM extends STORMBase {    
+public class ExactSTORM extends STORMBase {
     public class ISBNodeExact extends ISBNode {
         public int count_after;
         // nn_before:
         //   A list that needs O(logn) time for ordered insertion and search.
         //   It must be able to perform a search in the list using e.g. <=.
         private ArrayList<Long> nn_before;
-        
+
         public ISBNodeExact(Instance inst, StreamObj obj, Long id, int k) {
             super(inst, obj, id);
             m_k = k;
             count_after = 0;
             nn_before = new ArrayList<Long>();
         }
-        
+
         public void AddPrecNeigh(Long id) {
             int pos = Collections.binarySearch(nn_before, id);
             if (pos < 0) {
@@ -57,7 +58,7 @@ public class ExactSTORM extends STORMBase {
                 nn_before.add(-(pos + 1), id);
             }
         }
-        
+
         public int CountPrecNeighs(Long sinceId) {
             if (nn_before.size() > 0) {
                 // get number of neighs with id >= sinceId
@@ -70,49 +71,48 @@ public class ExactSTORM extends STORMBase {
                     // item exists at startPos
                     startPos = pos;
                 }
-                
+
                 if (startPos < nn_before.size()) {
                     return nn_before.size() - startPos;
                 }
             }
             return 0;
         }
-        
+
         public void PrintPrecNeighs() {
             Print("      nn_before: ");
             Iterator it = nn_before.iterator();
             while (it.hasNext()) {
-                Print((Long)it.next() + " ");
+                Print((Long) it.next() + " ");
             }
             Println(" ");
         }
     }
-    
+
     public FloatOption radiusOption = new FloatOption("radius", 'r', "Search radius.", 0.1);
     public IntOption kOption = new IntOption("k", 't', "Parameter k.", 50);
     public IntOption queryFreqOption = new IntOption("queryFreq", 'q', "Query frequency.", 1);
-    
-    public ExactSTORM()
-    {
+
+    public ExactSTORM() {
         // System.out.println("DistanceOutliersExact: created");
     }
-    
+
     @Override
     public String getObjectInfo(Object obj) {
         if (obj == null) return null;
-        
+
         ISBNodeExact node = (ISBNodeExact) obj;
-        
+
         ArrayList<String> infoTitle = new ArrayList<String>();
         ArrayList<String> infoValue = new ArrayList<String>();
         StringBuilder sb = new StringBuilder();
 
         // show node position
         for (int i = 0; i < node.obj.dimensions(); i++) {
-            infoTitle.add("Dim" + (i+1));
+            infoTitle.add("Dim" + (i + 1));
             infoValue.add(String.format("%.3f", node.obj.get(i)));
         }
-        
+
         // show node properties
         infoTitle.add("id");
         infoValue.add(String.format("%d", node.id));
@@ -120,51 +120,55 @@ public class ExactSTORM extends STORMBase {
         infoValue.add(String.format("%d", node.count_after));
         infoTitle.add("|nn_before|");
         infoValue.add(String.format("%d", node.CountPrecNeighs(GetWindowStart())));
-        
+
         sb.append("<html>");
         sb.append("<table>");
         int i = 0;
-        while(i < infoTitle.size() && i < infoValue.size()){
-            sb.append("<tr><td><b>"+infoTitle.get(i)+":</b></td><td>"+infoValue.get(i)+"</td></tr>");
+        while (i < infoTitle.size() && i < infoValue.size()) {
+            sb.append(
+                    "<tr><td><b>"
+                            + infoTitle.get(i)
+                            + ":</b></td><td>"
+                            + infoValue.get(i)
+                            + "</td></tr>");
             i++;
         }
         sb.append("</table>");
 
-        
         sb.append("</html>");
         return sb.toString();
     }
-    
+
     @Override
-    public void Init() {   
+    public void Init() {
         super.Init();
-        
+
         m_WindowSize = windowSizeOption.getValue();
         m_radius = radiusOption.getValue();
         m_k = kOption.getValue();
         m_QueryFreq = queryFreqOption.getValue();
-                
+
         Println("Init DistanceOutliersExact:");
         Println("   window_size: " + m_WindowSize);
         Println("   radius: " + m_radius);
         Println("   k: " + m_k);
         Println("   query_freq: " + m_QueryFreq);
-        
+
         objId = FIRST_OBJ_ID; // init object identifier
         // create fifo
         windowNodes = new Vector<ISBNode>();
         // create ISB
         ISB = new ISBIndex(m_radius, m_k);
-        
+
         // init statistics
         m_nBothInlierOutlier = 0;
         m_nOnlyInlier = 0;
         m_nOnlyOutlier = 0;
     }
-    
+
     void RemoveNode(ISBNode node) {
         // remove node from ISB
-        ISB.Remove(node);   
+        ISB.Remove(node);
         // remove from fifo
         windowNodes.remove(node);
         // remove from outliers
@@ -172,11 +176,10 @@ public class ExactSTORM extends STORMBase {
         // update statistics
         UpdateStatistics(node);
     }
-    
+
     void DeleteExpiredNode() {
-        if (windowNodes.size() <= 0)
-            return;        
-       
+        if (windowNodes.size() <= 0) return;
+
         // get oldest node
         ISBNode node = windowNodes.get(0);
         // check if node has expired
@@ -189,16 +192,15 @@ public class ExactSTORM extends STORMBase {
             RemoveNode(node);
         }
     }
-    
+
     @Override
-    protected void ProcessNewStreamObj(Instance inst)
-    {        
-        if (bShowProgress) ShowProgress("Processed " + objId + " stream objects.");       
+    protected void ProcessNewStreamObj(Instance inst) {
+        if (bShowProgress) ShowProgress("Processed " + objId + " stream objects.");
         // PrintInstance(inst);
-        
+
         double[] values = getInstanceValues(inst);
         StreamObj obj = new StreamObj(values);
-        
+
         if (bTrace) Println("\n- - - - - - - - - - - -\n");
 
         // create new ISB node
@@ -209,10 +211,10 @@ public class ExactSTORM extends STORMBase {
         }
         // update object identifier
         objId++;
-        
+
         // delete a node if it has expired
         DeleteExpiredNode();
-        
+
         // init nodeNew
         nodeNew.count_after = 1;
 
@@ -224,22 +226,22 @@ public class ExactSTORM extends STORMBase {
         // process each returned node
         for (ISBSearchResult res : nodes) {
             ISBNodeExact n = (ISBNodeExact) res.node;
-            if (bTrace)  {
+            if (bTrace) {
                 Printf("   Found at d=%.2f: ", res.distance);
                 PrintNode(res.node);
             }
-            
-            n.count_after++;            
+
+            n.count_after++;
             nodeNew.AddPrecNeigh(res.node.id);
         }
 
         if (bTrace) Println("Insert new node to ISB.");
         ISB.Insert(nodeNew);
-        
+
         // insert node at window
         windowNodes.add(nodeNew);
         if (bTrace) PrintWindow();
-        
+
         if (CanSearch()) {
             // invoke query function to detect outliers
             SearchOutliers();
@@ -248,7 +250,7 @@ public class ExactSTORM extends STORMBase {
             UpdateNodeStatistics(nodeNew);
         }
     }
-    
+
     void SearchOutliers() {
         if (bTrace) Println("Invoke query: ");
         ISBNodeExact node;
@@ -259,13 +261,13 @@ public class ExactSTORM extends STORMBase {
                 Print("   Process node: ");
                 PrintNode(node);
             }
-            UpdateNodeType(node);        
+            UpdateNodeType(node);
         }
     }
-    
+
     void UpdateNodeType(ISBNodeExact node) {
         int succ_neighs, prec_neighs;
-        
+
         // get number of succeeding neighbors
         succ_neighs = node.count_after;
         if (bTrace) Println("      succ_neighs: " + succ_neighs);
@@ -290,7 +292,7 @@ public class ExactSTORM extends STORMBase {
             RemoveOutlier(node);
         }
     }
-    
+
     void UpdateNodeStatistics(ISBNodeExact node) {
         int succ_neighs = node.count_after;
         int prec_neighs = node.CountPrecNeighs(GetWindowStart());

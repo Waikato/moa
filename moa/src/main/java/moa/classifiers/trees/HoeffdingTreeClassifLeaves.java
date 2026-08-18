@@ -15,35 +15,35 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.trees;
+
+import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.classifiers.Classifier;
+import moa.classifiers.core.AttributeSplitSuggestion;
+import moa.classifiers.core.splitcriteria.SplitCriterion;
+import moa.options.ClassOption;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import moa.classifiers.Classifier;
-import moa.classifiers.core.AttributeSplitSuggestion;
-import moa.classifiers.core.splitcriteria.SplitCriterion;
-import moa.classifiers.trees.HoeffdingTree;
-import moa.options.ClassOption;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Hoeffding Tree that have a classifier at the leaves.
  *
- * A Hoeffding tree is an incremental, anytime decision tree induction algorithm
- * that is capable of learning from massive data streams, assuming that the
- * distribution generating examples does not change over time.
- * 
- * 
- */ 
+ * <p>A Hoeffding tree is an incremental, anytime decision tree induction algorithm that is capable
+ * of learning from massive data streams, assuming that the distribution generating examples does
+ * not change over time.
+ */
 public class HoeffdingTreeClassifLeaves extends HoeffdingTree {
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption learnerOption = new ClassOption("learner", 'a',
-            "Classifier to train.", Classifier.class, "bayes.NaiveBayes");
+    public ClassOption learnerOption =
+            new ClassOption(
+                    "learner", 'a', "Classifier to train.", Classifier.class, "bayes.NaiveBayes");
 
     public class LearningNodeClassifier extends ActiveLearningNode {
 
@@ -55,9 +55,11 @@ public class HoeffdingTreeClassifLeaves extends HoeffdingTree {
             super(initialClassObservations);
         }
 
-        public LearningNodeClassifier(double[] initialClassObservations, Classifier cl, HoeffdingTreeClassifLeaves ht) {
+        public LearningNodeClassifier(
+                double[] initialClassObservations, Classifier cl, HoeffdingTreeClassifLeaves ht) {
             super(initialClassObservations);
-            //public void LearningNodeClassifier1(double[] initialClassObservations, Classifier cl, HoeffdingTreeClassifLeaves ht ) {
+            // public void LearningNodeClassifier1(double[] initialClassObservations, Classifier cl,
+            // HoeffdingTreeClassifLeaves ht ) {
 
             if (cl == null) {
                 this.classifier = (Classifier) getPreparedClassOption(ht.learnerOption);
@@ -65,7 +67,7 @@ public class HoeffdingTreeClassifLeaves extends HoeffdingTree {
                 this.classifier = cl.copy();
             }
         }
-	
+
         @Override
         public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
             if (getWeightSeen() >= ((HoeffdingTreeClassifLeaves) ht).nbThresholdOption.getValue()) {
@@ -99,44 +101,51 @@ public class HoeffdingTreeClassifLeaves extends HoeffdingTree {
         return new LearningNodeClassifier(initialClassObservations, null, this);
     }
 
-    //@Override
+    // @Override
     protected LearningNode newLearningNode(double[] initialClassObservations, Classifier cl) {
         return new LearningNodeClassifier(initialClassObservations, cl, this);
     }
 
     @Override
-    protected void attemptToSplit(ActiveLearningNode node, SplitNode parent,
-            int parentIndex) {
-        //ßSystem.out.println("Attempt to Split");
+    protected void attemptToSplit(ActiveLearningNode node, SplitNode parent, int parentIndex) {
+        // ßSystem.out.println("Attempt to Split");
         if (!node.observedClassDistributionIsPure()) {
-            SplitCriterion splitCriterion = (SplitCriterion) getPreparedClassOption(this.splitCriterionOption);
-            AttributeSplitSuggestion[] bestSplitSuggestions = node.getBestSplitSuggestions(splitCriterion, this);
+            SplitCriterion splitCriterion =
+                    (SplitCriterion) getPreparedClassOption(this.splitCriterionOption);
+            AttributeSplitSuggestion[] bestSplitSuggestions =
+                    node.getBestSplitSuggestions(splitCriterion, this);
             Arrays.sort(bestSplitSuggestions);
             boolean shouldSplit = false;
             if (bestSplitSuggestions.length < 2) {
                 shouldSplit = bestSplitSuggestions.length > 0;
             } else {
-                double hoeffdingBound = computeHoeffdingBound(splitCriterion.getRangeOfMerit(node.getObservedClassDistribution()),
-                        this.splitConfidenceOption.getValue(), node.getWeightSeen());
-                AttributeSplitSuggestion bestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 1];
-                AttributeSplitSuggestion secondBestSuggestion = bestSplitSuggestions[bestSplitSuggestions.length - 2];
-               // System.out.println(bestSuggestion.merit+" - "+secondBestSuggestion.merit+":"+
-               //         (bestSuggestion.merit - secondBestSuggestion.merit)+" > "+hoeffdingBound+ "<"+this.tieThresholdOption.getValue());
+                double hoeffdingBound =
+                        computeHoeffdingBound(
+                                splitCriterion.getRangeOfMerit(node.getObservedClassDistribution()),
+                                this.splitConfidenceOption.getValue(),
+                                node.getWeightSeen());
+                AttributeSplitSuggestion bestSuggestion =
+                        bestSplitSuggestions[bestSplitSuggestions.length - 1];
+                AttributeSplitSuggestion secondBestSuggestion =
+                        bestSplitSuggestions[bestSplitSuggestions.length - 2];
+                // System.out.println(bestSuggestion.merit+" - "+secondBestSuggestion.merit+":"+
+                //         (bestSuggestion.merit - secondBestSuggestion.merit)+" > "+hoeffdingBound+
+                // "<"+this.tieThresholdOption.getValue());
                 if ((bestSuggestion.merit - secondBestSuggestion.merit > hoeffdingBound)
                         || (hoeffdingBound < this.tieThresholdOption.getValue())) {
                     shouldSplit = true;
                 }
                 // }
-                if ((this.removePoorAttsOption != null)
-                        && this.removePoorAttsOption.isSet()) {
+                if ((this.removePoorAttsOption != null) && this.removePoorAttsOption.isSet()) {
                     Set<Integer> poorAtts = new HashSet<Integer>();
                     // scan 1 - add any poor to set
                     for (int i = 0; i < bestSplitSuggestions.length; i++) {
                         if (bestSplitSuggestions[i].splitTest != null) {
-                            int[] splitAtts = bestSplitSuggestions[i].splitTest.getAttsTestDependsOn();
+                            int[] splitAtts =
+                                    bestSplitSuggestions[i].splitTest.getAttsTestDependsOn();
                             if (splitAtts.length == 1) {
-                                if (bestSuggestion.merit
-                                        - bestSplitSuggestions[i].merit > hoeffdingBound) {
+                                if (bestSuggestion.merit - bestSplitSuggestions[i].merit
+                                        > hoeffdingBound) {
                                     poorAtts.add(new Integer(splitAtts[0]));
                                 }
                             }
@@ -145,10 +154,11 @@ public class HoeffdingTreeClassifLeaves extends HoeffdingTree {
                     // scan 2 - remove good ones from set
                     for (int i = 0; i < bestSplitSuggestions.length; i++) {
                         if (bestSplitSuggestions[i].splitTest != null) {
-                            int[] splitAtts = bestSplitSuggestions[i].splitTest.getAttsTestDependsOn();
+                            int[] splitAtts =
+                                    bestSplitSuggestions[i].splitTest.getAttsTestDependsOn();
                             if (splitAtts.length == 1) {
-                                if (bestSuggestion.merit
-                                        - bestSplitSuggestions[i].merit < hoeffdingBound) {
+                                if (bestSuggestion.merit - bestSplitSuggestions[i].merit
+                                        < hoeffdingBound) {
                                     poorAtts.remove(new Integer(splitAtts[0]));
                                 }
                             }
@@ -160,16 +170,21 @@ public class HoeffdingTreeClassifLeaves extends HoeffdingTree {
                 }
             }
             if (shouldSplit) {
-                AttributeSplitSuggestion splitDecision = bestSplitSuggestions[bestSplitSuggestions.length - 1];
+                AttributeSplitSuggestion splitDecision =
+                        bestSplitSuggestions[bestSplitSuggestions.length - 1];
                 if (splitDecision.splitTest == null) {
                     // preprune - null wins
                     deactivateLearningNode(node, parent, parentIndex);
                 } else {
-                    SplitNode newSplit = newSplitNode(splitDecision.splitTest,
-                            node.getObservedClassDistribution());
+                    SplitNode newSplit =
+                            newSplitNode(
+                                    splitDecision.splitTest, node.getObservedClassDistribution());
                     for (int i = 0; i < splitDecision.numSplits(); i++) {
-                        //Unique Change of HoeffdingTree
-                        Node newChild = newLearningNode(splitDecision.resultingClassDistributionFromSplit(i), ((LearningNodeClassifier) node).getClassifier());
+                        // Unique Change of HoeffdingTree
+                        Node newChild =
+                                newLearningNode(
+                                        splitDecision.resultingClassDistributionFromSplit(i),
+                                        ((LearningNodeClassifier) node).getClassifier());
                         newSplit.setChild(i, newChild);
                     }
                     this.activeLeafNodeCount--;

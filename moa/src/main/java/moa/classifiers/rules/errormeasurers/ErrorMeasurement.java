@@ -20,41 +20,33 @@
 
 package moa.classifiers.rules.errormeasurers;
 
-import moa.AbstractMOAObject;
-
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
-/**
- * Computes error measures with a fading factor
- * fadingErrorFactorOption - Fading factor
- */
+import moa.AbstractMOAObject;
 
+/** Computes error measures with a fading factor fadingErrorFactorOption - Fading factor */
+public abstract class ErrorMeasurement extends AbstractMOAObject {
 
+    public FloatOption fadingErrorFactorOption =
+            new FloatOption("fadingErrorFactor", 'e', "Fading factor for the error", 0.99, 0, 1);
 
-abstract public class ErrorMeasurement extends AbstractMOAObject {
-	
-	public FloatOption fadingErrorFactorOption = new FloatOption(
-			"fadingErrorFactor", 'e', 
-			"Fading factor for the error", 0.99, 0, 1);
+    /** */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	protected double fadingErrorFactor;
-	abstract public void addPrediction(double [] prediction, Instance inst);
-	
-	abstract public double getCurrentError();
+    protected double fadingErrorFactor;
 
-	public ErrorMeasurement(){
-		fadingErrorFactor=fadingErrorFactorOption.getValue();
-	}
-	@Override
-	public void getDescription(StringBuilder sb, int indent) {
-		// TODO Auto-generated method stub
+    public abstract void addPrediction(double[] prediction, Instance inst);
 
-	}
+    public abstract double getCurrentError();
 
+    public ErrorMeasurement() {
+        fadingErrorFactor = fadingErrorFactorOption.getValue();
+    }
+
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {
+        // TODO Auto-generated method stub
+
+    }
 }

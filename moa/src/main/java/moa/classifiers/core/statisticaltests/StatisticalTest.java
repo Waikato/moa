@@ -15,32 +15,36 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core.statisticaltests;
 
 import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.options.OptionHandler;
+
 import java.util.List;
 import java.util.concurrent.Callable;
-import moa.options.OptionHandler;
 
 /**
  * This interface represents how to perform multivariate statistical tests.
  *
  * @author Paulo Goncalves
- *
  */
 public interface StatisticalTest extends OptionHandler, Callable<Double> {
     /**
      * This method performs a test and returns the correspoding p-value.
+     *
      * @param x List of instances
      * @param y List of instances
      * @return p-value
      */
     public double test(List<Instance> x, List<Instance> y);
+
     /**
-     * This method sets the instances for later use in concurrent scenarios. 
-     * The test is performed by using the call() method.
+     * This method sets the instances for later use in concurrent scenarios. The test is performed
+     * by using the call() method.
+     *
      * @param x List of instances
      * @param y List of instances
      */

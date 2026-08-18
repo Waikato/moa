@@ -2,7 +2,7 @@
  *    IademException.java
  *
  *    @author José del Campo-Ávila
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.classifiers.trees.iadem;
@@ -27,15 +27,14 @@ public class IademException extends Exception implements Serializable {
     private final String myClass;
     private final String myMethod;
     private final String myExplanation;
-    
+
     public IademException(String myClass, String myMethod, String myExplanation) {
         super();
         this.myClass = myClass;
         this.myMethod = myMethod;
         this.myExplanation = myExplanation;
     }
-    
-    
+
     @Override
     public String getMessage() {
         return "Error in " + this.myClass + "." + this.myMethod + ": " + this.myExplanation;

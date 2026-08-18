@@ -14,10 +14,12 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.clusterers.outliers.Angiulli;
+
+import com.yahoo.labs.samoa.instances.Instance;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,15 +27,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import com.yahoo.labs.samoa.instances.Instance;
 
-
-public class ISBIndex {    
+public class ISBIndex {
     public abstract static class ISBNode {
         public Instance inst;
         public StreamObj obj;
         public Long id;
-        
+
         // statistics
         public int nOutlier;
         public int nInlier;
@@ -42,35 +42,35 @@ public class ISBIndex {
             this.inst = inst;
             this.obj = obj;
             this.id = id;
-            
+
             // init statistics
             nOutlier = 0;
-            nInlier  = 0;
+            nInlier = 0;
         }
     }
-    
+
     MyMTree mtree;
     Map<Integer, Set<ISBNode>> mapNodes;
     double m_radius;
     int m_k; // k nearest neighbors
-    
+
     public ISBIndex(double radius, int k) {
         mtree = new MyMTree();
         mapNodes = new HashMap<Integer, Set<ISBNode>>();
         m_radius = radius;
         m_k = k;
     }
-    
+
     public static class ISBSearchResult {
         public ISBNode node;
         public double distance;
-        
+
         public ISBSearchResult(ISBNode n, double distance) {
             this.node = n;
             this.distance = distance;
         }
     }
-    
+
     public Vector<ISBSearchResult> RangeSearch(ISBNode node, double radius) {
         Vector<ISBSearchResult> results = new Vector<ISBSearchResult>();
         // execute range search at mtree
@@ -86,17 +86,17 @@ public class ISBIndex {
             Vector<ISBNode> nodes = MapGetNodes(obj);
             for (int i = 0; i < nodes.size(); i++)
                 results.add(new ISBSearchResult(nodes.get(i), d));
-        }        
+        }
         return results;
     }
-    
+
     public void Insert(ISBNode node) {
         // insert object of node at mtree
         mtree.add(node.obj);
         // insert node at map
-        MapInsert(node);    
+        MapInsert(node);
     }
-    
+
     public void Remove(ISBNode node) {
         // remove from map
         MapDelete(node);
@@ -106,7 +106,7 @@ public class ISBIndex {
             mtree.remove(node.obj);
         }
     }
-    
+
     Vector<ISBNode> MapGetNodes(StreamObj obj) {
         int h = obj.hashCode();
         Vector<ISBNode> v = new Vector<ISBNode>();
@@ -116,13 +116,12 @@ public class ISBIndex {
             Iterator<ISBNode> i = s.iterator();
             while (i.hasNext()) {
                 node = i.next();
-                if (node.obj.equals(obj))
-                    v.add(node);
+                if (node.obj.equals(obj)) v.add(node);
             }
         }
         return v;
     }
-    
+
     int MapCountObjRefs(StreamObj obj) {
         int h = obj.hashCode();
         int iCount = 0;
@@ -132,27 +131,25 @@ public class ISBIndex {
             Iterator<ISBNode> i = s.iterator();
             while (i.hasNext()) {
                 n = i.next();
-                if (n.obj.equals(obj))
-                    iCount++;
+                if (n.obj.equals(obj)) iCount++;
             }
         }
         return iCount;
     }
-    
+
     void MapInsert(ISBNode node) {
         int h = node.obj.hashCode();
         Set<ISBNode> s;
         if (mapNodes.containsKey(h)) {
             s = mapNodes.get(h);
             s.add(node);
-        }
-        else {
+        } else {
             s = new HashSet<ISBNode>();
             s.add(node);
             mapNodes.put(h, s);
         }
     }
-    
+
     void MapDelete(ISBNode node) {
         int h = node.obj.hashCode();
         if (mapNodes.containsKey(h)) {
@@ -162,5 +159,5 @@ public class ISBIndex {
                 mapNodes.remove(h);
             }
         }
-    }    
+    }
 }

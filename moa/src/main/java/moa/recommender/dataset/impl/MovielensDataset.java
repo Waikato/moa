@@ -2,7 +2,7 @@
  *    MovielensDataset.java
  *    Copyright (C) 2012 Universitat Politecnica de Catalunya
  *    @author Alex Catarineu (a.catarineu@gmail.com)
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
@@ -14,13 +14,19 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.recommender.dataset.impl;
 
+import com.github.javacliparser.FileOption;
+
+import moa.core.ObjectRepository;
+import moa.options.AbstractOptionHandler;
 import moa.recommender.dataset.Dataset;
+import moa.tasks.TaskMonitor;
+
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -29,19 +35,21 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import moa.core.ObjectRepository;
-import moa.options.AbstractOptionHandler;
-import com.github.javacliparser.FileOption;
-import moa.tasks.TaskMonitor;
 
 public class MovielensDataset extends AbstractOptionHandler implements Dataset {
 
     private String strLine;
-    
+
     private BufferedReader br;
-    
-    public FileOption fileOption = new FileOption("file", 'f',
-            "File to load.", "/Users/abifet/Downloads/ml-1M/ratings.dat", "dat", false);
+
+    public FileOption fileOption =
+            new FileOption(
+                    "file",
+                    'f',
+                    "File to load.",
+                    "/Users/abifet/Downloads/ml-1M/ratings.dat",
+                    "dat",
+                    false);
 
     @Override
     public String getPurposeString() {
@@ -51,14 +59,13 @@ public class MovielensDataset extends AbstractOptionHandler implements Dataset {
     public void init() {
         FileInputStream fstream = null;
         try {
-            //fstream = new FileInputStream("/Users/abifet/Downloads/ml-1M/ratings.dat");
+            // fstream = new FileInputStream("/Users/abifet/Downloads/ml-1M/ratings.dat");
             fstream = new FileInputStream(this.fileOption.getFile());
             DataInputStream in = new DataInputStream(fstream);
             br = new BufferedReader(new InputStreamReader(in));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(MovielensDataset.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
     @Override
@@ -97,9 +104,10 @@ public class MovielensDataset extends AbstractOptionHandler implements Dataset {
     public void reset() {
         try {
             br.close();
-            //FileInputStream fstream = new FileInputStream("/home/alex/datasets/ml-1m/ratings.dat");
-            //DataInputStream in = new DataInputStream(fstream);
-            //br = new BufferedReader(new InputStreamReader(in));
+            // FileInputStream fstream = new
+            // FileInputStream("/home/alex/datasets/ml-1m/ratings.dat");
+            // DataInputStream in = new DataInputStream(fstream);
+            // br = new BufferedReader(new InputStreamReader(in));
             this.init();
         } catch (IOException e) {
             e.printStackTrace();

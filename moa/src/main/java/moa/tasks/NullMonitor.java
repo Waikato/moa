@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
@@ -28,17 +28,13 @@ package moa.tasks;
 public class NullMonitor implements TaskMonitor {
 
     @Override
-    public void setCurrentActivity(String activityDescription,
-            double fracComplete) {
-    }
+    public void setCurrentActivity(String activityDescription, double fracComplete) {}
 
     @Override
-    public void setCurrentActivityDescription(String activity) {
-    }
+    public void setCurrentActivityDescription(String activity) {}
 
     @Override
-    public void setCurrentActivityFractionComplete(double fracComplete) {
-    }
+    public void setCurrentActivityFractionComplete(double fracComplete) {}
 
     @Override
     public boolean taskShouldAbort() {
@@ -66,16 +62,13 @@ public class NullMonitor implements TaskMonitor {
     }
 
     @Override
-    public void requestCancel() {
-    }
+    public void requestCancel() {}
 
     @Override
-    public void requestPause() {
-    }
+    public void requestPause() {}
 
     @Override
-    public void requestResume() {
-    }
+    public void requestResume() {}
 
     @Override
     public Object getLatestResultPreview() {
@@ -83,8 +76,7 @@ public class NullMonitor implements TaskMonitor {
     }
 
     @Override
-    public void requestResultPreview() {
-    }
+    public void requestResultPreview() {}
 
     @Override
     public boolean resultPreviewRequested() {
@@ -92,10 +84,8 @@ public class NullMonitor implements TaskMonitor {
     }
 
     @Override
-    public void setLatestResultPreview(Object latestPreview) {
-    }
+    public void setLatestResultPreview(Object latestPreview) {}
 
     @Override
-    public void requestResultPreview(ResultPreviewListener toInform) {
-    }
+    public void requestResultPreview(ResultPreviewListener toInform) {}
 }

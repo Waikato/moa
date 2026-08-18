@@ -19,56 +19,56 @@ package moa.classifiers.meta;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleRegressorTestCase;
 import moa.classifiers.Classifier;
 
 /**
  * Tests the StreamingGradientBoostedRegression regressor.
- * 
- * @author  Nuwan Gunasekara (nuwan dot gunasekara at hh dot se)
+ *
+ * @author Nuwan Gunasekara (nuwan dot gunasekara at hh dot se)
  * @version $Revision$
  */
-public class StreamingGradientBoostedRegressionTest
-  extends AbstractMultipleRegressorTestCase {
+public class StreamingGradientBoostedRegressionTest extends AbstractMultipleRegressorTestCase {
 
-  /**
-   * Constructs the test case. Called by subclasses.
-   *
-   * @param name 	the name of the test
-   */
-  public StreamingGradientBoostedRegressionTest(String name) {
-    super(name);
-    this.setNumberTests(1);
-  }
+    /**
+     * Constructs the test case. Called by subclasses.
+     *
+     * @param name the name of the test
+     */
+    public StreamingGradientBoostedRegressionTest(String name) {
+        super(name);
+        this.setNumberTests(1);
+    }
 
-  /**
-   * Returns the classifier setups to use in the regression test.
-   *
-   * @return		the setups
-   */
-  @Override
-  protected Classifier[] getRegressionClassifierSetups() {
-      StreamingGradientBoostedRegression SGBRTest = new StreamingGradientBoostedRegression();
-      return new Classifier[]{
+    /**
+     * Returns the classifier setups to use in the regression test.
+     *
+     * @return the setups
+     */
+    @Override
+    protected Classifier[] getRegressionClassifierSetups() {
+        StreamingGradientBoostedRegression SGBRTest = new StreamingGradientBoostedRegression();
+        return new Classifier[] {
             SGBRTest,
-      };
-  }
-  
-  /**
-   * Returns a test suite.
-   *
-   * @return		the test suite
-   */
-  public static Test suite() {
-    return new TestSuite(StreamingGradientBoostedRegressionTest.class);
-  }
+        };
+    }
 
-  /**
-   * Runs the test from commandline.
-   *
-   * @param args	ignored
-   */
-  public static void main(String[] args) {
-    runTest(suite());
-  }
+    /**
+     * Returns a test suite.
+     *
+     * @return the test suite
+     */
+    public static Test suite() {
+        return new TestSuite(StreamingGradientBoostedRegressionTest.class);
+    }
+
+    /**
+     * Runs the test from commandline.
+     *
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        runTest(suite());
+    }
 }

@@ -20,50 +20,57 @@ package moa.classifiers.meta;
 
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
-import moa.options.ClassOption;
-import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.MiscUtils;
+import moa.options.ClassOption;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Creates two classifiers: a stable and a reactive. The first represents the
- * actual stable concept, while the second is trained on the most recent data.
- * If the accuracy of the reactive is higher than that of the stable, it means
- * the concept has changed. The stable classifier is then substituted by the
- * reactive, and the reactive is reset.
+ * Creates two classifiers: a stable and a reactive. The first represents the actual stable concept,
+ * while the second is trained on the most recent data. If the accuracy of the reactive is higher
+ * than that of the stable, it means the concept has changed. The stable classifier is then
+ * substituted by the reactive, and the reactive is reset.
  *
- * <p>
- * Stephen H. Bach, Marcus A. Maloof, "Paired Learners for Concept Drift",
- * Eighth IEEE International Conference on Data Mining (ICDM), 2008,
- * pp.23-32</p>
+ * <p>Stephen H. Bach, Marcus A. Maloof, "Paired Learners for Concept Drift", Eighth IEEE
+ * International Conference on Data Mining (ICDM), 2008, pp.23-32
  *
  * @author Paulo Gonçalves (paulogoncalves at recife.ifpe.edu.br)
- *
  */
-
 public class PairedLearners extends AbstractClassifier implements MultiClassClassifier {
     private static final long serialVersionUID = 1L;
 
-    public ClassOption stableLearnerOption = new ClassOption("stableLearner", 
-            's', "Stable learner", Classifier.class, "bayes.NaiveBayes");
+    public ClassOption stableLearnerOption =
+            new ClassOption(
+                    "stableLearner", 's', "Stable learner", Classifier.class, "bayes.NaiveBayes");
 
-    public ClassOption reactiveLearnerOption = new ClassOption("reactiveLearner", 
-            'r', "Reactive learner", Classifier.class, "bayes.NaiveBayes");
+    public ClassOption reactiveLearnerOption =
+            new ClassOption(
+                    "reactiveLearner",
+                    'r',
+                    "Reactive learner",
+                    Classifier.class,
+                    "bayes.NaiveBayes");
 
-    public IntOption windowSizeOption = new IntOption("windowSize", 
-            'w', "Window size for the reactive learner", 
-            12, 1, Integer.MAX_VALUE);
+    public IntOption windowSizeOption =
+            new IntOption(
+                    "windowSize",
+                    'w',
+                    "Window size for the reactive learner",
+                    12,
+                    1,
+                    Integer.MAX_VALUE);
 
-    public FloatOption thresholdOption = new FloatOption("threshold",
-            't', "Threashold for creating a new stable learner",
-            0.2, 0, 1);
+    public FloatOption thresholdOption =
+            new FloatOption(
+                    "threshold", 't', "Threashold for creating a new stable learner", 0.2, 0, 1);
 
     protected int[] c;
     protected Classifier stableLearner;
@@ -86,7 +93,8 @@ public class PairedLearners extends AbstractClassifier implements MultiClassClas
 
         this.stableLearner = ((Classifier) getPreparedClassOption(this.stableLearnerOption)).copy();
         this.stableLearner.resetLearning();
-        this.reactiveLearner = ((Classifier) getPreparedClassOption(this.reactiveLearnerOption)).copy();
+        this.reactiveLearner =
+                ((Classifier) getPreparedClassOption(this.reactiveLearnerOption)).copy();
         this.reactiveLearner.resetLearning();
     }
 
@@ -94,25 +102,27 @@ public class PairedLearners extends AbstractClassifier implements MultiClassClas
     public void trainOnInstanceImpl(Instance inst) {
         this.instances[this.t] = inst;
         int trueClass = (int) inst.classValue();
-        boolean stablePrediction = MiscUtils.maxIndex(this.stableLearner.getVotesForInstance(inst)) == trueClass;
-        boolean reactivePrediction = MiscUtils.maxIndex(this.reactiveLearner.getVotesForInstance(inst)) == trueClass;
+        boolean stablePrediction =
+                MiscUtils.maxIndex(this.stableLearner.getVotesForInstance(inst)) == trueClass;
+        boolean reactivePrediction =
+                MiscUtils.maxIndex(this.reactiveLearner.getVotesForInstance(inst)) == trueClass;
 
         this.numberOfErrors = this.numberOfErrors - this.c[this.t];
-        if(!stablePrediction && reactivePrediction) {
+        if (!stablePrediction && reactivePrediction) {
             this.c[this.t] = 1;
             this.numberOfErrors++;
-	} else {
+        } else {
             this.c[this.t] = 0;
-        }        
+        }
         if (this.theta < this.numberOfErrors) {
             this.changeDetected++;
             this.stableLearner = this.reactiveLearner.copy();
-            Arrays.fill(this.c, 0);   // Resets c
+            Arrays.fill(this.c, 0); // Resets c
             this.numberOfErrors = 0;
         }
         this.stableLearner.trainOnInstance(inst);
         this.reactiveLearner.resetLearning();
-        for (i=0; i<this.instances.length && this.instances[i] != null; i++) {
+        for (i = 0; i < this.instances.length && this.instances[i] != null; i++) {
             this.reactiveLearner.trainOnInstance(this.instances[i]);
         }
         this.t = (this.t + 1) % this.w;
@@ -122,6 +132,7 @@ public class PairedLearners extends AbstractClassifier implements MultiClassClas
     public double[] getVotesForInstance(Instance inst) {
         return this.stableLearner.getVotesForInstance(inst);
     }
+
     @Override
     public boolean isRandomizable() {
         return false;
@@ -131,15 +142,15 @@ public class PairedLearners extends AbstractClassifier implements MultiClassClas
     protected Measurement[] getModelMeasurementsImpl() {
         List<Measurement> measurementList = new LinkedList();
         measurementList.add(new Measurement("Change detected", this.changeDetected));
-        Measurement[] modelMeasurements = ((AbstractClassifier) this.stableLearner).getModelMeasurements();
+        Measurement[] modelMeasurements =
+                ((AbstractClassifier) this.stableLearner).getModelMeasurements();
         if (modelMeasurements != null) {
             measurementList.addAll(Arrays.asList(modelMeasurements));
         }
         this.changeDetected = 0;
         return measurementList.toArray(new Measurement[measurementList.size()]);
     }
-    @Override
-    public void getModelDescription(StringBuilder out, int indent) {
 
-    }
+    @Override
+    public void getModelDescription(StringBuilder out, int indent) {}
 }

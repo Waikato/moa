@@ -14,21 +14,20 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.learners;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Prediction;
+
 import moa.core.Example;
 
 /**
- *
  * @author RSousa
  */
-public interface LearnerSemiSupervised<E extends Example> extends Learner<Example<Instance>>{
-    
-   public Prediction getTrainingPrediction();
- 
+public interface LearnerSemiSupervised<E extends Example> extends Learner<Example<Instance>> {
+
+    public Prediction getTrainingPrediction();
 }

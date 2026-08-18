@@ -13,67 +13,64 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * LimAttHoeffdingTreeTest.java
- * Copyright (C) 2013 University of Waikato, Hamilton, New Zealand
- */
+/** LimAttHoeffdingTreeTest.java Copyright (C) 2013 University of Waikato, Hamilton, New Zealand */
 package moa.classifiers.trees;
+
+import static moa.test.MoaTestCase.runTest;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
-import static moa.test.MoaTestCase.runTest;
 
 /**
  * Tests the LimAttHoeffdingTree classifier.
- * 
- * @author  fracpete (fracpete at waikato dot ac dot nz)
+ *
+ * @author fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class LimAttHoeffdingTreeTest
-  extends AbstractMultipleClassifierTestCase {
+public class LimAttHoeffdingTreeTest extends AbstractMultipleClassifierTestCase {
 
-  /**
-   * Constructs the test case. Called by subclasses.
-   *
-   * @param name 	the name of the test
-   */
-  public LimAttHoeffdingTreeTest(String name) {
-    super(name);
-    this.setNumberTests(1);
-  }
+    /**
+     * Constructs the test case. Called by subclasses.
+     *
+     * @param name the name of the test
+     */
+    public LimAttHoeffdingTreeTest(String name) {
+        super(name);
+        this.setNumberTests(1);
+    }
 
-  /**
-   * Returns the classifier setups to use in the regression test.
-   *
-   * @return		the setups
-   */
-  @Override
-  protected Classifier[] getRegressionClassifierSetups() {
-    LimAttHoeffdingTree[]	result;
-    result    = new LimAttHoeffdingTree[1];
-    result[0] = new LimAttHoeffdingTree();  
-    result[0].setlistAttributes(new int[]{1,2});
-    return result;
-  }
-  
-  /**
-   * Returns a test suite.
-   *
-   * @return		the test suite
-   */
-  public static Test suite() {
-    return new TestSuite(LimAttHoeffdingTreeTest.class);
-  }
+    /**
+     * Returns the classifier setups to use in the regression test.
+     *
+     * @return the setups
+     */
+    @Override
+    protected Classifier[] getRegressionClassifierSetups() {
+        LimAttHoeffdingTree[] result;
+        result = new LimAttHoeffdingTree[1];
+        result[0] = new LimAttHoeffdingTree();
+        result[0].setlistAttributes(new int[] {1, 2});
+        return result;
+    }
 
-  /**
-   * Runs the test from commandline.
-   *
-   * @param args	ignored
-   */
-  public static void main(String[] args) {
-    runTest(suite());
-  }
+    /**
+     * Returns a test suite.
+     *
+     * @return the test suite
+     */
+    public static Test suite() {
+        return new TestSuite(LimAttHoeffdingTreeTest.class);
+    }
+
+    /**
+     * Runs the test from commandline.
+     *
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        runTest(suite());
+    }
 }
-

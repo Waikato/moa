@@ -15,16 +15,16 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa;
-
-import java.io.File;
-import java.io.Serializable;
 
 import moa.core.Globals;
 import moa.core.SerializeUtils;
 import moa.options.ClassOption;
+
+import java.io.File;
+import java.io.Serializable;
 
 /**
  * Class for writing a MOA object to a file from the command line.
@@ -45,8 +45,10 @@ public class MakeObject {
             System.err.println(Globals.getWorkbenchInfoString());
             System.err.println();
             if (args.length < 2) {
-                System.err.println("usage: java " + MakeObject.class.getName()
-                        + " outputfile.moa \"<object name> <options>\"");
+                System.err.println(
+                        "usage: java "
+                                + MakeObject.class.getName()
+                                + " outputfile.moa \"<object name> <options>\"");
                 System.err.println();
             } else {
                 String filename = args[0];
@@ -57,10 +59,10 @@ public class MakeObject {
                 }
                 // parse options
                 System.err.println("Making object...");
-                Object result = ClassOption.cliStringToObject(cliString.toString(), Object.class, null);
+                Object result =
+                        ClassOption.cliStringToObject(cliString.toString(), Object.class, null);
                 System.err.println("Writing object to file: " + filename);
-                SerializeUtils.writeToFile(new File(filename),
-                        (Serializable) result);
+                SerializeUtils.writeToFile(new File(filename), (Serializable) result);
                 System.err.println("Done.");
             }
         } catch (Exception ex) {

@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.gui.visualization;
 
@@ -24,9 +24,8 @@ import java.awt.Graphics;
 import java.text.DecimalFormat;
 
 /**
- * ParamGraphAxes is an implementation of AbstractGraphAxes, drawing x labels
- * based on a parameter.
- * 
+ * ParamGraphAxes is an implementation of AbstractGraphAxes, drawing x labels based on a parameter.
+ *
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
  * @see AbstractGraphAxes
@@ -55,14 +54,15 @@ public class ParamGraphAxes extends AbstractGraphAxes {
             String label = d.format(value);
             int str_length = g.getFontMetrics().stringWidth(label);
 
-            g.drawString(label,
+            g.drawString(
+                    label,
                     (int) (fraction * width) + X_OFFSET_LEFT - str_length / 2,
                     height + Y_OFFSET_TOP + 18);
-            g.drawLine((int) (fraction * width) + X_OFFSET_LEFT,
+            g.drawLine(
+                    (int) (fraction * width) + X_OFFSET_LEFT,
                     height + Y_OFFSET_TOP,
                     (int) (fraction * width) + X_OFFSET_LEFT,
                     height + Y_OFFSET_TOP + 5);
         }
     }
-
 }

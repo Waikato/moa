@@ -15,13 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Prediction;
+
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
@@ -39,8 +40,7 @@ public class WindowPredictionIntervalEvaluator extends AbstractOptionHandler
 
     private static final long serialVersionUID = 1L;
 
-    public IntOption widthOption = new IntOption("width",
-            'w', "Size of Window", 1000);
+    public IntOption widthOption = new IntOption("width", 'w', "Size of Window", 1000);
 
     protected double TotalweightObserved = 0;
     protected Estimator weightObserved;
@@ -134,32 +134,30 @@ public class WindowPredictionIntervalEvaluator extends AbstractOptionHandler
             this.weightObserved.add(weight);
 
             if (prediction.length == 3) {
-                this.squareError.add((inst.classValue() - prediction[1]) * (inst.classValue() - prediction[1]));
+                this.squareError.add(
+                        (inst.classValue() - prediction[1]) * (inst.classValue() - prediction[1]));
                 this.averageError.add(Math.abs(inst.classValue() - prediction[1]));
                 this.lower.add(prediction[0]);
                 this.upper.add(prediction[2]);
-                this.counterCorrect.add( inst.classValue() >= prediction[0] && inst.classValue() <= prediction[2]? 1 : 0);
+                this.counterCorrect.add(
+                        inst.classValue() >= prediction[0] && inst.classValue() <= prediction[2]
+                                ? 1
+                                : 0);
                 this.truth.add(inst.classValue());
             }
-            //System.out.println(inst.classValue()+", "+prediction[0]);
+            // System.out.println(inst.classValue()+", "+prediction[0]);
         }
     }
 
     @Override
     public Measurement[] getPerformanceMeasurements() {
-        return new Measurement[]{
-                    new Measurement("classified instances",
-                    getTotalWeightObserved()),
-                    new Measurement("mean absolute error",
-                    getMeanError()),
-                    new Measurement("root mean squared error",
-                    getSquareError()),
-                new Measurement("coverage",
-                        getCoverage()),
-                new Measurement("average length",
-                        getAverageLength()),
-                new Measurement("NMPIW",
-                        getNMPIW())
+        return new Measurement[] {
+            new Measurement("classified instances", getTotalWeightObserved()),
+            new Measurement("mean absolute error", getMeanError()),
+            new Measurement("root mean squared error", getSquareError()),
+            new Measurement("coverage", getCoverage()),
+            new Measurement("average length", getAverageLength()),
+            new Measurement("NMPIW", getNMPIW())
         };
     }
 
@@ -168,46 +166,44 @@ public class WindowPredictionIntervalEvaluator extends AbstractOptionHandler
     }
 
     public double getMeanError() {
-        return this.weightObserved.total() > 0.0 ? this.averageError.total()
-                / this.weightObserved.total() : 0.0;
+        return this.weightObserved.total() > 0.0
+                ? this.averageError.total() / this.weightObserved.total()
+                : 0.0;
     }
 
     public double getSquareError() {
-        return Math.sqrt(this.weightObserved.total() > 0.0 ? this.squareError.total()
-                / this.weightObserved.total() : 0.0);
+        return Math.sqrt(
+                this.weightObserved.total() > 0.0
+                        ? this.squareError.total() / this.weightObserved.total()
+                        : 0.0);
     }
 
-    public double getCoverage(){
+    public double getCoverage() {
         return Math.round(this.counterCorrect.sum / this.widthOption.getValue() * 10000.0) / 100.0;
     }
-    public double getAverageLength(){
+
+    public double getAverageLength() {
         return (this.upper.sum - this.lower.sum) / this.upper.SizeWindow;
     }
 
-    public double getNMPIW(){
-      return Math.round(getAverageLength() / (this.truth.max() - this.truth.min()) * 10000.0) / 100.0;
+    public double getNMPIW() {
+        return Math.round(getAverageLength() / (this.truth.max() - this.truth.min()) * 10000.0)
+                / 100.0;
     }
 
     @Override
     public void getDescription(StringBuilder sb, int indent) {
-        Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
-                sb, indent);
+        Measurement.getMeasurementsDescription(getPerformanceMeasurements(), sb, indent);
     }
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
-    }
-    
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {}
 
-	@Override
-	public void addResult(Example<Instance> testInst, Prediction prediction) {
-		double votes[];
-		if(prediction==null)
-			votes = new double[0];
-		else
-			votes=prediction.getVotes();
-		addResult(testInst, votes);
-		
-	}
+    @Override
+    public void addResult(Example<Instance> testInst, Prediction prediction) {
+        double votes[];
+        if (prediction == null) votes = new double[0];
+        else votes = prediction.getVotes();
+        addResult(testInst, votes);
+    }
 }

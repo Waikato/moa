@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.classifiers.rules.multilabel;
@@ -24,10 +24,6 @@ package moa.classifiers.rules.multilabel;
  * @author RSousa
  * @version $Revision: 1 $
  */
- 
-    
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.MultiTargetLearnerSemiSupervised;
 import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.core.driftdetection.ChangeDetector;
@@ -42,34 +38,64 @@ import moa.classifiers.rules.multilabel.errormeasurers.RelativeMeanAbsoluteDevia
 import moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor;
 import moa.options.ClassOption;
 
-public class AMRulesMultiTargetRegressorSemiSuper extends AMRulesMultiLabelLearnerSemiSuper implements MultiTargetLearnerSemiSupervised {  //MultiTargetRegressor,
+public class AMRulesMultiTargetRegressorSemiSuper extends AMRulesMultiLabelLearnerSemiSuper
+        implements MultiTargetLearnerSemiSupervised { // MultiTargetRegressor,
 
-	private static final long serialVersionUID = 1L;
-	
-	@Override
-	  public String getPurposeString() {
-	        return "Semi-supervised AMRules method for online multi-target regression.This method measures predicts the benefit of a unlabeled example to the models(using only the input information) to the model. If this benefit is higher than <scoreThreshold> then the algorithm predicts an output and artificially labels the example and use it for training.";
-	    }
-	
-	
-	public  AMRulesMultiTargetRegressorSemiSuper(){
-            splitCriterionOption = new ClassOption("splitCriterionOption", 'S',"Split criterion used to assess the merit of a split", MultiLabelSplitCriterion.class, MultiTargetVarianceRatio.class.getName()) ;
-            weightedVoteOption = new ClassOption("weightedVoteOption",'w', "Weighted vote type", ErrorWeightedVoteMultiLabel.class,InverseErrorWeightedVoteMultiLabel.class.getName());
-            learnerOption = new ClassOption("learnerOption",'L', "Learner", MultiTargetRegressor.class,AdaptiveMultiTargetRegressor.class.getName());
-            errorMeasurerOption = new ClassOption("errorMeasurer", 'e',"Measure of error for deciding which learner should predict.", MultiLabelErrorMeasurer.class, RelativeMeanAbsoluteDeviationMT.class.getName()) ;
-            changeDetector = new ClassOption("changeDetector",'H', "Change Detector.", ChangeDetector.class,"PageHinkleyDM -d 0.05 -l 35.0");
-	}
-	
-	@Override
-	protected MultiLabelRule newDefaultRule() {
-		return new MultiLabelRuleRegression(1);
-	}
+    private static final long serialVersionUID = 1L;
 
-	public AMRulesMultiTargetRegressorSemiSuper(double attributesPercentage) {
-		super(attributesPercentage);
-	}
-	
-  
-	
-	
+    @Override
+    public String getPurposeString() {
+        return "Semi-supervised AMRules method for online multi-target regression.This method"
+                + " measures predicts the benefit of a unlabeled example to the models(using"
+                + " only the input information) to the model. If this benefit is higher than"
+                + " <scoreThreshold> then the algorithm predicts an output and artificially"
+                + " labels the example and use it for training.";
+    }
+
+    public AMRulesMultiTargetRegressorSemiSuper() {
+        splitCriterionOption =
+                new ClassOption(
+                        "splitCriterionOption",
+                        'S',
+                        "Split criterion used to assess the merit of a split",
+                        MultiLabelSplitCriterion.class,
+                        MultiTargetVarianceRatio.class.getName());
+        weightedVoteOption =
+                new ClassOption(
+                        "weightedVoteOption",
+                        'w',
+                        "Weighted vote type",
+                        ErrorWeightedVoteMultiLabel.class,
+                        InverseErrorWeightedVoteMultiLabel.class.getName());
+        learnerOption =
+                new ClassOption(
+                        "learnerOption",
+                        'L',
+                        "Learner",
+                        MultiTargetRegressor.class,
+                        AdaptiveMultiTargetRegressor.class.getName());
+        errorMeasurerOption =
+                new ClassOption(
+                        "errorMeasurer",
+                        'e',
+                        "Measure of error for deciding which learner should predict.",
+                        MultiLabelErrorMeasurer.class,
+                        RelativeMeanAbsoluteDeviationMT.class.getName());
+        changeDetector =
+                new ClassOption(
+                        "changeDetector",
+                        'H',
+                        "Change Detector.",
+                        ChangeDetector.class,
+                        "PageHinkleyDM -d 0.05 -l 35.0");
+    }
+
+    @Override
+    protected MultiLabelRule newDefaultRule() {
+        return new MultiLabelRuleRegression(1);
+    }
+
+    public AMRulesMultiTargetRegressorSemiSuper(double attributesPercentage) {
+        super(attributesPercentage);
+    }
 }

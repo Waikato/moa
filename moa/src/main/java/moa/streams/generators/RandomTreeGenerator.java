@@ -15,31 +15,31 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.generators;
 
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.core.FastVector;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+import moa.core.InstanceExample;
+import moa.core.ObjectRepository;
+import moa.options.AbstractOptionHandler;
+import moa.streams.InstanceStream;
+import moa.tasks.TaskMonitor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
-import moa.core.InstanceExample;
-
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import moa.core.ObjectRepository;
-import moa.options.AbstractOptionHandler;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-import moa.streams.InstanceStream;
-import moa.tasks.TaskMonitor;
 
 /**
  * Stream generator for a stream based on a randomly generated tree..
@@ -47,8 +47,8 @@ import moa.tasks.TaskMonitor;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class RandomTreeGenerator extends AbstractOptionHandler implements
-        InstanceStream, CapabilitiesHandler {
+public class RandomTreeGenerator extends AbstractOptionHandler
+        implements InstanceStream, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -57,42 +57,74 @@ public class RandomTreeGenerator extends AbstractOptionHandler implements
 
     private static final long serialVersionUID = 1L;
 
-    public IntOption treeRandomSeedOption = new IntOption("treeRandomSeed",
-            'r', "Seed for random generation of tree.", 1);
+    public IntOption treeRandomSeedOption =
+            new IntOption("treeRandomSeed", 'r', "Seed for random generation of tree.", 1);
 
-    public IntOption instanceRandomSeedOption = new IntOption(
-            "instanceRandomSeed", 'i',
-            "Seed for random generation of instances.", 1);
+    public IntOption instanceRandomSeedOption =
+            new IntOption("instanceRandomSeed", 'i', "Seed for random generation of instances.", 1);
 
-    public IntOption numClassesOption = new IntOption("numClasses", 'c',
-            "The number of classes to generate.", 2, 2, Integer.MAX_VALUE);
+    public IntOption numClassesOption =
+            new IntOption(
+                    "numClasses",
+                    'c',
+                    "The number of classes to generate.",
+                    2,
+                    2,
+                    Integer.MAX_VALUE);
 
-    public IntOption numNominalsOption = new IntOption("numNominals", 'o',
-            "The number of nominal attributes to generate.", 5, 0,
-            Integer.MAX_VALUE);
+    public IntOption numNominalsOption =
+            new IntOption(
+                    "numNominals",
+                    'o',
+                    "The number of nominal attributes to generate.",
+                    5,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public IntOption numNumericsOption = new IntOption("numNumerics", 'u',
-            "The number of numeric attributes to generate.", 5, 0,
-            Integer.MAX_VALUE);
+    public IntOption numNumericsOption =
+            new IntOption(
+                    "numNumerics",
+                    'u',
+                    "The number of numeric attributes to generate.",
+                    5,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public IntOption numValsPerNominalOption = new IntOption(
-            "numValsPerNominal", 'v',
-            "The number of values to generate per nominal attribute.", 5, 2,
-            Integer.MAX_VALUE);
+    public IntOption numValsPerNominalOption =
+            new IntOption(
+                    "numValsPerNominal",
+                    'v',
+                    "The number of values to generate per nominal attribute.",
+                    5,
+                    2,
+                    Integer.MAX_VALUE);
 
-    public IntOption maxTreeDepthOption = new IntOption("maxTreeDepth", 'd',
-            "The maximum depth of the tree concept.", 5, 0, Integer.MAX_VALUE);
+    public IntOption maxTreeDepthOption =
+            new IntOption(
+                    "maxTreeDepth",
+                    'd',
+                    "The maximum depth of the tree concept.",
+                    5,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public IntOption firstLeafLevelOption = new IntOption(
-            "firstLeafLevel",
-            'l',
-            "The first level of the tree above maxTreeDepth that can have leaves.",
-            3, 0, Integer.MAX_VALUE);
+    public IntOption firstLeafLevelOption =
+            new IntOption(
+                    "firstLeafLevel",
+                    'l',
+                    "The first level of the tree above maxTreeDepth that can have leaves.",
+                    3,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public FloatOption leafFractionOption = new FloatOption("leafFraction",
-            'f',
-            "The fraction of leaves per level from firstLeafLevel onwards.",
-            0.15, 0.0, 1.0);
+    public FloatOption leafFractionOption =
+            new FloatOption(
+                    "leafFraction",
+                    'f',
+                    "The fraction of leaves per level from firstLeafLevel onwards.",
+                    0.15,
+                    0.0,
+                    1.0);
 
     protected static class Node implements Serializable {
 
@@ -114,8 +146,7 @@ public class RandomTreeGenerator extends AbstractOptionHandler implements
     protected Random instanceRandom;
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         monitor.setCurrentActivity("Preparing random tree...", -1.0);
         generateHeader();
         generateRandomTree();
@@ -149,13 +180,15 @@ public class RandomTreeGenerator extends AbstractOptionHandler implements
 
     @Override
     public InstanceExample nextInstance() {
-        double[] attVals = new double[this.numNominalsOption.getValue()
-                + this.numNumericsOption.getValue()];
+        double[] attVals =
+                new double[this.numNominalsOption.getValue() + this.numNumericsOption.getValue()];
         InstancesHeader header = getHeader();
         Instance inst = new DenseInstance(header.numAttributes());
         for (int i = 0; i < attVals.length; i++) {
-            attVals[i] = i < this.numNominalsOption.getValue() ? this.instanceRandom.nextInt(this.numValsPerNominalOption.getValue())
-                    : this.instanceRandom.nextDouble();
+            attVals[i] =
+                    i < this.numNominalsOption.getValue()
+                            ? this.instanceRandom.nextInt(this.numValsPerNominalOption.getValue())
+                            : this.instanceRandom.nextDouble();
             inst.setValue(i, attVals[i]);
         }
         inst.setDataset(header);
@@ -168,12 +201,10 @@ public class RandomTreeGenerator extends AbstractOptionHandler implements
             return node.classLabel;
         }
         if (node.splitAttIndex < this.numNominalsOption.getValue()) {
-            return classifyInstance(
-                    node.children[(int) attVals[node.splitAttIndex]], attVals);
+            return classifyInstance(node.children[(int) attVals[node.splitAttIndex]], attVals);
         }
         return classifyInstance(
-                node.children[attVals[node.splitAttIndex] < node.splitAttValue ? 0
-                : 1], attVals);
+                node.children[attVals[node.splitAttIndex] < node.splitAttValue ? 0 : 1], attVals);
     }
 
     protected void generateHeader() {
@@ -183,8 +214,7 @@ public class RandomTreeGenerator extends AbstractOptionHandler implements
             nominalAttVals.addElement("value" + (i + 1));
         }
         for (int i = 0; i < this.numNominalsOption.getValue(); i++) {
-            attributes.addElement(new Attribute("nominal" + (i + 1),
-                    nominalAttVals));
+            attributes.addElement(new Attribute("nominal" + (i + 1), nominalAttVals));
         }
         for (int i = 0; i < this.numNumericsOption.getValue(); i++) {
             attributes.addElement(new Attribute("numeric" + (i + 1)));
@@ -194,15 +224,16 @@ public class RandomTreeGenerator extends AbstractOptionHandler implements
             classLabels.addElement("class" + (i + 1));
         }
         attributes.addElement(new Attribute("class", classLabels));
-        this.streamHeader = new InstancesHeader(new Instances(
-                getCLICreationString(InstanceStream.class), attributes, 0));
+        this.streamHeader =
+                new InstancesHeader(
+                        new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
         this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
     }
 
     protected void generateRandomTree() {
         Random treeRand = new Random(this.treeRandomSeedOption.getValue());
-        ArrayList<Integer> nominalAttCandidates = new ArrayList<Integer>(
-                this.numNominalsOption.getValue());
+        ArrayList<Integer> nominalAttCandidates =
+                new ArrayList<Integer>(this.numNominalsOption.getValue());
         for (int i = 0; i < this.numNominalsOption.getValue(); i++) {
             nominalAttCandidates.add(i);
         }
@@ -212,51 +243,67 @@ public class RandomTreeGenerator extends AbstractOptionHandler implements
             minNumericVals[i] = 0.0;
             maxNumericVals[i] = 1.0;
         }
-        this.treeRoot = generateRandomTreeNode(0, nominalAttCandidates,
-                minNumericVals, maxNumericVals, treeRand);
+        this.treeRoot =
+                generateRandomTreeNode(
+                        0, nominalAttCandidates, minNumericVals, maxNumericVals, treeRand);
     }
 
-    protected Node generateRandomTreeNode(int currentDepth,
-            ArrayList<Integer> nominalAttCandidates, double[] minNumericVals,
-            double[] maxNumericVals, Random treeRand) {
+    protected Node generateRandomTreeNode(
+            int currentDepth,
+            ArrayList<Integer> nominalAttCandidates,
+            double[] minNumericVals,
+            double[] maxNumericVals,
+            Random treeRand) {
         if ((currentDepth >= this.maxTreeDepthOption.getValue())
-                || ((currentDepth >= this.firstLeafLevelOption.getValue()) && (this.leafFractionOption.getValue() >= (1.0 - treeRand.nextDouble())))) {
+                || ((currentDepth >= this.firstLeafLevelOption.getValue())
+                        && (this.leafFractionOption.getValue() >= (1.0 - treeRand.nextDouble())))) {
             Node leaf = new Node();
             leaf.classLabel = treeRand.nextInt(this.numClassesOption.getValue());
             return leaf;
         }
         Node node = new Node();
-        int chosenAtt = treeRand.nextInt(nominalAttCandidates.size()
-                + this.numNumericsOption.getValue());
+        int chosenAtt =
+                treeRand.nextInt(nominalAttCandidates.size() + this.numNumericsOption.getValue());
         if (chosenAtt < nominalAttCandidates.size()) {
             node.splitAttIndex = nominalAttCandidates.get(chosenAtt);
             node.children = new Node[this.numValsPerNominalOption.getValue()];
-            ArrayList<Integer> newNominalCandidates = new ArrayList<Integer>(
-                    nominalAttCandidates);
+            ArrayList<Integer> newNominalCandidates = new ArrayList<Integer>(nominalAttCandidates);
             newNominalCandidates.remove(new Integer(node.splitAttIndex));
             newNominalCandidates.trimToSize();
             for (int i = 0; i < node.children.length; i++) {
-                node.children[i] = generateRandomTreeNode(currentDepth + 1,
-                        newNominalCandidates, minNumericVals, maxNumericVals,
-                        treeRand);
+                node.children[i] =
+                        generateRandomTreeNode(
+                                currentDepth + 1,
+                                newNominalCandidates,
+                                minNumericVals,
+                                maxNumericVals,
+                                treeRand);
             }
         } else {
             int numericIndex = chosenAtt - nominalAttCandidates.size();
-            node.splitAttIndex = this.numNominalsOption.getValue()
-                    + numericIndex;
+            node.splitAttIndex = this.numNominalsOption.getValue() + numericIndex;
             double minVal = minNumericVals[numericIndex];
             double maxVal = maxNumericVals[numericIndex];
-            node.splitAttValue = ((maxVal - minVal) * treeRand.nextDouble())
-                    + minVal;
+            node.splitAttValue = ((maxVal - minVal) * treeRand.nextDouble()) + minVal;
             node.children = new Node[2];
             double[] newMaxVals = maxNumericVals.clone();
             newMaxVals[numericIndex] = node.splitAttValue;
-            node.children[0] = generateRandomTreeNode(currentDepth + 1,
-                    nominalAttCandidates, minNumericVals, newMaxVals, treeRand);
+            node.children[0] =
+                    generateRandomTreeNode(
+                            currentDepth + 1,
+                            nominalAttCandidates,
+                            minNumericVals,
+                            newMaxVals,
+                            treeRand);
             double[] newMinVals = minNumericVals.clone();
             newMinVals[numericIndex] = node.splitAttValue;
-            node.children[1] = generateRandomTreeNode(currentDepth + 1,
-                    nominalAttCandidates, newMinVals, maxNumericVals, treeRand);
+            node.children[1] =
+                    generateRandomTreeNode(
+                            currentDepth + 1,
+                            nominalAttCandidates,
+                            newMinVals,
+                            maxNumericVals,
+                            treeRand);
         }
         return node;
     }
@@ -270,7 +317,6 @@ public class RandomTreeGenerator extends AbstractOptionHandler implements
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == RandomTreeGenerator.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

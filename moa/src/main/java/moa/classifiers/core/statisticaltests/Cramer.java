@@ -15,13 +15,18 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core.statisticaltests;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeMap;
+import Jama.EigenvalueDecomposition;
+import Jama.Matrix;
+
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.MultiChoiceOption;
+import com.yahoo.labs.samoa.instances.ArffLoader;
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
@@ -29,53 +34,49 @@ import moa.tasks.TaskMonitor;
 
 import org.apache.commons.math3.complex.Complex;
 
-import Jama.EigenvalueDecomposition;
-import Jama.Matrix;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-import com.github.javacliparser.MultiChoiceOption;
-import com.yahoo.labs.samoa.instances.ArffLoader;
-import com.yahoo.labs.samoa.instances.Instance;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Implements the Multivariate Non-parametric Cramer Von Mises Statistical Test.
  *
  * @author Paulo Gonçalves
- *
  */
 public class Cramer extends AbstractOptionHandler implements StatisticalTest {
 
     private List<Instance> sample1i;
     private List<Instance> sample2i;
 
-    public FloatOption confidenceLevelOption = new FloatOption(
-            "confidenceLevel",
-            'q',
-            "The confidence level to use in the Cramer test.",
-            0.95, 0, 1);
+    public FloatOption confidenceLevelOption =
+            new FloatOption(
+                    "confidenceLevel",
+                    'q',
+                    "The confidence level to use in the Cramer test.",
+                    0.95,
+                    0,
+                    1);
 
-    public IntOption replicatesOption = new IntOption("replicates", 'r',
-            "Number of replications.", 1000, 1,
-            Integer.MAX_VALUE);
+    public IntOption replicatesOption =
+            new IntOption("replicates", 'r', "Number of replications.", 1000, 1, Integer.MAX_VALUE);
 
-    public MultiChoiceOption kernelOption = new MultiChoiceOption("kernel", 'f',
-            "Kernel function to use.", new String[]{"CRAMER", "BAHR", "LOG", "FRAC A", "FRAC B"},
-            new String[]{"CRAMER", "BAHR", "LOG", "FRAC A", "FRAC B"},
-            0);
+    public MultiChoiceOption kernelOption =
+            new MultiChoiceOption(
+                    "kernel",
+                    'f',
+                    "Kernel function to use.",
+                    new String[] {"CRAMER", "BAHR", "LOG", "FRAC A", "FRAC B"},
+                    new String[] {"CRAMER", "BAHR", "LOG", "FRAC A", "FRAC B"},
+                    0);
 
-    public FloatOption maxMOption = new FloatOption(
-            "maxM",
-            'm',
-            "Maximum M.",
-            Math.pow(2, 14), 1, Float.MAX_VALUE);
+    public FloatOption maxMOption =
+            new FloatOption("maxM", 'm', "Maximum M.", Math.pow(2, 14), 1, Float.MAX_VALUE);
 
-    public IntOption kOption = new IntOption("k", 'k',
-            "K value.", 160, 1,
-            Integer.MAX_VALUE);
+    public IntOption kOption = new IntOption("k", 'k', "K value.", 160, 1, Integer.MAX_VALUE);
 
     public static final int CRAMER = 0;
     public static final int BAHR = 1;
@@ -89,7 +90,7 @@ public class Cramer extends AbstractOptionHandler implements StatisticalTest {
 
         // base case
         if (N == 1) {
-            return new Complex[]{x[0]};
+            return new Complex[] {x[0]};
         }
 
         // radix 2 Cooley-Tukey FFT
@@ -105,7 +106,7 @@ public class Cramer extends AbstractOptionHandler implements StatisticalTest {
         Complex[] q = fft(even);
 
         // fft of odd terms
-        Complex[] odd = even;  // reuse the array
+        Complex[] odd = even; // reuse the array
         for (int k = 0; k < N / 2; k++) {
             odd[k] = x[2 * k + 1];
         }
@@ -194,7 +195,12 @@ public class Cramer extends AbstractOptionHandler implements StatisticalTest {
             yind[j] = i;
         }
         double mm = m, nn = n;
-        return mm * nn / (mm + nn) * (2 * this.sumCells(lookup, xind, yind) / (mm * nn) - this.sumCells(lookup, xind, xind) / (mm * mm) - this.sumCells(lookup, yind, yind) / (nn * nn));
+        return mm
+                * nn
+                / (mm + nn)
+                * (2 * this.sumCells(lookup, xind, yind) / (mm * nn)
+                        - this.sumCells(lookup, xind, xind) / (mm * mm)
+                        - this.sumCells(lookup, yind, yind) / (nn * nn));
     }
 
     class Boot {
@@ -469,26 +475,60 @@ public class Cramer extends AbstractOptionHandler implements StatisticalTest {
             xindex = 0;
         }
         // quantile<-x[xindex]+(conf.level-Fx[xindex])*(x[xindex+1]-x[xindex])/(Fx[xindex+1]-Fx[xindex])
-        double quantile = xx[xindex] + (confLevel - Fx[xindex]) * (xx[xindex + 1] - xx[xindex]) / (Fx[xindex + 1] - Fx[xindex]);
+        double quantile =
+                xx[xindex]
+                        + (confLevel - Fx[xindex])
+                                * (xx[xindex + 1] - xx[xindex])
+                                / (Fx[xindex + 1] - Fx[xindex]);
         if (Fx[M / 2] < confLevel) {
             System.out.println("Quantile calculation discrepance. Try to increase K!");
         }
         if (quantile > goodlimit) {
-            System.out.println("Quantile beyond good approximation limit. Try to increase maxM or decrease K!");
+            System.out.println(
+                    "Quantile beyond good approximation limit. Try to increase maxM or decrease"
+                            + " K!");
         }
         return new Kritwert(quantile, xx, Fx);
     }
 
     public CramerTest cramerTest(List<Instance> x, List<Instance> y) {
-        return this.cramerTest(x, y, this.confidenceLevelOption.getValue(), this.replicatesOption.getValue(), "ordinary", false, this.kernelOption.getChosenIndex(), this.maxMOption.getValue(), this.kOption.getValue());
+        return this.cramerTest(
+                x,
+                y,
+                this.confidenceLevelOption.getValue(),
+                this.replicatesOption.getValue(),
+                "ordinary",
+                false,
+                this.kernelOption.getChosenIndex(),
+                this.maxMOption.getValue(),
+                this.kOption.getValue());
     }
 
     public CramerTest cramerTest1(List<List<Double>> x, List<List<Double>> y) {
-        return this.cramerTest1(x, y, this.confidenceLevelOption.getValue(), this.replicatesOption.getValue(), "ordinary", false, this.kernelOption.getChosenIndex(), this.maxMOption.getValue(), this.kOption.getValue());
+        return this.cramerTest1(
+                x,
+                y,
+                this.confidenceLevelOption.getValue(),
+                this.replicatesOption.getValue(),
+                "ordinary",
+                false,
+                this.kernelOption.getChosenIndex(),
+                this.maxMOption.getValue(),
+                this.kOption.getValue());
     }
 
-    public CramerTest cramerTest1(List<List<Double>> x, List<List<Double>> y, double confLevel, int replicates, String sim, boolean justStatistic, int kernel, double maxM, int k) {
-        CramerTest RVAL = new CramerTest(0, 0, 0, 0, 0, 0, 0, confLevel, replicates, null, null, null);
+    public CramerTest cramerTest1(
+            List<List<Double>> x,
+            List<List<Double>> y,
+            double confLevel,
+            int replicates,
+            String sim,
+            boolean justStatistic,
+            int kernel,
+            double maxM,
+            int k) {
+        CramerTest RVAL =
+                new CramerTest(0, 0, 0, 0, 0, 0, 0, confLevel, replicates, null, null, null);
         // if ((is.matrix(x))&&(is.matrix(y))) if (ncol(x)==ncol(y)) RVAL$d<-ncol(x)
         RVAL.d = x.get(0).size();
         // RVAL$m<-nrow(x)
@@ -510,10 +550,19 @@ public class Cramer extends AbstractOptionHandler implements StatisticalTest {
         return this.compute(RVAL, daten, replicates, sim, justStatistic, kernel, maxM, k);
     }
 
-    private CramerTest compute(CramerTest RVAL, double[][] daten, int replicates, String sim, boolean justStatistic, int kernel, double maxM, int k) {
+    private CramerTest compute(
+            CramerTest RVAL,
+            double[][] daten,
+            int replicates,
+            String sim,
+            boolean justStatistic,
+            int kernel,
+            double maxM,
+            int k) {
         // lookup<-matrix(rep(0,(RVAL$m+RVAL$n)^2),ncol=(RVAL$m+RVAL$n))
         double[][] lookup = new double[RVAL.m + RVAL.n][RVAL.m + RVAL.n];
-        // for (i in 2:(RVAL$m+RVAL$n)) for (j in 1:(i-1)) { lookup[i,j]<-sum((daten[i,]-daten[j,])^2); lookup[j,i]<-lookup[i,j]; }
+        // for (i in 2:(RVAL$m+RVAL$n)) for (j in 1:(i-1)) {
+        // lookup[i,j]<-sum((daten[i,]-daten[j,])^2); lookup[j,i]<-lookup[i,j]; }
         for (int i = 1; i < RVAL.m + RVAL.n; i++) {
             for (int j = 0; j <= i - 1; j++) {
                 lookup[i][j] = this.subtractRows(daten, i, j);
@@ -602,8 +651,18 @@ public class Cramer extends AbstractOptionHandler implements StatisticalTest {
         return RVAL;
     }
 
-    public CramerTest cramerTest(List<Instance> x, List<Instance> y, double confLevel, int replicates, String sim, boolean justStatistic, int kernel, double maxM, int k) {
-        CramerTest RVAL = new CramerTest(0, 0, 0, 0, 0, 0, 0, confLevel, replicates, null, null, null);
+    public CramerTest cramerTest(
+            List<Instance> x,
+            List<Instance> y,
+            double confLevel,
+            int replicates,
+            String sim,
+            boolean justStatistic,
+            int kernel,
+            double maxM,
+            int k) {
+        CramerTest RVAL =
+                new CramerTest(0, 0, 0, 0, 0, 0, 0, confLevel, replicates, null, null, null);
         // if ((is.matrix(x))&&(is.matrix(y))) if (ncol(x)==ncol(y)) RVAL$d<-ncol(x)
         RVAL.d = x.get(0).numAttributes();
         // RVAL$m<-nrow(x)
@@ -647,10 +706,19 @@ public class Cramer extends AbstractOptionHandler implements StatisticalTest {
         double pValue, critValue, statistic, result, confLevel, replicates;
         double[] hypdistX, hypdistFx, ev;
 
-        public CramerTest(int d, int m, int n, double pValue,
-                double critValue, double statistic, double result,
-                double confLevel, double replicates, double[] hypdistX,
-                double[] hypdistFx, double[] ev) {
+        public CramerTest(
+                int d,
+                int m,
+                int n,
+                double pValue,
+                double critValue,
+                double statistic,
+                double result,
+                double confLevel,
+                double replicates,
+                double[] hypdistX,
+                double[] hypdistFx,
+                double[] ev) {
             super();
             this.d = d;
             this.m = m;
@@ -710,9 +778,16 @@ public class Cramer extends AbstractOptionHandler implements StatisticalTest {
 
         Cramer c = new Cramer();
         Cramer.CramerTest ct = c.cramerTest(x, y);
-        System.out.println("p Value [Resultado esperado: 0.7092907] [Resultado obtido..: " + ct.pValue + "]");
-        System.out.println("Critical value [Resultado esperado: 2.379552] [Resultado obtido: " + ct.critValue + "]");
-        System.out.println("Statistic [Resultado esperado: 0.8160198] [Resultado obtido: " + ct.statistic + "]");
+        System.out.println(
+                "p Value [Resultado esperado: 0.7092907] [Resultado obtido..: " + ct.pValue + "]");
+        System.out.println(
+                "Critical value [Resultado esperado: 2.379552] [Resultado obtido: "
+                        + ct.critValue
+                        + "]");
+        System.out.println(
+                "Statistic [Resultado esperado: 0.8160198] [Resultado obtido: "
+                        + ct.statistic
+                        + "]");
     }
 
     @Override
@@ -726,8 +801,7 @@ public class Cramer extends AbstractOptionHandler implements StatisticalTest {
     }
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
     }
 

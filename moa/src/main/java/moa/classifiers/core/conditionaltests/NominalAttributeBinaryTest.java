@@ -19,8 +19,8 @@
  */
 package moa.classifiers.core.conditionaltests;
 
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Nominal binary conditional test for instances to use to split nodes in Hoeffding trees.
@@ -43,9 +43,10 @@ public class NominalAttributeBinaryTest extends InstanceConditionalBinaryTest {
 
     @Override
     public int branchForInstance(Instance inst) {
-        int instAttIndex = this.attIndex < inst.classIndex() ? this.attIndex
-                : this.attIndex + 1;
-        return inst.isMissing(instAttIndex) ? -1 : ((int) inst.value(instAttIndex) == this.attValue ? 0 : 1);
+        int instAttIndex = this.attIndex < inst.classIndex() ? this.attIndex : this.attIndex + 1;
+        return inst.isMissing(instAttIndex)
+                ? -1
+                : ((int) inst.value(instAttIndex) == this.attValue ? 0 : 1);
     }
 
     public double getValue() {
@@ -55,11 +56,9 @@ public class NominalAttributeBinaryTest extends InstanceConditionalBinaryTest {
     @Override
     public String describeConditionForBranch(int branch, InstancesHeader context) {
         if ((branch == 0) || (branch == 1)) {
-            return InstancesHeader.getInputAttributeNameString(context,
-                    this.attIndex)
+            return InstancesHeader.getInputAttributeNameString(context, this.attIndex)
                     + (branch == 0 ? " = " : " != ")
-                    + InstancesHeader.getNominalValueString(context,
-                    this.attIndex, this.attValue);
+                    + InstancesHeader.getNominalValueString(context, this.attIndex, this.attValue);
         }
         throw new IndexOutOfBoundsException();
     }
@@ -71,6 +70,6 @@ public class NominalAttributeBinaryTest extends InstanceConditionalBinaryTest {
 
     @Override
     public int[] getAttsTestDependsOn() {
-        return new int[]{this.attIndex};
+        return new int[] {this.attIndex};
     }
 }

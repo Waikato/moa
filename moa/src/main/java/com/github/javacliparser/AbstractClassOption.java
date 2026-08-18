@@ -1,18 +1,18 @@
 /*
  * Copyright 2007 University of Waikato.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * 	        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the
- * License.  
+ * License.
  */
 
 package com.github.javacliparser;
@@ -29,10 +29,10 @@ public abstract class AbstractClassOption extends AbstractOption {
 
     private static final long serialVersionUID = 1L;
 
-    /** The prefix text to use to indicate file.  */
+    /** The prefix text to use to indicate file. */
     public static final String FILE_PREFIX_STRING = "file:";
 
-    /** The prefix text to use to indicate inmem.  */
+    /** The prefix text to use to indicate inmem. */
     public static final String INMEM_PREFIX_STRING = "inmem:";
 
     /** The current object */
@@ -48,9 +48,8 @@ public abstract class AbstractClassOption extends AbstractOption {
     protected String nullString;
 
     /**
-     * Creates a new instance of an abstract option given its class name,
-     * command line interface text, its purpose, its class type and its default
-     * command line interface text.
+     * Creates a new instance of an abstract option given its class name, command line interface
+     * text, its purpose, its class type and its default command line interface text.
      *
      * @param name the name of this option
      * @param cliChar the command line interface text
@@ -58,15 +57,18 @@ public abstract class AbstractClassOption extends AbstractOption {
      * @param requiredType the class type
      * @param defaultCLIString the default command line interface text
      */
-    public AbstractClassOption(String name, char cliChar, String purpose,
-            Class<?> requiredType, String defaultCLIString) {
+    public AbstractClassOption(
+            String name,
+            char cliChar,
+            String purpose,
+            Class<?> requiredType,
+            String defaultCLIString) {
         this(name, cliChar, purpose, requiredType, defaultCLIString, null);
     }
 
     /**
-     * Creates a new instance of an abstract option given its class name,
-     * command line interface text, its purpose, its class type, default
-     * command line interface text, and its null text.
+     * Creates a new instance of an abstract option given its class name, command line interface
+     * text, its purpose, its class type, default command line interface text, and its null text.
      *
      * @param name the name of this option
      * @param cliChar the command line interface text
@@ -75,8 +77,13 @@ public abstract class AbstractClassOption extends AbstractOption {
      * @param defaultCLIString the default command line interface text
      * @param nullString the null text
      */
-    public AbstractClassOption(String name, char cliChar, String purpose,
-            Class<?> requiredType, String defaultCLIString, String nullString) {
+    public AbstractClassOption(
+            String name,
+            char cliChar,
+            String purpose,
+            Class<?> requiredType,
+            String defaultCLIString,
+            String nullString) {
         super(name, cliChar, purpose);
         this.requiredType = requiredType;
         this.defaultCLIString = defaultCLIString;
@@ -94,8 +101,9 @@ public abstract class AbstractClassOption extends AbstractOption {
                 || this.requiredType.isInstance(obj)
                 || (obj instanceof String)
                 || (obj instanceof File)
-             //   || ((obj instanceof Task) && this.requiredType.isAssignableFrom(((Task) obj).getTaskResultType()))
-                ) {
+        //   || ((obj instanceof Task) && this.requiredType.isAssignableFrom(((Task)
+        // obj).getTaskResultType()))
+        ) {
             this.currentValue = obj;
         } else {
             throw new IllegalArgumentException("Object not of required type.");
@@ -107,7 +115,7 @@ public abstract class AbstractClassOption extends AbstractOption {
      *
      * @return the current object
      */
-    public Object getValue() { //getPreMaterializedObject() {
+    public Object getValue() { // getPreMaterializedObject() {
         return this.currentValue;
     }
 
@@ -131,14 +139,13 @@ public abstract class AbstractClassOption extends AbstractOption {
 
     /**
      * Gets a materialized object of this option.
-     * 
+     *
      * @return the materialized object
      */
     public Object materializeObject() {
-        if ((this.currentValue == null)
-                || this.requiredType.isInstance(this.currentValue)) {
+        if ((this.currentValue == null) || this.requiredType.isInstance(this.currentValue)) {
             return this.currentValue;
-       /* } else if (this.currentValue instanceof String) {
+            /* } else if (this.currentValue instanceof String) {
             if (repository != null) {
                 Object inmemObj = repository.getObjectNamed((String) this.currentValue);
                 if (inmemObj == null) {
@@ -148,28 +155,34 @@ public abstract class AbstractClassOption extends AbstractOption {
                 return inmemObj;
             }
             throw new RuntimeException("No object repository available.");
-            */ 
-      //  } else if (this.currentValue instanceof Task) {
-      //      Task task = (Task) this.currentValue;
-      //      Object result = task.doTask(monitor, repository);
-      //      return result;
+            */
+            //  } else if (this.currentValue instanceof Task) {
+            //      Task task = (Task) this.currentValue;
+            //      Object result = task.doTask(monitor, repository);
+            //      return result;
         } else if (this.currentValue instanceof File) {
             File inputFile = (File) this.currentValue;
             Object result = null;
             try {
                 result = SerializeUtils.readFromFile(inputFile);
             } catch (Exception ex) {
-                throw new RuntimeException("Problem loading "
-                        + this.requiredType.getName() + " object from file '"
-                        + inputFile.getName() + "':\n" + ex.getMessage(), ex);
+                throw new RuntimeException(
+                        "Problem loading "
+                                + this.requiredType.getName()
+                                + " object from file '"
+                                + inputFile.getName()
+                                + "':\n"
+                                + ex.getMessage(),
+                        ex);
             }
             return result;
         } else {
             throw new RuntimeException(
                     "Could not materialize object of required type "
-                    + this.requiredType.getName() + ", found "
-                    + this.currentValue.getClass().getName()
-                    + " instead.");
+                            + this.requiredType.getName()
+                            + ", found "
+                            + this.currentValue.getClass().getName()
+                            + " instead.");
         }
     }
 
@@ -192,13 +205,13 @@ public abstract class AbstractClassOption extends AbstractOption {
             // cut off package name
             className = className.substring(packageName.length() + 1, className.length());
         } /*else if (Task.class.isAssignableFrom(aClass)) {
-            packageName = Task.class.getPackage().getName();
-            if (className.startsWith(packageName)) {
-                // cut off task package name
-                className = className.substring(packageName.length() + 1,
-                        className.length());
-            }
-        }*/
+              packageName = Task.class.getPackage().getName();
+              if (className.startsWith(packageName)) {
+                  // cut off task package name
+                  className = className.substring(packageName.length() + 1,
+                          className.length());
+              }
+          }*/
         return className;
     }
 
@@ -208,8 +221,8 @@ public abstract class AbstractClassOption extends AbstractOption {
     @Override
     public abstract void setValueViaCLIString(String s);
 
-    //@Override
-    //public abstract JComponent getEditComponent();
+    // @Override
+    // public abstract JComponent getEditComponent();
 
     /**
      * Gets the class name without its package name prefix.

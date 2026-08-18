@@ -15,9 +15,11 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
+
+import com.github.javacliparser.IntOption;
 
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiLabelClassifier;
@@ -29,8 +31,6 @@ import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 import moa.streams.MultiTargetInstanceStream;
-
-import com.github.javacliparser.IntOption;
 
 /**
  * Task for learning a model without any evaluation.
@@ -47,31 +47,53 @@ public class LearnModelMultiLabel extends MultiLabelMainTask {
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Learner to train.", MultiLabelClassifier.class, MultiLabelNaiveBayes.class.getName());
+    public ClassOption learnerOption =
+            new ClassOption(
+                    "learner",
+                    'l',
+                    "Learner to train.",
+                    MultiLabelClassifier.class,
+                    MultiLabelNaiveBayes.class.getName());
 
-    public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", MultiTargetInstanceStream.class,
-            "MultiTargetArffFileStream");
+    public ClassOption streamOption =
+            new ClassOption(
+                    "stream",
+                    's',
+                    "Stream to learn from.",
+                    MultiTargetInstanceStream.class,
+                    "MultiTargetArffFileStream");
 
-    public IntOption maxInstancesOption = new IntOption("maxInstances", 'm',
-            "Maximum number of instances to train on per pass over the data.",
-            10000000, 0, Integer.MAX_VALUE);
+    public IntOption maxInstancesOption =
+            new IntOption(
+                    "maxInstances",
+                    'm',
+                    "Maximum number of instances to train on per pass over the data.",
+                    10000000,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public IntOption numPassesOption = new IntOption("numPasses", 'p',
-            "The number of passes to do over the data.", 1, 1,
-            Integer.MAX_VALUE);
+    public IntOption numPassesOption =
+            new IntOption(
+                    "numPasses",
+                    'p',
+                    "The number of passes to do over the data.",
+                    1,
+                    1,
+                    Integer.MAX_VALUE);
 
-    public IntOption memCheckFrequencyOption = new IntOption(
-            "memCheckFrequency", 'q',
-            "How many instances between memory bound checks.", 100000, 0,
-            Integer.MAX_VALUE);
+    public IntOption memCheckFrequencyOption =
+            new IntOption(
+                    "memCheckFrequency",
+                    'q',
+                    "How many instances between memory bound checks.",
+                    100000,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public LearnModelMultiLabel() {
-    }
+    public LearnModelMultiLabel() {}
 
-    public LearnModelMultiLabel(Classifier learner, InstanceStream stream,
-                                int maxInstances, int numPasses) {
+    public LearnModelMultiLabel(
+            Classifier learner, InstanceStream stream, int maxInstances, int numPasses) {
         this.learnerOption.setCurrentObject(learner);
         this.streamOption.setCurrentObject(stream);
         this.maxInstancesOption.setValue(maxInstances);
@@ -92,9 +114,13 @@ public class LearnModelMultiLabel extends MultiLabelMainTask {
         int maxInstances = this.maxInstancesOption.getValue();
         for (int pass = 0; pass < numPasses; pass++) {
             long instancesProcessed = 0;
-            monitor.setCurrentActivity("Training learner"
-                    + (numPasses > 1 ? (" (pass " + (pass + 1) + "/"
-                    + numPasses + ")") : "") + "...", -1.0);
+            monitor.setCurrentActivity(
+                    "Training learner"
+                            + (numPasses > 1
+                                    ? (" (pass " + (pass + 1) + "/" + numPasses + ")")
+                                    : "")
+                            + "...",
+                    -1.0);
             if (pass > 0) {
                 stream.restart();
             }
@@ -114,9 +140,13 @@ public class LearnModelMultiLabel extends MultiLabelMainTask {
                             estimatedRemainingInstances = maxRemaining;
                         }
                     }
-                    monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
-                            : (double) instancesProcessed
-                            / (double) (instancesProcessed + estimatedRemainingInstances));
+                    monitor.setCurrentActivityFractionComplete(
+                            estimatedRemainingInstances < 0
+                                    ? -1.0
+                                    : (double) instancesProcessed
+                                            / (double)
+                                                    (instancesProcessed
+                                                            + estimatedRemainingInstances));
                     if (monitor.resultPreviewRequested()) {
                         monitor.setLatestResultPreview(learner.copy());
                     }

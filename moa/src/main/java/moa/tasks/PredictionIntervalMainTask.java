@@ -24,8 +24,7 @@ import moa.streams.clustering.ClusterEvent;
 import java.util.ArrayList;
 
 /**
- * Abstract Regression Main Task. All tasks that uses prediction intervals must
- * extend this class.
+ * Abstract Regression Main Task. All tasks that uses prediction intervals must extend this class.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
@@ -37,9 +36,8 @@ public abstract class PredictionIntervalMainTask extends RegressionMainTask {
     protected void setEventsList(ArrayList<ClusterEvent> events) {
         this.events = events;
     }
-    
+
     public ArrayList<ClusterEvent> getEventsList() {
         return this.events;
     }
-    
 }

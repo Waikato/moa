@@ -1,9 +1,9 @@
 package moa.classifiers.rules.multilabel.core;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import com.yahoo.labs.samoa.instances.InstanceInformation;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.classifiers.MultiLabelLearner;
 import moa.classifiers.core.driftdetection.ChangeDetector;
@@ -20,262 +20,265 @@ import moa.classifiers.rules.multilabel.outputselectors.OutputAttributesSelector
 import moa.core.DoubleVector;
 import moa.core.StringUtils;
 
-import com.yahoo.labs.samoa.instances.InstanceInformation;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-import com.yahoo.labs.samoa.instances.Prediction;
-
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 
 public class MultiLabelRule extends ObservableMOAObject {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /** */
+    private static final long serialVersionUID = 1L;
 
-	protected List<Literal> literalList = new LinkedList<Literal>();
+    protected List<Literal> literalList = new LinkedList<Literal>();
 
-	protected LearningLiteral learningLiteral;
+    protected LearningLiteral learningLiteral;
 
-	protected int ruleNumberID;
+    protected int ruleNumberID;
 
-	protected MultiLabelRule otherBranchRule;
+    protected MultiLabelRule otherBranchRule;
 
-	protected MultiLabelRule otherOutputsRule;
+    protected MultiLabelRule otherOutputsRule;
 
-	protected InstanceInformation instanceInformation;
+    protected InstanceInformation instanceInformation;
 
-	//double [] attributesDemeritAccum; //forWeighted VoteFeatureRanking
+    // double [] attributesDemeritAccum; //forWeighted VoteFeatureRanking
 
-	public MultiLabelRule(LearningLiteral learningLiteral) {
-		this.learningLiteral=learningLiteral; //copy()?
-	}
+    public MultiLabelRule(LearningLiteral learningLiteral) {
+        this.learningLiteral = learningLiteral; // copy()?
+    }
 
-	public MultiLabelRule() {
+    public MultiLabelRule() {}
 
-	}
+    public MultiLabelRule(int id) {
+        this();
+        ruleNumberID = id;
+    }
 
-	public MultiLabelRule(int id) {
-		this();
-		ruleNumberID=id;
-	}
+    public int getRuleNumberID() {
+        return ruleNumberID;
+    }
 
-	public int getRuleNumberID() {
-		return ruleNumberID;
-	}
+    public void setRuleNumberID(int ruleNumberID) {
+        this.ruleNumberID = ruleNumberID;
+    }
 
-	public void setRuleNumberID(int ruleNumberID) {
-		this.ruleNumberID = ruleNumberID;
-	}
-
-	public boolean isCovering(MultiLabelInstance inst) {
-		boolean isCovering = true;
-		for (Literal l : literalList) {
-			if (l.evaluate(inst) == false) {
-				isCovering = false;
-				break;
-			}
-		}
-		return isCovering;
-	}
-
-	public int[] getOutputsCovered() {
-		return learningLiteral.getOutputsToLearn();
-	}
-
-	public int[] getInputsCovered() {
-		return learningLiteral.getInputsToLearn();
-	}
-
-	@Override
-	public void getDescription(StringBuilder out, int indent) {
-		StringUtils.appendIndented(out, indent+1, "Rule Nr." + this.ruleNumberID + " Instances seen:" + this.learningLiteral.getWeightSeenSinceExpansion() + "\n"); 
-		for (Literal literal : literalList) {
-			literal.getDescription(out, indent+1, instanceInformation);
-			StringUtils.appendIndented(out, indent+1, " ");
-		}
-		StringUtils.appendIndented(out, indent+1, " Output: " + this.learningLiteral.getStaticOutput(instanceInformation));
-	}
-
-	protected String getStaticOutput() {
-		return "";
-	}
-
-	public boolean updateChangeDetection(MultiLabelInstance instance) {
-		return this.learningLiteral.updateAndCheckChange(instance);
-	}
-
-	public boolean updateAnomalyDetection(MultiLabelInstance instance) {
-		return this.learningLiteral.updateAndCheckAnomalyDetection(instance);
-	}
-
-	public void trainOnInstance(MultiLabelInstance instance) {
-		if(this.instanceInformation==null)
-			this.instanceInformation=((InstancesHeader)instance.dataset()).getInstanceInformation();
-		learningLiteral.trainOnInstance(instance);
-	}
-
-	public double getWeightSeenSinceExpansion() {
-		return learningLiteral.getWeightSeenSinceExpansion();
-	}
-
-	public LearningLiteral getLearningNode() {
-		return learningLiteral;
-	}
-
-	public double [] getCurrentErrors() {
-		return learningLiteral.getErrors();
-	}
-
-	public  Prediction getPredictionForInstance(MultiLabelInstance instance) {
-		return learningLiteral.getPredictionForInstance(instance);
-	}
-
-        public double getAnomalyScore(){
-            //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-            //System.out.print("MultiLabelRule.getAnomalyScore:AScore=" + this.learningLiteral.anomalyDetector.getAnomalyScore() + "\n");
-            //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
-            return  this.learningLiteral.anomalyDetector.getAnomalyScore();
+    public boolean isCovering(MultiLabelInstance inst) {
+        boolean isCovering = true;
+        for (Literal l : literalList) {
+            if (l.evaluate(inst) == false) {
+                isCovering = false;
+                break;
+            }
         }
-	public boolean tryToExpand(double splitConfidence, double tieThresholdOption) {
-		boolean hasExpanded=learningLiteral.tryToExpand(splitConfidence,tieThresholdOption);
-		
-		//Merit check event
-		double[] merit=learningLiteral.getMeritInputAttributes();
-		if(merit!=null)
-			this.notifyAll( new MeritCheckMessage(new DoubleVector(merit), this.learningLiteral.getAttributeMask()));
+        return isCovering;
+    }
 
-		if(hasExpanded){
-			
-			LearningLiteral otherOutputsLiteral=learningLiteral.getOtherOutputsLearningLiteral();
-			//if && this.literalList.size()>0 is removed then consider including this code for default rule also
-			if(otherOutputsLiteral!=null && this.literalList.size()>0){ //only add "other outputs" rule if antecedent is not empty
-				otherOutputsRule=new MultiLabelRule();
-				otherOutputsRule.instanceInformation=instanceInformation; 
-				otherOutputsRule.literalList=new LinkedList<Literal>(this.literalList);
-				otherOutputsRule.learningLiteral=otherOutputsLiteral;
-			}
+    public int[] getOutputsCovered() {
+        return learningLiteral.getOutputsToLearn();
+    }
 
-			otherBranchRule=new MultiLabelRule((LearningLiteral)learningLiteral.getOtherBranchLearningLiteral());
-			//check for obsolete predicate
-			int attribIndex=learningLiteral.getBestSuggestion().getPredicate().getAttributeIndex();
-			boolean isEqualOrLess=learningLiteral.getBestSuggestion().getPredicate().isEqualOrLess();
-			
-			boolean isSpecialization=false;
-			Iterator<Literal> it=literalList.iterator();
-			while(it.hasNext()){
-				Literal l=it.next();
-				if(l.predicate.getAttributeIndex()==attribIndex && l.predicate.isEqualOrLess()==isEqualOrLess)
-				{
-					it.remove();
-					isSpecialization=true;
-					break;
-				}
-			}
-			
-			//Rule expansion event
-			this.notifyAll(new RuleExpandedMessage(attribIndex, isSpecialization));
+    public int[] getInputsCovered() {
+        return learningLiteral.getInputsToLearn();
+    }
 
-			this.literalList.add(new Literal(learningLiteral.getBestSuggestion().getPredicate()));
-			learningLiteral=learningLiteral.getExpandedLearningLiteral();	
-		}
-		return hasExpanded;
-	}
+    @Override
+    public void getDescription(StringBuilder out, int indent) {
+        StringUtils.appendIndented(
+                out,
+                indent + 1,
+                "Rule Nr."
+                        + this.ruleNumberID
+                        + " Instances seen:"
+                        + this.learningLiteral.getWeightSeenSinceExpansion()
+                        + "\n");
+        for (Literal literal : literalList) {
+            literal.getDescription(out, indent + 1, instanceInformation);
+            StringUtils.appendIndented(out, indent + 1, " ");
+        }
+        StringUtils.appendIndented(
+                out,
+                indent + 1,
+                " Output: " + this.learningLiteral.getStaticOutput(instanceInformation));
+    }
 
-	public MultiLabelRule getNewRuleFromOtherBranch(){
-		MultiLabelRule r=otherBranchRule;
-		otherBranchRule=null;
-		return r;
-	}
+    protected String getStaticOutput() {
+        return "";
+    }
 
-	public MultiLabelRule getNewRuleFromOtherOutputs(){
-		MultiLabelRule r=otherOutputsRule;
-		return r;
-	}
+    public boolean updateChangeDetection(MultiLabelInstance instance) {
+        return this.learningLiteral.updateAndCheckChange(instance);
+    }
 
-	@Override
-	public String toString()
-	{
-		StringBuilder out = new StringBuilder();
-		getDescription(out, 1);
-		return out.toString();
-	}
+    public boolean updateAnomalyDetection(MultiLabelInstance instance) {
+        return this.learningLiteral.updateAndCheckAnomalyDetection(instance);
+    }
 
-	public void setSplitCriterion(MultiLabelSplitCriterion splitCriterion) {
-		learningLiteral.setSplitCriterion(splitCriterion);
+    public void trainOnInstance(MultiLabelInstance instance) {
+        if (this.instanceInformation == null)
+            this.instanceInformation =
+                    ((InstancesHeader) instance.dataset()).getInstanceInformation();
+        learningLiteral.trainOnInstance(instance);
+    }
 
-	}
+    public double getWeightSeenSinceExpansion() {
+        return learningLiteral.getWeightSeenSinceExpansion();
+    }
 
-	public void setChangeDetector(ChangeDetector changeDetector) {
-		learningLiteral.setChangeDetector(changeDetector);
+    public LearningLiteral getLearningNode() {
+        return learningLiteral;
+    }
 
-	}
+    public double[] getCurrentErrors() {
+        return learningLiteral.getErrors();
+    }
 
-	public void setAnomalyDetector(AnomalyDetector anomalyDetector) {
-		learningLiteral.setAnomalyDetector(anomalyDetector);
+    public Prediction getPredictionForInstance(MultiLabelInstance instance) {
+        return learningLiteral.getPredictionForInstance(instance);
+    }
 
-	}
+    public double getAnomalyScore() {
+        // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        // System.out.print("MultiLabelRule.getAnomalyScore:AScore=" +
+        // this.learningLiteral.anomalyDetector.getAnomalyScore() + "\n");
+        // xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        return this.learningLiteral.anomalyDetector.getAnomalyScore();
+    }
 
-	public void setNumericObserverOption(
-			NumericStatisticsObserver numericStatisticsObserver) {
-		learningLiteral.setNumericObserverOption(numericStatisticsObserver);
+    public boolean tryToExpand(double splitConfidence, double tieThresholdOption) {
+        boolean hasExpanded = learningLiteral.tryToExpand(splitConfidence, tieThresholdOption);
 
-	}
+        // Merit check event
+        double[] merit = learningLiteral.getMeritInputAttributes();
+        if (merit != null)
+            this.notifyAll(
+                    new MeritCheckMessage(
+                            new DoubleVector(merit), this.learningLiteral.getAttributeMask()));
 
-	public void setLearner(MultiLabelLearner learner) {
-		learningLiteral.setLearner(learner);
+        if (hasExpanded) {
 
-	}
+            LearningLiteral otherOutputsLiteral = learningLiteral.getOtherOutputsLearningLiteral();
+            // if && this.literalList.size()>0 is removed then consider including this code for
+            // default rule also
+            if (otherOutputsLiteral != null
+                    && this.literalList.size()
+                            > 0) { // only add "other outputs" rule if antecedent is not empty
+                otherOutputsRule = new MultiLabelRule();
+                otherOutputsRule.instanceInformation = instanceInformation;
+                otherOutputsRule.literalList = new LinkedList<Literal>(this.literalList);
+                otherOutputsRule.learningLiteral = otherOutputsLiteral;
+            }
 
-	public void setErrorMeasurer(MultiLabelErrorMeasurer errorMeasurer) {
-		learningLiteral.setErrorMeasurer(errorMeasurer);
+            otherBranchRule =
+                    new MultiLabelRule(
+                            (LearningLiteral) learningLiteral.getOtherBranchLearningLiteral());
+            // check for obsolete predicate
+            int attribIndex =
+                    learningLiteral.getBestSuggestion().getPredicate().getAttributeIndex();
+            boolean isEqualOrLess =
+                    learningLiteral.getBestSuggestion().getPredicate().isEqualOrLess();
 
-	}
+            boolean isSpecialization = false;
+            Iterator<Literal> it = literalList.iterator();
+            while (it.hasNext()) {
+                Literal l = it.next();
+                if (l.predicate.getAttributeIndex() == attribIndex
+                        && l.predicate.isEqualOrLess() == isEqualOrLess) {
+                    it.remove();
+                    isSpecialization = true;
+                    break;
+                }
+            }
 
-	public void setOutputAttributesSelector(OutputAttributesSelector outputSelector) {
-		learningLiteral.setOutputAttributesSelector(outputSelector);
+            // Rule expansion event
+            this.notifyAll(new RuleExpandedMessage(attribIndex, isSpecialization));
 
-	}
+            this.literalList.add(new Literal(learningLiteral.getBestSuggestion().getPredicate()));
+            learningLiteral = learningLiteral.getExpandedLearningLiteral();
+        }
+        return hasExpanded;
+    }
 
-	public void setNominalObserverOption(NominalStatisticsObserver nominalStatisticsObserver) {
-		learningLiteral.setNominalObserverOption(nominalStatisticsObserver);	
-	}
+    public MultiLabelRule getNewRuleFromOtherBranch() {
+        MultiLabelRule r = otherBranchRule;
+        otherBranchRule = null;
+        return r;
+    }
 
-	public void setRandomGenerator(Random random) {
-		learningLiteral.setRandomGenerator(random);
-	}
+    public MultiLabelRule getNewRuleFromOtherOutputs() {
+        MultiLabelRule r = otherOutputsRule;
+        return r;
+    }
 
-	public void setAttributesPercentage(double attributesPercentage) {
-		learningLiteral.setAttributesPercentage(attributesPercentage);
+    @Override
+    public String toString() {
+        StringBuilder out = new StringBuilder();
+        getDescription(out, 1);
+        return out.toString();
+    }
 
-	}
+    public void setSplitCriterion(MultiLabelSplitCriterion splitCriterion) {
+        learningLiteral.setSplitCriterion(splitCriterion);
+    }
 
-	public void setInputAttributesSelector(InputAttributesSelector inputSelector) {
-		learningLiteral.setInputAttributesSelector(inputSelector);
+    public void setChangeDetector(ChangeDetector changeDetector) {
+        learningLiteral.setChangeDetector(changeDetector);
+    }
 
-	}
+    public void setAnomalyDetector(AnomalyDetector anomalyDetector) {
+        learningLiteral.setAnomalyDetector(anomalyDetector);
+    }
 
-	public boolean hasNewRuleFromOtherOutputs() {
-		return this.otherOutputsRule!=null;
-	}
+    public void setNumericObserverOption(NumericStatisticsObserver numericStatisticsObserver) {
+        learningLiteral.setNumericObserverOption(numericStatisticsObserver);
+    }
 
-	public void setInstanceTransformer(InstanceTransformer instanceTransformer) {
-		learningLiteral.setInstanceTransformer(instanceTransformer);
+    public void setLearner(MultiLabelLearner learner) {
+        learningLiteral.setLearner(learner);
+    }
 
-	}
+    public void setErrorMeasurer(MultiLabelErrorMeasurer errorMeasurer) {
+        learningLiteral.setErrorMeasurer(errorMeasurer);
+    }
 
-	@Override
-	public void addObserver(ObserverMOAObject o) {
-			observers.add(o);
-	}
+    public void setOutputAttributesSelector(OutputAttributesSelector outputSelector) {
+        learningLiteral.setOutputAttributesSelector(outputSelector);
+    }
 
-	public List<Literal> getLiterals(){
-		return literalList;
-	}
+    public void setNominalObserverOption(NominalStatisticsObserver nominalStatisticsObserver) {
+        learningLiteral.setNominalObserverOption(nominalStatisticsObserver);
+    }
 
-	public void clearOtherOutputs() {
-		otherOutputsRule=null;
-	}
+    public void setRandomGenerator(Random random) {
+        learningLiteral.setRandomGenerator(random);
+    }
 
+    public void setAttributesPercentage(double attributesPercentage) {
+        learningLiteral.setAttributesPercentage(attributesPercentage);
+    }
 
+    public void setInputAttributesSelector(InputAttributesSelector inputSelector) {
+        learningLiteral.setInputAttributesSelector(inputSelector);
+    }
+
+    public boolean hasNewRuleFromOtherOutputs() {
+        return this.otherOutputsRule != null;
+    }
+
+    public void setInstanceTransformer(InstanceTransformer instanceTransformer) {
+        learningLiteral.setInstanceTransformer(instanceTransformer);
+    }
+
+    @Override
+    public void addObserver(ObserverMOAObject o) {
+        observers.add(o);
+    }
+
+    public List<Literal> getLiterals() {
+        return literalList;
+    }
+
+    public void clearOtherOutputs() {
+        otherOutputsRule = null;
+    }
 }

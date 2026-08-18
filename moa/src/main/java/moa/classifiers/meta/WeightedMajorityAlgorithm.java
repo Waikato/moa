@@ -15,9 +15,15 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.meta;
+
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.ListOption;
+import com.github.javacliparser.Option;
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
@@ -25,14 +31,9 @@ import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
-import moa.options.ClassOption;
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.ListOption;
-import com.github.javacliparser.Option;
-import moa.tasks.TaskMonitor;
-import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.Utils;
+import moa.options.ClassOption;
+import moa.tasks.TaskMonitor;
 
 /**
  * Weighted majority algorithm for data streams.
@@ -43,55 +44,54 @@ import moa.core.Utils;
 public class WeightedMajorityAlgorithm extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Override
     public String getPurposeString() {
         return "Weighted majority algorithm for data streams.";
     }
-        
-    public ListOption learnerListOption = new ListOption(
-            "learners",
-            'l',
-            "The learners to combine.",
-            new ClassOption("learner", ' ', "", Classifier.class,
-            "trees.HoeffdingTree"),
-            new Option[]{
-                new ClassOption("", ' ', "", Classifier.class,
-                "trees.HoeffdingTree -l MC"),
-                new ClassOption("", ' ', "", Classifier.class,
-                "trees.HoeffdingTree -l NB"),
-                new ClassOption("", ' ', "", Classifier.class,
-                "trees.HoeffdingTree -l NBAdaptive"),
-                new ClassOption("", ' ', "", Classifier.class, "bayes.NaiveBayes")},
-            ',');
 
-    public FloatOption betaOption = new FloatOption("beta", 'b',
-            "Factor to punish mistakes by.", 0.9, 0.0, 1.0);
+    public ListOption learnerListOption =
+            new ListOption(
+                    "learners",
+                    'l',
+                    "The learners to combine.",
+                    new ClassOption("learner", ' ', "", Classifier.class, "trees.HoeffdingTree"),
+                    new Option[] {
+                        new ClassOption("", ' ', "", Classifier.class, "trees.HoeffdingTree -l MC"),
+                        new ClassOption("", ' ', "", Classifier.class, "trees.HoeffdingTree -l NB"),
+                        new ClassOption(
+                                "", ' ', "", Classifier.class, "trees.HoeffdingTree -l NBAdaptive"),
+                        new ClassOption("", ' ', "", Classifier.class, "bayes.NaiveBayes")
+                    },
+                    ',');
 
-    public FloatOption gammaOption = new FloatOption("gamma", 'g',
-            "Minimum fraction of weight per model.", 0.01, 0.0, 0.5);
+    public FloatOption betaOption =
+            new FloatOption("beta", 'b', "Factor to punish mistakes by.", 0.9, 0.0, 1.0);
 
-    public FlagOption pruneOption = new FlagOption("prune", 'p',
-            "Prune poorly performing models from ensemble.");
+    public FloatOption gammaOption =
+            new FloatOption("gamma", 'g', "Minimum fraction of weight per model.", 0.01, 0.0, 0.5);
+
+    public FlagOption pruneOption =
+            new FlagOption("prune", 'p', "Prune poorly performing models from ensemble.");
 
     protected Classifier[] ensemble;
 
     protected double[] ensembleWeights;
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         Option[] learnerOptions = this.learnerListOption.getList();
         this.ensemble = new Classifier[learnerOptions.length];
         for (int i = 0; i < learnerOptions.length; i++) {
-            monitor.setCurrentActivity("Materializing learner " + (i + 1)
-                    + "...", -1.0);
-            this.ensemble[i] = (Classifier) ((ClassOption) learnerOptions[i]).materializeObject(monitor, repository);
+            monitor.setCurrentActivity("Materializing learner " + (i + 1) + "...", -1.0);
+            this.ensemble[i] =
+                    (Classifier)
+                            ((ClassOption) learnerOptions[i])
+                                    .materializeObject(monitor, repository);
             if (monitor.taskShouldAbort()) {
                 return;
             }
-            monitor.setCurrentActivity("Preparing learner " + (i + 1) + "...",
-                    -1.0);
+            monitor.setCurrentActivity("Preparing learner " + (i + 1) + "...", -1.0);
             this.ensemble[i].prepareForUse(monitor, repository);
             if (monitor.taskShouldAbort()) {
                 return;
@@ -115,10 +115,9 @@ public class WeightedMajorityAlgorithm extends AbstractClassifier implements Mul
         for (int i = 0; i < this.ensemble.length; i++) {
             boolean prune = false;
             if (!this.ensemble[i].correctlyClassifies(inst)) {
-                if (this.ensembleWeights[i] > this.gammaOption.getValue()
-                        / this.ensembleWeights.length) {
-                    this.ensembleWeights[i] *= this.betaOption.getValue()
-                            * inst.weight();
+                if (this.ensembleWeights[i]
+                        > this.gammaOption.getValue() / this.ensembleWeights.length) {
+                    this.ensembleWeights[i] *= this.betaOption.getValue() * inst.weight();
                 } else if (this.pruneOption.isSet()) {
                     prune = true;
                     discardModel(i);
@@ -141,7 +140,8 @@ public class WeightedMajorityAlgorithm extends AbstractClassifier implements Mul
         if (this.trainingWeightSeenByModel > 0.0) {
             for (int i = 0; i < this.ensemble.length; i++) {
                 if (this.ensembleWeights[i] > 0.0) {
-                    DoubleVector vote = new DoubleVector(this.ensemble[i].getVotesForInstance(inst));
+                    DoubleVector vote =
+                            new DoubleVector(this.ensemble[i].getVotesForInstance(inst));
                     if (vote.sumOfValues() > 0.0) {
                         vote.normalize();
                         vote.scaleValues(this.ensembleWeights[i]);
@@ -164,8 +164,8 @@ public class WeightedMajorityAlgorithm extends AbstractClassifier implements Mul
         if (this.ensembleWeights != null) {
             measurements = new Measurement[this.ensembleWeights.length];
             for (int i = 0; i < this.ensembleWeights.length; i++) {
-                measurements[i] = new Measurement("member weight " + (i + 1),
-                        this.ensembleWeights[i]);
+                measurements[i] =
+                        new Measurement("member weight " + (i + 1), this.ensembleWeights[i]);
             }
         }
         return measurements;

@@ -16,48 +16,45 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.meta;
 
-import moa.classifiers.MultiClassClassifier;
-import moa.classifiers.trees.LimAttHoeffdingTree;
-import com.yahoo.labs.samoa.instances.Instance;
-import moa.core.Utils;
-
-import java.math.BigInteger;
-import java.util.Arrays;
-import moa.classifiers.core.driftdetection.ADWIN;
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
-
-import moa.core.Measurement;
-import moa.options.ClassOption;
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
+import moa.classifiers.core.driftdetection.ADWIN;
+import moa.classifiers.trees.LimAttHoeffdingTree;
+import moa.core.Measurement;
+import moa.core.Utils;
+import moa.options.ClassOption;
+
+import java.math.BigInteger;
+import java.util.Arrays;
 
 /**
- * Ensemble Combining Restricted Hoeffding Trees using Stacking.
- * It produces a classification model based on an
- * ensemble of restricted decision trees, where each tree is built from a
- * distinct subset of the attributes. The overall model is formed by
- * combining the log-odds of the predicted class probabilities of these trees
- * using sigmoid perceptrons, with one perceptron per class.
- * In contrast to the standard boosting approach,
- * which forms an ensemble classifier in a greedy fashion, building each tree in
- * sequence and assigning corresponding weights as a by-product, our
- * method generates each tree in parallel and combines them using perceptron
- * classifiers by adopting the stacking approach.
+ * Ensemble Combining Restricted Hoeffding Trees using Stacking. It produces a classification model
+ * based on an ensemble of restricted decision trees, where each tree is built from a distinct
+ * subset of the attributes. The overall model is formed by combining the log-odds of the predicted
+ * class probabilities of these trees using sigmoid perceptrons, with one perceptron per class. In
+ * contrast to the standard boosting approach, which forms an ensemble classifier in a greedy
+ * fashion, building each tree in sequence and assigning corresponding weights as a by-product, our
+ * method generates each tree in parallel and combines them using perceptron classifiers by adopting
+ * the stacking approach.
  *
- * For more information see,<br/>
- * <br/>
- * Albert Bifet, Eibe Frank, Geoffrey Holmes, Bernhard Pfahringer: Accurate
- * Ensembles for Data Streams: Combining Restricted Hoeffding Trees using Stacking.
- * Journal of Machine Learning Research - Proceedings Track 13: 225-240 (2010)
- *
-<!-- technical-bibtex-start -->
+ * <p>For more information see,<br>
+ * <br>
+ * Albert Bifet, Eibe Frank, Geoffrey Holmes, Bernhard Pfahringer: Accurate Ensembles for Data
+ * Streams: Combining Restricted Hoeffding Trees using Stacking. Journal of Machine Learning
+ * Research - Proceedings Track 13: 225-240 (2010)
+ * <!-- technical-bibtex-start -->
  * BibTeX:
+ *
  * <pre>
  * &#64;article{BifetFHP10,
  * author    = {Albert Bifet and
@@ -72,8 +69,9 @@ import com.github.javacliparser.IntOption;
  * pages     = {225-240}
  * }
  * </pre>
- * <p/>
-<!-- technical-bibtex-end -->
+ *
+ * <p>
+ * <!-- technical-bibtex-end -->
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @author Eibe Frank (eibe{[at]}cs{[dot]}waikato{[dot]}ac{[dot]}nz)
@@ -84,8 +82,8 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
     @Override
     public String getPurposeString() {
         return "Ensemble Combining Restricted Hoeffding Trees using Stacking";
-    }    
-    
+    }
+
     /*
      * Class that generates all combinations of n elements, taken
      * r at a time. The algorithm is described by
@@ -106,9 +104,10 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
         private BigInteger numLeft;
 
         private BigInteger total;
-        //------------
+
+        // ------------
         // Constructor
-        //------------
+        // ------------
 
         public CombinationGenerator(int n, int r) {
             if (r > n) {
@@ -126,9 +125,10 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
             total = nFact.divide(rFact.multiply(nminusrFact));
             reset();
         }
-        //------
+
+        // ------
         // Reset
-        //------
+        // ------
 
         public void reset() {
             for (int i = 0; i < a.length; i++) {
@@ -136,30 +136,34 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
             }
             numLeft = new BigInteger(total.toString());
         }
-        //------------------------------------------------
+
+        // ------------------------------------------------
         // Return number of combinations not yet generated
-        //------------------------------------------------
+        // ------------------------------------------------
 
         public BigInteger getNumLeft() {
             return numLeft;
         }
-        //-----------------------------
+
+        // -----------------------------
         // Are there more combinations?
-        //-----------------------------
+        // -----------------------------
 
         public boolean hasMore() {
             return numLeft.compareTo(BigInteger.ZERO) == 1;
         }
-        //------------------------------------
+
+        // ------------------------------------
         // Return total number of combinations
-        //------------------------------------
+        // ------------------------------------
 
         public BigInteger getTotal() {
             return total;
         }
-        //------------------
+
+        // ------------------
         // Compute factorial
-        //------------------
+        // ------------------
 
         private BigInteger getFactorial(int n) {
             BigInteger fact = BigInteger.ONE;
@@ -168,9 +172,10 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
             }
             return fact;
         }
-        //--------------------------------------------------------
+
+        // --------------------------------------------------------
         // Generate next combination (algorithm from Rosen p. 286)
-        //--------------------------------------------------------
+        // --------------------------------------------------------
 
         public int[] getNext() {
             if (numLeft.equals(total)) {
@@ -200,32 +205,63 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "trees.LimAttHoeffdingTree");
+    public ClassOption baseLearnerOption =
+            new ClassOption(
+                    "baseLearner",
+                    'l',
+                    "Classifier to train.",
+                    Classifier.class,
+                    "trees.LimAttHoeffdingTree");
 
-    public IntOption numAttributesOption = new IntOption("numAttributes", 'n',
-            "The number of attributes to use per model.", 1, 1, Integer.MAX_VALUE);
+    public IntOption numAttributesOption =
+            new IntOption(
+                    "numAttributes",
+                    'n',
+                    "The number of attributes to use per model.",
+                    1,
+                    1,
+                    Integer.MAX_VALUE);
 
-    public FloatOption weightShrinkOption = new FloatOption("weightShrink", 'w',
-            "The number to multiply the weight misclassified counts.", 0.5, 0.0, Float.MAX_VALUE);
+    public FloatOption weightShrinkOption =
+            new FloatOption(
+                    "weightShrink",
+                    'w',
+                    "The number to multiply the weight misclassified counts.",
+                    0.5,
+                    0.0,
+                    Float.MAX_VALUE);
 
-    public FloatOption deltaAdwinOption = new FloatOption("deltaAdwin", 'a',
-            "Delta of Adwin change detection", 0.002, 0.0, 1.0);
+    public FloatOption deltaAdwinOption =
+            new FloatOption("deltaAdwin", 'a', "Delta of Adwin change detection", 0.002, 0.0, 1.0);
 
-    public FloatOption oddsOffsetOption = new FloatOption("oddsOffset", 'o',
-            "Offset for odds to avoid probabilities that are zero.", 0.001, 0.0, Float.MAX_VALUE);
+    public FloatOption oddsOffsetOption =
+            new FloatOption(
+                    "oddsOffset",
+                    'o',
+                    "Offset for odds to avoid probabilities that are zero.",
+                    0.001,
+                    0.0,
+                    Float.MAX_VALUE);
 
-    public FlagOption pruneOption = new FlagOption("prune", 'x',
-            "Enable pruning.");
+    public FlagOption pruneOption = new FlagOption("prune", 'x', "Enable pruning.");
 
-    public FlagOption bigTreesOption = new FlagOption("bigTrees", 'b',
-            "Use m-n attributes on the trees.");
+    public FlagOption bigTreesOption =
+            new FlagOption("bigTrees", 'b', "Use m-n attributes on the trees.");
 
-    public IntOption numEnsemblePruningOption = new IntOption("numEnsemblePruning", 'm',
-            "The pruned number of classifiers to use to predict.", 10, 1, Integer.MAX_VALUE);
+    public IntOption numEnsemblePruningOption =
+            new IntOption(
+                    "numEnsemblePruning",
+                    'm',
+                    "The pruned number of classifiers to use to predict.",
+                    10,
+                    1,
+                    Integer.MAX_VALUE);
 
-    public FlagOption adwinReplaceWorstClassifierOption = new FlagOption("adwinReplaceWorstClassifier", 'z',
-            "When one Adwin detects change, replace worst classifier.");
+    public FlagOption adwinReplaceWorstClassifierOption =
+            new FlagOption(
+                    "adwinReplaceWorstClassifier",
+                    'z',
+                    "When one Adwin detects change, replace worst classifier.");
 
     protected Classifier[] ensemble;
 
@@ -252,13 +288,14 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
     @Override
     public void trainOnInstanceImpl(Instance inst) {
         int numClasses = inst.numClasses();
-        //Init Ensemble
+        // Init Ensemble
         if (this.initClassifiers == true) {
             numberAttributes = numAttributesOption.getValue();
             if (bigTreesOption.isSet()) {
                 numberAttributes = inst.numAttributes() - 1 - numAttributesOption.getValue();
             }
-            CombinationGenerator x = new CombinationGenerator(inst.numAttributes() - 1, this.numberAttributes);
+            CombinationGenerator x =
+                    new CombinationGenerator(inst.numAttributes() - 1, this.numberAttributes);
             int numberClassifiers = x.getTotal().intValue();
             this.ensemble = new Classifier[numberClassifiers];
             Classifier baseLearner = (Classifier) getPreparedClassOption(this.baseLearnerOption);
@@ -271,7 +308,7 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
                 this.ADError[i] = new ADWIN((double) this.deltaAdwinOption.getValue());
             }
             this.numberOfChangesDetected = 0;
-            //Prepare combinations
+            // Prepare combinations
             int i = 0;
             if (baseLearner instanceof LimAttHoeffdingTree) {
                 while (x.hasMore()) {
@@ -286,7 +323,7 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
         boolean Change = false;
         Instance weightedInst = (Instance) inst.copy();
 
-        //Train Perceptron
+        // Train Perceptron
         double[][] votes = new double[this.ensemble.length + 1][numClasses];
         for (int i = 0; i < this.ensemble.length; i++) {
             double[] v = new double[numClasses];
@@ -316,7 +353,7 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
         }
 
         if (adwinReplaceWorstClassifierOption.isSet() == false) {
-            //Train ensemble of classifiers
+            // Train ensemble of classifiers
             for (int i = 0; i < this.ensemble.length; i++) {
                 boolean correctlyClassifies = this.ensemble[i].correctlyClassifies(weightedInst);
                 double ErrEstim = this.ADError[i].getEstimation();
@@ -324,18 +361,18 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
                     numInstances = initialNumInstancesOption.getValue();
                     if (this.ADError[i].getEstimation() > ErrEstim) {
                         Change = true;
-                        //Replace classifier if ADWIN has detected change
+                        // Replace classifier if ADWIN has detected change
                         numberOfChangesDetected++;
                         this.ensemble[i].resetLearning();
                         this.ADError[i] = new ADWIN((double) this.deltaAdwinOption.getValue());
                         for (int ii = 0; ii < inst.numClasses(); ii++) {
-                            weightAttribute[ii][i] = 0.0;// 0.2 * Math.random() - 0.1;
+                            weightAttribute[ii][i] = 0.0; // 0.2 * Math.random() - 0.1;
                         }
                     }
                 }
             }
         } else {
-            //Train ensemble of classifiers
+            // Train ensemble of classifiers
             for (int i = 0; i < this.ensemble.length; i++) {
                 boolean correctlyClassifies = this.ensemble[i].correctlyClassifies(weightedInst);
                 double ErrEstim = this.ADError[i].getEstimation();
@@ -345,7 +382,7 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
                     }
                 }
             }
-            //Replace classifier with higher error if ADWIN has detected change
+            // Replace classifier with higher error if ADWIN has detected change
             if (Change) {
                 numberOfChangesDetected++;
                 double max = 0.0;
@@ -388,7 +425,7 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
         double[][] votes = new double[sizeEnsemble + 1][numClasses];
         int[] bestClassifiers = new int[sizeEnsemble];
         if (pruneOption.isSet()) {
-            //Check for the best classifiers
+            // Check for the best classifiers
             double[] weight = new double[this.ensemble.length];
             for (int i = 0; i < numClasses; i++) {
                 for (int j = 0; j < this.ensemble.length; j++) {
@@ -396,7 +433,7 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
                 }
             }
             Arrays.sort(weight);
-            double cutValue = weight[this.ensemble.length - sizeEnsemble]; //reverse order
+            double cutValue = weight[this.ensemble.length - sizeEnsemble]; // reverse order
             int ii = 0;
             for (int j = 0; j < this.ensemble.length; j++) {
                 if (weight[j] >= cutValue && ii < sizeEnsemble) {
@@ -404,7 +441,7 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
                     ii++;
                 }
             }
-        } else { //Not pruning: all classifiers
+        } else { // Not pruning: all classifiers
             for (int ii = 0; ii < sizeEnsemble; ii++) {
                 bestClassifiers[ii] = ii;
             }
@@ -452,10 +489,10 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        return new Measurement[]{new Measurement("ensemble size",
-                    this.ensemble != null ? this.ensemble.length : 0),
-                    new Measurement("change detections", this.numberOfChangesDetected)
-                };
+        return new Measurement[] {
+            new Measurement("ensemble size", this.ensemble != null ? this.ensemble.length : 0),
+            new Measurement("change detections", this.numberOfChangesDetected)
+        };
     }
 
     @Override
@@ -463,12 +500,14 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
         return this.ensemble.clone();
     }
 
-    //Perceptron
-    public FloatOption learningRatioOption = new FloatOption("learningRatio", 'r', "Learning ratio", 1);
+    // Perceptron
+    public FloatOption learningRatioOption =
+            new FloatOption("learningRatio", 'r', "Learning ratio", 1);
 
     public FloatOption penaltyFactorOption = new FloatOption("lambda", 'p', "Lambda", 0.0);
 
-    public IntOption initialNumInstancesOption = new IntOption("initialNumInstances", 'i', "initialNumInstances", 10);
+    public IntOption initialNumInstancesOption =
+            new IntOption("initialNumInstances", 'i', "initialNumInstances", 10);
 
     protected double[][] weightAttribute;
 
@@ -476,7 +515,7 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
 
     public void trainOnInstanceImplPerceptron(int numClasses, int actualClass, double[][] votes) {
 
-        //Init Perceptron
+        // Init Perceptron
         if (this.reset == true) {
             this.reset = false;
             this.weightAttribute = new double[numClasses][votes.length];
@@ -489,7 +528,8 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
         }
 
         // Weight decay
-        double learningRatio = learningRatioOption.getValue() * 2.0 / (numInstances + (votes.length - 1) + 2.0);
+        double learningRatio =
+                learningRatioOption.getValue() * 2.0 / (numInstances + (votes.length - 1) + 2.0);
         double lambda = penaltyFactorOption.getValue();
         numInstances++;
 
@@ -502,7 +542,8 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
             double actual = (i == actualClass) ? 1.0 : 0.0;
             double delta = (actual - preds[i]) * preds[i] * (1 - preds[i]);
             for (int j = 0; j < this.ensemble.length; j++) {
-                this.weightAttribute[i][j] += learningRatio * (delta * votes[j][i] - lambda * this.weightAttribute[i][j]);
+                this.weightAttribute[i][j] +=
+                        learningRatio * (delta * votes[j][i] - lambda * this.weightAttribute[i][j]);
             }
             this.weightAttribute[i][this.ensemble.length] += learningRatio * delta;
         }
@@ -526,7 +567,8 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
         return 1.0 / (1.0 + Math.exp(-sum));
     }
 
-    public double[] getVotesForInstancePerceptron(double[][] votesEnsemble, int[] bestClassifiers, int numClasses) {
+    public double[] getVotesForInstancePerceptron(
+            double[][] votesEnsemble, int[] bestClassifiers, int numClasses) {
         double[] votes = new double[numClasses];
         if (this.reset == false) {
             for (int i = 0; i < votes.length; i++) {
@@ -534,6 +576,5 @@ public class LimAttClassifier extends AbstractClassifier implements MultiClassCl
             }
         }
         return votes;
-
     }
 }

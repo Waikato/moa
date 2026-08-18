@@ -2,7 +2,7 @@
  *    STEPD.java
  *    Copyright (C) 2015 Santos, Barros
  *    @authors Silas Garrido T. de Carvalho Santos (sgtcs@cin.ufpe.br)
- *             Roberto S. M. Barros (roberto@cin.ufpe.br) 
+ *             Roberto S. M. Barros (roberto@cin.ufpe.br)
  *    @version $Version: 3 $
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -20,63 +20,61 @@
  */
 
 /**
- * Statistical Test of Equal Proportions method (STEPD), 
- * published as:
- * <p> Kyosuke Nishida and Koichiro Yamauchi: 
- *     Detecting Concept Drift Using Statistical Testing. 
- *     Discovery Science 2007, Springer, vol 4755 of LNCS, pp. 264-269. </p>
+ * Statistical Test of Equal Proportions method (STEPD), published as:
+ *
+ * <p>Kyosuke Nishida and Koichiro Yamauchi: Detecting Concept Drift Using Statistical Testing.
+ * Discovery Science 2007, Springer, vol 4755 of LNCS, pp. 264-269.
  */
-
 package moa.classifiers.core.driftdetection;
 
-import moa.core.ObjectRepository;
-import com.github.javacliparser.IntOption;
 import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+
+import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
+
 import weka.core.Statistics;
 
 public class STEPD extends AbstractChangeDetector {
     private static final long serialVersionUID = -3518369648142099719L;
-    
-    public IntOption windowSizeOption = new IntOption("windowSize", 
-            'r', "Recent Window Size.",
-            30, 0, 1000);
-        
-    public FloatOption alphaDriftOption = new FloatOption("alphaDrift",
-            'o', "Drift Significance Level.", 0.003, 0.0, 1.0);
 
-    public FloatOption alphaWarningOption = new FloatOption("alphaWarning",
-            'w', "Warning Significance Level.", 0.05, 0.0, 1.0);
+    public IntOption windowSizeOption =
+            new IntOption("windowSize", 'r', "Recent Window Size.", 30, 0, 1000);
+
+    public FloatOption alphaDriftOption =
+            new FloatOption("alphaDrift", 'o', "Drift Significance Level.", 0.003, 0.0, 1.0);
+
+    public FloatOption alphaWarningOption =
+            new FloatOption("alphaWarning", 'w', "Warning Significance Level.", 0.05, 0.0, 1.0);
 
     private int windowSize;
     private double alphaDrift, alphaWarning;
-    
-    private byte [] storedPredictions;
+
+    private byte[] storedPredictions;
     private int firstPos, lastPos;
-    
-    private double ro, rr, wo, wr;   // Correct and incorrect prediction numbers in both windows
-    private int no, nr;   //Number of instances in both windows
+    private double ro, rr, wo, wr; // Correct and incorrect prediction numbers in both windows
+    private int no, nr; // Number of instances in both windows
     private double p, Z, sizeInvertedSum;
 
     public void initialize() {
-    	windowSize = this.windowSizeOption.getValue();
-    	alphaDrift = this.alphaDriftOption.getValue();
-    	alphaWarning = this.alphaWarningOption.getValue();
+        windowSize = this.windowSizeOption.getValue();
+        alphaDrift = this.alphaDriftOption.getValue();
+        alphaWarning = this.alphaWarningOption.getValue();
         storedPredictions = new byte[windowSize];
         resetLearning();
     }
 
     @Override
     public void resetLearning() {
-    	firstPos = 0;
-    	lastPos = -1;   // This means storedPredictions is empty.
+        firstPos = 0;
+        lastPos = -1; // This means storedPredictions is empty.
         wo = wr = 0.0;
         no = nr = 0;
         this.isChangeDetected = false;
     }
 
     @Override
-    public void input(double prediction) {   // In MOA, 1.0=false, 0.0=true.
+    public void input(double prediction) { // In MOA, 1.0=false, 0.0=true.
         if (!this.isInitialized) {
             initialize();
             this.isInitialized = true;
@@ -86,45 +84,46 @@ public class STEPD extends AbstractChangeDetector {
             }
         }
 
-        if (nr == windowSize) {   // Recent window is full.
-            wo = wo + storedPredictions[firstPos];  // Oldest prediction in recent window 
-            no++;                                   // is moved to older window,
+        if (nr == windowSize) { // Recent window is full.
+            wo = wo + storedPredictions[firstPos]; // Oldest prediction in recent window
+            no++; // is moved to older window,
             wr = wr - storedPredictions[firstPos];
-            firstPos++;   // Start of recent window moves.
+            firstPos++; // Start of recent window moves.
             if (firstPos == windowSize) {
-            	firstPos = 0;
+                firstPos = 0;
             }
-        } else {   // Recent window grows.
+        } else { // Recent window grows.
             nr++;
         }
-        
-        lastPos++;   // Adds prediction at the end of recent window.
+
+        lastPos++; // Adds prediction at the end of recent window.
         if (lastPos == windowSize) {
             lastPos = 0;
-        };
+        }
+        ;
         storedPredictions[lastPos] = (byte) prediction;
         wr += prediction;
 
         this.isWarningZone = false;
-        
-        if (no >= windowSize) {   // The same as: (no + nr) >= 2 * windowSize.
-            ro = no - wo;   // Numbers of correct predictions are calculated.
+
+        if (no >= windowSize) { // The same as: (no + nr) >= 2 * windowSize.
+            ro = no - wo; // Numbers of correct predictions are calculated.
             rr = nr - wr;
-            sizeInvertedSum = 1.0 / no + 1.0 / nr;   // Auxiliary variable.
-            p = (ro + rr) / (no + nr);   // Calculation of the statistics of STEPD.
+            sizeInvertedSum = 1.0 / no + 1.0 / nr; // Auxiliary variable.
+            p = (ro + rr) / (no + nr); // Calculation of the statistics of STEPD.
             Z = Math.abs(ro / no - rr / nr);
             Z = Z - sizeInvertedSum / 2.0;
             Z = Z / Math.sqrt(p * (1.0 - p) * sizeInvertedSum);
-            
+
             Z = Statistics.normalProbability(Math.abs(Z));
             Z = 2 * (1 - Z);
-            
-            if (Z < alphaDrift) {  // Drift Level
+
+            if (Z < alphaDrift) { // Drift Level
                 this.isChangeDetected = true;
-            } else { 
-            	if (Z < alphaWarning) {  // Warning Level
+            } else {
+                if (Z < alphaWarning) { // Warning Level
                     this.isWarningZone = true;
-            	}
+                }
             }
         }
     }
@@ -135,9 +134,7 @@ public class STEPD extends AbstractChangeDetector {
     }
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
     }
 }
-

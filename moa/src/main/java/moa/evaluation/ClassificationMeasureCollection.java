@@ -15,14 +15,10 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 
 package moa.evaluation;
 
-/**
- * Classification Measure Collection interface that it is used to not appear in clustering 
- */
-public interface ClassificationMeasureCollection {
-
-}
+/** Classification Measure Collection interface that it is used to not appear in clustering */
+public interface ClassificationMeasureCollection {}

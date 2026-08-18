@@ -17,17 +17,17 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks.meta;
-
-import java.util.List;
 
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
 import moa.tasks.FailedTaskReport;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
+
+import java.util.List;
 
 /**
  * Task Thread for ALMainTask which supports pausing/resuming and cancelling of child threads
@@ -37,60 +37,54 @@ import moa.tasks.TaskThread;
  */
 public class ALTaskThread extends TaskThread {
 
-	public ALTaskThread(Task toRun) {
-		super(toRun, null);
-	}
+    public ALTaskThread(Task toRun) {
+        super(toRun, null);
+    }
 
-	public ALTaskThread(Task toRun, ObjectRepository repository) {
-		super(toRun, repository);
-	}
-	
-	@Override
+    public ALTaskThread(Task toRun, ObjectRepository repository) {
+        super(toRun, repository);
+    }
+
+    @Override
     public synchronized void pauseTask() {
-		ALMainTask task = (ALMainTask)getTask();
-		List<ALTaskThread> threads = task.getSubtaskThreads();
-		
+        ALMainTask task = (ALMainTask) getTask();
+        List<ALTaskThread> threads = task.getSubtaskThreads();
+
         super.pauseTask();
-        
+
         // pause all subtask threads
-        for(int i = 0; i < threads.size(); ++i)
-        {
-        	threads.get(i).pauseTask();
+        for (int i = 0; i < threads.size(); ++i) {
+            threads.get(i).pauseTask();
         }
     }
 
-	@Override
+    @Override
     public synchronized void resumeTask() {
-		ALMainTask task = (ALMainTask)getTask();
-		List<ALTaskThread> threads = task.getSubtaskThreads();
-		
+        ALMainTask task = (ALMainTask) getTask();
+        List<ALTaskThread> threads = task.getSubtaskThreads();
+
         super.resumeTask();
 
         // resume all subtask threads
-        for(int i = 0; i < threads.size(); ++i)
-        {
-        	threads.get(i).resumeTask();
+        for (int i = 0; i < threads.size(); ++i) {
+            threads.get(i).resumeTask();
         }
     }
 
-	@Override
+    @Override
     public synchronized void cancelTask() {
-		ALMainTask task = (ALMainTask)getTask();
-		List<ALTaskThread> threads = task.getSubtaskThreads();
-		
+        ALMainTask task = (ALMainTask) getTask();
+        List<ALTaskThread> threads = task.getSubtaskThreads();
+
         super.cancelTask();
-        
-        if(!isFailed())
-        	this.finalResult = getLatestResultPreview();
-        
+
+        if (!isFailed()) this.finalResult = getLatestResultPreview();
 
         // cancel all subtask threads
-        for(int i = 0; i < threads.size(); ++i)
-        {
-        	if(!threads.get(i).isComplete())
-        	{
-            	threads.get(i).cancelTask();
-        	}
+        for (int i = 0; i < threads.size(); ++i) {
+            if (!threads.get(i).isComplete()) {
+                threads.get(i).cancelTask();
+            }
         }
     }
 
@@ -100,20 +94,18 @@ public class ALTaskThread extends TaskThread {
         this.taskStartTime = TimingUtils.getNanoCPUTimeOfThread(getId());
         try {
             this.currentStatus = Status.RUNNING;
-            this.finalResult = this.runningTask.doTask(this.taskMonitor,
-                    this.repository);
-            this.currentStatus = this.taskMonitor.isCancelled() ? Status.CANCELLED
-                    : Status.COMPLETED;
+            this.finalResult = this.runningTask.doTask(this.taskMonitor, this.repository);
+            this.currentStatus =
+                    this.taskMonitor.isCancelled() ? Status.CANCELLED : Status.COMPLETED;
         } catch (Throwable ex) {
             this.finalResult = new FailedTaskReport(ex);
             this.currentStatus = Status.FAILED;
         }
-        
-        if(currentStatus == Status.FAILED || currentStatus == Status.CANCELLED)
-        {
+
+        if (currentStatus == Status.FAILED || currentStatus == Status.CANCELLED) {
             cancelTask();
         }
-        
+
         this.taskEndTime = TimingUtils.getNanoCPUTimeOfThread(getId());
         fireTaskCompleted();
         this.taskMonitor.setLatestResultPreview(null); // free preview memory

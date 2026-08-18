@@ -1,6 +1,6 @@
 /*
  *    Measure.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand 
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.experimentertab;
 
@@ -29,7 +29,7 @@ import moa.core.DoubleVector;
 public class Measure {
 
     private String name;
-    
+
     private String fileName;
 
     private Double value;
@@ -44,11 +44,12 @@ public class Measure {
 
     /**
      * Measure Constructor
+     *
      * @param name
      * @param type
      * @param index
      */
-    public Measure(String name,String filename, boolean type, int index) {
+    public Measure(String name, String filename, boolean type, int index) {
         this.name = name;
         this.fileName = filename;
         this.type = type;
@@ -56,9 +57,8 @@ public class Measure {
         this.value = 0.0;
         this.std = 0.0;
     }
-   
+
     /**
-     *
      * @return the name of measure
      */
     public String getName() {
@@ -68,13 +68,14 @@ public class Measure {
     public String getFileName() {
         return fileName;
     }
-    
+
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
-    
+
     /**
      * Sets the name of measure
+     *
      * @param name
      */
     public void setName(String name) {
@@ -82,7 +83,6 @@ public class Measure {
     }
 
     /**
-     *
      * @return the value of measure
      */
     public Double getValue() {
@@ -91,6 +91,7 @@ public class Measure {
 
     /**
      * Sets the value of measure
+     *
      * @param value
      */
     public void setValue(Double value) {
@@ -99,6 +100,7 @@ public class Measure {
 
     /**
      * Returns the standard deviation
+     *
      * @return the standard deviation
      */
     public Double getStd() {
@@ -107,6 +109,7 @@ public class Measure {
 
     /**
      * Sets the standard deviation
+     *
      * @param std
      */
     public void setStd(Double std) {
@@ -115,6 +118,7 @@ public class Measure {
 
     /**
      * Returns the type of measure
+     *
      * @return the type of measure
      */
     public boolean isType() {
@@ -123,6 +127,7 @@ public class Measure {
 
     /**
      * Sets the type of measure
+     *
      * @param type
      */
     public void setType(boolean type) {
@@ -131,6 +136,7 @@ public class Measure {
 
     /**
      * Returns the index of measure
+     *
      * @return the index of measure
      */
     public int getIndex() {
@@ -139,6 +145,7 @@ public class Measure {
 
     /**
      * Sets the index of measure
+     *
      * @param index
      */
     public void setIndex(int index) {
@@ -146,7 +153,6 @@ public class Measure {
     }
 
     /**
-     *
      * @return values
      */
     public DoubleVector getValues() {
@@ -154,7 +160,6 @@ public class Measure {
     }
 
     /**
-     *
      * @param values
      */
     public void setValues(DoubleVector values) {
@@ -163,6 +168,7 @@ public class Measure {
 
     /**
      * Calculates the value of measure
+     *
      * @param values
      */
     public void computeValue(DoubleVector values) {
@@ -177,12 +183,10 @@ public class Measure {
             sumDif = sumDif / this.values.numValues();
             this.std = Math.sqrt(sumDif);
         }
-
     }
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        return super.clone(); 
+        return super.clone();
     }
-
 }

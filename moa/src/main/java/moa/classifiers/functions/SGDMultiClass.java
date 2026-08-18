@@ -16,7 +16,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 
 /*
@@ -27,52 +27,64 @@
 
 package moa.classifiers.functions;
 
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.MultiChoiceOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.Regressor;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.MultiChoiceOption;
-import com.yahoo.labs.samoa.instances.Instance;
 import moa.core.Utils;
 
-
 /**
-<!-- globalinfo-start -->
- * Implements stochastic gradient descent for learning various linear models (binary class SVM, binary class logistic regression and linear regression). 
- * <p/>
-<!-- globalinfo-end -->
+ * <!-- globalinfo-start -->
+ * Implements stochastic gradient descent for learning various linear models (binary class SVM,
+ * binary class logistic regression and linear regression).
  *
+ * <p>
+ * <!-- globalinfo-end -->
  */
-public class SGDMultiClass extends AbstractClassifier implements MultiClassClassifier,Regressor{
+public class SGDMultiClass extends AbstractClassifier implements MultiClassClassifier, Regressor {
 
     /** For serialization */
     private static final long serialVersionUID = -3732968666673530290L;
 
-      @Override
+    @Override
     public String getPurposeString() {
-        return "AStochastic gradient descent for learning various linear models (binary class SVM, binary class logistic regression and linear regression).";
+        return "AStochastic gradient descent for learning various linear models (binary class SVM,"
+                + " binary class logistic regression and linear regression).";
     }
 
     /** The regularization parameter */
     protected double m_lambda = 0.0001;
 
-    public FloatOption lambdaRegularizationOption = new FloatOption("lambdaRegularization",
-            'l', "Lambda regularization parameter .",
-            0.0001, 0.00, Integer.MAX_VALUE);
+    public FloatOption lambdaRegularizationOption =
+            new FloatOption(
+                    "lambdaRegularization",
+                    'l',
+                    "Lambda regularization parameter .",
+                    0.0001,
+                    0.00,
+                    Integer.MAX_VALUE);
 
     /** The learning rate */
     protected double m_learningRate = 0.01;
 
-    public FloatOption learningRateOption = new FloatOption("learningRate",
-            'r', "Learning rate parameter.",
-            0.0001, 0.00, Integer.MAX_VALUE);
+    public FloatOption learningRateOption =
+            new FloatOption(
+                    "learningRate",
+                    'r',
+                    "Learning rate parameter.",
+                    0.0001,
+                    0.00,
+                    Integer.MAX_VALUE);
 
     /** Stores the weights (+ bias in the last element) */
     protected DoubleVector[] m_weights;
-    
+
     protected double[] m_bias;
 
     /** Holds the current iteration number */
@@ -90,12 +102,18 @@ public class SGDMultiClass extends AbstractClassifier implements MultiClassClass
     /** The current loss function to minimize */
     protected int m_loss = HINGE;
 
-    public MultiChoiceOption lossFunctionOption = new MultiChoiceOption(
-            "lossFunction", 'o', "The loss function to use.", new String[]{
-                "HINGE", "LOGLOSS", "SQUAREDLOSS"}, new String[]{
-                "Hinge loss (SVM)",
-                "Log loss (logistic regression)",
-                "Squared loss (regression)"}, 0);
+    public MultiChoiceOption lossFunctionOption =
+            new MultiChoiceOption(
+                    "lossFunction",
+                    'o',
+                    "The loss function to use.",
+                    new String[] {"HINGE", "LOGLOSS", "SQUAREDLOSS"},
+                    new String[] {
+                        "Hinge loss (SVM)",
+                        "Log loss (logistic regression)",
+                        "Squared loss (regression)"
+                    },
+                    0);
 
     /**
      * Set the value of lambda to use
@@ -151,13 +169,11 @@ public class SGDMultiClass extends AbstractClassifier implements MultiClassClass
         return m_learningRate;
     }
 
-    /**
-     * Reset the classifier.
-     */
+    /** Reset the classifier. */
     public void reset() {
         m_t = 1;
         m_weights = null;
-        m_bias = null; //0.0;
+        m_bias = null; // 0.0;
     }
 
     protected double dloss(double z) {
@@ -185,7 +201,7 @@ public class SGDMultiClass extends AbstractClassifier implements MultiClassClass
         int n1 = inst1.numValues();
         int n2 = weights.numValues();
 
-        for (int p1 = 0, p2 = 0; p1 < n1 && p2 < n2;) {
+        for (int p1 = 0, p2 = 0; p1 < n1 && p2 < n2; ) {
             int ind1 = inst1.index(p1);
             int ind2 = p2;
             if (ind1 == ind2) {
@@ -214,31 +230,32 @@ public class SGDMultiClass extends AbstractClassifier implements MultiClassClass
     /**
      * Trains the classifier with the given instance.
      *
-     * @param instance 	the new training instance to include in the model
+     * @param instance the new training instance to include in the model
      */
     @Override
     public void trainOnInstanceImpl(Instance instance) {
 
         if (m_weights == null) {
             int length;
-             if (instance.classAttribute().isNominal()) {
-                 length = instance.numClasses();
-             } else {
-                 length = 1;
-             }
+            if (instance.classAttribute().isNominal()) {
+                length = instance.numClasses();
+            } else {
+                length = 1;
+            }
             m_weights = new DoubleVector[length];
             m_bias = new double[length];
-            for (int i = 0; i < m_weights.length; i++){
-                m_weights[i] = new DoubleVector(); 
+            for (int i = 0; i < m_weights.length; i++) {
+                m_weights[i] = new DoubleVector();
                 m_bias[i] = 0.0;
             }
         }
-        for (int i = 0; i < m_weights.length; i++){
-                this.trainOnInstanceImpl(instance, i); 
-            }
+        for (int i = 0; i < m_weights.length; i++) {
+            this.trainOnInstanceImpl(instance, i);
+        }
         m_t++;
-    }    
-    public void trainOnInstanceImpl(Instance instance, int classLabel) {    
+    }
+
+    public void trainOnInstanceImpl(Instance instance, int classLabel) {
         if (!instance.classIsMissing()) {
 
             double wx = dotProd(instance, m_weights[classLabel], instance.classIndex());
@@ -262,7 +279,7 @@ public class SGDMultiClass extends AbstractClassifier implements MultiClassClass
                 multiplier = 1.0 - (m_learningRate * m_lambda) / m_numInstances;
             }
             for (int i = 0; i < m_weights[classLabel].numValues(); i++) {
-                m_weights[classLabel].setValue(i,m_weights[classLabel].getValue (i) * multiplier);
+                m_weights[classLabel].setValue(i, m_weights[classLabel].getValue(i) * multiplier);
             }
 
             // Only need to do the following if the loss is non-zero
@@ -283,16 +300,14 @@ public class SGDMultiClass extends AbstractClassifier implements MultiClassClass
                 // update the bias
                 m_bias[classLabel] += factor;
             }
-            
         }
     }
 
     /**
-     * Calculates the class membership probabilities for the given test
-     * instance.
+     * Calculates the class membership probabilities for the given test instance.
      *
-     * @param inst 	the instance to be classified
-     * @return 		predicted class probability distribution
+     * @param inst the instance to be classified
+     * @return predicted class probability distribution
      */
     @Override
     public double[] getVotesForInstance(Instance inst) {
@@ -300,37 +315,36 @@ public class SGDMultiClass extends AbstractClassifier implements MultiClassClass
         if (m_weights == null) {
             return new double[inst.numClasses()];
         }
-        double[] result = (inst.classAttribute().isNominal())
-                ? new double[inst.numClasses()]
-                : new double[1];
-        
+        double[] result =
+                (inst.classAttribute().isNominal()) ? new double[inst.numClasses()] : new double[1];
+
         if (inst.classAttribute().isNumeric()) {
-            double wx = dotProd(inst, m_weights[0], inst.classIndex());// * m_wScale;
+            double wx = dotProd(inst, m_weights[0], inst.classIndex()); // * m_wScale;
             double z = (wx + m_bias[0]);
             result[0] = z;
             return result;
         }
 
-        for (int i = 0; i < m_weights.length; i++){
-            double wx = dotProd(inst, m_weights[i], inst.classIndex());// * m_wScale;
+        for (int i = 0; i < m_weights.length; i++) {
+            double wx = dotProd(inst, m_weights[i], inst.classIndex()); // * m_wScale;
             double z = (wx + m_bias[i]);
             if (z <= 0) {
                 //  z = 0;
                 if (m_loss == LOGLOSS) {
-                    //result[0] = 1.0 / (1.0 + Math.exp(z));
-                    //result[1] = 1.0 - result[0];
-                    result[i] = 1.0 - 1.0 / (1.0 + Math.exp(z)); 
+                    // result[0] = 1.0 / (1.0 + Math.exp(z));
+                    // result[1] = 1.0 - result[0];
+                    result[i] = 1.0 - 1.0 / (1.0 + Math.exp(z));
                 } else {
-                    //result[0] = 1;
+                    // result[0] = 1;
                     result[i] = 0;
                 }
             } else {
                 if (m_loss == LOGLOSS) {
-                    //result[1] = 1.0 / (1.0 + Math.exp(-z));
-                    //result[0] = 1.0 - result[1];
-                    result[i] = 1.0 / (1.0 + Math.exp(-z)); 
+                    // result[1] = 1.0 / (1.0 + Math.exp(-z));
+                    // result[0] = 1.0 - result[1];
+                    result[i] = 1.0 / (1.0 + Math.exp(-z));
                 } else {
-                    //result[1] = 1;
+                    // result[1] = 1;
                     result[i] = 1;
                 }
             }
@@ -374,12 +388,14 @@ public class SGDMultiClass extends AbstractClassifier implements MultiClassClass
                 buff.append("   ");
             }
 
-            buff.append(Utils.doubleToString(m_weights[0].getValue(i), 12, 4) + " "
-                    // + m_data.attribute(i).name()
-                    + "\n");
+            buff.append(
+                    Utils.doubleToString(m_weights[0].getValue(i), 12, 4)
+                            + " "
+                            // + m_data.attribute(i).name()
+                            + "\n");
 
             printed++;
-            //}
+            // }
         }
 
         if (m_bias[0] > 0) {

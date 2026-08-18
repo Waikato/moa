@@ -20,12 +20,12 @@ package moa.classifiers.core.driftdetection;
 
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
 
 /**
  * Drift detection method based in Geometric Moving Average Test
- *
  *
  * @author Manuel Baena (mbaena@lcc.uma.es)
  * @version $Revision: 7 $
@@ -34,24 +34,39 @@ public class GeometricMovingAverageDM extends AbstractChangeDetector {
 
     private static final long serialVersionUID = -3518369648142099719L;
 
-    public IntOption minNumInstancesOption = new IntOption(
-            "minNumInstances",
-            'n',
-            "The minimum number of instances before permitting detecting change.",
-            30, 0, Integer.MAX_VALUE);
+    public IntOption minNumInstancesOption =
+            new IntOption(
+                    "minNumInstances",
+                    'n',
+                    "The minimum number of instances before permitting detecting change.",
+                    30,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public FloatOption lambdaOption = new FloatOption("lambda", 'l',
-            "Threshold parameter of the Geometric Moving Average Test", 1, 0.0, Float.MAX_VALUE);
+    public FloatOption lambdaOption =
+            new FloatOption(
+                    "lambda",
+                    'l',
+                    "Threshold parameter of the Geometric Moving Average Test",
+                    1,
+                    0.0,
+                    Float.MAX_VALUE);
 
-    public FloatOption alphaOption = new FloatOption("alpha", 'a',
-            "Alpha parameter of the Geometric Moving Average Test", .99, 0.0, 1.0);
+    public FloatOption alphaOption =
+            new FloatOption(
+                    "alpha",
+                    'a',
+                    "Alpha parameter of the Geometric Moving Average Test",
+                    .99,
+                    0.0,
+                    1.0);
 
     private double m_n;
 
     private double sum;
 
     private double x_mean;
-                                                                                            
+
     private double alpha;
 
     private double delta;
@@ -80,8 +95,7 @@ public class GeometricMovingAverageDM extends AbstractChangeDetector {
         }
 
         x_mean = x_mean + (x - x_mean) / m_n;
-        sum = alpha * sum + ( 1.0- alpha) * (x - x_mean);
-
+        sum = alpha * sum + (1.0 - alpha) * (x - x_mean);
 
         m_n++;
 
@@ -97,7 +111,7 @@ public class GeometricMovingAverageDM extends AbstractChangeDetector {
 
         if (sum > this.lambda) {
             this.isChangeDetected = true;
-        } 
+        }
     }
 
     @Override
@@ -106,8 +120,7 @@ public class GeometricMovingAverageDM extends AbstractChangeDetector {
     }
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
     }
 }

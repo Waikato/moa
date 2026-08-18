@@ -1,6 +1,5 @@
 package moa.gui.experimentertab.statisticaltests;
 
-
 /*
  * Created on 16-Jun-2004
  *
@@ -9,19 +8,15 @@ package moa.gui.experimentertab.statisticaltests;
  */
 /**
  * @author Jes�s Alcal� Fern�ndez
- *
- *
  */
 import java.io.*;
 
 /**
- *
  * @author Jes�s Alcal� Fern�ndez
  */
 public class Fichero {
 
     /**
-     *
      * @param nombreFichero
      * @return
      */
@@ -52,7 +47,6 @@ public class Fichero {
     }
 
     /**
-     *
      * @param nombreFichero
      * @param cadena
      */
@@ -71,7 +65,6 @@ public class Fichero {
     }
 
     /**
-     *
      * @param nombreFichero
      * @param cadena
      */
@@ -88,5 +81,4 @@ public class Fichero {
             System.exit(-1);
         }
     }
-
 }

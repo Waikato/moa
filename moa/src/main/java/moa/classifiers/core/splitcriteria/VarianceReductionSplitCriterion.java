@@ -15,11 +15,11 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
- *    
+ *
+ *
  */
 
-/* Project Knowledge Discovery from Data Streams, FCT LIAAD-INESC TEC, 
+/* Project Knowledge Discovery from Data Streams, FCT LIAAD-INESC TEC,
  *
  * Contact: jgama@fep.up.pt
  */
@@ -30,13 +30,14 @@ import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
-public class VarianceReductionSplitCriterion extends AbstractOptionHandler implements SplitCriterion {
+public class VarianceReductionSplitCriterion extends AbstractOptionHandler
+        implements SplitCriterion {
 
     private static final long serialVersionUID = 1L;
 
-/*    @Override
+    /*    @Override
     public double getMeritOfSplit(double[] preSplitDist, double[][] postSplitDists) {
-   
+
     	double N = preSplitDist[0];
     	double SDR = computeSD(preSplitDist);
 
@@ -49,33 +50,29 @@ public class VarianceReductionSplitCriterion extends AbstractOptionHandler imple
 
         return SDR;
     }*/
-    
+
     @Override
     public double getMeritOfSplit(double[] preSplitDist, double[][] postSplitDists) {
-        double SDR=0.0;
-    	double N = preSplitDist[0];
-    	int count = 0; 
-    	
-    	for(int i = 0; i < postSplitDists.length; i++)
-    	{
-    		double Ni = postSplitDists[i][0];
-    		if(Ni >=5.0){
-    			count = count +1;
-    		}
-    	}
-    	
-    	if(count == postSplitDists.length){
-    		SDR = computeSD(preSplitDist);
-    		for(int i = 0; i < postSplitDists.length; i++)
-        	{
-        		double Ni = postSplitDists[i][0];
-        		SDR -= (Ni/N)*computeSD(postSplitDists[i]);
-        	}
-    	}
-    	return SDR;
-    }
-    	
+        double SDR = 0.0;
+        double N = preSplitDist[0];
+        int count = 0;
 
+        for (int i = 0; i < postSplitDists.length; i++) {
+            double Ni = postSplitDists[i][0];
+            if (Ni >= 5.0) {
+                count = count + 1;
+            }
+        }
+
+        if (count == postSplitDists.length) {
+            SDR = computeSD(preSplitDist);
+            for (int i = 0; i < postSplitDists.length; i++) {
+                double Ni = postSplitDists[i][0];
+                SDR -= (Ni / N) * computeSD(postSplitDists[i]);
+            }
+        }
+        return SDR;
+    }
 
     @Override
     public double getRangeOfMerit(double[] preSplitDist) {
@@ -83,12 +80,12 @@ public class VarianceReductionSplitCriterion extends AbstractOptionHandler imple
     }
 
     public static double computeSD(double[] dist) {
-       
-    	int N = (int)dist[0];
+
+        int N = (int) dist[0];
         double sum = dist[1];
         double sumSq = dist[2];
-     //   return Math.sqrt((sumSq - ((sum * sum)/N))/N);
-        return (sumSq - ((sum * sum)/N))/N;
+        //   return Math.sqrt((sumSq - ((sum * sum)/N))/N);
+        return (sumSq - ((sum * sum) / N)) / N;
     }
 
     @Override
@@ -97,10 +94,7 @@ public class VarianceReductionSplitCriterion extends AbstractOptionHandler imple
     }
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
     }
-    
 }
-

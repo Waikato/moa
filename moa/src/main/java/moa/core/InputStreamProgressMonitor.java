@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
@@ -31,99 +31,98 @@ import java.io.InputStream;
  */
 public class InputStreamProgressMonitor extends FilterInputStream {
 
-	/** The number of bytes to read in total */
-	protected int inputByteSize;
+    /** The number of bytes to read in total */
+    protected int inputByteSize;
 
-	/** The number of bytes read so far */
-	protected int inputBytesRead;
+    /** The number of bytes read so far */
+    protected int inputBytesRead;
 
-	public InputStreamProgressMonitor(InputStream in) {
-		super(in);
-		try {
-			this.inputByteSize = in.available();
-		} catch (IOException ioe) {
-			this.inputByteSize = 0;
-		}
-		this.inputBytesRead = 0;
-	}
+    public InputStreamProgressMonitor(InputStream in) {
+        super(in);
+        try {
+            this.inputByteSize = in.available();
+        } catch (IOException ioe) {
+            this.inputByteSize = 0;
+        }
+        this.inputBytesRead = 0;
+    }
 
-	public int getBytesRead() {
-		return this.inputBytesRead;
-	}
+    public int getBytesRead() {
+        return this.inputBytesRead;
+    }
 
-	public int getBytesRemaining() {
-		return this.inputByteSize - this.inputBytesRead;
-	}
+    public int getBytesRemaining() {
+        return this.inputByteSize - this.inputBytesRead;
+    }
 
-	public double getProgressFraction() {
-		return ((double) this.inputBytesRead / (double) this.inputByteSize);
-	}
+    public double getProgressFraction() {
+        return ((double) this.inputBytesRead / (double) this.inputByteSize);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.io.InputStream#read()
-	 */
-	@Override
-	public int read() throws IOException {
-		int c = this.in.read();
-		if (c > 0) {
-			this.inputBytesRead++;
-		}
-		return c;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.io.InputStream#read()
+     */
+    @Override
+    public int read() throws IOException {
+        int c = this.in.read();
+        if (c > 0) {
+            this.inputBytesRead++;
+        }
+        return c;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.io.InputStream#read(byte[])
-	 */
-	@Override
-	public int read(byte[] b) throws IOException {
-		int numread = this.in.read(b);
-		if (numread > 0) {
-			this.inputBytesRead += numread;
-		}
-		return numread;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.io.InputStream#read(byte[])
+     */
+    @Override
+    public int read(byte[] b) throws IOException {
+        int numread = this.in.read(b);
+        if (numread > 0) {
+            this.inputBytesRead += numread;
+        }
+        return numread;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.io.InputStream#read(byte[], int, int)
-	 */
-	@Override
-	public int read(byte[] b, int off, int len) throws IOException {
-		int numread = this.in.read(b, off, len);
-		if (numread > 0) {
-			this.inputBytesRead += numread;
-		}
-		return numread;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.io.InputStream#read(byte[], int, int)
+     */
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        int numread = this.in.read(b, off, len);
+        if (numread > 0) {
+            this.inputBytesRead += numread;
+        }
+        return numread;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.io.InputStream#skip(long)
-	 */
-	@Override
-	public long skip(long n) throws IOException {
-		long numskip = this.in.skip(n);
-		if (numskip > 0) {
-			this.inputBytesRead += numskip;
-		}
-		return numskip;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.io.InputStream#skip(long)
+     */
+    @Override
+    public long skip(long n) throws IOException {
+        long numskip = this.in.skip(n);
+        if (numskip > 0) {
+            this.inputBytesRead += numskip;
+        }
+        return numskip;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.io.FilterInputStream#reset()
-	 */
-	@Override
-	public synchronized void reset() throws IOException {
-		this.in.reset();
-		this.inputBytesRead = this.inputByteSize - this.in.available();
-	}
-
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.io.FilterInputStream#reset()
+     */
+    @Override
+    public synchronized void reset() throws IOException {
+        this.in.reset();
+        this.inputBytesRead = this.inputByteSize - this.in.available();
+    }
 }

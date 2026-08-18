@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.recommender.rc.utils;
@@ -26,21 +26,20 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class DenseVector extends Vector {
-    
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -6077169543484777829L;
-	private ArrayList<Double> list;
-    
+
+    /** */
+    private static final long serialVersionUID = -6077169543484777829L;
+
+    private ArrayList<Double> list;
+
     public DenseVector() {
         list = new ArrayList<Double>();
     }
-    
+
     public DenseVector(ArrayList<Double> list) {
         this.list = list;
     }
-    
+
     @Override
     public int size() {
         return list.size();
@@ -48,8 +47,7 @@ public class DenseVector extends Vector {
 
     @Override
     public void set(int index, double val) {
-        while (index < list.size())
-            list.add(0.0);
+        while (index < list.size()) list.add(0.0);
         list.set(index, val);
     }
 
@@ -67,8 +65,7 @@ public class DenseVector extends Vector {
     @Override
     public Set<Integer> getIdxs() {
         HashSet<Integer> keys = new HashSet<Integer>();
-        for (int i = 0; i < list.size(); ++i)
-            keys.add(i);
+        for (int i = 0; i < list.size(); ++i) keys.add(i);
         return keys;
     }
 
@@ -76,10 +73,10 @@ public class DenseVector extends Vector {
     public Vector copy() {
         return new DenseVector(new ArrayList<Double>(list));
     }
-    
+
     public class DenseVectorIterator implements Iterator<Pair<Integer, Double>> {
         private int index = 0;
-        
+
         @Override
         public boolean hasNext() {
             return index < DenseVector.this.list.size();
@@ -95,10 +92,9 @@ public class DenseVector extends Vector {
             list.remove(index);
         }
     }
-    
+
     @Override
     public Iterator<Pair<Integer, Double>> iterator() {
         return new DenseVectorIterator();
     }
-  
 }

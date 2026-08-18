@@ -23,45 +23,27 @@ import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
-
 /**
- * Returns the probability for anomaly detection according to a Cantelli inequality
- * mean- mean of a  data variable
- * sd- standard deviation of a data variable
- * value- current value of the variable
+ * Returns the probability for anomaly detection according to a Cantelli inequality mean- mean of a
+ * data variable sd- standard deviation of a data variable value- current value of the variable
  */
-
-
-
 public class CantellisInequality extends AbstractOptionHandler implements ProbabilityFunction {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /** */
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public double getProbability(double mean, double sd, double value) {
-		if(sd==0)
-			sd=10^-9;
-		double var=Math.pow(sd, 2);
-		double prob=2*var/(var+Math.pow(value - mean, 2));
-		if(prob>1)
-			prob=1;
-		return prob;
-	}
+    @Override
+    public double getProbability(double mean, double sd, double value) {
+        if (sd == 0) sd = 10 ^ -9;
+        double var = Math.pow(sd, 2);
+        double prob = 2 * var / (var + Math.pow(value - mean, 2));
+        if (prob > 1) prob = 1;
+        return prob;
+    }
 
-	@Override
-	public void getDescription(StringBuilder sb, int indent) {
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {}
 
-	}
-
-	@Override
-	protected void prepareForUseImpl(TaskMonitor monitor,
-			ObjectRepository repository) {
-
-
-	}
-
-
+    @Override
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {}
 }

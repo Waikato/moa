@@ -19,8 +19,6 @@
 package moa.classifiers.drift;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import java.util.LinkedList;
-import java.util.List;
 
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
@@ -28,41 +26,54 @@ import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
+import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.classifiers.meta.WEKAClassifier;
 import moa.core.Measurement;
 import moa.core.Utils;
-import moa.classifiers.core.driftdetection.ChangeDetector;
 import moa.options.ClassOption;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * Class for handling concept drift datasets with a wrapper on a
- * classifier.<p>
+ * Class for handling concept drift datasets with a wrapper on a classifier.
  *
- * Valid options are:<p>
+ * <p>Valid options are:
  *
- * -l classname <br>
- * Specify the full class name of a classifier as the basis for
- * the concept drift classifier.<p>
- * -d Drift detection method to use<br>
+ * <p>-l classname <br>
+ * Specify the full class name of a classifier as the basis for the concept drift classifier.
+ *
+ * <p>-d Drift detection method to use<br>
  *
  * @author Manuel Baena (mbaena@lcc.uma.es)
  * @version 1.1
  */
-public class DriftDetectionMethodClassifier extends AbstractClassifier implements MultiClassClassifier,
-                                                                                  CapabilitiesHandler {
+public class DriftDetectionMethodClassifier extends AbstractClassifier
+        implements MultiClassClassifier, CapabilitiesHandler {
 
     private static final long serialVersionUID = 1L;
 
     @Override
     public String getPurposeString() {
-        return "Classifier that replaces the current classifier with a new one when a change is detected in accuracy.";
+        return "Classifier that replaces the current classifier with a new one when a change is"
+                + " detected in accuracy.";
     }
-    
-    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "bayes.NaiveBayes");
-    
-    public ClassOption driftDetectionMethodOption = new ClassOption("driftDetectionMethod", 'd',
-             "Drift detection method to use.", ChangeDetector.class, "DDM");
+
+    public ClassOption baseLearnerOption =
+            new ClassOption(
+                    "baseLearner",
+                    'l',
+                    "Classifier to train.",
+                    Classifier.class,
+                    "bayes.NaiveBayes");
+
+    public ClassOption driftDetectionMethodOption =
+            new ClassOption(
+                    "driftDetectionMethod",
+                    'd',
+                    "Drift detection method to use.",
+                    ChangeDetector.class,
+                    "DDM");
 
     protected Classifier classifier;
 
@@ -71,7 +82,7 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier implement
     protected ChangeDetector driftDetectionMethod;
 
     protected boolean newClassifierReset;
-    //protected int numberInstances = 0;
+    // protected int numberInstances = 0;
 
     protected int ddmLevel;
 
@@ -88,14 +99,15 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier implement
     public static final int DDM_WARNING_LEVEL = 1;
 
     public static final int DDM_OUTCONTROL_LEVEL = 2;
-    
+
     @Override
     public void resetLearningImpl() {
         this.classifier = ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
         this.newclassifier = this.classifier.copy();
         this.classifier.resetLearning();
         this.newclassifier.resetLearning();
-        this.driftDetectionMethod = ((ChangeDetector) getPreparedClassOption(this.driftDetectionMethodOption)).copy();
+        this.driftDetectionMethod =
+                ((ChangeDetector) getPreparedClassOption(this.driftDetectionMethodOption)).copy();
         this.newClassifierReset = false;
     }
 
@@ -105,7 +117,7 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier implement
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
-        //this.numberInstances++;
+        // this.numberInstances++;
         int trueClass = (int) inst.classValue();
         boolean prediction;
         if (Utils.maxIndex(this.classifier.getVotesForInstance(inst)) == trueClass) {
@@ -113,19 +125,19 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier implement
         } else {
             prediction = false;
         }
-        //this.ddmLevel = this.driftDetectionMethod.computeNextVal(prediction);
+        // this.ddmLevel = this.driftDetectionMethod.computeNextVal(prediction);
         this.driftDetectionMethod.input(prediction ? 0.0 : 1.0);
         this.ddmLevel = DDM_INCONTROL_LEVEL;
         if (this.driftDetectionMethod.getChange()) {
-         this.ddmLevel =  DDM_OUTCONTROL_LEVEL;
+            this.ddmLevel = DDM_OUTCONTROL_LEVEL;
         }
         if (this.driftDetectionMethod.getWarningZone()) {
-           this.ddmLevel =  DDM_WARNING_LEVEL;
+            this.ddmLevel = DDM_WARNING_LEVEL;
         }
         switch (this.ddmLevel) {
             case DDM_WARNING_LEVEL:
-                //System.out.println("1 0 W");
-            	//System.out.println("DDM_WARNING_LEVEL");
+                // System.out.println("1 0 W");
+                // System.out.println("DDM_WARNING_LEVEL");
                 if (newClassifierReset == true) {
                     this.warningDetected++;
                     this.newclassifier.resetLearning();
@@ -135,25 +147,26 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier implement
                 break;
 
             case DDM_OUTCONTROL_LEVEL:
-                //System.out.println("0 1 O");
-            	//System.out.println("DDM_OUTCONTROL_LEVEL");
+                // System.out.println("0 1 O");
+                // System.out.println("DDM_OUTCONTROL_LEVEL");
                 this.changeDetected++;
                 this.classifier = null;
                 this.classifier = this.newclassifier;
                 if (this.classifier instanceof WEKAClassifier) {
                     ((WEKAClassifier) this.classifier).buildClassifier();
                 }
-                this.newclassifier = ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
+                this.newclassifier =
+                        ((Classifier) getPreparedClassOption(this.baseLearnerOption)).copy();
                 this.newclassifier.resetLearning();
                 break;
 
             case DDM_INCONTROL_LEVEL:
-                //System.out.println("0 0 I");
-            	//System.out.println("DDM_INCONTROL_LEVEL");
+                // System.out.println("0 0 I");
+                // System.out.println("DDM_INCONTROL_LEVEL");
                 newClassifierReset = true;
                 break;
             default:
-            //System.out.println("ERROR!");
+                // System.out.println("ERROR!");
 
         }
 
@@ -179,7 +192,8 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier implement
         List<Measurement> measurementList = new LinkedList<Measurement>();
         measurementList.add(new Measurement("Change detected", this.changeDetected));
         measurementList.add(new Measurement("Warning detected", this.warningDetected));
-        Measurement[] modelMeasurements = ((AbstractClassifier) this.classifier).getModelMeasurements();
+        Measurement[] modelMeasurements =
+                ((AbstractClassifier) this.classifier).getModelMeasurements();
         if (modelMeasurements != null) {
             for (Measurement measurement : modelMeasurements) {
                 measurementList.add(measurement);
@@ -194,7 +208,6 @@ public class DriftDetectionMethodClassifier extends AbstractClassifier implement
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == DriftDetectionMethodClassifier.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

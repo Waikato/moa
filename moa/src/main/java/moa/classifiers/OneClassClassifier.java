@@ -15,32 +15,30 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers;
 
-import java.util.Collection;
-
 import com.yahoo.labs.samoa.instances.Instance;
+
+import java.util.Collection;
 
 /**
  * An interface for incremental classifier models. As an extension of MultiClassClassifier, these
- * classifiers appear in the GUI Classification Tab. Marking them as OneClassClassifiers also
- * allows them to appear specifically when one-class classifiers are needed.
- * 
- * @author Richard Hugh Moulton
+ * classifiers appear in the GUI Classification Tab. Marking them as OneClassClassifiers also allows
+ * them to appear specifically when one-class classifiers are needed.
  *
+ * @author Richard Hugh Moulton
  */
-public interface OneClassClassifier extends MultiClassClassifier
-{
-	/**
-	 * Allows a one class classifier to be initialized with a starting set of training instances.
-	 */
-	public void initialize(Collection<Instance> trainingPoints);
-	
-	/**
-	 * For use when an anomaly score is needed instead of a vote.
-	 * The higher an instance's anomaly score is, the more likely it is an anomaly.
-	 */
-	public double getAnomalyScore(Instance inst);
+public interface OneClassClassifier extends MultiClassClassifier {
+    /**
+     * Allows a one class classifier to be initialized with a starting set of training instances.
+     */
+    public void initialize(Collection<Instance> trainingPoints);
+
+    /**
+     * For use when an anomaly score is needed instead of a vote. The higher an instance's anomaly
+     * score is, the more likely it is an anomaly.
+     */
+    public double getAnomalyScore(Instance inst);
 }

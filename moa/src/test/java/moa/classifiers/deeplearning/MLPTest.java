@@ -15,76 +15,74 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- *
- */
+/** */
 package moa.classifiers.deeplearning;
-
-import org.junit.Ignore;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
+
+import org.junit.Ignore;
 
 /**
  * Tests the MLP classifier.
  *
- * @author  Nuwan Gunasekara (ng98 at students dot waikato dot ac dot nz)
+ * @author Nuwan Gunasekara (ng98 at students dot waikato dot ac dot nz)
  * @version $Revision$
  */
 @Ignore("TODO test is platform specific and fails on GitHub due to DJL.")
-public class MLPTest
-		extends AbstractMultipleClassifierTestCase {
+public class MLPTest extends AbstractMultipleClassifierTestCase {
 
-	/**
-	 * Constructs the test case. Called by subclasses.
-	 *
-	 * @param name 	the name of the test
-	 */
-	public MLPTest(String name) {
-		super(name);
-		this.setNumberTests(1);
-	}
+    /**
+     * Constructs the test case. Called by subclasses.
+     *
+     * @param name the name of the test
+     */
+    public MLPTest(String name) {
+        super(name);
+        this.setNumberTests(1);
+    }
 
-	/**
-	 * Returns the classifier setups to use in the regression test.
-	 *
-	 * @return		the setups
-	 */
-	@Override
-	protected Classifier[] getRegressionClassifierSetups() {
-		MLP MLPtest = new MLP();
+    /**
+     * Returns the classifier setups to use in the regression test.
+     *
+     * @return the setups
+     */
+    @Override
+    protected Classifier[] getRegressionClassifierSetups() {
+        MLP MLPtest = new MLP();
         MLPtest.learningRateOption.setValue(0.03);
         MLPtest.backPropLossThreshold.setValue(0.3);
         MLPtest.optimizerTypeOption.setChosenIndex(5);
-		MLPtest.useOneHotEncode.setValue(true);
-		MLPtest.useNormalization.setValue(true);
-		MLPtest.numberOfNeuronsInEachLayerInLog2.setValue(9);
-		MLPtest.numberOfLayers.setValue(1);
-		MLPtest.miniBatchSize.setValue(4);
-		MLPtest.deviceTypeOption.setChosenIndex(1);
+        MLPtest.useOneHotEncode.setValue(true);
+        MLPtest.useNormalization.setValue(true);
+        MLPtest.numberOfNeuronsInEachLayerInLog2.setValue(9);
+        MLPtest.numberOfLayers.setValue(1);
+        MLPtest.miniBatchSize.setValue(4);
+        MLPtest.deviceTypeOption.setChosenIndex(1);
 
-		return new Classifier[]{
-				MLPtest,
-		};
-	}
+        return new Classifier[] {
+            MLPtest,
+        };
+    }
 
-	/**
-	 * Returns a test suite.
-	 *
-	 * @return		the test suite
-	 */
-	public static Test suite() {
-		return new TestSuite(MLPTest.class);
-	}
+    /**
+     * Returns a test suite.
+     *
+     * @return the test suite
+     */
+    public static Test suite() {
+        return new TestSuite(MLPTest.class);
+    }
 
-	/**
-	 * Runs the test from commandline.
-	 *
-	 * @param args	ignored
-	 */
-	public static void main(String[] args) {
-		runTest(suite());
-	}
+    /**
+     * Runs the test from commandline.
+     *
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        runTest(suite());
+    }
 }

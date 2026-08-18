@@ -15,13 +15,13 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.rules.multilabel.attributeclassobservers;
 
-import moa.AbstractMOAObject;
-
 import com.github.javacliparser.StringUtils;
+
+import moa.AbstractMOAObject;
 
 /**
  * Vector of float numbers with some utilities.
@@ -44,19 +44,16 @@ public class SingleVector extends AbstractMOAObject {
         System.arraycopy(toCopy, 0, this.array, 0, toCopy.length);
     }
 
-    
     public SingleVector(SingleVector toCopy) {
         this(toCopy.getArrayRef());
     }
 
+    public SingleVector(double[] arrayRef) {
+        this.array = new float[arrayRef.length];
+        for (int i = 0; i < arrayRef.length; i++) this.array[i] = (float) arrayRef[i];
+    }
 
-	public SingleVector(double[] arrayRef) {
-		this.array=new float[arrayRef.length];
-		for(int i=0; i<arrayRef.length;i++)
-			this.array[i]=(float)arrayRef[i];
-	}
-
-	public int numValues() {
+    public int numValues() {
         return this.array.length;
     }
 

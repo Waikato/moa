@@ -3,12 +3,12 @@ package moa.classifiers.meta.AutoML;
 import com.github.javacliparser.Option;
 import com.github.javacliparser.Options;
 import com.yahoo.labs.samoa.instances.Attribute;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.options.ClassOption;
 
 import java.util.Arrays;
-
 
 class ParameterConfiguration {
     public String parameter;
@@ -55,15 +55,16 @@ public class Algorithm {
     public boolean isDefault;
 
     // copy constructor
-    public Algorithm(Algorithm x, double lambda, double reset, boolean keepCurrentModel, int verbose) {
+    public Algorithm(
+            Algorithm x, double lambda, double reset, boolean keepCurrentModel, int verbose) {
 
         // make a (mostly) deep copy of the algorithm
         this.algorithm = x.algorithm;
-        this.attributes = x.attributes; // this is a reference since we dont manipulate the attributes
+        this.attributes =
+                x.attributes; // this is a reference since we dont manipulate the attributes
         this.parameters = new IParameter[x.parameters.length];
         this.preventRemoval = x.preventRemoval;
         this.isDefault = false;
-
 
         for (int i = 0; i < x.parameters.length; i++) {
             this.parameters[i] = x.parameters[i].copy();
@@ -71,17 +72,20 @@ public class Algorithm {
         }
 
         if (keepCurrentModel) {
-            try{
+            try {
                 this.classifier = (AbstractClassifier) x.classifier.copy();
-            } catch (RuntimeException e){
-                if(verbose >= 2){
-                    System.out.println("Copy failed for " + x.classifier.getCLICreationString(Classifier.class) + "! Reinitialise instead.");
+            } catch (RuntimeException e) {
+                if (verbose >= 2) {
+                    System.out.println(
+                            "Copy failed for "
+                                    + x.classifier.getCLICreationString(Classifier.class)
+                                    + "! Reinitialise instead.");
                 }
                 this.classifier = x.classifier; // keep the old algorithm for now
                 keepCurrentModel = false;
             }
-        } else{
-            this.classifier = x.classifier;  // keep the old algorithm for now
+        } else {
+            this.classifier = x.classifier; // keep the old algorithm for now
         }
 
         adjustAlgorithm(keepCurrentModel, verbose);
@@ -98,9 +102,10 @@ public class Algorithm {
         this.attributes = new Attribute[x.parameters.length];
         for (int i = 0; i < x.parameters.length; i++) {
 
-
             ParameterConfiguration paramConfig = x.parameters[i];
-            if (paramConfig.type.equals("numeric") || paramConfig.type.equals("float") || paramConfig.type.equals("real")) {
+            if (paramConfig.type.equals("numeric")
+                    || paramConfig.type.equals("float")
+                    || paramConfig.type.equals("real")) {
                 NumericalParameter param = new NumericalParameter(paramConfig);
                 this.parameters[i] = param;
                 this.attributes[i] = new Attribute(param.getParameter());
@@ -108,21 +113,28 @@ public class Algorithm {
                 IntegerParameter param = new IntegerParameter(paramConfig);
                 this.parameters[i] = param;
                 this.attributes[i] = new Attribute(param.getParameter());
-            } else if (paramConfig.type.equals("nominal") || paramConfig.type.equals("categorical") || paramConfig.type.equals("factor")) {
+            } else if (paramConfig.type.equals("nominal")
+                    || paramConfig.type.equals("categorical")
+                    || paramConfig.type.equals("factor")) {
                 CategoricalParameter param = new CategoricalParameter(paramConfig);
                 this.parameters[i] = param;
-                this.attributes[i] = new Attribute(param.getParameter(), Arrays.asList(param.getRange()));
+                this.attributes[i] =
+                        new Attribute(param.getParameter(), Arrays.asList(param.getRange()));
             } else if (paramConfig.type.equals("boolean") || paramConfig.type.equals("flag")) {
                 BooleanParameter param = new BooleanParameter(paramConfig);
                 this.parameters[i] = param;
-                this.attributes[i] = new Attribute(param.getParameter(), Arrays.asList(param.getRange()));
+                this.attributes[i] =
+                        new Attribute(param.getParameter(), Arrays.asList(param.getRange()));
             } else if (paramConfig.type.equals("ordinal")) {
                 OrdinalParameter param = new OrdinalParameter(paramConfig);
                 this.parameters[i] = param;
                 this.attributes[i] = new Attribute(param.getParameter());
             } else {
-                throw new RuntimeException("Unknown parameter type: '" + paramConfig.type
-                        + "'. Available options are 'numeric', 'integer', 'nominal', 'boolean' or 'ordinal'");
+                throw new RuntimeException(
+                        "Unknown parameter type: '"
+                                + paramConfig.type
+                                + "'. Available options are 'numeric', 'integer', 'nominal',"
+                                + " 'boolean' or 'ordinal'");
             }
         }
         init();
@@ -163,27 +175,31 @@ public class Algorithm {
             // these changes do not transfer over directly since all algorithms cache the
             // option values. Therefore we try to adjust the cached values if possible
             try {
-//                ((AbstractClassifier) this.classifier).adjustParameters();
+                //                ((AbstractClassifier) this.classifier).adjustParameters();
                 if (verbose >= 2) {
-                    System.out.println("Changed: " + this.classifier.getCLICreationString(Classifier.class));
+                    System.out.println(
+                            "Changed: " + this.classifier.getCLICreationString(Classifier.class));
                 }
             } catch (UnsupportedOperationException e) {
                 if (verbose >= 2) {
-                    System.out.println("Cannot change parameters of " + this.algorithm + " on the fly, reset instead.");
+                    System.out.println(
+                            "Cannot change parameters of "
+                                    + this.algorithm
+                                    + " on the fly, reset instead.");
                 }
                 adjustAlgorithm(false, verbose);
             }
-        } else{
+        } else {
             // Option 2: reinitialise the entire state
             this.init();
             if (verbose >= 2) {
-                System.out.println("Initialise: " + this.classifier.getCLICreationString(Classifier.class));
+                System.out.println(
+                        "Initialise: " + this.classifier.getCLICreationString(Classifier.class));
             }
 
             if (verbose >= 2) {
                 System.out.println("Train with existing classifiers.");
             }
-
         }
     }
 

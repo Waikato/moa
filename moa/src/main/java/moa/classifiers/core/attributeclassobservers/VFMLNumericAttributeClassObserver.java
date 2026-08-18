@@ -15,28 +15,28 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core.attributeclassobservers;
 
+import com.github.javacliparser.IntOption;
+
+import moa.classifiers.core.AttributeSplitSuggestion;
+import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
+import moa.classifiers.core.splitcriteria.SplitCriterion;
+import moa.core.DoubleVector;
+import moa.core.ObjectRepository;
 import moa.core.Utils;
+import moa.options.AbstractOptionHandler;
+import moa.tasks.TaskMonitor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import moa.classifiers.core.AttributeSplitSuggestion;
-import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
-import moa.classifiers.core.splitcriteria.SplitCriterion;
-
-import moa.core.DoubleVector;
-import moa.core.ObjectRepository;
-import moa.options.AbstractOptionHandler;
-import com.github.javacliparser.IntOption;
-import moa.tasks.TaskMonitor;
 
 /**
- * Class for observing the class data distribution for a numeric attribute as in VFML.
- * Used in naive Bayes and decision trees to monitor data statistics on leaves.
+ * Class for observing the class data distribution for a numeric attribute as in VFML. Used in naive
+ * Bayes and decision trees to monitor data statistics on leaves.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
@@ -66,9 +66,8 @@ public class VFMLNumericAttributeClassObserver extends AbstractOptionHandler
 
     protected List<Bin> binList = new ArrayList<Bin>();
 
-    public IntOption numBinsOption = new IntOption("numBins", 'n',
-        "The number of bins.", 10, 1, Integer.MAX_VALUE);
-
+    public IntOption numBinsOption =
+            new IntOption("numBins", 'n', "The number of bins.", 10, 1, Integer.MAX_VALUE);
 
     @Override
     public void observeAttributeClass(double attVal, int classVal, double weight) {
@@ -95,7 +94,8 @@ public class VFMLNumericAttributeClassObserver extends AbstractOptionHandler
                     Bin bin = this.binList.get(i);
                     if (((attVal >= bin.lowerBound) && (attVal < bin.upperBound))
                             || ((i == this.binList.size() - 1)
-                            && (attVal >= bin.lowerBound) && (attVal <= bin.upperBound))) {
+                                    && (attVal >= bin.lowerBound)
+                                    && (attVal <= bin.upperBound))) {
                         found = true;
                         index = i;
                     } else if (attVal < bin.lowerBound) {
@@ -122,7 +122,8 @@ public class VFMLNumericAttributeClassObserver extends AbstractOptionHandler
                 }
                 Bin bin = this.binList.get(index); // VLIndex(ct->bins, index);
                 if ((bin.lowerBound == attVal)
-                        || (this.binList.size() >= this.numBinsOption.getValue())) {// Option.getValue())
+                        || (this.binList.size()
+                                >= this.numBinsOption.getValue())) { // Option.getValue())
                     // {//1000)
                     // {
                     // if this is the exact same boundary and class as the bin
@@ -130,8 +131,7 @@ public class VFMLNumericAttributeClassObserver extends AbstractOptionHandler
                     // increment
                     // boundary counts
                     bin.classWeights.addToValue(classVal, weight);
-                    if ((bin.boundaryClass == classVal)
-                            && (bin.lowerBound == attVal)) {
+                    if ((bin.boundaryClass == classVal) && (bin.lowerBound == attVal)) {
                         // if it is also the same class then special case it
                         bin.boundaryWeight += weight;
                     }
@@ -147,20 +147,20 @@ public class VFMLNumericAttributeClassObserver extends AbstractOptionHandler
                     double percent = 0.0;
                     // estimate initial counts with a linear interpolation
                     if (!((bin.upperBound - bin.lowerBound == 0) || last || first)) {
-                        percent = 1.0 - ((attVal - bin.lowerBound) / (bin.upperBound - bin.lowerBound));
+                        percent =
+                                1.0
+                                        - ((attVal - bin.lowerBound)
+                                                / (bin.upperBound - bin.lowerBound));
                     }
 
                     // take out the boundry points, they stay with the old bin
-                    bin.classWeights.addToValue(bin.boundaryClass,
-                            -bin.boundaryWeight);
-                    DoubleVector weightToShift = new DoubleVector(
-                            bin.classWeights);
+                    bin.classWeights.addToValue(bin.boundaryClass, -bin.boundaryWeight);
+                    DoubleVector weightToShift = new DoubleVector(bin.classWeights);
                     weightToShift.scaleValues(percent);
                     newBin.classWeights.addValues(weightToShift);
                     bin.classWeights.subtractValues(weightToShift);
                     // put the boundry examples back in
-                    bin.classWeights.addToValue(bin.boundaryClass,
-                            bin.boundaryWeight);
+                    bin.classWeights.addToValue(bin.boundaryClass, bin.boundaryWeight);
 
                     // insert the new bin in the right place
                     if (last) {
@@ -181,16 +181,14 @@ public class VFMLNumericAttributeClassObserver extends AbstractOptionHandler
     }
 
     @Override
-    public double probabilityOfAttributeValueGivenClass(double attVal,
-            int classVal) {
+    public double probabilityOfAttributeValueGivenClass(double attVal, int classVal) {
         // TODO: NaiveBayes broken until implemented
         return 0.0;
     }
 
     @Override
     public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(
-            SplitCriterion criterion, double[] preSplitDist, int attIndex,
-            boolean binaryOnly) {
+            SplitCriterion criterion, double[] preSplitDist, int attIndex, boolean binaryOnly) {
         AttributeSplitSuggestion bestSuggestion = null;
         DoubleVector rightDist = new DoubleVector();
         for (Bin bin : this.binList) {
@@ -200,14 +198,15 @@ public class VFMLNumericAttributeClassObserver extends AbstractOptionHandler
         for (Bin bin : this.binList) {
             leftDist.addValues(bin.classWeights);
             rightDist.subtractValues(bin.classWeights);
-            double[][] postSplitDists = new double[][]{
-                leftDist.getArrayCopy(), rightDist.getArrayCopy()};
-            double merit = criterion.getMeritOfSplit(preSplitDist,
-                    postSplitDists);
+            double[][] postSplitDists =
+                    new double[][] {leftDist.getArrayCopy(), rightDist.getArrayCopy()};
+            double merit = criterion.getMeritOfSplit(preSplitDist, postSplitDists);
             if ((bestSuggestion == null) || (merit > bestSuggestion.merit)) {
-                bestSuggestion = new AttributeSplitSuggestion(
-                        new NumericAttributeBinaryTest(attIndex,
-                        bin.upperBound, false), postSplitDists, merit);
+                bestSuggestion =
+                        new AttributeSplitSuggestion(
+                                new NumericAttributeBinaryTest(attIndex, bin.upperBound, false),
+                                postSplitDists,
+                                merit);
             }
         }
         return bestSuggestion;

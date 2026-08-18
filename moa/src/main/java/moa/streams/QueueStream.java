@@ -2,6 +2,7 @@ package moa.streams;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
@@ -10,8 +11,8 @@ import moa.tasks.TaskMonitor;
 import java.util.LinkedList;
 
 /**
- * Helper class for pipelines in CapyMOA.
- * Implements the stream interface and also acts as a queue by supporting `addToQueue`.
+ * Helper class for pipelines in CapyMOA. Implements the stream interface and also acts as a queue
+ * by supporting `addToQueue`.
  *
  * @author Marco Heyden (marco.heyden@kit.edu)
  * @version $Revision: 1 $
@@ -24,7 +25,6 @@ public class QueueStream extends AbstractOptionHandler implements ExampleStream 
         queue.add(new InstanceExample(newInstance));
     }
 
-
     @Override
     public long measureByteSize() {
         return 0;
@@ -34,9 +34,7 @@ public class QueueStream extends AbstractOptionHandler implements ExampleStream 
     protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {}
 
     @Override
-    public void getDescription(StringBuilder sb, int indent) {
-
-    }
+    public void getDescription(StringBuilder sb, int indent) {}
 
     @Override
     public InstancesHeader getHeader() {

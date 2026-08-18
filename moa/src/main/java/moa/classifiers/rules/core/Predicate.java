@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.classifiers.rules.core;
 
@@ -23,11 +23,14 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstanceInformation;
 
 public interface Predicate {
-	
-	 public boolean evaluate(Instance instance);
-	 public void negateCondition();
-	 public int getAttributeIndex();
-	 public boolean isEqualOrLess();
-	 public void getDescription(StringBuilder sb, int indent, InstanceInformation instInformation);
-	 
+
+    public boolean evaluate(Instance instance);
+
+    public void negateCondition();
+
+    public int getAttributeIndex();
+
+    public boolean isEqualOrLess();
+
+    public void getDescription(StringBuilder sb, int indent, InstanceInformation instInformation);
 }

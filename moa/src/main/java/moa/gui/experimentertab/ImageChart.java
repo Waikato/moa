@@ -1,6 +1,6 @@
 /*
  *    ImageChart.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand 
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -15,28 +15,25 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.experimentertab;
 
-import java.awt.Color;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
 
 /**
- * This class allows to handle the properties of the graph created by
- * JFreeChart.
+ * This class allows to handle the properties of the graph created by JFreeChart.
  *
  * @author Alberto
  */
@@ -50,11 +47,8 @@ public class ImageChart {
 
     private int height;
 
-    /**
-     * Default constructor.
-     */
-    public ImageChart() {
-    }
+    /** Default constructor. */
+    public ImageChart() {}
 
     /**
      * Constructor.
@@ -156,7 +150,7 @@ public class ImageChart {
 
     @Override
     public String toString() {
-        return name; //To change body of generated methods, choose Tools | Templates.
+        return name; // To change body of generated methods, choose Tools | Templates.
     }
 
     /**
@@ -171,14 +165,16 @@ public class ImageChart {
         switch (type) {
             case "JPG":
                 try {
-                    ChartUtilities.saveChartAsJPEG(new File(path + File.separator + name + ".jpg"), chart, width, height);
+                    ChartUtilities.saveChartAsJPEG(
+                            new File(path + File.separator + name + ".jpg"), chart, width, height);
                 } catch (IOException e) {
 
                 }
                 break;
             case "PNG":
                 try {
-                    ChartUtilities.saveChartAsPNG(new File(path + File.separator + name + ".png"), chart, width, height);
+                    ChartUtilities.saveChartAsPNG(
+                            new File(path + File.separator + name + ".png"), chart, width, height);
                 } catch (IOException e) {
 
                 }
@@ -187,8 +183,13 @@ public class ImageChart {
                 String svg = generateSVG(width, height);
                 BufferedWriter writer = null;
                 try {
-                    writer = new BufferedWriter(new FileWriter(new File(path + File.separator + name + ".svg")));
-                    writer.write("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n");
+                    writer =
+                            new BufferedWriter(
+                                    new FileWriter(
+                                            new File(path + File.separator + name + ".svg")));
+                    writer.write(
+                            "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\""
+                                    + " \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n");
                     writer.write(svg + "\n");
                     writer.flush();
                 } finally {
@@ -201,9 +202,7 @@ public class ImageChart {
                     }
                 }
                 break;
-
         }
-
     }
 
     private String generateSVG(int width, int height) {
@@ -220,7 +219,11 @@ public class ImageChart {
         try {
             Method m = g2.getClass().getMethod("getSVGElement");
             svg = (String) m.invoke(g2);
-        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        } catch (NoSuchMethodException
+                | SecurityException
+                | IllegalAccessException
+                | IllegalArgumentException
+                | InvocationTargetException e) {
             // null will be returned
         }
         return svg;
@@ -231,9 +234,14 @@ public class ImageChart {
             Class svgGraphics2d = Class.forName("org.jfree.graphics2d.svg.SVGGraphics2D");
             Constructor ctor = svgGraphics2d.getConstructor(int.class, int.class);
             return (Graphics2D) ctor.newInstance(w, h);
-        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+        } catch (ClassNotFoundException
+                | NoSuchMethodException
+                | SecurityException
+                | InstantiationException
+                | IllegalAccessException
+                | IllegalArgumentException
+                | InvocationTargetException ex) {
             return null;
         }
     }
-
 }

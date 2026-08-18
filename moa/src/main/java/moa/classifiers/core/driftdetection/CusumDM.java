@@ -20,12 +20,12 @@ package moa.classifiers.core.driftdetection;
 
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
+
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
 
 /**
  * Drift detection method based in Cusum
- *
  *
  * @author Manuel Baena (mbaena@lcc.uma.es)
  * @version $Revision: 7 $
@@ -34,17 +34,26 @@ public class CusumDM extends AbstractChangeDetector {
 
     private static final long serialVersionUID = -3518369648142099719L;
 
-    public IntOption minNumInstancesOption = new IntOption(
-            "minNumInstances",
-            'n',
-            "The minimum number of instances before permitting detecting change.",
-            30, 0, Integer.MAX_VALUE);
+    public IntOption minNumInstancesOption =
+            new IntOption(
+                    "minNumInstances",
+                    'n',
+                    "The minimum number of instances before permitting detecting change.",
+                    30,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public FloatOption deltaOption = new FloatOption("delta", 'd',
-            "Delta parameter of the Cusum Test", 0.005, 0.0, 1.0);
+    public FloatOption deltaOption =
+            new FloatOption("delta", 'd', "Delta parameter of the Cusum Test", 0.005, 0.0, 1.0);
 
-    public FloatOption lambdaOption = new FloatOption("lambda", 'l',
-            "Threshold parameter of the Cusum Test", 50, 0.0, Float.MAX_VALUE);
+    public FloatOption lambdaOption =
+            new FloatOption(
+                    "lambda",
+                    'l',
+                    "Threshold parameter of the Cusum Test",
+                    50,
+                    0.0,
+                    Float.MAX_VALUE);
 
     private int m_n;
 
@@ -82,9 +91,6 @@ public class CusumDM extends AbstractChangeDetector {
         x_mean = x_mean + (x - x_mean) / (double) m_n;
         sum = Math.max(0, sum + x - x_mean - this.delta);
 
-        
-
-
         m_n++;
 
         // System.out.print(prediction + " " + m_n + " " + (m_p+m_s) + " ");
@@ -99,7 +105,7 @@ public class CusumDM extends AbstractChangeDetector {
 
         if (sum > this.lambda) {
             this.isChangeDetected = true;
-        } 
+        }
     }
 
     @Override
@@ -108,8 +114,7 @@ public class CusumDM extends AbstractChangeDetector {
     }
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
     }
 }

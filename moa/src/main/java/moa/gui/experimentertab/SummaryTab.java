@@ -1,6 +1,6 @@
 /*
  *    SummaryTab.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand 
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -15,13 +15,21 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.experimentertab;
 
 import moa.gui.LookAndFeel;
+
 import nz.ac.waikato.cms.gui.core.SimpleDirectoryChooser;
+
 import org.apache.commons.io.FilenameUtils;
+
+import java.awt.BorderLayout;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
@@ -32,15 +40,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
-import java.awt.BorderLayout;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Summarize the performance measurements of different learning algorithms over
- * time in LaTeX and HTML formats.
+ * Summarize the performance measurements of different learning algorithms over time in LaTeX and
+ * HTML formats.
  *
  * @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
  */
@@ -76,15 +79,13 @@ public class SummaryTab extends JPanel {
     Summary summary;
     ReadFile rf;
 
-    /**
-     * SummaryTab Constructor
-     */
+    /** SummaryTab Constructor */
     public SummaryTab() {
         initComponents();
         measures = new LinkedList<>();
         algotithmID = new ArrayList<>();
         algorithmNames = new LinkedList<>();
-        streamNames    = new LinkedList<>();    
+        streamNames = new LinkedList<>();
         this.algoritmModel = (DefaultTableModel) jTableAlgoritms.getModel();
         this.streamModel = (DefaultTableModel) jTableStreams.getModel();
         this.measureModel = (DefaultTableModel) jTableMeasures.getModel();
@@ -117,27 +118,27 @@ public class SummaryTab extends JPanel {
         jLabelMeasure = new javax.swing.JLabel();
         jComboBoxMeasure = new javax.swing.JComboBox();
 
-        jPanelConfig.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Configure", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12))); // NOI18N
+        jPanelConfig.setBorder(
+                javax.swing.BorderFactory.createTitledBorder(
+                        null,
+                        "Configure",
+                        javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+                        javax.swing.border.TitledBorder.DEFAULT_POSITION,
+                        new java.awt.Font("Tahoma", 0, 12))); // NOI18N
 
         jScrollPaneAlgorithms.setBorder(javax.swing.BorderFactory.createTitledBorder("Algorithms"));
 
-        jTableAlgoritms.setModel(new javax.swing.table.DefaultTableModel(
-                new Object[][]{},
-                new String[]{
-                    "Algorithm", "Algorithm ID"
-                }
-        ));
+        jTableAlgoritms.setModel(
+                new javax.swing.table.DefaultTableModel(
+                        new Object[][] {}, new String[] {"Algorithm", "Algorithm ID"}));
         jTableAlgoritms.setEditingColumn(1);
         jScrollPaneAlgorithms.setViewportView(jTableAlgoritms);
 
         jScrollPaneStreams.setBorder(javax.swing.BorderFactory.createTitledBorder("Streams"));
 
-        jTableStreams.setModel(new javax.swing.table.DefaultTableModel(
-                new Object[][]{},
-                new String[]{
-                    "Stream", "Stream ID"
-                }
-        ));
+        jTableStreams.setModel(
+                new javax.swing.table.DefaultTableModel(
+                        new Object[][] {}, new String[] {"Stream", "Stream ID"}));
         jScrollPaneStreams.setViewportView(jTableStreams);
 
         jTextFieldResultsPath.setEditable(true);
@@ -149,18 +150,17 @@ public class SummaryTab extends JPanel {
 
         jButtonAddMeasure.setText("Add Measure");
         jButtonAddMeasure.setToolTipText("Add Measure");
-        jButtonAddMeasure.addActionListener((java.awt.event.ActionEvent evt) -> {
-            // jButtonRunActionPerformed(evt);
-        });
+        jButtonAddMeasure.addActionListener(
+                (java.awt.event.ActionEvent evt) -> {
+                    // jButtonRunActionPerformed(evt);
+                });
 
-        jTableMeasures.setModel(new javax.swing.table.DefaultTableModel(
-                new Object[][]{},
-                new String[]{
-                    "Measure", "Measure ID", "Option"
-                }
-        ));
-       
-        jScrollPaneMeasure.setBorder(javax.swing.BorderFactory.createTitledBorder("Performance measures"));
+        jTableMeasures.setModel(
+                new javax.swing.table.DefaultTableModel(
+                        new Object[][] {}, new String[] {"Measure", "Measure ID", "Option"}));
+
+        jScrollPaneMeasure.setBorder(
+                javax.swing.BorderFactory.createTitledBorder("Performance measures"));
         jScrollPaneMeasure.setViewportView(jTableMeasures);
 
         jButtonDelAlgoritm.setText("Delete Algorithm");
@@ -181,7 +181,7 @@ public class SummaryTab extends JPanel {
         jButtonShowSummary.addActionListener(this::jButtonShowSummaryActionPerformed);
 
         jLabelMeasure.setText("Measures");
-        jComboBoxMeasure.setModel(new javax.swing.DefaultComboBoxModel(new String[]{"--Slect--"}));
+        jComboBoxMeasure.setModel(new javax.swing.DefaultComboBoxModel(new String[] {"--Slect--"}));
         jButtonAddMeasure.addActionListener(this::jButtonAddMeasureActionPerformed);
         /*prueba*/
         JPanel jPanel1 = new JPanel();
@@ -191,67 +191,176 @@ public class SummaryTab extends JPanel {
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
-                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                        .addGap(14, 14, 14)
-                                        .addComponent(jLabelDirectory)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jTextFieldResultsPath)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jButtonResults))
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addContainerGap()
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jButtonDelAlgoritm)
-                                                .addComponent(jScrollPaneAlgorithms, javax.swing.GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                .addComponent(jScrollPaneStreams, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE)
-                                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                                        .addComponent(jButtonDelStream)
-                                                        .addGap(0, 0, Short.MAX_VALUE)))))
-                        .addGap(16, 16, 16))
-        );
+                jPanel1Layout
+                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(
+                                jPanel1Layout
+                                        .createSequentialGroup()
+                                        .addGroup(
+                                                jPanel1Layout
+                                                        .createParallelGroup(
+                                                                javax.swing.GroupLayout.Alignment
+                                                                        .LEADING)
+                                                        .addGroup(
+                                                                javax.swing.GroupLayout.Alignment
+                                                                        .TRAILING,
+                                                                jPanel1Layout
+                                                                        .createSequentialGroup()
+                                                                        .addGap(14, 14, 14)
+                                                                        .addComponent(
+                                                                                jLabelDirectory)
+                                                                        .addGap(18, 18, 18)
+                                                                        .addComponent(
+                                                                                jTextFieldResultsPath)
+                                                                        .addPreferredGap(
+                                                                                javax.swing
+                                                                                        .LayoutStyle
+                                                                                        .ComponentPlacement
+                                                                                        .UNRELATED)
+                                                                        .addComponent(
+                                                                                jButtonResults))
+                                                        .addGroup(
+                                                                jPanel1Layout
+                                                                        .createSequentialGroup()
+                                                                        .addContainerGap()
+                                                                        .addGroup(
+                                                                                jPanel1Layout
+                                                                                        .createParallelGroup(
+                                                                                                javax
+                                                                                                        .swing
+                                                                                                        .GroupLayout
+                                                                                                        .Alignment
+                                                                                                        .LEADING)
+                                                                                        .addComponent(
+                                                                                                jButtonDelAlgoritm)
+                                                                                        .addComponent(
+                                                                                                jScrollPaneAlgorithms,
+                                                                                                javax
+                                                                                                        .swing
+                                                                                                        .GroupLayout
+                                                                                                        .DEFAULT_SIZE,
+                                                                                                341,
+                                                                                                Short
+                                                                                                        .MAX_VALUE))
+                                                                        .addPreferredGap(
+                                                                                javax.swing
+                                                                                        .LayoutStyle
+                                                                                        .ComponentPlacement
+                                                                                        .UNRELATED)
+                                                                        .addGroup(
+                                                                                jPanel1Layout
+                                                                                        .createParallelGroup(
+                                                                                                javax
+                                                                                                        .swing
+                                                                                                        .GroupLayout
+                                                                                                        .Alignment
+                                                                                                        .LEADING)
+                                                                                        .addComponent(
+                                                                                                jScrollPaneStreams,
+                                                                                                javax
+                                                                                                        .swing
+                                                                                                        .GroupLayout
+                                                                                                        .DEFAULT_SIZE,
+                                                                                                332,
+                                                                                                Short
+                                                                                                        .MAX_VALUE)
+                                                                                        .addGroup(
+                                                                                                jPanel1Layout
+                                                                                                        .createSequentialGroup()
+                                                                                                        .addComponent(
+                                                                                                                jButtonDelStream)
+                                                                                                        .addGap(
+                                                                                                                0,
+                                                                                                                0,
+                                                                                                                Short
+                                                                                                                        .MAX_VALUE)))))
+                                        .addGap(16, 16, 16)));
         jPanel1Layout.setVerticalGroup(
-                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGap(23, 23, 23)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jTextFieldResultsPath, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jButtonResults)
-                                .addComponent(jLabelDirectory))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jScrollPaneAlgorithms, javax.swing.GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
-                                .addComponent(jScrollPaneStreams, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jButtonDelStream)
-                                .addComponent(jButtonDelAlgoritm)))
-        );
+                jPanel1Layout
+                        .createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(
+                                javax.swing.GroupLayout.Alignment.TRAILING,
+                                jPanel1Layout
+                                        .createSequentialGroup()
+                                        .addGap(23, 23, 23)
+                                        .addGroup(
+                                                jPanel1Layout
+                                                        .createParallelGroup(
+                                                                javax.swing.GroupLayout.Alignment
+                                                                        .BASELINE)
+                                                        .addComponent(
+                                                                jTextFieldResultsPath,
+                                                                javax.swing.GroupLayout
+                                                                        .PREFERRED_SIZE,
+                                                                23,
+                                                                javax.swing.GroupLayout
+                                                                        .PREFERRED_SIZE)
+                                                        .addComponent(jButtonResults)
+                                                        .addComponent(jLabelDirectory))
+                                        .addGap(18, 18, 18)
+                                        .addGroup(
+                                                jPanel1Layout
+                                                        .createParallelGroup(
+                                                                javax.swing.GroupLayout.Alignment
+                                                                        .LEADING)
+                                                        .addComponent(
+                                                                jScrollPaneAlgorithms,
+                                                                javax.swing.GroupLayout
+                                                                        .DEFAULT_SIZE,
+                                                                305,
+                                                                Short.MAX_VALUE)
+                                                        .addComponent(
+                                                                jScrollPaneStreams,
+                                                                javax.swing.GroupLayout
+                                                                        .PREFERRED_SIZE,
+                                                                0,
+                                                                Short.MAX_VALUE))
+                                        .addPreferredGap(
+                                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(
+                                                jPanel1Layout
+                                                        .createParallelGroup(
+                                                                javax.swing.GroupLayout.Alignment
+                                                                        .BASELINE)
+                                                        .addComponent(jButtonDelStream)
+                                                        .addComponent(jButtonDelAlgoritm))));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGap(0, 741, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addContainerGap()))
-        );
+                        .addGap(0, 741, Short.MAX_VALUE)
+                        .addGroup(
+                                layout.createParallelGroup(
+                                                javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(
+                                                layout.createSequentialGroup()
+                                                        .addContainerGap()
+                                                        .addComponent(
+                                                                jPanel1,
+                                                                javax.swing.GroupLayout
+                                                                        .DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout
+                                                                        .DEFAULT_SIZE,
+                                                                Short.MAX_VALUE)
+                                                        .addContainerGap())));
         layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGap(0, 443, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addContainerGap()))
-        );
+                        .addGap(0, 443, Short.MAX_VALUE)
+                        .addGroup(
+                                layout.createParallelGroup(
+                                                javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(
+                                                layout.createSequentialGroup()
+                                                        .addContainerGap()
+                                                        .addComponent(
+                                                                jPanel1,
+                                                                javax.swing.GroupLayout
+                                                                        .DEFAULT_SIZE,
+                                                                javax.swing.GroupLayout
+                                                                        .DEFAULT_SIZE,
+                                                                Short.MAX_VALUE)
+                                                        .addContainerGap())));
         /*fin prueba*/
         JPanel panelMeasure = new JPanel();
         // JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -260,20 +369,20 @@ public class SummaryTab extends JPanel {
         panelMeasure.add(jLabelMeasure, BorderLayout.WEST);
         panelMeasure.add(jComboBoxMeasure, BorderLayout.CENTER);
         panelMeasure.add(jButtonAddMeasure, BorderLayout.EAST);
-        //Configure task table panel
+        // Configure task table panel
         JPanel panelMeasuresTable = new JPanel();
         JPanel panelTaskTableBtn = new JPanel();
         panelTaskTableBtn.add(jButtonShowSummary);
-        //panelTaskTableBtn.add(jButtonSummarize);
+        // panelTaskTableBtn.add(jButtonSummarize);
         panelTaskTableBtn.add(jButtonDelMeasure);
         panelMeasuresTable.setLayout(new BorderLayout());
         panelMeasuresTable.add(panelMeasure, BorderLayout.NORTH);
         panelMeasuresTable.add(jScrollPaneMeasure, BorderLayout.CENTER);
         panelMeasuresTable.add(panelTaskTableBtn, BorderLayout.SOUTH);
         // panelMeasuresTable.setPreferredSize(new Dimension(200,200));
-        //splitPane.setTopComponent(jPanel1);
+        // splitPane.setTopComponent(jPanel1);
         //  splitPane.setBottomComponent(panelMeasuresTable);
-        //splitPane.setDividerLocation(100);
+        // splitPane.setDividerLocation(100);
         this.setLayout(new BorderLayout());
         this.add(jPanel1, BorderLayout.NORTH);
         this.add(panelMeasuresTable, BorderLayout.CENTER);
@@ -282,13 +391,13 @@ public class SummaryTab extends JPanel {
 
     private void jButtonDelAlgoritmActionPerformed(java.awt.event.ActionEvent evt) {
         if (this.jTableAlgoritms.getSelectedRow() != -1) {
-            
+
             this.algoritmModel.removeRow(this.jTableAlgoritms.getSelectedRow());
             String algorithms[] = new String[algoritmModel.getRowCount()];
             for (int i = 0; i < algoritmModel.getRowCount(); i++) {
                 algorithms[i] = algoritmModel.getValueAt(i, 0).toString();
             }
-            
+
             if (streamModel.getValueAt(0, 0).toString() != null) {
                 rf.updateMeasures(algorithms, streamModel.getValueAt(0, 0).toString());
                 this.measures = rf.getMeasures();
@@ -299,7 +408,6 @@ public class SummaryTab extends JPanel {
                 }
             }
         }
-
     }
 
     private void jButtonDelStreamActionPerformed(java.awt.event.ActionEvent evt) {
@@ -313,26 +421,27 @@ public class SummaryTab extends JPanel {
     private void jButtonAddMeasureActionPerformed(java.awt.event.ActionEvent evt) {
         for (int i = 0; i < this.measureModel.getRowCount(); i++) {
             if (jComboBoxMeasure.getSelectedItem().equals(this.measureModel.getValueAt(i, 0))) {
-                JOptionPane.showMessageDialog(this, "The value exist",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(
+                        this, "The value exist", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             } else if (jComboBoxMeasure.getSelectedItem().equals("--Slect--")) {
-                JOptionPane.showMessageDialog(this, "There are not values",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(
+                        this, "There are not values", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
 
-        this.measureModel.addRow(new Object[]{jComboBoxMeasure.getSelectedItem(),
-            jComboBoxMeasure.getSelectedItem(), "Mean"});
-
+        this.measureModel.addRow(
+                new Object[] {
+                    jComboBoxMeasure.getSelectedItem(), jComboBoxMeasure.getSelectedItem(), "Mean"
+                });
     }
 
     private void jButtonShowSummaryActionPerformed(java.awt.event.ActionEvent evt) {
 
         if (this.jTextFieldResultsPath.getText().equals("")) {
-            JOptionPane.showMessageDialog(this, "Directory not found",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(
+                    this, "Directory not found", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         List<Measure> algmeasures = new ArrayList<>();
@@ -345,69 +454,91 @@ public class SummaryTab extends JPanel {
                 if (this.measureModel.getValueAt(i, 0).equals(this.jComboBoxMeasure.getItemAt(j))) {
                     count++;
                 }
-                if (this.measureModel.getValueAt(i, 0).equals("") || this.measureModel.getValueAt(i, 1).equals("")
+                if (this.measureModel.getValueAt(i, 0).equals("")
+                        || this.measureModel.getValueAt(i, 1).equals("")
                         || this.measureModel.getValueAt(i, 2) == null) {
-                    JOptionPane.showMessageDialog(this, "There are fields incompleted in Table",
-                            "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "There are fields incompleted in Table",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
             }
         }
         boolean type = true;
         for (int k = 0; k < this.measureModel.getRowCount(); k++) {
             type = this.measureModel.getValueAt(k, 2).equals("Mean");
-            Measure m = new Measure(this.measureModel.getValueAt(k, 1).toString(),this.measureModel.getValueAt(k, 0).toString(), type,0);
+            Measure m =
+                    new Measure(
+                            this.measureModel.getValueAt(k, 1).toString(),
+                            this.measureModel.getValueAt(k, 0).toString(),
+                            type,
+                            0);
             algmeasures.add(m);
-
         }
         String path = this.jTextFieldResultsPath.getText();
         for (int i = 0; i < streamModel.getRowCount(); i++) {
-           
+
             algPath.clear();
             for (int j = 0; j < algoritmModel.getRowCount(); j++) {
-                File inputFile = new File(FilenameUtils.separatorsToSystem(
-                        path + "\\" + streamModel.getValueAt(i, 0) + "\\" + algoritmModel.getValueAt(j, 0)));
-                File streamFile = new File(FilenameUtils.separatorsToSystem(
-                        path + "\\" + streamModel.getValueAt(i, 0)));
+                File inputFile =
+                        new File(
+                                FilenameUtils.separatorsToSystem(
+                                        path
+                                                + "\\"
+                                                + streamModel.getValueAt(i, 0)
+                                                + "\\"
+                                                + algoritmModel.getValueAt(j, 0)));
+                File streamFile =
+                        new File(
+                                FilenameUtils.separatorsToSystem(
+                                        path + "\\" + streamModel.getValueAt(i, 0)));
                 if (!inputFile.exists()) {
-                    JOptionPane.showMessageDialog(this, "File not found: "
-                            + inputFile.getAbsolutePath(),
-                            "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "File not found: " + inputFile.getAbsolutePath(),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
-                    String algorithmPath = FilenameUtils.separatorsToSystem(
-                            path + "\\" + streamModel.getValueAt(i, 0).toString() + "\\"
-                            + algoritmModel.getValueAt(j, 0).toString());
+                    String algorithmPath =
+                            FilenameUtils.separatorsToSystem(
+                                    path
+                                            + "\\"
+                                            + streamModel.getValueAt(i, 0).toString()
+                                            + "\\"
+                                            + algoritmModel.getValueAt(j, 0).toString());
                     algPath.add(algorithmPath);
                     if (i == 0) {
                         algShortNames.add(algoritmModel.getValueAt(j, 1).toString());
                     }
-                   
                 }
             }
-            Stream s = new Stream(streamModel.getValueAt(i, 1).toString(), algPath, algShortNames, algmeasures);
+            Stream s =
+                    new Stream(
+                            streamModel.getValueAt(i, 1).toString(),
+                            algPath,
+                            algShortNames,
+                            algmeasures);
             streams.add(s);
         }
 
-        //create summary
+        // create summary
         try {
             summary = new Summary(streams, FilenameUtils.separatorsToSystem(path + "\\"));
             jButtonSummarize.setEnabled(true);
             SummaryTable[] table = summary.showSummary();
-            SummaryViewer summaryViewer = new SummaryViewer(table, summary,jTextFieldResultsPath.getText());
+            SummaryViewer summaryViewer =
+                    new SummaryViewer(table, summary, jTextFieldResultsPath.getText());
 
         } catch (Exception exc) {
-            JOptionPane.showMessageDialog(this, "Problems generating summaries",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-
+            JOptionPane.showMessageDialog(
+                    this, "Problems generating summaries", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
     }
 
-    private void jButtonSummaryActionPerformed(java.awt.event.ActionEvent evt) {
-
-    }
+    private void jButtonSummaryActionPerformed(java.awt.event.ActionEvent evt) {}
 
     private void jButtonResultsActionPerformed(java.awt.event.ActionEvent evt) {
         SimpleDirectoryChooser resultsDir = new SimpleDirectoryChooser();
@@ -422,78 +553,87 @@ public class SummaryTab extends JPanel {
                 readData(path);
 
             } catch (Exception exp) {
-                JOptionPane.showMessageDialog(this, "Problem with path",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-
+                JOptionPane.showMessageDialog(
+                        this, "Problem with path", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
         }
-
     }
-    
-    public void summaryCMD(String[] measures, String[] types){
-         List<Measure> algmeasures = new ArrayList<>();
+
+    public void summaryCMD(String[] measures, String[] types) {
+        List<Measure> algmeasures = new ArrayList<>();
         List<Stream> streams = new ArrayList<>();
         List<String> algPath = new ArrayList<>();
         List<String> algShortNames = new ArrayList<>();
-       
-     
+
         boolean type = true;
         for (int k = 0; k < measures.length; k++) {
             type = types[k].equals("Mean");
-            Measure m = new Measure(measures[k],measures[k], type,0);
+            Measure m = new Measure(measures[k], measures[k], type, 0);
             algmeasures.add(m);
-
         }
         String path = this.jTextFieldResultsPath.getText();
         for (int i = 0; i < streamModel.getRowCount(); i++) {
-           
+
             algPath.clear();
             for (int j = 0; j < algoritmModel.getRowCount(); j++) {
-                File inputFile = new File(FilenameUtils.separatorsToSystem(
-                        path + "\\" + streamModel.getValueAt(i, 0) + "\\" + algoritmModel.getValueAt(j, 0)));
-                File streamFile = new File(FilenameUtils.separatorsToSystem(
-                        path + "\\" + streamModel.getValueAt(i, 0)));
+                File inputFile =
+                        new File(
+                                FilenameUtils.separatorsToSystem(
+                                        path
+                                                + "\\"
+                                                + streamModel.getValueAt(i, 0)
+                                                + "\\"
+                                                + algoritmModel.getValueAt(j, 0)));
+                File streamFile =
+                        new File(
+                                FilenameUtils.separatorsToSystem(
+                                        path + "\\" + streamModel.getValueAt(i, 0)));
                 if (!inputFile.exists()) {
-                    System.out.println("File not found: "+ inputFile.getAbsolutePath());
-                            
+                    System.out.println("File not found: " + inputFile.getAbsolutePath());
+
                     return;
                 } else {
-                    String algorithmPath = FilenameUtils.separatorsToSystem(
-                            path + "\\" + streamModel.getValueAt(i, 0).toString() + "\\"
-                            + algoritmModel.getValueAt(j, 0).toString());
+                    String algorithmPath =
+                            FilenameUtils.separatorsToSystem(
+                                    path
+                                            + "\\"
+                                            + streamModel.getValueAt(i, 0).toString()
+                                            + "\\"
+                                            + algoritmModel.getValueAt(j, 0).toString());
                     algPath.add(algorithmPath);
                     if (i == 0) {
                         algShortNames.add(algoritmModel.getValueAt(j, 1).toString());
                     }
-                   
                 }
             }
-            Stream s = new Stream(streamModel.getValueAt(i, 1).toString(), algPath, algShortNames, algmeasures);
+            Stream s =
+                    new Stream(
+                            streamModel.getValueAt(i, 1).toString(),
+                            algPath,
+                            algShortNames,
+                            algmeasures);
             streams.add(s);
         }
 
-        //create summary
+        // create summary
         try {
             summary = new Summary(streams, FilenameUtils.separatorsToSystem(path + File.separator));
             jButtonSummarize.setEnabled(true);
-            String summaryPath = this.jTextFieldResultsPath.getText()+File.separator;
-            
-                    summary.invertedSumariesPerMeasure(summaryPath);
-                    summary.computeWinsTiesLossesHTML(summaryPath);
-                    summary.computeWinsTiesLossesLatex(summaryPath);
-                    summary.generateHTML(summaryPath);
-                    summary.generateLatex(summaryPath);
-                   System.out.println("Summaries created at: " + summaryPath);
+            String summaryPath = this.jTextFieldResultsPath.getText() + File.separator;
+
+            summary.invertedSumariesPerMeasure(summaryPath);
+            summary.computeWinsTiesLossesHTML(summaryPath);
+            summary.computeWinsTiesLossesLatex(summaryPath);
+            summary.generateHTML(summaryPath);
+            summary.generateLatex(summaryPath);
+            System.out.println("Summaries created at: " + summaryPath);
 
         } catch (Exception exc) {
-           //  System.err.println("Problems generating summaries");
-                    
+            //  System.err.println("Problems generating summaries");
 
         }
-
     }
-    
+
     /**
      * Allows to read the results file and update the corresponding fields.
      *
@@ -505,17 +645,19 @@ public class SummaryTab extends JPanel {
         rf = new ReadFile(path);
         String str = rf.processFiles();
         if (str.equals("")) {
-             algotithmID = rf.getAlgShortNames();
-             algorithmNames = rf.getAlgNames();
-             streamNames = rf.getStream();
+            algotithmID = rf.getAlgShortNames();
+            algorithmNames = rf.getAlgNames();
+            streamNames = rf.getStream();
             this.measures = rf.getMeasures();
-            //Set algorithms an streams
+            // Set algorithms an streams
             for (int i = 0; i < algotithmID.size(); i++) {
-                this.algoritmModel.addRow(new Object[]{algorithmNames.get(i), algotithmID.get(i)});
+                this.algoritmModel.addRow(new Object[] {algorithmNames.get(i), algotithmID.get(i)});
             }
-            streamNames.stream().forEach((streamName) -> {
-                this.streamModel.addRow(new Object[]{streamName, streamName});
-            });
+            streamNames.stream()
+                    .forEach(
+                            (streamName) -> {
+                                this.streamModel.addRow(new Object[] {streamName, streamName});
+                            });
 
             // set the measures into the combobox
             String measuresNames[] = measures.getFirst().split(",");
@@ -526,15 +668,11 @@ public class SummaryTab extends JPanel {
 
         } else {
 
-            JOptionPane.showMessageDialog(this, str,
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, str, "Error", JOptionPane.ERROR_MESSAGE);
         }
-
     }
 
-    /**
-     * Clean the tables
-     */
+    /** Clean the tables */
     public void cleanTables() {
         try {
             DefaultTableModel algModel = (DefaultTableModel) jTableAlgoritms.getModel();
@@ -582,16 +720,16 @@ public class SummaryTab extends JPanel {
     public static void main(String[] args) {
         try {
             LookAndFeel.install();
-            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            javax.swing.SwingUtilities.invokeLater(
+                    new Runnable() {
 
-                @Override
-                public void run() {
-                    createAndShowGUI();
-                }
-            });
+                        @Override
+                        public void run() {
+                            createAndShowGUI();
+                        }
+                    });
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }

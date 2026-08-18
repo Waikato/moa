@@ -1,6 +1,6 @@
 /*
  *    ReadFile.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand 
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -15,9 +15,11 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.experimentertab;
+
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,7 +34,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * This class processes the results files of the algorithms in each directory.
@@ -47,6 +48,7 @@ public class ReadFile {
     private LinkedList<String> measures;
     private ArrayList<String> algShortNames;
     private List<Algorithm> algorithm = new ArrayList<>();
+
     /**
      * File Constructor
      *
@@ -63,12 +65,12 @@ public class ReadFile {
     /**
      * Processes the results files of the algorithms in each directory.
      *
-     * @return If all the files were processed correctly it returns an empty
-     * string, else return the problem file.
+     * @return If all the files were processed correctly it returns an empty string, else return the
+     *     problem file.
      */
     public String processFiles() {
 
-        //read files
+        // read files
         File file = new File(path);
         File listFiles[] = file.listFiles();
         boolean addFirst = true;
@@ -90,7 +92,6 @@ public class ReadFile {
                             fr = new FileReader(algorithm[j].getAbsolutePath());
                         } catch (FileNotFoundException ex) {
                             return "Problem with file: " + listFiles[j].getAbsolutePath();
-
                         }
                         BufferedReader br = new BufferedReader(fr);
                         try {
@@ -109,7 +110,6 @@ public class ReadFile {
                                         if (lineArray[l].equals(measureArray[m])) {
                                             newMeasure += lineArray[l] + ",";
                                         }
-
                                     }
                                 }
                                 String s[];
@@ -130,25 +130,26 @@ public class ReadFile {
 
                         } catch (IOException ex) {
                             return "Problem with file: " + listFiles[j].getAbsolutePath();
-
                         }
                     }
-
                 }
             }
-        }//end files
-        algNames.stream().forEach((algName) -> {
-            this.algShortNames.add(FilenameUtils.getBaseName(algName));
-        });
+        } // end files
+        algNames.stream()
+                .forEach(
+                        (algName) -> {
+                            this.algShortNames.add(FilenameUtils.getBaseName(algName));
+                        });
         return "";
     }
 
     public String updateMeasures(String algNames[], String stream) {
         this.measures = new LinkedList<>();
-        //read files
+        // read files
         boolean addFirst = true;
         for (int i = 0; i < algNames.length; i++) {
-            File algorithm = new File(path + File.separator + stream + File.separator + algNames[i]);
+            File algorithm =
+                    new File(path + File.separator + stream + File.separator + algNames[i]);
             FileReader fr = null;
             try {
                 fr = new FileReader(algorithm.getAbsolutePath());
@@ -172,7 +173,6 @@ public class ReadFile {
                             if (lineArray[l].equals(measureArray[m])) {
                                 newMeasure += lineArray[l] + ",";
                             }
-
                         }
                     }
                     String s[];
@@ -193,36 +193,34 @@ public class ReadFile {
 
             } catch (IOException ex) {
                 return "Problem with file: " + algorithm.getAbsolutePath();
-
             }
         }
         return null;
     }
-    
-    static int getMeasureIndex(String algPath, String mesasure){
-          
-             FileReader fr = null;
+
+    static int getMeasureIndex(String algPath, String mesasure) {
+
+        FileReader fr = null;
         try {
             fr = new FileReader(new File(algPath));
             BufferedReader br = new BufferedReader(fr);
-             String line = br.readLine();
-                 String measures[] = line.split(",");
-                 for(int i = 0; i < measures.length; i++){
-                      if(measures[i].equals(mesasure)==true)
-                          return i;
-                 }
-            
+            String line = br.readLine();
+            String measures[] = line.split(",");
+            for (int i = 0; i < measures.length; i++) {
+                if (measures[i].equals(mesasure) == true) return i;
+            }
+
         } catch (FileNotFoundException ex) {
             Logger.getLogger(ReadFile.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(ReadFile.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return 0;
     }
-    
-  /*  public ArrayList<Algorithm> getAlgorithms(List<String> algPath,List<String> algNames, List<Measure> measures){
-        
+
+    /*  public ArrayList<Algorithm> getAlgorithms(List<String> algPath,List<String> algNames, List<Measure> measures){
+
          for(int i = 0; i < algPath.size(); i++){
              FileReader fr = null;
              try {
@@ -230,13 +228,13 @@ public class ReadFile {
              } catch (FileNotFoundException ex) {
                  Logger.getLogger(ReadFile.class.getName()).log(Level.SEVERE, null, ex);
              }
-             BufferedReader br = new BufferedReader(fr); 
-            
+             BufferedReader br = new BufferedReader(fr);
+
              try {
                  String line = br.readLine();
                  String measures1[] = line.split(",");
                  for(int j = 0; j < measures1.length; j++){
-                     
+
                  }
              } catch (IOException ex) {
                  Logger.getLogger(ReadFile.class.getName()).log(Level.SEVERE, null, ex);
@@ -337,13 +335,9 @@ public class ReadFile {
             while ((linea = br.readLine()) != null) {
 
                 data.add(linea.split(","));
-
             }
-
         }
 
         return data;
-
     }
-
 }

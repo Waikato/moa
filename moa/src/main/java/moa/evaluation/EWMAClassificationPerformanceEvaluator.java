@@ -15,37 +15,26 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
-import moa.core.Example;
-import moa.core.Measurement;
-import moa.core.ObjectRepository;
-
 import com.github.javacliparser.FloatOption;
 
-import moa.options.AbstractOptionHandler;
-import moa.tasks.TaskMonitor;
-
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.Prediction;
-
-import moa.core.Utils;
-
 /**
- * Classification evaluator that updates evaluation results using an Exponential Weighted Moving Average.
+ * Classification evaluator that updates evaluation results using an Exponential Weighted Moving
+ * Average.
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class EWMAClassificationPerformanceEvaluator extends BasicClassificationPerformanceEvaluator {
+public class EWMAClassificationPerformanceEvaluator
+        extends BasicClassificationPerformanceEvaluator {
 
     private static final long serialVersionUID = 1L;
 
-    public FloatOption alphaOption = new FloatOption("alpha",
-            'a', "Fading factor or exponential smoothing factor", .01);
+    public FloatOption alphaOption =
+            new FloatOption("alpha", 'a', "Fading factor or exponential smoothing factor", .01);
 
     @Override
     protected Estimator newEstimator() {
@@ -74,6 +63,5 @@ public class EWMAClassificationPerformanceEvaluator extends BasicClassificationP
         public double estimation() {
             return estimation;
         }
-
     }
 }

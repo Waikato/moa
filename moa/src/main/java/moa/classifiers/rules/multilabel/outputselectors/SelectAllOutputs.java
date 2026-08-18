@@ -26,26 +26,20 @@ import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
 public class SelectAllOutputs extends AbstractOptionHandler implements OutputAttributesSelector {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /** */
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public int[] getNextOutputIndices(DoubleVector[] resultingStatistics, DoubleVector[] currentLiteralStatistics,
-			int[] currentIndices) {
-		return currentIndices.clone();
-	}
+    @Override
+    public int[] getNextOutputIndices(
+            DoubleVector[] resultingStatistics,
+            DoubleVector[] currentLiteralStatistics,
+            int[] currentIndices) {
+        return currentIndices.clone();
+    }
 
-	@Override
-	public void getDescription(StringBuilder sb, int indent) {
-		
-	}
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {}
 
-	@Override
-	protected void prepareForUseImpl(TaskMonitor monitor,
-			ObjectRepository repository) {
-		
-	}
-
+    @Override
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {}
 }
