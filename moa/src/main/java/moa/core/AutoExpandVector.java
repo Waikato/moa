@@ -15,15 +15,15 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import moa.AbstractMOAObject;
 import moa.MOAObject;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Vector with the capability of automatic expansion.
@@ -38,7 +38,7 @@ public class AutoExpandVector<T> extends ArrayList<T> implements MOAObject {
     public AutoExpandVector() {
         super(0);
     }
-    
+
     public AutoExpandVector(int size) {
         super(size);
     }

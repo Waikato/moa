@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.generators;
 
@@ -26,41 +26,44 @@ import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import moa.core.InstanceExample;
 
+import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 /**
- * Abrupt concept drift, boolean noise-free examples. Four relevant attributes, 
- * two boolean attributes v,w and two numeric attributes from [0; 1]. The 
- * examples are classified positive if two of three conditions are satisfied: 
- * v,w, y &lt; 0,5 + 0,3 sin(3 * PI * x). After each context change the 
- * classification is reversed. Proposed by "Gama, Joao, et al. "Learning with 
- * drift detection." Advances in artificial intelligence–SBIA 2004. Springer 
- * Berlin Heidelberg, 2004. 286-295."
+ * Abrupt concept drift, boolean noise-free examples. Four relevant attributes, two boolean
+ * attributes v,w and two numeric attributes from [0; 1]. The examples are classified positive if
+ * two of three conditions are satisfied: v,w, y &lt; 0,5 + 0,3 sin(3 * PI * x). After each context
+ * change the classification is reversed. Proposed by "Gama, Joao, et al. "Learning with drift
+ * detection." Advances in artificial intelligence–SBIA 2004. Springer Berlin Heidelberg, 2004.
+ * 286-295."
  *
  * @author Paulo Gonçalves (paulogoncalves@recife.ifpe.edu.br)
  * @version $Revision: 1 $
  */
-public class MixedGenerator extends AbstractOptionHandler implements
-        InstanceStream {
+public class MixedGenerator extends AbstractOptionHandler implements InstanceStream {
 
-    public IntOption functionOption = new IntOption("function", 'f',
-            "Classification function used, as defined in the original paper.",
-            1, 1, 2);
+    public IntOption functionOption =
+            new IntOption(
+                    "function",
+                    'f',
+                    "Classification function used, as defined in the original paper.",
+                    1,
+                    1,
+                    2);
 
-    public IntOption instanceRandomSeedOption = new IntOption(
-            "instanceRandomSeed", 'i',
-            "Seed for random generation of instances.", 1);
+    public IntOption instanceRandomSeedOption =
+            new IntOption("instanceRandomSeed", 'i', "Seed for random generation of instances.", 1);
 
-    public FlagOption balanceClassesOption = new FlagOption("balanceClasses",
-            'b', "Balance the number of instances of each class.");
+    public FlagOption balanceClassesOption =
+            new FlagOption("balanceClasses", 'b', "Balance the number of instances of each class.");
 
     protected InstancesHeader streamHeader;
 
@@ -95,12 +98,11 @@ public class MixedGenerator extends AbstractOptionHandler implements
                     return 0;
                 }
             }
-        },};
+        },
+    };
 
     @Override
-    public void getDescription(StringBuilder sb, int indent) {
-
-    }
+    public void getDescription(StringBuilder sb, int indent) {}
 
     @Override
     public InstancesHeader getHeader() {
@@ -126,7 +128,9 @@ public class MixedGenerator extends AbstractOptionHandler implements
             w = (this.instanceRandom.nextDouble() < 0.5) ? 0 : 1;
             x = this.instanceRandom.nextDouble();
             y = this.instanceRandom.nextDouble();
-            group = classificationFunctions[this.functionOption.getValue() - 1].determineClass(v, w, x, y);
+            group =
+                    classificationFunctions[this.functionOption.getValue() - 1].determineClass(
+                            v, w, x, y);
             if (!this.balanceClassesOption.isSet()) {
                 desiredClassFound = true;
             } else {
@@ -162,8 +166,7 @@ public class MixedGenerator extends AbstractOptionHandler implements
     }
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         List booleanLabels = new ArrayList();
         booleanLabels.add("0");
         booleanLabels.add("1");
@@ -186,8 +189,9 @@ public class MixedGenerator extends AbstractOptionHandler implements
         attributes.add(attribute4);
         attributes.add(classAtt);
 
-        this.streamHeader = new InstancesHeader(new Instances(
-                getCLICreationString(InstanceStream.class), attributes, 0));
+        this.streamHeader =
+                new InstancesHeader(
+                        new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
         this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
         restart();
     }

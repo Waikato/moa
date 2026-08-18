@@ -15,70 +15,68 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams;
 
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.AbstractMOAObject;
 import moa.core.InstanceExample;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.Instances;
 
 /**
- * Stream generator for representing a stream that is cached in memory.
- * This generator is used with the task <code>CacheShuffledStream</code> that
- * stores and shuffles examples in memory.
+ * Stream generator for representing a stream that is cached in memory. This generator is used with
+ * the task <code>CacheShuffledStream</code> that stores and shuffles examples in memory.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class CachedInstancesStream extends AbstractMOAObject implements
-		MultiTargetInstanceStream {
+public class CachedInstancesStream extends AbstractMOAObject implements MultiTargetInstanceStream {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected Instances toStream;
+    protected Instances toStream;
 
-	protected int streamPos;
+    protected int streamPos;
 
-	public CachedInstancesStream(Instances toStream) {
-		this.toStream = toStream;
-	}
-
-    @Override
-	public InstancesHeader getHeader() {
-		return new InstancesHeader(this.toStream);
-	}
+    public CachedInstancesStream(Instances toStream) {
+        this.toStream = toStream;
+    }
 
     @Override
-	public long estimatedRemainingInstances() {
-		return this.toStream.numInstances() - this.streamPos;
-	}
+    public InstancesHeader getHeader() {
+        return new InstancesHeader(this.toStream);
+    }
 
     @Override
-	public boolean hasMoreInstances() {
-		return this.streamPos < this.toStream.numInstances();
-	}
+    public long estimatedRemainingInstances() {
+        return this.toStream.numInstances() - this.streamPos;
+    }
 
     @Override
-	public InstanceExample nextInstance() {
-		return new InstanceExample(this.toStream.instance(this.streamPos++));
-	}
+    public boolean hasMoreInstances() {
+        return this.streamPos < this.toStream.numInstances();
+    }
 
     @Override
-	public boolean isRestartable() {
-		return true;
-	}
+    public InstanceExample nextInstance() {
+        return new InstanceExample(this.toStream.instance(this.streamPos++));
+    }
 
     @Override
-	public void restart() {
-		this.streamPos = 0;
-	}
+    public boolean isRestartable() {
+        return true;
+    }
 
     @Override
-	public void getDescription(StringBuilder sb, int indent) {
-		// TODO Auto-generated method stub
+    public void restart() {
+        this.streamPos = 0;
+    }
 
-	}
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {
+        // TODO Auto-generated method stub
 
+    }
 }

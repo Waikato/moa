@@ -1,6 +1,6 @@
 /*
  *    ImageTreePanel.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand 
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -15,32 +15,31 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.experimentertab;
 
+import java.awt.Dimension;
+import java.awt.GridLayout;
+
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeSelectionModel;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import javax.swing.ImageIcon;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeSelectionModel;
 
 /**
- * This class creates a JTree panel to show the images generated with
- * JFreeChart.
+ * This class creates a JTree panel to show the images generated with JFreeChart.
  *
  * @author Alberto
  */
-public class ImageTreePanel extends JPanel
-        implements TreeSelectionListener {
+public class ImageTreePanel extends JPanel implements TreeSelectionListener {
 
     private JPanel imgPanel;
     private JTree tree;
@@ -49,14 +48,14 @@ public class ImageTreePanel extends JPanel
 
     /**
      * Constructor.
+     *
      * @param chart
      */
     public ImageTreePanel(ImageChart chart[]) {
         super(new GridLayout(1, 0));
         this.chart = chart;
-        //Create the nodes.
-        DefaultMutableTreeNode top
-                = new DefaultMutableTreeNode("Images");
+        // Create the nodes.
+        DefaultMutableTreeNode top = new DefaultMutableTreeNode("Images");
         imgPanel = new JPanel();
         imgPanel.setLayout(new GridLayout(1, 0));
         createNodes(top);
@@ -68,8 +67,7 @@ public class ImageTreePanel extends JPanel
         tree.addTreeSelectionListener(this);
         ImageIcon leafIcon = new ImageIcon("icon/img.png");
         if (leafIcon != null) {
-            DefaultTreeCellRenderer renderer
-                    = new DefaultTreeCellRenderer();
+            DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
             renderer.setLeafIcon(leafIcon);
             tree.setCellRenderer(renderer);
         }
@@ -83,7 +81,6 @@ public class ImageTreePanel extends JPanel
         splitPane.setDividerLocation(100);
         splitPane.setPreferredSize(new Dimension(500, 300));
         add(splitPane);
-
     }
 
     private void createNodes(DefaultMutableTreeNode top) {
@@ -101,7 +98,6 @@ public class ImageTreePanel extends JPanel
             this.imgPanel.updateUI();
             top.add(child);
         }
-
     }
 
     /**
@@ -140,5 +136,4 @@ public class ImageTreePanel extends JPanel
     public ImageChart[] getChart() {
         return chart;
     }
-
 }

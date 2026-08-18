@@ -30,10 +30,8 @@ import java.util.stream.IntStream;
 
 /**
  * <b>CandPolicy </b><br>
- *
- * The Cand policy chooses k/2 models random and k/2 models with best estimated
- * performance for training in Heros.
- *
+ * The Cand policy chooses k/2 models random and k/2 models with best estimated performance for
+ * training in Heros.
  */
 public class CandPolicy extends AbstractOptionHandler implements Policy {
 
@@ -41,8 +39,7 @@ public class CandPolicy extends AbstractOptionHandler implements Policy {
         super();
     }
 
-    protected void prepareForUseImpl(TaskMonitor taskMonitor, ObjectRepository objectRepository) {
-    }
+    protected void prepareForUseImpl(TaskMonitor taskMonitor, ObjectRepository objectRepository) {}
 
     @Override
     public int[] pullWithPolicy(PoolItem[] pool) {
@@ -53,30 +50,32 @@ public class CandPolicy extends AbstractOptionHandler implements Policy {
             performances[i] = pool[i].getEstimation();
         }
         // Sort performances in descending order
-        List<Integer> performanceSortedIndices = IntStream.range(0, performances.length)
-                .boxed()
-                .sorted((i, j) -> Double.compare(performances[j], performances[i])) // descending
-                .collect(Collectors.toList());
+        List<Integer> performanceSortedIndices =
+                IntStream.range(0, performances.length)
+                        .boxed()
+                        .sorted(
+                                (i, j) ->
+                                        Double.compare(
+                                                performances[j], performances[i])) // descending
+                        .collect(Collectors.toList());
         // Select each model only once
         List<Integer> notYetSelectedIndices = new ArrayList<>();
-        for (int i = 0; i<pool.length; i++) {
+        for (int i = 0; i < pool.length; i++) {
             notYetSelectedIndices.add(i);
         }
         // Choose an action (half of the models chosen by best performance, other half random)
         int idx;
-        for (int i=0; i<this.numModelsToTrainOption.getValue(); i++) {
+        for (int i = 0; i < this.numModelsToTrainOption.getValue(); i++) {
             if (i < numTopModelsToTrain) {
                 idx = performanceSortedIndices.get(i);
             } else {
                 idx = notYetSelectedIndices.get(this.random.nextInt(notYetSelectedIndices.size()));
             }
-            notYetSelectedIndices.remove((Integer)idx);     // remove value (not index)
+            notYetSelectedIndices.remove((Integer) idx); // remove value (not index)
             action[idx] = 1;
         }
         return action;
     }
 
-    public void getDescription(StringBuilder stringBuilder, int i) {
-
-    }
+    public void getDescription(StringBuilder stringBuilder, int i) {}
 }

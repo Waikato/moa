@@ -16,16 +16,16 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core.splitcriteria;
 
 import moa.core.Utils;
 
 /**
- * Class for computing splitting criteria using information gain with respect to
- * distributions of class values for Multilabel data. The split criterion is
- * used as a parameter on decision trees and decision stumps.
+ * Class for computing splitting criteria using information gain with respect to distributions of
+ * class values for Multilabel data. The split criterion is used as a parameter on decision trees
+ * and decision stumps.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @author Jesse Read (jesse@tsc.uc3m.es)
@@ -45,7 +45,9 @@ public class InfoGainSplitCriterionMultilabel extends InfoGainSplitCriterion {
             for (double num : dist) {
                 double d = num / sum;
                 if (d > 0.0) { // TODO: how small can d be before log2 overflows?
-                    entropy -= d * Utils.log2(d) + (1 - d) * Utils.log2(1 - d); //Extension to Multilabel
+                    entropy -=
+                            d * Utils.log2(d)
+                                    + (1 - d) * Utils.log2(1 - d); // Extension to Multilabel
                 }
             }
         }

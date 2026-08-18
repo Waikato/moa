@@ -23,20 +23,17 @@ import moa.classifiers.Regressor;
 import moa.classifiers.rules.multilabel.meta.MultiLabelRandomAMRules;
 
 /**
- * Random AMRules algoritgm that performs analogous procedure as the Random Forest Trees but with Rules
+ * Random AMRules algoritgm that performs analogous procedure as the Random Forest Trees but with
+ * Rules
  */
-
-
 public class RandomAMRules extends MultiLabelRandomAMRules implements Regressor {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /** */
+    private static final long serialVersionUID = 1L;
 
-	public RandomAMRules() {
-		super();
-	//	baseLearnerOption = new ClassOption("baseLearner", 'l', "Classifier to train.", AMRulesMultiLabelLearner.class, "AMRulesMultiTargetRegressor"); 
-	}
-
+    public RandomAMRules() {
+        super();
+        //	baseLearnerOption = new ClassOption("baseLearner", 'l', "Classifier to train.",
+        // AMRulesMultiLabelLearner.class, "AMRulesMultiTargetRegressor");
+    }
 }

@@ -1,38 +1,45 @@
 /**
  * [ClassOptionWithNames.java]
- * 
- * A variation of [ClassOption], which you can choose specific classes as its entries.
- * In the constructor, put a list of class names you want to add (String[] classNames) as an argument.
- * 
- * @author Yunsu Kim
- * 		   based on the implementation of Richard Kirkby
- * Data Management and Data Exploration Group, RWTH Aachen University
+ *
+ * <p>A variation of [ClassOption], which you can choose specific classes as its entries. In the
+ * constructor, put a list of class names you want to add (String[] classNames) as an argument.
+ *
+ * @author Yunsu Kim based on the implementation of Richard Kirkby Data Management and Data
+ *     Exploration Group, RWTH Aachen University
  */
-
 package moa.options;
 
-import com.github.javacliparser.Options;
 import com.github.javacliparser.Option;
-import java.io.File;
+import com.github.javacliparser.Options;
 
-import javax.swing.JComponent;
-
-import com.github.javacliparser.gui.ClassOptionWithNamesEditComponent;
 import moa.tasks.Task;
+
+import java.io.File;
 
 public class ClassOptionWithNames extends AbstractClassOption {
 
     private static final long serialVersionUID = 1L;
     private String[] names;
 
-    public ClassOptionWithNames(String name, char cliChar, String purpose,
-            Class<?> requiredType, String defaultCLIString, String[] classNames) {
+    public ClassOptionWithNames(
+            String name,
+            char cliChar,
+            String purpose,
+            Class<?> requiredType,
+            String defaultCLIString,
+            String[] classNames) {
         super(name, cliChar, purpose, requiredType, defaultCLIString);
         this.names = classNames;
     }
 
-    public ClassOptionWithNames(String name, char cliChar, String purpose,
-            Class<?> requiredType, String defaultCLIString, String nullString, String[] classNames) {
+    public ClassOptionWithNames(
+            String name,
+            char cliChar,
+            String purpose,
+            Class<?> requiredType,
+            String defaultCLIString,
+            String nullString,
+            String[] classNames) {
         super(name, cliChar, purpose, requiredType, defaultCLIString, nullString);
         this.names = classNames;
     }
@@ -52,8 +59,7 @@ public class ClassOptionWithNames extends AbstractClassOption {
             this.currentValue = null;
         } else {
             try {
-                this.currentValue = cliStringToObject(s, this.requiredType,
-                        null);
+                this.currentValue = cliStringToObject(s, this.requiredType, null);
             } catch (Exception e) {
                 throw new IllegalArgumentException("Problems with option: " + getName(), e);
             }
@@ -80,8 +86,8 @@ public class ClassOptionWithNames extends AbstractClassOption {
         return className;
     }
 
-    public static Object cliStringToObject(String cliString,
-            Class<?> requiredType, Option[] externalOptions) throws Exception {
+    public static Object cliStringToObject(
+            String cliString, Class<?> requiredType, Option[] externalOptions) throws Exception {
         if (cliString.startsWith(FILE_PREFIX_STRING)) {
             return new File(cliString.substring(FILE_PREFIX_STRING.length()));
         }
@@ -106,13 +112,12 @@ public class ClassOptionWithNames extends AbstractClassOption {
         } catch (Throwable t1) {
             try {
                 // try prepending default package
-                classObject = Class.forName(requiredType.getPackage().getName()
-                        + "." + className);
+                classObject = Class.forName(requiredType.getPackage().getName() + "." + className);
             } catch (Throwable t2) {
                 try {
                     // try prepending task package
-                    classObject = Class.forName(Task.class.getPackage().getName()
-                            + "." + className);
+                    classObject =
+                            Class.forName(Task.class.getPackage().getName() + "." + className);
                 } catch (Throwable t3) {
                     throw new Exception("Class not found: " + className);
                 }
@@ -122,11 +127,12 @@ public class ClassOptionWithNames extends AbstractClassOption {
         try {
             classInstance = classObject.newInstance();
         } catch (Exception ex) {
-            throw new Exception("Problem creating instance of class: "
-                    + className, ex);
+            throw new Exception("Problem creating instance of class: " + className, ex);
         }
         if (requiredType.isInstance(classInstance)
-                || ((classInstance instanceof Task) && requiredType.isAssignableFrom(((Task) classInstance).getTaskResultType()))) {
+                || ((classInstance instanceof Task)
+                        && requiredType.isAssignableFrom(
+                                ((Task) classInstance).getTaskResultType()))) {
             Options options = new Options();
             if (externalOptions != null) {
                 for (Option option : externalOptions) {
@@ -134,7 +140,8 @@ public class ClassOptionWithNames extends AbstractClassOption {
                 }
             }
             if (classInstance instanceof OptionHandler) {
-                Option[] objectOptions = ((OptionHandler) classInstance).getOptions().getOptionArray();
+                Option[] objectOptions =
+                        ((OptionHandler) classInstance).getOptions().getOptionArray();
                 for (Option option : objectOptions) {
                     options.addOption(option);
                 }
@@ -142,29 +149,35 @@ public class ClassOptionWithNames extends AbstractClassOption {
             try {
                 options.setViaCLIString(classOptions);
             } catch (Exception ex) {
-                throw new Exception("Problem with options to '"
-                        + className
-                        + "'."
-                        + "\n\nValid options for "
-                        + className
-                        + ":\n"
-                        + ((OptionHandler) classInstance).getOptions().getHelpString(), ex);
+                throw new Exception(
+                        "Problem with options to '"
+                                + className
+                                + "'."
+                                + "\n\nValid options for "
+                                + className
+                                + ":\n"
+                                + ((OptionHandler) classInstance).getOptions().getHelpString(),
+                        ex);
             } finally {
                 options.removeAllOptions(); // clean up listener refs
             }
         } else {
-            throw new Exception("Class named '" + className
-                    + "' is not an instance of " + requiredType.getName() + ".");
+            throw new Exception(
+                    "Class named '"
+                            + className
+                            + "' is not an instance of "
+                            + requiredType.getName()
+                            + ".");
         }
         return classInstance;
     }
 
-//    @Override
-//    public JComponent getEditComponent() {
-//        return new ClassOptionWithNamesEditComponent(this);
-//    }
-    
+    //    @Override
+    //    public JComponent getEditComponent() {
+    //        return new ClassOptionWithNamesEditComponent(this);
+    //    }
+
     public String[] getClassNames() {
-    	return this.names;
+        return this.names;
     }
 }

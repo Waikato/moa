@@ -13,22 +13,21 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.lazy;
 
-import moa.classifiers.MultiClassClassifier;
-import moa.classifiers.core.driftdetection.ADWIN;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 
+import moa.classifiers.MultiClassClassifier;
+
 /**
- * k Nearest Neighbor ADAPTIVE with PAW.<p>
+ * k Nearest Neighbor ADAPTIVE with PAW.
  *
- * Valid options are:
- * <p>
+ * <p>Valid options are:
  *
- * -k number of neighbours <br>
+ * <p>-k number of neighbours <br>
  *
  * @author Jesse Read (jesse@tsc.uc3m.es)
  * @version 03.2012
@@ -67,16 +66,13 @@ public class kNNwithPAW extends kNN implements MultiClassClassifier {
             }
         }
         this.window.add(inst);
-
     }
 
     @Override
-    public void getModelDescription(StringBuilder out, int indent) {
-    }
+    public void getModelDescription(StringBuilder out, int indent) {}
 
     @Override
     public boolean isRandomizable() {
         return true;
     }
-
 }

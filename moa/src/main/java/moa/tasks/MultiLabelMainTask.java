@@ -9,7 +9,6 @@ import moa.streams.clustering.ClusterEvent;
 import java.util.ArrayList;
 
 /**
- *
  * @author albert
  */
 public abstract class MultiLabelMainTask extends MainTask {
@@ -19,9 +18,8 @@ public abstract class MultiLabelMainTask extends MainTask {
     protected void setEventsList(ArrayList<ClusterEvent> events) {
         this.events = events;
     }
-    
+
     public ArrayList<ClusterEvent> getEventsList() {
         return this.events;
     }
-    
 }

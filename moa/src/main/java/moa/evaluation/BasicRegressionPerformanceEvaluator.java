@@ -19,12 +19,12 @@
  */
 package moa.evaluation;
 
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Prediction;
+
 import moa.AbstractMOAObject;
 import moa.core.Example;
 import moa.core.Measurement;
-
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Regression evaluator that performs basic incremental evaluation.
@@ -70,11 +70,13 @@ public class BasicRegressionPerformanceEvaluator extends AbstractMOAObject
         Instance inst = example.getData();
         if (inst.weight() > 0.0) {
             if (prediction.length > 0) {
-                double meanTarget = this.weightObserved != 0 ?
-                        this.sumTarget / this.weightObserved : 0.0;
-                this.squareError += (inst.classValue() - prediction[0]) * (inst.classValue() - prediction[0]);
+                double meanTarget =
+                        this.weightObserved != 0 ? this.sumTarget / this.weightObserved : 0.0;
+                this.squareError +=
+                        (inst.classValue() - prediction[0]) * (inst.classValue() - prediction[0]);
                 this.averageError += Math.abs(inst.classValue() - prediction[0]);
-                this.squareTargetError += (inst.classValue() - meanTarget) * (inst.classValue() - meanTarget);
+                this.squareTargetError +=
+                        (inst.classValue() - meanTarget) * (inst.classValue() - meanTarget);
                 this.averageTargetError += Math.abs(inst.classValue() - meanTarget);
                 this.sumTarget += inst.classValue();
                 this.weightObserved += inst.weight();
@@ -85,21 +87,16 @@ public class BasicRegressionPerformanceEvaluator extends AbstractMOAObject
 
     @Override
     public Measurement[] getPerformanceMeasurements() {
-        return new Measurement[]{
-                new Measurement("classified instances",
-                        getTotalWeightObserved()),
-                new Measurement("mean absolute error",
-                        getMeanError()),
-                new Measurement("root mean squared error",
-                        getSquareError()),
-                new Measurement("relative mean absolute error",
-                        getRelativeMeanError()),
-                new Measurement("relative root mean squared error",
-                        getRelativeSquareError()),
-                new Measurement("coefficient of determination",
-                        getCoefficientOfDetermination()),
-                new Measurement("adjusted coefficient of determination",
-                        getAdjustedCoefficientOfDetermination())
+        return new Measurement[] {
+            new Measurement("classified instances", getTotalWeightObserved()),
+            new Measurement("mean absolute error", getMeanError()),
+            new Measurement("root mean squared error", getSquareError()),
+            new Measurement("relative mean absolute error", getRelativeMeanError()),
+            new Measurement("relative root mean squared error", getRelativeSquareError()),
+            new Measurement("coefficient of determination", getCoefficientOfDetermination()),
+            new Measurement(
+                    "adjusted coefficient of determination",
+                    getAdjustedCoefficientOfDetermination())
         };
     }
 
@@ -108,7 +105,7 @@ public class BasicRegressionPerformanceEvaluator extends AbstractMOAObject
     }
 
     public double getCoefficientOfDetermination() {
-        if(weightObserved > 0.0) {
+        if (weightObserved > 0.0) {
             double SSres = squareError;
             double SStot = squareTargetError;
 
@@ -118,53 +115,48 @@ public class BasicRegressionPerformanceEvaluator extends AbstractMOAObject
     }
 
     public double getAdjustedCoefficientOfDetermination() {
-        return 1 - ((1-getCoefficientOfDetermination())*(getTotalWeightObserved() - 1)) /
-                (getTotalWeightObserved() - numAttributes - 1);
+        return 1
+                - ((1 - getCoefficientOfDetermination()) * (getTotalWeightObserved() - 1))
+                        / (getTotalWeightObserved() - numAttributes - 1);
     }
 
     public double getMeanError() {
-        return this.weightObserved > 0.0 ? this.averageError
-                / this.weightObserved : 0.0;
+        return this.weightObserved > 0.0 ? this.averageError / this.weightObserved : 0.0;
     }
 
     public double getSquareError() {
-        return Math.sqrt(this.weightObserved > 0.0 ? this.squareError
-                / this.weightObserved : 0.0);
+        return Math.sqrt(this.weightObserved > 0.0 ? this.squareError / this.weightObserved : 0.0);
     }
 
     public double getTargetMeanError() {
-        return this.weightObserved > 0.0 ? this.averageTargetError
-                / this.weightObserved : 0.0;
+        return this.weightObserved > 0.0 ? this.averageTargetError / this.weightObserved : 0.0;
     }
 
     public double getTargetSquareError() {
-        return Math.sqrt(this.weightObserved > 0.0 ? this.squareTargetError
-                / this.weightObserved : 0.0);
+        return Math.sqrt(
+                this.weightObserved > 0.0 ? this.squareTargetError / this.weightObserved : 0.0);
     }
 
     @Override
     public void getDescription(StringBuilder sb, int indent) {
-        Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
-                sb, indent);
+        Measurement.getMeasurementsDescription(getPerformanceMeasurements(), sb, indent);
     }
 
     private double getRelativeMeanError() {
-        //double targetMeanError = getTargetMeanError();
-        //return targetMeanError > 0 ? getMeanError()/targetMeanError : 0.0;
-        return this.averageTargetError> 0 ?
-                this.averageError/this.averageTargetError : 0.0;
+        // double targetMeanError = getTargetMeanError();
+        // return targetMeanError > 0 ? getMeanError()/targetMeanError : 0.0;
+        return this.averageTargetError > 0 ? this.averageError / this.averageTargetError : 0.0;
     }
 
     private double getRelativeSquareError() {
-        //double targetSquareError = getTargetSquareError();
-        //return targetSquareError > 0 ? getSquareError()/targetSquareError : 0.0;
-        return Math.sqrt(this.squareTargetError> 0 ?
-                this.squareError/this.squareTargetError : 0.0);
+        // double targetSquareError = getTargetSquareError();
+        // return targetSquareError > 0 ? getSquareError()/targetSquareError : 0.0;
+        return Math.sqrt(
+                this.squareTargetError > 0 ? this.squareError / this.squareTargetError : 0.0);
     }
 
     @Override
     public void addResult(Example<Instance> example, Prediction prediction) {
-        if(prediction!=null)
-            addResult(example,prediction.getVotes(0));
+        if (prediction != null) addResult(example, prediction.getVotes(0));
     }
 }

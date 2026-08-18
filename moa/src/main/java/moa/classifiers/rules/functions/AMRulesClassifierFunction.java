@@ -20,6 +20,4 @@
 
 package moa.classifiers.rules.functions;
 
-public interface AMRulesClassifierFunction {
-
-}
+public interface AMRulesClassifierFunction {}

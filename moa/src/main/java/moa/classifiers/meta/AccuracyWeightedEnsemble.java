@@ -15,40 +15,42 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.meta;
 
-import java.util.Random;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
-import moa.options.ClassOption;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-import moa.tasks.TaskMonitor;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
 import moa.core.Utils;
+import moa.options.ClassOption;
+import moa.tasks.TaskMonitor;
+
+import java.util.Random;
 
 /**
- * The Accuracy Weighted Ensemble classifier as proposed by Wang et al. in
- * "Mining concept-drifting data streams using ensemble classifiers", KDD 2003.
+ * The Accuracy Weighted Ensemble classifier as proposed by Wang et al. in "Mining concept-drifting
+ * data streams using ensemble classifiers", KDD 2003.
  */
 public class AccuracyWeightedEnsemble extends AbstractClassifier implements MultiClassClassifier {
 
     @Override
     public String getPurposeString() {
-        return "Accuracy Weighted Ensemble classifier as proposed by Wang et al. in 'Mining concept-drifting data streams using ensemble classifiers', KDD 2003";
+        return "Accuracy Weighted Ensemble classifier as proposed by Wang et al. in 'Mining"
+                + " concept-drifting data streams using ensemble classifiers', KDD 2003";
     }
 
-    /**
-     * Simple weight comparator. Needed for sorting component classifiers.
-     */
-    private static final class ClassifierWeightComparator implements java.util.Comparator<double[]> {
+    /** Simple weight comparator. Needed for sorting component classifiers. */
+    private static final class ClassifierWeightComparator
+            implements java.util.Comparator<double[]> {
 
         @Override
         public int compare(double[] o1, double[] o2) {
@@ -64,35 +66,59 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Mult
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * Simple weight comparator.
-     */
-    protected static java.util.Comparator<double[]> weightComparator = new ClassifierWeightComparator();
+    /** Simple weight comparator. */
+    protected static java.util.Comparator<double[]> weightComparator =
+            new ClassifierWeightComparator();
 
-    /**
-     * Type of classifier to use as a component classifier.
-     */
-    public ClassOption learnerOption = new ClassOption("learner", 'l', "Classifier to train.", Classifier.class, "trees.HoeffdingTree -l NB -e 1000 -g 100 -c 0.01");
+    /** Type of classifier to use as a component classifier. */
+    public ClassOption learnerOption =
+            new ClassOption(
+                    "learner",
+                    'l',
+                    "Classifier to train.",
+                    Classifier.class,
+                    "trees.HoeffdingTree -l NB -e 1000 -g 100 -c 0.01");
 
-    /**
-     * Number of component classifiers.
-     */
-    public FloatOption memberCountOption = new FloatOption("memberCount", 'n', "The maximum number of classifier in an ensemble.", 15, 1, Integer.MAX_VALUE);
+    /** Number of component classifiers. */
+    public FloatOption memberCountOption =
+            new FloatOption(
+                    "memberCount",
+                    'n',
+                    "The maximum number of classifier in an ensemble.",
+                    15,
+                    1,
+                    Integer.MAX_VALUE);
 
-    /**
-     * Number of classifiers remembered and available for ensemble construction.
-     */
-    public FloatOption storedCountOption = new FloatOption("storedCount", 'r', "The maximum number of classifiers to store and choose from when creating an ensemble.", 30, 1, Integer.MAX_VALUE);
+    /** Number of classifiers remembered and available for ensemble construction. */
+    public FloatOption storedCountOption =
+            new FloatOption(
+                    "storedCount",
+                    'r',
+                    "The maximum number of classifiers to store and choose from when creating an"
+                            + " ensemble.",
+                    30,
+                    1,
+                    Integer.MAX_VALUE);
 
-    /**
-     * Chunk size.
-     */
-    public IntOption chunkSizeOption = new IntOption("chunkSize", 'c', "The chunk size used for classifier creation and evaluation.", 500, 1, Integer.MAX_VALUE);
+    /** Chunk size. */
+    public IntOption chunkSizeOption =
+            new IntOption(
+                    "chunkSize",
+                    'c',
+                    "The chunk size used for classifier creation and evaluation.",
+                    500,
+                    1,
+                    Integer.MAX_VALUE);
 
-    /**
-     * Number of folds in candidate classifier cross-validation.
-     */
-    public IntOption numFoldsOption = new IntOption("numFolds", 'f', "Number of cross-validation folds for candidate classifier testing.", 10, 1, Integer.MAX_VALUE);
+    /** Number of folds in candidate classifier cross-validation. */
+    public IntOption numFoldsOption =
+            new IntOption(
+                    "numFolds",
+                    'f',
+                    "Number of cross-validation folds for candidate classifier testing.",
+                    10,
+                    1,
+                    Integer.MAX_VALUE);
 
     protected long[] classDistributions;
 
@@ -103,8 +129,8 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Mult
     protected double[] ensembleWeights;
 
     /**
-     * The weights of stored classifiers. storedWeights[x][0] = weight
-     * storedWeights[x][1] = classifier
+     * The weights of stored classifiers. storedWeights[x][0] = weight storedWeights[x][1] =
+     * classifier
      */
     protected double[][] storedWeights;
 
@@ -164,9 +190,7 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Mult
         }
     }
 
-    /**
-     * Initiates the current chunk and class distribution variables.
-     */
+    /** Initiates the current chunk and class distribution variables. */
     private void initVariables() {
         if (this.currentChunk == null) {
             this.currentChunk = new Instances(this.getModelContext());
@@ -181,15 +205,17 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Mult
         }
     }
 
-    /**
-     * Processes a chunk.
-     */
+    /** Processes a chunk. */
     protected void processChunk() {
         // Compute weights
-        double candidateClassifierWeight = this.computeCandidateWeight(this.candidateClassifier, this.currentChunk, this.numFolds);
+        double candidateClassifierWeight =
+                this.computeCandidateWeight(
+                        this.candidateClassifier, this.currentChunk, this.numFolds);
 
         for (int i = 0; i < this.storedLearners.length; i++) {
-            this.storedWeights[i][0] = this.computeWeight(this.storedLearners[(int) this.storedWeights[i][1]], this.currentChunk);
+            this.storedWeights[i][0] =
+                    this.computeWeight(
+                            this.storedLearners[(int) this.storedWeights[i][1]], this.currentChunk);
         }
 
         if (this.storedLearners.length < this.maxStoredCount) {
@@ -209,7 +235,8 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Mult
                 }
 
                 this.storedWeights[0][0] = candidateClassifierWeight;
-                this.storedLearners[(int) this.storedWeights[0][1]] = this.candidateClassifier.copy();
+                this.storedLearners[(int) this.storedWeights[0][1]] =
+                        this.candidateClassifier.copy();
             }
         }
 
@@ -294,7 +321,10 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Mult
                 }
 
                 if (voteSum > 0) {
-                    f_ci = learner.getVotesForInstance(chunk.instance(i))[(int) chunk.instance(i).classValue()] / voteSum;
+                    f_ci =
+                            learner.getVotesForInstance(chunk.instance(i))[
+                                            (int) chunk.instance(i).classValue()]
+                                    / voteSum;
                     mse_i += (1 - f_ci) * (1 - f_ci);
                 } else {
                     mse_i += 1;
@@ -327,21 +357,21 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Mult
         return mse_r;
     }
 
-    /**
-     * Predicts a class for an example.
-     */
+    /** Predicts a class for an example. */
     public double[] getVotesForInstance(Instance inst) {
         DoubleVector combinedVote = new DoubleVector();
 
         if (this.trainingWeightSeenByModel > 0.0) {
             for (int i = 0; i < this.ensemble.length; i++) {
                 if (this.ensembleWeights[i] > 0.0) {
-                    DoubleVector vote = new DoubleVector(this.ensemble[i].getVotesForInstance(inst));
+                    DoubleVector vote =
+                            new DoubleVector(this.ensemble[i].getVotesForInstance(inst));
 
                     if (vote.sumOfValues() > 0.0) {
                         vote.normalize();
-                        //scale weight and prevent overflow
-                        vote.scaleValues(this.ensembleWeights[i] / (1.0 * this.ensemble.length + 1));
+                        // scale weight and prevent overflow
+                        vote.scaleValues(
+                                this.ensembleWeights[i] / (1.0 * this.ensemble.length + 1));
                         combinedVote.addValues(vote);
                     }
                 }
@@ -352,12 +382,9 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Mult
     }
 
     @Override
-    public void getModelDescription(StringBuilder out, int indent) {
-    }
+    public void getModelDescription(StringBuilder out, int indent) {}
 
-    /**
-     * Adds ensemble weights to the measurements.
-     */
+    /** Adds ensemble weights to the measurements. */
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
         Measurement[] measurements = new Measurement[this.maxStoredCount];
@@ -375,18 +402,22 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Mult
 
             for (int i = 0; i < storeSize; i++) {
                 if (i < this.ensemble.length) {
-                    measurements[i] = new Measurement("Member weight " + (i + 1), this.storedWeights[storeSize - i - 1][0]);
+                    measurements[i] =
+                            new Measurement(
+                                    "Member weight " + (i + 1),
+                                    this.storedWeights[storeSize - i - 1][0]);
                 } else {
-                    measurements[i] = new Measurement("Stored member weight " + (i + 1), this.storedWeights[storeSize - i - 1][0]);
+                    measurements[i] =
+                            new Measurement(
+                                    "Stored member weight " + (i + 1),
+                                    this.storedWeights[storeSize - i - 1][0]);
                 }
             }
         }
         return measurements;
     }
 
-    /**
-     * Determines whether the classifier is randomizable.
-     */
+    /** Determines whether the classifier is randomizable. */
     public boolean isRandomizable() {
         return false;
     }
@@ -425,8 +456,7 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Mult
     }
 
     /**
-     * Removes the poorest classifier from the model, thus decreasing the models
-     * size.
+     * Removes the poorest classifier from the model, thus decreasing the models size.
      *
      * @return the size of the removed classifier.
      */
@@ -438,8 +468,7 @@ public class AccuracyWeightedEnsemble extends AbstractClassifier implements Mult
     }
 
     /**
-     * Removes the classifier at a given index from the model, thus decreasing
-     * the models size.
+     * Removes the classifier at a given index from the model, thus decreasing the models size.
      *
      * @param index
      */

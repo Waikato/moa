@@ -25,29 +25,20 @@ import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
-abstract public class AbstractFeatureRanking extends AbstractOptionHandler implements FeatureRanking{
+public abstract class AbstractFeatureRanking extends AbstractOptionHandler
+        implements FeatureRanking {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /** */
+    private static final long serialVersionUID = 1L;
 
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {}
 
-	@Override
-	public void getDescription(StringBuilder sb, int indent) {
+    @Override
+    public abstract void update(ObservableMOAObject o, Object arg);
 
-	}
+    public abstract DoubleVector getFeatureRankings();
 
-	@Override
-	abstract public void update(ObservableMOAObject o, Object arg);
-	
-
-	abstract public DoubleVector getFeatureRankings();
-	
-	@Override
-	protected void prepareForUseImpl(TaskMonitor monitor,
-			ObjectRepository repository) {
-	
-	}
-
+    @Override
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {}
 }

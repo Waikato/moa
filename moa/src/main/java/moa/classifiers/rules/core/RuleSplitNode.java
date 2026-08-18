@@ -14,19 +14,17 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.classifiers.rules.core;
+
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.classifiers.trees.HoeffdingTree.SplitNode;
 
-import com.yahoo.labs.samoa.instances.Instance;
-
-/**
- * A modified SplitNode method implementing the extra information
- */
+/** A modified SplitNode method implementing the extra information */
 public class RuleSplitNode extends SplitNode {
 
     protected double lastTargetMean;
@@ -38,9 +36,7 @@ public class RuleSplitNode extends SplitNode {
         return this.splitTest;
     }
 
-    /**
-     * Create a new RuleSplitNode
-     */
+    /** Create a new RuleSplitNode */
     public RuleSplitNode(InstanceConditionalTest splitTest, double[] classObservations) {
         super(splitTest, classObservations);
     }
@@ -49,5 +45,4 @@ public class RuleSplitNode extends SplitNode {
         Predicate predicate = (Predicate) this.splitTest;
         return predicate.evaluate(instance);
     }
-
 }

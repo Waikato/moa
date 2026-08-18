@@ -11,7 +11,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 
 /*
@@ -30,19 +30,18 @@ import java.util.Properties;
 import java.util.Vector;
 
 /**
- * This class offers get methods for the default GUI settings in 
- * the props file <code>moa/gui/GUI.props</code>.
+ * This class offers get methods for the default GUI settings in the props file <code>
+ * moa/gui/GUI.props</code>.
  *
- * @author  FracPete (fracpete at waikato dot ac dot nz)
+ * @author FracPete (fracpete at waikato dot ac dot nz)
  */
-public class GUIDefaults
-        implements Serializable {
+public class GUIDefaults implements Serializable {
 
     /** for serialization. */
     private static final long serialVersionUID = 4954795757927524225L;
 
     /** The name of the properties file. */
-    public final static String PROPERTY_FILE = "moa/gui/GUI.props";
+    public static final String PROPERTY_FILE = "moa/gui/GUI.props";
 
     /** Properties associated with the GUI options. */
     protected static Properties PROPERTIES;
@@ -58,12 +57,11 @@ public class GUIDefaults
     }
 
     /**
-     * returns the value for the specified property, if non-existent then the
-     * default value.
+     * returns the value for the specified property, if non-existent then the default value.
      *
-     * @param property      the property to retrieve the value for
-     * @param defaultValue  the default value for the property
-     * @return              the value of the specified property
+     * @param property the property to retrieve the value for
+     * @param defaultValue the default value for the property
+     * @return the value of the specified property
      */
     public static String get(String property, String defaultValue) {
         return PROPERTIES.getProperty(property, defaultValue);
@@ -72,34 +70,32 @@ public class GUIDefaults
     /**
      * returns the associated properties file.
      *
-     * @return              the props file
+     * @return the props file
      */
-    public final static Properties getProperties() {
+    public static final Properties getProperties() {
         return PROPERTIES;
     }
 
     /**
-     * Tries to instantiate the class stored for this property, optional
-     * options will be set as well. Returns null if unsuccessful.
+     * Tries to instantiate the class stored for this property, optional options will be set as
+     * well. Returns null if unsuccessful.
      *
-     * @param property      the property to get the object for
-     * @param defaultValue  the default object spec string
-     * @return              if successful the fully configured object, null
-     *                      otherwise
+     * @param property the property to get the object for
+     * @param defaultValue the default object spec string
+     * @return if successful the fully configured object, null otherwise
      */
     protected static Object getObject(String property, String defaultValue) {
         return getObject(property, defaultValue, Object.class);
     }
 
     /**
-     * Tries to instantiate the class stored for this property, optional
-     * options will be set as well. Returns null if unsuccessful.
+     * Tries to instantiate the class stored for this property, optional options will be set as
+     * well. Returns null if unsuccessful.
      *
-     * @param property      the property to get the object for
-     * @param defaultValue  the default object spec string
-     * @param cls           the class the object must be derived from
-     * @return              if successful the fully configured object, null
-     *                      otherwise
+     * @param property the property to get the object for
+     * @param defaultValue the default object spec string
+     * @param cls the class the object must be derived from
+     * @return if successful the fully configured object, null otherwise
      */
     protected static Object getObject(String property, String defaultValue, Class cls) {
         Object result;
@@ -125,27 +121,29 @@ public class GUIDefaults
     }
 
     /**
-     * returns an array with the classnames of all the additional panels to
-     * display as tabs in the GUI.
+     * returns an array with the classnames of all the additional panels to display as tabs in the
+     * GUI.
      *
-     * @return		the classnames
+     * @return the classnames
      */
     public static String[] getTabs() {
         String[] result;
         String tabs;
 
         // read and split on comma
-        tabs = get("Tabs", "moa.gui.ClassificationTabPanel,moa.gui.RegressionTabPanel,moa.gui.MultiLabelTabPanel,moa.gui.MultiTargetTabPanel,moa.gui.clustertab.ClusteringTabPanel,moa.gui.outliertab.OutlierTabPanel,moa.gui.ConceptDriftTabPanel,moa.gui.ALTabPanel,moa.gui.featureanalysis.FeatureAnalysisTabPanel,moa.gui.AuxiliarTabPanel,moa.gui.experimentertab.ExperimenterTabPanel");
+        tabs =
+                get(
+                        "Tabs",
+                        "moa.gui.ClassificationTabPanel,moa.gui.RegressionTabPanel,moa.gui.MultiLabelTabPanel,moa.gui.MultiTargetTabPanel,moa.gui.clustertab.ClusteringTabPanel,moa.gui.outliertab.OutlierTabPanel,moa.gui.ConceptDriftTabPanel,moa.gui.ALTabPanel,moa.gui.featureanalysis.FeatureAnalysisTabPanel,moa.gui.AuxiliarTabPanel,moa.gui.experimentertab.ExperimenterTabPanel");
         result = tabs.split(",");
 
         return result;
     }
 
     /**
-     * returns an array with the classnames of all default tabs to
-     * display as tabs in the GUI.
+     * returns an array with the classnames of all default tabs to display as tabs in the GUI.
      *
-     * @return		the classnames
+     * @return the classnames
      */
     public static String[] getDefaultTabs() {
         String[] result;
@@ -153,10 +151,8 @@ public class GUIDefaults
 
         // read and split on comma
         tabs = get("DefaultTabs", "").trim();
-        if (tabs.isEmpty())
-            result = new String[0];
-        else
-            result = tabs.split(",");
+        if (tabs.isEmpty()) result = new String[0];
+        else result = tabs.split(",");
 
         return result;
     }
@@ -164,25 +160,24 @@ public class GUIDefaults
     /**
      * Returns the maximum of undos for closing pages/tabs.
      *
-     * @return      the maximum
+     * @return the maximum
      */
     public static int getMaxTabUndo() {
         int defMaxUndo = 10;
         String maxUndo = get("MaxTabUndo", "" + defMaxUndo);
         try {
             return Math.max(Integer.parseInt(maxUndo), 0);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.err.println("Failed to parse 'MaxTabUndo': " + maxUndo);
             return defMaxUndo;
         }
     }
 
     /**
-     * Returns the initial directory for the file chooser used for opening
-     * datasets.
-     * <p/>
-     * The following placeholders are recognized:
+     * Returns the initial directory for the file chooser used for opening datasets.
+     *
+     * <p>The following placeholders are recognized:
+     *
      * <pre>
      *   %t - the temp directory
      *   %h - the user's home directory
@@ -190,7 +185,7 @@ public class GUIDefaults
      *   %% - gets replaced by a single percentage sign
      * </pre>
      *
-     * @return		the default directory
+     * @return the default directory
      */
     public static String getInitialDirectory() {
         String result;
@@ -215,8 +210,7 @@ public class GUIDefaults
         str = get("FrameWidth", "1200");
         try {
             result = Integer.parseInt(str);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             result = 1200;
         }
         return result;
@@ -233,8 +227,7 @@ public class GUIDefaults
         str = get("FrameHeight", "900");
         try {
             result = Integer.parseInt(str);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             result = 900;
         }
         return result;
@@ -251,8 +244,7 @@ public class GUIDefaults
         str = get("FileChooserWidth", "1200");
         try {
             result = Integer.parseInt(str);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             result = 1200;
         }
         return result;
@@ -269,8 +261,7 @@ public class GUIDefaults
         str = get("FileChooserHeight", "900");
         try {
             result = Integer.parseInt(str);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             result = 900;
         }
         return result;
@@ -279,7 +270,7 @@ public class GUIDefaults
     /**
      * only for testing - prints the content of the props file.
      *
-     * @param args	commandline parameters - ignored
+     * @param args commandline parameters - ignored
      */
     public static void main(String[] args) {
         Enumeration names;

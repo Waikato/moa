@@ -1,14 +1,17 @@
 /**
  * [ClassOptionWithNamesEditComponent.java]
- * 
- * ClassOptionWithNames: Editing window
- * 
- * @author Yunsu Kim
- * 		   based on the implementation of Richard Kirkby
- * Data Management and Data Exploration Group, RWTH Aachen University
+ *
+ * <p>ClassOptionWithNames: Editing window
+ *
+ * @author Yunsu Kim based on the implementation of Richard Kirkby Data Management and Data
+ *     Exploration Group, RWTH Aachen University
  */
-
 package com.github.javacliparser.gui;
+
+import com.github.javacliparser.Option;
+
+import moa.gui.ClassOptionWithNamesSelectionPanel;
+import moa.options.ClassOptionWithNames;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -23,13 +26,9 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import moa.options.ClassOptionWithNames;
-import com.github.javacliparser.Option;
-import moa.gui.ClassOptionWithNamesSelectionPanel;
-
 public class ClassOptionWithNamesEditComponent extends JPanel implements OptionEditComponent {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     protected ClassOptionWithNames editedOption;
 
@@ -43,30 +42,34 @@ public class ClassOptionWithNamesEditComponent extends JPanel implements OptionE
     public ClassOptionWithNamesEditComponent(ClassOptionWithNames option) {
         this.editedOption = option;
         this.textField.setEditable(false);
-        this.textField.getDocument().addDocumentListener(new DocumentListener() {
+        this.textField
+                .getDocument()
+                .addDocumentListener(
+                        new DocumentListener() {
 
-            public void removeUpdate(DocumentEvent e) {
-                notifyChangeListeners();
-            }
+                            public void removeUpdate(DocumentEvent e) {
+                                notifyChangeListeners();
+                            }
 
-            public void insertUpdate(DocumentEvent e) {
-                notifyChangeListeners();
-            }
+                            public void insertUpdate(DocumentEvent e) {
+                                notifyChangeListeners();
+                            }
 
-            public void changedUpdate(DocumentEvent e) {
-                notifyChangeListeners();
-            }
-        });
-        
+                            public void changedUpdate(DocumentEvent e) {
+                                notifyChangeListeners();
+                            }
+                        });
+
         setLayout(new BorderLayout());
         add(this.textField, BorderLayout.CENTER);
         add(this.editButton, BorderLayout.EAST);
-        this.editButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                editObject();
-            }
-        });
-        
+        this.editButton.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        editObject();
+                    }
+                });
+
         setEditState(this.editedOption.getValueAsCLIString());
     }
 
@@ -83,15 +86,19 @@ public class ClassOptionWithNamesEditComponent extends JPanel implements OptionE
     }
 
     public void editObject() {
-        setEditState(ClassOptionWithNamesSelectionPanel.showSelectClassDialog(this,
-                "Editing option: " + this.editedOption.getName(),
-                this.editedOption.getRequiredType(), this.textField.getText(),
-                this.editedOption.getNullString(), this.editedOption.getClassNames()));
+        setEditState(
+                ClassOptionWithNamesSelectionPanel.showSelectClassDialog(
+                        this,
+                        "Editing option: " + this.editedOption.getName(),
+                        this.editedOption.getRequiredType(),
+                        this.textField.getText(),
+                        this.editedOption.getNullString(),
+                        this.editedOption.getClassNames()));
     }
 
     /**
-     * Adds the listener to the internal set of listeners. Gets notified when
-     * the option string changes.
+     * Adds the listener to the internal set of listeners. Gets notified when the option string
+     * changes.
      *
      * @param l the listener to add
      */
@@ -108,9 +115,7 @@ public class ClassOptionWithNamesEditComponent extends JPanel implements OptionE
         changeListeners.remove(l);
     }
 
-    /**
-     * Notifies all registered change listeners that the options have changed.
-     */
+    /** Notifies all registered change listeners that the options have changed. */
     protected void notifyChangeListeners() {
         ChangeEvent e = new ChangeEvent(this);
         for (ChangeListener l : changeListeners) {

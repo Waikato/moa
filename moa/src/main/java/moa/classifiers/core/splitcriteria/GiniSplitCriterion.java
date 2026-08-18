@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core.splitcriteria;
 
@@ -25,22 +25,18 @@ import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
 /**
- * Class for computing splitting criteria using Gini
- * with respect to distributions of class values.
- * The split criterion is used as a parameter on
- * decision trees and decision stumps.
+ * Class for computing splitting criteria using Gini with respect to distributions of class values.
+ * The split criterion is used as a parameter on decision trees and decision stumps.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class GiniSplitCriterion extends AbstractOptionHandler implements
-        SplitCriterion {
+public class GiniSplitCriterion extends AbstractOptionHandler implements SplitCriterion {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public double getMeritOfSplit(double[] preSplitDist,
-            double[][] postSplitDists) {
+    public double getMeritOfSplit(double[] preSplitDist, double[][] postSplitDists) {
         double totalWeight = 0.0;
         double[] distWeights = new double[postSplitDists.length];
         for (int i = 0; i < postSplitDists.length; i++) {
@@ -49,8 +45,7 @@ public class GiniSplitCriterion extends AbstractOptionHandler implements
         }
         double gini = 0.0;
         for (int i = 0; i < postSplitDists.length; i++) {
-            gini += (distWeights[i] / totalWeight)
-                    * computeGini(postSplitDists[i], distWeights[i]);
+            gini += (distWeights[i] / totalWeight) * computeGini(postSplitDists[i], distWeights[i]);
         }
         return 1.0 - gini;
     }
@@ -79,8 +74,7 @@ public class GiniSplitCriterion extends AbstractOptionHandler implements
     }
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
     }
 }

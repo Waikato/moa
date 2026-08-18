@@ -15,39 +15,41 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core.attributeclassobservers;
+
+import com.github.javacliparser.IntOption;
 
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
 import moa.classifiers.core.splitcriteria.SplitCriterion;
-import moa.core.Utils;
-
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.GreenwaldKhannaQuantileSummary;
 import moa.core.ObjectRepository;
+import moa.core.Utils;
 import moa.options.AbstractOptionHandler;
-import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 
 /**
- * Class for observing the class data distribution for a numeric attribute using Greenwald and Khanna methodology.
- * This observer monitors the class distribution of a given attribute.
- * Used in naive Bayes and decision trees to monitor data statistics on leaves.
+ * Class for observing the class data distribution for a numeric attribute using Greenwald and
+ * Khanna methodology. This observer monitors the class distribution of a given attribute. Used in
+ * naive Bayes and decision trees to monitor data statistics on leaves.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class GreenwaldKhannaNumericAttributeClassObserver extends AbstractOptionHandler implements NumericAttributeClassObserver {
+public class GreenwaldKhannaNumericAttributeClassObserver extends AbstractOptionHandler
+        implements NumericAttributeClassObserver {
 
     private static final long serialVersionUID = 1L;
 
-    protected AutoExpandVector<GreenwaldKhannaQuantileSummary> attValDistPerClass = new AutoExpandVector<GreenwaldKhannaQuantileSummary>();
+    protected AutoExpandVector<GreenwaldKhannaQuantileSummary> attValDistPerClass =
+            new AutoExpandVector<GreenwaldKhannaQuantileSummary>();
 
-    public IntOption numTuplesOption = new IntOption("numTuples", 'n',
-        "The number of tuples.", 10, 1, Integer.MAX_VALUE);
+    public IntOption numTuplesOption =
+            new IntOption("numTuples", 'n', "The number of tuples.", 10, 1, Integer.MAX_VALUE);
 
     @Override
     public void observeAttributeClass(double attVal, int classVal, double weight) {
@@ -64,29 +66,27 @@ public class GreenwaldKhannaNumericAttributeClassObserver extends AbstractOption
     }
 
     @Override
-    public double probabilityOfAttributeValueGivenClass(double attVal,
-            int classVal) {
+    public double probabilityOfAttributeValueGivenClass(double attVal, int classVal) {
         // TODO: NaiveBayes broken until implemented
         return 0.0;
     }
 
     @Override
     public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(
-            SplitCriterion criterion, double[] preSplitDist, int attIndex,
-            boolean binaryOnly) {
+            SplitCriterion criterion, double[] preSplitDist, int attIndex, boolean binaryOnly) {
         AttributeSplitSuggestion bestSuggestion = null;
         for (GreenwaldKhannaQuantileSummary qs : this.attValDistPerClass) {
             if (qs != null) {
                 double[] cutpoints = qs.getSuggestedCutpoints();
                 for (double cutpoint : cutpoints) {
                     double[][] postSplitDists = getClassDistsResultingFromBinarySplit(cutpoint);
-                    double merit = criterion.getMeritOfSplit(preSplitDist,
-                            postSplitDists);
-                    if ((bestSuggestion == null)
-                            || (merit > bestSuggestion.merit)) {
-                        bestSuggestion = new AttributeSplitSuggestion(
-                                new NumericAttributeBinaryTest(attIndex,
-                                cutpoint, true), postSplitDists, merit);
+                    double merit = criterion.getMeritOfSplit(preSplitDist, postSplitDists);
+                    if ((bestSuggestion == null) || (merit > bestSuggestion.merit)) {
+                        bestSuggestion =
+                                new AttributeSplitSuggestion(
+                                        new NumericAttributeBinaryTest(attIndex, cutpoint, true),
+                                        postSplitDists,
+                                        merit);
                     }
                 }
             }
@@ -106,7 +106,7 @@ public class GreenwaldKhannaNumericAttributeClassObserver extends AbstractOption
                 rhsDist.addToValue(i, estimator.getTotalCount() - countBelow);
             }
         }
-        return new double[][]{lhsDist.getArrayRef(), rhsDist.getArrayRef()};
+        return new double[][] {lhsDist.getArrayRef(), rhsDist.getArrayRef()};
     }
 
     @Override

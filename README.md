@@ -32,4 +32,33 @@ If you want to refer to MOA in a publication, please cite the following JMLR pap
 > MOA: Massive Online Analysis; Journal of Machine Learning Research 11: 1601-1604 
 
 
+## Installation
 
+Clone the MOA repository from GitHub:
+```bash
+git clone git@github.com:Waikato/moa.git
+```
+Or, if you wish to contribute to MOA, [fork the repository and clone your fork](https://docs.github.com/en/pull-requests/how-tos/work-with-forks/fork-a-repo):
+```bash
+git clone git@github.com:$USERNAME/moa.git
+git remote add upstream git@github.com:Waikato/moa.git
+```
+
+Once you have cloned the repository, you can build and run MOA with the following commands:
+```bash
+cd moa
+mvn package # -DskipTests
+java -jar moa/target/moa-2024.07.2-SNAPSHOT-jar-with-dependencies.jar
+```
+
+Some useful Maven commands for development are:
+- `mvn clean` to remove compiled files and directories.
+- `mvn install` to install the MOA jar file in your local Maven repository.
+- `mvn test` to run the unit tests.
+- `mvn spotless:apply` to format the code according to the [AOSP style guide](https://github.com/google/google-java-format).
+
+To run the code-style check before each commit, enable the repository hook once:
+
+```bash
+git config core.hooksPath .githooks
+```

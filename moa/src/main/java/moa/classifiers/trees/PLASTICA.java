@@ -20,6 +20,7 @@ package moa.classifiers.trees;
 
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
@@ -37,31 +38,36 @@ import java.util.List;
 /**
  * PLASTIC-A
  *
- * <p>Combination of PLASTIC and a drift detector at the root. Will grow a background tree after a change and
- * replace the current tree once the BG tree is more accurate.</p>
+ * <p>Combination of PLASTIC and a drift detector at the root. Will grow a background tree after a
+ * change and replace the current tree once the BG tree is more accurate.
  *
- * <p>See details in:<br> Marco Heyden, Heitor Murilo Gomes, Edouard Fouché, Bernhard Pfahringer, Klemens Böhm:
- * Leveraging Plasticity in Incremental Decision Trees. ECML/PKDD (5) 2024: 38-54</p>
+ * <p>See details in:<br>
+ * Marco Heyden, Heitor Murilo Gomes, Edouard Fouché, Bernhard Pfahringer, Klemens Böhm: Leveraging
+ * Plasticity in Incremental Decision Trees. ECML/PKDD (5) 2024: 38-54
  *
  * @author Marco Heyden (marco dot heyden at kit dot edu)
  * @version $Revision: 1 $
  */
-public class PLASTICA extends AbstractClassifier implements MultiClassClassifier,
-                                                                                  CapabilitiesHandler {
+public class PLASTICA extends AbstractClassifier
+        implements MultiClassClassifier, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
         return "Classifier that grows a background tree when a change is detected in accuracy.";
     }
-    
-    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "trees.PLASTIC");
 
-    public FloatOption confidenceOption = new FloatOption(
-            "Confidence",
-            'c',
-            "Confidence at which the current learner will be replaced.",
-            0.05, 0.0, 1.0);
+    public ClassOption baseLearnerOption =
+            new ClassOption(
+                    "baseLearner", 'l', "Classifier to train.", Classifier.class, "trees.PLASTIC");
+
+    public FloatOption confidenceOption =
+            new FloatOption(
+                    "Confidence",
+                    'c',
+                    "Confidence at which the current learner will be replaced.",
+                    0.05,
+                    0.0,
+                    1.0);
 
     protected Classifier classifier;
 
@@ -89,7 +95,7 @@ public class PLASTICA extends AbstractClassifier implements MultiClassClassifier
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
-        //this.numberInstances++;
+        // this.numberInstances++;
         int trueClass = (int) inst.classValue();
         boolean prediction;
         if (Utils.maxIndex(this.classifier.getVotesForInstance(inst)) == trueClass) {
@@ -111,12 +117,12 @@ public class PLASTICA extends AbstractClassifier implements MultiClassClassifier
 
         if (this.mainLearnerChangeDetector.getChange() && newclassifier == null) {
             makeNewClassifier();
-        }
-        else if (this.bgLearnerChangeDetector.getChange()) {
+        } else if (this.bgLearnerChangeDetector.getChange()) {
             makeNewClassifier();
         }
 
-        if (mainLearnerChangeDetector.getWidth() > 200 && bgLearnerChangeDetector.getWidth() > 200) {
+        if (mainLearnerChangeDetector.getWidth() > 200
+                && bgLearnerChangeDetector.getWidth() > 200) {
             double oldErrorRate = mainLearnerChangeDetector.getEstimation();
             double oldWS = mainLearnerChangeDetector.getWidth();
             double altErrorRate = bgLearnerChangeDetector.getEstimation();
@@ -128,8 +134,7 @@ public class PLASTICA extends AbstractClassifier implements MultiClassClassifier
                 classifier = newclassifier;
                 newclassifier = null;
                 bgLearnerChangeDetector.resetLearning();
-            }
-            else if (Bound < altErrorRate - oldErrorRate) {
+            } else if (Bound < altErrorRate - oldErrorRate) {
                 // Erase alternate tree
                 newclassifier = null;
                 bgLearnerChangeDetector.resetLearning();
@@ -137,8 +142,7 @@ public class PLASTICA extends AbstractClassifier implements MultiClassClassifier
         }
 
         this.classifier.trainOnInstance(inst);
-        if (newclassifier != null)
-            newclassifier.trainOnInstance(inst);
+        if (newclassifier != null) newclassifier.trainOnInstance(inst);
     }
 
     private double computeBound(double oldErrorRate, double oldWS, double altWS) {
@@ -166,7 +170,8 @@ public class PLASTICA extends AbstractClassifier implements MultiClassClassifier
         List<Measurement> measurementList = new LinkedList<Measurement>();
         measurementList.add(new Measurement("Change detected", this.changeDetected));
         measurementList.add(new Measurement("Warning detected", this.warningDetected));
-        Measurement[] modelMeasurements = ((AbstractClassifier) this.classifier).getModelMeasurements();
+        Measurement[] modelMeasurements =
+                ((AbstractClassifier) this.classifier).getModelMeasurements();
         if (modelMeasurements != null) {
             for (Measurement measurement : modelMeasurements) {
                 measurementList.add(measurement);
@@ -181,8 +186,7 @@ public class PLASTICA extends AbstractClassifier implements MultiClassClassifier
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == PLASTICA.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 
     private void makeNewClassifier() {

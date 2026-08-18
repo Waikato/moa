@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
@@ -28,8 +28,7 @@ import moa.options.AbstractOptionHandler;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public abstract class AbstractTask extends AbstractOptionHandler implements
-        Task {
+public abstract class AbstractTask extends AbstractOptionHandler implements Task {
 
     /**
      * Gets the name of this task.
@@ -47,8 +46,7 @@ public abstract class AbstractTask extends AbstractOptionHandler implements
 
     @Override
     public Object doTask(TaskMonitor monitor, ObjectRepository repository) {
-        monitor.setCurrentActivity("Preparing options to " + getTaskName()
-                + "...", -1.0);
+        monitor.setCurrentActivity("Preparing options to " + getTaskName() + "...", -1.0);
         prepareClassOptions(monitor, repository);
         if (monitor.taskShouldAbort()) {
             return null;
@@ -56,25 +54,22 @@ public abstract class AbstractTask extends AbstractOptionHandler implements
         monitor.setCurrentActivity("Doing task " + getTaskName() + "...", -1.0);
         Object result = doTaskImpl(monitor, repository);
         monitor.setCurrentActivity("Task " + getTaskName() + " complete.", 1.0);
-        //this.classOptionNamesToPreparedObjects = null; // clean up refs
+        // this.classOptionNamesToPreparedObjects = null; // clean up refs
         return result;
     }
 
     /**
-     * This method performs this task.
-     * <code>AbstractTask</code> implements <code>doTask</code> so all
-     * its extensions only need to implement <code>doTaskImpl</code>.
+     * This method performs this task. <code>AbstractTask</code> implements <code>doTask</code> so
+     * all its extensions only need to implement <code>doTaskImpl</code>.
      *
      * @param monitor the TaskMonitor to use
-     * @param repository  the ObjectRepository to use
+     * @param repository the ObjectRepository to use
      * @return an object with the result of this task
      */
-    protected abstract Object doTaskImpl(TaskMonitor monitor,
-            ObjectRepository repository);
+    protected abstract Object doTaskImpl(TaskMonitor monitor, ObjectRepository repository);
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // tasks prepare themselves upon running
     }
 

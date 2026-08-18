@@ -15,29 +15,29 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.generators;
 
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.core.FastVector;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
-
-import java.util.Random;
 import moa.core.InstanceExample;
-
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
+
+import java.util.Random;
 
 /**
  * Stream generator for the problem of predicting the digit displayed on a 7-segment LED display.
@@ -45,8 +45,8 @@ import moa.tasks.TaskMonitor;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class LEDGenerator extends AbstractOptionHandler implements
-        InstanceStream, CapabilitiesHandler {
+public class LEDGenerator extends AbstractOptionHandler
+        implements InstanceStream, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -62,26 +62,28 @@ public class LEDGenerator extends AbstractOptionHandler implements
         {1, 0, 1, 1, 1, 0, 1}, {1, 0, 1, 1, 0, 1, 1},
         {0, 1, 1, 1, 0, 1, 0}, {1, 1, 0, 1, 0, 1, 1},
         {1, 1, 0, 1, 1, 1, 1}, {1, 0, 1, 0, 0, 1, 0},
-        {1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 0, 1, 1}};
+        {1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 0, 1, 1}
+    };
 
-    public IntOption instanceRandomSeedOption = new IntOption(
-            "instanceRandomSeed", 'i',
-            "Seed for random generation of instances.", 1);
+    public IntOption instanceRandomSeedOption =
+            new IntOption("instanceRandomSeed", 'i', "Seed for random generation of instances.", 1);
 
-    public IntOption noisePercentageOption = new IntOption("noisePercentage",
-            'n', "Percentage of noise to add to the data.", 10, 0, 100);
+    public IntOption noisePercentageOption =
+            new IntOption(
+                    "noisePercentage", 'n', "Percentage of noise to add to the data.", 10, 0, 100);
 
-    public FlagOption suppressIrrelevantAttributesOption = new FlagOption(
-            "suppressIrrelevantAttributes", 's',
-            "Reduce the data to only contain 7 relevant binary attributes.");
+    public FlagOption suppressIrrelevantAttributesOption =
+            new FlagOption(
+                    "suppressIrrelevantAttributes",
+                    's',
+                    "Reduce the data to only contain 7 relevant binary attributes.");
 
     protected InstancesHeader streamHeader;
 
     protected Random instanceRandom;
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // generate header
         FastVector attributes = new FastVector();
         FastVector binaryLabels = new FastVector();
@@ -99,8 +101,9 @@ public class LEDGenerator extends AbstractOptionHandler implements
             classLabels.addElement(Integer.toString(i));
         }
         attributes.addElement(new Attribute("class", classLabels));
-        this.streamHeader = new InstancesHeader(new Instances(
-                getCLICreationString(InstanceStream.class), attributes, 0));
+        this.streamHeader =
+                new InstancesHeader(
+                        new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
         this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
         restart();
     }
@@ -161,7 +164,6 @@ public class LEDGenerator extends AbstractOptionHandler implements
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == LEDGenerator.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

@@ -15,27 +15,18 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.github.javacliparser.gui;
 
 import com.github.javacliparser.Option;
 import com.github.javacliparser.Options;
+
 import moa.classifiers.trees.HoeffdingTree;
 import moa.gui.GUIUtils;
 import moa.gui.LookAndFeel;
 import moa.options.OptionHandler;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -49,6 +40,17 @@ import java.awt.event.ActionListener;
 import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 
 /**
  * This panel displays an options configuration.
@@ -82,22 +84,29 @@ public class OptionsConfigurationPanel extends JPanel {
             purposeTextArea.setEnabled(false);
             purposeTextArea.setBorder(BorderFactory.createTitledBorder("Purpose"));
             purposeTextArea.setBackground(getBackground());
-            JScrollPane scrollPanePurpose = new JScrollPane(purposeTextArea,
-            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            JScrollPane scrollPanePurpose =
+                    new JScrollPane(
+                            purposeTextArea,
+                            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             scrollPanePurpose.setBorder(null);
             add(scrollPanePurpose, BorderLayout.NORTH);
         }
-        JPanel optionsPanel = createLabelledOptionComponentListPanel(options.getOptionArray(), this.editComponents);
-        JScrollPane scrollPane = new JScrollPane(optionsPanel,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        JPanel optionsPanel =
+                createLabelledOptionComponentListPanel(
+                        options.getOptionArray(), this.editComponents);
+        JScrollPane scrollPane =
+                new JScrollPane(
+                        optionsPanel,
+                        ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(null);
         int optionPanelHeight = (int) optionsPanel.getPreferredSize().getHeight();
         int scrollPaneHeight = (int) scrollPane.getPreferredSize().getHeight();
-        scrollPane.setPreferredSize(new Dimension(FIXED_PANEL_WIDTH,
-                scrollPaneHeight > MAX_PANEL_HEIGHT ? MAX_PANEL_HEIGHT
-                : scrollPaneHeight));
+        scrollPane.setPreferredSize(
+                new Dimension(
+                        FIXED_PANEL_WIDTH,
+                        scrollPaneHeight > MAX_PANEL_HEIGHT ? MAX_PANEL_HEIGHT : scrollPaneHeight));
         optionsPanel.setPreferredSize(new Dimension(0, optionPanelHeight));
         add(scrollPane, BorderLayout.CENTER);
         JPanel lowerButtons = new JPanel();
@@ -105,29 +114,39 @@ public class OptionsConfigurationPanel extends JPanel {
         lowerButtons.add(this.helpButton);
         lowerButtons.add(this.resetButton);
         add(lowerButtons, BorderLayout.SOUTH);
-        this.helpButton.addActionListener(new ActionListener() {
+        this.helpButton.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                showHelpDialog();
-            }
-        });
-        this.resetButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        showHelpDialog();
+                    }
+                });
+        this.resetButton.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                resetToDefaults();
-            }
-        });
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        resetToDefaults();
+                    }
+                });
     }
 
-    public static boolean showEditOptionsDialog(Component parent, String title,
-            OptionHandler optionHandler) {
-        OptionsConfigurationPanel panel = new OptionsConfigurationPanel(
-                optionHandler.getPurposeString(), optionHandler.getOptions());
-        if (JOptionPane.showOptionDialog(parent, panel, title,
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null,
-                null, null) == JOptionPane.OK_OPTION) {
+    public static boolean showEditOptionsDialog(
+            Component parent, String title, OptionHandler optionHandler) {
+        OptionsConfigurationPanel panel =
+                new OptionsConfigurationPanel(
+                        optionHandler.getPurposeString(), optionHandler.getOptions());
+        if (JOptionPane.showOptionDialog(
+                        parent,
+                        panel,
+                        title,
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        null,
+                        null)
+                == JOptionPane.OK_OPTION) {
             panel.applyChanges();
             return true;
         }
@@ -142,8 +161,11 @@ public class OptionsConfigurationPanel extends JPanel {
         JTextArea helpTextArea = new JTextArea(getHelpText(), 20, 80);
         helpTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
         helpTextArea.setEditable(false);
-        JOptionPane.showMessageDialog(this, new JScrollPane(helpTextArea),
-                "Options Help", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(
+                this,
+                new JScrollPane(helpTextArea),
+                "Options Help",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void resetToDefaults() {
@@ -157,8 +179,8 @@ public class OptionsConfigurationPanel extends JPanel {
             try {
                 editor.applyState();
             } catch (Exception ex) {
-                GUIUtils.showExceptionDialog(this, "Problem with option "
-                        + editor.getEditedOption().getName(), ex);
+                GUIUtils.showExceptionDialog(
+                        this, "Problem with option " + editor.getEditedOption().getName(), ex);
             }
         }
     }
@@ -199,34 +221,37 @@ public class OptionsConfigurationPanel extends JPanel {
         return panel;
     }
 
-    public static JComponent getEditComponent(Option option){
-     
-        //Object classInstance;
-        
-        //classInstance = classObject.newInstance(option);
+    public static JComponent getEditComponent(Option option) {
+
+        // Object classInstance;
+
+        // classInstance = classObject.newInstance(option);
         Class<?> classObject;
         Constructor<?> ctor = null;
         JComponent ret = null;
-        String className="";
+        String className = "";
         try {
-            className = "com.github.javacliparser.gui."+option.getClass().getSimpleName()+"EditComponent";
+            className =
+                    "com.github.javacliparser.gui."
+                            + option.getClass().getSimpleName()
+                            + "EditComponent";
             classObject = Class.forName(className);
             ctor = classObject.getConstructor(Option.class);
             ret = (JComponent) ctor.newInstance(option);
         } catch (Throwable t1) {
-            try{
-                className = "moa.gui."+option.getClass().getSimpleName()+"EditComponent";
+            try {
+                className = "moa.gui." + option.getClass().getSimpleName() + "EditComponent";
                 classObject = Class.forName(className);
                 ctor = classObject.getConstructor(Option.class);
                 ret = (JComponent) ctor.newInstance(option);
             } catch (Throwable t3) {
-                    //throw new Exception("Class not found: " + className);
+                // throw new Exception("Class not found: " + className);
                 System.out.println("Class not found: " + className);
             }
         }
         return ret;
     }
-    
+
     private static void createAndShowGUI() {
 
         // Create and set up the window.
@@ -250,13 +275,14 @@ public class OptionsConfigurationPanel extends JPanel {
     public static void main(String[] args) {
         try {
             LookAndFeel.install();
-            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            javax.swing.SwingUtilities.invokeLater(
+                    new Runnable() {
 
-                @Override
-                public void run() {
-                    createAndShowGUI();
-                }
-            });
+                        @Override
+                        public void run() {
+                            createAndShowGUI();
+                        }
+                    });
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -15,26 +15,21 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.drift;
 
-
 /**
- * Class for handling concept drift datasets with a wrapper on a
- * classifier.<p>
+ * Class for handling concept drift datasets with a wrapper on a classifier.
  *
- * Valid options are:<p>
+ * <p>Valid options are:
  *
- * -l classname <br>
- * Specify the full class name of a classifier as the basis for
- * the concept drift classifier.<p>
- * -d Drift detection method to use<br>
+ * <p>-l classname <br>
+ * Specify the full class name of a classifier as the basis for the concept drift classifier.
+ *
+ * <p>-d Drift detection method to use<br>
  *
  * @author Manuel Baena (mbaena@lcc.uma.es)
  * @version 1.1
  */
-public class SingleClassifierDrift extends DriftDetectionMethodClassifier{
-
-
-}
+public class SingleClassifierDrift extends DriftDetectionMethodClassifier {}

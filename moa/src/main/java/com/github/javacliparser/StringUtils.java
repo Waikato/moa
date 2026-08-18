@@ -1,18 +1,18 @@
 /*
  * Copyright 2007 University of Waikato.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * 	        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the
- * License.  
+ * License.
  */
 
 package com.github.javacliparser;
@@ -33,8 +33,8 @@ public class StringUtils {
         return doubleToString(value, 0, fractionDigits);
     }
 
-    public static String doubleToString(double value, int minFractionDigits,
-            int maxFractionDigits) {
+    public static String doubleToString(
+            double value, int minFractionDigits, int maxFractionDigits) {
         DecimalFormat numberFormat = new DecimalFormat();
         numberFormat.setMinimumFractionDigits(minFractionDigits);
         numberFormat.setMaximumFractionDigits(maxFractionDigits);
@@ -56,8 +56,7 @@ public class StringUtils {
         out.append(s);
     }
 
-    public static void appendNewlineIndented(StringBuilder out, int indent,
-            String s) {
+    public static void appendNewlineIndented(StringBuilder out, int indent, String s) {
         appendNewline(out);
         appendIndented(out, indent, s);
     }

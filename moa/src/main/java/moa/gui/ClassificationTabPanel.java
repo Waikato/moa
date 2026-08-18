@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
@@ -29,34 +29,30 @@ import java.awt.BorderLayout;
  */
 public class ClassificationTabPanel extends AbstractTabPanel {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected TaskManagerPanel taskManagerPanel;
+    protected TaskManagerPanel taskManagerPanel;
 
-	protected PreviewPanel previewPanel;
+    protected PreviewPanel previewPanel;
 
-	public ClassificationTabPanel() {
-		this.taskManagerPanel = new TaskManagerPanel();
-		this.previewPanel = new PreviewPanel();
-		this.taskManagerPanel.setPreviewPanel(this.previewPanel);
-		setLayout(new BorderLayout());
-		add(this.taskManagerPanel, BorderLayout.NORTH);
-		add(this.previewPanel, BorderLayout.CENTER);
-	}
+    public ClassificationTabPanel() {
+        this.taskManagerPanel = new TaskManagerPanel();
+        this.previewPanel = new PreviewPanel();
+        this.taskManagerPanel.setPreviewPanel(this.previewPanel);
+        setLayout(new BorderLayout());
+        add(this.taskManagerPanel, BorderLayout.NORTH);
+        add(this.previewPanel, BorderLayout.CENTER);
+    }
 
-	//returns the string to display as title of the tab
+    // returns the string to display as title of the tab
     @Override
-	public String getTabTitle() {
-		return "Classification";
-	}
+    public String getTabTitle() {
+        return "Classification";
+    }
 
-	//a short description (can be used as tool tip) of the tab, or contributor, etc.
+    // a short description (can be used as tool tip) of the tab, or contributor, etc.
     @Override
-	public String getDescription(){
-		return "MOA Classification";
-	}
-
+    public String getDescription() {
+        return "MOA Classification";
+    }
 }
-
-
-

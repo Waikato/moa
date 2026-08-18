@@ -27,25 +27,23 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 
 /**
- * Kafka deserialiser for Java objects. Uses Java's serialisation tools
- * internally.
+ * Kafka deserialiser for Java objects. Uses Java's serialisation tools internally.
  *
  * @author Corey Sterling (csterlin at waikato dot ac dot nz)
  */
-public class ObjectDeserializer<T>
-  implements Deserializer<T>{
+public class ObjectDeserializer<T> implements Deserializer<T> {
 
-  @Override
-  public T deserialize(String s, byte[] bytes) {
-    // Bytes can be null; deserialise to null
-    if (bytes == null)
-      return null;
+    @Override
+    public T deserialize(String s, byte[] bytes) {
+        // Bytes can be null; deserialise to null
+        if (bytes == null) return null;
 
-    try {
-      ObjectInputStream streamDeserialiser = new ObjectInputStream(new ByteArrayInputStream(bytes));
-      return (T) streamDeserialiser.readObject();
-    } catch (IOException | ClassNotFoundException | ClassCastException e) {
-      throw new RuntimeException("Failed to deserialise object from Kafka", e);
+        try {
+            ObjectInputStream streamDeserialiser =
+                    new ObjectInputStream(new ByteArrayInputStream(bytes));
+            return (T) streamDeserialiser.readObject();
+        } catch (IOException | ClassNotFoundException | ClassCastException e) {
+            throw new RuntimeException("Failed to deserialise object from Kafka", e);
+        }
     }
-  }
 }

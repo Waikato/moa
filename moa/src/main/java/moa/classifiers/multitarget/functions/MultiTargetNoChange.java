@@ -1,14 +1,9 @@
 package moa.classifiers.multitarget.functions;
 
-
-import com.yahoo.labs.samoa.instances.DenseInstanceData;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
 
-import moa.classifiers.AbstractClassifier;
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiTargetRegressor;
 import moa.core.Measurement;
@@ -28,9 +23,9 @@ public class MultiTargetNoChange extends AbstractMultiLabelLearner implements Mu
         return "Weather Forecast class classifier: always predicts the last class seen.";
     }
 
-    //protected InstanceData lastSeenClasses;
+    // protected InstanceData lastSeenClasses;
     Prediction lastSeenClasses;
-    
+
     @Override
     public void resetLearningImpl() {
         this.lastSeenClasses = null;
@@ -38,17 +33,14 @@ public class MultiTargetNoChange extends AbstractMultiLabelLearner implements Mu
 
     @Override
     public void trainOnInstanceImpl(MultiLabelInstance inst) {
-    	int numOutputs = inst.numberOutputTargets();
-    	Prediction prediction = new MultiLabelPrediction(numOutputs);
-    	
-    	for(int i=0; i<numOutputs;i++)
-    		prediction.setVotes(i,new double[]{inst.classValue(i)});
-    	
+        int numOutputs = inst.numberOutputTargets();
+        Prediction prediction = new MultiLabelPrediction(numOutputs);
+
+        for (int i = 0; i < numOutputs; i++)
+            prediction.setVotes(i, new double[] {inst.classValue(i)});
+
         this.lastSeenClasses = prediction;
-    	
     }
-   
-    
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
@@ -56,18 +48,15 @@ public class MultiTargetNoChange extends AbstractMultiLabelLearner implements Mu
     }
 
     @Override
-    public void getModelDescription(StringBuilder out, int indent) {
-       
-    }
+    public void getModelDescription(StringBuilder out, int indent) {}
 
     public boolean isRandomizable() {
         return false;
     }
 
-	@Override
-	public Prediction getPredictionForInstance(MultiLabelInstance inst) {
-		//return (lastSeenClasses!=null) ? this.lastSeenClasses : new MultiLabelPrediction();
-		return (lastSeenClasses!=null) ? this.lastSeenClasses : null;
-	}
-
+    @Override
+    public Prediction getPredictionForInstance(MultiLabelInstance inst) {
+        // return (lastSeenClasses!=null) ? this.lastSeenClasses : new MultiLabelPrediction();
+        return (lastSeenClasses != null) ? this.lastSeenClasses : null;
+    }
 }

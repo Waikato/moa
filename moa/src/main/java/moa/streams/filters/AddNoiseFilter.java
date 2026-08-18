@@ -15,24 +15,24 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.filters;
 
-import java.util.Random;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.GaussianEstimator;
-import moa.core.InstanceExample;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-import com.yahoo.labs.samoa.instances.Instance;
+
+import java.util.Random;
 
 /**
- * Filter for adding random noise to examples in a stream.
- * Noise can be added to attribute values or to class labels.
+ * Filter for adding random noise to examples in a stream. Noise can be added to attribute values or
+ * to class labels.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
@@ -46,14 +46,16 @@ public class AddNoiseFilter extends AbstractStreamFilter {
 
     private static final long serialVersionUID = 1L;
 
-    public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
-            "Seed for random noise.", 1);
+    public IntOption randomSeedOption =
+            new IntOption("randomSeed", 'r', "Seed for random noise.", 1);
 
-    public FloatOption attNoiseFractionOption = new FloatOption("attNoise",
-            'a', "The fraction of attribute values to disturb.", 0.1, 0.0, 1.0);
+    public FloatOption attNoiseFractionOption =
+            new FloatOption(
+                    "attNoise", 'a', "The fraction of attribute values to disturb.", 0.1, 0.0, 1.0);
 
-    public FloatOption classNoiseFractionOption = new FloatOption("classNoise",
-            'c', "The fraction of class labels to disturb.", 0.1, 0.0, 1.0);
+    public FloatOption classNoiseFractionOption =
+            new FloatOption(
+                    "classNoise", 'c', "The fraction of class labels to disturb.", 0.1, 0.0, 1.0);
 
     protected Random random;
 
@@ -70,13 +72,15 @@ public class AddNoiseFilter extends AbstractStreamFilter {
         return this.inputStream.getHeader();
     }
 
-    //@Override
-    //public InstanceExample nextInstance() {
+    // @Override
+    // public InstanceExample nextInstance() {
     //    Instance inst = (Instance) ((Instance) this.inputStream.nextInstance().getData()).copy();
-    public Instance filterInstance(Instance inst){
+    public Instance filterInstance(Instance inst) {
         for (int i = 0; i < inst.numAttributes(); i++) {
-            double noiseFrac = i == inst.classIndex() ? this.classNoiseFractionOption.getValue()
-                    : this.attNoiseFractionOption.getValue();
+            double noiseFrac =
+                    i == inst.classIndex()
+                            ? this.classNoiseFractionOption.getValue()
+                            : this.attNoiseFractionOption.getValue();
             if (inst.attribute(i).isNominal()) {
                 DoubleVector obs = (DoubleVector) this.attValObservers.get(i);
                 if (obs == null) {
@@ -87,8 +91,7 @@ public class AddNoiseFilter extends AbstractStreamFilter {
                 if (!inst.isMissing(i)) {
                     obs.addToValue(originalVal, inst.weight());
                 }
-                if ((this.random.nextDouble() < noiseFrac)
-                        && (obs.numNonZeroEntries() > 1)) {
+                if ((this.random.nextDouble() < noiseFrac) && (obs.numNonZeroEntries() > 1)) {
                     do {
                         inst.setValue(i, this.random.nextInt(obs.numValues()));
                     } while (((int) inst.value(i) == originalVal)
@@ -101,11 +104,12 @@ public class AddNoiseFilter extends AbstractStreamFilter {
                     this.attValObservers.set(i, obs);
                 }
                 obs.addObservation(inst.value(i), inst.weight());
-                inst.setValue(i, inst.value(i) + this.random.nextGaussian()
-                        * obs.getStdDev() * noiseFrac);
+                inst.setValue(
+                        i,
+                        inst.value(i) + this.random.nextGaussian() * obs.getStdDev() * noiseFrac);
             }
         }
-        //return new InstanceExample(inst);
+        // return new InstanceExample(inst);
         return inst;
     }
 

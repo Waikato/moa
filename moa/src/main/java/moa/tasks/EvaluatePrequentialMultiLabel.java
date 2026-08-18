@@ -16,7 +16,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
@@ -27,7 +27,6 @@ import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.classifiers.MultiLabelClassifier;
-import moa.classifiers.MultiTargetRegressor;
 import moa.classifiers.rules.multilabel.functions.MultiLabelNaiveBayes;
 import moa.core.Example;
 import moa.core.Measurement;
@@ -39,14 +38,14 @@ import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.streams.MultiTargetInstanceStream;
-import weka.core.stopwords.Null;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 /**
- * Task for evaluating a classifier on a stream by testing then training with each example in sequence.
+ * Task for evaluating a classifier on a stream by testing then training with each example in
+ * sequence.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
@@ -56,60 +55,102 @@ public class EvaluatePrequentialMultiLabel extends MultiLabelMainTask {
 
     @Override
     public String getPurposeString() {
-        return "Evaluates a classifier on a stream by testing then training with each example in sequence.";
+        return "Evaluates a classifier on a stream by testing then training with each example in"
+                + " sequence.";
     }
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Learner to train.", MultiLabelClassifier.class, MultiLabelNaiveBayes.class.getName());
-    
-    public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", MultiTargetInstanceStream.class,
-            "MultiTargetArffFileStream");
+    public ClassOption learnerOption =
+            new ClassOption(
+                    "learner",
+                    'l',
+                    "Learner to train.",
+                    MultiLabelClassifier.class,
+                    MultiLabelNaiveBayes.class.getName());
+
+    public ClassOption streamOption =
+            new ClassOption(
+                    "stream",
+                    's',
+                    "Stream to learn from.",
+                    MultiTargetInstanceStream.class,
+                    "MultiTargetArffFileStream");
 
     /*public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
-            "Classification performance evaluation method.",
-            MultiLabelPerformanceEvaluator.class,
-            "MultilabelWindowClassificationPerformanceEvaluator");*/
+    "Classification performance evaluation method.",
+    MultiLabelPerformanceEvaluator.class,
+    "MultilabelWindowClassificationPerformanceEvaluator");*/
 
-    public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
-            "Classification performance evaluation method.",
-            MultiTargetPerformanceEvaluator.class,
-            "BasicMultiLabelPerformanceEvaluator");
+    public ClassOption evaluatorOption =
+            new ClassOption(
+                    "evaluator",
+                    'e',
+                    "Classification performance evaluation method.",
+                    MultiTargetPerformanceEvaluator.class,
+                    "BasicMultiLabelPerformanceEvaluator");
 
-    
-    public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
-            "Maximum number of instances to test/train on  (-1 = no limit).",
-            100000000, -1, Integer.MAX_VALUE);
+    public IntOption instanceLimitOption =
+            new IntOption(
+                    "instanceLimit",
+                    'i',
+                    "Maximum number of instances to test/train on  (-1 = no limit).",
+                    100000000,
+                    -1,
+                    Integer.MAX_VALUE);
 
-    public IntOption timeLimitOption = new IntOption("timeLimit", 't',
-            "Maximum number of seconds to test/train for (-1 = no limit).", -1,
-            -1, Integer.MAX_VALUE);
+    public IntOption timeLimitOption =
+            new IntOption(
+                    "timeLimit",
+                    't',
+                    "Maximum number of seconds to test/train for (-1 = no limit).",
+                    -1,
+                    -1,
+                    Integer.MAX_VALUE);
 
-    public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
-            'f',
-            "How many instances between samples of the learning performance.",
-            100000, 0, Integer.MAX_VALUE);
+    public IntOption sampleFrequencyOption =
+            new IntOption(
+                    "sampleFrequency",
+                    'f',
+                    "How many instances between samples of the learning performance.",
+                    100000,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public IntOption memCheckFrequencyOption = new IntOption(
-            "memCheckFrequency", 'q',
-            "How many instances between memory bound checks.", 100000, 0,
-            Integer.MAX_VALUE);
+    public IntOption memCheckFrequencyOption =
+            new IntOption(
+                    "memCheckFrequency",
+                    'q',
+                    "How many instances between memory bound checks.",
+                    100000,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
-            "File to append intermediate csv results to.", null, "csv", true);
+    public FileOption dumpFileOption =
+            new FileOption(
+                    "dumpFile",
+                    'd',
+                    "File to append intermediate csv results to.",
+                    null,
+                    "csv",
+                    true);
 
-    public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
-            "File to append output predictions to.", null, "pred", true);
+    public FileOption outputPredictionFileOption =
+            new FileOption(
+                    "outputPredictionFile",
+                    'o',
+                    "File to append output predictions to.",
+                    null,
+                    "pred",
+                    true);
 
-    //New for prequential method DEPRECATED
-    public IntOption widthOption = new IntOption("width",
-            'w', "Size of Window", 1000);
+    // New for prequential method DEPRECATED
+    public IntOption widthOption = new IntOption("width", 'w', "Size of Window", 1000);
 
-    public FloatOption alphaOption = new FloatOption("alpha",
-            'a', "Fading factor or exponential smoothing factor", .01);
-    //End New for prequential methods
+    public FloatOption alphaOption =
+            new FloatOption("alpha", 'a', "Fading factor or exponential smoothing factor", .01);
+
+    // End New for prequential methods
 
     @Override
     public Class<?> getTaskResultType() {
@@ -120,33 +161,48 @@ public class EvaluatePrequentialMultiLabel extends MultiLabelMainTask {
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Learner learner = (Learner) getPreparedClassOption(this.learnerOption);
         ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
-        LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
-        LearningCurve learningCurve = new LearningCurve(
-                "learning evaluation instances");
+        LearningPerformanceEvaluator evaluator =
+                (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
+        LearningCurve learningCurve = new LearningCurve("learning evaluation instances");
 
-        //New for prequential methods
+        // New for prequential methods
         if (evaluator instanceof WindowClassificationPerformanceEvaluator) {
-            //((WindowClassificationPerformanceEvaluator) evaluator).setWindowWidth(widthOption.getValue());
+            // ((WindowClassificationPerformanceEvaluator)
+            // evaluator).setWindowWidth(widthOption.getValue());
             if (widthOption.getValue() != 1000) {
-                System.out.println("DEPRECATED! Use EvaluatePrequential -e (WindowClassificationPerformanceEvaluator -w " + widthOption.getValue() + ")");
-                 return learningCurve;
+                System.out.println(
+                        "DEPRECATED! Use EvaluatePrequential -e"
+                                + " (WindowClassificationPerformanceEvaluator -w "
+                                + widthOption.getValue()
+                                + ")");
+                return learningCurve;
             }
         }
         if (evaluator instanceof EWMAClassificationPerformanceEvaluator) {
-            //((EWMAClassificationPerformanceEvaluator) evaluator).setalpha(alphaOption.getValue());
+            // ((EWMAClassificationPerformanceEvaluator)
+            // evaluator).setalpha(alphaOption.getValue());
             if (alphaOption.getValue() != .01) {
-                System.out.println("DEPRECATED! Use EvaluatePrequential -e (EWMAClassificationPerformanceEvaluator -a " + alphaOption.getValue() + ")");
+                System.out.println(
+                        "DEPRECATED! Use EvaluatePrequential -e"
+                                + " (EWMAClassificationPerformanceEvaluator -a "
+                                + alphaOption.getValue()
+                                + ")");
                 return learningCurve;
             }
         }
         if (evaluator instanceof FadingFactorClassificationPerformanceEvaluator) {
-            //((FadingFactorClassificationPerformanceEvaluator) evaluator).setalpha(alphaOption.getValue());
+            // ((FadingFactorClassificationPerformanceEvaluator)
+            // evaluator).setalpha(alphaOption.getValue());
             if (alphaOption.getValue() != .01) {
-                System.out.println("DEPRECATED! Use EvaluatePrequential -e (FadingFactorClassificationPerformanceEvaluator -a " + alphaOption.getValue() + ")");
+                System.out.println(
+                        "DEPRECATED! Use EvaluatePrequential -e"
+                                + " (FadingFactorClassificationPerformanceEvaluator -a "
+                                + alphaOption.getValue()
+                                + ")");
                 return learningCurve;
             }
         }
-        //End New for prequential methods
+        // End New for prequential methods
 
         learner.setModelContext(stream.getHeader());
         int maxInstances = this.instanceLimitOption.getValue();
@@ -160,28 +216,26 @@ public class EvaluatePrequentialMultiLabel extends MultiLabelMainTask {
         if (dumpFile != null) {
             try {
                 if (dumpFile.exists()) {
-                    immediateResultStream = new PrintStream(
-                            new FileOutputStream(dumpFile, true), true);
+                    immediateResultStream =
+                            new PrintStream(new FileOutputStream(dumpFile, true), true);
                 } else {
-                    immediateResultStream = new PrintStream(
-                            new FileOutputStream(dumpFile), true);
+                    immediateResultStream = new PrintStream(new FileOutputStream(dumpFile), true);
                 }
             } catch (Exception ex) {
-                throw new RuntimeException(
-                        "Unable to open immediate result file: " + dumpFile, ex);
+                throw new RuntimeException("Unable to open immediate result file: " + dumpFile, ex);
             }
         }
-        //File for output predictions
+        // File for output predictions
         File outputPredictionFile = this.outputPredictionFileOption.getFile();
         PrintStream outputPredictionResultStream = null;
         if (outputPredictionFile != null) {
             try {
                 if (outputPredictionFile.exists()) {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile, true), true);
+                    outputPredictionResultStream =
+                            new PrintStream(new FileOutputStream(outputPredictionFile, true), true);
                 } else {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile), true);
+                    outputPredictionResultStream =
+                            new PrintStream(new FileOutputStream(outputPredictionFile), true);
                 }
             } catch (Exception ex) {
                 throw new RuntimeException(
@@ -197,19 +251,18 @@ public class EvaluatePrequentialMultiLabel extends MultiLabelMainTask {
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))
                 && ((maxSeconds < 0) || (secondsElapsed < maxSeconds))) {
             Example trainInst = stream.nextInstance();
-            Example testInst = (Example) trainInst; //.copy();
+            Example testInst = (Example) trainInst; // .copy();
 
+            // testInst.setClassMissing();
+            // double[] prediction = learner.getVotesForInstance(testInst);
 
-            //testInst.setClassMissing();
-            //double[] prediction = learner.getVotesForInstance(testInst);
-
-            if ( instancesProcessed==0){
+            if (instancesProcessed == 0) {
                 learner.trainOnInstance(trainInst);
                 instancesProcessed++;
                 continue;
             }
 
-            //evaluator.addClassificationAttempt(trueClass, prediction, testInst.weight());
+            // evaluator.addClassificationAttempt(trueClass, prediction, testInst.weight());
 
             Prediction prediction = learner.getPredictionForInstance(testInst);
 
@@ -228,33 +281,35 @@ public class EvaluatePrequentialMultiLabel extends MultiLabelMainTask {
                     || stream.hasMoreInstances() == false) {
                 long evaluateTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
                 double time = TimingUtils.nanoTimeToSeconds(evaluateTime - evaluateStartTime);
-                double timeIncrement = TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);
-                double RAMHoursIncrement = learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); //GBs
-                RAMHoursIncrement *= (timeIncrement / 3600.0); //Hours
+                double timeIncrement =
+                        TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);
+                double RAMHoursIncrement =
+                        learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); // GBs
+                RAMHoursIncrement *= (timeIncrement / 3600.0); // Hours
                 RAMHours += RAMHoursIncrement;
                 lastEvaluateStartTime = evaluateTime;
-                learningCurve.insertEntry(new LearningEvaluation(
-                        new Measurement[]{
-                            new Measurement(
-                            "learning evaluation instances",
-                            instancesProcessed),
-                            new Measurement(
-                            "evaluation time ("
-                            + (preciseCPUTiming ? "cpu "
-                            : "") + "seconds)",
-                            time),
-                            new Measurement(
-                            "model cost (RAM-Hours)",
-                            RAMHours)
-                        },
-                        evaluator, learner));
+                learningCurve.insertEntry(
+                        new LearningEvaluation(
+                                new Measurement[] {
+                                    new Measurement(
+                                            "learning evaluation instances", instancesProcessed),
+                                    new Measurement(
+                                            "evaluation time ("
+                                                    + (preciseCPUTiming ? "cpu " : "")
+                                                    + "seconds)",
+                                            time),
+                                    new Measurement("model cost (RAM-Hours)", RAMHours)
+                                },
+                                evaluator,
+                                learner));
 
                 if (immediateResultStream != null) {
                     if (firstDump) {
                         immediateResultStream.println(learningCurve.headerToString());
                         firstDump = false;
                     }
-                    immediateResultStream.println(learningCurve.entryToString(learningCurve.numEntries() - 1));
+                    immediateResultStream.println(
+                            learningCurve.entryToString(learningCurve.numEntries() - 1));
                     immediateResultStream.flush();
                 }
             }
@@ -270,17 +325,23 @@ public class EvaluatePrequentialMultiLabel extends MultiLabelMainTask {
                         estimatedRemainingInstances = maxRemaining;
                     }
                 }
-                monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
-                        : (double) instancesProcessed
-                        / (double) (instancesProcessed + estimatedRemainingInstances));
+                monitor.setCurrentActivityFractionComplete(
+                        estimatedRemainingInstances < 0
+                                ? -1.0
+                                : (double) instancesProcessed
+                                        / (double)
+                                                (instancesProcessed + estimatedRemainingInstances));
                 if (monitor.resultPreviewRequested()) {
                     monitor.setLatestResultPreview(learningCurve.copy());
                 }
-                secondsElapsed = (int) TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread()
-                        - evaluateStartTime);
+                secondsElapsed =
+                        (int)
+                                TimingUtils.nanoTimeToSeconds(
+                                        TimingUtils.getNanoCPUTimeOfCurrentThread()
+                                                - evaluateStartTime);
             }
         }
-        StringBuilder sb= new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         learner.getDescription(sb, 0);
         System.out.println(sb.toString());
         if (immediateResultStream != null) {

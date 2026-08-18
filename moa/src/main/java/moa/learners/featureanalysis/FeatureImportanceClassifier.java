@@ -24,13 +24,13 @@ import moa.classifiers.Classifier;
 /**
  * Feature Importance Classifier
  *
- * <p>This interface defines the methods to be implemented on a Classifier to allow it to produce feature importances.
- * </p>
+ * <p>This interface defines the methods to be implemented on a Classifier to allow it to produce
+ * feature importances.
  *
- * <p>See details in:<br> Heitor Murilo Gomes, Rodrigo Fernandes de Mello, Bernhard Pfahringer, Albert Bifet.
- * Feature Scoring using Tree-Based Ensembles for Evolving Data Streams.
- * IEEE International Conference on Big Data (pp. 761-769), 2019</p>
- * </p>
+ * <p>See details in:<br>
+ * Heitor Murilo Gomes, Rodrigo Fernandes de Mello, Bernhard Pfahringer, Albert Bifet. Feature
+ * Scoring using Tree-Based Ensembles for Evolving Data Streams. IEEE International Conference on
+ * Big Data (pp. 761-769), 2019
  *
  * @author Heitor Murilo Gomes
  */
@@ -44,10 +44,10 @@ public interface FeatureImportanceClassifier extends Classifier {
     double[] getFeatureImportances(boolean normalize);
 
     /**
-     * The output is a double array where values indicates the
-     * original feature index and the order of the array its
-     * ranking. The size of this array is expected to be less than
-     * the complete set of features.
+     * The output is a double array where values indicates the original feature index and the order
+     * of the array its ranking. The size of this array is expected to be less than the complete set
+     * of features.
+     *
      * @param k
      * @param normalize
      * @return the k features with the highest scores.

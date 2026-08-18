@@ -14,46 +14,48 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
-
-
-
 
 package moa.classifiers.rules.multilabel.functions;
 
 import moa.classifiers.MultiLabelClassifier;
 import moa.options.ClassOption;
-import moa.classifiers.rules.functions.Perceptron;
 
 /**
- * Multi-Label perceptron classifier (by Binary Relevance).
- *This method computes a perceptron classifier per output
+ * Multi-Label perceptron classifier (by Binary Relevance). This method computes a perceptron
+ * classifier per output
+ *
  * @author RSousa
  * @version $Revision: 1 $
  */
 public class MultiLabelPerceptronClassification extends AbstractAMRulesFunctionBasicMlLearner
-                    implements MultiLabelClassifier, AMRulesFunction{
-    
+        implements MultiLabelClassifier, AMRulesFunction {
+
     private static final long serialVersionUID = 1L;
-    
+
     @Override
-    protected void init(){
-        baseLearnerOption=new ClassOption("baseLearner", 'l',
-            "moa.classifiers.functions.Perceptron", moa.classifiers.functions.Perceptron.class, "moa.classifiers.functions.Perceptron");
+    protected void init() {
+        baseLearnerOption =
+                new ClassOption(
+                        "baseLearner",
+                        'l',
+                        "moa.classifiers.functions.Perceptron",
+                        moa.classifiers.functions.Perceptron.class,
+                        "moa.classifiers.functions.Perceptron");
     }
 
     @Override
     public String getPurposeString() {
         return "Uses an ensemble of rules.Perceptron to preform multitarget regression.\n"
-	       + "Extends BasicMultiLabelLearner by allowing only rules.Perceptron";
+                + "Extends BasicMultiLabelLearner by allowing only rules.Perceptron";
     }
-    
+
     @Override
     public void resetWithMemory() {
-		//for (int i = 0; i < this.ensemble.length; i++) {
-		//TODO: JD - reset all statistics? how can we keep some memory?
-		//	
+        // for (int i = 0; i < this.ensemble.length; i++) {
+        // TODO: JD - reset all statistics? how can we keep some memory?
+        //
     }
 }

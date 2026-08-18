@@ -19,17 +19,15 @@
  */
 package moa.evaluation;
 
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Prediction;
+
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-
-import com.github.javacliparser.IntOption;
-
 import moa.tasks.TaskMonitor;
-
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Regression evaluator that updates evaluation results using a sliding window.
@@ -42,8 +40,7 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
 
     private static final long serialVersionUID = 1L;
 
-    public IntOption widthOption = new IntOption("width",
-            'w', "Size of Window", 1000);
+    public IntOption widthOption = new IntOption("width", 'w', "Size of Window", 1000);
 
     protected double TotalweightObserved = 0;
 
@@ -128,12 +125,16 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
             this.weightObserved.add(weight);
 
             if (prediction.length > 0) {
-                double meanTarget = this.weightObserved.total() != 0 ?
-                        this.sumTarget.total() / this.weightObserved.total() : 0.0;
+                double meanTarget =
+                        this.weightObserved.total() != 0
+                                ? this.sumTarget.total() / this.weightObserved.total()
+                                : 0.0;
 
-                this.squareError.add((inst.classValue() - prediction[0]) * (inst.classValue() - prediction[0]));
+                this.squareError.add(
+                        (inst.classValue() - prediction[0]) * (inst.classValue() - prediction[0]));
 
-                this.squareTargetError.add((inst.classValue() - meanTarget) * (inst.classValue() - meanTarget));
+                this.squareTargetError.add(
+                        (inst.classValue() - meanTarget) * (inst.classValue() - meanTarget));
                 this.sumTarget.add(inst.classValue());
                 this.numAttributes = inst.numAttributes();
 
@@ -141,32 +142,27 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
 
                 this.averageError.add(Math.abs(inst.classValue() - prediction[0]));
             }
-            //System.out.println(inst.classValue()+", "+prediction[0]);
+            // System.out.println(inst.classValue()+", "+prediction[0]);
         }
     }
 
     @Override
     public Measurement[] getPerformanceMeasurements() {
-        return new Measurement[]{
-                new Measurement("classified instances",
-                        getTotalWeightObserved()),
-                new Measurement("mean absolute error",
-                        getMeanError()),
-                new Measurement("root mean squared error",
-                        getSquareError()),
-                new Measurement("relative mean absolute error",
-                        getRelativeMeanError()),
-                new Measurement("relative root mean squared error",
-                        getRelativeSquareError()),
-                new Measurement("coefficient of determination",
-                        getCoefficientOfDetermination()),
-                new Measurement("adjusted coefficient of determination",
-                        getAdjustedCoefficientOfDetermination())
+        return new Measurement[] {
+            new Measurement("classified instances", getTotalWeightObserved()),
+            new Measurement("mean absolute error", getMeanError()),
+            new Measurement("root mean squared error", getSquareError()),
+            new Measurement("relative mean absolute error", getRelativeMeanError()),
+            new Measurement("relative root mean squared error", getRelativeSquareError()),
+            new Measurement("coefficient of determination", getCoefficientOfDetermination()),
+            new Measurement(
+                    "adjusted coefficient of determination",
+                    getAdjustedCoefficientOfDetermination())
         };
     }
 
     public double getCoefficientOfDetermination() {
-        if(weightObserved.total() > 0.0) {
+        if (weightObserved.total() > 0.0) {
             double SSres = squareError.total();
             double SStot = squareTargetError.total();
 
@@ -175,63 +171,62 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
         return 0.0;
     }
 
-
     public double getAdjustedCoefficientOfDetermination() {
-        return 1 - ((1-getCoefficientOfDetermination())*(getTotalWeightObserved() - 1)) /
-                (getTotalWeightObserved() - numAttributes - 1);
+        return 1
+                - ((1 - getCoefficientOfDetermination()) * (getTotalWeightObserved() - 1))
+                        / (getTotalWeightObserved() - numAttributes - 1);
     }
 
     private double getRelativeMeanError() {
-        //double targetMeanError = getTargetMeanError();
-        //return targetMeanError > 0 ? getMeanError()/targetMeanError : 0.0;
-        return this.averageTargetError.total() > 0 ?
-                this.averageError.total() / this.averageTargetError.total() : 0.0;
-//        //TODO: implement!
-//        return -1.0;
+        // double targetMeanError = getTargetMeanError();
+        // return targetMeanError > 0 ? getMeanError()/targetMeanError : 0.0;
+        return this.averageTargetError.total() > 0
+                ? this.averageError.total() / this.averageTargetError.total()
+                : 0.0;
+        //        //TODO: implement!
+        //        return -1.0;
     }
 
     private double getRelativeSquareError() {
-        //double targetSquareError = getTargetSquareError();
-        //return targetSquareError > 0 ? getSquareError()/targetSquareError : 0.0;
-        return Math.sqrt(this.squareTargetError.total() > 0 ?
-                this.squareError.total() / this.squareTargetError.total() : 0.0);
+        // double targetSquareError = getTargetSquareError();
+        // return targetSquareError > 0 ? getSquareError()/targetSquareError : 0.0;
+        return Math.sqrt(
+                this.squareTargetError.total() > 0
+                        ? this.squareError.total() / this.squareTargetError.total()
+                        : 0.0);
     }
 
     public double getTotalWeightObserved() {
-//        return this.weightObserved.total();
+        //        return this.weightObserved.total();
         return this.TotalweightObserved;
     }
 
     public double getMeanError() {
-        return this.weightObserved.total() > 0.0 ? this.averageError.total()
-                / this.weightObserved.total() : 0.0;
+        return this.weightObserved.total() > 0.0
+                ? this.averageError.total() / this.weightObserved.total()
+                : 0.0;
     }
 
     public double getSquareError() {
-        return Math.sqrt(this.weightObserved.total() > 0.0 ? this.squareError.total()
-                / this.weightObserved.total() : 0.0);
+        return Math.sqrt(
+                this.weightObserved.total() > 0.0
+                        ? this.squareError.total() / this.weightObserved.total()
+                        : 0.0);
     }
 
     @Override
     public void getDescription(StringBuilder sb, int indent) {
-        Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
-                sb, indent);
+        Measurement.getMeasurementsDescription(getPerformanceMeasurements(), sb, indent);
     }
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-                                  ObjectRepository repository) {
-    }
-
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {}
 
     @Override
     public void addResult(Example<Instance> testInst, Prediction prediction) {
         double votes[];
-        if(prediction==null)
-            votes = new double[0];
-        else
-            votes=prediction.getVotes();
+        if (prediction == null) votes = new double[0];
+        else votes = prediction.getVotes();
         addResult(testInst, votes);
-
     }
 }

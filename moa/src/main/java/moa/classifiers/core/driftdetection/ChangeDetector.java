@@ -21,7 +21,7 @@ package moa.classifiers.core.driftdetection;
 import moa.options.OptionHandler;
 
 /**
- *  Change Detector interface to implement methods that detects change.
+ * Change Detector interface to implement methods that detects change.
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
@@ -29,17 +29,15 @@ import moa.options.OptionHandler;
 public interface ChangeDetector extends OptionHandler {
 
     /**
-     * Resets this change detector. It must be similar to starting a new change
-     * detector from scratch.
-     *
+     * Resets this change detector. It must be similar to starting a new change detector from
+     * scratch.
      */
     public void resetLearning();
 
     /**
-     * Adding a numeric value to the change detector<br><br>
-     *
-     * The output of the change detector is modified after the insertion of a
-     * new item inside.
+     * Adding a numeric value to the change detector<br>
+     * <br>
+     * The output of the change detector is modified after the insertion of a new item inside.
      *
      * @param inputValue the number to insert into the change detector
      */
@@ -53,7 +51,8 @@ public interface ChangeDetector extends OptionHandler {
     public boolean getChange();
 
     /**
-     * Gets whether the change detector is in the warning zone, after a warning alert and before a change alert.
+     * Gets whether the change detector is in the warning zone, after a warning alert and before a
+     * change alert.
      *
      * @return true if the change detector is in the warning zone
      */
@@ -76,16 +75,16 @@ public interface ChangeDetector extends OptionHandler {
     /**
      * Gets the output state of the change detection.
      *
-     * @return an array with the number of change detections, number of
-     * warnings, delay, and estimation.
+     * @return an array with the number of change detections, number of warnings, delay, and
+     *     estimation.
      */
     public double[] getOutput();
 
     /**
      * Returns a string representation of the model.
      *
-     * @param sb	    the stringbuilder to add the description
-     * @param indent	the number of characters to indent
+     * @param sb the stringbuilder to add the description
+     * @param indent the number of characters to indent
      */
     @Override
     public void getDescription(StringBuilder sb, int indent);

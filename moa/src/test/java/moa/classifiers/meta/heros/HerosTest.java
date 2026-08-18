@@ -1,15 +1,14 @@
 package moa.classifiers.meta.heros;
 
-import org.junit.Ignore;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
 
-/**
- * Tests the Heros classifier.
- */
+import org.junit.Ignore;
+
+/** Tests the Heros classifier. */
 @Ignore("TODO test is platform specific and fails on GitHub due to DJL.")
 public class HerosTest extends AbstractMultipleClassifierTestCase {
     public HerosTest(String name) {
@@ -19,7 +18,9 @@ public class HerosTest extends AbstractMultipleClassifierTestCase {
 
     @Override
     protected Classifier[] getRegressionClassifierSetups() {
-        return new Classifier[] { new Heros(), };
+        return new Classifier[] {
+            new Heros(),
+        };
     }
 
     public static Test suite() {

@@ -13,11 +13,12 @@ package moa.streams.generators;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  */
 
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.*;
+
 import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
@@ -27,19 +28,22 @@ import moa.tasks.TaskMonitor;
 import java.util.ArrayList;
 import java.util.Random;
 
-/**
- * Text generator that simulates sentiment analysis on tweets.
- */
+/** Text generator that simulates sentiment analysis on tweets. */
 public class TextGenerator extends AbstractOptionHandler implements InstanceStream {
 
     private static final long serialVersionUID = 3028905554604259131L;
 
-    public IntOption numAttsOption = new IntOption("numAtts", 'a',
-            "The number of attributes to generate.", 1000, 0, Integer.MAX_VALUE);
+    public IntOption numAttsOption =
+            new IntOption(
+                    "numAtts",
+                    'a',
+                    "The number of attributes to generate.",
+                    1000,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public IntOption instanceRandomSeedOption = new IntOption(
-            "instanceRandomSeed", 'i',
-            "Seed for random generation of instances.", 1);
+    public IntOption instanceRandomSeedOption =
+            new IntOption("instanceRandomSeed", 'i', "Seed for random generation of instances.", 1);
 
     protected InstancesHeader streamHeader;
 
@@ -85,7 +89,7 @@ public class TextGenerator extends AbstractOptionHandler implements InstanceStre
             votes = new int[3];
             for (int j = 0; j < length; j++) {
                 double rand = this.instanceRandom.nextDouble();
-                //binary search
+                // binary search
                 int i = 0;
                 int min = 0;
                 int max = sizeTable - 1;
@@ -101,7 +105,6 @@ public class TextGenerator extends AbstractOptionHandler implements InstanceStre
 
                 attVals[this.wordTwitterGenerator[mid]] = 1;
                 votes[this.classTwitterGenerator[mid]]++;
-
             }
         } while (votes[1] == votes[2]);
 
@@ -122,7 +125,7 @@ public class TextGenerator extends AbstractOptionHandler implements InstanceStre
 
         this.sizeTable = this.numAttsOption.getValue();
 
-        //Prepare table of words to generate tweets
+        // Prepare table of words to generate tweets
         this.wordTwitterGenerator = new int[sizeTable];
         this.freqTwitterGenerator = new double[sizeTable];
         this.sumFreqTwitterGenerator = new double[sizeTable];
@@ -138,13 +141,13 @@ public class TextGenerator extends AbstractOptionHandler implements InstanceStre
             sum += this.freqTwitterGenerator[i];
             this.sumFreqTwitterGenerator[i] = sum;
             double rand = this.instanceRandom.nextDouble();
-            this.classTwitterGenerator[i] = (rand < probPositive ? 1 : (rand < probNegative + probPositive ? 2 : 0));
+            this.classTwitterGenerator[i] =
+                    (rand < probPositive ? 1 : (rand < probNegative + probPositive ? 2 : 0));
         }
         for (int i = 0; i < this.sizeTable; i++) {
             this.freqTwitterGenerator[i] /= sum;
             this.sumFreqTwitterGenerator[i] /= sum;
         }
-
     }
 
     @Override
@@ -154,11 +157,10 @@ public class TextGenerator extends AbstractOptionHandler implements InstanceStre
     }
 
     @Override
-    public void getDescription(StringBuilder sb, int indent) {
+    public void getDescription(StringBuilder sb, int indent) {}
 
-    }
     private void generateHeader() {
-        ArrayList<String>  classLabels = new ArrayList();
+        ArrayList<String> classLabels = new ArrayList();
         for (int i = 0; i < 2; i++) {
             classLabels.add("class" + (i + 1));
         }
@@ -167,11 +169,11 @@ public class TextGenerator extends AbstractOptionHandler implements InstanceStre
             attributes.add(new Attribute("att" + (i + 1), classLabels));
         }
         attributes.add(new Attribute("class", classLabels));
-        this.streamHeader = new InstancesHeader(new Instances(
-                getCLICreationString(InstanceStream.class), attributes, 0));
+        this.streamHeader =
+                new InstancesHeader(
+                        new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
         this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
     }
-
 
     public void changePolarity(int numberWords) {
         for (int i = 0; i < numberWords; ) {
@@ -196,6 +198,4 @@ public class TextGenerator extends AbstractOptionHandler implements InstanceStre
             this.wordTwitterGenerator[randWordFrom] = randWordTo;
         }
     }
-
-
 }

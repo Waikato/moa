@@ -29,21 +29,18 @@ import java.time.Duration;
  */
 public class KafkaUtils {
 
-  // The longest wait time that can be specified to Kafka calls
-  public static final Duration WAIT_AS_LONG_AS_POSSIBLE = Duration.ofMillis(Long.MAX_VALUE);
+    // The longest wait time that can be specified to Kafka calls
+    public static final Duration WAIT_AS_LONG_AS_POSSIBLE = Duration.ofMillis(Long.MAX_VALUE);
 
-  /**
-   * Generates a unique but consistent group ID string for
-   * an object.
-   */
-  public static String uniqueGroupIDString(Object obj) {
-    return Long.toHexString(System.currentTimeMillis()) + "-" + Integer.toHexString(obj.hashCode());
-  }
+    /** Generates a unique but consistent group ID string for an object. */
+    public static String uniqueGroupIDString(Object obj) {
+        return Long.toHexString(System.currentTimeMillis())
+                + "-"
+                + Integer.toHexString(obj.hashCode());
+    }
 
-  /**
-   * Gets the Kafka broker to connect to.
-   */
-  public static String broker(String host, String port) {
-    return host + ":" + port;
-  }
+    /** Gets the Kafka broker to connect to. */
+    public static String broker(String host, String port) {
+        return host + ":" + port;
+    }
 }

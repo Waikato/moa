@@ -18,39 +18,41 @@
  */
 package moa.classifiers.core.driftdetection;
 
-import com.github.javacliparser.IntOption;
 import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
 
 /**
- *  Drift detection method based in DDM method of Joao Gama SBIA 2004.
+ * Drift detection method based in DDM method of Joao Gama SBIA 2004.
  *
- *  <p>João Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues: Learning
- * with Drift Detection. SBIA 2004: 286-295 </p>
+ * <p>João Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues: Learning with Drift
+ * Detection. SBIA 2004: 286-295
  *
- *  @author Manuel Baena (mbaena@lcc.uma.es)
- *  @version $Revision: 7 $
+ * @author Manuel Baena (mbaena@lcc.uma.es)
+ * @version $Revision: 7 $
  */
 public class DDM extends AbstractChangeDetector {
 
     private static final long serialVersionUID = -3518369648142099719L;
 
-    //private static final int DDM_MINNUMINST = 30;
-    public IntOption minNumInstancesOption = new IntOption(
-            "minNumInstances",
-            'n',
-            "The minimum number of instances before permitting detecting change.",
-            30, 0, Integer.MAX_VALUE);
-    
-    public FloatOption warningLevelOption = new FloatOption(
-            "warningLevel", 'w', "Warning Level.",
-            2.0, 1.0, 4.0);
-        
-    public FloatOption outcontrolLevelOption = new FloatOption(
-            "outcontrolLevel", 'o', "Outcontrol Level.",
-            3.0, 1.0, 5.0);
-    
+    // private static final int DDM_MINNUMINST = 30;
+    public IntOption minNumInstancesOption =
+            new IntOption(
+                    "minNumInstances",
+                    'n',
+                    "The minimum number of instances before permitting detecting change.",
+                    30,
+                    0,
+                    Integer.MAX_VALUE);
+
+    public FloatOption warningLevelOption =
+            new FloatOption("warningLevel", 'w', "Warning Level.", 2.0, 1.0, 4.0);
+
+    public FloatOption outcontrolLevelOption =
+            new FloatOption("outcontrolLevel", 'o', "Outcontrol Level.", 3.0, 1.0, 5.0);
+
     private int m_n;
 
     private int minNumInstances;
@@ -116,15 +118,15 @@ public class DDM extends AbstractChangeDetector {
         }
 
         if (m_n > minNumInstances && m_p + m_s > m_pmin + outcontrolLevel * m_smin) {
-            //System.out.println(m_p + ",D");
+            // System.out.println(m_p + ",D");
             this.isChangeDetected = true;
-            //resetLearning();
+            // resetLearning();
         } else if (m_p + m_s > m_pmin + warningLevel * m_smin) {
-            //System.out.println(m_p + ",W");
+            // System.out.println(m_p + ",W");
             this.isWarningZone = true;
         } else {
             this.isWarningZone = false;
-            //System.out.println(m_p + ",N");
+            // System.out.println(m_p + ",N");
         }
     }
 
@@ -134,8 +136,7 @@ public class DDM extends AbstractChangeDetector {
     }
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
     }
 }

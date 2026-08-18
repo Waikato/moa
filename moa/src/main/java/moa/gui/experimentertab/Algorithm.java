@@ -1,6 +1,6 @@
 /*
  *    Algorithm.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand 
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -15,9 +15,11 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.experimentertab;
+
+import moa.core.DoubleVector;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import moa.core.DoubleVector;
 
 /**
  * This class calculates the different measures for each algorithm
@@ -34,25 +35,18 @@ import moa.core.DoubleVector;
  */
 public class Algorithm {
 
-    /**
-     * The name of the algorithms
-     */
+    /** The name of the algorithms */
     public String name;
-    
+
     public String path;
-    /**
-     * The list of measures per algorithm
-     */
+
+    /** The list of measures per algorithm */
     public List<Measure> measures = new ArrayList<>();
 
-    /**
-     * The results file for the algorithm
-     */
+    /** The results file for the algorithm */
     public BufferedReader buffer;
 
-    /**
-     * The same size that the measure list
-     */
+    /** The same size that the measure list */
     public int measureStdSize = 0;
 
     /**
@@ -63,18 +57,28 @@ public class Algorithm {
      * @param buffer
      * @param path
      */
-    public Algorithm(String name, List<Measure> measures, BufferedReader buffer,String path) {
+    public Algorithm(String name, List<Measure> measures, BufferedReader buffer, String path) {
 
         this.name = name;
         this.path = path;
         this.measureStdSize = measures.size();
-        measures.stream().map((measure) -> {
-            int index = ReadFile.getMeasureIndex(path,measure.getFileName());
-            this.measures.add(new Measure(measure.getName(),measure.getFileName(), measure.isType(), index));
-            return measure;
-        }).filter((measure) -> (measure.isType())).forEach((_item) -> {
-            this.measureStdSize++;
-        });
+        measures.stream()
+                .map(
+                        (measure) -> {
+                            int index = ReadFile.getMeasureIndex(path, measure.getFileName());
+                            this.measures.add(
+                                    new Measure(
+                                            measure.getName(),
+                                            measure.getFileName(),
+                                            measure.isType(),
+                                            index));
+                            return measure;
+                        })
+                .filter((measure) -> (measure.isType()))
+                .forEach(
+                        (_item) -> {
+                            this.measureStdSize++;
+                        });
 
         this.buffer = buffer;
         try {
@@ -82,13 +86,9 @@ public class Algorithm {
         } catch (IOException ex) {
             Logger.getLogger(Algorithm.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
-    /**
-     * calculates the different measures for each algorithm.
-     *
-     */
+    /** calculates the different measures for each algorithm. */
     private void calculateMeasures() throws IOException {
         int cont = 0;
         DoubleVector values[] = new DoubleVector[this.measures.size()];
@@ -103,27 +103,30 @@ public class Algorithm {
             for (int i = 0; i < this.measures.size(); i++) {
                 if (this.measures.get(i).isType()) {
 
-                   try{
-                       values[i].setValue(cont, Double.parseDouble(line[this.measures.get(i).getIndex()]));
-                   }catch(NumberFormatException exp){
-                       values[i].setValue(cont,0);
-                   }
+                    try {
+                        values[i].setValue(
+                                cont, Double.parseDouble(line[this.measures.get(i).getIndex()]));
+                    } catch (NumberFormatException exp) {
+                        values[i].setValue(cont, 0);
+                    }
 
                 } else {
-                    try{
-                        this.measures.get(i).setValue(Double.parseDouble(line[this.measures.get(i).getIndex()]));
-                    }catch(NumberFormatException exp){
-                       this.measures.get(i).setValue(0.0);
-                   }
+                    try {
+                        this.measures
+                                .get(i)
+                                .setValue(
+                                        Double.parseDouble(line[this.measures.get(i).getIndex()]));
+                    } catch (NumberFormatException exp) {
+                        this.measures.get(i).setValue(0.0);
+                    }
                 }
             }
             cont++;
         }
-        //compute values
+        // compute values
         for (int i = 0; i < this.measures.size(); i++) {
             this.measures.get(i).computeValue(values[i]);
         }
-
     }
 
     /**
@@ -155,8 +158,7 @@ public class Algorithm {
     }
 
     /**
-     * Returns the closest long to the argument, with ties rounding to positive
-     * infinity.
+     * Returns the closest long to the argument, with ties rounding to positive infinity.
      *
      * @return the value of the argument rounded to the nearest long value.
      */
@@ -173,5 +175,4 @@ public class Algorithm {
     static double Round(double x) {
         return (Math.floor((x + 0.005) * 100)) / 100;
     }
-
 }

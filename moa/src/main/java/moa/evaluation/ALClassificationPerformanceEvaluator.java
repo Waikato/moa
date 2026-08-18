@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
@@ -30,14 +30,13 @@ import moa.core.Example;
  * @version $Revision: 1 $
  */
 public interface ALClassificationPerformanceEvaluator extends ClassificationPerformanceEvaluator {
-	
-	   /**
-	     * Reports if a label of an instance was acquired.
-	     *
-	     * @param trainInst the instance that was previously considered
-	     * @param labelAcquired bool type which indicates if trainInst 
-	     *        was acquired by the active learner
-	     */
-		public void doLabelAcqReport(Example<Instance> trainInst, int labelAcquired);
 
+    /**
+     * Reports if a label of an instance was acquired.
+     *
+     * @param trainInst the instance that was previously considered
+     * @param labelAcquired bool type which indicates if trainInst was acquired by the active
+     *     learner
+     */
+    public void doLabelAcqReport(Example<Instance> trainInst, int labelAcquired);
 }

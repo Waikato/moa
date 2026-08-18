@@ -15,11 +15,11 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
- *    
+ *
+ *
  */
 
-/* Project Knowledge Discovery from Data Streams, FCT LIAAD-INESC TEC, 
+/* Project Knowledge Discovery from Data Streams, FCT LIAAD-INESC TEC,
  *
  * Contact: jgama@fep.up.pt
  */
@@ -27,13 +27,12 @@
 package moa.classifiers.core.splitcriteria;
 
 public class SDRSplitCriterion extends VarianceReductionSplitCriterion {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public static double computeSD(double[] dist) {
-    	int N = (int)dist[0];
+    public static double computeSD(double[] dist) {
+        int N = (int) dist[0];
         double sum = dist[1];
         double sumSq = dist[2];
-        return Math.sqrt((sumSq - ((sum * sum)/N))/N);
+        return Math.sqrt((sumSq - ((sum * sum) / N)) / N);
     }
-
 }

@@ -16,7 +16,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
@@ -30,25 +30,9 @@ import moa.tasks.EvaluatePrequential;
 import moa.tasks.MainTask;
 import moa.tasks.Task;
 import moa.tasks.TaskThread;
+
 import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -68,6 +52,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+
 /**
  * This panel displays the running tasks.
  *
@@ -81,8 +83,7 @@ public class TaskManagerPanel extends JPanel {
 
     public static String exportFileExtension = "log";
 
-    public class ProgressCellRenderer extends JProgressBar implements
-            TableCellRenderer {
+    public class ProgressCellRenderer extends JProgressBar implements TableCellRenderer {
 
         private static final long serialVersionUID = 1L;
 
@@ -92,9 +93,13 @@ public class TaskManagerPanel extends JPanel {
             setStringPainted(true);
         }
 
-         @Override
-        public Component getTableCellRendererComponent(JTable table,
-                Object value, boolean isSelected, boolean hasFocus, int row,
+        @Override
+        public Component getTableCellRendererComponent(
+                JTable table,
+                Object value,
+                boolean isSelected,
+                boolean hasFocus,
+                int row,
                 int column) {
             double frac = -1.0;
             if (value instanceof Double) {
@@ -106,29 +111,23 @@ public class TaskManagerPanel extends JPanel {
                 setString(StringUtils.doubleToString(frac * 100.0, 2, 2));
             } else {
                 setValue(0);
-                //setIndeterminate(true);
-                //setString("?");
+                // setIndeterminate(true);
+                // setString("?");
             }
             return this;
         }
 
         @Override
-        public void validate() {
-        }
+        public void validate() {}
 
         @Override
-        public void revalidate() {
-        }
+        public void revalidate() {}
 
         @Override
-        protected void firePropertyChange(String propertyName, Object oldValue,
-                Object newValue) {
-        }
+        protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {}
 
         @Override
-        public void firePropertyChange(String propertyName, boolean oldValue,
-                boolean newValue) {
-        }
+        public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {}
     }
 
     protected class TaskTableModel extends AbstractTableModel {
@@ -186,7 +185,7 @@ public class TaskManagerPanel extends JPanel {
         }
     }
 
-    protected MainTask currentTask = new EvaluatePrequential();//LearnModel();
+    protected MainTask currentTask = new EvaluatePrequential(); // LearnModel();
 
     protected List<TaskThread> taskList = new ArrayList<TaskThread>();
 
@@ -196,7 +195,11 @@ public class TaskManagerPanel extends JPanel {
 
     protected JButton runTaskButton = new JButton("Run");
 
-    protected JComboBox<String> viewModeList = new JComboBox<>(new String[]{Capability.VIEW_LITE.toString(), Capability.VIEW_STANDARD.toString()});
+    protected JComboBox<String> viewModeList =
+            new JComboBox<>(
+                    new String[] {
+                        Capability.VIEW_LITE.toString(), Capability.VIEW_STANDARD.toString()
+                    });
 
     protected TaskTableModel taskTableModel;
 
@@ -213,7 +216,7 @@ public class TaskManagerPanel extends JPanel {
     protected PreviewPanel previewPanel;
 
     private Preferences prefs;
-    
+
     private final String PREF_NAME = "currentTask";
 
     private final String PREF_VIEW_MODE = "viewModeOption";
@@ -224,62 +227,67 @@ public class TaskManagerPanel extends JPanel {
         currentTask = new EvaluatePrequential();
         String taskText = this.currentTask.getCLICreationString(MainTask.class);
         String propertyValue = prefs.get(PREF_NAME, taskText);
-        //this.taskDescField.setText(propertyValue);
-        setTaskString(propertyValue, false); //Not store preference
+        // this.taskDescField.setText(propertyValue);
+        setTaskString(propertyValue, false); // Not store preference
         this.taskDescField.setEditable(false);
-        
+
         final Component comp = this.taskDescField;
-        this.taskDescField.addMouseListener(new MouseAdapter() {
+        this.taskDescField.addMouseListener(
+                new MouseAdapter() {
 
-            @Override
-            public void mouseClicked(MouseEvent evt) {
-                if (evt.getClickCount() == 1) {
-                    if ((evt.getButton() == MouseEvent.BUTTON3)
-                            || ((evt.getButton() == MouseEvent.BUTTON1) && evt.isAltDown() && evt.isShiftDown())) {
-                        JPopupMenu menu = new JPopupMenu();
-                        JMenuItem item;
+                    @Override
+                    public void mouseClicked(MouseEvent evt) {
+                        if (evt.getClickCount() == 1) {
+                            if ((evt.getButton() == MouseEvent.BUTTON3)
+                                    || ((evt.getButton() == MouseEvent.BUTTON1)
+                                            && evt.isAltDown()
+                                            && evt.isShiftDown())) {
+                                JPopupMenu menu = new JPopupMenu();
+                                JMenuItem item;
 
-                        item = new JMenuItem("Copy configuration to clipboard");
-                        item.addActionListener(new ActionListener() {
+                                item = new JMenuItem("Copy configuration to clipboard");
+                                item.addActionListener(
+                                        new ActionListener() {
 
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                copyClipBoardConfiguration();
+                                            @Override
+                                            public void actionPerformed(ActionEvent e) {
+                                                copyClipBoardConfiguration();
+                                            }
+                                        });
+                                menu.add(item);
+
+                                item = new JMenuItem("Save selected tasks to file");
+                                item.addActionListener(
+                                        new ActionListener() {
+
+                                            @Override
+                                            public void actionPerformed(ActionEvent arg0) {
+                                                saveLogSelectedTasks();
+                                            }
+                                        });
+                                menu.add(item);
+
+                                item = new JMenuItem("Enter configuration...");
+                                item.addActionListener(
+                                        new ActionListener() {
+
+                                            @Override
+                                            public void actionPerformed(ActionEvent arg0) {
+                                                String newTaskString =
+                                                        JOptionPane.showInputDialog(
+                                                                "Insert command line");
+                                                if (newTaskString != null) {
+                                                    setTaskString(newTaskString);
+                                                }
+                                            }
+                                        });
+                                menu.add(item);
+
+                                menu.show(comp, evt.getX(), evt.getY());
                             }
-                        });
-                        menu.add(item);
-
-
-
-                        item = new JMenuItem("Save selected tasks to file");
-                        item.addActionListener(new ActionListener() {
-
-                            @Override
-                            public void actionPerformed(ActionEvent arg0) {
-                                saveLogSelectedTasks();
-                            }
-                        });
-                        menu.add(item);
-
-
-                        item = new JMenuItem("Enter configuration...");
-                        item.addActionListener(new ActionListener() {
-
-                            @Override
-                            public void actionPerformed(ActionEvent arg0) {
-                                String newTaskString = JOptionPane.showInputDialog("Insert command line");
-                                if (newTaskString != null) {
-                                    setTaskString(newTaskString);
-                                }
-                            }
-                        });
-                        menu.add(item);
-
-                        menu.show(comp, evt.getX(), evt.getY());
+                        }
                     }
-                }
-            }
-        });
+                });
 
         JPanel configPanel = new JPanel();
         configPanel.setLayout(new BorderLayout());
@@ -288,7 +296,9 @@ public class TaskManagerPanel extends JPanel {
         JPanel runViewPanel = new JPanel();
         runViewPanel.setLayout(new BorderLayout());
         runViewPanel.add(this.runTaskButton, BorderLayout.WEST);
-        this.viewModeList.setPrototypeDisplayValue(Capability.VIEW_EXPERIMENTAL.toString() + "        "); // Require extra spacing to force enough width
+        this.viewModeList.setPrototypeDisplayValue(
+                Capability.VIEW_EXPERIMENTAL.toString()
+                        + "        "); // Require extra spacing to force enough width
         runViewPanel.add(this.viewModeList, BorderLayout.EAST);
         configPanel.add(runViewPanel, BorderLayout.EAST);
         this.viewModeList.setSelectedIndex(prefs.getInt(PREF_VIEW_MODE, 0));
@@ -296,12 +306,9 @@ public class TaskManagerPanel extends JPanel {
         this.taskTable = new JTable(this.taskTableModel);
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        this.taskTable.getColumnModel().getColumn(1).setCellRenderer(
-                centerRenderer);
-        this.taskTable.getColumnModel().getColumn(2).setCellRenderer(
-                centerRenderer);
-        this.taskTable.getColumnModel().getColumn(4).setCellRenderer(
-                new ProgressCellRenderer());
+        this.taskTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+        this.taskTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+        this.taskTable.getColumnModel().getColumn(4).setCellRenderer(new ProgressCellRenderer());
         JPanel controlPanel = new JPanel();
         controlPanel.add(this.pauseTaskButton);
         controlPanel.add(this.resumeTaskButton);
@@ -311,79 +318,94 @@ public class TaskManagerPanel extends JPanel {
         add(configPanel, BorderLayout.NORTH);
         add(new JScrollPane(this.taskTable), BorderLayout.CENTER);
         add(controlPanel, BorderLayout.SOUTH);
-        this.taskTable.getSelectionModel().addListSelectionListener(
-                new ListSelectionListener() {
+        this.taskTable
+                .getSelectionModel()
+                .addListSelectionListener(
+                        new ListSelectionListener() {
+
+                            @Override
+                            public void valueChanged(ListSelectionEvent arg0) {
+                                taskSelectionChanged();
+                            }
+                        });
+        this.configureTaskButton.addActionListener(
+                new ActionListener() {
 
                     @Override
-                    public void valueChanged(ListSelectionEvent arg0) {
-                        taskSelectionChanged();
+                    public void actionPerformed(ActionEvent arg0) {
+                        CapabilityRequirement capReq = forViewSelection();
+                        ClassOptionSelectionPanel.setRequiredCapabilities(capReq);
+                        String newTaskString =
+                                ClassOptionSelectionPanel.showSelectClassDialog(
+                                        TaskManagerPanel.this,
+                                        "Configure task",
+                                        ClassificationMainTask.class,
+                                        TaskManagerPanel.this.currentTask.getCLICreationString(
+                                                ClassificationMainTask.class),
+                                        null);
+                        setTaskString(newTaskString);
+                        ClassOptionSelectionPanel.setRequiredCapabilities(null);
                     }
                 });
-        this.configureTaskButton.addActionListener(new ActionListener() {
+        this.viewModeList.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                CapabilityRequirement capReq = forViewSelection();
-                ClassOptionSelectionPanel.setRequiredCapabilities(capReq);
-                String newTaskString = ClassOptionSelectionPanel.showSelectClassDialog(TaskManagerPanel.this,
-                        "Configure task", ClassificationMainTask.class,
-                        TaskManagerPanel.this.currentTask.getCLICreationString(ClassificationMainTask.class),
-                        null);
-                setTaskString(newTaskString);
-                ClassOptionSelectionPanel.setRequiredCapabilities(null);
-            }
-        });
-        this.viewModeList.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        storeSelectedViewMode();
+                    }
+                });
+        this.runTaskButton.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                storeSelectedViewMode();
-            }
-        });
-        this.runTaskButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        runTask((Task) TaskManagerPanel.this.currentTask.copy());
+                    }
+                });
+        this.pauseTaskButton.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                runTask((Task) TaskManagerPanel.this.currentTask.copy());
-            }
-        });
-        this.pauseTaskButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        pauseSelectedTasks();
+                    }
+                });
+        this.resumeTaskButton.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                pauseSelectedTasks();
-            }
-        });
-        this.resumeTaskButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        resumeSelectedTasks();
+                    }
+                });
+        this.cancelTaskButton.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                resumeSelectedTasks();
-            }
-        });
-        this.cancelTaskButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        cancelSelectedTasks();
+                    }
+                });
+        this.deleteTaskButton.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                cancelSelectedTasks();
-            }
-        });
-        this.deleteTaskButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        deleteSelectedTasks();
+                    }
+                });
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                deleteSelectedTasks();
-            }
-        });
+        javax.swing.Timer updateListTimer =
+                new javax.swing.Timer(
+                        MILLISECS_BETWEEN_REFRESH,
+                        new ActionListener() {
 
-        javax.swing.Timer updateListTimer = new javax.swing.Timer(
-                MILLISECS_BETWEEN_REFRESH, new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                TaskManagerPanel.this.taskTable.repaint();
-            }
-        });
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                TaskManagerPanel.this.taskTable.repaint();
+                            }
+                        });
         updateListTimer.start();
         setPreferredSize(new Dimension(0, 200));
     }
@@ -395,16 +417,16 @@ public class TaskManagerPanel extends JPanel {
     public void setTaskString(String cliString) {
         setTaskString(cliString, true);
     }
-        
-    public void setTaskString(String cliString, boolean storePreference) {    
+
+    public void setTaskString(String cliString, boolean storePreference) {
         try {
-            this.currentTask = (MainTask) ClassOption.cliStringToObject(
-                    cliString, MainTask.class, null);
+            this.currentTask =
+                    (MainTask) ClassOption.cliStringToObject(cliString, MainTask.class, null);
             String taskText = this.currentTask.getCLICreationString(MainTask.class);
             this.taskDescField.setText(taskText);
-            if (storePreference == true){
-            //Save task text as a preference
-            prefs.put(PREF_NAME, taskText);
+            if (storePreference == true) {
+                // Save task text as a preference
+                prefs.put(PREF_NAME, taskText);
             }
         } catch (Exception ex) {
             GUIUtils.showExceptionDialog(this, "Problem with task", ex);
@@ -422,7 +444,9 @@ public class TaskManagerPanel extends JPanel {
     public void taskSelectionChanged() {
         TaskThread[] selectedTasks = getSelectedTasks();
         if (selectedTasks.length == 1) {
-            setTaskString(((OptionHandler) selectedTasks[0].getTask()).getCLICreationString(MainTask.class));
+            setTaskString(
+                    ((OptionHandler) selectedTasks[0].getTask())
+                            .getCLICreationString(MainTask.class));
             if (this.previewPanel != null) {
                 this.previewPanel.setTaskThreadToPreview(selectedTasks[0]);
             }
@@ -480,36 +504,31 @@ public class TaskManagerPanel extends JPanel {
         StringSelection selection = new StringSelection(this.taskDescField.getText().trim());
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, selection);
-
     }
 
     public void saveLogSelectedTasks() {
         String tasksLog = "";
         TaskThread[] selectedTasks = getSelectedTasks();
         for (TaskThread thread : selectedTasks) {
-            tasksLog += ((OptionHandler) thread.getTask()).getCLICreationString(MainTask.class) + "\n";
+            tasksLog +=
+                    ((OptionHandler) thread.getTask()).getCLICreationString(MainTask.class) + "\n";
         }
 
         BaseFileChooser fileChooser = new BaseFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(true);
-        fileChooser.addChoosableFileFilter(new FileExtensionFilter(
-                exportFileExtension));
+        fileChooser.addChoosableFileFilter(new FileExtensionFilter(exportFileExtension));
         if (fileChooser.showSaveDialog(this) == BaseFileChooser.APPROVE_OPTION) {
             File chosenFile = fileChooser.getSelectedFile();
             String fileName = chosenFile.getPath();
-            if (!chosenFile.exists()
-                    && !fileName.endsWith(exportFileExtension)) {
+            if (!chosenFile.exists() && !fileName.endsWith(exportFileExtension)) {
                 fileName = fileName + "." + exportFileExtension;
             }
             try {
-                PrintWriter out = new PrintWriter(new BufferedWriter(
-                        new FileWriter(fileName)));
+                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(fileName)));
                 out.write(tasksLog);
                 out.close();
             } catch (IOException ioe) {
-                GUIUtils.showExceptionDialog(
-                        this,
-                        "Problem saving file " + fileName, ioe);
+                GUIUtils.showExceptionDialog(this, "Problem saving file " + fileName, ioe);
             }
         }
     }
@@ -517,10 +536,11 @@ public class TaskManagerPanel extends JPanel {
     /**
      * Gets the requirement that a capabilities object must have the selected view.
      *
-     * @return  The requirement.
+     * @return The requirement.
      */
     private CapabilityRequirement forViewSelection() {
-        return CapabilityRequirement.has(Capability.forShortName((String) this.viewModeList.getSelectedItem()));
+        return CapabilityRequirement.has(
+                Capability.forShortName((String) this.viewModeList.getSelectedItem()));
     }
 
     private static void createAndShowGUI() {
@@ -543,13 +563,14 @@ public class TaskManagerPanel extends JPanel {
     public static void main(String[] args) {
         try {
             LookAndFeel.install();
-            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            javax.swing.SwingUtilities.invokeLater(
+                    new Runnable() {
 
-                @Override
-                public void run() {
-                    createAndShowGUI();
-                }
-            });
+                        @Override
+                        public void run() {
+                            createAndShowGUI();
+                        }
+                    });
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -16,20 +16,20 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
 import com.github.javacliparser.FlagOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Prediction;
+
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.Utils;
-
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Prediction;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
@@ -41,8 +41,7 @@ import java.util.ArrayList;
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
- * 
- * Updates in September 15th 2017 to include precision, recall and F1 scores.
+ *     <p>Updates in September 15th 2017 to include precision, recall and F1 scores.
  * @author Jean Karax (karaxjr@gmail.com)
  * @author Jean Paul Barddal (jean.barddal@ppgia.pucpr.br)
  * @author Wilson Sasaki Jr (sasaki.wilson.jr@gmail.com)
@@ -73,20 +72,19 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
 
     private double totalWeightObserved;
 
-    public FlagOption precisionRecallOutputOption = new FlagOption("precisionRecallOutput",
-            'o',
-            "Outputs average precision, recall and F1 scores.");
-    
-    public FlagOption precisionPerClassOption = new FlagOption("precisionPerClass",
-            'p',
-            "Report precision per class.");
+    public FlagOption precisionRecallOutputOption =
+            new FlagOption(
+                    "precisionRecallOutput",
+                    'o',
+                    "Outputs average precision, recall and F1 scores.");
 
-    public FlagOption recallPerClassOption = new FlagOption("recallPerClass",
-            'r',
-            "Report recall per class.");
+    public FlagOption precisionPerClassOption =
+            new FlagOption("precisionPerClass", 'p', "Report precision per class.");
 
-    public FlagOption f1PerClassOption = new FlagOption("f1PerClass", 'f',
-            "Report F1 per class.");
+    public FlagOption recallPerClassOption =
+            new FlagOption("recallPerClass", 'r', "Report recall per class.");
+
+    public FlagOption f1PerClassOption = new FlagOption("f1PerClass", 'f', "Report F1 per class.");
 
     @Override
     public void reset() {
@@ -160,42 +158,54 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
     public Measurement[] getPerformanceMeasurements() {
         ArrayList<Measurement> measurements = new ArrayList<Measurement>();
         measurements.add(new Measurement("classified instances", this.getTotalWeightObserved()));
-        measurements.add(new Measurement("classifications correct (percent)", this.getFractionCorrectlyClassified() * 100.0));
-        measurements.add(new Measurement("Kappa Statistic (percent)", this.getKappaStatistic() * 100.0));
-        measurements.add(new Measurement("Kappa Temporal Statistic (percent)", this.getKappaTemporalStatistic() * 100.0));
-        measurements.add(new Measurement("Kappa M Statistic (percent)", this.getKappaMStatistic() * 100.0));
-        if (precisionRecallOutputOption.isSet()) 
-            measurements.add(new Measurement("F1 Score (percent)", 
-                    this.getF1Statistic() * 100.0));
+        measurements.add(
+                new Measurement(
+                        "classifications correct (percent)",
+                        this.getFractionCorrectlyClassified() * 100.0));
+        measurements.add(
+                new Measurement("Kappa Statistic (percent)", this.getKappaStatistic() * 100.0));
+        measurements.add(
+                new Measurement(
+                        "Kappa Temporal Statistic (percent)",
+                        this.getKappaTemporalStatistic() * 100.0));
+        measurements.add(
+                new Measurement("Kappa M Statistic (percent)", this.getKappaMStatistic() * 100.0));
+        if (precisionRecallOutputOption.isSet())
+            measurements.add(new Measurement("F1 Score (percent)", this.getF1Statistic() * 100.0));
         if (f1PerClassOption.isSet()) {
             for (int i = 0; i < this.numClasses; i++) {
-                measurements.add(new Measurement("F1 Score for class " + i + 
-                        " (percent)", 100.0 * this.getF1Statistic(i)));
+                measurements.add(
+                        new Measurement(
+                                "F1 Score for class " + i + " (percent)",
+                                100.0 * this.getF1Statistic(i)));
             }
         }
         if (precisionRecallOutputOption.isSet())
-            measurements.add(new Measurement("Precision (percent)", 
-                this.getPrecisionStatistic() * 100.0));               
+            measurements.add(
+                    new Measurement("Precision (percent)", this.getPrecisionStatistic() * 100.0));
         if (precisionPerClassOption.isSet()) {
             for (int i = 0; i < this.numClasses; i++) {
-                measurements.add(new Measurement("Precision for class " + i + 
-                        " (percent)", 100.0 * this.getPrecisionStatistic(i)));
+                measurements.add(
+                        new Measurement(
+                                "Precision for class " + i + " (percent)",
+                                100.0 * this.getPrecisionStatistic(i)));
             }
         }
         if (precisionRecallOutputOption.isSet())
-            measurements.add(new Measurement("Recall (percent)", 
-                this.getRecallStatistic() * 100.0));
+            measurements.add(
+                    new Measurement("Recall (percent)", this.getRecallStatistic() * 100.0));
         if (recallPerClassOption.isSet()) {
             for (int i = 0; i < this.numClasses; i++) {
-                measurements.add(new Measurement("Recall for class " + i + 
-                        " (percent)", 100.0 * this.getRecallStatistic(i)));
+                measurements.add(
+                        new Measurement(
+                                "Recall for class " + i + " (percent)",
+                                100.0 * this.getRecallStatistic(i)));
             }
         }
 
         Measurement[] result = new Measurement[measurements.size()];
 
         return measurements.toArray(result);
-
     }
 
     public double getTotalWeightObserved() {
@@ -215,8 +225,7 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
             double p0 = getFractionCorrectlyClassified();
             double pc = 0.0;
             for (int i = 0; i < this.numClasses; i++) {
-                pc += this.rowKappa[i].estimation()
-                        * this.columnKappa[i].estimation();
+                pc += this.rowKappa[i].estimation() * this.columnKappa[i].estimation();
             }
             return (p0 - pc) / (1.0 - pc);
         } else {
@@ -271,19 +280,21 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
     }
 
     public double getF1Statistic() {
-        return 2 * ((this.getPrecisionStatistic() * this.getRecallStatistic())
-                / (this.getPrecisionStatistic() + this.getRecallStatistic()));
+        return 2
+                * ((this.getPrecisionStatistic() * this.getRecallStatistic())
+                        / (this.getPrecisionStatistic() + this.getRecallStatistic()));
     }
 
     public double getF1Statistic(int numClass) {
-        return 2 * ((this.getPrecisionStatistic(numClass) * this.getRecallStatistic(numClass))
-                / (this.getPrecisionStatistic(numClass) + this.getRecallStatistic(numClass)));
+        return 2
+                * ((this.getPrecisionStatistic(numClass) * this.getRecallStatistic(numClass))
+                        / (this.getPrecisionStatistic(numClass)
+                                + this.getRecallStatistic(numClass)));
     }
 
     @Override
     public void getDescription(StringBuilder sb, int indent) {
-        Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
-                sb, indent);
+        Measurement.getMeasurementsDescription(getPerformanceMeasurements(), sb, indent);
     }
 
     @Override
@@ -293,9 +304,7 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
     }
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
-
-    }
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {}
 
     public interface Estimator extends Serializable {
 
@@ -312,7 +321,7 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
 
         @Override
         public void add(double value) {
-            if(!Double.isNaN(value)) {
+            if (!Double.isNaN(value)) {
                 sum += value;
                 len++;
             }
@@ -322,19 +331,16 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
         public double estimation() {
             return sum / len;
         }
-
     }
 
     protected Estimator newEstimator() {
         return new BasicEstimator();
     }
 
-
     @Override
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == BasicClassificationPerformanceEvaluator.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

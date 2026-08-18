@@ -14,17 +14,18 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.evaluation;
 
-import java.util.ArrayList;
 import moa.cluster.Clustering;
 import moa.gui.visualization.DataPoint;
 
-public class SSQ extends MeasureCollection{
+import java.util.ArrayList;
+
+public class SSQ extends MeasureCollection {
 
     public SSQ() {
         super();
@@ -35,17 +36,18 @@ public class SSQ extends MeasureCollection{
         String[] names = {"SSQ"};
         return names;
     }
-    
-  @Override
-  protected boolean[] getDefaultEnabled() {
-      boolean [] defaults = {false};
-      return defaults;
-  }
-    
-    public void evaluateClustering(Clustering clustering, Clustering trueClsutering, ArrayList<DataPoint> points) {
+
+    @Override
+    protected boolean[] getDefaultEnabled() {
+        boolean[] defaults = {false};
+        return defaults;
+    }
+
+    public void evaluateClustering(
+            Clustering clustering, Clustering trueClsutering, ArrayList<DataPoint> points) {
         double sum = 0.0;
         for (int p = 0; p < points.size(); p++) {
-            //don't include noise
+            // don't include noise
             // Matthias Carnein 2019/09/20
             // Removed condition, will go out of bounds if class label does not exist
             // same as in SilhouetteCoefficient
@@ -61,15 +63,10 @@ public class SSQ extends MeasureCollection{
                 }
                 minDistance = Math.min(distance, minDistance);
             }
-            
-            sum+=minDistance;
+
+            sum += minDistance;
         }
-        
-        addValue(0,sum);
+
+        addValue(0, sum);
     }
-
-
-
-
-
 }

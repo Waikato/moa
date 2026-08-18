@@ -14,11 +14,18 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.recommender.dataset.impl;
+
+import com.github.javacliparser.FileOption;
+
+import moa.core.ObjectRepository;
+import moa.options.AbstractOptionHandler;
+import moa.recommender.dataset.Dataset;
+import moa.tasks.TaskMonitor;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -28,27 +35,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import moa.core.ObjectRepository;
-import moa.options.AbstractOptionHandler;
-import com.github.javacliparser.FileOption;
 
-import moa.recommender.dataset.Dataset;
-import moa.tasks.TaskMonitor;
-
-public class FlixsterDataset extends AbstractOptionHandler implements Dataset  {
+public class FlixsterDataset extends AbstractOptionHandler implements Dataset {
     private String strLine;
     private BufferedReader br;
-        public FileOption fileOption = new FileOption("file", 'f',
-            "File to load.", "/home/alex/datasets/ratings.txt", "txt", false);
-    
+    public FileOption fileOption =
+            new FileOption(
+                    "file", 'f', "File to load.", "/home/alex/datasets/ratings.txt", "txt", false);
+
     /*public FlixsterDataset() throws IOException {
         super();
         FileInputStream fstream = new FileInputStream("/home/alex/datasets/ratings.txt");
         DataInputStream in = new DataInputStream(fstream);
         br = new BufferedReader(new InputStreamReader(in));
     }*/
-        
-         @Override
+
+    @Override
     public String getPurposeString() {
         return "A Jester Dataset reader.";
     }
@@ -63,8 +65,7 @@ public class FlixsterDataset extends AbstractOptionHandler implements Dataset  {
             Logger.getLogger(MovielensDataset.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    
+
     @Override
     public boolean next() {
         try {
@@ -101,15 +102,16 @@ public class FlixsterDataset extends AbstractOptionHandler implements Dataset  {
     public void reset() {
         try {
             br.close();
-            //FileInputStream fstream = new FileInputStream("/home/alicia/datasets/flixster/ratings.txt");
-            //DataInputStream in = new DataInputStream(fstream);
-            //br = new BufferedReader(new InputStreamReader(in));
+            // FileInputStream fstream = new
+            // FileInputStream("/home/alicia/datasets/flixster/ratings.txt");
+            // DataInputStream in = new DataInputStream(fstream);
+            // br = new BufferedReader(new InputStreamReader(in));
             this.init();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
+
     @Override
     protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         this.init();

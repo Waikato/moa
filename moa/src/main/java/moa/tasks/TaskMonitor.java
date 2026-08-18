@@ -15,15 +15,15 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
 /**
- * Interface representing a task monitor. 
+ * Interface representing a task monitor.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $ 
+ * @version $Revision: 7 $
  */
 public interface TaskMonitor {
 
@@ -33,8 +33,7 @@ public interface TaskMonitor {
      * @param activityDescription the description of the current activity
      * @param fracComplete the percentage done of the current activity
      */
-    public void setCurrentActivity(String activityDescription,
-            double fracComplete);
+    public void setCurrentActivity(String activityDescription, double fracComplete);
 
     /**
      * Sets the description of the current activity.
@@ -85,22 +84,13 @@ public interface TaskMonitor {
      */
     public double getCurrentActivityFractionComplete();
 
-    /**
-     * Requests the task monitored to pause.
-     *
-     */
+    /** Requests the task monitored to pause. */
     public void requestPause();
 
-    /**
-     * Requests the task monitored to resume.
-     *
-     */
+    /** Requests the task monitored to resume. */
     public void requestResume();
 
-    /**
-     * Requests the task monitored to cancel.
-     *
-     */
+    /** Requests the task monitored to cancel. */
     public void requestCancel();
 
     /**
@@ -117,10 +107,7 @@ public interface TaskMonitor {
      */
     public boolean isCancelled();
 
-    /**
-     * Requests to preview the task result.
-     *
-     */
+    /** Requests to preview the task result. */
     public void requestResultPreview();
 
     /**

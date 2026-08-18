@@ -1,16 +1,16 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * 	        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the
- * License.  
+ * License.
  */
 package com.yahoo.labs.samoa.instances;
 
@@ -24,10 +24,10 @@ import java.util.List;
  *
  * @author abifet
  */
-public class WekaToSamoaInstanceConverter implements Serializable{
+public class WekaToSamoaInstanceConverter implements Serializable {
 
     protected Instances samoaInstanceInformation;
-    
+
     /**
      * Samoa instance from weka instance.
      *
@@ -45,25 +45,26 @@ public class WekaToSamoaInstanceConverter implements Serializable{
                     indexValues[i] = inst.index(i);
                 }
             }
-            samoaInstance = new SparseInstance(inst.weight(), attributeValues,
-                    indexValues, inst.numAttributes());
+            samoaInstance =
+                    new SparseInstance(
+                            inst.weight(), attributeValues, indexValues, inst.numAttributes());
         } else {
             samoaInstance = new DenseInstance(inst.weight(), inst.toDoubleArray());
-            //samoaInstance.deleteAttributeAt(inst.classIndex());
+            // samoaInstance.deleteAttributeAt(inst.classIndex());
         }
         if (this.samoaInstanceInformation == null) {
             this.samoaInstanceInformation = this.samoaInstancesInformation(inst.dataset());
         }
         samoaInstance.setDataset(samoaInstanceInformation);
 
-        if(inst.classIndex() >= 0) { // class attribute is present
+        if (inst.classIndex() >= 0) { // class attribute is present
             samoaInstance.setClassValue(inst.classValue());
         }
-        
+
         return samoaInstance;
     }
 
-     /**
+    /**
      * Samoa instances from weka instances.
      *
      * @param instances the instances
@@ -71,7 +72,7 @@ public class WekaToSamoaInstanceConverter implements Serializable{
      */
     public Instances samoaInstances(weka.core.Instances instances) {
         Instances samoaInstances = samoaInstancesInformation(instances);
-        //We assume that we have only one samoaInstanceInformation for WekaToSamoaInstanceConverter
+        // We assume that we have only one samoaInstanceInformation for WekaToSamoaInstanceConverter
         this.samoaInstanceInformation = samoaInstances;
         for (int i = 0; i < instances.numInstances(); i++) {
             samoaInstances.add(samoaInstance(instances.instance(i)));
@@ -79,7 +80,7 @@ public class WekaToSamoaInstanceConverter implements Serializable{
         return samoaInstances;
     }
 
-     /**
+    /**
      * Samoa instances information.
      *
      * @param instances the instances
@@ -92,16 +93,15 @@ public class WekaToSamoaInstanceConverter implements Serializable{
             attInfo.add(samoaAttribute(i, instances.attribute(i)));
         }
         samoaInstances = new Instances(instances.relationName(), attInfo, 0);
-        
-        if(instances.classIndex() >= 0) { // class attribute is present
+
+        if (instances.classIndex() >= 0) { // class attribute is present
             samoaInstances.setClassIndex(instances.classIndex());
         }
-        
+
         return samoaInstances;
     }
 
-    
-     /**
+    /**
      * Get Samoa attribute from a weka attribute.
      *
      * @param index the index

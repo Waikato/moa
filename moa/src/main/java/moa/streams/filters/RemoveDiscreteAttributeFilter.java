@@ -15,20 +15,22 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.filters;
 
-import java.util.ArrayList;
-import java.util.List;
-import moa.core.InstanceExample;
-import moa.streams.InstanceStream;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.SparseInstance;
+
 import moa.core.FastVector;
+import moa.core.InstanceExample;
+import moa.streams.InstanceStream;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Filter for removing discrete attributes in instances of a stream.
@@ -42,12 +44,13 @@ public class RemoveDiscreteAttributeFilter extends AbstractStreamFilter {
     public String getPurposeString() {
         return "Removes discrete attribute examples in a stream.";
     }
+
     private static final long serialVersionUID = 1L;
 
     protected InstancesHeader streamHeader;
 
     protected List<Integer> numericAttributes;
-    
+
     @Override
     protected void restartImpl() {
         this.streamHeader = null;
@@ -63,7 +66,7 @@ public class RemoveDiscreteAttributeFilter extends AbstractStreamFilter {
         Instance inst = (Instance) this.inputStream.nextInstance().getData();
 
         if (streamHeader == null) {
-            //Create a new header
+            // Create a new header
             FastVector attributes = new FastVector();
             numericAttributes = new ArrayList<Integer>();
             for (int i = 0; i < inst.numAttributes(); i++) {
@@ -74,16 +77,17 @@ public class RemoveDiscreteAttributeFilter extends AbstractStreamFilter {
             }
             attributes.addElement(inst.classAttribute());
             numericAttributes.add(inst.classIndex());
-            this.streamHeader = new InstancesHeader(new Instances(
-                    getCLICreationString(InstanceStream.class), attributes, 0));
+            this.streamHeader =
+                    new InstancesHeader(
+                            new Instances(
+                                    getCLICreationString(InstanceStream.class), attributes, 0));
             this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
-
         }
 
-        //Create a new instance
+        // Create a new instance
         double[] vals = new double[getHeader().numAttributes()];
         for (int i = 0; i < numericAttributes.size(); i++) {
-                vals[i] = inst.value(numericAttributes.get(i));
+            vals[i] = inst.value(numericAttributes.get(i));
         }
 
         Instance instance = null;
@@ -92,7 +96,6 @@ public class RemoveDiscreteAttributeFilter extends AbstractStreamFilter {
         } else {
             instance = new DenseInstance(inst.weight(), vals);
         }
-
 
         return new InstanceExample(instance);
     }

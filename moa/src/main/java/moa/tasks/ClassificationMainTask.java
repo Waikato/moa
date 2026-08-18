@@ -27,21 +27,19 @@ import moa.streams.clustering.ClusterEvent;
 import java.util.ArrayList;
 
 /**
- * Abstract Classification Main Task. All tasks that uses classifiers must
- * extend this class.
+ * Abstract Classification Main Task. All tasks that uses classifiers must extend this class.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public abstract class ClassificationMainTask extends MainTask
-                                             implements CapabilitiesHandler {
+public abstract class ClassificationMainTask extends MainTask implements CapabilitiesHandler {
 
     protected ArrayList<ClusterEvent> events;
 
     protected void setEventsList(ArrayList<ClusterEvent> events) {
         this.events = events;
     }
-    
+
     public ArrayList<ClusterEvent> getEventsList() {
         return this.events;
     }
@@ -50,5 +48,4 @@ public abstract class ClassificationMainTask extends MainTask
         // We are restricting tasks based on view mode
         return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
-    
 }

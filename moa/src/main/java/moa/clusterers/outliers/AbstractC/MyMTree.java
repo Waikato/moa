@@ -15,13 +15,12 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.clusterers.outliers.AbstractC;
 
-import java.util.Set;
 import moa.clusterers.outliers.utils.mtree.ComposedSplitFunction;
 import moa.clusterers.outliers.utils.mtree.DistanceFunction;
 import moa.clusterers.outliers.utils.mtree.DistanceFunctions;
@@ -31,22 +30,27 @@ import moa.clusterers.outliers.utils.mtree.PromotionFunction;
 import moa.clusterers.outliers.utils.mtree.utils.Pair;
 import moa.clusterers.outliers.utils.mtree.utils.Utils;
 
+import java.util.Set;
 
 class MyMTree extends MTree<StreamObj> {
 
-    private static final PromotionFunction<StreamObj> nonRandomPromotion = new PromotionFunction<StreamObj>() {
+    private static final PromotionFunction<StreamObj> nonRandomPromotion =
+            new PromotionFunction<StreamObj>() {
 
-        @Override
-        public Pair<StreamObj> process(Set<StreamObj> dataSet, DistanceFunction<? super StreamObj> distanceFunction) {
-            return Utils.minMax(dataSet);
-        }
-    };
+                @Override
+                public Pair<StreamObj> process(
+                        Set<StreamObj> dataSet,
+                        DistanceFunction<? super StreamObj> distanceFunction) {
+                    return Utils.minMax(dataSet);
+                }
+            };
 
     MyMTree() {
-        super(2, DistanceFunctions.EUCLIDEAN,
+        super(
+                2,
+                DistanceFunctions.EUCLIDEAN,
                 new ComposedSplitFunction<StreamObj>(
-                nonRandomPromotion,
-                new PartitionFunctions.BalancedPartition<StreamObj>()));
+                        nonRandomPromotion, new PartitionFunctions.BalancedPartition<StreamObj>()));
     }
 
     public void add(StreamObj data) {
@@ -63,4 +67,5 @@ class MyMTree extends MTree<StreamObj> {
     DistanceFunction<? super StreamObj> getDistanceFunction() {
         return distanceFunction;
     }
-};
+}
+;

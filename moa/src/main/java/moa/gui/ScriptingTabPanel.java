@@ -28,19 +28,16 @@ import java.util.Arrays;
 /**
  * Tab for performing scripting via jshell. Requires Java 9.
  *
- * See https://docs.oracle.com/javase/9/jshell/
+ * <p>See https://docs.oracle.com/javase/9/jshell/
  *
  * @author FracPete (fracpete at waikato dot ac dot nz)
  */
-public class ScriptingTabPanel
-  extends AbstractTabPanel {
+public class ScriptingTabPanel extends AbstractTabPanel {
 
     /** the panel to use. */
     protected JShellPanel m_PanelJShell;
 
-    /**
-     * Initializes the tab.
-     */
+    /** Initializes the tab. */
     public ScriptingTabPanel() {
         super();
         setLayout(new BorderLayout());
@@ -58,12 +55,12 @@ public class ScriptingTabPanel
      * @return the jar, null if not found
      */
     protected String locateSizeOfAg() {
-        String      result;
-        String[]      cp;
+        String result;
+        String[] cp;
 
         result = null;
-        cp     = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
-        for (String part: cp) {
+        cp = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
+        for (String part : cp) {
             if (part.toLowerCase().contains("sizeofag")) {
                 result = part;
                 break;

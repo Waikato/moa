@@ -15,13 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
-import java.awt.BorderLayout;
 import moa.gui.PreviewPanel.TypePanel;
 import moa.gui.conceptdrift.CDTaskManagerPanel;
+
+import java.awt.BorderLayout;
 
 /**
  * This panel allows the user to select and configure a task, and run it.
@@ -31,34 +32,30 @@ import moa.gui.conceptdrift.CDTaskManagerPanel;
  */
 public class ConceptDriftTabPanel extends AbstractTabPanel {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected CDTaskManagerPanel taskManagerPanel;
+    protected CDTaskManagerPanel taskManagerPanel;
 
-	protected PreviewPanel previewPanel;
+    protected PreviewPanel previewPanel;
 
-	public ConceptDriftTabPanel() {
-		this.taskManagerPanel = new CDTaskManagerPanel();
-		this.previewPanel = new PreviewPanel(TypePanel.CONCEPT_DRIFT, this.taskManagerPanel);
-		this.taskManagerPanel.setPreviewPanel(this.previewPanel);
-		setLayout(new BorderLayout());
-		add(this.taskManagerPanel, BorderLayout.NORTH);
-		add(this.previewPanel, BorderLayout.CENTER);
-	}
+    public ConceptDriftTabPanel() {
+        this.taskManagerPanel = new CDTaskManagerPanel();
+        this.previewPanel = new PreviewPanel(TypePanel.CONCEPT_DRIFT, this.taskManagerPanel);
+        this.taskManagerPanel.setPreviewPanel(this.previewPanel);
+        setLayout(new BorderLayout());
+        add(this.taskManagerPanel, BorderLayout.NORTH);
+        add(this.previewPanel, BorderLayout.CENTER);
+    }
 
-	//returns the string to display as title of the tab
+    // returns the string to display as title of the tab
     @Override
-	public String getTabTitle() {
-		return "Concept Drift";
-	}
+    public String getTabTitle() {
+        return "Concept Drift";
+    }
 
-	//a short description (can be used as tool tip) of the tab, or contributor, etc.
+    // a short description (can be used as tool tip) of the tab, or contributor, etc.
     @Override
-	public String getDescription(){
-		return "MOA Concept Drift";
-	}
-
+    public String getDescription() {
+        return "MOA Concept Drift";
+    }
 }
-
-
-

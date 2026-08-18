@@ -14,22 +14,22 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.recommender.rc.predictor.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import moa.recommender.rc.data.RecommenderData;
 import moa.recommender.rc.predictor.RatingPredictor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BaselinePredictor implements RatingPredictor {
-    /**
-     * 
-     */
+    /** */
     private static final long serialVersionUID = 8444152568941483368L;
+
     protected RecommenderData data;
 
     public BaselinePredictor(RecommenderData data) {
@@ -50,8 +50,7 @@ public class BaselinePredictor implements RatingPredictor {
         for (int i = 0; i < itemIDS.size(); ++i) {
             int itemID = itemIDS.get(i);
             double rat = avg + data.getAvgRatingItem(itemID);
-            rat = Math.min(Math.max(rat, data.getMinRating()),
-                    data.getMaxRating());
+            rat = Math.min(Math.max(rat, data.getMinRating()), data.getMaxRating());
             ret.add(rat);
         }
         return ret;
@@ -63,6 +62,5 @@ public class BaselinePredictor implements RatingPredictor {
     }
 
     @Override
-    public void train() {
-    }
+    public void train() {}
 }

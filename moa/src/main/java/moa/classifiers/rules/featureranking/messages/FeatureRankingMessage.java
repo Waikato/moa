@@ -19,6 +19,4 @@
  */
 package moa.classifiers.rules.featureranking.messages;
 
-public interface FeatureRankingMessage {
-
-}
+public interface FeatureRankingMessage {}

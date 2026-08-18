@@ -15,9 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.github.javacliparser.gui;
+
+import com.github.javacliparser.Option;
+
+import moa.gui.ClassOptionSelectionPanel;
+import moa.options.ClassOption;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -32,18 +37,13 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import moa.options.ClassOption;
-import com.github.javacliparser.Option;
-import moa.gui.ClassOptionSelectionPanel;
-
 /**
  * An OptionEditComponent that lets the user edit a class option.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class ClassOptionEditComponent extends JPanel implements
-        OptionEditComponent {
+public class ClassOptionEditComponent extends JPanel implements OptionEditComponent {
 
     private static final long serialVersionUID = 1L;
 
@@ -54,9 +54,9 @@ public class ClassOptionEditComponent extends JPanel implements
     protected JButton editButton = new JButton("Edit");
 
     /**
-     * Flag that says the text field is in the middle of an update operation.
-     * This is to prevent two change notifications from going out when the
-     * update is implemented as a remove followed by an insert.
+     * Flag that says the text field is in the middle of an update operation. This is to prevent two
+     * change notifications from going out when the update is implemented as a remove followed by an
+     * insert.
      */
     protected boolean midUpdate = false;
 
@@ -67,34 +67,37 @@ public class ClassOptionEditComponent extends JPanel implements
         ClassOption option = (ClassOption) opt;
         this.editedOption = option;
         this.textField.setEditable(false);
-        this.textField.getDocument().addDocumentListener(new DocumentListener() {
+        this.textField
+                .getDocument()
+                .addDocumentListener(
+                        new DocumentListener() {
 
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                if (!midUpdate)
-                    notifyChangeListeners();
-            }
+                            @Override
+                            public void removeUpdate(DocumentEvent e) {
+                                if (!midUpdate) notifyChangeListeners();
+                            }
 
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                notifyChangeListeners();
-            }
+                            @Override
+                            public void insertUpdate(DocumentEvent e) {
+                                notifyChangeListeners();
+                            }
 
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                notifyChangeListeners();
-            }
-        });
+                            @Override
+                            public void changedUpdate(DocumentEvent e) {
+                                notifyChangeListeners();
+                            }
+                        });
         setLayout(new BorderLayout());
         add(this.textField, BorderLayout.CENTER);
         add(this.editButton, BorderLayout.EAST);
-        this.editButton.addActionListener(new ActionListener() {
+        this.editButton.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                editObject();
-            }
-        });
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        editObject();
+                    }
+                });
         setEditState(this.editedOption.getValueAsCLIString());
     }
 
@@ -116,15 +119,18 @@ public class ClassOptionEditComponent extends JPanel implements
     }
 
     public void editObject() {
-        setEditState(ClassOptionSelectionPanel.showSelectClassDialog(this,
-                "Editing option: " + this.editedOption.getName(),
-                this.editedOption.getRequiredType(), this.textField.getText(),
-                this.editedOption.getNullString()));
+        setEditState(
+                ClassOptionSelectionPanel.showSelectClassDialog(
+                        this,
+                        "Editing option: " + this.editedOption.getName(),
+                        this.editedOption.getRequiredType(),
+                        this.textField.getText(),
+                        this.editedOption.getNullString()));
     }
 
     /**
-     * Adds the listener to the internal set of listeners. Gets notified when
-     * the option string changes.
+     * Adds the listener to the internal set of listeners. Gets notified when the option string
+     * changes.
      *
      * @param l the listener to add
      */
@@ -141,9 +147,7 @@ public class ClassOptionEditComponent extends JPanel implements
         changeListeners.remove(l);
     }
 
-    /**
-     * Notifies all registered change listeners that the options have changed.
-     */
+    /** Notifies all registered change listeners that the options have changed. */
     protected void notifyChangeListeners() {
         ChangeEvent e = new ChangeEvent(this);
         for (ChangeListener l : changeListeners) {

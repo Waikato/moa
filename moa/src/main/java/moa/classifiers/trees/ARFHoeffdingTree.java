@@ -1,6 +1,6 @@
 /*
  *    ARFHoeffdingTree.java
- * 
+ *
  *    @author Heitor Murilo Gomes (heitor_murilo_gomes at yahoo dot com dot br)
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,26 +20,26 @@
 package moa.classifiers.trees;
 
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.bayes.NaiveBayes;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.core.Utils;
-import com.yahoo.labs.samoa.instances.Instance;
 
 import java.util.ArrayList;
 
 /**
  * Adaptive Random Forest Hoeffding Tree.
- * 
- * <p>Adaptive Random Forest Hoeffding Tree. This is the base model for the 
- * Adaptive Random Forest ensemble learner 
- * (See moa.classifiers.meta.AdaptiveRandomForest.java). This Hoeffding Tree
- * includes a subspace size k parameter, which defines the number of randomly 
- * selected features to be considered at each split. </p>
- * 
- * <p>See details in:<br> Heitor Murilo Gomes, Albert Bifet, Jesse Read, 
- * Jean Paul Barddal, Fabricio Enembreck, Bernhard Pfharinger, Geoff Holmes, 
- * Talel Abdessalem. Adaptive random forests for evolving data stream classification. 
- * In Machine Learning, DOI: 10.1007/s10994-017-5642-8, Springer, 2017.</p>
+ *
+ * <p>Adaptive Random Forest Hoeffding Tree. This is the base model for the Adaptive Random Forest
+ * ensemble learner (See moa.classifiers.meta.AdaptiveRandomForest.java). This Hoeffding Tree
+ * includes a subspace size k parameter, which defines the number of randomly selected features to
+ * be considered at each split.
+ *
+ * <p>See details in:<br>
+ * Heitor Murilo Gomes, Albert Bifet, Jesse Read, Jean Paul Barddal, Fabricio Enembreck, Bernhard
+ * Pfharinger, Geoff Holmes, Talel Abdessalem. Adaptive random forests for evolving data stream
+ * classification. In Machine Learning, DOI: 10.1007/s10994-017-5642-8, Springer, 2017.
  *
  * @author Heitor Murilo Gomes (heitor_murilo_gomes at yahoo dot com dot br)
  * @version $Revision: 1 $
@@ -47,11 +47,16 @@ import java.util.ArrayList;
 public class ARFHoeffdingTree extends HoeffdingTree {
 
     private static final long serialVersionUID = 1L;
-    
-    public IntOption subspaceSizeOption = new IntOption("subspaceSizeSize", 'k',
-            "Number of features per subset for each node split.",
-            2, 1, Integer.MAX_VALUE);
-    
+
+    public IntOption subspaceSizeOption =
+            new IntOption(
+                    "subspaceSizeSize",
+                    'k',
+                    "Number of features per subset for each node split.",
+                    2,
+                    1,
+                    Integer.MAX_VALUE);
+
     @Override
     public String getPurposeString() {
         return "Adaptive Random Forest Hoeffding Tree for data streams. "
@@ -59,13 +64,13 @@ public class ARFHoeffdingTree extends HoeffdingTree {
     }
 
     public static class RandomLearningNode extends ActiveLearningNode {
-        
+
         private static final long serialVersionUID = 1L;
 
         protected int[] listAttributes;
 
         protected int numAttributes;
-        
+
         public RandomLearningNode(double[] initialClassObservations, int subspaceSize) {
             super(initialClassObservations);
             this.numAttributes = subspaceSize;
@@ -73,27 +78,29 @@ public class ARFHoeffdingTree extends HoeffdingTree {
 
         @Override
         public void learnFromInstance(Instance inst, HoeffdingTree ht) {
-            this.observedClassDistribution.addToValue((int) inst.classValue(),
-                    inst.weight());
+            this.observedClassDistribution.addToValue((int) inst.classValue(), inst.weight());
             if (this.listAttributes == null) {
                 // -1 to not count the class attribute
-                int totalInstanceNumberOfAttributes = (inst.numAttributes()-1);
-                // Check if the subspaceSize (numAttributes) is greater than the number of attributes in the instance.
-                // If yes, then override numAttributes to match the maximum number of attributes. Also, there is no
+                int totalInstanceNumberOfAttributes = (inst.numAttributes() - 1);
+                // Check if the subspaceSize (numAttributes) is greater than the number of
+                // attributes in the instance.
+                // If yes, then override numAttributes to match the maximum number of attributes.
+                // Also, there is no
                 // need to randomly select features, then just add all to the listAttributes.
-                if(this.numAttributes >= totalInstanceNumberOfAttributes || this.numAttributes < 0) {
+                if (this.numAttributes >= totalInstanceNumberOfAttributes
+                        || this.numAttributes < 0) {
                     this.numAttributes = totalInstanceNumberOfAttributes;
                     this.listAttributes = new int[this.numAttributes];
-                    for (int i = 0; i < totalInstanceNumberOfAttributes ; i++)
+                    for (int i = 0; i < totalInstanceNumberOfAttributes; i++)
                         this.listAttributes[i] = i;
                 } else {
                     this.listAttributes = new int[this.numAttributes];
                     // Creates a list with all possible indexes
                     ArrayList<Integer> allFeatureIndexes = new ArrayList<>();
-                    for (int i = 0; i < totalInstanceNumberOfAttributes ; i++)
+                    for (int i = 0; i < totalInstanceNumberOfAttributes; i++)
                         allFeatureIndexes.add(i);
                     // Randomly assign attributes to the list of attributes.
-                    for(int i = 0 ; i < this.listAttributes.length ; ++i) {
+                    for (int i = 0; i < this.listAttributes.length; ++i) {
                         int randIndex = ht.classifierRandom.nextInt(allFeatureIndexes.size());
                         this.listAttributes[i] = allFeatureIndexes.get(randIndex);
                         allFeatureIndexes.remove(randIndex);
@@ -101,15 +108,19 @@ public class ARFHoeffdingTree extends HoeffdingTree {
                 }
             }
 
-            for (int j = 0; j < this.listAttributes.length ; j++) {
+            for (int j = 0; j < this.listAttributes.length; j++) {
                 int i = this.listAttributes[j];
                 int instAttIndex = modelAttIndexToInstanceAttIndex(i, inst);
                 AttributeClassObserver obs = this.attributeObservers.get(i);
                 if (obs == null) {
-                    obs = inst.attribute(instAttIndex).isNominal() ? ht.newNominalClassObserver() : ht.newNumericClassObserver();
+                    obs =
+                            inst.attribute(instAttIndex).isNominal()
+                                    ? ht.newNominalClassObserver()
+                                    : ht.newNumericClassObserver();
                     this.attributeObservers.set(i, obs);
                 }
-                obs.observeAttributeClass(inst.value(instAttIndex), (int) inst.classValue(), inst.weight());
+                obs.observeAttributeClass(
+                        inst.value(instAttIndex), (int) inst.classValue(), inst.weight());
             }
         }
     }
@@ -125,9 +136,8 @@ public class ARFHoeffdingTree extends HoeffdingTree {
         @Override
         public double[] getClassVotes(Instance inst, HoeffdingTree ht) {
             if (getWeightSeen() >= ht.nbThresholdOption.getValue()) {
-                return NaiveBayes.doNaiveBayesPrediction(inst,
-                        this.observedClassDistribution,
-                        this.attributeObservers);
+                return NaiveBayes.doNaiveBayesPrediction(
+                        inst, this.observedClassDistribution, this.attributeObservers);
             }
             return super.getClassVotes(inst, ht);
         }
@@ -156,8 +166,10 @@ public class ARFHoeffdingTree extends HoeffdingTree {
             if (this.observedClassDistribution.maxIndex() == trueClass) {
                 this.mcCorrectWeight += inst.weight();
             }
-            if (Utils.maxIndex(NaiveBayes.doNaiveBayesPrediction(inst,
-                    this.observedClassDistribution, this.attributeObservers)) == trueClass) {
+            if (Utils.maxIndex(
+                            NaiveBayes.doNaiveBayesPrediction(
+                                    inst, this.observedClassDistribution, this.attributeObservers))
+                    == trueClass) {
                 this.nbCorrectWeight += inst.weight();
             }
             super.learnFromInstance(inst, ht);
@@ -168,25 +180,29 @@ public class ARFHoeffdingTree extends HoeffdingTree {
             if (this.mcCorrectWeight > this.nbCorrectWeight) {
                 return this.observedClassDistribution.getArrayCopy();
             }
-            return NaiveBayes.doNaiveBayesPrediction(inst,
-                    this.observedClassDistribution, this.attributeObservers);
+            return NaiveBayes.doNaiveBayesPrediction(
+                    inst, this.observedClassDistribution, this.attributeObservers);
         }
     }
 
     public ARFHoeffdingTree() {
         this.removePoorAttsOption = null;
     }
-    
+
     @Override
     protected LearningNode newLearningNode(double[] initialClassObservations) {
         LearningNode ret;
         int predictionOption = this.leafpredictionOption.getChosenIndex();
-        if (predictionOption == 0) { //MC
-            ret = new RandomLearningNode(initialClassObservations, this.subspaceSizeOption.getValue());
-        } else if (predictionOption == 1) { //NB
+        if (predictionOption == 0) { // MC
+            ret =
+                    new RandomLearningNode(
+                            initialClassObservations, this.subspaceSizeOption.getValue());
+        } else if (predictionOption == 1) { // NB
             ret = new LearningNodeNB(initialClassObservations, this.subspaceSizeOption.getValue());
-        } else { //NBAdaptive
-            ret = new LearningNodeNBAdaptive(initialClassObservations, this.subspaceSizeOption.getValue());
+        } else { // NBAdaptive
+            ret =
+                    new LearningNodeNBAdaptive(
+                            initialClassObservations, this.subspaceSizeOption.getValue());
         }
         return ret;
     }

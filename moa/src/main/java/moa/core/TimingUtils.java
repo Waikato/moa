@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
@@ -32,7 +32,8 @@ public class TimingUtils {
     public static boolean enablePreciseTiming() {
         if (!preciseThreadTimesAvailable) {
             try {
-                java.lang.management.ThreadMXBean tmxb = java.lang.management.ManagementFactory.getThreadMXBean();
+                java.lang.management.ThreadMXBean tmxb =
+                        java.lang.management.ManagementFactory.getThreadMXBean();
                 if (tmxb.isCurrentThreadCpuTimeSupported()) {
                     tmxb.setThreadCpuTimeEnabled(true);
                     preciseThreadTimesAvailable = true;
@@ -50,7 +51,9 @@ public class TimingUtils {
 
     public static long getNanoCPUTimeOfThread(long threadID) {
         if (preciseThreadTimesAvailable) {
-            long time = java.lang.management.ManagementFactory.getThreadMXBean().getThreadCpuTime(threadID);
+            long time =
+                    java.lang.management.ManagementFactory.getThreadMXBean()
+                            .getThreadCpuTime(threadID);
             if (time != -1) {
                 return time;
             }

@@ -13,62 +13,57 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * ALRandomTest.java
- * Copyright (C) 2016 Otto von Guericke University, Magdeburg, Germany
- */
+/** ALRandomTest.java Copyright (C) 2016 Otto von Guericke University, Magdeburg, Germany */
 package moa.classifiers.active;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
 
 /**
  * Tests the ALRandom classifier.
- * 
- * @author  Cornelius Styp von Rekowski (cornelius dot styp at ovgu dot de)
+ *
+ * @author Cornelius Styp von Rekowski (cornelius dot styp at ovgu dot de)
  */
-public class ALRandomTest
-  extends AbstractMultipleClassifierTestCase {
+public class ALRandomTest extends AbstractMultipleClassifierTestCase {
 
-  /**
-   * Constructs the test case. Called by subclasses.
-   *
-   * @param name 	the name of the test
-   */
-  public ALRandomTest(String name) {
-    super(name);
-    this.setNumberTests(1);
-  }
+    /**
+     * Constructs the test case. Called by subclasses.
+     *
+     * @param name the name of the test
+     */
+    public ALRandomTest(String name) {
+        super(name);
+        this.setNumberTests(1);
+    }
 
-  /**
-   * Returns the classifier setups to use in the regression test.
-   *
-   * @return		the setups
-   */
-  @Override
-  protected Classifier[] getRegressionClassifierSetups() {
-	return new Classifier[]{
-		new ALRandom()
-	};
-  }
-  
-  /**
-   * Returns a test suite.
-   *
-   * @return		the test suite
-   */
-  public static Test suite() {
-    return new TestSuite(ALRandomTest.class);
-  }
+    /**
+     * Returns the classifier setups to use in the regression test.
+     *
+     * @return the setups
+     */
+    @Override
+    protected Classifier[] getRegressionClassifierSetups() {
+        return new Classifier[] {new ALRandom()};
+    }
 
-  /**
-   * Runs the test from commandline.
-   *
-   * @param args	ignored
-   */
-  public static void main(String[] args) {
-    runTest(suite());
-  }
+    /**
+     * Returns a test suite.
+     *
+     * @return the test suite
+     */
+    public static Test suite() {
+        return new TestSuite(ALRandomTest.class);
+    }
+
+    /**
+     * Runs the test from commandline.
+     *
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        runTest(suite());
+    }
 }

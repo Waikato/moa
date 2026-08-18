@@ -2,7 +2,7 @@
  *    IADEM3Tree.java
  *
  *    @author Isvani Frías-Blanco
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
@@ -14,45 +14,56 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.classifiers.trees.iadem;
 
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import java.io.Serializable;
-import java.util.Arrays;
 
 import moa.classifiers.MultiClassClassifier;
-import moa.classifiers.core.driftdetection.AbstractChangeDetector;
-import moa.core.AutoExpandVector;
-import java.util.ArrayList;
-import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.classifiers.core.conditionaltests.NominalAttributeMultiwayTest;
 import moa.classifiers.core.conditionaltests.NumericAttributeBinaryTest;
+import moa.classifiers.core.driftdetection.AbstractChangeDetector;
+import moa.core.AutoExpandVector;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+
 import weka.core.Utils;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @author Isvani Frías Blanco (ifriasb at hotmail dot com)
  */
 public class Iadem3 extends Iadem2 implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
 
-    public IntOption maxNestingLevelOption = new IntOption("maxNestingLevel", 'p',
-            "Maximum level of nesting for alternative subtrees (-1 => unbounded).",
-            1, -1, Integer.MAX_VALUE);
+    public IntOption maxNestingLevelOption =
+            new IntOption(
+                    "maxNestingLevel",
+                    'p',
+                    "Maximum level of nesting for alternative subtrees (-1 => unbounded).",
+                    1,
+                    -1,
+                    Integer.MAX_VALUE);
 
-    public IntOption maxSubtreesPerNodeOption = new IntOption("maxSubtreesPerNode", 'w',
-            "Maximum number of alternative subtrees per split node (-1 => unbounded).",
-            1, -1, Integer.MAX_VALUE);
+    public IntOption maxSubtreesPerNodeOption =
+            new IntOption(
+                    "maxSubtreesPerNode",
+                    'w',
+                    "Maximum number of alternative subtrees per split node (-1 => unbounded).",
+                    1,
+                    -1,
+                    Integer.MAX_VALUE);
 
     protected final boolean restartAtDrift = true;
 
@@ -60,29 +71,29 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
     protected int deletedTrees = 0;
     protected int numTrees = 0;
 
-    protected int lastPrediction = -1,
-            lastPredictionInLeaf = -1;
+    protected int lastPrediction = -1, lastPredictionInLeaf = -1;
     //
     protected int treeLevel = 0;
     protected AutoExpandVector<Iadem3Subtree> subtreeList = new AutoExpandVector<Iadem3Subtree>();
 
     protected int currentSplitState = -1;
-    protected final int SPLIT_BY_TIE_BREAKING = 0,
-            SPLIT_WITH_CONFIDENCE = 1;
+    protected final int SPLIT_BY_TIE_BREAKING = 0, SPLIT_WITH_CONFIDENCE = 1;
 
     public int numSplitsByBreakingTies = 0;
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        return new Measurement[]{
+        return new Measurement[] {
             new Measurement("tree size (nodes)", this.getNumberOfNodes()),
             new Measurement("tree size (leaves)", this.getNumberOfLeaves()),
             new Measurement("interchanged trees", this.getChangedTrees())
         };
     }
-    
+
     public AbstractChangeDetector getEstimatorCopy() {
-        return (AbstractChangeDetector) ((AbstractChangeDetector) getPreparedClassOption(this.driftDetectionMethodOption)).copy();
+        return (AbstractChangeDetector)
+                ((AbstractChangeDetector) getPreparedClassOption(this.driftDetectionMethodOption))
+                        .copy();
     }
 
     @Override
@@ -113,63 +124,72 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
     }
 
     @Override
-    public LeafNode newLeafNode(Node parent,
+    public LeafNode newLeafNode(
+            Node parent,
             long instTreeCountSinceVirtual,
             long instNodeCountSinceVirtual,
             double[] initialClassCount,
             Instance instance) {
         switch (this.leafPredictionOption.getChosenIndex()) {
-            case 0: {
-                return new AdaptiveLeafNode(this,
-                        parent,
-                        instTreeCountSinceVirtual,
-                        instNodeCountSinceVirtual,
-                        initialClassCount,
-                        newNumericClassObserver(),
-                        this.estimator,
-                        this.splitTestsOption.getChosenIndex() == 2,
-                        this.splitTestsOption.getChosenIndex() == 0,
-                        instance);
-            }
-            case 1: {
-                return new AdaptiveLeafNodeNB(this,
-                        parent,
-                        instTreeCountSinceVirtual,
-                        instNodeCountSinceVirtual,
-                        initialClassCount,
-                        newNumericClassObserver(),
-                        this.naiveBayesLimit,
-                        this.estimator,
-                        this.splitTestsOption.getChosenIndex() == 2,
-                        this.splitTestsOption.getChosenIndex() == 0,
-                        instance);
-            }
-            case 2: {
-                return new AdaptiveLeafNodeNBKirkby(this,
-                        parent,
-                        instTreeCountSinceVirtual,
-                        instNodeCountSinceVirtual,
-                        initialClassCount,
-                        newNumericClassObserver(),
-                        this.naiveBayesLimit,
-                        this.splitTestsOption.getChosenIndex() == 2,
-                        this.splitTestsOption.getChosenIndex() == 0,
-                        this.estimator,
-                        instance);
-            }
-            default: {
-                return new AdaptiveLeafNodeWeightedVote(this,
-                        parent,
-                        instTreeCountSinceVirtual,
-                        instNodeCountSinceVirtual,
-                        initialClassCount,
-                        newNumericClassObserver(),
-                        this.naiveBayesLimit,
-                        this.splitTestsOption.getChosenIndex() == 2,
-                        this.splitTestsOption.getChosenIndex() == 0,
-                        this.estimator,
-                        instance);
-            }
+            case 0:
+                {
+                    return new AdaptiveLeafNode(
+                            this,
+                            parent,
+                            instTreeCountSinceVirtual,
+                            instNodeCountSinceVirtual,
+                            initialClassCount,
+                            newNumericClassObserver(),
+                            this.estimator,
+                            this.splitTestsOption.getChosenIndex() == 2,
+                            this.splitTestsOption.getChosenIndex() == 0,
+                            instance);
+                }
+            case 1:
+                {
+                    return new AdaptiveLeafNodeNB(
+                            this,
+                            parent,
+                            instTreeCountSinceVirtual,
+                            instNodeCountSinceVirtual,
+                            initialClassCount,
+                            newNumericClassObserver(),
+                            this.naiveBayesLimit,
+                            this.estimator,
+                            this.splitTestsOption.getChosenIndex() == 2,
+                            this.splitTestsOption.getChosenIndex() == 0,
+                            instance);
+                }
+            case 2:
+                {
+                    return new AdaptiveLeafNodeNBKirkby(
+                            this,
+                            parent,
+                            instTreeCountSinceVirtual,
+                            instNodeCountSinceVirtual,
+                            initialClassCount,
+                            newNumericClassObserver(),
+                            this.naiveBayesLimit,
+                            this.splitTestsOption.getChosenIndex() == 2,
+                            this.splitTestsOption.getChosenIndex() == 0,
+                            this.estimator,
+                            instance);
+                }
+            default:
+                {
+                    return new AdaptiveLeafNodeWeightedVote(
+                            this,
+                            parent,
+                            instTreeCountSinceVirtual,
+                            instNodeCountSinceVirtual,
+                            initialClassCount,
+                            newNumericClassObserver(),
+                            this.naiveBayesLimit,
+                            this.splitTestsOption.getChosenIndex() == 2,
+                            this.splitTestsOption.getChosenIndex() == 0,
+                            this.estimator,
+                            instance);
+                }
         }
     }
 
@@ -252,9 +272,8 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
     }
 
     @Override
-    public void learnFromInstance(Instance instance)
-            throws IademException {
-        getClassVotes(instance); // to update lastPrediction in the trees 
+    public void learnFromInstance(Instance instance) throws IademException {
+        getClassVotes(instance); // to update lastPrediction in the trees
         getClassVotesFromLeaf(instance);
         super.learnFromInstance(instance);
     }
@@ -326,7 +345,8 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
         private static final long serialVersionUID = 1L;
         protected AbstractChangeDetector estimator;
 
-        public AdaptiveLeafNode(Iadem3 arbol,
+        public AdaptiveLeafNode(
+                Iadem3 arbol,
                 Node parent,
                 long instTreeCountSinceVirtual,
                 long instNodeCountSinceVirtual,
@@ -336,8 +356,16 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
                 boolean onlyMultiwayTest,
                 boolean onlyBinaryTest,
                 Instance instance) {
-            super(arbol,
-                    parent, instTreeCountSinceVirtual, instNodeCountSinceVirtual, initialClassCount, numericAttClassObserver, onlyMultiwayTest, onlyBinaryTest, instance);
+            super(
+                    arbol,
+                    parent,
+                    instTreeCountSinceVirtual,
+                    instNodeCountSinceVirtual,
+                    initialClassCount,
+                    numericAttClassObserver,
+                    onlyMultiwayTest,
+                    onlyBinaryTest,
+                    instance);
             if (estimator != null) {
                 this.estimator = (AbstractChangeDetector) estimator.copy();
             } else {
@@ -346,31 +374,29 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
         }
 
         @Override
-        protected void createVirtualNodes(IademNumericAttributeObserver numericAttClassObserver,
+        protected void createVirtualNodes(
+                IademNumericAttributeObserver numericAttClassObserver,
                 boolean onlyMultiwayTest,
                 boolean onlyBinaryTest,
                 Instance instance) {
             ArrayList<Integer> nominalUsed = nominalAttUsed(instance);
             TreeSet<Integer> sort = new TreeSet<>(nominalUsed);
             for (int i = 0; i < instance.numAttributes(); i++) {
-                if (instance.classIndex() != i
-                        && instance.attribute(i).isNominal()) {
+                if (instance.classIndex() != i && instance.attribute(i).isNominal()) {
                     if ((!sort.isEmpty()) && (i == sort.first())) {
                         sort.remove(new Integer(sort.first()));
                         virtualChildren.set(i, null);
                     } else {
-                        virtualChildren.set(i, new AdaptiveNominalVirtualNode((Iadem3) tree,
-                                this,
+                        virtualChildren.set(
                                 i,
-                                onlyMultiwayTest,
-                                onlyBinaryTest));
+                                new AdaptiveNominalVirtualNode(
+                                        (Iadem3) tree, this, i, onlyMultiwayTest, onlyBinaryTest));
                     }
-                } else if (instance.classIndex() != i
-                        && instance.attribute(i).isNumeric()) {
-                    virtualChildren.set(i, new AdaptiveNumericVirtualNode((Iadem3) tree,
-                            this,
+                } else if (instance.classIndex() != i && instance.attribute(i).isNumeric()) {
+                    virtualChildren.set(
                             i,
-                            numericAttClassObserver));
+                            new AdaptiveNumericVirtualNode(
+                                    (Iadem3) tree, this, i, numericAttClassObserver));
                 } else {
                     virtualChildren.set(i, null);
                 }
@@ -400,13 +426,15 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
                             ((Iadem3) this.tree).updateNumberOfNodesSplitByTieBreaking(1);
                             bestSplitSuggestion = getFastSplitSuggestion(instance);
                             if (bestSplitSuggestion != null) {
-                                ((Iadem3) this.tree).currentSplitState = ((Iadem3) this.tree).SPLIT_BY_TIE_BREAKING;
+                                ((Iadem3) this.tree).currentSplitState =
+                                        ((Iadem3) this.tree).SPLIT_BY_TIE_BREAKING;
                                 doSplit(bestSplitSuggestion, instance);
                             }
                         } else {
                             bestSplitSuggestion = getBestSplitSuggestion(instance);
                             if (bestSplitSuggestion != null) {
-                                ((Iadem3) this.tree).currentSplitState = ((Iadem3) this.tree).SPLIT_WITH_CONFIDENCE;
+                                ((Iadem3) this.tree).currentSplitState =
+                                        ((Iadem3) this.tree).SPLIT_WITH_CONFIDENCE;
                                 doSplit(bestSplitSuggestion, instance);
                             }
                         }
@@ -424,12 +452,18 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
         }
 
         @Override
-        public AdaptiveLeafNode[] doSplit(IademAttributeSplitSuggestion mejorExpansion, Instance instance) {
+        public AdaptiveLeafNode[] doSplit(
+                IademAttributeSplitSuggestion mejorExpansion, Instance instance) {
             AdaptiveSplitNode splitNode;
-            splitNode = (AdaptiveSplitNode) virtualChildren.get(mejorExpansion.splitTest.getAttsTestDependsOn()[0]).getNewSplitNode(instTreeCountSinceReal,
-                    parent,
-                    mejorExpansion,
-                    instance);
+            splitNode =
+                    (AdaptiveSplitNode)
+                            virtualChildren
+                                    .get(mejorExpansion.splitTest.getAttsTestDependsOn()[0])
+                                    .getNewSplitNode(
+                                            instTreeCountSinceReal,
+                                            parent,
+                                            mejorExpansion,
+                                            instance);
             splitNode.setParent(this.parent);
             splitNode.estimator = this.tree.newEstimator();
 
@@ -462,7 +496,8 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
         private static final long serialVersionUID = 1L;
         protected int limitNaiveBayes;
 
-        public AdaptiveLeafNodeNB(Iadem3 tree,
+        public AdaptiveLeafNodeNB(
+                Iadem3 tree,
                 Node parent,
                 long instTreeCountSinceVirtual,
                 long instNodeCountSinceVirtual,
@@ -473,7 +508,8 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
                 boolean onlyMultiwayTest,
                 boolean onlyBinaryTest,
                 Instance instance) {
-            super(tree,
+            super(
+                    tree,
                     parent,
                     instTreeCountSinceVirtual,
                     instNodeCountSinceVirtual,
@@ -532,10 +568,10 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
     public class AdaptiveLeafNodeNBAdaptive extends AdaptiveLeafNodeNB {
 
         private static final long serialVersionUID = 1L;
-        protected AbstractChangeDetector naiveBayesError,
-                majorityClassError;
+        protected AbstractChangeDetector naiveBayesError, majorityClassError;
 
-        public AdaptiveLeafNodeNBAdaptive(Iadem3 tree,
+        public AdaptiveLeafNodeNBAdaptive(
+                Iadem3 tree,
                 Node parent,
                 long instancesProcessedByTheTree,
                 long instancesProcessedByThisLeaf,
@@ -546,7 +582,8 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
                 boolean onlyBinaryTest,
                 AbstractChangeDetector estimator,
                 Instance instance) {
-            super(tree,
+            super(
+                    tree,
                     parent,
                     instancesProcessedByTheTree,
                     instancesProcessedByThisLeaf,
@@ -584,16 +621,15 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
 
             return super.learnFromInstance(inst);
         }
-
     }
 
     public class AdaptiveLeafNodeNBKirkby extends AdaptiveLeafNodeNB {
 
         private static final long serialVersionUID = 1L;
-        protected int naiveBayesError,
-                majorityClassError;
+        protected int naiveBayesError, majorityClassError;
 
-        public AdaptiveLeafNodeNBKirkby(Iadem3 tree,
+        public AdaptiveLeafNodeNBKirkby(
+                Iadem3 tree,
                 Node parent,
                 long instancesProcessedByTheTree,
                 long instancesProcessedByThisLeaf,
@@ -604,7 +640,8 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
                 boolean onlyBinaryTest,
                 AbstractChangeDetector estimator,
                 Instance instance) {
-            super(tree,
+            super(
+                    tree,
                     parent,
                     instancesProcessedByTheTree,
                     instancesProcessedByThisLeaf,
@@ -640,14 +677,14 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
 
             return super.learnFromInstance(inst);
         }
-
     }
 
     public class AdaptiveLeafNodeWeightedVote extends AdaptiveLeafNodeNBAdaptive {
 
         private static final long serialVersionUID = 1L;
 
-        public AdaptiveLeafNodeWeightedVote(Iadem3 tree,
+        public AdaptiveLeafNodeWeightedVote(
+                Iadem3 tree,
                 Node parent,
                 long instTreeCountSinceVirtual,
                 long instNodeCountSinceVirtual,
@@ -658,7 +695,8 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
                 boolean onlyBinaryTest,
                 AbstractChangeDetector estimator,
                 Instance instance) {
-            super(tree,
+            super(
+                    tree,
                     parent,
                     instTreeCountSinceVirtual,
                     instNodeCountSinceVirtual,
@@ -693,13 +731,15 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
         }
     }
 
-    public class AdaptiveNominalVirtualNode extends NominalVirtualNode implements Serializable, restartsVariablesAtDrift {
+    public class AdaptiveNominalVirtualNode extends NominalVirtualNode
+            implements Serializable, restartsVariablesAtDrift {
 
         private static final long serialVersionUID = 1L;
 
         protected AbstractChangeDetector estimador;
 
-        public AdaptiveNominalVirtualNode(Iadem3 tree,
+        public AdaptiveNominalVirtualNode(
+                Iadem3 tree,
                 Node parent,
                 int attID,
                 boolean onlyMultiwayTest,
@@ -730,42 +770,48 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
         }
 
         @Override
-        public SplitNode getNewSplitNode(long counter,
+        public SplitNode getNewSplitNode(
+                long counter,
                 Node parent,
                 IademAttributeSplitSuggestion bestSplit,
                 Instance instance) {
-            AdaptiveSplitNode splitNode = new AdaptiveSplitNode((Iadem3) this.tree,
-                    parent,
-                    null,
-                    ((LeafNode) this.parent).getMajorityClassVotes(instance),
-                    bestSplit.splitTest,
-                    ((AdaptiveLeafNode) this.parent).estimator,
-                    (AdaptiveLeafNode) this.parent,
-                    ((Iadem3) this.tree).currentSplitState);
+            AdaptiveSplitNode splitNode =
+                    new AdaptiveSplitNode(
+                            (Iadem3) this.tree,
+                            parent,
+                            null,
+                            ((LeafNode) this.parent).getMajorityClassVotes(instance),
+                            bestSplit.splitTest,
+                            ((AdaptiveLeafNode) this.parent).estimator,
+                            (AdaptiveLeafNode) this.parent,
+                            ((Iadem3) this.tree).currentSplitState);
 
             Node[] children;
             if (bestSplit.splitTest instanceof NominalAttributeMultiwayTest) {
                 children = new Node[instance.attribute(this.attIndex).numValues()];
                 for (int i = 0; i < children.length; i++) {
                     long tmpConter = 0;
-                    double[] newClassDist = new double[instance.attribute(instance.classIndex()).numValues()];
+                    double[] newClassDist =
+                            new double[instance.attribute(instance.classIndex()).numValues()];
                     Arrays.fill(newClassDist, 0);
                     for (int j = 0; j < newClassDist.length; j++) {
                         DoubleVector tmpClassDist = nominalAttClassObserver.get(i);
-                        double tmpAttClassCounter = tmpClassDist != null ? tmpClassDist.getValue(j) : 0.0;
+                        double tmpAttClassCounter =
+                                tmpClassDist != null ? tmpClassDist.getValue(j) : 0.0;
                         newClassDist[j] = tmpAttClassCounter;
                         tmpConter += newClassDist[j];
                     }
-                    children[i] = ((Iadem3) tree).newLeafNode(splitNode,
-                            counter,
-                            tmpConter,
-                            newClassDist,
-                            instance);
+                    children[i] =
+                            ((Iadem3) tree)
+                                    .newLeafNode(
+                                            splitNode, counter, tmpConter, newClassDist, instance);
                 }
             } else { // binary split
                 children = new Node[2];
-                IademNominalAttributeBinaryTest binarySplit = (IademNominalAttributeBinaryTest) bestSplit.splitTest;
-                double[] newClassDist = new double[instance.attribute(instance.classIndex()).numValues()];
+                IademNominalAttributeBinaryTest binarySplit =
+                        (IademNominalAttributeBinaryTest) bestSplit.splitTest;
+                double[] newClassDist =
+                        new double[instance.attribute(instance.classIndex()).numValues()];
                 double tmpCounter = 0;
                 Arrays.fill(newClassDist, 0);
                 DoubleVector classDist = nominalAttClassObserver.get(binarySplit.getAttValue());
@@ -773,21 +819,27 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
                     newClassDist[i] = classDist.getValue(i);
                     tmpCounter += classDist.getValue(i);
                 }
-                children[0] = ((Iadem3) tree).newLeafNode(splitNode,
-                        counter,
-                        (int) tmpCounter,
-                        newClassDist,
-                        instance);
+                children[0] =
+                        ((Iadem3) tree)
+                                .newLeafNode(
+                                        splitNode,
+                                        counter,
+                                        (int) tmpCounter,
+                                        newClassDist,
+                                        instance);
                 // a la derecha...
                 tmpCounter = this.classValueDist.sumOfValues() - tmpCounter;
                 for (int i = 0; i < newClassDist.length; i++) {
                     newClassDist[i] = this.classValueDist.getValue(i) - newClassDist[i];
                 }
-                children[1] = ((Iadem3) tree).newLeafNode(splitNode,
-                        counter,
-                        (int) tmpCounter,
-                        newClassDist,
-                        instance);
+                children[1] =
+                        ((Iadem3) tree)
+                                .newLeafNode(
+                                        splitNode,
+                                        counter,
+                                        (int) tmpCounter,
+                                        newClassDist,
+                                        instance);
             }
 
             splitNode.setChildren(children);
@@ -803,14 +855,16 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
         }
     }
 
-    public class AdaptiveNumericVirtualNode extends NumericVirtualNode implements Serializable, restartsVariablesAtDrift {
+    public class AdaptiveNumericVirtualNode extends NumericVirtualNode
+            implements Serializable, restartsVariablesAtDrift {
 
         private static final long serialVersionUID = 1L;
         protected IademNumericAttributeObserver altAttClassObserver;
         protected DoubleVector altClassDist;
         protected AbstractChangeDetector estimator;
 
-        public AdaptiveNumericVirtualNode(Iadem3 tree,
+        public AdaptiveNumericVirtualNode(
+                Iadem3 tree,
                 Node parent,
                 int attID,
                 IademNumericAttributeObserver observadorContinuos) {
@@ -844,11 +898,12 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
         }
 
         @Override
-        public SplitNode getNewSplitNode(long counter,
+        public SplitNode getNewSplitNode(
+                long counter,
                 Node parent,
                 IademAttributeSplitSuggestion bestSplit,
                 Instance instance) {
-            double[] cutPoints = new double[]{bestCutPoint};
+            double[] cutPoints = new double[] {bestCutPoint};
             Node[] children = new Node[2]; // a binary split
             long[] newClassDist = numericAttClassObserver.getLeftClassDist(bestCutPoint);
             long sumClassDist = numericAttClassObserver.getValueCount();
@@ -857,18 +912,23 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
             if (this.numericAttClassObserver instanceof IademVFMLNumericAttributeClassObserver) {
                 equalsPassesTest = false;
             }
-            AdaptiveSplitNode splitNode = new AdaptiveSplitNode((Iadem3) this.tree,
-                    parent,
-                    null,
-                    ((LeafNode) this.parent).getMajorityClassVotes(instance),
-                    new NumericAttributeBinaryTest(this.attIndex, cutPoints[0], equalsPassesTest),
-                    ((AdaptiveLeafNode) this.parent).estimator,
-                    (AdaptiveLeafNode) this.parent,
-                    ((Iadem3) this.tree).currentSplitState);
+            AdaptiveSplitNode splitNode =
+                    new AdaptiveSplitNode(
+                            (Iadem3) this.tree,
+                            parent,
+                            null,
+                            ((LeafNode) this.parent).getMajorityClassVotes(instance),
+                            new NumericAttributeBinaryTest(
+                                    this.attIndex, cutPoints[0], equalsPassesTest),
+                            ((AdaptiveLeafNode) this.parent).estimator,
+                            (AdaptiveLeafNode) this.parent,
+                            ((Iadem3) this.tree).currentSplitState);
             long leftClassDist = sum(newClassDist);
             long rightClassDist = sumClassDist - leftClassDist;
-            double[] newLeftClassDist = new double[instance.attribute(instance.classIndex()).numValues()];
-            double[] newRightClassDist = new double[instance.attribute(instance.classIndex()).numValues()];
+            double[] newLeftClassDist =
+                    new double[instance.attribute(instance.classIndex()).numValues()];
+            double[] newRightClassDist =
+                    new double[instance.attribute(instance.classIndex()).numValues()];
 
             Arrays.fill(newLeftClassDist, 0);
             Arrays.fill(newRightClassDist, 0);
@@ -878,16 +938,18 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
                 newRightClassDist[i] = sumAttClassDist[i] - newLeftClassDist[i];
             }
             splitNode.setChildren(null);
-            children[0] = ((Iadem3) tree).newLeafNode(splitNode,
-                    counter,
-                    leftClassDist,
-                    newLeftClassDist,
-                    instance);
-            children[1] = ((Iadem3) tree).newLeafNode(splitNode,
-                    counter,
-                    rightClassDist,
-                    newRightClassDist,
-                    instance);
+            children[0] =
+                    ((Iadem3) tree)
+                            .newLeafNode(
+                                    splitNode, counter, leftClassDist, newLeftClassDist, instance);
+            children[1] =
+                    ((Iadem3) tree)
+                            .newLeafNode(
+                                    splitNode,
+                                    counter,
+                                    rightClassDist,
+                                    newRightClassDist,
+                                    instance);
             splitNode.setChildren(children);
             return splitNode;
         }
@@ -905,7 +967,8 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
 
         private static final long serialVersionUID = 1L;
 
-        protected AutoExpandVector<Iadem3Subtree> alternativeTree = new AutoExpandVector<Iadem3Subtree>();
+        protected AutoExpandVector<Iadem3Subtree> alternativeTree =
+                new AutoExpandVector<Iadem3Subtree>();
         // Detector de cambio de concepto
         protected AbstractChangeDetector estimator;
 
@@ -913,7 +976,8 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
 
         protected AdaptiveLeafNode leaf;
 
-        public AdaptiveSplitNode(Iadem3 tree,
+        public AdaptiveSplitNode(
+                Iadem3 tree,
                 Node parent,
                 Node[] child,
                 double[] freq,
@@ -944,7 +1008,7 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
                 double delta = 0.0001;
                 double bound = Math.sqrt(m * Math.log(2.0 / delta) / 2.0);
                 double diff = thisError - leafError;
-                if (diff > bound && thisSize > 600 && leafSize > 600/**/) {
+                if (diff > bound && thisSize > 600 && leafSize > 600 /**/) {
                     prune();
                     return this.leaf;
                 } else if (-diff > bound) {
@@ -952,7 +1016,8 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
                     this.leaf.estimator = (AbstractChangeDetector) this.leaf.estimator.copy();
                 }
                 Node node;
-                boolean rightPredicted = ((Iadem3) this.tree).lastPredictionInLeaf == instance.classValue();
+                boolean rightPredicted =
+                        ((Iadem3) this.tree).lastPredictionInLeaf == instance.classValue();
                 node = checkAlternativeSubtrees(rightPredicted, instance);
                 if (node == null) {
                     // no subtree change
@@ -961,7 +1026,8 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
                             subtree.learnFromInstance(instance);
                             subtree.incrNumberOfInstancesProcessed();
                         } catch (IademException ex) {
-                            Logger.getLogger(AdaptiveSplitNode.class.getName()).log(Level.SEVERE, null, ex);
+                            Logger.getLogger(AdaptiveSplitNode.class.getName())
+                                    .log(Level.SEVERE, null, ex);
                         }
                     }
                     this.leaf.learnFromInstance(instance);
@@ -976,7 +1042,8 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
             return null;
         }
 
-        private Node checkAlternativeSubtrees(boolean acierto, Instance instance) throws IademException {
+        private Node checkAlternativeSubtrees(boolean acierto, Instance instance)
+                throws IademException {
             if (this.estimator != null) {
                 double loss = (acierto == true ? 0.0 : 1.0);
                 estimator.input(loss);
@@ -987,51 +1054,58 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
                     Iadem3Subtree subtree = alternativeTree.get(i);
                     double treeError = subtree.estimacionValorMedio(),
                             thisError = this.estimator.getEstimation();
-                    double bound = IademCommonProcedures.AverageComparitionByHoeffdingCorollary(this.estimator.getDelay(),
-                            subtree.windowWidth(),
-                            1e-4);
+                    double bound =
+                            IademCommonProcedures.AverageComparitionByHoeffdingCorollary(
+                                    this.estimator.getDelay(), subtree.windowWidth(), 1e-4);
 
-                    if (thisError - treeError > bound/**/) {
+                    if (thisError - treeError > bound /**/) {
                         ((Iadem3) this.tree).interchangedTrees++;
                         return changeTrees(i);
                     } else if (isUseless(i)) {
                         ((Iadem3) this.tree).updateNumberOfLeaves(-subtree.getNumberOfLeaves());
                         ((Iadem3) this.tree).updateNumberOfNodes(-subtree.getNumberOfNodes());
-                        ((Iadem3) this.tree).updateNumberOfNodesSplitByTieBreaking(-subtree.numSplitsByBreakingTies);
+                        ((Iadem3) this.tree)
+                                .updateNumberOfNodesSplitByTieBreaking(
+                                        -subtree.numSplitsByBreakingTies);
                         i--;
                     } else if (this.estimator.getDelay() > 6000
-                            && subtree.windowWidth() > 6000/**/) {
+                            && subtree.windowWidth() > 6000 /**/) {
                         {
                             if (treeError - thisError > bound) {
                                 this.alternativeTree.remove(i);
                                 // update number of nodes
-                                ((Iadem3) this.tree).updateNumberOfLeaves(-subtree.getNumberOfLeaves());
-                                ((Iadem3) this.tree).updateNumberOfNodes(-subtree.getNumberOfNodes());
-                                ((Iadem3) this.tree).updateNumberOfNodesSplitByTieBreaking(-subtree.numSplitsByBreakingTies);
+                                ((Iadem3) this.tree)
+                                        .updateNumberOfLeaves(-subtree.getNumberOfLeaves());
+                                ((Iadem3) this.tree)
+                                        .updateNumberOfNodes(-subtree.getNumberOfNodes());
+                                ((Iadem3) this.tree)
+                                        .updateNumberOfNodesSplitByTieBreaking(
+                                                -subtree.numSplitsByBreakingTies);
                                 i--;
                             } else /**/ {
-                                int[] countMain = new int[3],
-                                        countAlt = new int[3];
+                                int[] countMain = new int[3], countAlt = new int[3];
                                 for (Node child : this.children) {
                                     child.getNumberOfNodes(countMain);
                                 }
-                                subtree.getNumberOfNodes(countAlt);/**/
+                                subtree.getNumberOfNodes(countAlt); /**/
 
                                 if (countMain[0] + countMain[1] + 1 > countAlt[0] + countAlt[1]) {
                                     return changeTrees(i);
                                 } else {
                                     this.alternativeTree.remove(i);
                                     // update number of nodes
-                                    ((Iadem3) this.tree).updateNumberOfLeaves(-subtree.getNumberOfLeaves());
-                                    ((Iadem3) this.tree).updateNumberOfNodes(-subtree.getNumberOfNodes());
-                                    ((Iadem3) this.tree).updateNumberOfNodesSplitByTieBreaking(-subtree.numSplitsByBreakingTies);
+                                    ((Iadem3) this.tree)
+                                            .updateNumberOfLeaves(-subtree.getNumberOfLeaves());
+                                    ((Iadem3) this.tree)
+                                            .updateNumberOfNodes(-subtree.getNumberOfNodes());
+                                    ((Iadem3) this.tree)
+                                            .updateNumberOfNodesSplitByTieBreaking(
+                                                    -subtree.numSplitsByBreakingTies);
                                     i--;
                                 }
                             }
-                        }/**/
-
+                        } /**/
                     }
-
                 }
             }
             return null;
@@ -1041,15 +1115,14 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
             boolean removed = false;
             Iadem3Subtree subtree = this.alternativeTree.get(i);
             if (subtree.getTreeRoot() instanceof AdaptiveSplitNode) /**/ {
-                // change if it already has an alternative subtree 
+                // change if it already has an alternative subtree
                 AdaptiveSplitNode splitNode = ((AdaptiveSplitNode) subtree.getTreeRoot());
 
                 int nMain = (int) this.estimator.getDelay(),
                         nAlt = (int) subtree.getEstimador().getDelay();
                 double errorMain = this.estimator.getEstimation(),
                         errorAlt = subtree.getEstimador().getEstimation();
-                double errorDifference = errorAlt - errorMain,
-                        absError = Math.abs(errorDifference);
+                double errorDifference = errorAlt - errorMain, absError = Math.abs(errorDifference);
                 if (!removed && nMain > 0 && nAlt > 0) {
                     double m = 1.0 / nMain + 1.0 / nAlt;
                     double delta = 1e-4;
@@ -1064,18 +1137,22 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
                     InstanceConditionalTest condTest = splitNode.splitTest;
                     if (condTest instanceof IademNominalAttributeBinaryTest
                             && this.splitTest instanceof IademNominalAttributeBinaryTest) {
-                        IademNominalAttributeBinaryTest altTest = (IademNominalAttributeBinaryTest) condTest,
+                        IademNominalAttributeBinaryTest
+                                altTest = (IademNominalAttributeBinaryTest) condTest,
                                 mainTest = (IademNominalAttributeBinaryTest) this.splitTest;
                         if (mainTest.getAttValue() == altTest.getAttValue()
-                                && mainTest.getAttsTestDependsOn()[0] == altTest.getAttsTestDependsOn()[0]) {
+                                && mainTest.getAttsTestDependsOn()[0]
+                                        == altTest.getAttsTestDependsOn()[0]) {
                             this.alternativeTree.remove(i);
                             removed = true;
                         }
                     } else if (condTest instanceof NominalAttributeMultiwayTest
                             && this.splitTest instanceof NominalAttributeMultiwayTest) {
-                        NominalAttributeMultiwayTest altTest = (NominalAttributeMultiwayTest) condTest,
+                        NominalAttributeMultiwayTest
+                                altTest = (NominalAttributeMultiwayTest) condTest,
                                 mainTest = (NominalAttributeMultiwayTest) this.splitTest;
-                        if (mainTest.getAttsTestDependsOn()[0] == altTest.getAttsTestDependsOn()[0]) {
+                        if (mainTest.getAttsTestDependsOn()[0]
+                                == altTest.getAttsTestDependsOn()[0]) {
                             this.alternativeTree.remove(i);
                             removed = true;
                         }
@@ -1100,7 +1177,9 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
                     Iadem3Subtree subtree = this.alternativeTree.get(i);
                     ((Iadem3) this.tree).updateNumberOfLeaves(-subtree.getNumberOfLeaves());
                     ((Iadem3) this.tree).updateNumberOfNodes(-subtree.getNumberOfNodes());
-                    ((Iadem3) this.tree).updateNumberOfNodesSplitByTieBreaking(-subtree.numSplitsByBreakingTies);
+                    ((Iadem3) this.tree)
+                            .updateNumberOfNodesSplitByTieBreaking(
+                                    -subtree.numSplitsByBreakingTies);
                 }
             }
             Iadem3Subtree subtree = this.alternativeTree.get(index);
@@ -1197,10 +1276,12 @@ public class Iadem3 extends Iadem2 implements MultiClassClassifier {
                 if ((maxTreeLevel == -1 || iadem3Tree.getTreeLevel() < maxTreeLevel)
                         && (maxAltSubtrees == -1 || this.alternativeTree.size() < maxAltSubtrees)) {
                     if (this.estimator != null) {
-                        Iadem3Subtree subtree = new Iadem3Subtree(this,
-                                iadem3Tree.getTreeLevel() + 1,
-                                (Iadem3) this.tree,
-                                instance);
+                        Iadem3Subtree subtree =
+                                new Iadem3Subtree(
+                                        this,
+                                        iadem3Tree.getTreeLevel() + 1,
+                                        (Iadem3) this.tree,
+                                        instance);
                         this.alternativeTree.add(subtree);
                         ((Iadem3) tree).setNewTree();
                     }

@@ -19,14 +19,14 @@
  */
 package moa.gui.visualization;
 
+import moa.evaluation.MeasureCollection;
+
 import java.awt.Color;
 import java.awt.Dimension;
 
-import moa.evaluation.MeasureCollection;
-
 /**
- * ParamGraphCanvas is an implementation of AbstractGraphCanvas showing the
- * relation between a parameter and the measures.
+ * ParamGraphCanvas is an implementation of AbstractGraphCanvas showing the relation between a
+ * parameter and the measures.
  *
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
@@ -39,9 +39,8 @@ public class ParamGraphCanvas extends AbstractGraphCanvas {
     private double[] variedParamValues;
 
     /**
-     * Initialises a ProcessGraphCanvas by calling the super constructor with a
-     * ParamGraphAxes as instance of AbstractGraphAxes and GraphScatter as
-     * instance of AbstractGraphPlot.
+     * Initialises a ProcessGraphCanvas by calling the super constructor with a ParamGraphAxes as
+     * instance of AbstractGraphAxes and GraphScatter as instance of AbstractGraphPlot.
      */
     public ParamGraphCanvas() {
         super(new ParamGraphAxes(), new GraphScatter());
@@ -50,21 +49,19 @@ public class ParamGraphCanvas extends AbstractGraphCanvas {
     /**
      * Sets the scatter graph.
      *
-     * @param measures
-     *            information about the curves
-     * @param measureStds
-     *            standard deviation for the measures
-     * @param variedParamValues
-     *            values of the varied parameter
-     * @param colors
-     *            color encoding for the param array
+     * @param measures information about the curves
+     * @param measureStds standard deviation for the measures
+     * @param variedParamValues values of the varied parameter
+     * @param colors color encoding for the param array
      */
-    public void setGraph(MeasureCollection[] measures, MeasureCollection[] measureStds,
-            double[] variedParamValues, Color[] colors) {
+    public void setGraph(
+            MeasureCollection[] measures,
+            MeasureCollection[] measureStds,
+            double[] variedParamValues,
+            Color[] colors) {
         this.measures = measures;
         this.variedParamValues = variedParamValues;
-        ((GraphScatter) this.plotPanel).setGraph(measures, measureStds,
-                variedParamValues, colors);
+        ((GraphScatter) this.plotPanel).setGraph(measures, measureStds, variedParamValues, colors);
         updateCanvas(false);
     }
 
@@ -102,13 +99,11 @@ public class ParamGraphCanvas extends AbstractGraphCanvas {
 
     @Override
     public void setSize() {
-        setSize((int) (baseWidth * x_resolution),
-                (int) (baseHeight * y_resolution));
+        setSize((int) (baseWidth * x_resolution), (int) (baseHeight * y_resolution));
     }
 
     @Override
     public void setPreferredSize() {
         setPreferredSize(new Dimension(getWidth(), getHeight()));
     }
-
 }

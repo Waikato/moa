@@ -15,11 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa;
 
-import weka.core.Version;
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.Option;
+
 import moa.core.Globals;
 import moa.core.Measurement;
 import moa.core.StringUtils;
@@ -32,9 +35,7 @@ import moa.tasks.MainTask;
 import moa.tasks.TaskThread;
 import moa.tasks.meta.MetaMainTask;
 
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.IntOption;
-import com.github.javacliparser.Option;
+import weka.core.Version;
 
 /**
  * Class for running a MOA task from the command line.
@@ -45,10 +46,9 @@ import com.github.javacliparser.Option;
 public class DoTask {
 
     /** Array of characters to use to animate the progress of tasks running. */
-    public static final char[] progressAnimSequence = new char[]{'-', '\\',
-        '|', '/'};
+    public static final char[] progressAnimSequence = new char[] {'-', '\\', '|', '/'};
 
-    /** Maximum length of the status string that shows the progress of tasks running.  */
+    /** Maximum length of the status string that shows the progress of tasks running. */
     public static final int MAX_STATUS_STRING_LENGTH = 79;
 
     /**
@@ -62,29 +62,25 @@ public class DoTask {
         String[] parts;
         double version;
         if (versionStr.contains(".")) {
-          parts = versionStr.split("\\.");
-	}
-	else {
-          parts = new String[]{versionStr};
-	}
-	if (parts.length == 1) {
-          try {
-            version = Double.parseDouble(parts[0]);
-	  }
-	  catch (Exception e) {
-            System.err.println("Unparsable Java version: " + versionStr);
-            return false;
-	  }
-	}
-	else {
-          try {
-            version = Double.parseDouble(parts[0]) + Double.parseDouble(parts[1]) / 10;
-	  }
-	  catch (Exception e) {
-            System.err.println("Unparsable Java version: " + versionStr);
-            return false;
-	  }
-	}
+            parts = versionStr.split("\\.");
+        } else {
+            parts = new String[] {versionStr};
+        }
+        if (parts.length == 1) {
+            try {
+                version = Double.parseDouble(parts[0]);
+            } catch (Exception e) {
+                System.err.println("Unparsable Java version: " + versionStr);
+                return false;
+            }
+        } else {
+            try {
+                version = Double.parseDouble(parts[0]) + Double.parseDouble(parts[1]) / 10;
+            } catch (Exception e) {
+                System.err.println("Unparsable Java version: " + versionStr);
+                return false;
+            }
+        }
         if (version < 1.8) {
             isJavaVersionOK = false;
             System.err.println();
@@ -97,10 +93,9 @@ public class DoTask {
     }
 
     /**
-     * Checks if the Weka version is recent enough to run MOA.
-     * For example, if the Weka version is not recent, there may be problems
-     * due to the fact that <code>Instance</code> was a class before 3.7.1 and
-     * now is an interface.
+     * Checks if the Weka version is recent enough to run MOA. For example, if the Weka version is
+     * not recent, there may be problems due to the fact that <code>Instance</code> was a class
+     * before 3.7.1 and now is an interface.
      *
      * @return true if the Weka version is recent.
      */
@@ -117,7 +112,6 @@ public class DoTask {
             return true;
         }
     }
-   
 
     /**
      * Main method for running tasks from the command line.
@@ -136,20 +130,30 @@ public class DoTask {
                     return;
                 }
                 // create standard options
-                FlagOption suppressStatusOutputOption = new FlagOption(
-                        "suppressStatusOutput", 'S',
-                        "Suppress the task status output that is normally send to stderr.");
-                FlagOption suppressResultOutputOption = new FlagOption(
-                        "suppressResultOutput", 'R',
-                        "Suppress the task result output that is normally send to stdout.");
-                IntOption statusUpdateFrequencyOption = new IntOption(
-                        "statusUpdateFrequency",
-                        'F',
-                        "How many milliseconds to wait between status updates.",
-                        1000, 0, Integer.MAX_VALUE);
-                Option[] extraOptions = new Option[]{
-                    suppressStatusOutputOption, suppressResultOutputOption,
-                    statusUpdateFrequencyOption};
+                FlagOption suppressStatusOutputOption =
+                        new FlagOption(
+                                "suppressStatusOutput",
+                                'S',
+                                "Suppress the task status output that is normally send to stderr.");
+                FlagOption suppressResultOutputOption =
+                        new FlagOption(
+                                "suppressResultOutput",
+                                'R',
+                                "Suppress the task result output that is normally send to stdout.");
+                IntOption statusUpdateFrequencyOption =
+                        new IntOption(
+                                "statusUpdateFrequency",
+                                'F',
+                                "How many milliseconds to wait between status updates.",
+                                1000,
+                                0,
+                                Integer.MAX_VALUE);
+                Option[] extraOptions =
+                        new Option[] {
+                            suppressStatusOutputOption,
+                            suppressResultOutputOption,
+                            statusUpdateFrequencyOption
+                        };
                 // build a single string by concatenating cli options
                 StringBuilder cliString = new StringBuilder();
                 for (int i = 0; i < args.length; i++) {
@@ -158,15 +162,19 @@ public class DoTask {
                 // parse options
                 AbstractTask task;
                 try {
-                	task = (AbstractTask) ClassOption.cliStringToObject(
-                			cliString.toString(), MainTask.class, extraOptions);
-                } catch(Exception e) {
-                	// regular task could not be found, maybe it is a meta task
-            		task = (AbstractTask) ClassOption.cliStringToObject(
-            				cliString.toString(), MetaMainTask.class, extraOptions);
+                    task =
+                            (AbstractTask)
+                                    ClassOption.cliStringToObject(
+                                            cliString.toString(), MainTask.class, extraOptions);
+                } catch (Exception e) {
+                    // regular task could not be found, maybe it is a meta task
+                    task =
+                            (AbstractTask)
+                                    ClassOption.cliStringToObject(
+                                            cliString.toString(), MetaMainTask.class, extraOptions);
                 }
                 task.prepareForUse();
-                
+
                 Object result = null;
                 if (suppressStatusOutputOption.isSet()) {
                     result = task.doTask();
@@ -184,14 +192,15 @@ public class DoTask {
                         StringBuilder progressLine = new StringBuilder();
                         progressLine.append(progressAnimSequence[progressAnimIndex]);
                         progressLine.append(' ');
-                        progressLine.append(StringUtils.secondsToDHMSString(taskThread.getCPUSecondsElapsed()));
+                        progressLine.append(
+                                StringUtils.secondsToDHMSString(taskThread.getCPUSecondsElapsed()));
                         progressLine.append(" [");
                         progressLine.append(taskThread.getCurrentStatusString());
                         progressLine.append("] ");
                         double fracComplete = taskThread.getCurrentActivityFracComplete();
                         if (fracComplete >= 0.0) {
-                            progressLine.append(StringUtils.doubleToString(
-                                    fracComplete * 100.0, 2, 2));
+                            progressLine.append(
+                                    StringUtils.doubleToString(fracComplete * 100.0, 2, 2));
                             progressLine.append("% ");
                         }
                         progressLine.append(taskThread.getCurrentActivityString());
@@ -200,8 +209,7 @@ public class DoTask {
                         }
                         if (progressLine.length() > MAX_STATUS_STRING_LENGTH) {
                             progressLine.setLength(MAX_STATUS_STRING_LENGTH);
-                            progressLine.setCharAt(
-                                    MAX_STATUS_STRING_LENGTH - 1, '~');
+                            progressLine.setCharAt(MAX_STATUS_STRING_LENGTH - 1, '~');
                         }
                         System.err.print(progressLine.toString());
                         System.err.print('\r');
@@ -221,8 +229,10 @@ public class DoTask {
                     System.err.println(cleanupString);
                     result = taskThread.getFinalResult();
                     if (!(result instanceof FailedTaskReport)) {
-                        System.err.print("Task completed in "
-                                + StringUtils.secondsToDHMSString(taskThread.getCPUSecondsElapsed()));
+                        System.err.print(
+                                "Task completed in "
+                                        + StringUtils.secondsToDHMSString(
+                                                taskThread.getCPUSecondsElapsed()));
                         if (preciseTiming) {
                             System.err.print(" (CPU time)");
                         }
@@ -237,8 +247,7 @@ public class DoTask {
                     if (!suppressResultOutputOption.isSet()) {
                         if (result instanceof Measurement[]) {
                             StringBuilder sb = new StringBuilder();
-                            Measurement.getMeasurementsDescription(
-                                    (Measurement[]) result, sb, 0);
+                            Measurement.getMeasurementsDescription((Measurement[]) result, sb, 0);
                             System.out.println(sb.toString());
                         } else {
                             System.out.println(result);

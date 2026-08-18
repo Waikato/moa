@@ -15,60 +15,72 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.meta;
+
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
-import com.yahoo.labs.samoa.instances.Instance;
-
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.Regressor;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;
-import com.github.javacliparser.IntOption;
 
 /**
  * Incremental on-line bagging of Oza and Russell.
  *
- * <p>Oza and Russell developed online versions of bagging and boosting for
- * Data Streams. They show how the process of sampling bootstrap replicates
- * from training data can be simulated in a data stream context. They observe
- * that the probability that any individual example will be chosen for a
- * replicate tends to a Poisson(1) distribution.</p>
+ * <p>Oza and Russell developed online versions of bagging and boosting for Data Streams. They show
+ * how the process of sampling bootstrap replicates from training data can be simulated in a data
+ * stream context. They observe that the probability that any individual example will be chosen for
+ * a replicate tends to a Poisson(1) distribution.
  *
- * <p>[OR] N. Oza and S. Russell. Online bagging and boosting.
- * In Artiﬁcial Intelligence and Statistics 2001, pages 105–112.
- * Morgan Kaufmann, 2001.</p>
+ * <p>[OR] N. Oza and S. Russell. Online bagging and boosting. In Artiﬁcial Intelligence and
+ * Statistics 2001, pages 105–112. Morgan Kaufmann, 2001.
  *
- * <p>Parameters:</p> <ul>
- * <li>-l : Classiﬁer to train</li>
- * <li>-s : The number of models in the bag</li> </ul>
+ * <p>Parameters:
+ *
+ * <ul>
+ *   <li>-l : Classiﬁer to train
+ *   <li>-s : The number of models in the bag
+ * </ul>
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class OzaBag extends AbstractClassifier implements MultiClassClassifier,
-                                                          CapabilitiesHandler, Regressor {
+public class OzaBag extends AbstractClassifier
+        implements MultiClassClassifier, CapabilitiesHandler, Regressor {
 
     @Override
     public String getPurposeString() {
         return "Incremental on-line bagging of Oza and Russell.";
     }
-        
+
     private static final long serialVersionUID = 1L;
 
-    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "trees.HoeffdingTree");
+    public ClassOption baseLearnerOption =
+            new ClassOption(
+                    "baseLearner",
+                    'l',
+                    "Classifier to train.",
+                    Classifier.class,
+                    "trees.HoeffdingTree");
 
-    public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
-            "The number of models in the bag.", 10, 1, Integer.MAX_VALUE);
+    public IntOption ensembleSizeOption =
+            new IntOption(
+                    "ensembleSize",
+                    's',
+                    "The number of models in the bag.",
+                    10,
+                    1,
+                    Integer.MAX_VALUE);
 
     protected Classifier[] ensemble;
 
@@ -98,15 +110,15 @@ public class OzaBag extends AbstractClassifier implements MultiClassClassifier,
     public double[] getVotesForInstance(Instance inst) {
         DoubleVector combinedVote = new DoubleVector();
 
-        if (inst.classAttribute().isNumeric()){ //regression
+        if (inst.classAttribute().isNumeric()) { // regression
             double sumOfPredictions = 0;
             int length = this.ensemble.length;
-            for (int i = 0; i <  length; i++) {
+            for (int i = 0; i < length; i++) {
                 // getVotesForInstance returns an array with one element from each regressor
                 sumOfPredictions += this.ensemble[i].getVotesForInstance(inst)[0];
             }
-            return new double[]{sumOfPredictions/length};
-        }else { // classification
+            return new double[] {sumOfPredictions / length};
+        } else { // classification
             for (int i = 0; i < this.ensemble.length; i++) {
                 DoubleVector vote = new DoubleVector(this.ensemble[i].getVotesForInstance(inst));
                 if (vote.sumOfValues() > 0.0) {
@@ -130,8 +142,9 @@ public class OzaBag extends AbstractClassifier implements MultiClassClassifier,
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        return new Measurement[]{new Measurement("ensemble size",
-                    this.ensemble != null ? this.ensemble.length : 0)};
+        return new Measurement[] {
+            new Measurement("ensemble size", this.ensemble != null ? this.ensemble.length : 0)
+        };
     }
 
     @Override
@@ -143,7 +156,6 @@ public class OzaBag extends AbstractClassifier implements MultiClassClassifier,
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == OzaBag.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

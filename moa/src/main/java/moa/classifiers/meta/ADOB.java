@@ -26,32 +26,28 @@
 
 package moa.classifiers.meta;
 
-import moa.classifiers.MultiClassClassifier;
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
 
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
+import moa.classifiers.MultiClassClassifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.core.MiscUtils;
 import moa.options.ClassOption;
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.IntOption;
 
 /**
- * Adaptable Diversity-based Online Boosting (ADOB) is a modified version
- * of the online boosting, as proposed by Oza and Russell, which is aimed
- * at speeding up the experts recovery after concept drifts.
+ * Adaptable Diversity-based Online Boosting (ADOB) is a modified version of the online boosting, as
+ * proposed by Oza and Russell, which is aimed at speeding up the experts recovery after concept
+ * drifts.
  *
- * published as:
- *     Silas G. T. C. Santos, Paulo M. Goncalves Jr., Geyson D. S. Silva,
- *     and Roberto S. M. Barros:
- *     Speeding Up Recovery from Concept Drifts.
- *     In book: Machine Learning and Knowledge Discovery in Databases,
- *     ECML/PKDD 2014, Part III, LNCS 8726, pp. 179-194. 09/2014.
- *     DOI: 10.1007/978-3-662-44845-8_12
+ * <p>published as: Silas G. T. C. Santos, Paulo M. Goncalves Jr., Geyson D. S. Silva, and Roberto
+ * S. M. Barros: Speeding Up Recovery from Concept Drifts. In book: Machine Learning and Knowledge
+ * Discovery in Databases, ECML/PKDD 2014, Part III, LNCS 8726, pp. 179-194. 09/2014. DOI:
+ * 10.1007/978-3-662-44845-8_12
  */
-
 public class ADOB extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
@@ -61,18 +57,28 @@ public class ADOB extends AbstractClassifier implements MultiClassClassifier {
         return "Adaptable Diversity-based Online Boosting (ADOB)";
     }
 
-    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class,
-            "drift.SingleClassifierDrift -l trees.HoeffdingTree -d ADWINChangeDetector");
+    public ClassOption baseLearnerOption =
+            new ClassOption(
+                    "baseLearner",
+                    'l',
+                    "Classifier to train.",
+                    Classifier.class,
+                    "drift.SingleClassifierDrift -l trees.HoeffdingTree -d ADWINChangeDetector");
 
-    public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
-            "The number of models to boost.", 10, 1, Integer.MAX_VALUE);
+    public IntOption ensembleSizeOption =
+            new IntOption(
+                    "ensembleSize",
+                    's',
+                    "The number of models to boost.",
+                    10,
+                    1,
+                    Integer.MAX_VALUE);
 
-    public FlagOption pureBoostOption = new FlagOption("pureBoost", 'p',
-            "Boost with weights only; no poisson.");
+    public FlagOption pureBoostOption =
+            new FlagOption("pureBoost", 'p', "Boost with weights only; no poisson.");
 
     protected Classifier[] ensemble;
-    
+
     protected int[] orderPosition;
 
     protected double[] scms;
@@ -95,55 +101,58 @@ public class ADOB extends AbstractClassifier implements MultiClassClassifier {
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
-	// Calculates current accuracy of experts
+        // Calculates current accuracy of experts
         double[] acc = new double[this.ensemble.length];
-        for ( int i=0; i<this.ensemble.length; i++ ) {
+        for (int i = 0; i < this.ensemble.length; i++) {
             acc[i] = this.scms[this.orderPosition[i]] + this.swms[this.orderPosition[i]];
-            if ( acc[i] != 0.0 ) {
+            if (acc[i] != 0.0) {
                 acc[i] = this.scms[this.orderPosition[i]] / acc[i];
             }
         }
-        
-	// Sort by accuracy in ascending order
-        double key_acc; int key_position, j;
-        for ( int i=1; i<this.ensemble.length; i++ ) {
+
+        // Sort by accuracy in ascending order
+        double key_acc;
+        int key_position, j;
+        for (int i = 1; i < this.ensemble.length; i++) {
             key_position = this.orderPosition[i];
             key_acc = acc[i];
-            j = i-1;
-            while ( j>=0 && acc[j]<key_acc ) {
-                this.orderPosition[j+1] = this.orderPosition[j];
-                acc[j+1] = acc[j];
+            j = i - 1;
+            while (j >= 0 && acc[j] < key_acc) {
+                this.orderPosition[j + 1] = this.orderPosition[j];
+                acc[j + 1] = acc[j];
                 j--;
             }
-            this.orderPosition[j+1] = key_position;
-            acc[j+1] = key_acc;
+            this.orderPosition[j + 1] = key_position;
+            acc[j + 1] = key_acc;
         }
-        
-        boolean correct=false; int pos;
-        double lambda_d = 1.0; int maxAcc=0, minAcc=this.ensemble.length-1;
+
+        boolean correct = false;
+        int pos;
+        double lambda_d = 1.0;
+        int maxAcc = 0, minAcc = this.ensemble.length - 1;
         for (int i = 0; i < this.ensemble.length; i++) {
-            if ( correct ) {
+            if (correct) {
                 pos = this.orderPosition[maxAcc];
                 maxAcc++;
             } else {
                 pos = this.orderPosition[minAcc];
                 minAcc--;
             }
-            
+
             double k;
-            if ( this.pureBoostOption.isSet() ) {
+            if (this.pureBoostOption.isSet()) {
                 k = lambda_d;
             } else {
                 k = MiscUtils.poisson(lambda_d, this.classifierRandom);
             }
-            
+
             if (k > 0.0) {
                 Instance weightedInst = (Instance) inst.copy();
                 weightedInst.setWeight(inst.weight() * k);
                 this.ensemble[pos].trainOnInstance(weightedInst);
             }
 
-	    // Increases or decreases lambda based on the prediction of instance
+            // Increases or decreases lambda based on the prediction of instance
             if (this.ensemble[pos].correctlyClassifies(inst)) {
                 this.scms[pos] += lambda_d;
                 lambda_d *= this.trainingWeightSeenByModel / (2 * this.scms[pos]);
@@ -157,7 +166,7 @@ public class ADOB extends AbstractClassifier implements MultiClassClassifier {
     }
 
     protected double getEnsembleMemberWeight(int i) {
-        if ( this.scms[i]>0.0 && this.swms[i]>0.0 ) {
+        if (this.scms[i] > 0.0 && this.swms[i] > 0.0) {
             double em = this.swms[i] / (this.scms[i] + this.swms[i]);
             if (em <= 0.5) {
                 double Bm = em / (1.0 - em);
@@ -182,7 +191,7 @@ public class ADOB extends AbstractClassifier implements MultiClassClassifier {
                 break;
             }
         }
-        
+
         return combinedVote.getArrayRef();
     }
 
@@ -197,8 +206,9 @@ public class ADOB extends AbstractClassifier implements MultiClassClassifier {
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        return new Measurement[]{new Measurement("ensemble size",
-                    this.ensemble != null ? this.ensemble.length : 0)};
+        return new Measurement[] {
+            new Measurement("ensemble size", this.ensemble != null ? this.ensemble.length : 0)
+        };
     }
 
     @Override

@@ -15,9 +15,11 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
+
+import com.github.javacliparser.IntOption;
 
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
@@ -27,7 +29,6 @@ import moa.classifiers.MultiClassClassifier;
 import moa.core.ObjectRepository;
 import moa.learners.Learner;
 import moa.options.ClassOption;
-import com.github.javacliparser.IntOption;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
 
@@ -46,31 +47,52 @@ public class LearnModel extends ClassificationMainTask implements CapabilitiesHa
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Classifier to train.", MultiClassClassifier.class, "moa.classifiers.bayes.NaiveBayes");
+    public ClassOption learnerOption =
+            new ClassOption(
+                    "learner",
+                    'l',
+                    "Classifier to train.",
+                    MultiClassClassifier.class,
+                    "moa.classifiers.bayes.NaiveBayes");
 
-    public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", ExampleStream.class,
-            "generators.RandomTreeGenerator");
+    public ClassOption streamOption =
+            new ClassOption(
+                    "stream",
+                    's',
+                    "Stream to learn from.",
+                    ExampleStream.class,
+                    "generators.RandomTreeGenerator");
 
-    public IntOption maxInstancesOption = new IntOption("maxInstances", 'm',
-            "Maximum number of instances to train on per pass over the data.",
-            10000000, 0, Integer.MAX_VALUE);
+    public IntOption maxInstancesOption =
+            new IntOption(
+                    "maxInstances",
+                    'm',
+                    "Maximum number of instances to train on per pass over the data.",
+                    10000000,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public IntOption numPassesOption = new IntOption("numPasses", 'p',
-            "The number of passes to do over the data.", 1, 1,
-            Integer.MAX_VALUE);
+    public IntOption numPassesOption =
+            new IntOption(
+                    "numPasses",
+                    'p',
+                    "The number of passes to do over the data.",
+                    1,
+                    1,
+                    Integer.MAX_VALUE);
 
-    public IntOption memCheckFrequencyOption = new IntOption(
-            "memCheckFrequency", 'q',
-            "How many instances between memory bound checks.", 100000, 0,
-            Integer.MAX_VALUE);
+    public IntOption memCheckFrequencyOption =
+            new IntOption(
+                    "memCheckFrequency",
+                    'q',
+                    "How many instances between memory bound checks.",
+                    100000,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public LearnModel() {
-    }
+    public LearnModel() {}
 
-    public LearnModel(Classifier learner, InstanceStream stream,
-            int maxInstances, int numPasses) {
+    public LearnModel(Classifier learner, InstanceStream stream, int maxInstances, int numPasses) {
         this.learnerOption.setCurrentObject(learner);
         this.streamOption.setCurrentObject(stream);
         this.maxInstancesOption.setValue(maxInstances);
@@ -91,9 +113,13 @@ public class LearnModel extends ClassificationMainTask implements CapabilitiesHa
         int maxInstances = this.maxInstancesOption.getValue();
         for (int pass = 0; pass < numPasses; pass++) {
             long instancesProcessed = 0;
-            monitor.setCurrentActivity("Training learner"
-                    + (numPasses > 1 ? (" (pass " + (pass + 1) + "/"
-                    + numPasses + ")") : "") + "...", -1.0);
+            monitor.setCurrentActivity(
+                    "Training learner"
+                            + (numPasses > 1
+                                    ? (" (pass " + (pass + 1) + "/" + numPasses + ")")
+                                    : "")
+                            + "...",
+                    -1.0);
             if (pass > 0) {
                 stream.restart();
             }
@@ -113,9 +139,13 @@ public class LearnModel extends ClassificationMainTask implements CapabilitiesHa
                             estimatedRemainingInstances = maxRemaining;
                         }
                     }
-                    monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
-                            : (double) instancesProcessed
-                            / (double) (instancesProcessed + estimatedRemainingInstances));
+                    monitor.setCurrentActivityFractionComplete(
+                            estimatedRemainingInstances < 0
+                                    ? -1.0
+                                    : (double) instancesProcessed
+                                            / (double)
+                                                    (instancesProcessed
+                                                            + estimatedRemainingInstances));
                     if (monitor.resultPreviewRequested()) {
                         monitor.setLatestResultPreview(learner.copy());
                     }
@@ -130,7 +160,6 @@ public class LearnModel extends ClassificationMainTask implements CapabilitiesHa
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == LearnModel.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

@@ -1,8 +1,8 @@
 /*
  *    StatisticalTest.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand 
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
- * 
+ *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 3 of the License, or
@@ -15,21 +15,24 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    The statistical tests programmed in this class were taken from 
- *    KEEL(Knowledge Extraction based on Evolutionary Learning) software. 
- *    KEEL is an open source (GPLv3) Java software tool that can be used for 
+ *    The statistical tests programmed in this class were taken from
+ *    KEEL(Knowledge Extraction based on Evolutionary Learning) software.
+ *    KEEL is an open source (GPLv3) Java software tool that can be used for
  *    a large number of different knowledge data discovery tasks.
- *    J. Alcalá-Fdez, L. Sánchez, S. García, M.J. del Jesus, S. Ventura, 
- *    J.M. Garrell, J. Otero, C. Romero, J. Bacardit, V.M. Rivas, J.C. Fernández, 
- *    F. Herrera. KEEL: A Software Tool to Assess Evolutionary Algorithms to 
- *    Data Mining Problems. Soft Computing 13:3 (2009) 307-318, 
+ *    J. Alcalá-Fdez, L. Sánchez, S. García, M.J. del Jesus, S. Ventura,
+ *    J.M. Garrell, J. Otero, C. Romero, J. Bacardit, V.M. Rivas, J.C. Fernández,
+ *    F. Herrera. KEEL: A Software Tool to Assess Evolutionary Algorithms to
+ *    Data Mining Problems. Soft Computing 13:3 (2009) 307-318,
  *    doi: 10.1007/s00500-008-0323-y.
- *    J. Alcalá-Fdez, A. Fernandez, J. Luengo, J. Derrac, S. García, L. Sánchez, 
- *    F. Herrera. KEEL Data-Mining Software Tool: Data Set Repository, 
- *    Integration of Algorithms and Experimental Analysis Framework. Journal of 
- *    Multiple-Valued Logic and Soft Computing 17:2-3 (2011) 255-287. 
+ *    J. Alcalá-Fdez, A. Fernandez, J. Luengo, J. Derrac, S. García, L. Sánchez,
+ *    F. Herrera. KEEL Data-Mining Software Tool: Data Set Repository,
+ *    Integration of Algorithms and Experimental Analysis Framework. Journal of
+ *    Multiple-Valued Logic and Soft Computing 17:2-3 (2011) 255-287.
  */
 package moa.gui.experimentertab.statisticaltests;
+
+import moa.gui.experimentertab.Algorithm;
+import moa.gui.experimentertab.Stream;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,11 +40,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.StringTokenizer;
-import moa.gui.experimentertab.Algorithm;
-import moa.gui.experimentertab.Stream;
 
 /**
- *
  * @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
  */
 public class StatisticalTest {
@@ -49,7 +49,7 @@ public class StatisticalTest {
     ArrayList algoritmos;
     ArrayList datasets;
     ArrayList datos;
-    //String linea, token;
+    // String linea, token;
     int i, j, k, m;
     int posicion;
     double mean[][];
@@ -104,7 +104,6 @@ public class StatisticalTest {
         datasets = new ArrayList();
         datos = new ArrayList();
         rankAlg = new ArrayList<>();
-
     }
 
     /**
@@ -145,9 +144,7 @@ public class StatisticalTest {
         }
     }
 
-    /**
-     * Read data from experiments sumaries.
-     */
+    /** Read data from experiments sumaries. */
     public void readData() {
 
         int cont = 0;
@@ -165,14 +162,10 @@ public class StatisticalTest {
             for (int j = 0; j < algorithmSize; j++) {
                 ((ArrayList) datos.get(j)).add(alg.get(j).measures.get(cont).getValue());
             }
-
         }
-
     }
 
-    /**
-     * Compute the average ranking of the algorithms.
-     */
+    /** Compute the average ranking of the algorithms. */
     public void avgPerformance() {
         mean = new double[datasets.size()][algoritmos.size()];
 
@@ -250,14 +243,18 @@ public class StatisticalTest {
         for (i = 0; i < algoritmos.size(); i++) {
             rankAlg.add(new RankPerAlgorithm((String) algoritmos.get(i), Rj[i]));
         }
-        //Order de Algorithms with rank
+        // Order de Algorithms with rank
         Collections.sort(rankAlg, new ComparatorImpl());
 
         /*Compute the Friedman statistic*/
-        termino1 = (12 * (double) datasets.size()) / ((double) algoritmos.size()
-                * ((double) algoritmos.size() + 1));
-        termino2 = (double) algoritmos.size() * ((double) algoritmos.size() + 1)
-                * ((double) algoritmos.size() + 1) / (4.0);
+        termino1 =
+                (12 * (double) datasets.size())
+                        / ((double) algoritmos.size() * ((double) algoritmos.size() + 1));
+        termino2 =
+                (double) algoritmos.size()
+                        * ((double) algoritmos.size() + 1)
+                        * ((double) algoritmos.size() + 1)
+                        / (4.0);
         for (i = 0; i < algoritmos.size(); i++) {
             sumatoria += Rj[i] * Rj[i];
         }
@@ -266,15 +263,24 @@ public class StatisticalTest {
         pFriedman = ChiSq(friedman, (algoritmos.size() - 1));
 
         /*Compute the Iman-Davenport statistic*/
-        iman = ((datasets.size() - 1) * friedman) / (datasets.size() * (algoritmos.size() - 1) - friedman);
-        pIman = FishF(iman, (algoritmos.size() - 1), (algoritmos.size() - 1) * (datasets.size() - 1));
-        //System.out.print("P-value computed by Iman and Daveport Test: " + pIman + ".\\newline\n\n");
+        iman =
+                ((datasets.size() - 1) * friedman)
+                        / (datasets.size() * (algoritmos.size() - 1) - friedman);
+        pIman =
+                FishF(
+                        iman,
+                        (algoritmos.size() - 1),
+                        (algoritmos.size() - 1) * (datasets.size() - 1));
+        // System.out.print("P-value computed by Iman and Daveport Test: " + pIman +
+        // ".\\newline\n\n");
 
-        termino3 = Math.sqrt((double) algoritmos.size() * ((double) algoritmos.size() + 1)
-                / (6.0 * (double) datasets.size()));
-        //Inicialize values
+        termino3 =
+                Math.sqrt(
+                        (double) algoritmos.size()
+                                * ((double) algoritmos.size() + 1)
+                                / (6.0 * (double) datasets.size()));
+        // Inicialize values
         inicialize();
-
     }
 
     /**
@@ -323,14 +329,16 @@ public class StatisticalTest {
         for (i = 0, k = 0; i < algoritmos.size(); i++) {
             for (j = i + 1; j < algoritmos.size(); j++, k++) {
                 ordenRankings[k] = Math.abs(Rj[i] - Rj[j]);
-                ordenAlgoritmos[k] = (String) algoritmos.get(i) + " vs. " + (String) algoritmos.get(j);
+                ordenAlgoritmos[k] =
+                        (String) algoritmos.get(i) + " vs. " + (String) algoritmos.get(j);
                 parejitas[k] = new Relation(i, j);
             }
         }
 
         Arrays.fill(vistos, false);
         for (i = 0; i < ordenRankings.length; i++) {
-            for (j = 0; vistos[j] == true; j++);
+            for (j = 0; vistos[j] == true; j++)
+                ;
             pos = j;
             maxVal = ordenRankings[j];
             for (j = j + 1; j < ordenRankings.length; j++) {
@@ -348,9 +356,7 @@ public class StatisticalTest {
         tmp = Tarray.length - 1;
         for (i = 0; i < order.length; i++) {
             Pi[i] = 2 * CDF_Normal.normp((-1) * Math.abs((ordenRankings[order[i]]) / SE));
-
         }
-
     }
 
     /**
@@ -372,8 +378,11 @@ public class StatisticalTest {
             }
         }
         for (i = 0; i < Pi.length; i++) {
-            algPValues.add(new PValuePerTwoAlgorithm(algoritmos.get(parejitas[order[i]].i).toString(),
-                    algoritmos.get(parejitas[order[i]].j).toString(), holmPValues[i]));
+            algPValues.add(
+                    new PValuePerTwoAlgorithm(
+                            algoritmos.get(parejitas[order[i]].i).toString(),
+                            algoritmos.get(parejitas[order[i]].j).toString(),
+                            holmPValues[i]));
         }
 
         return algPValues;
@@ -391,7 +400,8 @@ public class StatisticalTest {
         pos = 0;
         tmp = Tarray.length - 1;
         for (i = 0; i < shafferPValues.length; i++) {
-            shafferPValues[i] = Pi[i] * ((double) shafferPValues.length - (double) Math.max(pos, i));
+            shafferPValues[i] =
+                    Pi[i] * ((double) shafferPValues.length - (double) Math.max(pos, i));
             if (i == pos) {
                 tmp--;
                 pos = (int) combinatoria(2, algoritmos.size()) - Tarray[tmp];
@@ -407,8 +417,11 @@ public class StatisticalTest {
         }
 
         for (i = 0; i < Pi.length; i++) {
-            algPValues.add(new PValuePerTwoAlgorithm(algoritmos.get(parejitas[order[i]].i).toString(),
-                    algoritmos.get(parejitas[order[i]].j).toString(), shafferPValues[i]));
+            algPValues.add(
+                    new PValuePerTwoAlgorithm(
+                            algoritmos.get(parejitas[order[i]].i).toString(),
+                            algoritmos.get(parejitas[order[i]].j).toString(),
+                            shafferPValues[i]));
         }
 
         return algPValues;
@@ -430,8 +443,11 @@ public class StatisticalTest {
         }
 
         for (i = 0; i < Pi.length; i++) {
-            algPValues.add(new PValuePerTwoAlgorithm(algoritmos.get(parejitas[order[i]].i).toString(),
-                    algoritmos.get(parejitas[order[i]].j).toString(), nemenyiPValues[i]));
+            algPValues.add(
+                    new PValuePerTwoAlgorithm(
+                            algoritmos.get(parejitas[order[i]].i).toString(),
+                            algoritmos.get(parejitas[order[i]].j).toString(),
+                            nemenyiPValues[i]));
         }
         return algPValues;
     }
@@ -521,7 +537,6 @@ public class StatisticalTest {
                     } else {
                         temp3.addAll((ArrayList) temp2);
                         result.add(new ArrayList(temp3));
-
                     }
                 }
             }
@@ -534,7 +549,9 @@ public class StatisticalTest {
         }
         for (i = 0; i < result.size(); i++) {
             for (j = i + 1; j < result.size(); j++) {
-                if (((ArrayList) result.get(i)).toString().equalsIgnoreCase(((ArrayList) result.get(j)).toString())) {
+                if (((ArrayList) result.get(i))
+                        .toString()
+                        .equalsIgnoreCase(((ArrayList) result.get(j)).toString())) {
                     result.remove(j);
                     j--;
                 }
@@ -619,23 +636,24 @@ public class StatisticalTest {
             return StatCom(1 - x, n2, n1 + n2 - 4, n2 - 2) * Math.pow(x, n2 / 2.0);
         }
         if ((n2 % 2) == 0) {
-            return 1
-                    - StatCom(x, n1, n1 + n2 - 4, n1 - 2)
-                    * Math.pow(1 - x, n1 / 2.0);
+            return 1 - StatCom(x, n1, n1 + n2 - 4, n1 - 2) * Math.pow(1 - x, n1 / 2.0);
         }
         double th = Math.atan(Math.sqrt(n1 * f / (1.0 * n2)));
         double a = th / (Math.PI / 2.0);
         double sth = Math.sin(th);
         double cth = Math.cos(th);
         if (n2 > 1) {
-            a = a
-                    + sth * cth * StatCom(cth * cth, 2, n2 - 3, -1) / (Math.PI / 2.0);
+            a = a + sth * cth * StatCom(cth * cth, 2, n2 - 3, -1) / (Math.PI / 2.0);
         }
         if (n1 == 1) {
             return 1 - a;
         }
-        double c = 4 * StatCom(sth * sth, n2 + 1, n1 + n2 - 4, n2 - 2) * sth
-                * Math.pow(cth, n2) / Math.PI;
+        double c =
+                4
+                        * StatCom(sth * sth, n2 + 1, n1 + n2 - 4, n2 - 2)
+                        * sth
+                        * Math.pow(cth, n2)
+                        / Math.PI;
         if (n2 == 1) {
             return 1 - a + c / 2.0;
         }
@@ -661,13 +679,11 @@ public class StatisticalTest {
 
     private static class ComparatorImpl implements Comparator<RankPerAlgorithm> {
 
-        public ComparatorImpl() {
-        }
+        public ComparatorImpl() {}
 
         @Override
         public int compare(RankPerAlgorithm r1, RankPerAlgorithm r2) {
             return r1.compareTo(r2);
         }
     }
-
 }

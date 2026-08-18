@@ -15,25 +15,27 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams;
 
 import com.github.javacliparser.FileOption;
+import com.github.javacliparser.RangeOption; // jesse
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader; 
-import com.github.javacliparser.RangeOption;  // jesse
+
 import moa.core.InputStreamProgressMonitor;
 import moa.core.InstanceExample;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 /**
  * Stream reader of ARFF files.
@@ -41,8 +43,8 @@ import moa.tasks.TaskMonitor;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class MultiTargetArffFileStream extends AbstractOptionHandler implements
-        MultiTargetInstanceStream {
+public class MultiTargetArffFileStream extends AbstractOptionHandler
+        implements MultiTargetInstanceStream {
 
     @Override
     public String getPurposeString() {
@@ -51,14 +53,17 @@ public class MultiTargetArffFileStream extends AbstractOptionHandler implements
 
     private static final long serialVersionUID = 1L;
 
-    public FileOption arffFileOption = new FileOption("arffFile", 'f',
-            "ARFF file to load.", null, "arff", false);
+    public FileOption arffFileOption =
+            new FileOption("arffFile", 'f', "ARFF file to load.", null, "arff", false);
 
-    public RangeOption outputAttributesOption = new RangeOption(
-            "outputAttributes",
-            'c',
-            "Output attributes:  n for first n attributes,  -n for last n attributes  For example, 2 for the two first attributes, -2 for the two last attributes.",
-			"-1");
+    public RangeOption outputAttributesOption =
+            new RangeOption(
+                    "outputAttributes",
+                    'c',
+                    "Output attributes:  n for first n attributes,  -n for last n attributes  For"
+                            + " example, 2 for the two first attributes, -2 for the two last"
+                            + " attributes.",
+                    "-1");
 
     protected Instances instances;
 
@@ -72,27 +77,25 @@ public class MultiTargetArffFileStream extends AbstractOptionHandler implements
 
     protected InputStreamProgressMonitor fileProgressMonitor;
 
-    public MultiTargetArffFileStream() {
-    }
+    public MultiTargetArffFileStream() {}
 
-	// jesse
+    // jesse
     public MultiTargetArffFileStream(String arffFileName, String classIndices) {
-		this.arffFileOption.setValue(arffFileName);
-		this.outputAttributesOption.setValue(classIndices);
-		restart();
-    }
-
-	/*
-    public ArffFileStream(String arffFileName, int classIndex) {
         this.arffFileOption.setValue(arffFileName);
-        this.outputAttributesOption.setValue(classIndex);
+        this.outputAttributesOption.setValue(classIndices);
         restart();
     }
-	*/
+
+    /*
+       public ArffFileStream(String arffFileName, int classIndex) {
+           this.arffFileOption.setValue(arffFileName);
+           this.outputAttributesOption.setValue(classIndex);
+           restart();
+       }
+    */
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         restart();
     }
 
@@ -134,27 +137,25 @@ public class MultiTargetArffFileStream extends AbstractOptionHandler implements
                 this.fileReader.close();
             }
             InputStream fileStream = new FileInputStream(this.arffFileOption.getFile());
-            this.fileProgressMonitor = new InputStreamProgressMonitor(
-                    fileStream);
-            this.fileReader = new BufferedReader(new InputStreamReader(
-                    this.fileProgressMonitor));
-			// jesse -----
-			/*int cs[] = this.outputAttributesOption.getRange(); 
-			if (cs.length == 1) {
-				// single label
-				int c = cs[0]; 
-				this.instances = new Instances(this.fileReader, 1, c);
-				if (c < 0) {
-					this.instances.setClassIndex(this.instances.numAttributes() - 1);
-				} else if (c > 0) {
-					this.instances.setClassIndex(c - 1);
-				}
-			}
-			else {*/
-				// multi-label since cs[] contains _multipe_ class indices, e.g., cs[] = {9,10,11} 
-				// what to do here?
-			this.instances = new Instances(this.fileReader, this.outputAttributesOption.getRange());
-			//}
+            this.fileProgressMonitor = new InputStreamProgressMonitor(fileStream);
+            this.fileReader = new BufferedReader(new InputStreamReader(this.fileProgressMonitor));
+            // jesse -----
+            /*int cs[] = this.outputAttributesOption.getRange();
+            if (cs.length == 1) {
+            	// single label
+            	int c = cs[0];
+            	this.instances = new Instances(this.fileReader, 1, c);
+            	if (c < 0) {
+            		this.instances.setClassIndex(this.instances.numAttributes() - 1);
+            	} else if (c > 0) {
+            		this.instances.setClassIndex(c - 1);
+            	}
+            }
+            else {*/
+            // multi-label since cs[] contains _multipe_ class indices, e.g., cs[] = {9,10,11}
+            // what to do here?
+            this.instances = new Instances(this.fileReader, this.outputAttributesOption.getRange());
+            // }
             this.numInstancesRead = 0;
             this.lastInstanceRead = null;
             this.hitEndOfFile = !readNextInstanceFromFile();
@@ -177,8 +178,7 @@ public class MultiTargetArffFileStream extends AbstractOptionHandler implements
             }
             return false;
         } catch (IOException ioe) {
-            throw new RuntimeException(
-                    "ArffFileStream failed to read instance from stream.", ioe);
+            throw new RuntimeException("ArffFileStream failed to read instance from stream.", ioe);
         }
     }
 

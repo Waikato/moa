@@ -21,99 +21,118 @@ package moa.classifiers.meta.heros;
 
 import com.github.javacliparser.*;
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.capabilities.Capabilities;
 import moa.capabilities.CapabilitiesHandler;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.driftdetection.ADWIN;
+import moa.classifiers.deeplearning.MLP;
+import moa.classifiers.lazy.kNN;
+import moa.classifiers.trees.HoeffdingTree;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.Utils;
 import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
-import moa.classifiers.trees.HoeffdingTree;
-import moa.classifiers.lazy.kNN;
-import moa.classifiers.deeplearning.MLP;
 
 import java.util.*;
 
 /**
  * <b>Heterogeneous Online Ensemble (Heros)</b><br>
+ * This class implements the Heros ensemble algorithm for classification. For every training step,
+ * HEROS chooses a subset of models from a pool of models initialized with diverse hyperparameter
+ * choices under resource constraints to train. Different policies for choosing which models to
+ * train on incoming data can be selected. Among the following policies can be chosen: -ZetaPolicy:
+ * Focuses on training near-optimal models at reduced costs. -CandPolicy: Half of the models random,
+ * other half with best estimated performance.
  *
- * This class implements the Heros ensemble algorithm for classification.
- * For every training step, HEROS chooses a subset of models from a pool of models initialized with diverse
- * hyperparameter choices under resource constraints to train. Different policies for choosing which models
- * to train on incoming data can be selected. Among the following policies can be chosen:
- * -ZetaPolicy: Focuses on training near-optimal models at reduced costs.
- * -CandPolicy: Half of the models random, other half with best estimated performance.
+ * <p>Parameters:
  *
- *  <p>Parameters:</p> <ul>
- *      <li>-P : Pool of models</li>
- *      <li>-N : Number of instances to train all models on</li>
- *      <li>-e : Evaluate all models on each instance</li>
- *      <li>-a : Aggregation method for prediction. (1: Best, 2: Average over k models, 3: PoE over k models, 4: Weighted)</li>
- *      <li>-r : Dynamic resource cost computation</li>
- *      <li>-p : Policy to use</li>
- *      <li>-d : ADWIN delta to estimate the predictive performance</li>
- *      <li>-R : Reset a learner after a drift is detected</li>
- *  </ul>
+ * <ul>
+ *   <li>-P : Pool of models
+ *   <li>-N : Number of instances to train all models on
+ *   <li>-e : Evaluate all models on each instance
+ *   <li>-a : Aggregation method for prediction. (1: Best, 2: Average over k models, 3: PoE over k
+ *       models, 4: Weighted)
+ *   <li>-r : Dynamic resource cost computation
+ *   <li>-p : Policy to use
+ *   <li>-d : ADWIN delta to estimate the predictive performance
+ *   <li>-R : Reset a learner after a drift is detected
+ * </ul>
  *
  * Reference (pre-print): <a href="url">https://arxiv.org/abs/2509.18962</a>
- *  @author Kirsten Köbschall (koebschall at uni dash mainz dot de)
+ *
+ * @author Kirsten Köbschall (koebschall at uni dash mainz dot de)
  */
-
 public class Heros extends AbstractClassifier implements MultiClassClassifier, CapabilitiesHandler {
 
-    public ListOption poolOption = new ListOption(
-            "pool",
-            'P',
-            "Ensemble of heterogeneous classifiers.",
-            new ClassOption("learner", ' ', "", Classifier.class,
-                    "trees.HoeffdingTree"),
-            new Option[]{
-                    new ClassOption("", ' ', "", Classifier.class,
-                            "trees.HoeffdingTree -m 2000"),
-                    new ClassOption("", ' ', "", Classifier.class,
-                            "trees.HoeffdingTree -m 4000"),
-                    new ClassOption("", ' ', "", Classifier.class,
-                            "trees.HoeffdingTree -m 8000"),
-                    new ClassOption("", ' ', "", Classifier.class,
-                            "trees.HoeffdingTree -m 16000"),
-                    new ClassOption("", ' ', "", Classifier.class,
-                            "trees.HoeffdingTree -m 32000"),
-                    new ClassOption("", ' ', "", Classifier.class,
-                            "trees.HoeffdingTree -m 64000"),
-                    new ClassOption("", ' ', "", Classifier.class,
-                            "trees.HoeffdingTree -m 128000"),
-                    new ClassOption("", ' ', "", Classifier.class,
-                            "trees.HoeffdingTree -m 256000"),
-                    new ClassOption("", ' ', "", Classifier.class,
-                            "trees.HoeffdingTree -m 512000"),
-                    new ClassOption("", ' ', "", Classifier.class,
-                            "trees.HoeffdingTree -m 1024000"),
-            },
-            ','
-    );
-    public IntOption numInstancesToTrainAllModelsOption = new IntOption("numInstancesToTrainAllModels",
-            'N', "Number of instances to train all models on.", 100, 0,
-            Integer.MAX_VALUE);
+    public ListOption poolOption =
+            new ListOption(
+                    "pool",
+                    'P',
+                    "Ensemble of heterogeneous classifiers.",
+                    new ClassOption("learner", ' ', "", Classifier.class, "trees.HoeffdingTree"),
+                    new Option[] {
+                        new ClassOption(
+                                "", ' ', "", Classifier.class, "trees.HoeffdingTree -m 2000"),
+                        new ClassOption(
+                                "", ' ', "", Classifier.class, "trees.HoeffdingTree -m 4000"),
+                        new ClassOption(
+                                "", ' ', "", Classifier.class, "trees.HoeffdingTree -m 8000"),
+                        new ClassOption(
+                                "", ' ', "", Classifier.class, "trees.HoeffdingTree -m 16000"),
+                        new ClassOption(
+                                "", ' ', "", Classifier.class, "trees.HoeffdingTree -m 32000"),
+                        new ClassOption(
+                                "", ' ', "", Classifier.class, "trees.HoeffdingTree -m 64000"),
+                        new ClassOption(
+                                "", ' ', "", Classifier.class, "trees.HoeffdingTree -m 128000"),
+                        new ClassOption(
+                                "", ' ', "", Classifier.class, "trees.HoeffdingTree -m 256000"),
+                        new ClassOption(
+                                "", ' ', "", Classifier.class, "trees.HoeffdingTree -m 512000"),
+                        new ClassOption(
+                                "", ' ', "", Classifier.class, "trees.HoeffdingTree -m 1024000"),
+                    },
+                    ',');
+    public IntOption numInstancesToTrainAllModelsOption =
+            new IntOption(
+                    "numInstancesToTrainAllModels",
+                    'N',
+                    "Number of instances to train all models on.",
+                    100,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public FlagOption evaluateNotAllModelsOption = new FlagOption("evaluateNotAllModels", 'e',
-            "Evaluate all models on each instance.");
-    public IntOption aggregationOption = new IntOption("aggregation", 'a',
-            "Aggregation method for prediction. (1: Best, 2: Average over k models, 3: PoE over k models, 4: Weighted)",
-            1, 1, 4);
-    public FlagOption dynamicResourceCosts = new FlagOption("dynamicResourceCosts",
-            'r', "Dynamic resource cost computation.");
-    public ClassOption policyOption = new ClassOption("policy",
-            'p', "Policy to use.", Policy.class, "ZetaPolicy");
+    public FlagOption evaluateNotAllModelsOption =
+            new FlagOption("evaluateNotAllModels", 'e', "Evaluate all models on each instance.");
+    public IntOption aggregationOption =
+            new IntOption(
+                    "aggregation",
+                    'a',
+                    "Aggregation method for prediction. (1: Best, 2: Average over k models, 3: PoE"
+                            + " over k models, 4: Weighted)",
+                    1,
+                    1,
+                    4);
+    public FlagOption dynamicResourceCosts =
+            new FlagOption("dynamicResourceCosts", 'r', "Dynamic resource cost computation.");
+    public ClassOption policyOption =
+            new ClassOption("policy", 'p', "Policy to use.", Policy.class, "ZetaPolicy");
     protected Policy policy;
-    public FloatOption deltaOption = new FloatOption("delta",
-            'd', "ADWIN delta to estimate the predictive performance.",
-            0.002, 0.0, 1.);
-    public FlagOption resetLearnerAfterDriftOption = new FlagOption("resetLearnerAfterDrift",
-            'R', "Reset a learner after a drift is detected.");
+    public FloatOption deltaOption =
+            new FloatOption(
+                    "delta",
+                    'd',
+                    "ADWIN delta to estimate the predictive performance.",
+                    0.002,
+                    0.0,
+                    1.);
+    public FlagOption resetLearnerAfterDriftOption =
+            new FlagOption(
+                    "resetLearnerAfterDrift", 'R', "Reset a learner after a drift is detected.");
 
     protected PoolItem[] pool;
     protected int samplesSeen;
@@ -130,12 +149,16 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
         this.samplesSeen++;
         // Use only one model with the highest estimated accuracy for prediction
         if (this.aggregationOption.getValue() == 1) {
-           return this.predictOnBestModels(instance);
-        } else if (this.aggregationOption.getValue() == 2) {        // Use all models from the last applied action for prediction (apply an average on the votes)
+            return this.predictOnBestModels(instance);
+        } else if (this.aggregationOption.getValue()
+                == 2) { // Use all models from the last applied action for prediction (apply an
+            // average on the votes)
             return this.predictOnKModels(instance);
-        } else if (this.aggregationOption.getValue() == 3) {    // Normalize and multiply votes to a product of experts
+        } else if (this.aggregationOption.getValue()
+                == 3) { // Normalize and multiply votes to a product of experts
             return this.predictProductOfExperts(instance);
-        } else {        // Multiply the estimated predictive performance of each learner by the vote and normalize
+        } else { // Multiply the estimated predictive performance of each learner by the vote and
+            // normalize
             return this.predictWeighted(instance);
         }
     }
@@ -156,7 +179,7 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
         double[] votesForInstanceTemp;
         int numberOfAppliedActions = 0;
         int[] lastAction = this.getLastAction();
-        for (int i=0; i < this.pool.length; i++) {
+        for (int i = 0; i < this.pool.length; i++) {
             if (lastAction[i] == 0) {
                 continue;
             }
@@ -171,7 +194,8 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
                     try {
                         votesForInstance[j] = votesForInstance[j] + votesForInstanceTemp[j];
                     } catch (ArrayIndexOutOfBoundsException e) {
-                        // continue if both length of votes are unequal, could happen especially for untrained models
+                        // continue if both length of votes are unequal, could happen especially for
+                        // untrained models
                         continue;
                     }
                 }
@@ -199,7 +223,7 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
         double[] votesForInstance = null;
         double[] votesForInstanceTemp;
         int[] lastAction = this.getLastAction();
-        for (int i=0; i < this.pool.length; i++) {
+        for (int i = 0; i < this.pool.length; i++) {
             if (lastAction[i] == 0) {
                 continue;
             }
@@ -213,7 +237,8 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
                     try {
                         votesForInstance[j] = votesForInstance[j] * votesForInstanceTemp[j];
                     } catch (ArrayIndexOutOfBoundsException e) {
-                        // continue if both length of votes are unequal, could happen especially for untrained models
+                        // continue if both length of votes are unequal, could happen especially for
+                        // untrained models
                     }
                 }
             }
@@ -228,11 +253,11 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
 
         // Get estimated predictive performance from each ensemble member as voting weight
         double[] votingWeight = new double[this.pool.length];
-        for (int i=0; i < votingWeight.length; i++) {
+        for (int i = 0; i < votingWeight.length; i++) {
             votingWeight[i] = this.pool[i].getEstimation();
         }
 
-        for (int i=0; i < this.pool.length; i++) {
+        for (int i = 0; i < this.pool.length; i++) {
             if (lastAction[i] == 0) {
                 continue;
             }
@@ -246,7 +271,8 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
                     try {
                         votesForInstance[j] += votingWeight[i] * votesForInstanceTemp[j];
                     } catch (ArrayIndexOutOfBoundsException e) {
-                        // continue if both length of votes are unequal, could happen especially for untrained models
+                        // continue if both length of votes are unequal, could happen especially for
+                        // untrained models
                     }
                 }
             }
@@ -274,11 +300,13 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
         }
         // MLP: number of neurons
         else if (model instanceof MLP) {
-            resourceCost = (float) (((MLP) model).numberOfNeuronsInEachLayerInLog2.getValue() * ((MLP) model).numberOfLayers.getValue());
+            resourceCost =
+                    (float)
+                            (((MLP) model).numberOfNeuronsInEachLayerInLog2.getValue()
+                                    * ((MLP) model).numberOfLayers.getValue());
         }
         return resourceCost;
     }
-
 
     public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         this.samplesSeen = 0;
@@ -289,12 +317,19 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
         float sumResourceCost = 0.0F;
         for (int i = 0; i < poolOptions.length; i++) {
             monitor.setCurrentActivity("Materializing learner " + (i + 1) + "...", -1.0);
-            Classifier model = (Classifier) ((ClassOption) poolOptions[i]).materializeObject(monitor, repository);
+            Classifier model =
+                    (Classifier)
+                            ((ClassOption) poolOptions[i]).materializeObject(monitor, repository);
             // Compute static resource cost for each model at the beginning
             float resourceCost = this.computeStaticResourceCosts(model);
             sumResourceCost += resourceCost;
-            this.pool[i] = new PoolItem(model, new ADWIN(deltaOption.getValue()), resourceCost,
-                    this.dynamicResourceCosts.isSet(), resetLearnerAfterDriftOption.isSet());
+            this.pool[i] =
+                    new PoolItem(
+                            model,
+                            new ADWIN(deltaOption.getValue()),
+                            resourceCost,
+                            this.dynamicResourceCosts.isSet(),
+                            resetLearnerAfterDriftOption.isSet());
             if (monitor.taskShouldAbort()) {
                 return;
             }
@@ -338,7 +373,7 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
                 // Forward instance to model and update estimator
                 double[] classVotes = this.pool[i].model.getVotesForInstance(instance);
                 this.pool[i].updateEstimator(instance, classVotes);
-                if (action[i] > 0) {    // train model (and update resource costs)
+                if (action[i] > 0) { // train model (and update resource costs)
                     float resCost = 0;
                     long startTime = System.nanoTime();
 
@@ -355,7 +390,8 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
         if (this.dynamicResourceCosts.isSet()) {
             this.resourceNormFactor = 0;
             for (int i = 0; i < this.pool.length; i++) {
-                // Do not use normalized resource costs here, set factor to one such that they are not normalized
+                // Do not use normalized resource costs here, set factor to one such that they are
+                // not normalized
                 this.pool[i].setResourceNormFactor(1);
                 this.resourceNormFactor += this.pool[i].getResourceCost();
             }
@@ -366,22 +402,22 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
         }
     }
 
-
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        return new Measurement[]{new Measurement("pool size (models)", this.pool.length),
-                new Measurement("samples seen", this.samplesSeen)};
+        return new Measurement[] {
+            new Measurement("pool size (models)", this.pool.length),
+            new Measurement("samples seen", this.samplesSeen)
+        };
     }
 
     @Override
     public void getModelDescription(StringBuilder stringBuilder, int i) {
-//        for (PoolItem poolItem : this.pool) {
-//            poolItem.model.getModelDescription(stringBuilder, i);
-//            stringBuilder.append(", Resource cost: " + poolItem.getResourceCost());
-//            StringUtils.appendNewline(stringBuilder);
-//        }
+        //        for (PoolItem poolItem : this.pool) {
+        //            poolItem.model.getModelDescription(stringBuilder, i);
+        //            stringBuilder.append(", Resource cost: " + poolItem.getResourceCost());
+        //            StringUtils.appendNewline(stringBuilder);
+        //        }
     }
-
 
     @Override
     public boolean isRandomizable() {
@@ -415,8 +451,12 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
         protected float resourceNormFactor;
         private boolean resetLearnerAfterDrift;
 
-        public PoolItem(Classifier model, ADWIN estimator, float resourceCost, boolean dynamicResources,
-                        boolean resetLearnerAfterDrift) {
+        public PoolItem(
+                Classifier model,
+                ADWIN estimator,
+                float resourceCost,
+                boolean dynamicResources,
+                boolean resetLearnerAfterDrift) {
             this.model = model;
             this.estimator = estimator;
             this.resourceEstimator = new ADWIN();
@@ -456,7 +496,7 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
             this.estimator.setInput(predictedClass == trueClass ? 1.0 : 0.0);
             // Reset learner after concept drift recognized in performance estimation
             if (this.resetLearnerAfterDrift && this.estimator.getChange()) {
-//            System.out.println("Change detected");
+                //            System.out.println("Change detected");
                 this.model.resetLearning();
             }
         }
@@ -473,5 +513,4 @@ public class Heros extends AbstractClassifier implements MultiClassClassifier, C
             this.resourceNormFactor = resourceNormFactor;
         }
     }
-
 }

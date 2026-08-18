@@ -24,52 +24,35 @@ import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
 /**
- * Returns the probability for anomaly detection according to a Chebyshev inequality
- * mean- mean of a  data variable
- * sd- standard deviation of a data variable
- * value- current value of the variable
+ * Returns the probability for anomaly detection according to a Chebyshev inequality mean- mean of a
+ * data variable sd- standard deviation of a data variable value- current value of the variable
  */
-
-
-
-
 public class ChebyshevInequality extends AbstractOptionHandler implements ProbabilityFunction {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /** */
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public void getDescription(StringBuilder sb, int indent) {
-		
-		
-	}
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {}
 
-	@Override
-	public double getProbability(double mean, double sd, double value) {
-		{
-			double probability = 0.0;
-		//	double diff = value - mean;
-	        if (sd > 0.0) {
-	            double k = (Math.abs(value - mean) / sd);
-	            if (k > 1.0) {
-	                probability = 1.0 / (k * k); // Chebyshev's inequality
-	            } else {
-	                //probability = Math.exp(-(diff * diff / (2.0 * sd * sd)));
-	            	probability=1;
-	            }
-	        }
-			return probability;
-		}
-	}
+    @Override
+    public double getProbability(double mean, double sd, double value) {
+        {
+            double probability = 0.0;
+            //	double diff = value - mean;
+            if (sd > 0.0) {
+                double k = (Math.abs(value - mean) / sd);
+                if (k > 1.0) {
+                    probability = 1.0 / (k * k); // Chebyshev's inequality
+                } else {
+                    // probability = Math.exp(-(diff * diff / (2.0 * sd * sd)));
+                    probability = 1;
+                }
+            }
+            return probability;
+        }
+    }
 
-	@Override
-	protected void prepareForUseImpl(TaskMonitor monitor,
-			ObjectRepository repository) {
-		
-		
-	}
-
-
+    @Override
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {}
 }

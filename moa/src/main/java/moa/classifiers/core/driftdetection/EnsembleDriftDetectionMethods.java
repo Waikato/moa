@@ -22,6 +22,7 @@ import com.github.javacliparser.IntOption;
 import com.github.javacliparser.ListOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.github.javacliparser.Option;
+
 import moa.core.ObjectRepository;
 import moa.options.ClassOption;
 import moa.options.OptionHandler;
@@ -30,7 +31,6 @@ import moa.tasks.TaskMonitor;
 /**
  * Ensemble Drift detection method
  *
- *
  * @author Manuel Baena (mbaena@lcc.uma.es)
  * @version $Revision: 7 $
  */
@@ -38,24 +38,38 @@ public class EnsembleDriftDetectionMethods extends AbstractChangeDetector {
 
     private static final long serialVersionUID = -3518369648142099719L;
 
-    //private static final int DDM_MINNUMINST = 30;
-    public IntOption minNumInstancesOption = new IntOption(
-            "minNumInstances",
-            'n',
-            "The minimum number of instances before permitting detecting change.",
-            30, 0, Integer.MAX_VALUE);
+    // private static final int DDM_MINNUMINST = 30;
+    public IntOption minNumInstancesOption =
+            new IntOption(
+                    "minNumInstances",
+                    'n',
+                    "The minimum number of instances before permitting detecting change.",
+                    30,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public ListOption changeDetectorsOption = new ListOption("changeDetectors", 'c',
-            "Change Detectors to use.", new ClassOption("driftDetectionMethod", 'd',
-            "Drift detection method to use.", ChangeDetector.class, "DDM"),
-            new Option[0], ',');
+    public ListOption changeDetectorsOption =
+            new ListOption(
+                    "changeDetectors",
+                    'c',
+                    "Change Detectors to use.",
+                    new ClassOption(
+                            "driftDetectionMethod",
+                            'd',
+                            "Drift detection method to use.",
+                            ChangeDetector.class,
+                            "DDM"),
+                    new Option[0],
+                    ',');
 
-    public MultiChoiceOption predictionOption = new MultiChoiceOption(
-            "prediction", 'l', "Prediction to use.", new String[]{
-                "max", "min", "majority"}, new String[]{
-                "Maximum",
-                "Minimum",
-                "Majority"}, 0);
+    public MultiChoiceOption predictionOption =
+            new MultiChoiceOption(
+                    "prediction",
+                    'l',
+                    "Prediction to use.",
+                    new String[] {"max", "min", "majority"},
+                    new String[] {"Maximum", "Minimum", "Majority"},
+                    0);
 
     public EnsembleDriftDetectionMethods() {
         resetLearning();
@@ -63,14 +77,14 @@ public class EnsembleDriftDetectionMethods extends AbstractChangeDetector {
 
     @Override
     public void resetLearning() {
-        //if (preds == null) {
-             preds = new Boolean[this.changeDetectorsOption.getList().length];
-        //}
+        // if (preds == null) {
+        preds = new Boolean[this.changeDetectorsOption.getList().length];
+        // }
         for (int i = 0; i < preds.length; i++) {
             preds[i] = false;
         }
     }
-        
+
     protected ChangeDetector[] cds;
 
     protected Boolean[] preds;
@@ -84,54 +98,57 @@ public class EnsembleDriftDetectionMethods extends AbstractChangeDetector {
             }
         }
         int typePrediction = this.predictionOption.getChosenIndex();
-                   int numberDetections = 0;
-            for (int i = 0; i < cds.length; i++) {
-                if (preds[i] == true) {
-                    numberDetections++;
-                }
+        int numberDetections = 0;
+        for (int i = 0; i < cds.length; i++) {
+            if (preds[i] == true) {
+                numberDetections++;
             }
-        if (typePrediction == 0) { 
-            //Choose Max
+        }
+        if (typePrediction == 0) {
+            // Choose Max
             this.isChangeDetected = (numberDetections == cds.length);
         } else if (typePrediction == 1) {
-            //Choose Min
-             this.isChangeDetected = (numberDetections > 0);
+            // Choose Min
+            this.isChangeDetected = (numberDetections > 0);
         } else if (typePrediction == 2) {
-            //Choose Avg
-            this.isChangeDetected = (numberDetections > cds.length/2) ;
+            // Choose Avg
+            this.isChangeDetected = (numberDetections > cds.length / 2);
         }
         if (this.isChangeDetected == true) {
             this.resetLearning();
         }
     }
 
-    //public double[] getOutput() {
-    //    double[] res = {this.isChangeDetected ? 1 : 0, this.isWarningZone ? 1 : 0, this.delay, this.estimation};
+    // public double[] getOutput() {
+    //    double[] res = {this.isChangeDetected ? 1 : 0, this.isWarningZone ? 1 : 0, this.delay,
+    // this.estimation};
     //    return res;
-    //}
-    
+    // }
+
     @Override
     public void getDescription(StringBuilder sb, int indent) {
         // TODO Auto-generated method stub
     }
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
         Option[] changeDetectorOptions = this.changeDetectorsOption.getList();
         cds = new ChangeDetector[changeDetectorOptions.length];
         preds = new Boolean[changeDetectorOptions.length];
         for (int i = 0; i < cds.length; i++) {
-            //monitor.setCurrentActivity("Materializing change detector " + (i + 1)
+            // monitor.setCurrentActivity("Materializing change detector " + (i + 1)
             //        + "...", -1.0);
-            cds[i] = ((ChangeDetector) ((ClassOption) changeDetectorOptions[i]).materializeObject(monitor, repository)).copy();
+            cds[i] =
+                    ((ChangeDetector)
+                                    ((ClassOption) changeDetectorOptions[i])
+                                            .materializeObject(monitor, repository))
+                            .copy();
             if (monitor.taskShouldAbort()) {
                 return;
             }
             if (cds[i] instanceof OptionHandler) {
-                monitor.setCurrentActivity("Preparing change detector " + (i + 1)
-                        + "...", -1.0);
+                monitor.setCurrentActivity("Preparing change detector " + (i + 1) + "...", -1.0);
                 ((OptionHandler) cds[i]).prepareForUse(monitor, repository);
                 if (monitor.taskShouldAbort()) {
                     return;

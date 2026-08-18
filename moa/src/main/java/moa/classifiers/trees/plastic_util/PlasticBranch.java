@@ -6,7 +6,7 @@ import java.util.LinkedList;
 class PlasticBranch implements Comparable<PlasticBranch> {
     private LinkedList<PlasticTreeElement> branch = new LinkedList<>();
 
-    public PlasticBranch(){}
+    public PlasticBranch() {}
 
     public PlasticBranch(LinkedList<PlasticTreeElement> branch) {
         this.branch = branch;
@@ -22,7 +22,7 @@ class PlasticBranch implements Comparable<PlasticBranch> {
         }
         StringBuilder s = new StringBuilder();
         int i = 0;
-        for (PlasticTreeElement e: branch) {
+        for (PlasticTreeElement e : branch) {
             i++;
             s.append(e.getDescription()).append(i == branch.size() ? "" : " --> ");
         }
@@ -30,8 +30,7 @@ class PlasticBranch implements Comparable<PlasticBranch> {
     }
 
     public PlasticTreeElement getLast() {
-        if (branch == null)
-            return null;
+        if (branch == null) return null;
         if (branch.size() == 0) {
             return null;
         }
@@ -40,7 +39,7 @@ class PlasticBranch implements Comparable<PlasticBranch> {
 
     public PlasticBranch copy() {
         PlasticBranch cpy = new PlasticBranch();
-        for (PlasticTreeElement item: branch) {
+        for (PlasticTreeElement item : branch) {
             cpy.getBranchRef().add(item.copy());
         }
         return cpy;
@@ -50,14 +49,11 @@ class PlasticBranch implements Comparable<PlasticBranch> {
         return new ArrayList<>(branch);
     }
 
-    public int compareTo(PlasticBranch other)
-    {
+    public int compareTo(PlasticBranch other) {
         int a = branch.getLast().getNode().observedClassDistribution.numValues();
         int b = other.branch.getLast().getNode().observedClassDistribution.numValues();
-        if (a < b)
-            return -1;
-        if (a == b)
-            return 0;
+        if (a < b) return -1;
+        if (a == b) return 0;
         return 1;
     }
 }

@@ -15,22 +15,18 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
+
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
+import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.AbstractMOAObject;
 import moa.core.Example;
 import moa.core.Measurement;
-import moa.evaluation.MultiTargetWindowRegressionPerformanceRelativeMeasuresEvaluator.Estimator;
-
-import com.yahoo.labs.samoa.instances.DenseInstance;
-import com.yahoo.labs.samoa.instances.DenseInstanceData;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
-import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
-import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
  * Regression evaluator that performs basic incremental evaluation.
@@ -39,121 +35,114 @@ import com.yahoo.labs.samoa.instances.Prediction;
  * @version $Revision: 7 $
  */
 public class BasicMultiTargetPerformanceRelativeMeasuresEvaluator extends AbstractMOAObject
-implements MultiTargetPerformanceEvaluator, RegressionPerformanceEvaluator{
+        implements MultiTargetPerformanceEvaluator, RegressionPerformanceEvaluator {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	protected double weightObserved;
+    protected double weightObserved;
 
-	protected double [] squareError;
+    protected double[] squareError;
 
-	protected double [] averageError;
+    protected double[] averageError;
 
-	protected double [] averageErrorToTargetMean;
+    protected double[] averageErrorToTargetMean;
 
-	protected double [] squareErrorToTargetMean;
+    protected double[] squareErrorToTargetMean;
 
-	protected double [] sumY;
+    protected double[] sumY;
 
+    protected int numberOutputs;
 
-	protected int numberOutputs;
+    @Override
+    public void reset() {
+        this.weightObserved = 0.0;
+        this.squareError = null;
+        this.averageError = null;
+        this.averageErrorToTargetMean = null;
+        this.squareErrorToTargetMean = null;
+        this.sumY = null;
+    }
 
-	@Override
-	public void reset() {
-		this.weightObserved = 0.0;
-		this.squareError = null;
-		this.averageError = null;
-		this.averageErrorToTargetMean=null;
-		this.squareErrorToTargetMean=null;
-		this.sumY=null;
-	}
+    @Override
+    public void addResult(Example<Instance> example, Prediction prediction) {
+        MultiLabelInstance inst = (MultiLabelInstance) example.getData();
+        if (numberOutputs == 0) {
+            numberOutputs = inst.numberOutputTargets();
+        }
+        if (this.squareError == null) {
+            this.squareError = new double[numberOutputs];
+            this.averageError = new double[numberOutputs];
+            this.averageErrorToTargetMean = new double[numberOutputs];
+            this.squareErrorToTargetMean = new double[numberOutputs];
+            this.sumY = new double[numberOutputs];
+        }
 
-	@Override
-	public void addResult(Example<Instance> example, Prediction prediction) {
-		MultiLabelInstance inst = (MultiLabelInstance) example.getData();
-		if (numberOutputs == 0) {
-			numberOutputs = inst.numberOutputTargets();
-		}
-		if(this.squareError==null){
-			this.squareError = new double[numberOutputs];
-			this.averageError = new double[numberOutputs];
-			this.averageErrorToTargetMean=new double[numberOutputs];
-			this.squareErrorToTargetMean=new double[numberOutputs];
-			this.sumY=new double[numberOutputs];
-		}
+        if (inst.weight() > 0.0) {
+            this.weightObserved += inst.weight();
+            if (prediction != null && prediction.numOutputAttributes() > 0) {
+                for (int i = 0; i < numberOutputs; i++) {
+                    double error = (inst.valueOutputAttribute(i) - prediction.getVote(i, 0));
 
+                    this.sumY[i] += inst.valueOutputAttribute(i);
+                    double errorTM =
+                            (inst.valueOutputAttribute(i) - this.sumY[i] / this.weightObserved);
 
+                    this.averageErrorToTargetMean[i] += Math.abs(errorTM);
+                    this.squareErrorToTargetMean[i] += errorTM * errorTM;
 
-		if (inst.weight() > 0.0) {
-			this.weightObserved += inst.weight();
-			if (prediction != null && prediction.numOutputAttributes()>0) {
-				for (int i = 0; i< numberOutputs;i++){
-					double error=(inst.valueOutputAttribute(i) - prediction.getVote(i, 0));
-					
-					this.sumY[i]+=inst.valueOutputAttribute(i);
-					double errorTM=(inst.valueOutputAttribute(i) - this.sumY[i]/this.weightObserved);
+                    this.averageError[i] += Math.abs(error);
+                    this.squareError[i] += error * error;
+                }
+            }
+            // System.out.println(inst.classValue()+", "+prediction);
+        }
+    }
 
-					this.averageErrorToTargetMean[i]+=Math.abs(errorTM);
-					this.squareErrorToTargetMean[i]+=errorTM*errorTM;
+    @Override
+    public Measurement[] getPerformanceMeasurements() {
+        return new Measurement[] {
+            new Measurement("classified instances", getTotalWeightObserved()),
+            new Measurement("relative mean absolute error", getMeanError()),
+            new Measurement("relative root mean squared error", getSquareError())
+        };
+    }
 
-					this.averageError[i]+=Math.abs(error);
-					this.squareError[i]+=error*error;
+    public double getTotalWeightObserved() {
+        return this.weightObserved;
+    }
 
-				}
-			}
-			//System.out.println(inst.classValue()+", "+prediction);
-		}
-	}
+    public double getMeanError() {
+        double error = 0;
+        if (this.weightObserved > 0.0) {
+            for (int i = 0; i < this.averageError.length; i++) {
+                error += this.averageError[i] / this.averageErrorToTargetMean[i];
+            }
+            error /= this.numberOutputs;
+        }
+        return error;
+    }
 
-	@Override
-	public Measurement[] getPerformanceMeasurements() {
-		return new Measurement[]{
-				new Measurement("classified instances",
-						getTotalWeightObserved()),
-						new Measurement("relative mean absolute error",
-								getMeanError()),
-								new Measurement("relative root mean squared error",
-										getSquareError())};
-	}
+    public double getSquareError() {
+        double error = 0;
+        if (this.weightObserved > 0.0) {
+            for (int i = 0; i < this.squareError.length; i++) {
+                error += Math.sqrt(this.squareError[i] / this.squareErrorToTargetMean[i]);
+            }
+            error /= this.numberOutputs;
+        }
+        return error;
+    }
 
-	public double getTotalWeightObserved() {
-		return this.weightObserved;
-	}
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {
+        Measurement.getMeasurementsDescription(getPerformanceMeasurements(), sb, indent);
+    }
 
-	public double getMeanError() {
-		double error=0;
-		if(this.weightObserved > 0.0 ){
-			for(int i=0; i<this.averageError.length;i++){
-				error+=this.averageError[i]/this.averageErrorToTargetMean[i];
-			}
-			error/=this.numberOutputs;
-		}
-		return error;
-	}
-
-	public double getSquareError() {
-		double error=0;
-		if(this.weightObserved > 0.0 ){
-			for(int i=0; i<this.squareError.length;i++){
-				error+=Math.sqrt(this.squareError[i]/this.squareErrorToTargetMean[i]);
-			}
-			error/=this.numberOutputs;
-		}
-		return error;
-	}
-
-	@Override
-	public void getDescription(StringBuilder sb, int indent) {
-		Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
-				sb, indent);
-	}
-
-	//only for one output
-	@Override
-	public void addResult(Example<Instance> example, double[] classVotes) {
-		Prediction p=new MultiLabelPrediction(1);
-		p.setVotes(classVotes);
-		addResult(example, p);
-	}
-
+    // only for one output
+    @Override
+    public void addResult(Example<Instance> example, double[] classVotes) {
+        Prediction p = new MultiLabelPrediction(1);
+        p.setVotes(classVotes);
+        addResult(example, p);
+    }
 }

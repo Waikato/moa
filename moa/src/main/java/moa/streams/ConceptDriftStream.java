@@ -15,43 +15,43 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams;
 
-import java.util.Random;
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.core.Example;
-
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
 import moa.tasks.TaskMonitor;
 
+import java.util.Random;
+
 /**
- * Stream generator that adds concept drift to examples in a stream.
- *<br/><br/>
- * Example:
- *<br/><br/>
+ * Stream generator that adds concept drift to examples in a stream. <br>
+ * <br>
+ * Example: <br>
+ * <br>
  * <code>ConceptDriftStream -s (generators.AgrawalGenerator -f 7) <br/>
- *    -d (generators.AgrawalGenerator -f 2) -w 1000000 -p 900000</code>
- *<br/><br/>
- * s : Stream <br/>
- * d : Concept drift Stream<br/>
- * p : Central position of concept drift change<br/>
- * w : Width of concept drift change<br/>
+ *    -d (generators.AgrawalGenerator -f 2) -w 1000000 -p 900000</code> <br>
+ * <br>
+ * s : Stream <br>
+ * d : Concept drift Stream<br>
+ * p : Central position of concept drift change<br>
+ * w : Width of concept drift change<br>
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class ConceptDriftStream extends AbstractOptionHandler implements
-        InstanceStream, CapabilitiesHandler {
+public class ConceptDriftStream extends AbstractOptionHandler
+        implements InstanceStream, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -60,25 +60,33 @@ public class ConceptDriftStream extends AbstractOptionHandler implements
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to add concept drift.", ExampleStream.class,
-            "generators.RandomTreeGenerator");
+    public ClassOption streamOption =
+            new ClassOption(
+                    "stream",
+                    's',
+                    "Stream to add concept drift.",
+                    ExampleStream.class,
+                    "generators.RandomTreeGenerator");
 
-    public ClassOption driftstreamOption = new ClassOption("driftstream", 'd',
-            "Concept drift Stream.", ExampleStream.class,
-            "generators.RandomTreeGenerator");
+    public ClassOption driftstreamOption =
+            new ClassOption(
+                    "driftstream",
+                    'd',
+                    "Concept drift Stream.",
+                    ExampleStream.class,
+                    "generators.RandomTreeGenerator");
 
-    public FloatOption alphaOption = new FloatOption("alpha",
-            'a', "Angle alpha of change grade.", 0.0, 0.0, 90.0);
+    public FloatOption alphaOption =
+            new FloatOption("alpha", 'a', "Angle alpha of change grade.", 0.0, 0.0, 90.0);
 
-    public IntOption positionOption = new IntOption("position",
-            'p', "Central position of concept drift change.", 0);
+    public IntOption positionOption =
+            new IntOption("position", 'p', "Central position of concept drift change.", 0);
 
-    public IntOption widthOption = new IntOption("width",
-            'w', "Width of concept drift change.", 1000);
+    public IntOption widthOption =
+            new IntOption("width", 'w', "Width of concept drift change.", 1000);
 
-    public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
-            "Seed for random noise.", 1);
+    public IntOption randomSeedOption =
+            new IntOption("randomSeed", 'r', "Seed for random noise.", 1);
 
     protected ExampleStream inputStream;
 
@@ -89,21 +97,22 @@ public class ConceptDriftStream extends AbstractOptionHandler implements
     protected int numberInstanceStream;
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
 
         this.inputStream = (ExampleStream) getPreparedClassOption(this.streamOption);
         this.driftStream = (ExampleStream) getPreparedClassOption(this.driftstreamOption);
         this.random = new Random(this.randomSeedOption.getValue());
         numberInstanceStream = 0;
         if (this.alphaOption.getValue() != 0.0) {
-            this.widthOption.setValue((int) (1 / Math.tan(this.alphaOption.getValue() * Math.PI / 180)));
+            this.widthOption.setValue(
+                    (int) (1 / Math.tan(this.alphaOption.getValue() * Math.PI / 180)));
         }
     }
 
     @Override
     public long estimatedRemainingInstances() {
-        return this.inputStream.estimatedRemainingInstances() + this.driftStream.estimatedRemainingInstances();
+        return this.inputStream.estimatedRemainingInstances()
+                + this.driftStream.estimatedRemainingInstances();
     }
 
     @Override
@@ -124,14 +133,16 @@ public class ConceptDriftStream extends AbstractOptionHandler implements
     @Override
     public Example nextInstance() {
         numberInstanceStream++;
-        double x = -4.0 * (double) (numberInstanceStream - this.positionOption.getValue()) / (double) this.widthOption.getValue();
+        double x =
+                -4.0
+                        * (double) (numberInstanceStream - this.positionOption.getValue())
+                        / (double) this.widthOption.getValue();
         double probabilityDrift = 1.0 / (1.0 + Math.exp(x));
         if (this.random.nextDouble() > probabilityDrift) {
             return this.inputStream.nextInstance();
         } else {
             return this.driftStream.nextInstance();
         }
-
     }
 
     @Override
@@ -150,7 +161,6 @@ public class ConceptDriftStream extends AbstractOptionHandler implements
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == ConceptDriftStream.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

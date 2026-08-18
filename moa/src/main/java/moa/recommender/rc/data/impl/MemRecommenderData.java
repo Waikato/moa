@@ -14,11 +14,15 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.recommender.rc.data.impl;
+
+import moa.recommender.rc.data.AbstractRecommenderData;
+import moa.recommender.rc.utils.Rating;
+import moa.recommender.rc.utils.SparseVector;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -27,9 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import moa.recommender.rc.data.AbstractRecommenderData;
-import moa.recommender.rc.utils.Rating;
-import moa.recommender.rc.utils.SparseVector;
 
 public class MemRecommenderData extends AbstractRecommenderData {
 
@@ -40,34 +41,32 @@ public class MemRecommenderData extends AbstractRecommenderData {
         public double sum = 0;
         public double num = 0;
     }
-    
+
     protected Map<Integer, Map<Integer, Double>> ratingsUser;
     protected Map<Integer, Map<Integer, Double>> ratingsItem;
     protected Map<Integer, EntityStats> usersStats;
     protected Map<Integer, EntityStats> itemsStats;
-    
+
     protected int nItems = 0;
     protected int nUsers = 0;
     protected double sumRatings = 0;
     protected int nRatings = 0;
     protected double minRating = 0;
     protected double maxRating = 0;
-    
+
     protected class RatingIterator implements Iterator<Rating> {
         private int currentUser = -1;
         private Iterator<Integer> userIt = null;
         private Iterator<Entry<Integer, Double>> ratsIt = null;
         private boolean calculated = false;
         private boolean result = true;
-        
-        RatingIterator() throws Exception {
-        }
-        
+
+        RatingIterator() throws Exception {}
+
         @Override
         public boolean hasNext() {
-            if (calculated)
-                return result;
-            
+            if (calculated) return result;
+
             calculated = true;
             result = false;
             if (ratsIt == null) {
@@ -82,12 +81,10 @@ public class MemRecommenderData extends AbstractRecommenderData {
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 if (ratsIt.hasNext()) {
                     result = true;
-                }
-                else if (userIt.hasNext()) {
+                } else if (userIt.hasNext()) {
                     Integer first = userIt.next();
                     currentUser = first;
                     ratsIt = ratingsUser.get(first).entrySet().iterator();
@@ -101,22 +98,20 @@ public class MemRecommenderData extends AbstractRecommenderData {
 
         @Override
         public Rating next() {
-            if (!calculated)
-                hasNext();
+            if (!calculated) hasNext();
             calculated = false;
             Entry<Integer, Double> pair = ratsIt.next();
-            
+
             return new Rating(currentUser, pair.getKey(), pair.getValue());
         }
 
         @Override
         public void remove() {
             // TODO Auto-generated method stub
-            
+
         }
-        
     }
-    
+
     public MemRecommenderData() {
         super();
         ratingsItem = new HashMap<Integer, Map<Integer, Double>>();
@@ -124,21 +119,20 @@ public class MemRecommenderData extends AbstractRecommenderData {
         usersStats = new HashMap<Integer, EntityStats>();
         itemsStats = new HashMap<Integer, EntityStats>();
     }
-    
+
     @Override
     public void addUser(int userID, List<Integer> ratedItems, List<Double> ratings) {
         super.addUser(userID, ratedItems, ratings);
-        
+
         ratingsUser.put(userID, new HashMap<Integer, Double>());
         usersStats.put(userID, new EntityStats());
-        
+
         int n = ratedItems.size();
-        
-        for (int i = 0; i < n; ++i)
-            auxSetRating(userID, ratedItems.get(i), ratings.get(i));
+
+        for (int i = 0; i < n; ++i) auxSetRating(userID, ratedItems.get(i), ratings.get(i));
     }
 
-    //FIXME: have to update item stats!!!
+    // FIXME: have to update item stats!!!
     @Override
     public void removeUser(int userID) {
         super.removeUser(userID);
@@ -149,15 +143,14 @@ public class MemRecommenderData extends AbstractRecommenderData {
     @Override
     public void addItem(int itemID, List<Integer> ratingUsers, List<Double> ratings) {
         super.addItem(itemID, ratingUsers, ratings);
-        
+
         ratingsItem.put(itemID, new HashMap<Integer, Double>());
         itemsStats.put(itemID, new EntityStats());
         int n = ratingUsers.size();
-        for (int i = 0; i < n; ++i)
-            auxSetRating(ratingUsers.get(i), itemID, ratings.get(i));
+        for (int i = 0; i < n; ++i) auxSetRating(ratingUsers.get(i), itemID, ratings.get(i));
     }
 
-    //FIXME: have to update user stats!!!
+    // FIXME: have to update user stats!!!
     @Override
     public void removeItem(int itemID) {
         super.removeItem(itemID);
@@ -169,12 +162,11 @@ public class MemRecommenderData extends AbstractRecommenderData {
         if (nRatings == 0) {
             minRating = rating;
             maxRating = rating;
-        }
-        else {
+        } else {
             minRating = Math.min(minRating, rating);
             maxRating = Math.max(maxRating, rating);
         }
-        
+
         EntityStats userStats = usersStats.get(userID);
         EntityStats itemStats = itemsStats.get(itemID);
         if (userStats == null) {
@@ -183,14 +175,14 @@ public class MemRecommenderData extends AbstractRecommenderData {
             userStats = new EntityStats();
             usersStats.put(userID, userStats);
         }
-        
+
         if (itemStats == null) {
             ++nItems;
             ratingsItem.put(itemID, new HashMap<Integer, Double>());
             itemStats = new EntityStats();
             itemsStats.put(itemID, itemStats);
         }
-        
+
         Map<Integer, Double> ratUser = ratingsUser.get(userID);
         Map<Integer, Double> ratItem = ratingsItem.get(itemID);
         Double rat = ratUser.get(itemID);
@@ -202,7 +194,7 @@ public class MemRecommenderData extends AbstractRecommenderData {
             itemStats.num--;
             --nRatings;
         }
-        
+
         userStats.sum += rating;
         userStats.num++;
         itemStats.sum += rating;
@@ -212,17 +204,17 @@ public class MemRecommenderData extends AbstractRecommenderData {
         ratUser.put(itemID, rating);
         ratItem.put(userID, rating);
     }
-    
+
     @Override
     public void setRating(int userID, int itemID, double rating) {
         super.setRating(userID, itemID, rating);
         auxSetRating(userID, itemID, rating);
     }
-    
+
     @Override
     public void removeRating(int userID, int itemID) {
         super.removeRating(userID, itemID);
-        
+
         Map<Integer, Double> ratUser = ratingsUser.get(userID);
         Map<Integer, Double> ratItem = ratingsItem.get(itemID);
         Double rat = ratUser.get(itemID);
@@ -245,7 +237,7 @@ public class MemRecommenderData extends AbstractRecommenderData {
         Map<Integer, Double> ratUser = ratingsUser.get(userID);
         return new SparseVector(ratUser);
     }
-    
+
     @Override
     public double getRating(int userID, int itemID) {
         Map<Integer, Double> ratUser = ratingsUser.get(userID);
@@ -261,14 +253,15 @@ public class MemRecommenderData extends AbstractRecommenderData {
     public int getNumUsers() {
         return nUsers;
     }
-    
+
     @Override
     public double getAvgRatingUser(int userID) {
         EntityStats stats = usersStats.get(userID);
         double sum = (stats != null ? stats.sum : 0);
         double num = (stats != null ? stats.num : 0);
-        double mean = (nRatings > 0 ? sumRatings/(double)nRatings : (minRating + maxRating)/2.0);
-        return (mean*25 + sum)/(25 + num);
+        double mean =
+                (nRatings > 0 ? sumRatings / (double) nRatings : (minRating + maxRating) / 2.0);
+        return (mean * 25 + sum) / (25 + num);
     }
 
     @Override
@@ -276,10 +269,11 @@ public class MemRecommenderData extends AbstractRecommenderData {
         EntityStats stats = itemsStats.get(itemID);
         double sum = (stats != null ? stats.sum : 0);
         double num = (stats != null ? stats.num : 0);
-        double mean = (nRatings > 0 ? sumRatings/(double)nRatings : (minRating + maxRating)/2.0);
-        return (mean*25 + sum)/(25 + num);
+        double mean =
+                (nRatings > 0 ? sumRatings / (double) nRatings : (minRating + maxRating) / 2.0);
+        return (mean * 25 + sum) / (25 + num);
     }
-    
+
     @Override
     public double getMinRating() {
         return minRating;
@@ -308,19 +302,19 @@ public class MemRecommenderData extends AbstractRecommenderData {
 
     @Override
     public double getGlobalMean() {
-        return (nRatings > 0 ? sumRatings/(double)nRatings : (minRating + maxRating)/2.0);
+        return (nRatings > 0 ? sumRatings / (double) nRatings : (minRating + maxRating) / 2.0);
     }
 
     @Override
     public int countRatingsUser(int userID) {
         EntityStats stats = usersStats.get(userID);
-        return (stats != null ? (int)stats.num : 0);
+        return (stats != null ? (int) stats.num : 0);
     }
 
     @Override
     public int countRatingsItem(int itemID) {
         EntityStats stats = itemsStats.get(itemID);
-        return (stats != null ? (int)stats.num : 0);
+        return (stats != null ? (int) stats.num : 0);
     }
 
     @Override
@@ -333,11 +327,12 @@ public class MemRecommenderData extends AbstractRecommenderData {
     public int getNumRatings() {
         return nRatings;
     }
-    
+
     @Override
     public boolean userExists(int userID) {
         return usersStats.containsKey(userID);
     }
+
     @Override
     public boolean itemExists(int itemID) {
         return itemsStats.containsKey(itemID);
@@ -353,4 +348,3 @@ public class MemRecommenderData extends AbstractRecommenderData {
         ratingsItem.clear();
     }
 }
-

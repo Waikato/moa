@@ -15,9 +15,12 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.github.javacliparser.gui;
+
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.Option;
 
 import java.awt.GridLayout;
 
@@ -28,17 +31,13 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.Option;
-
 /**
  * An OptionEditComponent that lets the user edit a float option.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class FloatOptionEditComponent extends JPanel implements
-        OptionEditComponent {
+public class FloatOptionEditComponent extends JPanel implements OptionEditComponent {
 
     private static final long serialVersionUID = 1L;
 
@@ -56,43 +55,49 @@ public class FloatOptionEditComponent extends JPanel implements
         double minVal = option.getMinValue();
         double maxVal = option.getMaxValue();
         setLayout(new GridLayout(1, 0));
-        this.spinner = new JSpinner(new SpinnerNumberModel(option.getValue(),
-                minVal, maxVal, 0.001));
+        this.spinner =
+                new JSpinner(new SpinnerNumberModel(option.getValue(), minVal, maxVal, 0.001));
         add(this.spinner);
-        if ((minVal > Double.NEGATIVE_INFINITY)
-                && (maxVal < Double.POSITIVE_INFINITY)) {
-            this.slider = new JSlider(0, SLIDER_RESOLUTION,
-                    floatValueToSliderValue(option.getValue()));
+        if ((minVal > Double.NEGATIVE_INFINITY) && (maxVal < Double.POSITIVE_INFINITY)) {
+            this.slider =
+                    new JSlider(0, SLIDER_RESOLUTION, floatValueToSliderValue(option.getValue()));
             add(this.slider);
-            this.slider.addChangeListener(new ChangeListener() {
+            this.slider.addChangeListener(
+                    new ChangeListener() {
 
-                @Override
-                public void stateChanged(ChangeEvent e) {
-                    FloatOptionEditComponent.this.spinner.setValue(sliderValueToFloatValue(FloatOptionEditComponent.this.slider.getValue()));
-                }
-            });
-            this.spinner.addChangeListener(new ChangeListener() {
+                        @Override
+                        public void stateChanged(ChangeEvent e) {
+                            FloatOptionEditComponent.this.spinner.setValue(
+                                    sliderValueToFloatValue(
+                                            FloatOptionEditComponent.this.slider.getValue()));
+                        }
+                    });
+            this.spinner.addChangeListener(
+                    new ChangeListener() {
 
-                @Override
-                public void stateChanged(ChangeEvent e) {
-                    FloatOptionEditComponent.this.slider.setValue(floatValueToSliderValue(((Double) FloatOptionEditComponent.this.spinner.getValue()).doubleValue()));
-                }
-            });
+                        @Override
+                        public void stateChanged(ChangeEvent e) {
+                            FloatOptionEditComponent.this.slider.setValue(
+                                    floatValueToSliderValue(
+                                            ((Double)
+                                                            FloatOptionEditComponent.this.spinner
+                                                                    .getValue())
+                                                    .doubleValue()));
+                        }
+                    });
         }
     }
 
     protected int floatValueToSliderValue(double floatValue) {
         double minVal = this.editedOption.getMinValue();
         double maxVal = this.editedOption.getMaxValue();
-        return (int) Math.round((floatValue - minVal) / (maxVal - minVal)
-                * SLIDER_RESOLUTION);
+        return (int) Math.round((floatValue - minVal) / (maxVal - minVal) * SLIDER_RESOLUTION);
     }
 
     protected double sliderValueToFloatValue(int sliderValue) {
         double minVal = this.editedOption.getMinValue();
         double maxVal = this.editedOption.getMaxValue();
-        return minVal
-                + (((double) sliderValue / SLIDER_RESOLUTION) * (maxVal - minVal));
+        return minVal + (((double) sliderValue / SLIDER_RESOLUTION) * (maxVal - minVal));
     }
 
     @Override

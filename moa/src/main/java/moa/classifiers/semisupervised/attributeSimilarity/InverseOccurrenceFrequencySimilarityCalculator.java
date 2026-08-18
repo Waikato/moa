@@ -10,8 +10,8 @@ public class InverseOccurrenceFrequencySimilarityCalculator extends AttributeSim
     @Override
     public double computePerAttributeSimilarity(Attribute attr, double X_k, double Y_k) {
         if (X_k == Y_k) return 1.0;
-        double fX = Math.max(attributeStats.get(attr).getFrequencyOfValue((int)X_k), SMALL_VALUE);
-        double fY = Math.max(attributeStats.get(attr).getFrequencyOfValue((int)Y_k), SMALL_VALUE);
+        double fX = Math.max(attributeStats.get(attr).getFrequencyOfValue((int) X_k), SMALL_VALUE);
+        double fY = Math.max(attributeStats.get(attr).getFrequencyOfValue((int) Y_k), SMALL_VALUE);
         double logX = fX > 0 ? Math.log(fX) : 0.0;
         double logY = fY > 0 ? Math.log(fY) : 0.0;
         return 1 / (1 + logX * logY);

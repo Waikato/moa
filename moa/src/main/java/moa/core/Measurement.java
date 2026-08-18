@@ -15,14 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
+import moa.AbstractMOAObject;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import moa.AbstractMOAObject;
 
 /**
  * Class for storing an evaluation measurement.
@@ -51,8 +51,7 @@ public class Measurement extends AbstractMOAObject {
         return this.value;
     }
 
-    public static Measurement getMeasurementNamed(String name,
-            Measurement[] measurements) {
+    public static Measurement getMeasurementNamed(String name, Measurement[] measurements) {
         for (Measurement measurement : measurements) {
             if (name.equals(measurement.getName())) {
                 return measurement;
@@ -61,14 +60,13 @@ public class Measurement extends AbstractMOAObject {
         return null;
     }
 
-    public static void getMeasurementsDescription(Measurement[] measurements,
-            StringBuilder out, int indent) {
+    public static void getMeasurementsDescription(
+            Measurement[] measurements, StringBuilder out, int indent) {
         if (measurements.length > 0) {
             StringUtils.appendIndented(out, indent, measurements[0].toString());
             for (int i = 1; i < measurements.length; i++) {
                 StringUtils.appendNewlineIndented(out, indent, measurements[i].toString());
             }
-
         }
     }
 
@@ -87,7 +85,8 @@ public class Measurement extends AbstractMOAObject {
         }
         for (Measurement[] measurements : toAverage) {
             for (Measurement measurement : measurements) {
-                estimators[measurementNames.indexOf(measurement.getName())].addObservation(measurement.getValue(), 1.0);
+                estimators[measurementNames.indexOf(measurement.getName())].addObservation(
+                        measurement.getValue(), 1.0);
             }
         }
         List<Measurement> averagedMeasurements = new ArrayList<Measurement>();
@@ -97,8 +96,7 @@ public class Measurement extends AbstractMOAObject {
             if (mEstimator.getTotalWeightObserved() > 1.0) {
                 averagedMeasurements.add(new Measurement("[avg] " + mName, mEstimator.getMean()));
                 averagedMeasurements.add(new Measurement("[err] " + mName, mEstimator.getStdDev()));
-            }
-            else {
+            } else {
                 averagedMeasurements.add(new Measurement("[avg] " + mName, 0.0));
                 averagedMeasurements.add(new Measurement("[err] " + mName, 0.0));
             }
@@ -110,10 +108,10 @@ public class Measurement extends AbstractMOAObject {
     public void getDescription(StringBuilder sb, int indent) {
         sb.append(getName());
         sb.append(" = ");
-        if (getValue()>.001) {
-                sb.append(StringUtils.doubleToString(getValue(),3));
+        if (getValue() > .001) {
+            sb.append(StringUtils.doubleToString(getValue(), 3));
         } else {
-                sb.append(getValue());
+            sb.append(getValue());
         }
     }
 }

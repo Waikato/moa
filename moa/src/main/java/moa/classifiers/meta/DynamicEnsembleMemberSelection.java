@@ -15,9 +15,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package moa.classifiers.meta;
-
 
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
@@ -27,6 +25,8 @@ import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
+
+import moa.AbstractMOAObject;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
@@ -34,108 +34,158 @@ import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.core.driftdetection.ChangeDetector;
+import moa.classifiers.trees.ARFHoeffdingTree;
 import moa.classifiers.trees.HoeffdingTree;
 import moa.core.*;
+import moa.core.Utils;
 import moa.evaluation.BasicClassificationPerformanceEvaluator;
 import moa.options.ClassOption;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
-
-import moa.AbstractMOAObject;
-import moa.classifiers.trees.ARFHoeffdingTree;
-
-import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import moa.AbstractMOAObject;
-import moa.core.Utils;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of Dynamic Ensemble Member Selection (DEMS).
- * <p>
- * Only ARF and SRP are included as ensemble options, since other ones are not considered SOTA.
  *
- * <p>See details in:<br> Yibin Sun, Bernhard Pfahringer, Heitor Murilo Gomes, Albert Bifet.
- * Dynamic Ensemble Member Selection for Data Stream Classification.
- * In ACM International Conference on Information and Knowledge Management (CIKM) 2025.
- * https://dl.acm.org/doi/pdf/10.1145/3746252.3761072</p>
+ * <p>Only ARF and SRP are included as ensemble options, since other ones are not considered SOTA.
+ *
+ * <p>See details in:<br>
+ * Yibin Sun, Bernhard Pfahringer, Heitor Murilo Gomes, Albert Bifet. Dynamic Ensemble Member
+ * Selection for Data Stream Classification. In ACM International Conference on Information and
+ * Knowledge Management (CIKM) 2025. https://dl.acm.org/doi/pdf/10.1145/3746252.3761072
  */
-
-
-public class DynamicEnsembleMemberSelection extends AbstractClassifier implements MultiClassClassifier,
-        CapabilitiesHandler {
-
+public class DynamicEnsembleMemberSelection extends AbstractClassifier
+        implements MultiClassClassifier, CapabilitiesHandler {
 
     private static final long serialVersionUID = 1L;
 
-    public MultiChoiceOption ensembleClassOption = new MultiChoiceOption("ensembleClassOption", 'e',
-            "The ensemble class to use.",
-            new String[]{"StreamingRandomPatches", "AdaptiveRandomForest"},
-            new String[]{"StreamingRandomPatches", "AdaptiveRandomForest"}, 0);
+    public MultiChoiceOption ensembleClassOption =
+            new MultiChoiceOption(
+                    "ensembleClassOption",
+                    'e',
+                    "The ensemble class to use.",
+                    new String[] {"StreamingRandomPatches", "AdaptiveRandomForest"},
+                    new String[] {"StreamingRandomPatches", "AdaptiveRandomForest"},
+                    0);
 
-    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train on instances.", Classifier.class, "trees.HoeffdingTree -g 50 -c 0.01");
+    public ClassOption baseLearnerOption =
+            new ClassOption(
+                    "baseLearner",
+                    'l',
+                    "Classifier to train on instances.",
+                    Classifier.class,
+                    "trees.HoeffdingTree -g 50 -c 0.01");
 
-    public IntOption ensembleSizeOption = new IntOption("ensembleSize", 's',
-            "The number of models.", 100, 1, Integer.MAX_VALUE);
-
+    public IntOption ensembleSizeOption =
+            new IntOption("ensembleSize", 's', "The number of models.", 100, 1, Integer.MAX_VALUE);
 
     // Number of jobs for ARF (0 or 1 = single-thread, -1 = as many as possible)
-    public IntOption numberOfJobsOption = new IntOption("numberOfJobs", 'j',
-            "Total number of concurrent jobs used for processing (-1 = as much as possible, 0 = do not use multithreading)",
-            1, -1, Integer.MAX_VALUE);
+    public IntOption numberOfJobsOption =
+            new IntOption(
+                    "numberOfJobs",
+                    'j',
+                    "Total number of concurrent jobs used for processing (-1 = as much as possible,"
+                            + " 0 = do not use multithreading)",
+                    1,
+                    -1,
+                    Integer.MAX_VALUE);
 
     // SUBSPACE CONFIGURATION (used by both SRP and ARF)
-    public MultiChoiceOption subspaceModeOption = new MultiChoiceOption("subspaceMode", 'o',
-            "Defines how m, defined by mFeaturesPerTreeSize, is interpreted. M represents the total number of features.",
-            new String[]{"Specified m (integer value)", "sqrt(M)+1", "M-(sqrt(M)+1)",
-                    "Percentage (M * (m / 100))"},
-            new String[]{"SpecifiedM", "SqrtM1", "MSqrtM1", "Percentage"}, 3);
+    public MultiChoiceOption subspaceModeOption =
+            new MultiChoiceOption(
+                    "subspaceMode",
+                    'o',
+                    "Defines how m, defined by mFeaturesPerTreeSize, is interpreted. M represents"
+                            + " the total number of features.",
+                    new String[] {
+                        "Specified m (integer value)",
+                        "sqrt(M)+1",
+                        "M-(sqrt(M)+1)",
+                        "Percentage (M * (m / 100))"
+                    },
+                    new String[] {"SpecifiedM", "SqrtM1", "MSqrtM1", "Percentage"},
+                    3);
 
-    public IntOption subspaceSizeOption = new IntOption("subspaceSize", 'm',
-            "# attributes per subset for each classifier. Negative values = totalAttributes - #attributes", 60, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    public IntOption subspaceSizeOption =
+            new IntOption(
+                    "subspaceSize",
+                    'm',
+                    "# attributes per subset for each classifier. Negative values = totalAttributes"
+                            + " - #attributes",
+                    60,
+                    Integer.MIN_VALUE,
+                    Integer.MAX_VALUE);
 
     // TRAINING
-    public MultiChoiceOption trainingMethodOption = new MultiChoiceOption("trainingMethod", 't',
-            "The training method to use: Random Patches, Random Subspaces or Bagging.",
-            new String[]{"Random Subspaces", "Resampling (bagging)", "Random Patches"},
-            new String[]{"RandomSubspaces", "Resampling", "RandomPatches"}, 2);
+    public MultiChoiceOption trainingMethodOption =
+            new MultiChoiceOption(
+                    "trainingMethod",
+                    't',
+                    "The training method to use: Random Patches, Random Subspaces or Bagging.",
+                    new String[] {"Random Subspaces", "Resampling (bagging)", "Random Patches"},
+                    new String[] {"RandomSubspaces", "Resampling", "RandomPatches"},
+                    2);
 
-    public FloatOption lambdaOption = new FloatOption("lambda", 'a',
-            "The lambda parameter for bagging.", 6.0, 1, Float.MAX_VALUE);
+    public FloatOption lambdaOption =
+            new FloatOption(
+                    "lambda", 'a', "The lambda parameter for bagging.", 6.0, 1, Float.MAX_VALUE);
 
     // DRIFT and WARNING DETECTION
-    public ClassOption driftDetectionMethodOption = new ClassOption("driftDetectionMethod", 'x',
-            "Change detector for drifts and its parameters", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-5");
+    public ClassOption driftDetectionMethodOption =
+            new ClassOption(
+                    "driftDetectionMethod",
+                    'x',
+                    "Change detector for drifts and its parameters",
+                    ChangeDetector.class,
+                    "ADWINChangeDetector -a 1.0E-5");
 
-    public ClassOption warningDetectionMethodOption = new ClassOption("warningDetectionMethod", 'p',
-            "Change detector for warnings (start training bkg learner)", ChangeDetector.class, "ADWINChangeDetector -a 1.0E-4");
+    public ClassOption warningDetectionMethodOption =
+            new ClassOption(
+                    "warningDetectionMethod",
+                    'p',
+                    "Change detector for warnings (start training bkg learner)",
+                    ChangeDetector.class,
+                    "ADWINChangeDetector -a 1.0E-4");
 
     // VOTING
-    public FlagOption disableWeightedVote = new FlagOption("disableWeightedVote", 'w',
-            "Should use weighted voting?");
+    public FlagOption disableWeightedVote =
+            new FlagOption("disableWeightedVote", 'w', "Should use weighted voting?");
 
     // DISABLING DRIFT DETECTION and BKG LEARNER (warning is also disabled in this case)
-    public FlagOption disableDriftDetectionOption = new FlagOption("disableDriftDetection", 'u',
-            "Should use drift detection? If disabled, then the bkg learner is also disabled.");
+    public FlagOption disableDriftDetectionOption =
+            new FlagOption(
+                    "disableDriftDetection",
+                    'u',
+                    "Should use drift detection? If disabled, then the bkg learner is also"
+                            + " disabled.");
 
-    public FlagOption disableBackgroundLearnerOption = new FlagOption("disableBackgroundLearner", 'q',
-            "Should use bkg learner? If disabled, then trees are reset immediately.");
+    public FlagOption disableBackgroundLearnerOption =
+            new FlagOption(
+                    "disableBackgroundLearner",
+                    'q',
+                    "Should use bkg learner? If disabled, then trees are reset immediately.");
 
     // Yibin New
-    public IntOption kValueOption = new IntOption("kValues", 'k', "K values", 5, 1, this.ensembleSizeOption.getValue());
-    public FlagOption disableSelfOptimisingOption = new FlagOption("disableSelfOptimizing", 'f', "Self Optimising Option");
+    public IntOption kValueOption =
+            new IntOption("kValues", 'k', "K values", 5, 1, this.ensembleSizeOption.getValue());
+    public FlagOption disableSelfOptimisingOption =
+            new FlagOption("disableSelfOptimizing", 'f', "Self Optimising Option");
 
     // This options will only be used when the ensemble is ARD
-    public ClassOption treeLearnerOption = new ClassOption("treeLearner", '1',
-            "Random Forest Tree.", ARFHoeffdingTree.class,
-            "ARFHoeffdingTree -e 2000000 -g 50 -c 0.01");
+    public ClassOption treeLearnerOption =
+            new ClassOption(
+                    "treeLearner",
+                    '1',
+                    "Random Forest Tree.",
+                    ARFHoeffdingTree.class,
+                    "ARFHoeffdingTree -e 2000000 -g 50 -c 0.01");
 
     public static final int TRAIN_RANDOM_SUBSPACES = 0;
     public static final int TRAIN_RESAMPLING = 1;
@@ -168,7 +218,6 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
     protected List<SortingInformationForDEMS> informations;
     protected int kBest;
 
-
     @Override
     public void resetLearningImpl() {
         this.instancesSeen = 0;
@@ -192,13 +241,11 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
                 numberOfJobs = Runtime.getRuntime().availableProcessors();
             else if (this.numberOfJobsOption != null)
                 numberOfJobs = this.numberOfJobsOption.getValue();
-            else
-                numberOfJobs = 0;
+            else numberOfJobs = 0;
 
             if (numberOfJobs != 0 && numberOfJobs != 1)
                 this.executor = Executors.newFixedThreadPool(numberOfJobs);
-            else
-                this.executor = null;
+            else this.executor = null;
         }
     }
 
@@ -208,16 +255,17 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         int ensembleType = this.ensembleClassOption.getChosenIndex();
 
         if (ensembleType == 0) { // StreamingRandomPatches path
-            if (this.ensemble == null)
-                initSRPEnsemble(instance);
+            if (this.ensemble == null) initSRPEnsemble(instance);
 
             if (!this.disableSelfOptimisingOption.isSet()) {
-                if (this.performances == null)
-                    this.performances = new int[this.ensemble.length];
+                if (this.performances == null) this.performances = new int[this.ensemble.length];
                 DoubleVector combinedVotes = new DoubleVector();
                 for (int i = this.infos.size() - 1; i >= 0; i--) {
                     SortingInformationForDEMS s = this.infos.get(i);
-                    DoubleVector vote = new DoubleVector(this.ensemble[s.getClassifierIndex()].getVotesForInstance(instance));
+                    DoubleVector vote =
+                            new DoubleVector(
+                                    this.ensemble[s.getClassifierIndex()].getVotesForInstance(
+                                            instance));
 
                     if (vote.sumOfValues() > 0) {
                         vote.normalize();
@@ -243,27 +291,52 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
                 InstanceExample example = new InstanceExample(instance);
 
                 this.ensemble[i].evaluator.addResult(example, vote.getArrayRef());
-                // Train using random subspaces without resampling, i.e. all instances are used for training.
+                // Train using random subspaces without resampling, i.e. all instances are used for
+                // training.
                 if (this.trainingMethodOption.getChosenIndex() == TRAIN_RANDOM_SUBSPACES) {
-                    this.ensemble[i].trainOnInstance(instance, 1, this.instancesSeen, this.classifierRandom);
+                    this.ensemble[i].trainOnInstance(
+                            instance, 1, this.instancesSeen, this.classifierRandom);
                 }
-                // Train using random patches or resampling, thus we simulate online bagging with poisson(lambda=...)
+                // Train using random patches or resampling, thus we simulate online bagging with
+                // poisson(lambda=...)
                 else {
                     int k = MiscUtils.poisson(this.lambdaOption.getValue(), this.classifierRandom);
                     if (k > 0) {
                         double weight = k;
-                        this.ensemble[i].trainOnInstance(instance, weight, this.instancesSeen, this.classifierRandom);
+                        this.ensemble[i].trainOnInstance(
+                                instance, weight, this.instancesSeen, this.classifierRandom);
                     }
                 }
             }
         } else { // AdaptiveRandomForest
-            if (this.arfEnsemble == null)
-                initARFEnsemble(instance);
+            if (this.arfEnsemble == null) initARFEnsemble(instance);
 
             this.informations = new ArrayList<>();
 
             for (int i = 0; i < this.arfEnsemble.length; i++) {
-                this.informations.add(new SortingInformationForDEMS(this.arfEnsemble[i].evaluator.getTotalWeightObserved() == 0 ? 0 : this.arfEnsemble[i].evaluator.getFractionCorrectlyClassified(), this.arfEnsemble[i].classifier.getTreeRoot() == null ? new double[]{0} : this.arfEnsemble[i].classifier.getTreeRoot().filterInstanceToLeaf(instance, null, -1).node == null ? new double[]{0} : this.arfEnsemble[i].classifier.getTreeRoot().filterInstanceToLeaf(instance, null, -1).node.getObservedClassDistribution(), i));
+                this.informations.add(
+                        new SortingInformationForDEMS(
+                                this.arfEnsemble[i].evaluator.getTotalWeightObserved() == 0
+                                        ? 0
+                                        : this.arfEnsemble[i].evaluator
+                                                .getFractionCorrectlyClassified(),
+                                this.arfEnsemble[i].classifier.getTreeRoot() == null
+                                        ? new double[] {0}
+                                        : this.arfEnsemble[i]
+                                                                .classifier
+                                                                .getTreeRoot()
+                                                                .filterInstanceToLeaf(
+                                                                        instance, null, -1)
+                                                                .node
+                                                        == null
+                                                ? new double[] {0}
+                                                : this.arfEnsemble[i]
+                                                        .classifier
+                                                        .getTreeRoot()
+                                                        .filterInstanceToLeaf(instance, null, -1)
+                                                        .node
+                                                        .getObservedClassDistribution(),
+                                i));
             }
 
             if (!this.disableSelfOptimisingOption.isSet() && this.performances == null)
@@ -272,12 +345,15 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
             if (!this.disableSelfOptimisingOption.isSet()) {
                 DoubleVector combinedVotes = new DoubleVector();
                 for (int i = this.informations.size() - 1; i >= 0; i--) {
-                    ARFBaseLearner arfBaseLearner = this.arfEnsemble[this.informations.get(i).getClassifierIndex()];
-                    DoubleVector vote = new DoubleVector(arfBaseLearner.getVotesForInstance(instance));
+                    ARFBaseLearner arfBaseLearner =
+                            this.arfEnsemble[this.informations.get(i).getClassifierIndex()];
+                    DoubleVector vote =
+                            new DoubleVector(arfBaseLearner.getVotesForInstance(instance));
 
                     if (vote.sumOfValues() > 0) {
                         vote.normalize();
-                        double acc = arfBaseLearner.evaluator.getPerformanceMeasurements()[1].getValue();
+                        double acc =
+                                arfBaseLearner.evaluator.getPerformanceMeasurements()[1].getValue();
                         if (!this.disableWeightedVote.isSet() && acc > 0.0) {
                             for (int v = 0; v < vote.numValues(); ++v) {
                                 vote.setValue(v, vote.getValue(v) * acc);
@@ -296,14 +372,16 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
 
             Collection<TrainingRunnable> trainers = new ArrayList<TrainingRunnable>();
             for (int i = 0; i < this.arfEnsemble.length; i++) {
-                DoubleVector vote = new DoubleVector(this.arfEnsemble[i].getVotesForInstance(instance));
+                DoubleVector vote =
+                        new DoubleVector(this.arfEnsemble[i].getVotesForInstance(instance));
                 InstanceExample example = new InstanceExample(instance);
                 this.arfEnsemble[i].evaluator.addResult(example, vote.getArrayRef());
                 int k = MiscUtils.poisson(this.lambdaOption.getValue(), this.classifierRandom);
                 if (k > 0) {
                     if (this.executor != null) {
-                        TrainingRunnable trainer = new TrainingRunnable(this.arfEnsemble[i],
-                                instance, k, this.instancesSeen);
+                        TrainingRunnable trainer =
+                                new TrainingRunnable(
+                                        this.arfEnsemble[i], instance, k, this.instancesSeen);
                         trainers.add(trainer);
                     } else {
                         this.arfEnsemble[i].trainOnInstance(instance, k, this.instancesSeen);
@@ -328,8 +406,7 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
             Instance testInstance = instance.copy();
             testInstance.setMissing(instance.classAttribute());
             testInstance.setClassValue(0.0);
-            if (this.ensemble == null)
-                initEnsemble(testInstance);
+            if (this.ensemble == null) initEnsemble(testInstance);
             DoubleVector combinedVote = new DoubleVector();
 
             // Yibin New
@@ -337,23 +414,43 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
             for (int i = 0; i < this.ensemble.length; i++) {
                 if (this.ensemble[i].classifier instanceof HoeffdingTree) {
                     HoeffdingTree ht = (HoeffdingTree) this.ensemble[i].classifier;
-                    this.infos.add(new SortingInformationForDEMS(
-                            this.ensemble[i].evaluator.getTotalWeightObserved() == 0 ? 0 : this.ensemble[i].evaluator.getFractionCorrectlyClassified(),
-                            ht.getTreeRoot() == null ? new double[]{0} :
-                                    ht.getTreeRoot().filterInstanceToLeaf(testInstance, null, -1).node == null ?
-                                            new double[]{0} :
-                                            ht.getTreeRoot().filterInstanceToLeaf(testInstance, null, -1).node.getObservedClassDistribution(),
-                            i));
+                    this.infos.add(
+                            new SortingInformationForDEMS(
+                                    this.ensemble[i].evaluator.getTotalWeightObserved() == 0
+                                            ? 0
+                                            : this.ensemble[i].evaluator
+                                                    .getFractionCorrectlyClassified(),
+                                    ht.getTreeRoot() == null
+                                            ? new double[] {0}
+                                            : ht.getTreeRoot()
+                                                                    .filterInstanceToLeaf(
+                                                                            testInstance, null, -1)
+                                                                    .node
+                                                            == null
+                                                    ? new double[] {0}
+                                                    : ht.getTreeRoot()
+                                                            .filterInstanceToLeaf(
+                                                                    testInstance, null, -1)
+                                                            .node
+                                                            .getObservedClassDistribution(),
+                                    i));
                 }
             }
-            this.infos = this.infos.stream().sorted(Comparator.comparing(SortingInformationForDEMS::getMargin_TreeAcc)).collect(Collectors.toList());
+            this.infos =
+                    this.infos.stream()
+                            .sorted(
+                                    Comparator.comparing(
+                                            SortingInformationForDEMS::getMargin_TreeAcc))
+                            .collect(Collectors.toList());
 
-            if (this.disableSelfOptimisingOption.isSet())
-                this.bestK = this.kValueOption.getValue();
+            if (this.disableSelfOptimisingOption.isSet()) this.bestK = this.kValueOption.getValue();
 
             for (int i = 0; i < this.bestK; i++) {
                 SortingInformationForDEMS s = this.infos.get(this.ensemble.length - 1 - i);
-                DoubleVector vote = new DoubleVector(this.ensemble[s.getClassifierIndex()].getVotesForInstance(testInstance));
+                DoubleVector vote =
+                        new DoubleVector(
+                                this.ensemble[s.getClassifierIndex()].getVotesForInstance(
+                                        testInstance));
                 if (vote.sumOfValues() > 0.0) {
                     vote.normalize();
                     double acc = s.getTreeAcc();
@@ -368,8 +465,7 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
             return combinedVote.getArrayRef();
         } else { // AdaptiveRandomForest
             Instance testInstance = instance.copy();
-            if (this.arfEnsemble == null)
-                initEnsemble(testInstance);
+            if (this.arfEnsemble == null) initEnsemble(testInstance);
             DoubleVector combinedVote = new DoubleVector();
 
             if (this.disableSelfOptimisingOption.isSet() && this.performances == null)
@@ -377,23 +473,54 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
             this.informations = new ArrayList<>();
 
             for (int i = 0; i < this.arfEnsemble.length; i++) {
-                this.informations.add(new SortingInformationForDEMS(this.arfEnsemble[i].evaluator.getTotalWeightObserved() == 0 ? 0 : this.arfEnsemble[i].evaluator.getFractionCorrectlyClassified(), this.arfEnsemble[i].classifier.getTreeRoot() == null ? new double[]{0} : this.arfEnsemble[i].classifier.getTreeRoot().filterInstanceToLeaf(instance, null, -1).node == null ? new double[]{0} : this.arfEnsemble[i].classifier.getTreeRoot().filterInstanceToLeaf(instance, null, -1).node.getObservedClassDistribution(), i));
+                this.informations.add(
+                        new SortingInformationForDEMS(
+                                this.arfEnsemble[i].evaluator.getTotalWeightObserved() == 0
+                                        ? 0
+                                        : this.arfEnsemble[i].evaluator
+                                                .getFractionCorrectlyClassified(),
+                                this.arfEnsemble[i].classifier.getTreeRoot() == null
+                                        ? new double[] {0}
+                                        : this.arfEnsemble[i]
+                                                                .classifier
+                                                                .getTreeRoot()
+                                                                .filterInstanceToLeaf(
+                                                                        instance, null, -1)
+                                                                .node
+                                                        == null
+                                                ? new double[] {0}
+                                                : this.arfEnsemble[i]
+                                                        .classifier
+                                                        .getTreeRoot()
+                                                        .filterInstanceToLeaf(instance, null, -1)
+                                                        .node
+                                                        .getObservedClassDistribution(),
+                                i));
             }
-            this.informations = this.informations.stream().sorted(Comparator.comparing(SortingInformationForDEMS::getMargin_TreeAcc)).collect(Collectors.toList());
+            this.informations =
+                    this.informations.stream()
+                            .sorted(
+                                    Comparator.comparing(
+                                            SortingInformationForDEMS::getMargin_TreeAcc))
+                            .collect(Collectors.toList());
 
-            if (this.disableSelfOptimisingOption.isSet())
-                this.kBest = this.kValueOption.getValue();
+            if (this.disableSelfOptimisingOption.isSet()) this.kBest = this.kValueOption.getValue();
 
-//
+            //
             if (!this.informations.isEmpty()) {
                 for (int i = 0; i < this.kBest; i++) {
-                    int treeIndex = this.informations.get(this.informations.size() - 1 - i).getClassifierIndex();
-//                trees += treeIndex + ", ";
+                    int treeIndex =
+                            this.informations
+                                    .get(this.informations.size() - 1 - i)
+                                    .getClassifierIndex();
+                    //                trees += treeIndex + ", ";
                     ARFBaseLearner arfBaseLearner = this.arfEnsemble[treeIndex];
-                    DoubleVector vote = new DoubleVector(arfBaseLearner.getVotesForInstance(testInstance));
+                    DoubleVector vote =
+                            new DoubleVector(arfBaseLearner.getVotesForInstance(testInstance));
                     if (vote.sumOfValues() > 0.0) {
                         vote.normalize();
-                        double acc = arfBaseLearner.evaluator.getPerformanceMeasurements()[1].getValue();
+                        double acc =
+                                arfBaseLearner.evaluator.getPerformanceMeasurements()[1].getValue();
                         if (!this.disableWeightedVote.isSet() && acc > 0.0) {
                             for (int v = 0; v < vote.numValues(); ++v) {
                                 vote.setValue(v, vote.getValue(v) * acc);
@@ -413,8 +540,7 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
     }
 
     @Override
-    public void getModelDescription(StringBuilder arg0, int arg1) {
-    }
+    public void getModelDescription(StringBuilder arg0, int arg1) {}
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
@@ -435,11 +561,14 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         int ensembleSize = this.ensembleSizeOption.getValue();
         this.ensemble = new StreamingRandomPatchesClassifier[ensembleSize];
 
-        BasicClassificationPerformanceEvaluator classificationEvaluator = new BasicClassificationPerformanceEvaluator();
+        BasicClassificationPerformanceEvaluator classificationEvaluator =
+                new BasicClassificationPerformanceEvaluator();
 
-        // #1 Select the size of k, it depends on 2 parameters (subspaceSizeOption and subspaceModeOption).
+        // #1 Select the size of k, it depends on 2 parameters (subspaceSizeOption and
+        // subspaceModeOption).
         int k = this.subspaceSizeOption.getValue();
-        if (this.trainingMethodOption.getChosenIndex() != DynamicEnsembleMemberSelection.TRAIN_RESAMPLING) {
+        if (this.trainingMethodOption.getChosenIndex()
+                != DynamicEnsembleMemberSelection.TRAIN_RESAMPLING) {
             // PS: This applies only to subspaces and random patches option.
             int n = instance.numAttributes() - 1; // Ignore the class label by subtracting 1
 
@@ -454,33 +583,38 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
                     double percent = k < 0 ? (100 + k) / 100.0 : k / 100.0;
                     k = (int) Math.round(n * percent);
 
-                    if (Math.round(n * percent) < 2)
-                        k = (int) Math.round(n * percent) + 1;
+                    if (Math.round(n * percent) < 2) k = (int) Math.round(n * percent) + 1;
                     break;
             }
             // k is negative, use size(features) + -k
-            if (k < 0)
-                k = n + k;
+            if (k < 0) k = n + k;
 
             // #2 generate the subspaces
-            if (this.trainingMethodOption.getChosenIndex() == DynamicEnsembleMemberSelection.TRAIN_RANDOM_SUBSPACES ||
-                    this.trainingMethodOption.getChosenIndex() == DynamicEnsembleMemberSelection.TRAIN_RANDOM_PATCHES) {
+            if (this.trainingMethodOption.getChosenIndex()
+                            == DynamicEnsembleMemberSelection.TRAIN_RANDOM_SUBSPACES
+                    || this.trainingMethodOption.getChosenIndex()
+                            == DynamicEnsembleMemberSelection.TRAIN_RANDOM_PATCHES) {
                 if (k != 0 && k < n) {
                     if (n <= 20 || k < 2) {
-                        if (k == 1 && instance.numAttributes() > 2)
-                            k = 2;
+                        if (k == 1 && instance.numAttributes() > 2) k = 2;
                         this.subspaces = DynamicEnsembleMemberSelection.allKCombinations(k, n);
                         for (int i = 0; this.subspaces.size() < this.ensemble.length; ++i) {
                             i = i == this.subspaces.size() ? 0 : i;
-                            ArrayList<Integer> copiedSubspace = new ArrayList<>(this.subspaces.get(i));
+                            ArrayList<Integer> copiedSubspace =
+                                    new ArrayList<>(this.subspaces.get(i));
                             this.subspaces.add(copiedSubspace);
                         }
                     } else {
-                        this.subspaces = DynamicEnsembleMemberSelection.localRandomKCombinations(k, n,
-                                this.ensembleSizeOption.getValue(), this.classifierRandom);
+                        this.subspaces =
+                                DynamicEnsembleMemberSelection.localRandomKCombinations(
+                                        k,
+                                        n,
+                                        this.ensembleSizeOption.getValue(),
+                                        this.classifierRandom);
                     }
                 } else {
-                    this.trainingMethodOption.setChosenIndex(DynamicEnsembleMemberSelection.TRAIN_RESAMPLING);
+                    this.trainingMethodOption.setChosenIndex(
+                            DynamicEnsembleMemberSelection.TRAIN_RESAMPLING);
                 }
             }
         }
@@ -490,34 +624,38 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         for (int i = 0; i < ensembleSize; ++i) {
             switch (this.trainingMethodOption.getChosenIndex()) {
                 case DynamicEnsembleMemberSelection.TRAIN_RESAMPLING:
-                    this.ensemble[i] = new StreamingRandomPatchesClassifier(
-                            i,
-                            baseLearner.copy(),
-                            (BasicClassificationPerformanceEvaluator) classificationEvaluator.copy(),
-                            this.instancesSeen,
-                            this.disableBackgroundLearnerOption.isSet(),
-                            this.disableDriftDetectionOption.isSet(),
-                            this.driftDetectionMethodOption,
-                            this.warningDetectionMethodOption,
-                            false);
+                    this.ensemble[i] =
+                            new StreamingRandomPatchesClassifier(
+                                    i,
+                                    baseLearner.copy(),
+                                    (BasicClassificationPerformanceEvaluator)
+                                            classificationEvaluator.copy(),
+                                    this.instancesSeen,
+                                    this.disableBackgroundLearnerOption.isSet(),
+                                    this.disableDriftDetectionOption.isSet(),
+                                    this.driftDetectionMethodOption,
+                                    this.warningDetectionMethodOption,
+                                    false);
                     break;
                 case DynamicEnsembleMemberSelection.TRAIN_RANDOM_SUBSPACES:
                 case DynamicEnsembleMemberSelection.TRAIN_RANDOM_PATCHES:
                     int selectedValue = this.classifierRandom.nextInt(subspaces.size());
                     ArrayList<Integer> subsetOfFeatures = this.subspaces.get(selectedValue);
                     subsetOfFeatures.add(instance.classIndex());
-                    this.ensemble[i] = new StreamingRandomPatchesClassifier(
-                            i,
-                            baseLearner.copy(),
-                            (BasicClassificationPerformanceEvaluator) classificationEvaluator.copy(),
-                            this.instancesSeen,
-                            this.disableBackgroundLearnerOption.isSet(),
-                            this.disableDriftDetectionOption.isSet(),
-                            this.driftDetectionMethodOption,
-                            this.warningDetectionMethodOption,
-                            subsetOfFeatures,
-                            instance,
-                            false);
+                    this.ensemble[i] =
+                            new StreamingRandomPatchesClassifier(
+                                    i,
+                                    baseLearner.copy(),
+                                    (BasicClassificationPerformanceEvaluator)
+                                            classificationEvaluator.copy(),
+                                    this.instancesSeen,
+                                    this.disableBackgroundLearnerOption.isSet(),
+                                    this.disableDriftDetectionOption.isSet(),
+                                    this.driftDetectionMethodOption,
+                                    this.warningDetectionMethodOption,
+                                    subsetOfFeatures,
+                                    instance,
+                                    false);
                     this.subspaces.remove(selectedValue);
                     break;
             }
@@ -528,7 +666,8 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         int ensembleSize = this.ensembleSizeOption.getValue();
         this.arfEnsemble = new ARFBaseLearner[ensembleSize];
 
-        BasicClassificationPerformanceEvaluator classificationEvaluator = new BasicClassificationPerformanceEvaluator();
+        BasicClassificationPerformanceEvaluator classificationEvaluator =
+                new BasicClassificationPerformanceEvaluator();
 
         this.subspaceSize = this.subspaceSizeOption.getValue();
 
@@ -542,22 +681,24 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
                 this.subspaceSize = n - (int) Math.round(Math.sqrt(n) + 1);
                 break;
             case DynamicEnsembleMemberSelection.FEATURES_PERCENT:
-                double percent = this.subspaceSize < 0 ? (100 + this.subspaceSize) / 100.0 : this.subspaceSize / 100.0;
+                double percent =
+                        this.subspaceSize < 0
+                                ? (100 + this.subspaceSize) / 100.0
+                                : this.subspaceSize / 100.0;
                 this.subspaceSize = (int) Math.round(n * percent);
                 break;
         }
 
-        if (this.subspaceSize < 0)
-            this.subspaceSize = n + this.subspaceSize;
-        if (this.subspaceSize <= 0)
-            this.subspaceSize = 1;
-        if (this.subspaceSize > n)
-            this.subspaceSize = n;
+        if (this.subspaceSize < 0) this.subspaceSize = n + this.subspaceSize;
+        if (this.subspaceSize <= 0) this.subspaceSize = 1;
+        if (this.subspaceSize > n) this.subspaceSize = n;
 
-        ARFHoeffdingTree treeLearner = (ARFHoeffdingTree) getPreparedClassOption(this.treeLearnerOption);
-        // Instantiate ARFHoeffdingTree directly and prepare it so its internal options/config are initialised
-//        ARFHoeffdingTree treeLearner = new ARFHoeffdingTree();
-//        treeLearner.prepareForUse();
+        ARFHoeffdingTree treeLearner =
+                (ARFHoeffdingTree) getPreparedClassOption(this.treeLearnerOption);
+        // Instantiate ARFHoeffdingTree directly and prepare it so its internal options/config are
+        // initialised
+        //        ARFHoeffdingTree treeLearner = new ARFHoeffdingTree();
+        //        treeLearner.prepareForUse();
         treeLearner.subspaceSizeOption.setValue(this.subspaceSize);
 
         for (int i = 0; i < ensembleSize; ++i) {
@@ -565,16 +706,18 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
             baseLearner.setRandomSeed(this.classifierRandom.nextInt());
             baseLearner.resetLearning();
 
-            this.arfEnsemble[i] = new ARFBaseLearner(
-                    i,
-                    baseLearner,
-                    (BasicClassificationPerformanceEvaluator) classificationEvaluator.copy(),
-                    this.instancesSeen,
-                    !this.disableBackgroundLearnerOption.isSet(),
-                    !this.disableDriftDetectionOption.isSet(),
-                    this.driftDetectionMethodOption,
-                    this.warningDetectionMethodOption,
-                    false);
+            this.arfEnsemble[i] =
+                    new ARFBaseLearner(
+                            i,
+                            baseLearner,
+                            (BasicClassificationPerformanceEvaluator)
+                                    classificationEvaluator.copy(),
+                            this.instancesSeen,
+                            !this.disableBackgroundLearnerOption.isSet(),
+                            !this.disableDriftDetectionOption.isSet(),
+                            this.driftDetectionMethodOption,
+                            this.warningDetectionMethodOption,
+                            false);
         }
     }
 
@@ -582,8 +725,7 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == DynamicEnsembleMemberSelection.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 
     @Override
@@ -615,14 +757,13 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         return forest;
     }
 
-    private static ArrayList<ArrayList<Integer>> localRandomKCombinations(int k, int length,
-                                                                          int nCombinations, Random random) {
+    private static ArrayList<ArrayList<Integer>> localRandomKCombinations(
+            int k, int length, int nCombinations, Random random) {
         ArrayList<ArrayList<Integer>> combinations = new ArrayList<>();
         for (int i = 0; i < nCombinations; ++i) {
             ArrayList<Integer> combination = new ArrayList<>();
             // Add all possible items
-            for (int j = 0; j < length; ++j)
-                combination.add(j);
+            for (int j = 0; j < length; ++j) combination.add(j);
             // Randomly remove each item by index using the current size
             // Out of "length" items, maintain only "k" items.
             for (int j = 0; j < (length - k); ++j)
@@ -633,8 +774,12 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         return combinations;
     }
 
-    private static void allKCombinationsInner(int offset, int k, ArrayList<Integer> combination, long originalSize,
-                                              ArrayList<ArrayList<Integer>> combinations) {
+    private static void allKCombinationsInner(
+            int offset,
+            int k,
+            ArrayList<Integer> combination,
+            long originalSize,
+            ArrayList<ArrayList<Integer>> combinations) {
         if (k == 0) {
             combinations.add(new ArrayList<>(combination));
             return;
@@ -653,10 +798,9 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         return combinations;
     }
 
-
     /**
-     * Inner class that represents a single tree member of the forest.
-     * It contains some analysis information, such as the numberOfDriftsDetected,
+     * Inner class that represents a single tree member of the forest. It contains some analysis
+     * information, such as the numberOfDriftsDetected,
      */
     protected final class ARFBaseLearner extends AbstractMOAObject {
         public int indexOriginal;
@@ -684,8 +828,16 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         protected int numberOfDriftsDetected;
         protected int numberOfWarningsDetected;
 
-        private void init(int indexOriginal, ARFHoeffdingTree instantiatedClassifier, BasicClassificationPerformanceEvaluator evaluatorInstantiated,
-                          long instancesSeen, boolean useBkgLearner, boolean useDriftDetector, ClassOption driftOption, ClassOption warningOption, boolean isBackgroundLearner) {
+        private void init(
+                int indexOriginal,
+                ARFHoeffdingTree instantiatedClassifier,
+                BasicClassificationPerformanceEvaluator evaluatorInstantiated,
+                long instancesSeen,
+                boolean useBkgLearner,
+                boolean useDriftDetector,
+                ClassOption driftOption,
+                ClassOption warningOption,
+                boolean isBackgroundLearner) {
             this.indexOriginal = indexOriginal;
             this.createdOn = instancesSeen;
             this.lastDriftOn = 0;
@@ -702,19 +854,38 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
 
             if (this.useDriftDetector) {
                 this.driftOption = driftOption;
-                this.driftDetectionMethod = ((ChangeDetector) getPreparedClassOption(this.driftOption)).copy();
+                this.driftDetectionMethod =
+                        ((ChangeDetector) getPreparedClassOption(this.driftOption)).copy();
             }
 
             // Init Drift Detector for Warning detection.
             if (this.useBkgLearner) {
                 this.warningOption = warningOption;
-                this.warningDetectionMethod = ((ChangeDetector) getPreparedClassOption(this.warningOption)).copy();
+                this.warningDetectionMethod =
+                        ((ChangeDetector) getPreparedClassOption(this.warningOption)).copy();
             }
         }
 
-        public ARFBaseLearner(int indexOriginal, ARFHoeffdingTree instantiatedClassifier, BasicClassificationPerformanceEvaluator evaluatorInstantiated,
-                              long instancesSeen, boolean useBkgLearner, boolean useDriftDetector, ClassOption driftOption, ClassOption warningOption, boolean isBackgroundLearner) {
-            init(indexOriginal, instantiatedClassifier, evaluatorInstantiated, instancesSeen, useBkgLearner, useDriftDetector, driftOption, warningOption, isBackgroundLearner);
+        public ARFBaseLearner(
+                int indexOriginal,
+                ARFHoeffdingTree instantiatedClassifier,
+                BasicClassificationPerformanceEvaluator evaluatorInstantiated,
+                long instancesSeen,
+                boolean useBkgLearner,
+                boolean useDriftDetector,
+                ClassOption driftOption,
+                ClassOption warningOption,
+                boolean isBackgroundLearner) {
+            init(
+                    indexOriginal,
+                    instantiatedClassifier,
+                    evaluatorInstantiated,
+                    instancesSeen,
+                    useBkgLearner,
+                    useDriftDetector,
+                    driftOption,
+                    warningOption,
+                    isBackgroundLearner);
         }
 
         public void reset() {
@@ -730,7 +901,8 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
             } else {
                 this.classifier.resetLearning();
                 this.createdOn = instancesSeen;
-                this.driftDetectionMethod = ((ChangeDetector) getPreparedClassOption(this.driftOption)).copy();
+                this.driftDetectionMethod =
+                        ((ChangeDetector) getPreparedClassOption(this.driftOption)).copy();
             }
             this.evaluator.reset();
         }
@@ -741,10 +913,10 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
 
             this.classifier.trainOnInstance(weightedInstance);
 
-            if (this.bkgLearner != null)
-                this.bkgLearner.classifier.trainOnInstance(instance);
+            if (this.bkgLearner != null) this.bkgLearner.classifier.trainOnInstance(instance);
 
-            // Should it use a drift detector? Also, is it a backgroundLearner? If so, then do not "incept" another one.
+            // Should it use a drift detector? Also, is it a backgroundLearner? If so, then do not
+            // "incept" another one.
             if (this.useDriftDetector && !this.isBackgroundLearner) {
                 boolean correctlyClassifies = this.classifier.correctlyClassifies(instance);
                 // Check for warning only if useBkgLearner is active
@@ -760,16 +932,29 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
                         bkgClassifier.resetLearning();
 
                         // Resets the evaluator
-                        BasicClassificationPerformanceEvaluator bkgEvaluator = (BasicClassificationPerformanceEvaluator) this.evaluator.copy();
+                        BasicClassificationPerformanceEvaluator bkgEvaluator =
+                                (BasicClassificationPerformanceEvaluator) this.evaluator.copy();
                         bkgEvaluator.reset();
 
                         // Create a new bkgLearner object
-                        this.bkgLearner = new ARFBaseLearner(indexOriginal, bkgClassifier, bkgEvaluator, instancesSeen,
-                                this.useBkgLearner, this.useDriftDetector, this.driftOption, this.warningOption, true);
+                        this.bkgLearner =
+                                new ARFBaseLearner(
+                                        indexOriginal,
+                                        bkgClassifier,
+                                        bkgEvaluator,
+                                        instancesSeen,
+                                        this.useBkgLearner,
+                                        this.useDriftDetector,
+                                        this.driftOption,
+                                        this.warningOption,
+                                        true);
 
                         // Update the warning detection object for the current object
-                        // (this effectively resets changes made to the object while it was still a bkg learner).
-                        this.warningDetectionMethod = ((ChangeDetector) getPreparedClassOption(this.warningOption)).copy();
+                        // (this effectively resets changes made to the object while it was still a
+                        // bkg learner).
+                        this.warningDetectionMethod =
+                                ((ChangeDetector) getPreparedClassOption(this.warningOption))
+                                        .copy();
                     }
                 }
 
@@ -791,21 +976,20 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         }
 
         @Override
-        public void getDescription(StringBuilder sb, int indent) {
-        }
+        public void getDescription(StringBuilder sb, int indent) {}
     }
 
     /***
      * Inner class to assist with the multi-thread execution.
      */
     protected class TrainingRunnable implements Runnable, Callable<Integer> {
-        final private ARFBaseLearner learner;
-        final private Instance instance;
-        final private double weight;
-        final private long instancesSeen;
+        private final ARFBaseLearner learner;
+        private final Instance instance;
+        private final double weight;
+        private final long instancesSeen;
 
-        public TrainingRunnable(ARFBaseLearner learner, Instance instance,
-                                double weight, long instancesSeen) {
+        public TrainingRunnable(
+                ARFBaseLearner learner, Instance instance, double weight, long instancesSeen) {
             this.learner = learner;
             this.instance = instance;
             this.weight = weight;
@@ -823,7 +1007,6 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
             return 0;
         }
     }
-
 
     // Inner class representing the base learner of SRP.
     protected class StreamingRandomPatchesClassifier {
@@ -857,10 +1040,16 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         public int numberOfDriftsInduced;
         public int numberOfWarningsInduced;
 
-        private void init(int indexOriginal, Classifier instantiatedClassifier,
-                          BasicClassificationPerformanceEvaluator evaluatorInstantiated,
-                          long instancesSeen, boolean disableBkgLearner, boolean disableDriftDetector,
-                          ClassOption driftOption, ClassOption warningOption, boolean isBackgroundLearner) {
+        private void init(
+                int indexOriginal,
+                Classifier instantiatedClassifier,
+                BasicClassificationPerformanceEvaluator evaluatorInstantiated,
+                long instancesSeen,
+                boolean disableBkgLearner,
+                boolean disableDriftDetector,
+                ClassOption driftOption,
+                ClassOption warningOption,
+                boolean isBackgroundLearner) {
             this.indexOriginal = indexOriginal;
             this.createdOn = instancesSeen;
 
@@ -871,13 +1060,15 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
 
             if (!this.disableDriftDetector) {
                 this.driftOption = driftOption;
-                this.driftDetectionMethod = ((ChangeDetector) getPreparedClassOption(driftOption)).copy();
+                this.driftDetectionMethod =
+                        ((ChangeDetector) getPreparedClassOption(driftOption)).copy();
             }
 
             // Init Drift Detector for Warning detection.
             if (!this.disableBkgLearner) {
                 this.warningOption = warningOption;
-                this.warningDetectionMethod = ((ChangeDetector) getPreparedClassOption(warningOption)).copy();
+                this.warningDetectionMethod =
+                        ((ChangeDetector) getPreparedClassOption(warningOption)).copy();
             }
 
             this.numberOfDriftsDetected = this.numberOfDriftsInduced = 0;
@@ -886,13 +1077,24 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         }
 
         // Create to simulate "Bagging" only, i.e., no random subspaces.
-        public StreamingRandomPatchesClassifier(int indexOriginal, Classifier instantiatedClassifier,
-                                                BasicClassificationPerformanceEvaluator evaluatorInstantiated,
-                                                long instancesSeen, boolean disableBkgLearner, boolean disableDriftDetector,
-                                                ClassOption driftOption, ClassOption warningOption,
-                                                boolean isBackgroundLearner) {
-            init(indexOriginal, instantiatedClassifier, evaluatorInstantiated, instancesSeen, disableBkgLearner,
-                    disableDriftDetector, driftOption,
+        public StreamingRandomPatchesClassifier(
+                int indexOriginal,
+                Classifier instantiatedClassifier,
+                BasicClassificationPerformanceEvaluator evaluatorInstantiated,
+                long instancesSeen,
+                boolean disableBkgLearner,
+                boolean disableDriftDetector,
+                ClassOption driftOption,
+                ClassOption warningOption,
+                boolean isBackgroundLearner) {
+            init(
+                    indexOriginal,
+                    instantiatedClassifier,
+                    evaluatorInstantiated,
+                    instancesSeen,
+                    disableBkgLearner,
+                    disableDriftDetector,
+                    driftOption,
                     warningOption,
                     isBackgroundLearner);
 
@@ -901,14 +1103,28 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         }
 
         // Create the subspaces for the current model.
-        public StreamingRandomPatchesClassifier(int indexOriginal, Classifier instantiatedClassifier,
-                                                BasicClassificationPerformanceEvaluator evaluatorInstantiated,
-                                                long instancesSeen, boolean disableBkgLearner, boolean disableDriftDetector,
-                                                ClassOption driftOption, ClassOption warningOption,
-                                                ArrayList<Integer> featuresIndexes, Instance instance,
-                                                boolean isBackgroundLearner) {
-            init(indexOriginal, instantiatedClassifier, evaluatorInstantiated, instancesSeen, disableBkgLearner,
-                    disableDriftDetector, driftOption, warningOption, isBackgroundLearner);
+        public StreamingRandomPatchesClassifier(
+                int indexOriginal,
+                Classifier instantiatedClassifier,
+                BasicClassificationPerformanceEvaluator evaluatorInstantiated,
+                long instancesSeen,
+                boolean disableBkgLearner,
+                boolean disableDriftDetector,
+                ClassOption driftOption,
+                ClassOption warningOption,
+                ArrayList<Integer> featuresIndexes,
+                Instance instance,
+                boolean isBackgroundLearner) {
+            init(
+                    indexOriginal,
+                    instantiatedClassifier,
+                    evaluatorInstantiated,
+                    instancesSeen,
+                    disableBkgLearner,
+                    disableDriftDetector,
+                    driftOption,
+                    warningOption,
+                    isBackgroundLearner);
 
             // Features + class (last index)
             this.featureIndexes = new int[featuresIndexes.size()];
@@ -926,8 +1142,7 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
 
         public void prepareRandomSubspaceInstance(Instance instance, double weight) {
             // If there is any instance lingering in the subset, remove it.
-            while (this.subset.numInstances() > 0)
-                this.subset.delete(0);
+            while (this.subset.numInstances() > 0) this.subset.delete(0);
 
             double[] values = new double[this.subset.numAttributes()];
             for (int j = 0; j < this.subset.numAttributes(); ++j)
@@ -944,8 +1159,7 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         private ArrayList<Integer> applySubsetResetStrategy(Instance instance, Random random) {
             if (this.subset != null) {
                 ArrayList<Integer> fIndexes = new ArrayList<Integer>();
-                for (int j = 0; j < instance.numAttributes(); ++j)
-                    fIndexes.add(j);
+                for (int j = 0; j < instance.numAttributes(); ++j) fIndexes.add(j);
                 // Remove the class label... (it will be added latter)
                 fIndexes.remove(instance.classIndex());
 
@@ -973,7 +1187,8 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
                 this.classifier.resetLearning();
                 this.evaluator.reset();
                 this.createdOn = instancesSeen;
-                this.driftDetectionMethod = ((ChangeDetector) getPreparedClassOption(this.driftOption)).copy();
+                this.driftDetectionMethod =
+                        ((ChangeDetector) getPreparedClassOption(this.driftOption)).copy();
 
                 if (this.subset != null) {
                     ArrayList<Integer> fIndexes = this.applySubsetResetStrategy(instance, random);
@@ -991,14 +1206,16 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
             }
         }
 
-        public void trainOnInstance(Instance instance, double weight, long instancesSeen, Random random) {
+        public void trainOnInstance(
+                Instance instance, double weight, long instancesSeen, Random random) {
             boolean correctlyClassifies;
             // The subset object will be null if we are training with all features
             if (this.subset != null) {
                 // Selecting just the subset of features that we are going to use
                 prepareRandomSubspaceInstance(instance, weight);
 
-                // After prepareRandomSubspaceInstance, index 0 of subset holds the instance with this learner subspaces
+                // After prepareRandomSubspaceInstance, index 0 of subset holds the instance with
+                // this learner subspaces
                 this.classifier.trainOnInstance(this.subset.get(0));
                 correctlyClassifies = this.classifier.correctlyClassifies(this.subset.get(0));
                 if (this.bkgLearner != null)
@@ -1041,19 +1258,40 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
             Classifier bkgClassifier = this.classifier.copy();
             bkgClassifier.resetLearning();
 
-            BasicClassificationPerformanceEvaluator bkgEvaluator = (BasicClassificationPerformanceEvaluator) this.evaluator.copy();
+            BasicClassificationPerformanceEvaluator bkgEvaluator =
+                    (BasicClassificationPerformanceEvaluator) this.evaluator.copy();
             bkgEvaluator.reset();
             if (this.subset == null) {
-                this.bkgLearner = new StreamingRandomPatchesClassifier(indexOriginal, bkgClassifier, bkgEvaluator, instancesSeen,
-                        this.disableBkgLearner, this.disableDriftDetector, this.driftOption, this.warningOption, true);
+                this.bkgLearner =
+                        new StreamingRandomPatchesClassifier(
+                                indexOriginal,
+                                bkgClassifier,
+                                bkgEvaluator,
+                                instancesSeen,
+                                this.disableBkgLearner,
+                                this.disableDriftDetector,
+                                this.driftOption,
+                                this.warningOption,
+                                true);
             } else {
                 ArrayList<Integer> fIndexes = this.applySubsetResetStrategy(instance, random);
 
-                this.bkgLearner = new StreamingRandomPatchesClassifier(indexOriginal, bkgClassifier, bkgEvaluator, instancesSeen,
-                        this.disableBkgLearner, this.disableDriftDetector, this.driftOption, this.warningOption,
-                        fIndexes, instance, true);
+                this.bkgLearner =
+                        new StreamingRandomPatchesClassifier(
+                                indexOriginal,
+                                bkgClassifier,
+                                bkgEvaluator,
+                                instancesSeen,
+                                this.disableBkgLearner,
+                                this.disableDriftDetector,
+                                this.driftOption,
+                                this.warningOption,
+                                fIndexes,
+                                instance,
+                                true);
             }
-            this.warningDetectionMethod = ((ChangeDetector) getPreparedClassOption(this.warningOption)).copy();
+            this.warningDetectionMethod =
+                    ((ChangeDetector) getPreparedClassOption(this.warningOption)).copy();
         }
 
         /**
@@ -1063,8 +1301,10 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         public double[] getVotesForInstance(Instance instance) {
             if (this.subset != null) {
                 prepareRandomSubspaceInstance(instance, 1);
-                // subset.get(0) returns the instance transformed to the correct subspace (i.e. current model subspace).
-                DoubleVector vote = new DoubleVector(this.classifier.getVotesForInstance(this.subset.get(0)));
+                // subset.get(0) returns the instance transformed to the correct subspace (i.e.
+                // current model subspace).
+                DoubleVector vote =
+                        new DoubleVector(this.classifier.getVotesForInstance(this.subset.get(0)));
 
                 return vote.getArrayRef();
             }
@@ -1134,8 +1374,8 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
             this.votes = votes;
         }
 
-
-        public SortingInformationForDEMS(double classifierAcc, double[] votes, int classifierIndex) {
+        public SortingInformationForDEMS(
+                double classifierAcc, double[] votes, int classifierIndex) {
             this.classifierAcc = classifierAcc;
             this.votes = votes;
             this.classifierIndex = classifierIndex;
@@ -1158,7 +1398,9 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         }
 
         public double getConfidence() {
-            return Utils.sum(this.votes) == 0 ? 0 : this.votes[Utils.maxIndex(this.votes)] / Utils.sum(this.votes);
+            return Utils.sum(this.votes) == 0
+                    ? 0
+                    : this.votes[Utils.maxIndex(this.votes)] / Utils.sum(this.votes);
         }
 
         public int getClassifierIndex() {
@@ -1195,7 +1437,6 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
             return (max - secondMax) / Utils.sum(this.votes);
         }
 
-
         public double getConfidence_TreeAcc() {
             return getClassifierAcc() * getConfidence();
         }
@@ -1213,9 +1454,6 @@ public class DynamicEnsembleMemberSelection extends AbstractClassifier implement
         }
 
         @Override
-        public void getDescription(StringBuilder sb, int indent) {
-
-        }
+        public void getDescription(StringBuilder sb, int indent) {}
     }
-
 }

@@ -14,62 +14,62 @@
  */
 
 /**
- * DriftDetectionMethodClassifierTest.java
- * Copyright (C) 2013 University of Waikato, Hamilton, New Zealand
+ * DriftDetectionMethodClassifierTest.java Copyright (C) 2013 University of Waikato, Hamilton, New
+ * Zealand
  */
 package moa.classifiers.drift;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
 
 /**
  * Tests the DriftDetectionMethodClassifier classifier.
- * 
- * @author  fracpete (fracpete at waikato dot ac dot nz)
+ *
+ * @author fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class DriftDetectionMethodClassifierTest
-  extends AbstractMultipleClassifierTestCase {
+public class DriftDetectionMethodClassifierTest extends AbstractMultipleClassifierTestCase {
 
-  /**
-   * Constructs the test case. Called by subclasses.
-   *
-   * @param name 	the name of the test
-   */
-  public DriftDetectionMethodClassifierTest(String name) {
-    super(name);
-    this.setNumberTests(1);
-  }
+    /**
+     * Constructs the test case. Called by subclasses.
+     *
+     * @param name the name of the test
+     */
+    public DriftDetectionMethodClassifierTest(String name) {
+        super(name);
+        this.setNumberTests(1);
+    }
 
-  /**
-   * Returns the classifier setups to use in the regression test.
-   *
-   * @return		the setups
-   */
-  @Override
-  protected Classifier[] getRegressionClassifierSetups() {
-    return new Classifier[]{
-	new DriftDetectionMethodClassifier(),
-    };
-  }
-  
-  /**
-   * Returns a test suite.
-   *
-   * @return		the test suite
-   */
-  public static Test suite() {
-    return new TestSuite(DriftDetectionMethodClassifierTest.class);
-  }
+    /**
+     * Returns the classifier setups to use in the regression test.
+     *
+     * @return the setups
+     */
+    @Override
+    protected Classifier[] getRegressionClassifierSetups() {
+        return new Classifier[] {
+            new DriftDetectionMethodClassifier(),
+        };
+    }
 
-  /**
-   * Runs the test from commandline.
-   *
-   * @param args	ignored
-   */
-  public static void main(String[] args) {
-    runTest(suite());
-  }
+    /**
+     * Returns a test suite.
+     *
+     * @return the test suite
+     */
+    public static Test suite() {
+        return new TestSuite(DriftDetectionMethodClassifierTest.class);
+    }
+
+    /**
+     * Runs the test from commandline.
+     *
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        runTest(suite());
+    }
 }

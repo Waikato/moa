@@ -14,11 +14,20 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.gui.outliertab;
+
+import com.github.javacliparser.Option;
+import com.github.javacliparser.gui.OptionEditComponent;
+import com.github.javacliparser.gui.OptionsConfigurationPanel;
+
+import moa.clusterers.outliers.MyBaseOutlierDetector;
+import moa.gui.GUIUtils;
+import moa.options.ClassOption;
+import moa.streams.clustering.ClusteringStream;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -28,37 +37,41 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import moa.clusterers.outliers.MyBaseOutlierDetector;
-import moa.gui.GUIUtils;
-import moa.options.ClassOption;
-import com.github.javacliparser.Option;
-import com.github.javacliparser.gui.OptionEditComponent;
-import com.github.javacliparser.gui.OptionsConfigurationPanel;
-import moa.streams.clustering.ClusteringStream;
 
-public class OutlierAlgoPanel extends javax.swing.JPanel implements ActionListener{
+public class OutlierAlgoPanel extends javax.swing.JPanel implements ActionListener {
 
     protected List<OptionEditComponent> editComponents = new LinkedList<OptionEditComponent>();
 
-    private ClassOption streamOption = new ClassOption("Stream", 's',
-                "", ClusteringStream.class,
-                "RandomRBFGeneratorEvents"); 
+    private ClassOption streamOption =
+            new ClassOption("Stream", 's', "", ClusteringStream.class, "RandomRBFGeneratorEvents");
 
-    private ClassOption algorithmOption0 = new ClassOption("Algorithm0", 'a',
-               "Algorithm to use.", MyBaseOutlierDetector.class, "MCOD.MCOD");
-    
-    private ClassOption algorithmOption1 = new ClassOption("Algorithm1", 'a',
-               "Algorithm to use.", MyBaseOutlierDetector.class, "Angiulli.ExactSTORM","None");
-   
+    private ClassOption algorithmOption0 =
+            new ClassOption(
+                    "Algorithm0",
+                    'a',
+                    "Algorithm to use.",
+                    MyBaseOutlierDetector.class,
+                    "MCOD.MCOD");
+
+    private ClassOption algorithmOption1 =
+            new ClassOption(
+                    "Algorithm1",
+                    'a',
+                    "Algorithm to use.",
+                    MyBaseOutlierDetector.class,
+                    "Angiulli.ExactSTORM",
+                    "None");
+
     public OutlierAlgoPanel() {
         initComponents();
     }
 
-    public void renderAlgoPanel(){
+    public void renderAlgoPanel() {
 
         setLayout(new BorderLayout());
 
@@ -70,16 +83,16 @@ public class OutlierAlgoPanel extends javax.swing.JPanel implements ActionListen
         JPanel optionsPanel = new JPanel();
         GridBagLayout gbLayout = new GridBagLayout();
         optionsPanel.setLayout(gbLayout);
-        
-        //Create generic label constraints
+
+        // Create generic label constraints
         GridBagConstraints gbcLabel = new GridBagConstraints();
         gbcLabel.gridx = 0;
         gbcLabel.fill = GridBagConstraints.NONE;
         gbcLabel.anchor = GridBagConstraints.EAST;
         gbcLabel.weightx = 0;
         gbcLabel.insets = new Insets(5, 5, 5, 5);
-        
-        //Create generic editor constraints
+
+        // Create generic editor constraints
         GridBagConstraints gbcOption = new GridBagConstraints();
         gbcOption.gridx = 1;
         gbcOption.fill = GridBagConstraints.HORIZONTAL;
@@ -87,7 +100,7 @@ public class OutlierAlgoPanel extends javax.swing.JPanel implements ActionListen
         gbcOption.weightx = 1;
         gbcOption.insets = new Insets(5, 5, 5, 0);
 
-        //Stream Option
+        // Stream Option
         JLabel labelStream = new JLabel("Stream");
         labelStream.setToolTipText("Stream to use.");
         optionsPanel.add(labelStream, gbcLabel);
@@ -96,7 +109,7 @@ public class OutlierAlgoPanel extends javax.swing.JPanel implements ActionListen
         editComponents.add((OptionEditComponent) editorStream);
         optionsPanel.add(editorStream, gbcOption);
 
-        //Algorithm0 Option
+        // Algorithm0 Option
         JLabel labelAlgo0 = new JLabel("Algorithm1");
         labelAlgo0.setForeground(Color.RED);
         labelAlgo0.setToolTipText("Algorithm to use.");
@@ -104,9 +117,9 @@ public class OutlierAlgoPanel extends javax.swing.JPanel implements ActionListen
         JComponent editorAlgo0 = getEditComponent(algorithmOption0);
         labelAlgo0.setLabelFor(editorAlgo0);
         editComponents.add((OptionEditComponent) editorAlgo0);
-        optionsPanel.add(editorAlgo0, gbcOption);    
-        
-        //Algorithm1 Option
+        optionsPanel.add(editorAlgo0, gbcOption);
+
+        // Algorithm1 Option
         JLabel labelAlgo1 = new JLabel("Algorithm2");
         labelAlgo1.setForeground(Color.BLUE);
         labelAlgo1.setToolTipText("Algorithm to use.");
@@ -114,130 +127,155 @@ public class OutlierAlgoPanel extends javax.swing.JPanel implements ActionListen
         JComponent editorAlgo1 = getEditComponent(algorithmOption1);
         labelAlgo1.setLabelFor(editorAlgo1);
         editComponents.add((OptionEditComponent) editorAlgo1);
-        optionsPanel.add(editorAlgo1, gbcOption);  
-        
-        //use comparison Algorithm Option
+        optionsPanel.add(editorAlgo1, gbcOption);
+
+        // use comparison Algorithm Option
         GridBagConstraints gbcClearButton = new GridBagConstraints();
         gbcClearButton.gridx = 2;
         gbcClearButton.gridy = 2;
         gbcClearButton.fill = GridBagConstraints.NONE;
         gbcClearButton.anchor = GridBagConstraints.CENTER;
         gbcClearButton.insets = new Insets(5, 0, 5, 5);
-        
+
         JButton clearButton = new JButton("Clear");
         clearButton.addActionListener(this);
         clearButton.setActionCommand("clear");
-        optionsPanel.add(clearButton, gbcClearButton);  
-            
+        optionsPanel.add(clearButton, gbcClearButton);
+
         add(optionsPanel);
     }
-    
-    public JComponent getEditComponent(Option option){
+
+    public JComponent getEditComponent(Option option) {
         return OptionsConfigurationPanel.getEditComponent(option);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("clear")){
+        if (e.getActionCommand().equals("clear")) {
             algorithmOption1.setValueViaCLIString("None");
             editComponents.get(2).setEditState("None");
         }
-    }    
-    
-    public MyBaseOutlierDetector getClusterer0(){
+    }
+
+    public MyBaseOutlierDetector getClusterer0() {
         MyBaseOutlierDetector c = null;
         applyChanges();
         try {
-            c = (MyBaseOutlierDetector) ClassOption.cliStringToObject(algorithmOption0.getValueAsCLIString(), MyBaseOutlierDetector.class, null);
+            c =
+                    (MyBaseOutlierDetector)
+                            ClassOption.cliStringToObject(
+                                    algorithmOption0.getValueAsCLIString(),
+                                    MyBaseOutlierDetector.class,
+                                    null);
         } catch (Exception ex) {
             Logger.getLogger(OutlierAlgoPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
         return c;
     }
-    
-    public MyBaseOutlierDetector getClusterer1(){
+
+    public MyBaseOutlierDetector getClusterer1() {
         MyBaseOutlierDetector c = null;
         if (algorithmOption1.getValueAsCLIString().equalsIgnoreCase("None") == false) {
             applyChanges();
             try {
-                c = (MyBaseOutlierDetector) ClassOption.cliStringToObject(algorithmOption1.getValueAsCLIString(), MyBaseOutlierDetector.class, null);
+                c =
+                        (MyBaseOutlierDetector)
+                                ClassOption.cliStringToObject(
+                                        algorithmOption1.getValueAsCLIString(),
+                                        MyBaseOutlierDetector.class,
+                                        null);
             } catch (Exception ex) {
                 Logger.getLogger(OutlierAlgoPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return c;
     }
-    
-    public ClusteringStream getStream(){
+
+    public ClusteringStream getStream() {
         ClusteringStream s = null;
         applyChanges();
         try {
-            s = (ClusteringStream) ClassOption.cliStringToObject(streamOption.getValueAsCLIString(), ClusteringStream.class, null);
+            s =
+                    (ClusteringStream)
+                            ClassOption.cliStringToObject(
+                                    streamOption.getValueAsCLIString(),
+                                    ClusteringStream.class,
+                                    null);
         } catch (Exception ex) {
             Logger.getLogger(OutlierAlgoPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
         return s;
     }
 
-    public String getStreamValueAsCLIString(){
+    public String getStreamValueAsCLIString() {
         applyChanges();
         return streamOption.getValueAsCLIString();
     }
 
-    public String getAlgorithm0ValueAsCLIString(){
+    public String getAlgorithm0ValueAsCLIString() {
         applyChanges();
         return algorithmOption0.getValueAsCLIString();
     }
-    
-    public String getAlgorithm1ValueAsCLIString(){
+
+    public String getAlgorithm1ValueAsCLIString() {
         applyChanges();
         return algorithmOption1.getValueAsCLIString();
     }
-    
+
     /* We need to fetch the right item from editComponents list, index needs to match GUI order */
-    public void setStreamValueAsCLIString(String s){
+    public void setStreamValueAsCLIString(String s) {
         streamOption.setValueViaCLIString(s);
         editComponents.get(0).setEditState(streamOption.getValueAsCLIString());
     }
 
-    public void setAlgorithm0ValueAsCLIString(String s){
+    public void setAlgorithm0ValueAsCLIString(String s) {
         algorithmOption0.setValueViaCLIString(s);
         editComponents.get(1).setEditState(algorithmOption0.getValueAsCLIString());
     }
-    
-    public void setAlgorithm1ValueAsCLIString(String s){
+
+    public void setAlgorithm1ValueAsCLIString(String s) {
         algorithmOption1.setValueViaCLIString(s);
         editComponents.get(2).setEditState(algorithmOption1.getValueAsCLIString());
     }
 
     public void applyChanges() {
-            for (OptionEditComponent editor : this.editComponents) {
-                    try {
-                            editor.applyState();
-                    } catch (Exception ex) {
-                            GUIUtils.showExceptionDialog(this, "Problem with option "
-                                            + editor.getEditedOption().getName(), ex);
-                    }
+        for (OptionEditComponent editor : this.editComponents) {
+            try {
+                editor.applyState();
+            } catch (Exception ex) {
+                GUIUtils.showExceptionDialog(
+                        this, "Problem with option " + editor.getEditedOption().getName(), ex);
             }
+        }
     }
 
-    public void setPanelTitle(String title){
-        setBorder(javax.swing.BorderFactory.createTitledBorder(null,title, javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11)));
+    public void setPanelTitle(String title) {
+        setBorder(
+                javax.swing.BorderFactory.createTitledBorder(
+                        null,
+                        title,
+                        javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+                        javax.swing.border.TitledBorder.DEFAULT_POSITION,
+                        new java.awt.Font("Tahoma", 1, 11)));
     }
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
+    /**
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT
+     * modify this code. The content of this method is always regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Cluster Algorithm Setup", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 11))); // NOI18N
+        setBorder(
+                javax.swing.BorderFactory.createTitledBorder(
+                        null,
+                        "Cluster Algorithm Setup",
+                        javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+                        javax.swing.border.TitledBorder.DEFAULT_POSITION,
+                        new java.awt.Font("Tahoma", 1, 11))); // NOI18N
         setLayout(new java.awt.GridBagLayout());
-    }// </editor-fold>//GEN-END:initComponents
-
+    } // </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

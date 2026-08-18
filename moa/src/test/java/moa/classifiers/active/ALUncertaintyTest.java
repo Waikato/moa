@@ -13,73 +13,68 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * ALUncertaintyTest.java
- * Copyright (C) 2013 University of Waikato, Hamilton, New Zealand
- */
+/** ALUncertaintyTest.java Copyright (C) 2013 University of Waikato, Hamilton, New Zealand */
 package moa.classifiers.active;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
 
 /**
  * Tests the ALUncertainty classifier.
- * 
- * @author  fracpete (fracpete at waikato dot ac dot nz)
+ *
+ * @author fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class ALUncertaintyTest
-  extends AbstractMultipleClassifierTestCase {
+public class ALUncertaintyTest extends AbstractMultipleClassifierTestCase {
 
-  /**
-   * Constructs the test case. Called by subclasses.
-   *
-   * @param name 	the name of the test
-   */
-  public ALUncertaintyTest(String name) {
-    super(name);
-    this.setNumberTests(4);
-  }
+    /**
+     * Constructs the test case. Called by subclasses.
+     *
+     * @param name the name of the test
+     */
+    public ALUncertaintyTest(String name) {
+        super(name);
+        this.setNumberTests(4);
+    }
 
-  /**
-   * Returns the classifier setups to use in the regression test.
-   *
-   * @return		the setups
-   */
-  @Override
-  protected Classifier[] getRegressionClassifierSetups() {
-	ALUncertainty fixed       = new ALUncertainty();
-	ALUncertainty var         = new ALUncertainty();
-	ALUncertainty randVar     = new ALUncertainty();
-	ALUncertainty selSampling = new ALUncertainty();
-	
-	fixed.activeLearningStrategyOption.setChosenLabel("FixedUncertainty");
-	var.activeLearningStrategyOption.setChosenLabel("VarUncertainty");
-	randVar.activeLearningStrategyOption.setChosenLabel("RandVarUncertainty");
-	selSampling.activeLearningStrategyOption.setChosenLabel("SelSampling");
-	
-	return new Classifier[]{
-		fixed, var, randVar, selSampling
-	};
-  }
-  
-  /**
-   * Returns a test suite.
-   *
-   * @return		the test suite
-   */
-  public static Test suite() {
-    return new TestSuite(ALUncertaintyTest.class);
-  }
+    /**
+     * Returns the classifier setups to use in the regression test.
+     *
+     * @return the setups
+     */
+    @Override
+    protected Classifier[] getRegressionClassifierSetups() {
+        ALUncertainty fixed = new ALUncertainty();
+        ALUncertainty var = new ALUncertainty();
+        ALUncertainty randVar = new ALUncertainty();
+        ALUncertainty selSampling = new ALUncertainty();
 
-  /**
-   * Runs the test from commandline.
-   *
-   * @param args	ignored
-   */
-  public static void main(String[] args) {
-    runTest(suite());
-  }
+        fixed.activeLearningStrategyOption.setChosenLabel("FixedUncertainty");
+        var.activeLearningStrategyOption.setChosenLabel("VarUncertainty");
+        randVar.activeLearningStrategyOption.setChosenLabel("RandVarUncertainty");
+        selSampling.activeLearningStrategyOption.setChosenLabel("SelSampling");
+
+        return new Classifier[] {fixed, var, randVar, selSampling};
+    }
+
+    /**
+     * Returns a test suite.
+     *
+     * @return the test suite
+     */
+    public static Test suite() {
+        return new TestSuite(ALUncertaintyTest.class);
+    }
+
+    /**
+     * Runs the test from commandline.
+     *
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        runTest(suite());
+    }
 }

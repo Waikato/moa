@@ -11,7 +11,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 
 /*
@@ -23,9 +23,10 @@ package moa.core;
 import sizeof.agent.SizeOfAgent;
 
 /**
- * Helper class for <a href="http://www.jroller.com/maxim/entry/again_about_determining_size_of" target="_blank">Maxim Zakharenkov's SizeOf agent</a>.
+ * Helper class for <a href="http://www.jroller.com/maxim/entry/again_about_determining_size_of"
+ * target="_blank">Maxim Zakharenkov's SizeOf agent</a>.
  *
- * @author  fracpete (fracpete at waikato dot ac dot nz)
+ * @author fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
 public class SizeOf {
@@ -54,7 +55,7 @@ public class SizeOf {
     /**
      * Returns the size of the object.
      *
-     * @param o	the object to get the size for
+     * @param o the object to get the size for
      * @return the size of the object, or if the agent isn't present -1
      */
     public static long sizeOf(Object o) {
@@ -68,7 +69,7 @@ public class SizeOf {
     /**
      * Returns the full size of the object.
      *
-     * @param o	the object to get the size for
+     * @param o the object to get the size for
      * @return the size of the object, or if the agent isn't present -1
      */
     public static long fullSizeOf(Object o) {

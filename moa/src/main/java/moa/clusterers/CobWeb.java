@@ -2,7 +2,7 @@
  *    CobWeb.java
  *    Copyright (C) 2009 University of Waikato, Hamilton, New Zealand
  *    @author Mark Hall (mhall@cs.waikato.ac.nz)
- * 
+ *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 3 of the License, or
@@ -15,43 +15,49 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.clusterers;
 
-import java.io.Serializable;
-
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
 
 import moa.cluster.Clustering;
 import moa.cluster.SphereCluster;
+import moa.core.FastVector;
 import moa.core.Measurement;
 import moa.core.StringUtils;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.IntOption;
-import moa.core.FastVector;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
+
 import weka.core.AttributeStats;
 import weka.experiment.Stats;
 import weka.filters.unsupervised.attribute.Add;
 
+import java.io.Serializable;
+
 /**
- * Class implementing the Cobweb and Classit clustering algorithms.
- * See: http://en.wikipedia.org/wiki/Cobweb_%28clustering%29
- * 
- * Citation: D. Fisher (1987). 
- * Knowledge acquisition via incremental conceptual clustering. 
+ * Class implementing the Cobweb and Classit clustering algorithms. See:
+ * http://en.wikipedia.org/wiki/Cobweb_%28clustering%29
+ *
+ * <p>Citation: D. Fisher (1987). Knowledge acquisition via incremental conceptual clustering.
  * Machine Learning. 2(2):139-172.
- **/
+ */
 public class CobWeb extends AbstractClusterer {
 
     private static final long serialVersionUID = 1L;
-    public FloatOption acuityOption = new FloatOption("acuity",
-            'a', "Acuity (minimum standard deviation)", 1.0, 0.0, 90.0);
-    public FloatOption cutoffOption = new FloatOption("cutoff",
-            'c', "Cutoff (minimum category utility)", 0.002, 0.0, 90.0); //0.01 * Cobweb.m_normal
-    public IntOption randomSeedOption = new IntOption("randomSeed", 'r',
-            "Seed for random noise.", 1);	//42
+    public FloatOption acuityOption =
+            new FloatOption("acuity", 'a', "Acuity (minimum standard deviation)", 1.0, 0.0, 90.0);
+    public FloatOption cutoffOption =
+            new FloatOption(
+                    "cutoff",
+                    'c',
+                    "Cutoff (minimum category utility)",
+                    0.002,
+                    0.0,
+                    90.0); // 0.01 * Cobweb.m_normal
+    public IntOption randomSeedOption =
+            new IntOption("randomSeed", 'r', "Seed for random noise.", 1); // 42
 
     /**
      * Inner class handling node operations for Cobweb.
@@ -62,29 +68,23 @@ public class CobWeb extends AbstractClusterer {
 
         /** for serialization */
         static final long serialVersionUID = 3452097436933325631L;
-        /**
-         * Within cluster attribute statistics
-         */
+
+        /** Within cluster attribute statistics */
         private AttributeStats[] m_attStats;
-        /**
-         * Number of attributes
-         */
+
+        /** Number of attributes */
         private int m_numAttributes;
-        /**
-         * Instances at this node
-         */
+
+        /** Instances at this node */
         protected Instances m_clusterInstances = null;
-        /**
-         * Children of this node
-         */
+
+        /** Children of this node */
         private FastVector m_children = null;
-        /**
-         * Total instances at this node
-         */
+
+        /** Total instances at this node */
         private double m_totalInstances = 0.0;
-        /**
-         * Cluster number of this node
-         */
+
+        /** Cluster number of this node */
         private int m_clusterNum = -1;
 
         /**
@@ -105,8 +105,8 @@ public class CobWeb extends AbstractClusterer {
         public CNode(int numAttributes, Instance leafInstance) {
             this(numAttributes);
             if (m_clusterInstances == null) {
-		//System.out.println(leafInstance.numAttributes()+"-"+leafInstance.value(0)+"-"+leafInstance.value(1)+"-"+leafInstance.value(2));
-		//System.out.println(leafInstance.numAttributes()+"-"+leafInstance.attribute(0).type()+"-"+leafInstance.attribute(1).type()+"-"+leafInstance.attribute(2).type());
+                // System.out.println(leafInstance.numAttributes()+"-"+leafInstance.value(0)+"-"+leafInstance.value(1)+"-"+leafInstance.value(2));
+                // System.out.println(leafInstance.numAttributes()+"-"+leafInstance.attribute(0).type()+"-"+leafInstance.attribute(1).type()+"-"+leafInstance.attribute(2).type());
                 m_clusterInstances = new Instances(leafInstance.dataset(), 1);
             }
             m_clusterInstances.add(leafInstance);
@@ -130,8 +130,7 @@ public class CobWeb extends AbstractClusterer {
                 /* we are a leaf, so make our existing instance(s) into a child
                 and then add the new instance as a child */
                 m_children = new FastVector();
-                CNode tempSubCluster = new CNode(m_numAttributes,
-                        m_clusterInstances.instance(0));
+                CNode tempSubCluster = new CNode(m_numAttributes, m_clusterInstances.instance(0));
 
                 //	System.out.println("Dumping "+m_clusterInstances.numInstances());
                 for (int i = 1; i < m_clusterInstances.numInstances(); i++) {
@@ -163,16 +162,16 @@ public class CobWeb extends AbstractClusterer {
         }
 
         /**
-         * Temporarily adds a new instance to each of this nodes children
-         * in turn and computes the category utility.
+         * Temporarily adds a new instance to each of this nodes children in turn and computes the
+         * category utility.
          *
          * @param newInstance the new instance to evaluate
-         * @return an array of category utility values---the result of considering
-         * each child in turn as a host for the new instance
+         * @return an array of category utility values---the result of considering each child in
+         *     turn as a host for the new instance
          * @throws Exception if an error occurs
          */
         private double[] cuScoresForChildren(Instance newInstance) {
-            //throws Exception {
+            // throws Exception {
             // look for a host in existing children
             double[] categoryUtils = new double[m_children.size()];
 
@@ -189,9 +188,8 @@ public class CobWeb extends AbstractClusterer {
             return categoryUtils;
         }
 
-        private double cuScoreForBestTwoMerged(CNode merged,
-                CNode a, CNode b,
-                Instance newInstance) {//throws Exception {
+        private double cuScoreForBestTwoMerged(
+                CNode merged, CNode a, CNode b, Instance newInstance) { // throws Exception {
 
             double mergedCU = -Double.MAX_VALUE;
             // consider merging the best and second
@@ -215,17 +213,17 @@ public class CobWeb extends AbstractClusterer {
         }
 
         /**
-         * Finds a host for the new instance in this nodes children. Also
-         * considers merging the two best hosts and splitting the best host.
+         * Finds a host for the new instance in this nodes children. Also considers merging the two
+         * best hosts and splitting the best host.
          *
          * @param newInstance the instance to find a host for
-         * @param structureFrozen true if the instance is not to be added to
-         * the tree and instead the best potential host is to be returned
+         * @param structureFrozen true if the instance is not to be added to the tree and instead
+         *     the best potential host is to be returned
          * @return the best host
          * @throws Exception if an error occurs
          */
-        private CNode findHost(Instance newInstance,
-                boolean structureFrozen) {//throws Exception {
+        private CNode findHost(
+                Instance newInstance, boolean structureFrozen) { // throws Exception {
 
             if (!structureFrozen) {
                 updateStats(newInstance, false);
@@ -337,10 +335,11 @@ public class CobWeb extends AbstractClusterer {
                     splitPlusMergeBestTwoCU =
                             cuScoreForBestTwoMerged(mergedSplitChildren, sa, sb, newInstance);
                 }
-                splitCU = (splitBestChildCU > splitPlusNewLeafCU)
-                        ? splitBestChildCU : splitPlusNewLeafCU;
-                splitCU = (splitCU > splitPlusMergeBestTwoCU)
-                        ? splitCU : splitPlusMergeBestTwoCU;
+                splitCU =
+                        (splitBestChildCU > splitPlusNewLeafCU)
+                                ? splitBestChildCU
+                                : splitPlusNewLeafCU;
+                splitCU = (splitCU > splitPlusMergeBestTwoCU) ? splitCU : splitPlusMergeBestTwoCU;
 
                 if (splitCU > bestHostCU) {
                     bestHostCU = splitCU;
@@ -392,8 +391,8 @@ public class CobWeb extends AbstractClusterer {
         }
 
         /**
-         * Adds the supplied node as a child of this node. All of the child's
-         * instances are added to this nodes instances
+         * Adds the supplied node as a child of this node. All of the child's instances are added to
+         * this nodes instances
          *
          * @param child the child to add
          */
@@ -416,10 +415,10 @@ public class CobWeb extends AbstractClusterer {
          * @return the category utility of the children with respect to this node.
          * @throws Exception if there are no children
          */
-        protected double categoryUtility() {// {throws Exception {
+        protected double categoryUtility() { // {throws Exception {
 
             // if (m_children == null) {
-            //throw new Exception("categoryUtility: No children!");
+            // throw new Exception("categoryUtility: No children!");
             // }
 
             double totalCU = 0;
@@ -440,22 +439,19 @@ public class CobWeb extends AbstractClusterer {
          * @return the utility of the child with respect to this node
          * @throws Exception if something goes wrong
          */
-        protected double categoryUtilityChild(CNode child) {//throws Exception {
+        protected double categoryUtilityChild(CNode child) { // throws Exception {
 
             double sum = 0;
             for (int i = 0; i < m_numAttributes; i++) {
                 if (m_clusterInstances.attribute(i).isNominal()) {
-                    for (int j = 0;
-                            j < m_clusterInstances.attribute(i).numValues(); j++) {
+                    for (int j = 0; j < m_clusterInstances.attribute(i).numValues(); j++) {
                         double x = child.getProbability(i, j);
                         double y = getProbability(i, j);
                         sum += (x * x) - (y * y);
                     }
                 } else {
                     // numeric attribute
-                    sum += ((m_normal / child.getStandardDev(i))
-                            - (m_normal / getStandardDev(i)));
-
+                    sum += ((m_normal / child.getStandardDev(i)) - (m_normal / getStandardDev(i)));
                 }
             }
             return (child.m_totalInstances / m_totalInstances) * sum;
@@ -470,10 +466,10 @@ public class CobWeb extends AbstractClusterer {
          * @throws Exception if the requested attribute is not nominal
          */
         protected double getProbability(int attIndex, int valueIndex) {
-            //throws Exception {
+            // throws Exception {
 
             //  if (!m_clusterInstances.attribute(attIndex).isNominal()) {
-            //throw new Exception("getProbability: attribute is not nominal");
+            // throw new Exception("getProbability: attribute is not nominal");
             //  }
 
             if (m_attStats[attIndex].totalCount <= 0) {
@@ -491,9 +487,9 @@ public class CobWeb extends AbstractClusterer {
          * @return the standard deviation
          * @throws Exception if an error occurs
          */
-        protected double getStandardDev(int attIndex) { //throws Exception {
+        protected double getStandardDev(int attIndex) { // throws Exception {
             //  if (!m_clusterInstances.attribute(attIndex).isNumeric()) {
-            //throw new Exception("getStandardDev: attribute is not numeric");
+            // throw new Exception("getStandardDev: attribute is not numeric");
             // }
 
             m_attStats[attIndex].numericStats.calculateDerived();
@@ -509,11 +505,10 @@ public class CobWeb extends AbstractClusterer {
          * Update attribute stats using the supplied instance.
          *
          * @param updateInstance the instance for updating
-         * @param delete true if the values of the supplied instance are
-         * to be removed from the statistics
+         * @param delete true if the values of the supplied instance are to be removed from the
+         *     statistics
          */
-        protected void updateStats(Instance updateInstance,
-                boolean delete) {
+        protected void updateStats(Instance updateInstance, boolean delete) {
 
             if (m_attStats == null) {
                 m_attStats = new AttributeStats[m_numAttributes];
@@ -531,25 +526,25 @@ public class CobWeb extends AbstractClusterer {
                 if (!updateInstance.isMissing(i)) {
                     double value = updateInstance.value(i);
                     if (m_clusterInstances.attribute(i).isNominal()) {
-                        m_attStats[i].nominalCounts[(int) value] += (delete)
-                                ? (-1.0 * updateInstance.weight())
-                                : updateInstance.weight();
-                        m_attStats[i].totalCount += (delete)
-                                ? (-1.0 * updateInstance.weight())
-                                : updateInstance.weight();
+                        m_attStats[i].nominalCounts[(int) value] +=
+                                (delete)
+                                        ? (-1.0 * updateInstance.weight())
+                                        : updateInstance.weight();
+                        m_attStats[i].totalCount +=
+                                (delete)
+                                        ? (-1.0 * updateInstance.weight())
+                                        : updateInstance.weight();
                     } else {
                         if (delete) {
-                            m_attStats[i].numericStats.subtract(value,
-                                    updateInstance.weight());
+                            m_attStats[i].numericStats.subtract(value, updateInstance.weight());
                         } else {
                             m_attStats[i].numericStats.add(value, updateInstance.weight());
                         }
                     }
                 }
             }
-            m_totalInstances += (delete)
-                    ? (-1.0 * updateInstance.weight())
-                    : (updateInstance.weight());
+            m_totalInstances +=
+                    (delete) ? (-1.0 * updateInstance.weight()) : (updateInstance.weight());
         }
 
         /**
@@ -558,9 +553,9 @@ public class CobWeb extends AbstractClusterer {
          * @param cl_num an <code>int[]</code> value
          * @throws Exception if an error occurs
          */
-        private void assignClusterNums(int[] cl_num) { //throws Exception {
+        private void assignClusterNums(int[] cl_num) { // throws Exception {
             // if (m_children != null && m_children.size() < 2) {
-            //throw new Exception("assignClusterNums: tree not built correctly!");
+            // throw new Exception("assignClusterNums: tree not built correctly!");
             // }
 
             m_clusterNum = cl_num[0];
@@ -590,30 +585,33 @@ public class CobWeb extends AbstractClusterer {
                 for (int j = 0; j < depth; j++) {
                     text.append("|   ");
                 }
-                text.append("leaf " + m_clusterNum + " ["
-                        + m_clusterInstances.numInstances() + "]");
+                text.append(
+                        "leaf " + m_clusterNum + " [" + m_clusterInstances.numInstances() + "]");
             } else {
                 for (int i = 0; i < m_children.size(); i++) {
                     text.append("\n");
                     for (int j = 0; j < depth; j++) {
                         text.append("|   ");
                     }
-                    text.append("node " + m_clusterNum + " ["
-                            + m_clusterInstances.numInstances()
-                            + "]");
+                    text.append(
+                            "node "
+                                    + m_clusterNum
+                                    + " ["
+                                    + m_clusterInstances.numInstances()
+                                    + "]");
                     ((CNode) m_children.elementAt(i)).dumpTree(depth + 1, text);
                 }
             }
         }
 
         /**
-         * Returns the instances at this node as a string. Appends the cluster
-         * number of the child that each instance belongs to.
+         * Returns the instances at this node as a string. Appends the cluster number of the child
+         * that each instance belongs to.
          *
          * @return a <code>String</code> value
          * @throws Exception if an error occurs
          */
-        protected String dumpData() { //throws Exception {
+        protected String dumpData() { // throws Exception {
             if (m_children == null) {
                 return m_clusterInstances.toString();
             }
@@ -638,8 +636,8 @@ public class CobWeb extends AbstractClusterer {
                 }
             }
             af.setNominalLabels(labels);
-            //af.setInputFormat(tempInst);
-            //tempInst = Filter.useFilter(tempInst, af);
+            // af.setInputFormat(tempInst);
+            // tempInst = Filter.useFilter(tempInst, af);
             tempInst.setRelationName("Cluster " + m_clusterNum);
 
             int z = 0;
@@ -659,27 +657,25 @@ public class CobWeb extends AbstractClusterer {
          * @param text holds the graph string
          * @throws Exception if generation fails
          */
-        protected void graphTree(StringBuffer text) { //throws Exception {
+        protected void graphTree(StringBuffer text) { // throws Exception {
 
-            text.append("N" + m_clusterNum
-                    + " [label=\"" + ((m_children == null)
-                    ? "leaf " : "node ")
-                    + m_clusterNum + " "
-                    + " (" + m_clusterInstances.numInstances()
-                    + ")\" "
-                    + ((m_children == null)
-                    ? "shape=box style=filled " : "")
-                    + (m_saveInstances
-                    ? "data =\n" + dumpData() + "\n,\n"
-                    : "")
-                    + "]\n");
+            text.append(
+                    "N"
+                            + m_clusterNum
+                            + " [label=\""
+                            + ((m_children == null) ? "leaf " : "node ")
+                            + m_clusterNum
+                            + " "
+                            + " ("
+                            + m_clusterInstances.numInstances()
+                            + ")\" "
+                            + ((m_children == null) ? "shape=box style=filled " : "")
+                            + (m_saveInstances ? "data =\n" + dumpData() + "\n,\n" : "")
+                            + "]\n");
             if (m_children != null) {
                 for (int i = 0; i < m_children.size(); i++) {
                     CNode temp = (CNode) m_children.elementAt(i);
-                    text.append("N" + m_clusterNum
-                            + "->"
-                            + "N" + temp.m_clusterNum
-                            + "\n");
+                    text.append("N" + m_clusterNum + "->" + "N" + temp.m_clusterNum + "\n");
                 }
 
                 for (int i = 0; i < m_children.size(); i++) {
@@ -689,7 +685,7 @@ public class CobWeb extends AbstractClusterer {
             }
         }
 
-	/**
+        /**
          * Recursively build a clustering representation of the Cobweb tree
          *
          * @param depth depth of this node in the tree
@@ -702,21 +698,23 @@ public class CobWeb extends AbstractClusterer {
             }
 
             if (m_children == null) {
-		//Append Cluster
+                // Append Cluster
                 /*text.append("\n");
-                for (int j = 0; j < depth; j++) {
-                    text.append("|   ");
+                              for (int j = 0; j < depth; j++) {
+                                  text.append("|   ");
+                              }
+                              text.append("leaf " + m_clusterNum + " ["
+                                      + m_clusterInstances.numInstances() + "]");
+                clustering.add(SphereCluster(this.coordinates, .05, m_clusterInstances.numInstances()));*/
+                if (depth == 0) {
+                    double[] centroidCoordinates = new double[m_clusterInstances.numAttributes()];
+                    for (int j = 0; j < m_clusterInstances.numAttributes() - 1; j++) {
+                        centroidCoordinates[j] = m_clusterInstances.meanOrMode(j);
+                    }
+                    clustering.add(
+                            new SphereCluster(
+                                    centroidCoordinates, .05, m_clusterInstances.numInstances()));
                 }
-                text.append("leaf " + m_clusterNum + " ["
-                        + m_clusterInstances.numInstances() + "]");
-		clustering.add(SphereCluster(this.coordinates, .05, m_clusterInstances.numInstances()));*/
-	            if (depth == 0) {
-	    		    double [] centroidCoordinates = new double[m_clusterInstances.numAttributes()];
-			    for (int j = 0; j < m_clusterInstances.numAttributes()-1; j++) {						
-				centroidCoordinates[j] = m_clusterInstances.meanOrMode(j);	
-			    }
-			    clustering.add(new SphereCluster(centroidCoordinates, .05, m_clusterInstances.numInstances()));
-	            }
             } else {
                 for (int i = 0; i < m_children.size(); i++) {
                     /*text.append("\n");
@@ -726,54 +724,60 @@ public class CobWeb extends AbstractClusterer {
                     text.append("node " + m_clusterNum + " ["
                             + m_clusterInstances.numInstances()
                             + "]");*/
-    		    double [] centroidCoordinates = new double[m_clusterInstances.numAttributes()];
-		    for (int j = 0; j < m_clusterInstances.numAttributes()-1; j++) {						
-			centroidCoordinates[j] = m_clusterInstances.meanOrMode(j);	
-		    }
-		    clustering.add(new SphereCluster(centroidCoordinates, .05, m_clusterInstances.numInstances()));
+                    double[] centroidCoordinates = new double[m_clusterInstances.numAttributes()];
+                    for (int j = 0; j < m_clusterInstances.numAttributes() - 1; j++) {
+                        centroidCoordinates[j] = m_clusterInstances.meanOrMode(j);
+                    }
+                    clustering.add(
+                            new SphereCluster(
+                                    centroidCoordinates, .05, m_clusterInstances.numInstances()));
                     ((CNode) m_children.elementAt(i)).computeTreeClustering(depth + 1, clustering);
                 }
             }
         }
     }
-    /**
-     * Normal constant.
-     */
+
+    /** Normal constant. */
     protected static final double m_normal = 1.0 / (2 * Math.sqrt(Math.PI));
-    /**
-     * Acuity (minimum standard deviation).
-     */
+
+    /** Acuity (minimum standard deviation). */
     protected double m_acuity = 1.0;
-    /**
-     * Cutoff (minimum category utility).
-     */
-    protected double m_cutoff = 0.002;//0.01 * Cobweb.m_normal;
-    /**
-     * Holds the root of the Cobweb tree.
-     */
+
+    /** Cutoff (minimum category utility). */
+    protected double m_cutoff = 0.002; // 0.01 * Cobweb.m_normal;
+
+    /** Holds the root of the Cobweb tree. */
     protected CNode m_cobwebTree = null;
+
     /**
-     * Number of clusters (nodes in the tree). Must never be queried directly,
-     * only via the method numberOfClusters(). Otherwise it's not guaranteed that
-     * it contains the correct value.
+     * Number of clusters (nodes in the tree). Must never be queried directly, only via the method
+     * numberOfClusters(). Otherwise it's not guaranteed that it contains the correct value.
      *
      * @see #numberOfClusters()
      * @see #m_numberOfClustersDetermined
      */
     protected int m_numberOfClusters = -1;
+
     /** whether the number of clusters was already determined */
     protected boolean m_numberOfClustersDetermined = false;
+
     /** the number of splits that happened */
     protected int m_numberSplits;
+
     /** the number of merges that happened */
     protected int m_numberMerges;
+
     /**
-     * Output instances in graph representation of Cobweb tree (Allows
-     * instances at nodes in the tree to be visualized in the Explorer).
+     * Output instances in graph representation of Cobweb tree (Allows instances at nodes in the
+     * tree to be visualized in the Explorer).
      */
     protected boolean m_saveInstances = false;
+
     @SuppressWarnings("hiding")
-    public static final String classifierPurposeString = "Cobweb and Classit clustering algorithms: it always compares the best host, adding a new leaf, merging the two best hosts, and splitting the best host when considering where to place a new instance..";
+    public static final String classifierPurposeString =
+            "Cobweb and Classit clustering algorithms: it always compares the best host, adding a"
+                    + " new leaf, merging the two best hosts, and splitting the best host when"
+                    + " considering where to place a new instance..";
 
     @Override
     public void resetLearningImpl() {
@@ -789,11 +793,11 @@ public class CobWeb extends AbstractClusterer {
      * Adds an instance to the clusterer.
      *
      * @param newInstance the instance to be added
-     * @throws Exception 	if something goes wrong
+     * @throws Exception if something goes wrong
      */
     // public void updateClusterer(Instance newInstance) throws Exception {
     @Override
-    public void trainOnInstanceImpl(Instance newInstance) { //throws Exception {
+    public void trainOnInstanceImpl(Instance newInstance) { // throws Exception {
         m_numberOfClustersDetermined = false;
 
         if (m_cobwebTree == null) {
@@ -807,13 +811,12 @@ public class CobWeb extends AbstractClusterer {
      * Classifies a given instance.
      *
      * @param instance the instance to be assigned to a cluster
-     * @return the number of the assigned cluster as an interger
-     * if the class is enumerated, otherwise the predicted value
-     * @throws Exception if instance could not be classified
-     * successfully
+     * @return the number of the assigned cluster as an interger if the class is enumerated,
+     *     otherwise the predicted value
+     * @throws Exception if instance could not be classified successfully
      */
     public double[] getVotesForInstance(Instance instance) {
-        //public int clusterInstance(Instance instance) {//throws Exception {
+        // public int clusterInstance(Instance instance) {//throws Exception {
         CNode host = m_cobwebTree;
         CNode temp = null;
 
@@ -850,16 +853,15 @@ public class CobWeb extends AbstractClusterer {
      * @see #m_numberOfClustersDetermined
      */
     protected void determineNumberOfClusters() {
-        if (!m_numberOfClustersDetermined
-                && (m_cobwebTree != null)) {
+        if (!m_numberOfClustersDetermined && (m_cobwebTree != null)) {
             int[] numClusts = new int[1];
             numClusts[0] = 0;
             //  try {
             m_cobwebTree.assignClusterNums(numClusts);
             // }
             // catch (Exception e) {
-//	e.printStackTrace();
-//	numClusts[0] = 0;
+            //	e.printStackTrace();
+            //	numClusts[0] = 0;
             // }
             m_numberOfClusters = numClusts[0];
 
@@ -878,7 +880,7 @@ public class CobWeb extends AbstractClusterer {
     }
 
     {
-//		return this.observedClassDistribution.getArrayCopy();
+        //		return this.observedClassDistribution.getArrayCopy();
     }
 
     @Override
@@ -895,10 +897,15 @@ public class CobWeb extends AbstractClusterer {
         } else {
             m_cobwebTree.dumpTree(0, text);
             StringUtils.appendIndented(out, indent, "CobWeb - ");
-            out.append("Number of merges: "
-                    + m_numberMerges + "\nNumber of splits: "
-                    + m_numberSplits + "\nNumber of clusters: "
-                    + numberOfClusters() + "\n" + text.toString());
+            out.append(
+                    "Number of merges: "
+                            + m_numberMerges
+                            + "\nNumber of splits: "
+                            + m_numberSplits
+                            + "\nNumber of clusters: "
+                            + numberOfClusters()
+                            + "\n"
+                            + text.toString());
             StringUtils.appendNewline(out);
         }
     }
@@ -913,7 +920,7 @@ public class CobWeb extends AbstractClusterer {
      * @return a <code>String</code> value
      * @throws Exception if an error occurs
      */
-    public String graph() {// throws Exception {
+    public String graph() { // throws Exception {
         StringBuffer text = new StringBuffer();
 
         text.append("digraph CobwebTree {\n");
@@ -924,6 +931,7 @@ public class CobWeb extends AbstractClusterer {
 
     /**
      * set the acuity.
+     *
      * @param a the acuity value
      */
     public void setAcuity(double a) {
@@ -932,6 +940,7 @@ public class CobWeb extends AbstractClusterer {
 
     /**
      * get the acuity value
+     *
      * @return the acuity
      */
     public double getAcuity() {
@@ -940,6 +949,7 @@ public class CobWeb extends AbstractClusterer {
 
     /**
      * set the cutoff
+     *
      * @param c the cutof
      */
     public void setCutoff(double c) {
@@ -948,6 +958,7 @@ public class CobWeb extends AbstractClusterer {
 
     /**
      * get the cutoff
+     *
      * @return the cutoff
      */
     public double getCutoff() {
@@ -975,21 +986,16 @@ public class CobWeb extends AbstractClusterer {
     }
 
     public Clustering getClusteringResult() {
-        //throw new UnsupportedOperationException("Not supported yet.");
-	Clustering result = new Clustering();
+        // throw new UnsupportedOperationException("Not supported yet.");
+        Clustering result = new Clustering();
         if (m_cobwebTree == null) {
-            //StringUtils.appendIndented(out, indent, "Cobweb hasn't been built yet!");
-            //StringUtils.appendNewline(out);
+            // StringUtils.appendIndented(out, indent, "Cobweb hasn't been built yet!");
+            // StringUtils.appendNewline(out);
         } else {
-            m_cobwebTree.computeTreeClustering(0,result);
-	    System.out.println("After Number of clusters: "+numberOfClusters() );    
-	}
-	System.out.println("Number of clusters: "+result.size());
-	return result; 
+            m_cobwebTree.computeTreeClustering(0, result);
+            System.out.println("After Number of clusters: " + numberOfClusters());
+        }
+        System.out.println("Number of clusters: " + result.size());
+        return result;
     }
-
-
 }
-     
-
-

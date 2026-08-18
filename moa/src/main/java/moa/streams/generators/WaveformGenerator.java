@@ -15,29 +15,29 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.generators;
 
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.core.FastVector;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
-
-import java.util.Random;
 import moa.core.InstanceExample;
-
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
+
+import java.util.Random;
 
 /**
  * Stream generator for the problem of predicting one of three waveform types.
@@ -45,8 +45,8 @@ import moa.tasks.TaskMonitor;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class WaveformGenerator extends AbstractOptionHandler implements
-        InstanceStream, CapabilitiesHandler {
+public class WaveformGenerator extends AbstractOptionHandler
+        implements InstanceStream, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -64,26 +64,27 @@ public class WaveformGenerator extends AbstractOptionHandler implements
     protected static final int hFunctions[][] = {
         {0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0},
-        {0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0}};
+        {0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0}
+    };
 
-    public IntOption instanceRandomSeedOption = new IntOption(
-            "instanceRandomSeed", 'i',
-            "Seed for random generation of instances.", 1);
+    public IntOption instanceRandomSeedOption =
+            new IntOption("instanceRandomSeed", 'i', "Seed for random generation of instances.", 1);
 
-    public FlagOption addNoiseOption = new FlagOption("addNoise", 'n',
-            "Adds noise, for a total of 40 attributes.");
+    public FlagOption addNoiseOption =
+            new FlagOption("addNoise", 'n', "Adds noise, for a total of 40 attributes.");
 
     protected InstancesHeader streamHeader;
 
     protected Random instanceRandom;
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // generate header
         FastVector attributes = new FastVector();
-        int numAtts = this.addNoiseOption.isSet() ? TOTAL_ATTRIBUTES_INCLUDING_NOISE
-                : NUM_BASE_ATTRIBUTES;
+        int numAtts =
+                this.addNoiseOption.isSet()
+                        ? TOTAL_ATTRIBUTES_INCLUDING_NOISE
+                        : NUM_BASE_ATTRIBUTES;
         for (int i = 0; i < numAtts; i++) {
             attributes.addElement(new Attribute("att" + (i + 1)));
         }
@@ -92,8 +93,9 @@ public class WaveformGenerator extends AbstractOptionHandler implements
             classLabels.addElement("class" + (i + 1));
         }
         attributes.addElement(new Attribute("class", classLabels));
-        this.streamHeader = new InstancesHeader(new Instances(
-                getCLICreationString(InstanceStream.class), attributes, 0));
+        this.streamHeader =
+                new InstancesHeader(
+                        new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
         this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
         restart();
     }
@@ -138,14 +140,15 @@ public class WaveformGenerator extends AbstractOptionHandler implements
                 choiceA = 1;
                 choiceB = 2;
                 break;
-
         }
         double multiplierA = this.instanceRandom.nextDouble();
         double multiplierB = 1.0 - multiplierA;
         for (int i = 0; i < NUM_BASE_ATTRIBUTES; i++) {
-            inst.setValue(i, (multiplierA * hFunctions[choiceA][i])
-                    + (multiplierB * hFunctions[choiceB][i])
-                    + this.instanceRandom.nextGaussian());
+            inst.setValue(
+                    i,
+                    (multiplierA * hFunctions[choiceA][i])
+                            + (multiplierB * hFunctions[choiceB][i])
+                            + this.instanceRandom.nextGaussian());
         }
         if (this.addNoiseOption.isSet()) {
             for (int i = NUM_BASE_ATTRIBUTES; i < TOTAL_ATTRIBUTES_INCLUDING_NOISE; i++) {
@@ -170,7 +173,6 @@ public class WaveformGenerator extends AbstractOptionHandler implements
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == WaveformGenerator.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

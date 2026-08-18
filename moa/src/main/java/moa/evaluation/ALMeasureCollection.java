@@ -19,31 +19,30 @@
  */
 package moa.evaluation;
 
-import java.util.ArrayList;
-
 import moa.cluster.Clustering;
 import moa.gui.visualization.DataPoint;
+
+import java.util.ArrayList;
 
 /**
  * Collection of measures used to evaluate AL tasks.
  *
  * @author Tim Sabsch (tim.sabsch@ovgu.de)
  * @version $Revision: 1 $
- *
  */
-public class ALMeasureCollection extends MeasureCollection implements ClassificationMeasureCollection {
+public class ALMeasureCollection extends MeasureCollection
+        implements ClassificationMeasureCollection {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     @Override
     protected String[] getNames() {
-        return new String[]{"Accuracy", "Kappa", "Kappa Temp", "Ram-Hours",
-                    "Time", "Memory", "Label Acq. Rate"};
+        return new String[] {
+            "Accuracy", "Kappa", "Kappa Temp", "Ram-Hours", "Time", "Memory", "Label Acq. Rate"
+        };
     }
 
     @Override
-    public void evaluateClustering(Clustering clustering, Clustering trueClsutering, ArrayList<DataPoint> points) {
-
-    }
-
+    public void evaluateClustering(
+            Clustering clustering, Clustering trueClsutering, ArrayList<DataPoint> points) {}
 }

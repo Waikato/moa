@@ -14,19 +14,21 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.gui.visualization;
+
+import moa.evaluation.MeasureCollection;
+import moa.streams.clustering.ClusterEvent;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.util.ArrayList;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JViewport;
-import moa.evaluation.MeasureCollection;
-import moa.streams.clustering.ClusterEvent;
 
 public class GraphCanvas extends JPanel {
 
@@ -58,16 +60,16 @@ public class GraphCanvas extends JPanel {
 
     private int processFrequency;
 
-    //default values to start with;
+    // default values to start with;
     private double min_y_value = 0;
 
     private double max_y_value = 1;
 
     private double max_x_value = 250;
 
-    private double x_resolution = 0.5; //how many pixels per 1px
+    private double x_resolution = 0.5; // how many pixels per 1px
 
-    private double y_resolution = 1;   //full min to max scale
+    private double y_resolution = 1; // full min to max scale
 
     private JViewport viewport;
 
@@ -103,7 +105,11 @@ public class GraphCanvas extends JPanel {
         return this.processFrequency;
     }
 
-    public void setGraph(MeasureCollection measure0, MeasureCollection measure1, int mSelect, int processFrequency) {
+    public void setGraph(
+            MeasureCollection measure0,
+            MeasureCollection measure1,
+            int mSelect,
+            int processFrequency) {
         this.measure0 = measure0;
         this.measure1 = measure1;
         measureSelected = mSelect;
@@ -120,7 +126,7 @@ public class GraphCanvas extends JPanel {
 
     public void updateCanvas(boolean force) {
 
-        //check for new min max values first so we know if we have to do some resizing
+        // check for new min max values first so we know if we have to do some resizing
         if (updateMinMaxValues() || force) {
             int maxLabel = (int) Math.ceil(max_x_value / x_resolution / 500);
             int width = (int) (maxLabel * 500);
@@ -136,34 +142,43 @@ public class GraphCanvas extends JPanel {
             axesPanel.repaint();
         }
 
-        //check for new events
+        // check for new events
         addEvents();
 
-        //add the latest plot point through repaint
-        //TODO: somehow realize incremental painting? (real heavyweight canvas: update())
+        // add the latest plot point through repaint
+        // TODO: somehow realize incremental painting? (real heavyweight canvas: update())
         curvePanel.repaint();
     }
 
-    //returns true when values have changed
+    // returns true when values have changed
     private boolean updateMinMaxValues() {
         double min_y_value_new = min_y_value;
         double max_y_value_new = max_y_value;
         double max_x_value_new = max_x_value;
 
         if (measure0 != null && measure1 != null) {
-            min_y_value_new = Math.min(measure0.getMinValue(measureSelected), measure1.getMinValue(measureSelected));
-            max_y_value_new = Math.max(measure0.getMaxValue(measureSelected), measure1.getMaxValue(measureSelected));
+            min_y_value_new =
+                    Math.min(
+                            measure0.getMinValue(measureSelected),
+                            measure1.getMinValue(measureSelected));
+            max_y_value_new =
+                    Math.max(
+                            measure0.getMaxValue(measureSelected),
+                            measure1.getMaxValue(measureSelected));
             max_x_value_new = Math.max(measure0.getNumberOfValues(measureSelected), max_x_value);
         } else {
             if (measure0 != null) {
                 min_y_value_new = measure0.getMinValue(measureSelected);
                 max_y_value_new = measure0.getMaxValue(measureSelected);
-                max_x_value_new = Math.max(measure0.getNumberOfValues(measureSelected), max_x_value);
+                max_x_value_new =
+                        Math.max(measure0.getNumberOfValues(measureSelected), max_x_value);
             }
         }
 
-        //resizing needed?
-        if (max_x_value_new != max_x_value || max_y_value_new != max_y_value || min_y_value_new != min_y_value) {
+        // resizing needed?
+        if (max_x_value_new != max_x_value
+                || max_y_value_new != max_y_value
+                || min_y_value_new != min_y_value) {
             min_y_value = min_y_value_new;
             max_y_value = max_y_value_new;
             max_x_value = max_x_value_new;
@@ -184,14 +199,20 @@ public class GraphCanvas extends JPanel {
 
     private void updateSize() {
         axesPanel.setSize(getWidth(), getHeight());
-        //axesPanel.setPreferredSize(new Dimension(getWidth(), getHeight()));
-        curvePanel.setSize(getWidth() - x_offset_left - x_offset_right, getHeight() - y_offset_bottom - y_offset_top);
+        // axesPanel.setPreferredSize(new Dimension(getWidth(), getHeight()));
+        curvePanel.setSize(
+                getWidth() - x_offset_left - x_offset_right,
+                getHeight() - y_offset_bottom - y_offset_top);
         eventPanel.setSize(getWidth() - x_offset_left - x_offset_right, y_offset_top);
 
         if (clusterEvents != null) {
-            //update Label positions
+            // update Label positions
             for (int i = 0; i < clusterEvents.size(); i++) {
-                int x = (int) (clusterEvents.get(i).getTimestamp() / processFrequency / x_resolution);
+                int x =
+                        (int)
+                                (clusterEvents.get(i).getTimestamp()
+                                        / processFrequency
+                                        / x_resolution);
                 if (i < eventLabelList.size()) {
                     eventLabelList.get(i).setLocation(x - 10, 0);
                 }
@@ -199,7 +220,7 @@ public class GraphCanvas extends JPanel {
         }
     }
 
-    //check if there are any new events in the event list and add them to the plot
+    // check if there are any new events in the event list and add them to the plot
     private void addEvents() {
         if (clusterEvents != null && clusterEvents.size() > eventCounter) {
             ClusterEvent ev = clusterEvents.get(eventCounter);
@@ -212,14 +233,15 @@ public class GraphCanvas extends JPanel {
             int x = (int) (ev.getTimestamp() / processFrequency / x_resolution);
 
             eventMarker.setLocation(x - 10, 0);
-            eventMarker.setToolTipText(ev.getType() + " at " + ev.getTimestamp() + ": " + ev.getMessage());
+            eventMarker.setToolTipText(
+                    ev.getType() + " at " + ev.getTimestamp() + ": " + ev.getMessage());
             eventPanel.add(eventMarker);
             eventLabelList.add(eventMarker);
             eventPanel.repaint();
         }
     }
 
-    //check if there are any new events in the event list and add them to the plot
+    // check if there are any new events in the event list and add them to the plot
     public void forceAddEvents() {
         if (clusterEvents != null) {
             eventPanel.removeAll();
@@ -234,7 +256,8 @@ public class GraphCanvas extends JPanel {
                 int x = (int) (ev.getTimestamp() / processFrequency / x_resolution);
 
                 eventMarker.setLocation(x - 10, 0);
-                eventMarker.setToolTipText(ev.getType() + " at " + ev.getTimestamp() + ": " + ev.getMessage());
+                eventMarker.setToolTipText(
+                        ev.getType() + " at " + ev.getTimestamp() + ": " + ev.getMessage());
                 eventPanel.add(eventMarker);
                 eventLabelList.add(eventMarker);
                 eventPanel.repaint();
@@ -244,8 +267,8 @@ public class GraphCanvas extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        //needed in case parent component gets resized
-        //TODO doesn't fully work yet when reducing height
+        // needed in case parent component gets resized
+        // TODO doesn't fully work yet when reducing height
         updateSize();
         super.paintComponent(g);
     }
@@ -263,20 +286,18 @@ public class GraphCanvas extends JPanel {
         add(axesPanel);
         axesPanel.add(curvePanel);
         axesPanel.add(eventPanel);
-
     }
 
     /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT
+     * modify this code. The content of this method is always regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         setLayout(new java.awt.GridBagLayout());
-    }// </editor-fold>//GEN-END:initComponents
+    } // </editor-fold>//GEN-END:initComponents
 
     public void setClusterEventsList(ArrayList<ClusterEvent> clusterEvents) {
         this.clusterEvents = clusterEvents;

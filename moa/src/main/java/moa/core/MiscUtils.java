@@ -16,14 +16,13 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Random;
-
 
 /**
  * Class implementing some utility methods.
@@ -34,8 +33,7 @@ import java.util.Random;
  */
 public class MiscUtils {
 
-    public static int chooseRandomIndexBasedOnWeights(double[] weights,
-            Random random) {
+    public static int chooseRandomIndexBasedOnWeights(double[] weights, Random random) {
         double probSum = Utils.sum(weights);
         double val = random.nextDouble() * probSum;
         int index = 0;
@@ -74,8 +72,7 @@ public class MiscUtils {
     }
 
     /**
-     * Returns index of maximum element in a given array of doubles. First
-     * maximum is returned.
+     * Returns index of maximum element in a given array of doubles. First maximum is returned.
      *
      * @param doubles the array of doubles
      * @return the index of the maximum element

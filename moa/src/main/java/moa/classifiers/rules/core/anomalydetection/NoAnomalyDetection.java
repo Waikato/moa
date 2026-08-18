@@ -19,47 +19,37 @@
  */
 package moa.classifiers.rules.core.anomalydetection;
 
+import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
 
-import com.yahoo.labs.samoa.instances.MultiLabelInstance;
+/** No anomaly detection is performed */
+public class NoAnomalyDetection extends AbstractAnomalyDetector {
 
-/**
- *  No anomaly detection is performed
- */
+    /** */
+    private static final long serialVersionUID = 1L;
 
-public class NoAnomalyDetection extends AbstractAnomalyDetector{
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    @Override
+    public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance) {
+        return false;
+    }
 
-	@Override
-	public void getDescription(StringBuilder sb, int indent) {
-		
-	}
+    @Override
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {}
 
-	@Override
-	public boolean updateAndCheckAnomalyDetection(MultiLabelInstance instance) {
-		return false;
-	}
+    public double anomalyScore;
 
-	@Override
-	protected void prepareForUseImpl(TaskMonitor monitor,
-			ObjectRepository repository) {
-		
-	}
-	
-        public double anomalyScore;
+    @Override
+    public double getAnomalyScore() {
+        return anomalyScore;
+    }
 
-        @Override 
-        public double getAnomalyScore(){
-            return anomalyScore;
-        }
     @Override
     public String getPurposeString() {
         return "Use this class to NOT detect anomalies.";
     }
-
 }

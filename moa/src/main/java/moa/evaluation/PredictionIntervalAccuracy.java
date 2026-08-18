@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
@@ -23,7 +23,17 @@ public class PredictionIntervalAccuracy extends RegressionAccuracy {
 
     @Override
     public String[] getNames() {
-        String[] names = {"mean abs. error", "root mean sq. er.", "", "coverage", "average length", "NMPIW", "Ram-Hours", "Time", "Memory"};
+        String[] names = {
+            "mean abs. error",
+            "root mean sq. er.",
+            "",
+            "coverage",
+            "average length",
+            "NMPIW",
+            "Ram-Hours",
+            "Time",
+            "Memory"
+        };
         return names;
     }
 
@@ -32,5 +42,4 @@ public class PredictionIntervalAccuracy extends RegressionAccuracy {
         boolean[] defaults = {true, true, false, true, true, true, true, true, true};
         return defaults;
     }
-
 }

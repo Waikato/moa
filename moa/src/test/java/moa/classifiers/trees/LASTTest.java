@@ -13,69 +13,65 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * LASTTest.java
- * Copyright (C) 2013 University of Waikato, Hamilton, New Zealand
- */
+/** LASTTest.java Copyright (C) 2013 University of Waikato, Hamilton, New Zealand */
 package moa.classifiers.trees;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
 
 /**
  * Tests the HoeffdingTree classifier.
- * 
- * @author  Daniel Nowak Assis (daniel dot nowak dot assis at gmail dot com)
- * @version $Revision 1$ 
+ *
+ * @author Daniel Nowak Assis (daniel dot nowak dot assis at gmail dot com)
+ * @version $Revision 1$
  */
-public class LASTTest
-  extends AbstractMultipleClassifierTestCase {
+public class LASTTest extends AbstractMultipleClassifierTestCase {
 
-  /**
-   * Constructs the test case. Called by subclasses.
-   *
-   * @param name 	the name of the test
-   */
-  public LASTTest(String name) {
-    super(name);
-    this.setNumberTests(2);
-  }
+    /**
+     * Constructs the test case. Called by subclasses.
+     *
+     * @param name the name of the test
+     */
+    public LASTTest(String name) {
+        super(name);
+        this.setNumberTests(2);
+    }
 
-  
-  /**
-   * Returns the classifier setups to use in the regression test.
-   *
-   * @return		the setups
-   */
-  @Override
-  protected Classifier[] getRegressionClassifierSetups() {
-    LAST[]	result;
-    result    = new LAST[2];
-    result[0] = new LAST();
-    result[1] = new LAST();
-    result[0].changeDetectionMethodOption.setValueViaCLIString("RDDM -y 300");
-    	
-    //result[1].distributionOption.setValue(true);
-    return result;
-  }
-  
-  /**
-   * Returns a test suite.
-   *
-   * @return		the test suite
-   */
-  public static Test suite() {
-    return new TestSuite(LASTTest.class);
-  }
+    /**
+     * Returns the classifier setups to use in the regression test.
+     *
+     * @return the setups
+     */
+    @Override
+    protected Classifier[] getRegressionClassifierSetups() {
+        LAST[] result;
+        result = new LAST[2];
+        result[0] = new LAST();
+        result[1] = new LAST();
+        result[0].changeDetectionMethodOption.setValueViaCLIString("RDDM -y 300");
 
-  /**
-   * Runs the test from commandline.
-   *
-   * @param args	ignored
-   */
-  public static void main(String[] args) {
-    runTest(suite());
-  }
+        // result[1].distributionOption.setValue(true);
+        return result;
+    }
+
+    /**
+     * Returns a test suite.
+     *
+     * @return the test suite
+     */
+    public static Test suite() {
+        return new TestSuite(LASTTest.class);
+    }
+
+    /**
+     * Runs the test from commandline.
+     *
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        runTest(suite());
+    }
 }

@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core.attributeclassobservers;
 
@@ -26,25 +26,23 @@ import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
 /**
- * Class for observing the class data distribution for a null attribute.
- * This method is used to disable the observation for an attribute.
- * Used in decision trees to monitor data statistics on leaves.
+ * Class for observing the class data distribution for a null attribute. This method is used to
+ * disable the observation for an attribute. Used in decision trees to monitor data statistics on
+ * leaves.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class NullAttributeClassObserver extends AbstractOptionHandler implements
-        AttributeClassObserver {
+public class NullAttributeClassObserver extends AbstractOptionHandler
+        implements AttributeClassObserver {
 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void observeAttributeClass(double attVal, int classVal, double weight) {
-    }
+    public void observeAttributeClass(double attVal, int classVal, double weight) {}
 
     @Override
-    public double probabilityOfAttributeValueGivenClass(double attVal,
-            int classVal) {
+    public double probabilityOfAttributeValueGivenClass(double attVal, int classVal) {
         return 0.0;
     }
 
@@ -63,8 +61,7 @@ public class NullAttributeClassObserver extends AbstractOptionHandler implements
 
     @Override
     public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(
-            SplitCriterion criterion, double[] preSplitDist, int attIndex,
-            boolean binaryOnly) {
+            SplitCriterion criterion, double[] preSplitDist, int attIndex, boolean binaryOnly) {
         return null;
     }
 

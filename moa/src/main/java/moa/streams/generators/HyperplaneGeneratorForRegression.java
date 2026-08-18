@@ -20,6 +20,7 @@
 package moa.streams.generators;
 
 import com.yahoo.labs.samoa.instances.*;
+
 import moa.core.FastVector;
 import moa.core.InstanceExample;
 import moa.streams.InstanceStream;
@@ -44,11 +45,11 @@ public class HyperplaneGeneratorForRegression extends HyperplaneGenerator {
             classLabels.addElement("class" + (i + 1));
         }
         attributes.addElement(new Attribute("target"));
-        this.streamHeader = new InstancesHeader(new Instances(
-                getCLICreationString(InstanceStream.class), attributes, 0));
+        this.streamHeader =
+                new InstancesHeader(
+                        new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
         this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
     }
-
 
     @Override
     public InstanceExample nextInstance() {
@@ -62,20 +63,17 @@ public class HyperplaneGeneratorForRegression extends HyperplaneGenerator {
             sum += this.weights[i] * attVals[i];
             sumWeights += this.weights[i];
         }
-//        double classLabel;
+        //        double classLabel;
 
-
-//        classLabel = sum;
+        //        classLabel = sum;
 
         double classLabel = sum * 10;
 
-        classLabel=classLabel * 10 ;
-        //Add Noise
+        classLabel = classLabel * 10;
+        // Add Noise
         if ((1 + (this.instanceRandom.nextInt(100))) <= this.noisePercentageOption.getValue()) {
-            classLabel = classLabel +classLabel/sumWeights;
-
-
-            }
+            classLabel = classLabel + classLabel / sumWeights;
+        }
 
         Instance inst = new DenseInstance(1.0, attVals);
         inst.setDataset(getHeader());
@@ -86,13 +84,12 @@ public class HyperplaneGeneratorForRegression extends HyperplaneGenerator {
 
     private void addDrift() {
         for (int i = 0; i < this.numDriftAttsOption.getValue(); i++) {
-            this.weights[i] += (double) ((double) sigma[i]) * ((double) this.magChangeOption.getValue());
-            if (//this.weights[i] >= 1.0 || this.weights[i] <= 0.0 ||
-                    (1 + (this.instanceRandom.nextInt(100))) <= this.sigmaPercentageOption.getValue()) {
+            this.weights[i] +=
+                    (double) ((double) sigma[i]) * ((double) this.magChangeOption.getValue());
+            if ( // this.weights[i] >= 1.0 || this.weights[i] <= 0.0 ||
+            (1 + (this.instanceRandom.nextInt(100))) <= this.sigmaPercentageOption.getValue()) {
                 this.sigma[i] *= -1;
             }
         }
-
     }
-
 }

@@ -19,19 +19,23 @@
 package moa.learners;
 
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.AbstractClassifier;
-import moa.core.Measurement;
 import moa.classifiers.core.driftdetection.ChangeDetector;
+import moa.core.Measurement;
 import moa.options.ClassOption;
 
 /**
- * Class for detecting concept drift and to be used as a learner.<p>data
+ * Class for detecting concept drift and to be used as a learner.
  *
- * Valid options are:<p>
+ * <p>data
  *
- * -l classname <br> Specify the full class name of a classifier as the basis
- * for the concept drift classifier.<p>
+ * <p>Valid options are:
  *
+ * <p>-l classname <br>
+ * Specify the full class name of a classifier as the basis for the concept drift classifier.
+ *
+ * <p>
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
@@ -40,20 +44,25 @@ public class ChangeDetectorLearner extends AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption driftDetectionMethodOption = new ClassOption("driftDetectionMethod", 'd',
-            "Drift detection method to use.", ChangeDetector.class, "DDM");
+    public ClassOption driftDetectionMethodOption =
+            new ClassOption(
+                    "driftDetectionMethod",
+                    'd',
+                    "Drift detection method to use.",
+                    ChangeDetector.class,
+                    "DDM");
 
     protected ChangeDetector driftDetectionMethod;
 
     @Override
     public void resetLearningImpl() {
-        this.driftDetectionMethod = ((ChangeDetector) getPreparedClassOption(this.driftDetectionMethodOption)).copy();
+        this.driftDetectionMethod =
+                ((ChangeDetector) getPreparedClassOption(this.driftDetectionMethodOption)).copy();
     }
 
     @Override
     public void trainOnInstanceImpl(Instance inst) {
         this.driftDetectionMethod.input(inst.value(0));
-
     }
 
     public double[] getVotesForInstance(Instance inst) {
@@ -66,12 +75,12 @@ public class ChangeDetectorLearner extends AbstractClassifier {
 
     @Override
     public void getModelDescription(StringBuilder out, int indent) {
-        //((AbstractClassifier) this.classifier).getModelDescription(out, indent);
+        // ((AbstractClassifier) this.classifier).getModelDescription(out, indent);
     }
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
-        //return ((AbstractClassifier) this.classifier).getModelMeasurementsImpl();
+        // return ((AbstractClassifier) this.classifier).getModelMeasurementsImpl();
         return new Measurement[0];
     }
 }

@@ -14,62 +14,61 @@
  */
 
 /**
- * NaiveBayesMultinomialTest.java
- * Copyright (C) 2013 University of Waikato, Hamilton, New Zealand
+ * NaiveBayesMultinomialTest.java Copyright (C) 2013 University of Waikato, Hamilton, New Zealand
  */
 package moa.classifiers.bayes;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
 
 /**
  * Tests the NaiveBayesMultinomial classifier.
- * 
- * @author  fracpete (fracpete at waikato dot ac dot nz)
+ *
+ * @author fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class NaiveBayesMultinomialTest
-  extends AbstractMultipleClassifierTestCase {
+public class NaiveBayesMultinomialTest extends AbstractMultipleClassifierTestCase {
 
-  /**
-   * Constructs the test case. Called by subclasses.
-   *
-   * @param name 	the name of the test
-   */
-  public NaiveBayesMultinomialTest(String name) {
-    super(name);
-    this.setNumberTests(1);
-  }
-  
-  /**
-   * Returns the classifier setups to use in the regression test.
-   *
-   * @return		the setups
-   */
-  @Override
-  protected Classifier[] getRegressionClassifierSetups() {  
-    return new Classifier[]{
-	new NaiveBayesMultinomial(),
-    };
-  }
+    /**
+     * Constructs the test case. Called by subclasses.
+     *
+     * @param name the name of the test
+     */
+    public NaiveBayesMultinomialTest(String name) {
+        super(name);
+        this.setNumberTests(1);
+    }
 
-  /**
-   * Returns a test suite.
-   *
-   * @return		the test suite
-   */
-  public static Test suite() {
-    return new TestSuite(NaiveBayesMultinomialTest.class);
-  }
+    /**
+     * Returns the classifier setups to use in the regression test.
+     *
+     * @return the setups
+     */
+    @Override
+    protected Classifier[] getRegressionClassifierSetups() {
+        return new Classifier[] {
+            new NaiveBayesMultinomial(),
+        };
+    }
 
-  /**
-   * Runs the test from commandline.
-   *
-   * @param args	ignored
-   */
-  public static void main(String[] args) {
-    runTest(suite());
-  }
+    /**
+     * Returns a test suite.
+     *
+     * @return the test suite
+     */
+    public static Test suite() {
+        return new TestSuite(NaiveBayesMultinomialTest.class);
+    }
+
+    /**
+     * Runs the test from commandline.
+     *
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        runTest(suite());
+    }
 }

@@ -15,28 +15,33 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.functions;
+
+import com.github.javacliparser.FloatOption;
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
 import moa.core.Utils;
-import com.github.javacliparser.FloatOption;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Single perceptron classifier.
  *
- * <p>Performs classic perceptron multiclass learning incrementally.</p>
+ * <p>Performs classic perceptron multiclass learning incrementally.
  *
- * <p>Parameters:</p> <ul> <li>-r : Learning ratio of the classifier</li> </ul>
+ * <p>Parameters:
+ *
+ * <ul>
+ *   <li>-r : Learning ratio of the classifier
+ * </ul>
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class Perceptron extends AbstractClassifier  implements MultiClassClassifier {
+public class Perceptron extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 221L;
 
@@ -45,7 +50,8 @@ public class Perceptron extends AbstractClassifier  implements MultiClassClassif
         return "Perceptron classifier: Single perceptron classifier.";
     }
 
-    public FloatOption learningRatioOption = new FloatOption("learningRatio", 'r', "Learning ratio", 1);
+    public FloatOption learningRatioOption =
+            new FloatOption("learningRatio", 'r', "Learning ratio", 1);
 
     protected double[][] weightAttribute;
 
@@ -65,7 +71,7 @@ public class Perceptron extends AbstractClassifier  implements MultiClassClassif
     @Override
     public void trainOnInstanceImpl(Instance inst) {
 
-        //Init Perceptron
+        // Init Perceptron
         if (this.reset == true) {
             this.reset = false;
             this.numberAttributes = inst.numAttributes();
@@ -96,22 +102,22 @@ public class Perceptron extends AbstractClassifier  implements MultiClassClassif
     }
 
     public void setWeights(double[][] w) {
-        //Perceptron Hoeffding Tree
+        // Perceptron Hoeffding Tree
         this.weightAttribute = w;
     }
 
     public double[][] getWeights() {
-        //Perceptron Hoeffding Tree
+        // Perceptron Hoeffding Tree
         return this.weightAttribute;
     }
 
     public int getNumberAttributes() {
-        //Perceptron Hoeffding Tree
+        // Perceptron Hoeffding Tree
         return this.numberAttributes;
     }
 
     public int getNumberClasses() {
-        //Perceptron Hoeffding Tree
+        // Perceptron Hoeffding Tree
         return this.numberClasses;
     }
 
@@ -146,8 +152,7 @@ public class Perceptron extends AbstractClassifier  implements MultiClassClassif
     }
 
     @Override
-    public void getModelDescription(StringBuilder out, int indent) {
-    }
+    public void getModelDescription(StringBuilder out, int indent) {}
 
     @Override
     public boolean isRandomizable() {

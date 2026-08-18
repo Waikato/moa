@@ -1,6 +1,6 @@
 /*
  *    ImageViewer.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand 
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -15,11 +15,16 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.experimentertab;
 
 import nz.ac.waikato.cms.gui.core.SimpleDirectoryChooser;
+
+import java.awt.BorderLayout;
+import java.awt.HeadlessException;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -28,14 +33,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.HeadlessException;
-import java.io.File;
-import java.io.IOException;
 
 /**
- * This class creates a window where images generated with JFreeChart are
- * displayed.
+ * This class creates a window where images generated with JFreeChart are displayed.
  *
  * @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
  */
@@ -102,14 +102,13 @@ public class ImageViewer extends JFrame {
                         chart.exportIMG(path, this.imgType.getSelectedItem().toString());
 
                     } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(this, "Error creating image " + chart.getName());
+                        JOptionPane.showMessageDialog(
+                                this, "Error creating image " + chart.getName());
                         return;
                     }
-
                 }
                 JOptionPane.showMessageDialog(this, "Images saved at: " + path);
             }
         }
-
     }
 }

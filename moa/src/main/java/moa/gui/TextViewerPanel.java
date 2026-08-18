@@ -15,16 +15,12 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
 
 import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -36,6 +32,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 /**
  * This panel displays text. Used to output the results of tasks.
@@ -68,33 +69,36 @@ public class TextViewerPanel extends JPanel {
         this.scrollPane = new JScrollPane(this.textArea);
         add(this.scrollPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
-        this.exportButton.addActionListener(new ActionListener() {
+        this.exportButton.addActionListener(
+                new ActionListener() {
 
-            public void actionPerformed(ActionEvent e) {
-                BaseFileChooser fileChooser = new BaseFileChooser();
-                fileChooser.setAcceptAllFileFilterUsed(true);
-                fileChooser.addChoosableFileFilter(new FileExtensionFilter(
-                        exportFileExtension));
-                if (fileChooser.showSaveDialog(TextViewerPanel.this) == BaseFileChooser.APPROVE_OPTION) {
-                    File chosenFile = fileChooser.getSelectedFile();
-                    String fileName = chosenFile.getPath();
-                    if (!chosenFile.exists()
-                            && !fileName.endsWith(exportFileExtension)) {
-                        fileName = fileName + "." + exportFileExtension;
+                    public void actionPerformed(ActionEvent e) {
+                        BaseFileChooser fileChooser = new BaseFileChooser();
+                        fileChooser.setAcceptAllFileFilterUsed(true);
+                        fileChooser.addChoosableFileFilter(
+                                new FileExtensionFilter(exportFileExtension));
+                        if (fileChooser.showSaveDialog(TextViewerPanel.this)
+                                == BaseFileChooser.APPROVE_OPTION) {
+                            File chosenFile = fileChooser.getSelectedFile();
+                            String fileName = chosenFile.getPath();
+                            if (!chosenFile.exists() && !fileName.endsWith(exportFileExtension)) {
+                                fileName = fileName + "." + exportFileExtension;
+                            }
+                            try {
+                                PrintWriter out =
+                                        new PrintWriter(
+                                                new BufferedWriter(new FileWriter(fileName)));
+                                out.write(TextViewerPanel.this.textArea.getText());
+                                out.close();
+                            } catch (IOException ioe) {
+                                GUIUtils.showExceptionDialog(
+                                        TextViewerPanel.this.exportButton,
+                                        "Problem saving file " + fileName,
+                                        ioe);
+                            }
+                        }
                     }
-                    try {
-                        PrintWriter out = new PrintWriter(new BufferedWriter(
-                                new FileWriter(fileName)));
-                        out.write(TextViewerPanel.this.textArea.getText());
-                        out.close();
-                    } catch (IOException ioe) {
-                        GUIUtils.showExceptionDialog(
-                                TextViewerPanel.this.exportButton,
-                                "Problem saving file " + fileName, ioe);
-                    }
-                }
-            }
-        });
+                });
     }
 
     public void setText(String newText) {

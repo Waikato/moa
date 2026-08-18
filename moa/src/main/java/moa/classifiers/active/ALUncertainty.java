@@ -16,63 +16,57 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.active;
 
-import java.util.LinkedList;
-import java.util.List;
-import moa.classifiers.AbstractClassifier;
-import moa.classifiers.Classifier;
-
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
 
-import moa.core.Utils;
-
+import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
 import moa.core.DoubleVector;
 import moa.core.Measurement;
+import moa.core.Utils;
 import moa.options.ClassOption;
-import com.github.javacliparser.FloatOption;
-import com.github.javacliparser.MultiChoiceOption;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Active learning setting for evolving data streams.
  *
- * <p>Active learning focuses on learning an accurate model with as few labels
- * as possible. Streaming data poses additional challenges for active learning,
- * since the data distribution may change over time (concept drift) and
- * classifiers need to adapt. Conventional active learning strategies
- * concentrate on querying the most uncertain instances, which are typically
- * concentrated around the decision boundary. If changes do not occur close to
- * the boundary, they will be missed and classifiers will fail to adapt. This
- * class contains three active learning strategies for streaming data that
- * explicitly handle concept drift. They are based on fixed uncertainty,
- * dynamic allocation of labeling efforts over time and randomization of the
- * search space [ZBPH]. It also contains the Selective Sampling strategy, which
- * is adapted from [CGZ] and uses a variable labeling threshold.
- * </p>
+ * <p>Active learning focuses on learning an accurate model with as few labels as possible.
+ * Streaming data poses additional challenges for active learning, since the data distribution may
+ * change over time (concept drift) and classifiers need to adapt. Conventional active learning
+ * strategies concentrate on querying the most uncertain instances, which are typically concentrated
+ * around the decision boundary. If changes do not occur close to the boundary, they will be missed
+ * and classifiers will fail to adapt. This class contains three active learning strategies for
+ * streaming data that explicitly handle concept drift. They are based on fixed uncertainty, dynamic
+ * allocation of labeling efforts over time and randomization of the search space [ZBPH]. It also
+ * contains the Selective Sampling strategy, which is adapted from [CGZ] and uses a variable
+ * labeling threshold.
  *
- * <p>[ZBPH] Indre Zliobaite, Albert Bifet, Bernhard Pfahringer, Geoff Holmes:
- * Active Learning with Evolving Streaming Data. ECML/PKDD (3) 2011: 597-612</p>
+ * <p>[ZBPH] Indre Zliobaite, Albert Bifet, Bernhard Pfahringer, Geoff Holmes: Active Learning with
+ * Evolving Streaming Data. ECML/PKDD (3) 2011: 597-612
  *
- * <p>[CGZ] N. Cesa-Bianchi, C. Gentile, and L. Zaniboni. Worst-case analysis of
- * selective sampling for linear classification. J. Mach. Learn. Res. (7) 2006:
- * 1205-1230</p>.
+ * <p>[CGZ] N. Cesa-Bianchi, C. Gentile, and L. Zaniboni. Worst-case analysis of selective sampling
+ * for linear classification. J. Mach. Learn. Res. (7) 2006: 1205-1230.
  *
- * <p>Parameters:</p>
+ * <p>Parameters:
+ *
  * <ul>
- *   <li>-l : Classifier to train</li>
- *   <li>-d : Strategy to use: FixedUncertainty, VarUncertainty,
- *            RandVarUncertainty, SelSampling</li>
- *   <li>-b : Budget to use</li>
- *   <li>-u : Fixed threshold</li>
- *   <li>-s : Floating budget step</li>
- *   <li>-n : Number of instances at beginning without active learning</li>
+ *   <li>-l : Classifier to train
+ *   <li>-d : Strategy to use: FixedUncertainty, VarUncertainty, RandVarUncertainty, SelSampling
+ *   <li>-b : Budget to use
+ *   <li>-u : Fixed threshold
+ *   <li>-s : Floating budget step
+ *   <li>-n : Number of instances at beginning without active learning
  * </ul>
  *
  * <p>Structural changes to match active learning framework by Daniel Kottke.
- * </p>
  *
  * @author Indre Zliobaite (zliobaite at gmail dot com)
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
@@ -88,43 +82,52 @@ public class ALUncertainty extends AbstractClassifier implements ALClassifier {
         return "Active learning classifier for evolving data streams based on uncertainty";
     }
 
-    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "drift.SingleClassifierDrift");
+    public ClassOption baseLearnerOption =
+            new ClassOption(
+                    "baseLearner",
+                    'l',
+                    "Classifier to train.",
+                    Classifier.class,
+                    "drift.SingleClassifierDrift");
 
-    public MultiChoiceOption activeLearningStrategyOption = new MultiChoiceOption(
-            "activeLearningStrategy", 'd', "Active Learning Strategy to use.",
-            new String[]{
-                    "FixedUncertainty",
-                    "VarUncertainty",
-                    "RandVarUncertainty",
-                    "SelSampling"},
-            new String[]{
-                    "Fixed uncertainty strategy",
-                    "Uncertainty strategy with variable threshold",
-                    "Uncertainty strategy with randomized variable threshold",
-                    "Selective Sampling"}, 
-            0);
+    public MultiChoiceOption activeLearningStrategyOption =
+            new MultiChoiceOption(
+                    "activeLearningStrategy",
+                    'd',
+                    "Active Learning Strategy to use.",
+                    new String[] {
+                        "FixedUncertainty", "VarUncertainty", "RandVarUncertainty", "SelSampling"
+                    },
+                    new String[] {
+                        "Fixed uncertainty strategy",
+                        "Uncertainty strategy with variable threshold",
+                        "Uncertainty strategy with randomized variable threshold",
+                        "Selective Sampling"
+                    },
+                    0);
 
-    public FloatOption budgetOption = new FloatOption("budget",
-            'b', "Budget to use.",
-            0.1, 0.0, 1.0);
+    public FloatOption budgetOption =
+            new FloatOption("budget", 'b', "Budget to use.", 0.1, 0.0, 1.0);
 
-    public FloatOption fixedThresholdOption = new FloatOption("fixedThreshold",
-            'u', "Fixed threshold.",
-            0.9, 0.00, 1.00);
+    public FloatOption fixedThresholdOption =
+            new FloatOption("fixedThreshold", 'u', "Fixed threshold.", 0.9, 0.00, 1.00);
 
-    public FloatOption stepOption = new FloatOption("step",
-            's', "Floating budget step.",
-            0.01, 0.00, 1.00);
+    public FloatOption stepOption =
+            new FloatOption("step", 's', "Floating budget step.", 0.01, 0.00, 1.00);
 
-    public FloatOption numInstancesInitOption = new FloatOption("numInstancesInit",
-            'n', "Number of instances at beginning without active learning.",
-            0.0, 0.00, Integer.MAX_VALUE);
+    public FloatOption numInstancesInitOption =
+            new FloatOption(
+                    "numInstancesInit",
+                    'n',
+                    "Number of instances at beginning without active learning.",
+                    0.0,
+                    0.00,
+                    Integer.MAX_VALUE);
 
     public Classifier classifier;
 
     public int lastLabelAcq = 0;
-    
+
     public int costLabeling;
 
     public int iterationControl;
@@ -200,30 +203,33 @@ public class ALUncertainty extends AbstractClassifier implements ALClassifier {
 
         if (this.iterationControl <= this.numInstancesInitOption.getValue()) {
             costNow = 0;
-            //Use all instances at the beginning
+            // Use all instances at the beginning
             this.classifier.trainOnInstance(inst);
             this.costLabeling++;
             return;
         } else {
-            costNow = (this.costLabeling - this.numInstancesInitOption.getValue()) / ((double) this.iterationControl - this.numInstancesInitOption.getValue());
+            costNow =
+                    (this.costLabeling - this.numInstancesInitOption.getValue())
+                            / ((double) this.iterationControl
+                                    - this.numInstancesInitOption.getValue());
         }
 
-        if (costNow < this.budgetOption.getValue()) { //allow to label
+        if (costNow < this.budgetOption.getValue()) { // allow to label
             switch (this.activeLearningStrategyOption.getChosenIndex()) {
-                case 0: //fixed
+                case 0: // fixed
                     maxPosterior = getMaxPosterior(this.classifier.getVotesForInstance(inst));
                     labelFixed(maxPosterior, inst);
                     break;
-                case 1: //variable
+                case 1: // variable
                     maxPosterior = getMaxPosterior(this.classifier.getVotesForInstance(inst));
                     labelVar(maxPosterior, inst);
                     break;
-                case 2: //randomized
+                case 2: // randomized
                     maxPosterior = getMaxPosterior(this.classifier.getVotesForInstance(inst));
                     maxPosterior = maxPosterior / (this.classifierRandom.nextGaussian() + 1.0);
                     labelVar(maxPosterior, inst);
                     break;
-                case 3: //selective-sampling
+                case 3: // selective-sampling
                     maxPosterior = getMaxPosterior(this.classifier.getVotesForInstance(inst));
                     labelSelSampling(maxPosterior, inst);
                     break;
@@ -252,8 +258,12 @@ public class ALUncertainty extends AbstractClassifier implements ALClassifier {
         measurementList.add(new Measurement("labeling cost", this.costLabeling));
         measurementList.add(new Measurement("newThreshold", this.newThreshold));
         measurementList.add(new Measurement("maxPosterior", this.maxPosterior));
-        measurementList.add(new Measurement("accuracyBaseLearner (percent)", 100 * this.accuracyBaseLearner / this.costLabeling));
-        Measurement[] modelMeasurements = ((AbstractClassifier) this.classifier).getModelMeasurements();
+        measurementList.add(
+                new Measurement(
+                        "accuracyBaseLearner (percent)",
+                        100 * this.accuracyBaseLearner / this.costLabeling));
+        Measurement[] modelMeasurements =
+                ((AbstractClassifier) this.classifier).getModelMeasurements();
         if (modelMeasurements != null) {
             for (Measurement measurement : modelMeasurements) {
                 measurementList.add(measurement);
@@ -262,16 +272,16 @@ public class ALUncertainty extends AbstractClassifier implements ALClassifier {
         return measurementList.toArray(new Measurement[measurementList.size()]);
     }
 
-	@Override
-	public int getLastLabelAcqReport() {
-		int help = this.lastLabelAcq;
-		this.lastLabelAcq = 0;
-		return help; 
-	}
-	
-	@Override
-	public void setModelContext(InstancesHeader ih) {
-		super.setModelContext(ih);
-		classifier.setModelContext(ih);
-	}
+    @Override
+    public int getLastLabelAcqReport() {
+        int help = this.lastLabelAcq;
+        this.lastLabelAcq = 0;
+        return help;
+    }
+
+    @Override
+    public void setModelContext(InstancesHeader ih) {
+        super.setModelContext(ih);
+        classifier.setModelContext(ih);
+    }
 }

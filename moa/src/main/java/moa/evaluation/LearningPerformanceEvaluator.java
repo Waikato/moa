@@ -29,43 +29,39 @@ import moa.core.Example;
 import moa.core.Measurement;
 
 /**
- * Interface implemented by learner evaluators to monitor
- * the results of the learning process.
+ * Interface implemented by learner evaluators to monitor the results of the learning process.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public interface LearningPerformanceEvaluator<E extends Example> extends MOAObject, CapabilitiesHandler, AutoCloseable {
+public interface LearningPerformanceEvaluator<E extends Example>
+        extends MOAObject, CapabilitiesHandler, AutoCloseable {
 
-	/**
-	 * Resets this evaluator. It must be similar to
-	 * starting a new evaluator from scratch.
-	 *
-	 */
-	public void reset();
+    /** Resets this evaluator. It must be similar to starting a new evaluator from scratch. */
+    public void reset();
 
-	/**
-	 * Adds a learning result to this evaluator.
-	 *
-	 * @param example the example to be classified
-	 * @param classVotes an array containing the estimated membership
-	 * probabilities of the test instance in each class
-	 */
-	public void addResult(E example, double[] classVotes);
-	public void addResult(E testInst, Prediction prediction);
+    /**
+     * Adds a learning result to this evaluator.
+     *
+     * @param example the example to be classified
+     * @param classVotes an array containing the estimated membership probabilities of the test
+     *     instance in each class
+     */
+    public void addResult(E example, double[] classVotes);
 
-	/**
-	 * Gets the current measurements monitored by this evaluator.
-	 *
-	 * @return an array of measurements monitored by this evaluator
-	 */
-	public Measurement[] getPerformanceMeasurements();
+    public void addResult(E testInst, Prediction prediction);
 
-	@Override
-	default ImmutableCapabilities defineImmutableCapabilities() {
-		return new ImmutableCapabilities(Capability.VIEW_STANDARD);
-	}
+    /**
+     * Gets the current measurements monitored by this evaluator.
+     *
+     * @return an array of measurements monitored by this evaluator
+     */
+    public Measurement[] getPerformanceMeasurements();
 
-	default void close() throws Exception {
-	}
+    @Override
+    default ImmutableCapabilities defineImmutableCapabilities() {
+        return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+    }
+
+    default void close() throws Exception {}
 }

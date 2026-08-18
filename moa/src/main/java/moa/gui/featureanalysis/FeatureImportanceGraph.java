@@ -20,19 +20,22 @@
 package moa.gui.featureanalysis;
 
 import org.math.plot.Plot2DPanel;
-import javax.swing.*;
+
 import java.awt.*;
 import java.util.Arrays;
 
+import javax.swing.*;
+
 /**
- * This is a sub panel in FeatureImportance tab. It is used to show scores of feature importance of a data stream as a line graph.
+ * This is a sub panel in FeatureImportance tab. It is used to show scores of feature importance of
+ * a data stream as a line graph.
  */
 public class FeatureImportanceGraph extends JPanel {
 
     /** Store feature importance scores. */
     protected double[][] m_featureImportance;
 
-    /**The selected attribute indices.*/
+    /** The selected attribute indices. */
     protected int[] m_selectedAttributeIndices;
 
     /** THe drawing tool provided by jmathplot.jar */
@@ -52,9 +55,7 @@ public class FeatureImportanceGraph extends JPanel {
         this.remove(plot);
         plot = new Plot2DPanel();
 
-        /**
-         * show the line graph of the first feature importance as the default line graph
-         */
+        /** show the line graph of the first feature importance as the default line graph */
         this.repaint();
     }
 
@@ -62,8 +63,8 @@ public class FeatureImportanceGraph extends JPanel {
         this.m_selectedAttributeIndices = selectedAttributeIndices;
 
         /**
-         * The following two line codes are crucial for updating line graphs
-         * in the following method "public void paintComponent(Graphics g)"
+         * The following two line codes are crucial for updating line graphs in the following method
+         * "public void paintComponent(Graphics g)"
          */
         this.remove(plot);
         plot = new Plot2DPanel();
@@ -71,10 +72,9 @@ public class FeatureImportanceGraph extends JPanel {
         this.repaint();
     }
 
-    public FeatureImportanceGraph(){
+    public FeatureImportanceGraph() {
         plot.setSize(super.getWidth(), super.getHeight());
     }
-
 
     @Override
     public void paintComponent(Graphics g) {
@@ -82,46 +82,48 @@ public class FeatureImportanceGraph extends JPanel {
         this.setLayout(new BorderLayout());
 
         plot.addLegend("SOUTH");
-        plot.setAxisLabel(0, "Win index");//X axis
-        plot.setAxisLabel(1, "Feature importance");//Y axis
+        plot.setAxisLabel(0, "Win index"); // X axis
+        plot.setAxisLabel(1, "Feature importance"); // Y axis
         plot.setFont(new Font("Courier", Font.BOLD, 12));
         plot.setVisible(true);
 
-        if(m_featureImportance!=null){
+        if (m_featureImportance != null) {
 
             int selectedAttributeIndex;
-            int rows=m_featureImportance.length;
-            double[] featureImportance=new double[rows];
+            int rows = m_featureImportance.length;
+            double[] featureImportance = new double[rows];
 
-            if(m_selectedAttributeIndices==null ||
-                    (Arrays.toString(m_selectedAttributeIndices).equalsIgnoreCase("[]"))
-            ){ //
-                /** User does not choose any attribute yet,show the first attribute importance as default. */
-                selectedAttributeIndex=0;
+            if (m_selectedAttributeIndices == null
+                    || (Arrays.toString(m_selectedAttributeIndices).equalsIgnoreCase("[]"))) { //
+                /**
+                 * User does not choose any attribute yet,show the first attribute importance as
+                 * default.
+                 */
+                selectedAttributeIndex = 0;
 
-                for(int i=0;i<rows; i++){
-                    featureImportance[i]=m_featureImportance[i][selectedAttributeIndex];
+                for (int i = 0; i < rows; i++) {
+                    featureImportance[i] = m_featureImportance[i][selectedAttributeIndex];
                 }
-                /** Set the same colors for all lines*/
-                //plot.addLinePlot(m_attributeNames[selectedAttributeIndex],Color.BLUE,featureImportance);
+                /** Set the same colors for all lines */
+                // plot.addLinePlot(m_attributeNames[selectedAttributeIndex],Color.BLUE,featureImportance);
 
-                /** Randomly set colors for different lines.*/
-                plot.addLinePlot(m_attributeNames[selectedAttributeIndex],featureImportance);
+                /** Randomly set colors for different lines. */
+                plot.addLinePlot(m_attributeNames[selectedAttributeIndex], featureImportance);
                 this.add(plot, BorderLayout.CENTER);
                 super.revalidate();
-            }else{
-                int numSelectedAttributes=m_selectedAttributeIndices.length;
-                for(int j=0; j<numSelectedAttributes; j++ ){
-                    selectedAttributeIndex=m_selectedAttributeIndices[j];
-                    for(int i=0;i<rows; i++){
-                        featureImportance[i]=m_featureImportance[i][selectedAttributeIndex];
+            } else {
+                int numSelectedAttributes = m_selectedAttributeIndices.length;
+                for (int j = 0; j < numSelectedAttributes; j++) {
+                    selectedAttributeIndex = m_selectedAttributeIndices[j];
+                    for (int i = 0; i < rows; i++) {
+                        featureImportance[i] = m_featureImportance[i][selectedAttributeIndex];
                     }
 
-                    /** Set the same colors for all lines*/
-                    //plot.addLinePlot(m_attributeNames[selectedAttributeIndex],Color.BLUE,featureImportance);
+                    /** Set the same colors for all lines */
+                    // plot.addLinePlot(m_attributeNames[selectedAttributeIndex],Color.BLUE,featureImportance);
 
-                    /** Randomly set colors for different lines.*/
-                    plot.addLinePlot(m_attributeNames[selectedAttributeIndex],featureImportance);
+                    /** Randomly set colors for different lines. */
+                    plot.addLinePlot(m_attributeNames[selectedAttributeIndex], featureImportance);
                     this.add(plot, BorderLayout.CENTER);
                     super.revalidate();
                 }

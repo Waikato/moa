@@ -20,25 +20,24 @@
 package moa.learners;
 
 import com.yahoo.labs.samoa.instances.*;
+
 import moa.MOAObject;
 import moa.core.Example;
-
 import moa.core.Measurement;
 import moa.gui.AWTRenderable;
 import moa.options.OptionHandler;
 
 /**
- * Learner interface for incremental learning models. 
+ * Learner interface for incremental learning models.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
 public interface Learner<E extends Example> extends MOAObject, OptionHandler, AWTRenderable {
 
-
     /**
-     * Gets whether this learner needs a random seed.
-     * Examples of methods that needs a random seed are bagging and boosting.
+     * Gets whether this learner needs a random seed. Examples of methods that needs a random seed
+     * are bagging and boosting.
      *
      * @return true if the learner needs a random seed.
      */
@@ -59,18 +58,14 @@ public interface Learner<E extends Example> extends MOAObject, OptionHandler, AW
     public boolean trainingHasStarted();
 
     /**
-     * Gets the sum of the weights of the instances that have been used
-     * by this learner during the training in <code>trainOnInstance</code>
+     * Gets the sum of the weights of the instances that have been used by this learner during the
+     * training in <code>trainOnInstance</code>
      *
      * @return the weight of the instances that have been used training
      */
     public double trainingWeightSeenByModel();
 
-    /**
-     * Resets this learner. It must be similar to
-     * starting a new learner from scratch.
-     *
-     */
+    /** Resets this learner. It must be similar to starting a new learner from scratch. */
     public void resetLearning();
 
     /**
@@ -81,18 +76,16 @@ public interface Learner<E extends Example> extends MOAObject, OptionHandler, AW
     public void trainOnInstance(E example);
 
     /**
-     * Predicts the class memberships for a given instance. If
-     * an instance is unclassified, the returned array elements
-     * must be all zero.
+     * Predicts the class memberships for a given instance. If an instance is unclassified, the
+     * returned array elements must be all zero.
      *
      * @param example the instance to be classified
-     * @return an array containing the estimated membership
-     * probabilities of the test instance in each class
+     * @return an array containing the estimated membership probabilities of the test instance in
+     *     each class
      */
     public double[] getVotesForInstance(E example);
 
     /**
-     *
      * @param example the instance whose confidence we are observing
      * @param label
      * @return
@@ -107,41 +100,36 @@ public interface Learner<E extends Example> extends MOAObject, OptionHandler, AW
     public Measurement[] getModelMeasurements();
 
     /**
-     * Gets the learners of this ensemble.
-     * Returns null if this learner is a single learner.
+     * Gets the learners of this ensemble. Returns null if this learner is a single learner.
      *
      * @return an array of the learners of the ensemble
      */
     public Learner[] getSublearners();
 
-     /**
+    /**
      * Gets the model if this learner.
      *
      * @return the copy of this learner
      */
     public MOAObject getModel();
-    
-     /**
-     * Sets the reference to the header of the data stream.
-     * The header of the data stream is extended from WEKA <code>Instances</code>.
-     * This header is needed to know the number of classes and attributes
+
+    /**
+     * Sets the reference to the header of the data stream. The header of the data stream is
+     * extended from WEKA <code>Instances</code>. This header is needed to know the number of
+     * classes and attributes
      *
      * @param ih the reference to the data stream header
      */
     public void setModelContext(InstancesHeader ih);
-    
+
     /**
-     * Gets the reference to the header of the data stream.
-     * The header of the data stream is extended from WEKA <code>Instances</code>.
-     * This header is needed to know the number of classes and attributes
+     * Gets the reference to the header of the data stream. The header of the data stream is
+     * extended from WEKA <code>Instances</code>. This header is needed to know the number of
+     * classes and attributes
      *
      * @return the reference to the data stream header
      */
     public InstancesHeader getModelContext();
 
-	public Prediction getPredictionForInstance(E testInst);
-    
+    public Prediction getPredictionForInstance(E testInst);
 }
-
-
-

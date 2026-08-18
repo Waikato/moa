@@ -1,6 +1,6 @@
 /*
  *    Stream.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand 
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.experimentertab;
 
@@ -34,30 +34,29 @@ import java.util.logging.Logger;
  */
 public class Stream {
 
-    /**
-     * The name of the stream
-     */
+    /** The name of the stream */
     public String name;
 
-    /**
-     * The list of algorithms within of the stream
-     */
+    /** The list of algorithms within of the stream */
     public List<Algorithm> algorithm = new ArrayList<>();
 
     /**
      * Stream Constructor
+     *
      * @param name
      * @param algPath
      * @param algNames
      * @param measures
      */
-    public Stream(String name, List<String> algPath, List<String> algNames, List<Measure> measures) {
+    public Stream(
+            String name, List<String> algPath, List<String> algNames, List<Measure> measures) {
         this.name = name;
         readBuffer(algPath, algNames, measures);
     }
 
     /**
      * Read each algorithm file.
+     *
      * @param algPath
      * @param algNames
      * @param measures
@@ -70,14 +69,14 @@ public class Stream {
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(Stream.class.getName()).log(Level.SEVERE, null, ex);
             }
-            Algorithm algorithm = new Algorithm(algNames.get(i), measures, buffer,algPath.get(i));
+            Algorithm algorithm = new Algorithm(algNames.get(i), measures, buffer, algPath.get(i));
             this.algorithm.add(algorithm);
         }
-
     }
 
     /**
      * Sets the name of stream
+     *
      * @param name
      */
     public void setName(String name) {
@@ -86,6 +85,7 @@ public class Stream {
 
     /**
      * Returns the name of the stream
+     *
      * @return the name of the stream
      */
     public String getName() {
@@ -94,10 +94,10 @@ public class Stream {
 
     /**
      * Returns the list of the algorithms
-     * @return the list of  the algorithms
+     *
+     * @return the list of the algorithms
      */
     public List<Algorithm> getAlgorithm() {
         return algorithm;
     }
-
 }

@@ -15,49 +15,54 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.clusterers;
 
-import java.util.ArrayList;
-import java.util.List;
-import moa.cluster.Clustering;
-import moa.core.AutoClassDiscovery;
-import moa.core.AutoExpandVector;
-import moa.core.Measurement;
-import moa.options.ClassOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.github.javacliparser.StringOption;
-import moa.core.FastVector;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 
+import moa.cluster.Clustering;
+import moa.core.AutoClassDiscovery;
+import moa.core.AutoExpandVector;
+import moa.core.FastVector;
+import moa.core.Measurement;
+import moa.options.ClassOption;
+
 import weka.core.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class WekaClusteringAlgorithm extends AbstractClusterer {
 
     private static final long serialVersionUID = 1L;
-    
-    public IntOption horizonOption = new IntOption("horizon",
-            'h', "Range of the window.", 1000);
-    
+
+    public IntOption horizonOption = new IntOption("horizon", 'h', "Range of the window.", 1000);
+
     public MultiChoiceOption wekaAlgorithmOption;
-    
-    public StringOption parameterOption = new StringOption("parameter", 'p',
-            "Parameters that will be passed to the weka algorithm. (e.g. '-N 5' for using SimpleKmeans with 5 clusters)", "-N 5 -S 8");
-    
+
+    public StringOption parameterOption =
+            new StringOption(
+                    "parameter",
+                    'p',
+                    "Parameters that will be passed to the weka algorithm. (e.g. '-N 5' for using"
+                            + " SimpleKmeans with 5 clusters)",
+                    "-N 5 -S 8");
+
     private Class<?>[] clustererClasses;
-    
+
     private Instances instances;
-    
+
     private weka.clusterers.AbstractClusterer clusterer;
-    
+
     protected SamoaToWekaInstanceConverter instanceConverter;
-    
 
     public WekaClusteringAlgorithm() {
         clustererClasses = findWekaClustererClasses();
@@ -67,39 +72,42 @@ public class WekaClusteringAlgorithm extends AbstractClusterer {
         for (int i = 0; i < clustererClasses.length; i++) {
             optionLabels[i] = clustererClasses[i].getSimpleName();
             optionDescriptions[i] = clustererClasses[i].getName();
-//			We do have the parameter option info, but not really a place to show it somewhere
-/*
-             //System.out.println(clustererClasses[i].getSimpleName());
-             for (Class c : clustererClasses[i].getInterfaces()) {
-             if (c.equals(weka.core.OptionHandler.class)) {
-             try {
-             Enumeration options = ((weka.core.OptionHandler)clustererClasses[i].newInstance()).listOptions();
-             while(options.hasMoreElements()){
-             weka.core.Option o = (weka.core.Option)options.nextElement(); 
-             System.out.print(o.synopsis()+" ");	
-             } 
-							
-             } catch (InstantiationException e) {
-             e.printStackTrace();
-             } catch (IllegalAccessException e) {
-             e.printStackTrace();
-             }
-			        	
-             }
-             }
-             */
+            //			We do have the parameter option info, but not really a place to show it somewhere
+            /*
+            //System.out.println(clustererClasses[i].getSimpleName());
+            for (Class c : clustererClasses[i].getInterfaces()) {
+            if (c.equals(weka.core.OptionHandler.class)) {
+            try {
+            Enumeration options = ((weka.core.OptionHandler)clustererClasses[i].newInstance()).listOptions();
+            while(options.hasMoreElements()){
+            weka.core.Option o = (weka.core.Option)options.nextElement();
+            System.out.print(o.synopsis()+" ");
+            }
+
+            } catch (InstantiationException e) {
+            e.printStackTrace();
+            } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            }
+
+            }
+            }
+            */
         }
 
         if (clustererClasses != null && clustererClasses.length > 0) {
-            wekaAlgorithmOption = new MultiChoiceOption("clusterer", 'w',
-                    "Weka cluster algorithm to use.",
-                    optionLabels, optionDescriptions, 6);
+            wekaAlgorithmOption =
+                    new MultiChoiceOption(
+                            "clusterer",
+                            'w',
+                            "Weka cluster algorithm to use.",
+                            optionLabels,
+                            optionDescriptions,
+                            6);
         } else {
             horizonOption = null;
             parameterOption = null;
-
         }
-
     }
 
     @Override
@@ -107,7 +115,10 @@ public class WekaClusteringAlgorithm extends AbstractClusterer {
         try {
             instances = null;
             String clistring = clustererClasses[wekaAlgorithmOption.getChosenIndex()].getName();
-            clusterer = (weka.clusterers.AbstractClusterer) ClassOption.cliStringToObject(clistring, weka.clusterers.Clusterer.class, null);
+            clusterer =
+                    (weka.clusterers.AbstractClusterer)
+                            ClassOption.cliStringToObject(
+                                    clistring, weka.clusterers.Clusterer.class, null);
 
             String rawOptions = parameterOption.getValue();
             String[] options = rawOptions.split(" ");
@@ -131,13 +142,13 @@ public class WekaClusteringAlgorithm extends AbstractClusterer {
 
     public Clustering getClusteringResult() {
         Clustering clustering = null;
-        weka.core.Instances wekaInstances= this.instanceConverter.wekaInstances(instances);
+        weka.core.Instances wekaInstances = this.instanceConverter.wekaInstances(instances);
         try {
-            
+
             clusterer.buildClusterer(wekaInstances);
             int numClusters = clusterer.numberOfClusters();
             Instances dataset = getDataset(instances.numAttributes(), numClusters);
-            List<Instance> newInstances = new ArrayList<Instance>() ; //Instances(dataset);
+            List<Instance> newInstances = new ArrayList<Instance>(); // Instances(dataset);
 
             for (int i = 0; i < wekaInstances.numInstances(); i++) {
                 weka.core.Instance inst = wekaInstances.get(i);
@@ -183,8 +194,9 @@ public class WekaClusteringAlgorithm extends AbstractClusterer {
 
     private Class<?>[] findWekaClustererClasses() {
         AutoExpandVector<Class<?>> finalClasses = new AutoExpandVector<Class<?>>();
-        Class<?>[] classesFound = AutoClassDiscovery.findClassesOfType("weka.clusterers",
-                weka.clusterers.AbstractClusterer.class);
+        Class<?>[] classesFound =
+                AutoClassDiscovery.findClassesOfType(
+                        "weka.clusterers", weka.clusterers.AbstractClusterer.class);
         for (Class<?> foundClass : classesFound) {
             finalClasses.add(foundClass);
         }
@@ -197,8 +209,7 @@ public class WekaClusteringAlgorithm extends AbstractClusterer {
     }
 
     @Override
-    public void getModelDescription(StringBuilder out, int indent) {
-    }
+    public void getModelDescription(StringBuilder out, int indent) {}
 
     public boolean isRandomizable() {
         return false;
@@ -220,6 +231,5 @@ public class WekaClusteringAlgorithm extends AbstractClusterer {
             purpose += "\nPlease add weka.jar to the classpath to use Weka clustering algorithms.";
         }
         return purpose;
-
     }
 }

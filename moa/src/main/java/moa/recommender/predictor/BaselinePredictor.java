@@ -14,34 +14,39 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.recommender.predictor;
 
-import java.util.List;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 
-/**
- * A naive algorithm which combines the global mean of all the existing 
- * ratings, the mean rating of the user and the mean rating of the item 
- * to make a prediction.
- * 
- */
+import java.util.List;
 
-public class BaselinePredictor extends AbstractOptionHandler implements moa.recommender.predictor.RatingPredictor {   
+/**
+ * A naive algorithm which combines the global mean of all the existing ratings, the mean rating of
+ * the user and the mean rating of the item to make a prediction.
+ */
+public class BaselinePredictor extends AbstractOptionHandler
+        implements moa.recommender.predictor.RatingPredictor {
     protected moa.recommender.rc.predictor.impl.BaselinePredictor rp;
-    
-    public ClassOption dataOption = new ClassOption("data", 'd',
-            "Data", moa.recommender.data.RecommenderData.class, "moa.recommender.data.MemRecommenderData");
+
+    public ClassOption dataOption =
+            new ClassOption(
+                    "data",
+                    'd',
+                    "Data",
+                    moa.recommender.data.RecommenderData.class,
+                    "moa.recommender.data.MemRecommenderData");
 
     @Override
     protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
-        moa.recommender.data.RecommenderData data = (moa.recommender.data.RecommenderData) getPreparedClassOption(this.dataOption);
+        moa.recommender.data.RecommenderData data =
+                (moa.recommender.data.RecommenderData) getPreparedClassOption(this.dataOption);
         rp = new moa.recommender.rc.predictor.impl.BaselinePredictor(data.getData());
     }
 
@@ -51,7 +56,7 @@ public class BaselinePredictor extends AbstractOptionHandler implements moa.reco
     }
 
     public double predictRating(Integer user, Integer item) {
-        return rp.predictRating(user,item);
+        return rp.predictRating(user, item);
     }
 
     public moa.recommender.rc.data.RecommenderData getData() {
@@ -72,5 +77,4 @@ public class BaselinePredictor extends AbstractOptionHandler implements moa.reco
     public void train() {
         rp.train();
     }
-
 }

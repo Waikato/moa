@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
@@ -23,7 +23,9 @@ public class RegressionAccuracy extends Accuracy {
 
     @Override
     public String[] getNames() {
-        String[] names = {"mean abs. error", "root mean sq. er.", "", "Ram-Hours", "Time", "Memory"};
+        String[] names = {
+            "mean abs. error", "root mean sq. er.", "", "Ram-Hours", "Time", "Memory"
+        };
         return names;
     }
 
@@ -32,5 +34,4 @@ public class RegressionAccuracy extends Accuracy {
         boolean[] defaults = {true, true, false, true, true, true};
         return defaults;
     }
-
 }

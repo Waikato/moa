@@ -15,15 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
@@ -40,7 +39,10 @@ import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
-import com.yahoo.labs.samoa.instances.Instance;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 /**
  * Task for evaluating a static model on a stream.
@@ -57,35 +59,60 @@ public class EvaluateModel extends ClassificationMainTask implements Capabilitie
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption modelOption = new ClassOption("model", 'm',
-            "Learner to evaluate.", MultiClassClassifier.class, "LearnModel");
+    public ClassOption modelOption =
+            new ClassOption(
+                    "model", 'm', "Learner to evaluate.", MultiClassClassifier.class, "LearnModel");
 
-    public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to evaluate on.", ExampleStream.class,
-            "generators.RandomTreeGenerator");
+    public ClassOption streamOption =
+            new ClassOption(
+                    "stream",
+                    's',
+                    "Stream to evaluate on.",
+                    ExampleStream.class,
+                    "generators.RandomTreeGenerator");
 
-    public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
-            "Classification performance evaluation method.",
-            LearningPerformanceEvaluator.class,
-            "BasicClassificationPerformanceEvaluator");
+    public ClassOption evaluatorOption =
+            new ClassOption(
+                    "evaluator",
+                    'e',
+                    "Classification performance evaluation method.",
+                    LearningPerformanceEvaluator.class,
+                    "BasicClassificationPerformanceEvaluator");
 
-    public IntOption maxInstancesOption = new IntOption("maxInstances", 'i',
-            "Maximum number of instances to test.", 100000000, 0,
-            Integer.MAX_VALUE);
-    
-    public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
-            'f',
-            "How many instances between samples of the learning performance.",
-            100000, 0, Integer.MAX_VALUE);
+    public IntOption maxInstancesOption =
+            new IntOption(
+                    "maxInstances",
+                    'i',
+                    "Maximum number of instances to test.",
+                    100000000,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
-            "File to append output predictions to.", null, "pred", true);
+    public IntOption sampleFrequencyOption =
+            new IntOption(
+                    "sampleFrequency",
+                    'f',
+                    "How many instances between samples of the learning performance.",
+                    100000,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public EvaluateModel() {
-    }
+    public FileOption outputPredictionFileOption =
+            new FileOption(
+                    "outputPredictionFile",
+                    'o',
+                    "File to append output predictions to.",
+                    null,
+                    "pred",
+                    true);
 
-    public EvaluateModel(Classifier model, InstanceStream stream,
-            LearningPerformanceEvaluator evaluator, int maxInstances) {
+    public EvaluateModel() {}
+
+    public EvaluateModel(
+            Classifier model,
+            InstanceStream stream,
+            LearningPerformanceEvaluator evaluator,
+            int maxInstances) {
         this.modelOption.setCurrentObject(model);
         this.streamOption.setCurrentObject(stream);
         this.evaluatorOption.setCurrentObject(evaluator);
@@ -101,23 +128,24 @@ public class EvaluateModel extends ClassificationMainTask implements Capabilitie
     public Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Learner model = (Learner) getPreparedClassOption(this.modelOption);
         ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
-        LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
+        LearningPerformanceEvaluator evaluator =
+                (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         LearningCurve learningCurve = new LearningCurve("learning evaluation instances");
         int maxInstances = this.maxInstancesOption.getValue();
         long instancesProcessed = 0;
         monitor.setCurrentActivity("Evaluating model...", -1.0);
 
-        //File for output predictions
+        // File for output predictions
         File outputPredictionFile = this.outputPredictionFileOption.getFile();
         PrintStream outputPredictionResultStream = null;
         if (outputPredictionFile != null) {
             try {
                 if (outputPredictionFile.exists()) {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile, true), true);
+                    outputPredictionResultStream =
+                            new PrintStream(new FileOutputStream(outputPredictionFile, true), true);
                 } else {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile), true);
+                    outputPredictionResultStream =
+                            new PrintStream(new FileOutputStream(outputPredictionFile), true);
                 }
             } catch (Exception ex) {
                 throw new RuntimeException(
@@ -126,28 +154,33 @@ public class EvaluateModel extends ClassificationMainTask implements Capabilitie
         }
         while (stream.hasMoreInstances()
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))) {
-            Example testInst = (Example) stream.nextInstance();//.copy();
+            Example testInst = (Example) stream.nextInstance(); // .copy();
             int trueClass = (int) ((Instance) testInst.getData()).classValue();
-            //testInst.setClassMissing();
+            // testInst.setClassMissing();
             double[] prediction = model.getVotesForInstance(testInst);
-            //evaluator.addClassificationAttempt(trueClass, prediction, testInst
+            // evaluator.addClassificationAttempt(trueClass, prediction, testInst
             //		.weight());
             if (outputPredictionFile != null) {
-                outputPredictionResultStream.println(Utils.maxIndex(prediction) + "," +(
-                        ((Instance) testInst.getData()).classIsMissing() == true ? " ? " : trueClass));
+                outputPredictionResultStream.println(
+                        Utils.maxIndex(prediction)
+                                + ","
+                                + (((Instance) testInst.getData()).classIsMissing() == true
+                                        ? " ? "
+                                        : trueClass));
             }
             evaluator.addResult(testInst, prediction);
             instancesProcessed++;
 
             if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0
                     || stream.hasMoreInstances() == false) {
-	            learningCurve.insertEntry(new LearningEvaluation(
-	                    new Measurement[]{
-	                        new Measurement(
-	                        "learning evaluation instances",
-	                        instancesProcessed)
-	                    },
-	                    evaluator, model));
+                learningCurve.insertEntry(
+                        new LearningEvaluation(
+                                new Measurement[] {
+                                    new Measurement(
+                                            "learning evaluation instances", instancesProcessed)
+                                },
+                                evaluator,
+                                model));
             }
             if (instancesProcessed % INSTANCES_BETWEEN_MONITOR_UPDATES == 0) {
                 if (monitor.taskShouldAbort()) {
@@ -161,9 +194,12 @@ public class EvaluateModel extends ClassificationMainTask implements Capabilitie
                         estimatedRemainingInstances = maxRemaining;
                     }
                 }
-                monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
-                        : (double) instancesProcessed
-                        / (double) (instancesProcessed + estimatedRemainingInstances));
+                monitor.setCurrentActivityFractionComplete(
+                        estimatedRemainingInstances < 0
+                                ? -1.0
+                                : (double) instancesProcessed
+                                        / (double)
+                                                (instancesProcessed + estimatedRemainingInstances));
                 if (monitor.resultPreviewRequested()) {
                     monitor.setLatestResultPreview(learningCurve.copy());
                 }
@@ -179,7 +215,6 @@ public class EvaluateModel extends ClassificationMainTask implements Capabilitie
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == EvaluateModel.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

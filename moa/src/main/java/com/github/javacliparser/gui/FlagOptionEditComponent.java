@@ -15,14 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.github.javacliparser.gui;
 
-import javax.swing.JCheckBox;
-
 import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.Option;
+
+import javax.swing.JCheckBox;
 
 /**
  * An OptionEditComponent that lets the user edit a flag option.
@@ -30,8 +30,7 @@ import com.github.javacliparser.Option;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class FlagOptionEditComponent extends JCheckBox implements
-        OptionEditComponent {
+public class FlagOptionEditComponent extends JCheckBox implements OptionEditComponent {
 
     private static final long serialVersionUID = 1L;
 

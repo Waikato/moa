@@ -22,6 +22,7 @@ package moa.classifiers.trees;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
 
@@ -30,51 +31,49 @@ import moa.classifiers.Classifier;
  *
  * @author Corey Sterling (csterlin at waikato dot ac dot nz)
  */
-public class EFDTTest
-  extends AbstractMultipleClassifierTestCase {
+public class EFDTTest extends AbstractMultipleClassifierTestCase {
 
-  /**
-   * Constructs the test case. Called by subclasses.
-   *
-   * @param name 	the name of the test
-   */
-  public EFDTTest(String name) {
-    super(name);
-    this.setNumberTests(2);
-  }
+    /**
+     * Constructs the test case. Called by subclasses.
+     *
+     * @param name the name of the test
+     */
+    public EFDTTest(String name) {
+        super(name);
+        this.setNumberTests(2);
+    }
 
+    /**
+     * Returns the classifier setups to use in the regression test.
+     *
+     * @return the setups
+     */
+    @Override
+    protected Classifier[] getRegressionClassifierSetups() {
+        EFDT[] result;
+        result = new EFDT[2];
+        result[0] = new EFDT();
+        result[1] = new EFDT();
+        result[1].tieThresholdOption.setValue(0.2);
 
-  /**
-   * Returns the classifier setups to use in the regression test.
-   *
-   * @return		the setups
-   */
-  @Override
-  protected Classifier[] getRegressionClassifierSetups() {
-    EFDT[]	result;
-    result    = new EFDT[2];
-    result[0] = new EFDT();
-    result[1] = new EFDT();
-    result[1].tieThresholdOption.setValue(0.2);
+        return result;
+    }
 
-    return result;
-  }
+    /**
+     * Returns a test suite.
+     *
+     * @return the test suite
+     */
+    public static Test suite() {
+        return new TestSuite(EFDTTest.class);
+    }
 
-  /**
-   * Returns a test suite.
-   *
-   * @return		the test suite
-   */
-  public static Test suite() {
-    return new TestSuite(EFDTTest.class);
-  }
-
-  /**
-   * Runs the test from commandline.
-   *
-   * @param args	ignored
-   */
-  public static void main(String[] args) {
-    runTest(suite());
-  }
+    /**
+     * Runs the test from commandline.
+     *
+     * @param args ignored
+     */
+    public static void main(String[] args) {
+        runTest(suite());
+    }
 }

@@ -1,17 +1,17 @@
 /*
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * 	        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the
- * License.  
+ * License.
  */
 package com.yahoo.labs.samoa.instances;
 
@@ -24,19 +24,13 @@ import java.text.SimpleDateFormat;
  */
 public class InstanceImpl implements MultiLabelInstance {
 
-    /**
-     * The weight.
-     */
+    /** The weight. */
     protected double weight;
 
-    /**
-     * The instance data.
-     */
+    /** The instance data. */
     protected InstanceData instanceData;
 
-    /**
-     * The instance information.
-     */
+    /** The instance information. */
     protected InstancesHeader instanceHeader;
 
     /**
@@ -50,7 +44,7 @@ public class InstanceImpl implements MultiLabelInstance {
         this.instanceHeader = inst.instanceHeader;
     }
 
-    //Dense
+    // Dense
     /**
      * Instantiates a new instance.
      *
@@ -62,7 +56,7 @@ public class InstanceImpl implements MultiLabelInstance {
         this.instanceData = new DenseInstanceData(res);
     }
 
-    //Sparse
+    // Sparse
     /**
      * Instantiates a new instance.
      *
@@ -71,7 +65,8 @@ public class InstanceImpl implements MultiLabelInstance {
      * @param indexValues the index values
      * @param numberAttributes the number attributes
      */
-    public InstanceImpl(double weight, double[] attributeValues, int[] indexValues, int numberAttributes) {
+    public InstanceImpl(
+            double weight, double[] attributeValues, int[] indexValues, int numberAttributes) {
         this.weight = weight;
         this.instanceData = new SparseInstanceData(attributeValues, indexValues, numberAttributes);
     }
@@ -93,7 +88,7 @@ public class InstanceImpl implements MultiLabelInstance {
      * @param numAttributes the num attributes
      */
     public InstanceImpl(int numAttributes) {
-        this.instanceData = new DenseInstanceData(new double[numAttributes]); //JD
+        this.instanceData = new DenseInstanceData(new double[numAttributes]); // JD
         this.weight = 1;
     }
 
@@ -128,10 +123,10 @@ public class InstanceImpl implements MultiLabelInstance {
         return this.instanceHeader.attribute(instAttIndex);
     }
 
-    public int indexOfAttribute(Attribute attribute){
+    public int indexOfAttribute(Attribute attribute) {
         return this.instanceHeader.indexOf(attribute);
     }
-    
+
     /**
      * Delete attribute at.
      *
@@ -148,7 +143,9 @@ public class InstanceImpl implements MultiLabelInstance {
      * @param i the i
      */
     @Override
-    public void insertAttributeAt(int i) {this.instanceData.insertAttributeAt(i);}
+    public void insertAttributeAt(int i) {
+        this.instanceData.insertAttributeAt(i);
+    }
 
     /**
      * Num attributes.
@@ -287,12 +284,11 @@ public class InstanceImpl implements MultiLabelInstance {
     @Override
     public int classIndex() {
         int classIndex = instanceHeader.classIndex();
-       // return  ? classIndex : 0;
-        if(classIndex == Integer.MAX_VALUE)
-        	if(this.instanceHeader.instanceInformation.range!=null)
-        		classIndex=instanceHeader.instanceInformation.range.getStart();
-        	else
-        		classIndex=0;
+        // return  ? classIndex : 0;
+        if (classIndex == Integer.MAX_VALUE)
+            if (this.instanceHeader.instanceInformation.range != null)
+                classIndex = instanceHeader.instanceInformation.range.getStart();
+            else classIndex = 0;
         return classIndex;
     }
 
@@ -364,9 +360,9 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public void setDataset(Instances dataset) {
-        if(dataset instanceof InstancesHeader) {
+        if (dataset instanceof InstancesHeader) {
             this.instanceHeader = (InstancesHeader) dataset;
-        }else {
+        } else {
             this.instanceHeader = new InstancesHeader(dataset);
         }
     }
@@ -380,12 +376,11 @@ public class InstanceImpl implements MultiLabelInstance {
      */
     @Override
     public void addSparseValues(int[] indexValues, double[] attributeValues, int numberAttributes) {
-        this.instanceData = new SparseInstanceData(attributeValues, indexValues, numberAttributes); //???
+        this.instanceData =
+                new SparseInstanceData(attributeValues, indexValues, numberAttributes); // ???
     }
 
-    /**
-     * Text representation of a InstanceImpl.
-     */
+    /** Text representation of a InstanceImpl. */
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
@@ -431,8 +426,8 @@ public class InstanceImpl implements MultiLabelInstance {
     @Override
     public void setClassValue(int indexClass, double valueAttribute) {
         InstanceInformation instanceInformation = this.instanceHeader.getInstanceInformation();
-        this.instanceData.setValue(instanceInformation.outputAttributeIndex(indexClass), valueAttribute);
-
+        this.instanceData.setValue(
+                instanceInformation.outputAttributeIndex(indexClass), valueAttribute);
     }
 
     @Override

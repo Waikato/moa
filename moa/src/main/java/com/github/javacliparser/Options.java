@@ -1,18 +1,18 @@
 /*
  * Copyright 2007 University of Waikato.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * 	        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the
- * License.  
+ * License.
  */
 
 package com.github.javacliparser;
@@ -27,7 +27,7 @@ import java.util.List;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class Options implements Serializable {//extends AbstractMOAObject {
+public class Options implements Serializable { // extends AbstractMOAObject {
 
     private static final long serialVersionUID = 1L;
 
@@ -35,13 +35,11 @@ public class Options implements Serializable {//extends AbstractMOAObject {
 
     public void addOption(Option opt) {
         if (getOption(opt.getName()) != null) {
-            throw new IllegalArgumentException("Duplicate option name: "
-                    + opt.getName());
+            throw new IllegalArgumentException("Duplicate option name: " + opt.getName());
         }
         if (getOption(opt.getCLIChar()) != null) {
             throw new IllegalArgumentException(
-                    "Duplicate option command line character: "
-                    + opt.getCLIChar());
+                    "Duplicate option command line character: " + opt.getCLIChar());
         }
         this.optionList.add(opt);
     }
@@ -124,15 +122,14 @@ public class Options implements Serializable {//extends AbstractMOAObject {
                                 opt = getOption(optionString.charAt(i));
                                 opt.setValueViaCLIString("");
                             }
-                            cliString = cliString.substring(nextSpaceIndex + 1,
-                                    cliString.length());
+                            cliString = cliString.substring(nextSpaceIndex + 1, cliString.length());
                         }
                     }
                 }
                 if (!flagClusterFound) {
                     if (opt != null) {
-                        String parameters = cliString.substring(
-                                nextSpaceIndex + 1, cliString.length());
+                        String parameters =
+                                cliString.substring(nextSpaceIndex + 1, cliString.length());
                         if (opt instanceof FlagOption) {
                             opt.setValueViaCLIString("");
                             cliString = parameters;
@@ -142,13 +139,11 @@ public class Options implements Serializable {//extends AbstractMOAObject {
                             cliString = paramSplit[1];
                         }
                     } else {
-                        throw new IllegalArgumentException("Unknown option: -"
-                                + optionString);
+                        throw new IllegalArgumentException("Unknown option: -" + optionString);
                     }
                 }
             } else {
-                throw new IllegalArgumentException("Expecting option, found: '"
-                        + cliString + "'.");
+                throw new IllegalArgumentException("Expecting option, found: '" + cliString + "'.");
             }
             cliString = cliString.trim();
         }
@@ -206,23 +201,20 @@ public class Options implements Serializable {//extends AbstractMOAObject {
     }
 
     /**
-     * Internal method that splits a string into two parts - the parameter for
-     * the current option, and the remaining options.
+     * Internal method that splits a string into two parts - the parameter for the current option,
+     * and the remaining options.
      *
-     * @param cliString
-     *            the command line string, beginning at an option parameter
-     * @return an array of two strings - the first is the option paramter, the
-     *         second is the remaining cli string
+     * @param cliString the command line string, beginning at an option parameter
+     * @return an array of two strings - the first is the option paramter, the second is the
+     *     remaining cli string
      */
-    protected static String[] splitParameterFromRemainingOptions(
-            String cliString) {
+    protected static String[] splitParameterFromRemainingOptions(String cliString) {
         String[] paramSplit = new String[2];
         cliString = cliString.trim();
         if (cliString.startsWith("\"") || cliString.startsWith("'")) {
             int endQuoteIndex = cliString.indexOf(cliString.charAt(0), 1);
             if (endQuoteIndex < 0) {
-                throw new IllegalArgumentException(
-                        "Quotes not terminated correctly.");
+                throw new IllegalArgumentException("Quotes not terminated correctly.");
             }
             paramSplit[0] = cliString.substring(1, endQuoteIndex);
             paramSplit[1] = cliString.substring(endQuoteIndex + 1, cliString.length());
@@ -234,8 +226,7 @@ public class Options implements Serializable {//extends AbstractMOAObject {
             while (bracketsOpen != 0) {
                 if (nextCloseIndex < 0) {
                     throw new IllegalArgumentException("Brackets do not match.");
-                } else if ((nextOpenIndex < 0)
-                        || (nextCloseIndex < nextOpenIndex)) {
+                } else if ((nextOpenIndex < 0) || (nextCloseIndex < nextOpenIndex)) {
                     bracketsOpen--;
                     currPos = nextCloseIndex + 1;
                     nextCloseIndex = cliString.indexOf(")", currPos);
@@ -251,8 +242,7 @@ public class Options implements Serializable {//extends AbstractMOAObject {
             int firstSpaceIndex = cliString.indexOf(" ", 0);
             if (firstSpaceIndex >= 0) {
                 paramSplit[0] = cliString.substring(0, firstSpaceIndex);
-                paramSplit[1] = cliString.substring(firstSpaceIndex + 1,
-                        cliString.length());
+                paramSplit[1] = cliString.substring(firstSpaceIndex + 1, cliString.length());
             } else {
                 paramSplit[0] = cliString;
                 paramSplit[1] = "";

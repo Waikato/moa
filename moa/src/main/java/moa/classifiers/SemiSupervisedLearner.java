@@ -15,17 +15,16 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers;
 
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.core.Example;
 import moa.learners.Learner;
 
-/**
- * Updated learner interface for semi-supervised methods.
- */
+/** Updated learner interface for semi-supervised methods. */
 public interface SemiSupervisedLearner extends Learner<Example<Instance>> {
     // Returns the pseudo-label used. If no pseudo-label was used, then return -1.
     int trainOnUnlabeledInstance(Instance instance);

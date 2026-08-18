@@ -15,18 +15,18 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
+
+import com.github.javacliparser.IntOption;
 
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
 import moa.evaluation.LearningEvaluation;
 import moa.options.ClassOption;
-import com.github.javacliparser.IntOption;
 import moa.streams.ExampleStream;
-import moa.streams.InstanceStream;
 
 /**
  * Task for measuring the speed of the stream.
@@ -43,12 +43,17 @@ public class MeasureStreamSpeed extends AuxiliarMainTask {
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to measure.", ExampleStream.class,
-            "generators.RandomTreeGenerator");
+    public ClassOption streamOption =
+            new ClassOption(
+                    "stream",
+                    's',
+                    "Stream to measure.",
+                    ExampleStream.class,
+                    "generators.RandomTreeGenerator");
 
-    public IntOption generateSizeOption = new IntOption("generateSize", 'g',
-            "Number of examples.", 10000000, 0, Integer.MAX_VALUE);
+    public IntOption generateSizeOption =
+            new IntOption(
+                    "generateSize", 'g', "Number of examples.", 10000000, 0, Integer.MAX_VALUE);
 
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
@@ -60,15 +65,15 @@ public class MeasureStreamSpeed extends AuxiliarMainTask {
             stream.nextInstance();
             numInstances++;
         }
-        double genTime = TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread()
-                - genStartTime);
+        double genTime =
+                TimingUtils.nanoTimeToSeconds(
+                        TimingUtils.getNanoCPUTimeOfCurrentThread() - genStartTime);
         return new LearningEvaluation(
-                new Measurement[]{
-                    new Measurement("Number of instances generated",
-                    numInstances),
+                new Measurement[] {
+                    new Measurement("Number of instances generated", numInstances),
                     new Measurement("Time elapsed", genTime),
-                    new Measurement("Instances per second", numInstances
-                    / genTime)});
+                    new Measurement("Instances per second", numInstances / genTime)
+                });
     }
 
     @Override

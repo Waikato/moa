@@ -2,7 +2,7 @@
  *    IademGreenwaldKhannaNumericAttributeClassObserver.java
  *
  *    @author Isvani Frias-Blanco
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
@@ -14,26 +14,30 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.classifiers.trees.iadem;
 
-import java.util.Arrays;
-import java.util.ArrayList;
 import moa.classifiers.core.attributeclassobservers.GreenwaldKhannaNumericAttributeClassObserver;
 import moa.core.AutoExpandVector;
 import moa.core.GreenwaldKhannaQuantileSummary;
+
 import weka.core.Utils;
 
-public class IademGreenwaldKhannaNumericAttributeClassObserver extends GreenwaldKhannaNumericAttributeClassObserver implements IademNumericAttributeObserver {
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class IademGreenwaldKhannaNumericAttributeClassObserver
+        extends GreenwaldKhannaNumericAttributeClassObserver
+        implements IademNumericAttributeObserver {
     private static final long serialVersionUID = 1L;
 
     public IademGreenwaldKhannaNumericAttributeClassObserver() {
         super();
     }
-    
+
     public IademGreenwaldKhannaNumericAttributeClassObserver(int maxTuples) {
         super();
         this.numTuplesOption.setValue(maxTuples);
@@ -43,7 +47,8 @@ public class IademGreenwaldKhannaNumericAttributeClassObserver extends Greenwald
     public void observeAttributeClass(double attVal, int classVal, double weight) {
         if (Utils.isMissingValue(attVal)) {
         } else {
-            IademGreenwaldKhannaQuantileSummary valDist = (IademGreenwaldKhannaQuantileSummary) this.attValDistPerClass.get(classVal);
+            IademGreenwaldKhannaQuantileSummary valDist =
+                    (IademGreenwaldKhannaQuantileSummary) this.attValDistPerClass.get(classVal);
             if (valDist == null) {
                 valDist = new IademGreenwaldKhannaQuantileSummary(this.numTuplesOption.getValue());
                 this.attValDistPerClass.set(classVal, valDist);
@@ -55,7 +60,8 @@ public class IademGreenwaldKhannaNumericAttributeClassObserver extends Greenwald
 
     @Override
     public double probabilityOfAttributeValueGivenClass(double attVal, int classVal) {
-        IademGreenwaldKhannaQuantileSummary obs = (IademGreenwaldKhannaQuantileSummary) this.attValDistPerClass.get(classVal);
+        IademGreenwaldKhannaQuantileSummary obs =
+                (IademGreenwaldKhannaQuantileSummary) this.attValDistPerClass.get(classVal);
         if (obs == null) {
             return 0.0;
         } else {
@@ -142,15 +148,15 @@ public class IademGreenwaldKhannaNumericAttributeClassObserver extends Greenwald
     }
 
     @Override
-    public void computeClassDistProbabilities(double[][][] cut_value_classDist_lower, 
-            double[][][] cut_value_classDist_upper, 
+    public void computeClassDistProbabilities(
+            double[][][] cut_value_classDist_lower,
+            double[][][] cut_value_classDist_upper,
             double[][] counts_cut_value,
             boolean withIntervalEstimates) {
         ArrayList<Double> cuts = cutPointSuggestion(-1);
-        long [] totalDist = getClassDist();
+        long[] totalDist = getClassDist();
         for (int i = 0; i < cuts.size(); i++) {
-            long [] lDist = getLeftClassDist(cuts.get(i)),
-                    rDist = new long[lDist.length];
+            long[] lDist = getLeftClassDist(cuts.get(i)), rDist = new long[lDist.length];
             long totalIzq = sum(lDist);
             long total = sum(totalDist);
             counts_cut_value[i][0] = totalIzq;
@@ -163,26 +169,30 @@ public class IademGreenwaldKhannaNumericAttributeClassObserver extends Greenwald
                 }
                 double lError = 0.0;
                 if (withIntervalEstimates) {
-                    lError = IademCommonProcedures.getIADEM_HoeffdingBound(lEst, counts_cut_value[i][0]);
+                    lError =
+                            IademCommonProcedures.getIADEM_HoeffdingBound(
+                                    lEst, counts_cut_value[i][0]);
                 }
                 cut_value_classDist_lower[i][0][j] = Math.max(0.0, lEst - lError);
                 cut_value_classDist_upper[i][0][j] = Math.min(1.0, lEst + lError);
-                
+
                 double rEst = 0.0;
                 if (counts_cut_value[i][1] != 0) {
                     rEst = (double) rDist[j] / counts_cut_value[i][1];
                 }
                 double rightError = 0.0;
                 if (withIntervalEstimates) {
-                    rightError = IademCommonProcedures.getIADEM_HoeffdingBound(rEst, counts_cut_value[i][1]);
+                    rightError =
+                            IademCommonProcedures.getIADEM_HoeffdingBound(
+                                    rEst, counts_cut_value[i][1]);
                 }
                 cut_value_classDist_lower[i][1][j] = Math.max(0.0, rEst - rightError);
                 cut_value_classDist_upper[i][1][j] = Math.min(1.0, rEst + rightError);
             }
         }
     }
-    
-    protected long sum(long []arr) {
+
+    protected long sum(long[] arr) {
         long counter = 0;
         for (int i = 0; i < arr.length; i++) {
             counter += arr[i];
@@ -206,11 +216,11 @@ public class IademGreenwaldKhannaNumericAttributeClassObserver extends Greenwald
 
     @Override
     public ArrayList<Double[]> computeConditionalProbPerBin(ArrayList<Double> cuts) {
-        ArrayList<Double []> prob = new ArrayList<Double []>();
+        ArrayList<Double[]> prob = new ArrayList<Double[]>();
         long total = getValueCount();
         for (Double currentCut : cuts) {
             long[] numExp = getLeftClassDist(currentCut);
-            Double [] tmpProb = new Double[numExp.length];
+            Double[] tmpProb = new Double[numExp.length];
             for (int j = 0; j < tmpProb.length; j++) {
                 tmpProb[j] = (double) numExp[j] / total;
             }
@@ -221,7 +231,7 @@ public class IademGreenwaldKhannaNumericAttributeClassObserver extends Greenwald
 
     @Override
     public double[] computeConditionalProb(ArrayList<Double> cortes, double valor) {
-        double [] probabilidadCondicional = new double[this.attValDistPerClass.size()];
+        double[] probabilidadCondicional = new double[this.attValDistPerClass.size()];
         for (int i = 0; i < this.attValDistPerClass.size(); i++) {
             probabilidadCondicional[i] = probabilityOfAttributeValueGivenClass(valor, i);
         }
@@ -230,14 +240,14 @@ public class IademGreenwaldKhannaNumericAttributeClassObserver extends Greenwald
 
     @Override
     public IademNumericAttributeObserver getCopy() {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void reset() {
         this.attValDistPerClass = new AutoExpandVector<GreenwaldKhannaQuantileSummary>();
     }
-    
+
     @Override
     public void setMaxBins(int numTuples) {
         this.numTuplesOption.setValue(numTuples);
@@ -246,13 +256,12 @@ public class IademGreenwaldKhannaNumericAttributeClassObserver extends Greenwald
     @Override
     public void computeClassDist(double[][][] cutClassDist) {
         ArrayList<Double> cuts = cutPointSuggestion(-1);
-        long [] totalDist = getClassDist();
+        long[] totalDist = getClassDist();
         for (int i = 0; i < cuts.size(); i++) {
-            long [] lDist = getLeftClassDist(cuts.get(i)),
-                    rDist = new long[lDist.length];
+            long[] lDist = getLeftClassDist(cuts.get(i)), rDist = new long[lDist.length];
             for (int j = 0; j < totalDist.length; j++) {
                 rDist[j] = totalDist[j] - lDist[j];
-                
+
                 cutClassDist[i][0][j] = lDist[j];
                 cutClassDist[i][1][j] = rDist[j];
             }

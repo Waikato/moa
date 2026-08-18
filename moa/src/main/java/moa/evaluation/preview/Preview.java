@@ -15,14 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation.preview;
 
+import moa.AbstractMOAObject;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import moa.AbstractMOAObject;
 
 /**
  * Abstract class which is used to define the methods needed from a preview
@@ -30,40 +30,39 @@ import moa.AbstractMOAObject;
  * @author Tuan Pham Minh (tuan.pham@ovgu.de)
  * @version $Revision: 1 $
  */
-public abstract class Preview extends AbstractMOAObject{
-	private static final long serialVersionUID = 1L;
+public abstract class Preview extends AbstractMOAObject {
+    private static final long serialVersionUID = 1L;
 
-	// TODO add methods to return a 2D double array
-	public abstract int getMeasurementNameCount();
+    // TODO add methods to return a 2D double array
+    public abstract int getMeasurementNameCount();
 
-	public abstract String getMeasurementName(int measurementIndex);
+    public abstract String getMeasurementName(int measurementIndex);
 
-	public abstract int numEntries();
+    public abstract int numEntries();
 
-	public abstract String entryToString(int entryIndex);
+    public abstract String entryToString(int entryIndex);
 
-	public abstract Class<?> getTaskClass();
+    public abstract Class<?> getTaskClass();
 
-	public abstract double[] getEntryData(int entryIndex);
-	
-	public String[] getMeasurementNames() {
-		int numNames = getMeasurementNameCount();
-		String[] names = new String[numNames];
-		for (int i = 0; i < numNames; i++) {
-			names[i] = getMeasurementName(i);
-		}
-		return names;
-	}
+    public abstract double[] getEntryData(int entryIndex);
 
-	public List<double[]> getData()
-	{
-		// create list to store all entries
-		List<double[]> data = new ArrayList<>();
-		// add all entries in the list above
+    public String[] getMeasurementNames() {
+        int numNames = getMeasurementNameCount();
+        String[] names = new String[numNames];
+        for (int i = 0; i < numNames; i++) {
+            names[i] = getMeasurementName(i);
+        }
+        return names;
+    }
+
+    public List<double[]> getData() {
+        // create list to store all entries
+        List<double[]> data = new ArrayList<>();
+        // add all entries in the list above
         for (int entryIdx = 0; entryIdx < numEntries(); entryIdx++) {
             data.add(getEntryData(entryIdx));
         }
-		
-		return data;
-	}
+
+        return data;
+    }
 }

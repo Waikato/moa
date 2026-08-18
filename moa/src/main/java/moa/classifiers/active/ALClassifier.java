@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.active;
 
@@ -29,10 +29,9 @@ import moa.classifiers.Classifier;
  */
 public interface ALClassifier extends Classifier {
 
-   /**
-     * Returns true if the previously chosen instance was added to the training set 
-     * of the active learner.
-     *
+    /**
+     * Returns true if the previously chosen instance was added to the training set of the active
+     * learner.
      */
-	public int getLastLabelAcqReport();
+    public int getLastLabelAcqReport();
 }

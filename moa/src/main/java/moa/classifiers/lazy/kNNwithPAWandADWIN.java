@@ -13,24 +13,24 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.lazy;
 
-import java.util.ArrayList;
-
-import moa.classifiers.MultiClassClassifier;
-import moa.classifiers.core.driftdetection.ADWIN;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
 
+import moa.classifiers.MultiClassClassifier;
+import moa.classifiers.core.driftdetection.ADWIN;
+
+import java.util.ArrayList;
+
 /**
- * k Nearest Neighbor ADAPTIVE with ADWIN+PAW.<p>
+ * k Nearest Neighbor ADAPTIVE with ADWIN+PAW.
  *
- * Valid options are:
- * <p>
+ * <p>Valid options are:
  *
- * -k number of neighbours <br>
+ * <p>-k number of neighbours <br>
  *
  * @author Jesse Read (jesse@tsc.uc3m.es)
  * @version 03.2012
@@ -86,7 +86,7 @@ public class kNNwithPAWandADWIN extends kNN implements MultiClassClassifier {
         this.time++;
         boolean correctlyClassifies = this.correctlyClassifies(inst);
         if (this.adwin.setInput(correctlyClassifies ? 0 : 1)) {
-            //Change
+            // Change
             int size = (int) this.adwin.getWidth();
             for (int i = 0; i < this.window.size(); i++) {
                 if (this.timeStamp.get(i) < this.time - size) {
@@ -95,16 +95,13 @@ public class kNNwithPAWandADWIN extends kNN implements MultiClassClassifier {
                 }
             }
         }
-
     }
 
     @Override
-    public void getModelDescription(StringBuilder out, int indent) {
-    }
+    public void getModelDescription(StringBuilder out, int indent) {}
 
     @Override
     public boolean isRandomizable() {
         return true;
     }
-
 }

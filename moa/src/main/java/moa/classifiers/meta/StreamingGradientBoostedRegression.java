@@ -21,44 +21,48 @@ package moa.classifiers.meta;
 
 import moa.classifiers.Regressor;
 
-
 /**
  * Gradient boosted bagging for evolving data stream regression
  *
- * <p>Streaming Gradient Boosted Regression (SGBR)
- * was developed to adapt gradient boosting for streaming regression using Streaming Gradient Boosted Trees (SGBT).
- * A variant called SGB(Oza), which uses OzaBag bagging regressors as base learners,
- * outperforms existing state-of-the-art methods in both accuracy and efficiency across various drift scenarios.</p>
+ * <p>Streaming Gradient Boosted Regression (SGBR) was developed to adapt gradient boosting for
+ * streaming regression using Streaming Gradient Boosted Trees (SGBT). A variant called SGB(Oza),
+ * which uses OzaBag bagging regressors as base learners, outperforms existing state-of-the-art
+ * methods in both accuracy and efficiency across various drift scenarios.
  *
- * <p>See details in:<br> Nuwan Gunasekara, Bernhard Pfahringer, Heitor Murilo Gomes, Albert Bifet.
- * Gradient boosted bagging for evolving data stream regression.
- * Data Mining and Knowledge Discovery, Springer, 2025.
- * <a href="https://doi.org/10.1007/s10618-025-01147-x">DOI</a>. </p>
+ * <p>See details in:<br>
+ * Nuwan Gunasekara, Bernhard Pfahringer, Heitor Murilo Gomes, Albert Bifet. Gradient boosted
+ * bagging for evolving data stream regression. Data Mining and Knowledge Discovery, Springer, 2025.
+ * <a href="https://doi.org/10.1007/s10618-025-01147-x">DOI</a>.
  *
- * <p>Parameters:</p> <ul>
- * <li>Same as in SGBT</li>
- * <li>-l : The base learner option is used to employ bagging base learners instead of trees.</li>
+ * <p>Parameters:
+ *
+ * <ul>
+ *   <li>Same as in SGBT
+ *   <li>-l : The base learner option is used to employ bagging base learners instead of trees.
  * </ul>
  *
  * @author Nuwan Gunasekara (nuwan dot gunasekara at hh dot se)
  * @version $Revision: 1 $
  */
-public class StreamingGradientBoostedRegression extends StreamingGradientBoostedTrees implements Regressor {
+public class StreamingGradientBoostedRegression extends StreamingGradientBoostedTrees
+        implements Regressor {
 
     private static final long serialVersionUID = 1L;
 
-    public StreamingGradientBoostedRegression(){
+    public StreamingGradientBoostedRegression() {
         super();
         // initialise an object with correct default values
-        super.baseLearnerOption.setValueViaCLIString("meta.OzaBag -s 10 -l (trees.FIMTDD -s VarianceReductionSplitCriterion -g 50 -c 0.01 -e)");
+        super.baseLearnerOption.setValueViaCLIString(
+                "meta.OzaBag -s 10 -l (trees.FIMTDD -s VarianceReductionSplitCriterion -g 50 -c"
+                        + " 0.01 -e)");
         super.learningRateOption.setValue(1.0);
         super.numberOfboostingIterations.setValue(10);
 
         // to support reset to defaults in GUI
-        super.baseLearnerOption.setDefaultCLIString("meta.OzaBag -s 10 -l (trees.FIMTDD -s VarianceReductionSplitCriterion -g 50 -c 0.01 -e)");
+        super.baseLearnerOption.setDefaultCLIString(
+                "meta.OzaBag -s 10 -l (trees.FIMTDD -s VarianceReductionSplitCriterion -g 50 -c"
+                        + " 0.01 -e)");
         super.learningRateOption.setDefault(1.0);
         super.numberOfboostingIterations.setDefaultValue(10);
-
     }
-
 }

@@ -1,5 +1,3 @@
-
-
 /*
  *   DynamicEnsembleMemberSelectionTest.java
  *
@@ -17,29 +15,27 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- *
- */
+/** */
 package moa.classifiers.meta;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
 
 /**
  * Tests the DynamicEnsembleMemberSelection classifier.
  *
- * @author  Yibin Sun (y dot sun at waikato dot ac dot nz)
+ * @author Yibin Sun (y dot sun at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class DynamicEnsembleMemberSelectionTest
-        extends AbstractMultipleClassifierTestCase {
+public class DynamicEnsembleMemberSelectionTest extends AbstractMultipleClassifierTestCase {
 
     /**
      * Constructs the test case. Called by subclasses.
      *
-     * @param name 	the name of the test
+     * @param name the name of the test
      */
     public DynamicEnsembleMemberSelectionTest(String name) {
         super(name);
@@ -49,7 +45,7 @@ public class DynamicEnsembleMemberSelectionTest
     /**
      * Returns the classifier setups to use in the regression test.
      *
-     * @return		the setups
+     * @return the setups
      */
     @Override
     protected Classifier[] getRegressionClassifierSetups() {
@@ -59,15 +55,15 @@ public class DynamicEnsembleMemberSelectionTest
         DEMSTest.subspaceModeOption.setChosenIndex(0);
         DEMSTest.subspaceSizeOption.setValue(2);
 
-        return new Classifier[]{
-                DEMSTest,
+        return new Classifier[] {
+            DEMSTest,
         };
     }
 
     /**
      * Returns a test suite.
      *
-     * @return		the test suite
+     * @return the test suite
      */
     public static Test suite() {
         return new TestSuite(DynamicEnsembleMemberSelectionTest.class);
@@ -76,7 +72,7 @@ public class DynamicEnsembleMemberSelectionTest
     /**
      * Runs the test from commandline.
      *
-     * @param args	ignored
+     * @param args ignored
      */
     public static void main(String[] args) {
         runTest(suite());

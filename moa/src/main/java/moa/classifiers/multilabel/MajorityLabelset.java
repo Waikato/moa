@@ -2,7 +2,7 @@
  *    MajorityLabelset.java
  *    Copyright (C) 2012 University of Waikato, Hamilton, New Zealand
  *    @author Jesse Read (jesse@tsc.uc3m.es)
- * 
+ *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 3 of the License, or
@@ -15,38 +15,37 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.multilabel;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import moa.core.Measurement;
-import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.MultiLabelPrediction;
 import com.yahoo.labs.samoa.instances.Prediction;
+
 import moa.classifiers.AbstractMultiLabelLearner;
 import moa.classifiers.MultiLabelLearner;
-import moa.classifiers.MultiTargetRegressor;
+import moa.core.Measurement;
 import moa.core.StringUtils;
 
+import java.util.HashMap;
+
 /**
- * Majority Labelset classifier. Each labelset combination of relevances, e.g.
- * [0,0,1,1,0,0], is treated as a single class value.
- * 
+ * Majority Labelset classifier. Each labelset combination of relevances, e.g. [0,0,1,1,0,0], is
+ * treated as a single class value.
+ *
  * @author Jesse Read (jesse@tsc.uc3m.es)
  * @version $Revision: 1 $
  */
 public class MajorityLabelset extends AbstractMultiLabelLearner implements MultiLabelLearner {
-    //AbstractClassifier {
+    // AbstractClassifier {
 
     private static final long serialVersionUID = 1L;
 
-	@Override
+    @Override
     public String getPurposeString() {
-        return "Majority labelset classifier: always predicts the labelvector most frequently seen so far.";
+        return "Majority labelset classifier: always predicts the labelvector most frequently seen"
+                + " so far.";
     }
 
     private double maxValue = -1.0;
@@ -57,38 +56,38 @@ public class MajorityLabelset extends AbstractMultiLabelLearner implements Multi
 
     @Override
     public void resetLearningImpl() {
-		this.majorityLabelset = null;
+        this.majorityLabelset = null;
     }
 
     @Override
     public void trainOnInstanceImpl(MultiLabelInstance x) {
-		int L = x.numberOutputTargets();
+        int L = x.numberOutputTargets();
 
         MultiLabelPrediction y = new MultiLabelPrediction(L);
-		for(int j=0; j<L;j++)
-    		y.setVotes(j,new double[]{1- x.classValue(j), x.classValue(j)});
+        for (int j = 0; j < L; j++)
+            y.setVotes(j, new double[] {1 - x.classValue(j), x.classValue(j)});
 
         double freq = x.weight();
-		if (this.vectorCounts.containsKey(y.toString())) {
+        if (this.vectorCounts.containsKey(y.toString())) {
             freq += this.vectorCounts.get(y.toString());
         }
-        this.vectorCounts.put(y.toString(), (Double)freq);
+        this.vectorCounts.put(y.toString(), (Double) freq);
         if (freq > this.maxValue) {
             this.maxValue = freq;
             this.majorityLabelset = y;
         }
-        //System.out.println("---"+this.majorityLabelset);
+        // System.out.println("---"+this.majorityLabelset);
     }
 
     @Override
-    public Prediction getPredictionForInstance(MultiLabelInstance x){
+    public Prediction getPredictionForInstance(MultiLabelInstance x) {
 
-		if (this.majorityLabelset == null)  {
-			int L = x.numberOutputTargets();
-			return new MultiLabelPrediction(L);
-		}
+        if (this.majorityLabelset == null) {
+            int L = x.numberOutputTargets();
+            return new MultiLabelPrediction(L);
+        }
 
-		return this.majorityLabelset;
+        return this.majorityLabelset;
     }
 
     @Override
@@ -106,7 +105,5 @@ public class MajorityLabelset extends AbstractMultiLabelLearner implements Multi
         StringUtils.appendIndented(out, indent, "");
         out.append(this.majorityLabelset.toString());
         StringUtils.appendNewline(out);
-
     }
-
 }

@@ -15,13 +15,11 @@ public class CustomADWINChangeDetector extends ADWINChangeDetector {
     @Override
     public void input(double inputValue) {
         super.input(inputValue);
-        if (!hadChange)
-            hadChange = super.getChange();
+        if (!hadChange) hadChange = super.getChange();
     }
 
     public int getWidth() {
-        if (adwin == null)
-            return 0;
+        if (adwin == null) return 0;
         return adwin.getWidth();
     }
 }

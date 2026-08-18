@@ -19,15 +19,16 @@
  */
 package moa.clusterers.clustream;
 
-import java.util.ArrayList;
-import java.util.Random;
-import moa.cluster.CFCluster;
 import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.cluster.CFCluster;
+
+import java.util.ArrayList;
 
 public class ClustreamKernel extends CFCluster {
     private static final long serialVersionUID = 1L;
 
-    private final static double EPSILON = 0.00005;
+    private static final double EPSILON = 0.00005;
     public static final double MIN_VARIANCE = 1e-50;
 
     protected double LST;
@@ -40,13 +41,13 @@ public class ClustreamKernel extends CFCluster {
 
     public static int ID_GENERATOR = 0;
 
-    public ClustreamKernel(Instance instance, int dimensions, long timestamp , double t, int m) {
+    public ClustreamKernel(Instance instance, int dimensions, long timestamp, double t, int m) {
         super(instance, dimensions);
 
-//        Avoid situations where the instance header hasn't been defined and runtime errors.
-        if(instance.dataset() != null) {
+        //        Avoid situations where the instance header hasn't been defined and runtime errors.
+        if (instance.dataset() != null) {
             this.classObserver = new double[instance.numClasses()];
-//        
+            //
             if (this.instanceHasClass(instance)) {
                 this.classObserver[(int) instance.classValue()]++;
             }
@@ -55,10 +56,10 @@ public class ClustreamKernel extends CFCluster {
         this.t = t;
         this.m = m;
         this.LST = timestamp;
-        this.SST = timestamp*timestamp;
+        this.SST = timestamp * timestamp;
     }
 
-    public ClustreamKernel( ClustreamKernel cluster, double t, int m ) {
+    public ClustreamKernel(ClustreamKernel cluster, double t, int m) {
         super(cluster);
         this.setId(ID_GENERATOR++);
         this.t = t;
@@ -72,38 +73,39 @@ public class ClustreamKernel extends CFCluster {
         // TODO: Why is this check necessary? Shouldn't classIsMissing() be enough?
         // Edge case where the class index is out of bounds. number of attributes
         // (i.e. there is no class value in the attributes array).
-        return instance.numAttributes() > instance.classIndex() &&
-                !instance.classIsMissing() && // Also check for missing class.
-                instance.classValue() >= 0 && // Or invalid class values.
+        return instance.numAttributes() > instance.classIndex()
+                && !instance.classIsMissing()
+                && // Also check for missing class.
+                instance.classValue() >= 0
+                && // Or invalid class values.
                 instance.classValue() < instance.numClasses();
     }
 
-    public void insert( Instance instance, long timestamp ) {
-        if(this.classObserver == null)
-            this.classObserver = new double[instance.numClasses()];
-        if(this.instanceHasClass(instance)) {
-            this.classObserver[(int)instance.classValue()]++;
+    public void insert(Instance instance, long timestamp) {
+        if (this.classObserver == null) this.classObserver = new double[instance.numClasses()];
+        if (this.instanceHasClass(instance)) {
+            this.classObserver[(int) instance.classValue()]++;
         }
         N++;
         LST += timestamp;
-        SST += timestamp*timestamp;
+        SST += timestamp * timestamp;
 
-        for ( int i = 0; i < instance.numValues(); i++ ) {
+        for (int i = 0; i < instance.numValues(); i++) {
             LS[i] += instance.value(i);
-            SS[i] += instance.value(i)*instance.value(i);
+            SS[i] += instance.value(i) * instance.value(i);
         }
     }
 
     @Override
-    public void add( CFCluster other2 ) {
+    public void add(CFCluster other2) {
         ClustreamKernel other = (ClustreamKernel) other2;
-        assert( other.LS.length == this.LS.length );
+        assert (other.LS.length == this.LS.length);
         this.N += other.N;
         this.LST += other.LST;
         this.SST += other.SST;
         this.classObserver = sumClassObservers(other.classObserver, this.classObserver);
 
-        for ( int i = 0; i < LS.length; i++ ) {
+        for (int i = 0; i < LS.length; i++) {
             this.LS[i] += other.LS[i];
             this.SS[i] += other.SS[i];
         }
@@ -113,25 +115,22 @@ public class ClustreamKernel extends CFCluster {
         double[] result = null;
         if (A != null && B != null) {
             result = new double[A.length];
-            if(A.length == B.length)
-                for(int i = 0 ; i < A.length ; ++i)
-                    result[i] += A[i] + B[i];
+            if (A.length == B.length) for (int i = 0; i < A.length; ++i) result[i] += A[i] + B[i];
         }
         return result;
     }
 
-//    @Override
-//    public void add( CFCluster other2, long timestamp) {
-//        this.add(other2);
-//        // accumulate the count
-//        this.accumulateWeight(other2, timestamp);
-//    }
+    //    @Override
+    //    public void add( CFCluster other2, long timestamp) {
+    //        this.add(other2);
+    //        // accumulate the count
+    //        this.accumulateWeight(other2, timestamp);
+    //    }
 
     public double getRelevanceStamp() {
-        if ( N < 2*m )
-            return getMuTime();
+        if (N < 2 * m) return getMuTime();
 
-        return getMuTime() + getSigmaTime() * getQuantile( ((double)m)/(2*N) );
+        return getMuTime() + getSigmaTime() * getQuantile(((double) m) / (2 * N));
     }
 
     private double getMuTime() {
@@ -139,31 +138,29 @@ public class ClustreamKernel extends CFCluster {
     }
 
     private double getSigmaTime() {
-        return Math.sqrt(SST/N - (LST/N)*(LST/N));
+        return Math.sqrt(SST / N - (LST / N) * (LST / N));
     }
 
-    private double getQuantile( double z ) {
-        assert( z >= 0 && z <= 1 );
-        return Math.sqrt( 2 ) * inverseError( 2*z - 1 );
+    private double getQuantile(double z) {
+        assert (z >= 0 && z <= 1);
+        return Math.sqrt(2) * inverseError(2 * z - 1);
     }
 
     @Override
     public double getRadius() {
-        //trivial cluster
-        if(N == 1) return 0;
-        if(t==1)
-            t=1;
+        // trivial cluster
+        if (N == 1) return 0;
+        if (t == 1) t = 1;
 
-        return getDeviation()*radiusFactor;
+        return getDeviation() * radiusFactor;
     }
 
     @Override
-    public CFCluster getCF(){
+    public CFCluster getCF() {
         return this;
     }
 
-
-    private double getDeviation(){
+    private double getDeviation() {
         double[] variance = getVarianceVector();
         double sumOfDeviation = 0.0;
         for (int i = 0; i < variance.length; i++) {
@@ -188,32 +185,30 @@ public class ClustreamKernel extends CFCluster {
 
     /**
      * See interface <code>Cluster</code>
+     *
      * @param instance
      */
     @Override
     public double getInclusionProbability(Instance instance) {
-        //trivial cluster
-        if(N == 1){
+        // trivial cluster
+        if (N == 1) {
             double distance = 0.0;
             for (int i = 0; i < LS.length; i++) {
                 double d = LS[i] - instance.value(i);
                 distance += d * d;
             }
             distance = Math.sqrt(distance);
-            if( distance < EPSILON )
-                return 1.0;
+            if (distance < EPSILON) return 1.0;
             return 0.0;
-        }
-        else{
+        } else {
             double dist = calcNormalizedDistance(instance.toDoubleArray());
-            if(dist <= getRadius()){
+            if (dist <= getRadius()) {
                 return 1;
-            }
-            else{
+            } else {
                 return 0;
             }
-//            double res = AuxiliaryFunctions.distanceProbabilty(dist, LS.length);
-//            return res;
+            //            double res = AuxiliaryFunctions.distanceProbabilty(dist, LS.length);
+            //            return res;
         }
     }
 
@@ -234,8 +229,7 @@ public class ClustreamKernel extends CFCluster {
                 if (res[i] > -EPSILON) {
                     res[i] = MIN_VARIANCE;
                 }
-            }
-            else{
+            } else {
 
             }
         }
@@ -244,22 +238,22 @@ public class ClustreamKernel extends CFCluster {
 
     /**
      * Check if this cluster is empty or not.
-     * @return <code>true</code> if the cluster has no data points,
-     * <code>false</code> otherwise.
+     *
+     * @return <code>true</code> if the cluster has no data points, <code>false</code> otherwise.
      */
     public boolean isEmpty() {
         return this.N == 0;
     }
 
     /**
-     * Calculate the normalized euclidean distance (Mahalanobis distance for
-     * distribution w/o covariances) to a point.
+     * Calculate the normalized euclidean distance (Mahalanobis distance for distribution w/o
+     * covariances) to a point.
+     *
      * @param point The point to which the distance is calculated.
      * @return The normalized distance to the cluster center.
-     *
-     * TODO: check whether WEIGHTING is correctly applied to variances
+     *     <p>TODO: check whether WEIGHTING is correctly applied to variances
      */
-    //???????
+    // ???????
     private double calcNormalizedDistance(double[] point) {
         double[] variance = getVarianceVector();
         double[] center = getCenter();
@@ -267,13 +261,14 @@ public class ClustreamKernel extends CFCluster {
 
         for (int i = 0; i < center.length; i++) {
             double diff = center[i] - point[i];
-            res += (diff * diff);// variance[i];
+            res += (diff * diff); // variance[i];
         }
         return Math.sqrt(res);
     }
 
     /**
      * Approximates the inverse error function. Clustream needs this.
+     *
      * @param x
      */
     public static double inverseError(double x) {
@@ -284,26 +279,27 @@ public class ClustreamKernel extends CFCluster {
         double zProd = z * z2; // z^3
         res += (1.0 / 24) * zProd;
 
-        zProd *= z2;  // z^5
+        zProd *= z2; // z^5
         res += (7.0 / 960) * zProd;
 
-        zProd *= z2;  // z^7
+        zProd *= z2; // z^7
         res += (127 * zProd) / 80640;
 
-        zProd *= z2;  // z^9
+        zProd *= z2; // z^9
         res += (4369 * zProd) / 11612160;
 
-        zProd *= z2;  // z^11
+        zProd *= z2; // z^11
         res += (34807 * zProd) / 364953600;
 
-        zProd *= z2;  // z^13
+        zProd *= z2; // z^13
         res += (20036983 * zProd) / 797058662400d;
 
         return res;
     }
 
     @Override
-    protected void getClusterSpecificInfo(ArrayList<String> infoTitle, ArrayList<String> infoValue) {
+    protected void getClusterSpecificInfo(
+            ArrayList<String> infoTitle, ArrayList<String> infoValue) {
         super.getClusterSpecificInfo(infoTitle, infoValue);
         infoTitle.add("Deviation");
 
@@ -314,7 +310,7 @@ public class ClustreamKernel extends CFCluster {
             sumOfDeviation += d;
         }
 
-        sumOfDeviation/= variance.length;
+        sumOfDeviation /= variance.length;
 
         infoValue.add(Double.toString(sumOfDeviation));
     }

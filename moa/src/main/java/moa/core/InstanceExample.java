@@ -4,36 +4,34 @@ import com.yahoo.labs.samoa.instances.Instance;
 
 public class InstanceExample implements Example<Instance> {
 
-	public Instance instance;
+    public Instance instance;
 
-  	public InstanceExample (Instance inst)
-   	{                             
-		this.instance = inst;    
-  	}  
+    public InstanceExample(Instance inst) {
+        this.instance = inst;
+    }
 
-	@Override
-	public Instance getData() {
-		return this.instance;
-	}
-	
-	@Override
-	public double weight() {
-		return this.instance.weight();
-	}
+    @Override
+    public Instance getData() {
+        return this.instance;
+    }
 
-	@Override
-	public void setWeight(double w) {
-		this.instance.setWeight(w);
-	}
+    @Override
+    public double weight() {
+        return this.instance.weight();
+    }
 
-	@Override
-	public Example copy() {
-		return new InstanceExample(instance.copy());
-	}
+    @Override
+    public void setWeight(double w) {
+        this.instance.setWeight(w);
+    }
 
-	@Override
-  	public String toString() {
-  	  return this.instance.toString();
-	}
+    @Override
+    public Example copy() {
+        return new InstanceExample(instance.copy());
+    }
 
-} 
+    @Override
+    public String toString() {
+        return this.instance.toString();
+    }
+}

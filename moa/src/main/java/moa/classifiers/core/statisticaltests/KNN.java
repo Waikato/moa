@@ -15,35 +15,40 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core.statisticaltests;
 
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.PriorityQueue;
 
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.tasks.TaskMonitor;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
+
 /**
  * Implements the multivariate non-parametric KNN statistical test.
  *
  * @author Paulo Goncalves
- *
  */
 public class KNN extends AbstractOptionHandler implements StatisticalTest {
 
     private List<Instance> sample1i;
     private List<Instance> sample2i;
 
-    public IntOption kValueOption = new IntOption("kValue", 'k',
-            "K value of the K nearest neighbours algorithm.", 5, 1,
-            Integer.MAX_VALUE);
+    public IntOption kValueOption =
+            new IntOption(
+                    "kValue",
+                    'k',
+                    "K value of the K nearest neighbours algorithm.",
+                    5,
+                    1,
+                    Integer.MAX_VALUE);
 
     private double[] compute(double[][] set, int d, int n1, int n2) throws InterruptedException {
         double n = n1 + n2;
@@ -55,15 +60,20 @@ public class KNN extends AbstractOptionHandler implements StatisticalTest {
             Tk += counts[i];
         }
         Tk /= (n * this.kValueOption.getValue());
-        double V = (n1 - 1) * (n2 - 1) / ((n - 1) * (n - 1)) + 4
-                * ((n1 - 1) * (n1 - 2) / ((n - 1) * (n - 2)))
-                * ((n2 - 1) * (n2 - 2) / ((n - 1) * (n - 2)));
-        double Z = Math.sqrt(n * this.kValueOption.getValue())
-                * (Tk - (n1 - 1) * (n1 - 2) / ((n - 1) * (n - 2)) - (n2 - 1)
-                * (n2 - 2) / ((n - 1) * (n - 2))) / Math.sqrt(V);
+        double V =
+                (n1 - 1) * (n2 - 1) / ((n - 1) * (n - 1))
+                        + 4
+                                * ((n1 - 1) * (n1 - 2) / ((n - 1) * (n - 2)))
+                                * ((n2 - 1) * (n2 - 2) / ((n - 1) * (n - 2)));
+        double Z =
+                Math.sqrt(n * this.kValueOption.getValue())
+                        * (Tk
+                                - (n1 - 1) * (n1 - 2) / ((n - 1) * (n - 2))
+                                - (n2 - 1) * (n2 - 2) / ((n - 1) * (n - 2)))
+                        / Math.sqrt(V);
         double P = this.pnorm(Z, 0, 1, false, false);
 
-        return new double[]{Tk, Z, P};
+        return new double[] {Tk, Z, P};
     }
 
     private double[] attributeToDoubleArray(List<Instance> list, int attIndex) {
@@ -92,15 +102,14 @@ public class KNN extends AbstractOptionHandler implements StatisticalTest {
         return this.compute(set, d, n1, n2);
     }
 
-    private double pnorm(double x, double mu, double sigma, boolean lower_tail,
-            boolean log_p) {
+    private double pnorm(double x, double mu, double sigma, boolean lower_tail, boolean log_p) {
         double p;
 
         if (Double.isNaN(x) || Double.isNaN(mu) || Double.isNaN(sigma)) {
             return x + mu + sigma;
         }
         if (Double.isInfinite(x) && mu == x) {
-            return Double.NaN;/* x-mu is NaN */
+            return Double.NaN; /* x-mu is NaN */
         }
         if (sigma <= 0) {
             // if(sigma < 0) ML_ERR_return_NAN;
@@ -153,23 +162,21 @@ public class KNN extends AbstractOptionHandler implements StatisticalTest {
         double sum = 0;
         for (int i = 0; i != d; ++i) {
             // Do not use Math.pow! It is 8x slower than computing directly
-            sum += (points[i][v1] - points[i][v2])
-                    * (points[i][v1] - points[i][v2]);
+            sum += (points[i][v1] - points[i][v2]) * (points[i][v1] - points[i][v2]);
         }
         return sum;
     }
 
     /**
-     * Computes, for each instance, the number of the k nearest neighbors that
-     * are from the same sample.
+     * Computes, for each instance, the number of the k nearest neighbors that are from the same
+     * sample.
      *
-     * @param points Instances of both samples put together, with the last
-     * column having 1 for the first sample and 2 for the second sample.
+     * @param points Instances of both samples put together, with the last column having 1 for the
+     *     first sample and 2 for the second sample.
      * @param n Number of instances.
      * @param d Number of attributes + 1 column.
      * @param k K nearest neighbors.
-     * @return the number of the closest neighbors that are from the same
-     * sample.
+     * @return the number of the closest neighbors that are from the same sample.
      * @throws InterruptedException
      */
     private int[] knn(double[][] points, int n, int d, int k) throws InterruptedException {
@@ -181,8 +188,7 @@ public class KNN extends AbstractOptionHandler implements StatisticalTest {
                 // We've been interrupted: no more crunching.
                 throw new InterruptedException();
             }
-            PriorityQueue<DIPair> q = new PriorityQueue(k,
-                    new HigherComparator());
+            PriorityQueue<DIPair> q = new PriorityQueue(k, new HigherComparator());
             // Percorrendo os valores do atributo
             for (int j = 0; j != n; ++j) {
                 if (i != j) {
@@ -222,33 +228,60 @@ public class KNN extends AbstractOptionHandler implements StatisticalTest {
     }
 
     private double R_DT(boolean lower_tail, boolean log_p) {
-        return (lower_tail) ? ((log_p) ? Double.NEGATIVE_INFINITY : 0)
-                : ((log_p) ? 0 : 1);
+        return (lower_tail) ? ((log_p) ? Double.NEGATIVE_INFINITY : 0) : ((log_p) ? 0 : 1);
     }
 
-    private double[] pnorm_both(double x, double cum, int i_tail,
-            boolean log_p) {
+    private double[] pnorm_both(double x, double cum, int i_tail, boolean log_p) {
         double ccum = 0;
-        final double a[] = {2.2352520354606839287, 161.02823106855587881,
-            1067.6894854603709582, 18154.981253343561249,
-            0.065682337918207449113};
-        final double b[] = {47.20258190468824187, 976.09855173777669322,
-            10260.932208618978205, 45507.789335026729956};
-        final double c[] = {0.39894151208813466764, 8.8831497943883759412,
-            93.506656132177855979, 597.27027639480026226,
-            2494.5375852903726711, 6848.1904505362823326,
-            11602.651437647350124, 9842.7148383839780218,
-            1.0765576773720192317e-8};
-        final double d[] = {22.266688044328115691, 235.38790178262499861,
-            1519.377599407554805, 6485.558298266760755,
-            18615.571640885098091, 34900.952721145977266,
-            38912.003286093271411, 19685.429676859990727};
-        final double p[] = {0.21589853405795699, 0.1274011611602473639,
-            0.022235277870649807, 0.001421619193227893466,
-            2.9112874951168792e-5, 0.02307344176494017303};
-        final double q[] = {1.28426009614491121, 0.468238212480865118,
-            0.0659881378689285515, 0.00378239633202758244,
-            7.29751555083966205e-5};
+        final double a[] = {
+            2.2352520354606839287,
+            161.02823106855587881,
+            1067.6894854603709582,
+            18154.981253343561249,
+            0.065682337918207449113
+        };
+        final double b[] = {
+            47.20258190468824187,
+            976.09855173777669322,
+            10260.932208618978205,
+            45507.789335026729956
+        };
+        final double c[] = {
+            0.39894151208813466764,
+            8.8831497943883759412,
+            93.506656132177855979,
+            597.27027639480026226,
+            2494.5375852903726711,
+            6848.1904505362823326,
+            11602.651437647350124,
+            9842.7148383839780218,
+            1.0765576773720192317e-8
+        };
+        final double d[] = {
+            22.266688044328115691,
+            235.38790178262499861,
+            1519.377599407554805,
+            6485.558298266760755,
+            18615.571640885098091,
+            34900.952721145977266,
+            38912.003286093271411,
+            19685.429676859990727
+        };
+        final double p[] = {
+            0.21589853405795699,
+            0.1274011611602473639,
+            0.022235277870649807,
+            0.001421619193227893466,
+            2.9112874951168792e-5,
+            0.02307344176494017303
+        };
+        final double q[] = {
+            1.28426009614491121,
+            0.468238212480865118,
+            0.0659881378689285515,
+            0.00378239633202758244,
+            7.29751555083966205e-5
+        };
         final double M_SQRT_32 = 5.656854249492380195206754896838;
         final double M_1_SQRT_2PI = 0.398942280401432677939946059934;
         double xden, xnum, temp, eps, xsq, y;
@@ -258,7 +291,7 @@ public class KNN extends AbstractOptionHandler implements StatisticalTest {
 
         if (Double.isNaN(x)) {
             cum = ccum = x;
-            return new double[]{cum, ccum};
+            return new double[] {cum, ccum};
         }
 
         eps = 1E-9 * 0.5;
@@ -269,8 +302,8 @@ public class KNN extends AbstractOptionHandler implements StatisticalTest {
         y = Math.abs(x);
         if (y <= 0.67448975) {
             /*
-								 * qnorm(3/4) = .6744.... -- earlier had
-								 * 0.66291
+             * qnorm(3/4) = .6744.... -- earlier had
+             * 0.66291
              */
             if (y > eps) {
                 xsq = x * x;
@@ -308,12 +341,12 @@ public class KNN extends AbstractOptionHandler implements StatisticalTest {
             }
             temp = (xnum + c[7]) / (xden + d[7]);
 
-            double[] retorno = do_del(y, log_p, cum, ccum, lower, x, temp,
-                    upper);
+            double[] retorno = do_del(y, log_p, cum, ccum, lower, x, temp, upper);
             retorno = swap_tail(x, temp, retorno[0], lower, retorno[1]);
             cum = retorno[0];
             ccum = retorno[1];
-        } else if (log_p || (lower && -37.5193 < x && x < 8.2924)
+        } else if (log_p
+                || (lower && -37.5193 < x && x < 8.2924)
                 || (upper && -8.2924 < x && x < 37.5193)) {
 
             /* Evaluate pnorm for x in (-37.5, -5.657) union (5.657, 37.5) */
@@ -327,8 +360,7 @@ public class KNN extends AbstractOptionHandler implements StatisticalTest {
             temp = xsq * (xnum + p[4]) / (xden + q[4]);
             temp = (M_1_SQRT_2PI - temp) / y;
 
-            double[] retorno = do_del(x, log_p, cum, ccum, lower, x, temp,
-                    upper);
+            double[] retorno = do_del(x, log_p, cum, ccum, lower, x, temp, upper);
             retorno = swap_tail(x, temp, retorno[0], lower, retorno[1]);
             cum = retorno[0];
             ccum = retorno[1];
@@ -356,37 +388,43 @@ public class KNN extends AbstractOptionHandler implements StatisticalTest {
                 ccum = 0.;
             }
         }
-        return new double[]{cum, ccum};
+        return new double[] {cum, ccum};
     }
 
-    private double[] do_del(double X, boolean log_p, double cum,
-            double ccum, boolean lower, double x, double temp, boolean upper) {
+    private double[] do_del(
+            double X,
+            boolean log_p,
+            double cum,
+            double ccum,
+            boolean lower,
+            double x,
+            double temp,
+            boolean upper) {
         final int SIXTEN = 16;
         double xsq = Math.ceil(X * SIXTEN) / SIXTEN;
         double del = (X - xsq) * (X + xsq);
         if (log_p) {
             cum = (-xsq * xsq * 0.5) + (-del * 0.5) + Math.log(temp);
             if ((lower && x > 0.) || (upper && x <= 0.)) {
-                ccum = Math.log1p(-Math.exp(-xsq * xsq * 0.5)
-                        * Math.exp(-del * 0.5) * temp);
+                ccum = Math.log1p(-Math.exp(-xsq * xsq * 0.5) * Math.exp(-del * 0.5) * temp);
             }
         } else {
             cum = Math.exp(-xsq * xsq * 0.5) * Math.exp(-del * 0.5) * temp;
             ccum = 1.0 - cum;
         }
-        return new double[]{cum, ccum};
+        return new double[] {cum, ccum};
     }
 
-    private double[] swap_tail(double x, double temp, double cum,
-            boolean lower, double ccum) {
-        if (x > 0.) {/* swap ccum <--> cum */
+    private double[] swap_tail(double x, double temp, double cum, boolean lower, double ccum) {
+        if (x > 0.) {
+            /* swap ccum <--> cum */
             temp = cum;
             if (lower) {
                 cum = ccum;
             }
             ccum = temp;
         }
-        return new double[]{cum, ccum};
+        return new double[] {cum, ccum};
     }
 
     @Override
@@ -400,12 +438,11 @@ public class KNN extends AbstractOptionHandler implements StatisticalTest {
 
     @Override
     public void getDescription(StringBuilder sb, int indent) {
-        // TODO Auto-generated method stub		
+        // TODO Auto-generated method stub
     }
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // TODO Auto-generated method stub
     }
 
@@ -426,8 +463,15 @@ public class KNN extends AbstractOptionHandler implements StatisticalTest {
 
         KNN c = new KNN();
         double[] ct = c.mtsknn(x, y);
-        System.out.println("p Value [Resultado esperado: 0.09866699171730517] [Resultado obtido..: " + ct[2] + "]");
-        System.out.println("Critical value [Resultado esperado: 0.521] [Resultado obtido: " + ct[0] + "]");
-        System.out.println("Statistic [Resultado esperado: 1.2891844104764096] [Resultado obtido: " + ct[1] + "]");
+        System.out.println(
+                "p Value [Resultado esperado: 0.09866699171730517] [Resultado obtido..: "
+                        + ct[2]
+                        + "]");
+        System.out.println(
+                "Critical value [Resultado esperado: 0.521] [Resultado obtido: " + ct[0] + "]");
+        System.out.println(
+                "Statistic [Resultado esperado: 1.2891844104764096] [Resultado obtido: "
+                        + ct[1]
+                        + "]");
     }
 }

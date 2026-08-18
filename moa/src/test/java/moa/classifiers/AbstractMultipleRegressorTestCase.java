@@ -22,18 +22,16 @@ import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.core.Example;
 import moa.evaluation.BasicRegressionPerformanceEvaluator;
-import moa.evaluation.ClassificationPerformanceEvaluator;
 import moa.evaluation.LearningPerformanceEvaluator;
 
 /**
- * Ancestor that defines a setting to test a classifier several times with
- * different parameters using this predefined same setting.
+ * Ancestor that defines a setting to test a classifier several times with different parameters
+ * using this predefined same setting.
  *
  * @author fracpete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public abstract class AbstractMultipleRegressorTestCase
-        extends AbstractClassifierTestCase {
+public abstract class AbstractMultipleRegressorTestCase extends AbstractClassifierTestCase {
 
     protected int numberTests = 1;
 
@@ -52,7 +50,6 @@ public abstract class AbstractMultipleRegressorTestCase
      * @param name the name of the test
      * @param numberTests the numbers of tests to run
      */
-
     public void setNumberTests(int numberTests) {
         this.numberTests = numberTests;
     }
@@ -72,7 +69,7 @@ public abstract class AbstractMultipleRegressorTestCase
     /**
      * Called by JUnit after each test method.
      *
-     * @throws Exception	if tear-down fails
+     * @throws Exception if tear-down fails
      */
     @Override
     protected void tearDown() throws Exception {
@@ -82,10 +79,9 @@ public abstract class AbstractMultipleRegressorTestCase
     }
 
     /**
-     * Returns the filenames (without path) of the input data files to use in
-     * the regression test.
+     * Returns the filenames (without path) of the input data files to use in the regression test.
      *
-     * @return	the filenames
+     * @return the filenames
      */
     @Override
     protected String[] getRegressionInputFiles() {
@@ -100,7 +96,7 @@ public abstract class AbstractMultipleRegressorTestCase
     /**
      * Returns the class index for the datasets.
      *
-     * @return	the class indices (0-based)
+     * @return the class indices (0-based)
      */
     @Override
     protected int[] getRegressionInputClassIndex() {
@@ -113,14 +109,14 @@ public abstract class AbstractMultipleRegressorTestCase
     }
 
     /**
-     * Returns the index of the instances in the stream to inspect the
-     * performance/classification output of the classifiers.
+     * Returns the index of the instances in the stream to inspect the performance/classification
+     * output of the classifiers.
      *
-     * @return	the inspection indices
+     * @return the inspection indices
      */
     @Override
     protected int[][] getRegressionInspectionPoints() {
-        int[] value = new int[]{100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
+        int[] value = new int[] {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000};
         int[][] ret = new int[this.numberTests][value.length];
         for (int i = 0; i < this.numberTests; i++) {
             ret[i] = value.clone();
@@ -131,7 +127,7 @@ public abstract class AbstractMultipleRegressorTestCase
     /**
      * Returns the classifier setups to use in the regression test.
      *
-     * @return	the setups
+     * @return the setups
      */
     @Override
     protected abstract Classifier[] getRegressionClassifierSetups();
@@ -139,16 +135,17 @@ public abstract class AbstractMultipleRegressorTestCase
     /**
      * Returns the evaluator setups to use in the regression test.
      *
-     * @return	the setups
+     * @return the setups
      */
     @Override
-    protected LearningPerformanceEvaluator<Example<Instance>> [] getRegressionEvaluatorSetups() {
-    	LearningPerformanceEvaluator<Example<Instance>>  value = new BasicRegressionPerformanceEvaluator();
-    	LearningPerformanceEvaluator<Example<Instance>> [] ret = new BasicRegressionPerformanceEvaluator[this.numberTests];
+    protected LearningPerformanceEvaluator<Example<Instance>>[] getRegressionEvaluatorSetups() {
+        LearningPerformanceEvaluator<Example<Instance>> value =
+                new BasicRegressionPerformanceEvaluator();
+        LearningPerformanceEvaluator<Example<Instance>>[] ret =
+                new BasicRegressionPerformanceEvaluator[this.numberTests];
         for (int i = 0; i < this.numberTests; i++) {
-            ret[i] = (LearningPerformanceEvaluator<Example<Instance>> ) value.copy();
+            ret[i] = (LearningPerformanceEvaluator<Example<Instance>>) value.copy();
         }
         return ret;
     }
-
 }

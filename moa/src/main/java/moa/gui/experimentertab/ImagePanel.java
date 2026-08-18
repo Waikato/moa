@@ -1,6 +1,6 @@
 /*
  *    ImagePanel.java
- *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand 
+ *    Copyright (C) 2007 University of Waikato, Hamilton, New Zealand
  *    @author Alberto Verdecia Cabrera (averdeciac@gmail.com)
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -15,20 +15,23 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui.experimentertab;
 
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+
+import weka.gui.ExtensionFileFilter;
+
 import java.io.File;
 import java.io.IOException;
+
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import weka.gui.ExtensionFileFilter;
 
 /**
  * This class creates a panel with an image.
@@ -75,23 +78,37 @@ public class ImagePanel extends ChartPanel {
             String fileDesc = fileChooser.getFileFilter().getDescription();
             if (fileDesc.startsWith("PNG")) {
                 if (!fileChooser.getSelectedFile().getName().toUpperCase().endsWith("PNG")) {
-                    ChartUtilities.saveChartAsPNG(new File(fileChooser.getSelectedFile().getAbsolutePath() + ".png"), this.chart, this.getWidth(), this.getHeight());
+                    ChartUtilities.saveChartAsPNG(
+                            new File(fileChooser.getSelectedFile().getAbsolutePath() + ".png"),
+                            this.chart,
+                            this.getWidth(),
+                            this.getHeight());
                 } else {
-                    ChartUtilities.saveChartAsPNG(fileChooser.getSelectedFile(), this.chart, this.getWidth(), this.getHeight());
+                    ChartUtilities.saveChartAsPNG(
+                            fileChooser.getSelectedFile(),
+                            this.chart,
+                            this.getWidth(),
+                            this.getHeight());
                 }
             } else if (fileDesc.startsWith("JPG")) {
                 if (!fileChooser.getSelectedFile().getName().toUpperCase().endsWith("JPG")) {
-                    ChartUtilities.saveChartAsJPEG(new File(fileChooser.getSelectedFile().getAbsolutePath() + ".jpg"), this.chart, this.getWidth(), this.getHeight());
+                    ChartUtilities.saveChartAsJPEG(
+                            new File(fileChooser.getSelectedFile().getAbsolutePath() + ".jpg"),
+                            this.chart,
+                            this.getWidth(),
+                            this.getHeight());
                 } else {
-                    ChartUtilities.saveChartAsJPEG(fileChooser.getSelectedFile(), this.chart, this.getWidth(), this.getHeight());
+                    ChartUtilities.saveChartAsJPEG(
+                            fileChooser.getSelectedFile(),
+                            this.chart,
+                            this.getWidth(),
+                            this.getHeight());
                 }
             }
-
-        }//else
+        } // else
     }
 
     /**
-     *
      * @param properties
      * @param copy
      * @param save
@@ -100,14 +117,14 @@ public class ImagePanel extends ChartPanel {
      * @return JPopupMenu
      */
     @Override
-    protected JPopupMenu createPopupMenu(boolean properties,
-            boolean copy, boolean save, boolean print, boolean zoom) {
+    protected JPopupMenu createPopupMenu(
+            boolean properties, boolean copy, boolean save, boolean print, boolean zoom) {
         JPopupMenu result = new JPopupMenu(localizationResources.getString("Chart") + ":");
         boolean separator = false;
 
         if (properties) {
-            JMenuItem propertiesItem = new JMenuItem(
-                    localizationResources.getString("Properties..."));
+            JMenuItem propertiesItem =
+                    new JMenuItem(localizationResources.getString("Properties..."));
             propertiesItem.setActionCommand(PROPERTIES_COMMAND);
             propertiesItem.addActionListener(this);
             result.add(propertiesItem);
@@ -118,8 +135,7 @@ public class ImagePanel extends ChartPanel {
             if (separator) {
                 result.addSeparator();
             }
-            JMenuItem copyItem = new JMenuItem(
-                    localizationResources.getString("Copy"));
+            JMenuItem copyItem = new JMenuItem(localizationResources.getString("Copy"));
             copyItem.setActionCommand(COPY_COMMAND);
             copyItem.addActionListener(this);
             result.add(copyItem);
@@ -130,10 +146,8 @@ public class ImagePanel extends ChartPanel {
             if (separator) {
                 result.addSeparator();
             }
-            JMenu saveSubMenu = new JMenu(localizationResources.getString(
-                    "Save_as"));
-            JMenuItem pngItem = new JMenuItem(localizationResources.getString(
-                    "PNG..."));
+            JMenu saveSubMenu = new JMenu(localizationResources.getString("Save_as"));
+            JMenuItem pngItem = new JMenuItem(localizationResources.getString("PNG..."));
 
             separator = true;
         }
@@ -142,8 +156,7 @@ public class ImagePanel extends ChartPanel {
             if (separator) {
                 result.addSeparator();
             }
-            JMenuItem printItem = new JMenuItem(
-                    localizationResources.getString("Print..."));
+            JMenuItem printItem = new JMenuItem(localizationResources.getString("Print..."));
             printItem.setActionCommand(PRINT_COMMAND);
             printItem.addActionListener(this);
             result.add(printItem);
@@ -152,5 +165,4 @@ public class ImagePanel extends ChartPanel {
 
         return result;
     }
-
 }

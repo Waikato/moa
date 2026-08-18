@@ -15,16 +15,17 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.functions;
+
+import com.yahoo.labs.samoa.instances.Instance;
 
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * NoChange class classifier. It always predicts the last class seen.
@@ -65,19 +66,16 @@ public class NoChange extends AbstractClassifier implements MultiClassClassifier
     }
 
     @Override
-    public void getModelDescription(StringBuilder out, int indent) {
-       
-    }
+    public void getModelDescription(StringBuilder out, int indent) {}
 
     public boolean isRandomizable() {
         return false;
     }
-    
+
     @Override
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == NoChange.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

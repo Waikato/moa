@@ -2,7 +2,7 @@
  *    IademVFMLNumericAttributeClassObserver.java
  *
  *    @author Isvani Frias-Blanco
- * 
+ *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
  *    You may obtain a copy of the License at
@@ -14,15 +14,11 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.classifiers.trees.iadem;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
 import moa.classifiers.core.AttributeSplitSuggestion;
 import moa.classifiers.core.attributeclassobservers.AttributeClassObserver;
 import moa.classifiers.core.attributeclassobservers.VFMLNumericAttributeClassObserver;
@@ -30,7 +26,13 @@ import moa.classifiers.core.splitcriteria.SplitCriterion;
 import moa.core.DoubleVector;
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
+
 import weka.core.Utils;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttributeClassObserver
         implements IademNumericAttributeObserver, AttributeClassObserver {
@@ -53,8 +55,7 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
     }
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
-    }
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {}
 
     @Override
     public void computeClassDist(double[][][] cutClassDist) {
@@ -101,6 +102,7 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
         public int boundaryClass;
         public double boundaryWeight;
     }
+
     protected List<Bin> binList = new ArrayList<Bin>();
     protected DoubleVector classDist = new DoubleVector();
 
@@ -129,7 +131,8 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
                     Bin bin = this.binList.get(i);
                     if (((attVal >= bin.lowerBound) && (attVal < bin.upperBound))
                             || ((i == this.binList.size() - 1)
-                            && (attVal >= bin.lowerBound) && (attVal <= bin.upperBound))) {
+                                    && (attVal >= bin.lowerBound)
+                                    && (attVal <= bin.upperBound))) {
                         found = true;
                         index = i;
                     } else if (attVal < bin.lowerBound) {
@@ -156,7 +159,8 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
                 }
                 Bin bin = this.binList.get(index); // VLIndex(ct->bins, index);
                 if ((bin.lowerBound == attVal)
-                        || (this.binList.size() >= this.numBinsOption.getValue())) {// Option.getValue())
+                        || (this.binList.size()
+                                >= this.numBinsOption.getValue())) { // Option.getValue())
                     // {//1000)
                     // {
                     // if this is the exact same boundary and class as the bin
@@ -164,8 +168,7 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
                     // increment
                     // boundary counts
                     bin.classWeights.addToValue(classVal, weight);
-                    if ((bin.boundaryClass == classVal)
-                            && (bin.lowerBound == attVal)) {
+                    if ((bin.boundaryClass == classVal) && (bin.lowerBound == attVal)) {
                         // if it is also the same class then special case it
                         bin.boundaryWeight += weight;
                     }
@@ -181,14 +184,15 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
                     double percent = 0.0;
                     // estimate initial counts with a linear interpolation
                     if (!((bin.upperBound - bin.lowerBound == 0) || last || first)) {
-                        percent = 1.0 - ((attVal - bin.lowerBound) / (bin.upperBound - bin.lowerBound));
+                        percent =
+                                1.0
+                                        - ((attVal - bin.lowerBound)
+                                                / (bin.upperBound - bin.lowerBound));
                     }
 
                     // take out the boundry points, they stay with the old bin
-                    bin.classWeights.addToValue(bin.boundaryClass,
-                            -bin.boundaryWeight);
-                    DoubleVector weightToShift = new DoubleVector(
-                            bin.classWeights);
+                    bin.classWeights.addToValue(bin.boundaryClass, -bin.boundaryWeight);
+                    DoubleVector weightToShift = new DoubleVector(bin.classWeights);
 
                     // make this a vector of integers
                     weightToShift.scaleValues(percent);
@@ -200,8 +204,7 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
                     newBin.classWeights.addValues(weightToShift);
                     bin.classWeights.subtractValues(weightToShift);
                     // put the boundry examples back in
-                    bin.classWeights.addToValue(bin.boundaryClass,
-                            bin.boundaryWeight);
+                    bin.classWeights.addToValue(bin.boundaryClass, bin.boundaryWeight);
 
                     // insert the new bin in the right place
                     if (last) {
@@ -223,8 +226,7 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
 
     @Override
     public AttributeSplitSuggestion getBestEvaluatedSplitSuggestion(
-            SplitCriterion criterion, double[] preSplitDist, int attIndex,
-            boolean binaryOnly) {
+            SplitCriterion criterion, double[] preSplitDist, int attIndex, boolean binaryOnly) {
         AttributeSplitSuggestion bestSuggestion = null;
         DoubleVector rightDist = new DoubleVector();
         for (Bin bin : this.binList) {
@@ -234,14 +236,16 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
         for (Bin bin : this.binList) {
             leftDist.addValues(bin.classWeights);
             rightDist.subtractValues(bin.classWeights);
-            double[][] postSplitDists = new double[][]{
-                leftDist.getArrayCopy(), rightDist.getArrayCopy()};
-            double merit = criterion.getMeritOfSplit(preSplitDist,
-                    postSplitDists);
+            double[][] postSplitDists =
+                    new double[][] {leftDist.getArrayCopy(), rightDist.getArrayCopy()};
+            double merit = criterion.getMeritOfSplit(preSplitDist, postSplitDists);
             if ((bestSuggestion == null) || (merit > bestSuggestion.merit)) {
-                bestSuggestion = new AttributeSplitSuggestion(
-                        new IademNumericAttributeBinaryTest(attIndex,
-                                bin.upperBound, false), postSplitDists, merit);
+                bestSuggestion =
+                        new AttributeSplitSuggestion(
+                                new IademNumericAttributeBinaryTest(
+                                        attIndex, bin.upperBound, false),
+                                postSplitDists,
+                                merit);
             }
         }
         return bestSuggestion;
@@ -253,8 +257,7 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
     }
 
     @Override
-    public double probabilityOfAttributeValueGivenClass(double attVal,
-            int classVal) {
+    public double probabilityOfAttributeValueGivenClass(double attVal, int classVal) {
         // compute the conditional probability
         double attValClassValCount = 0.0;
         double totalClassValCount = 0.0;
@@ -263,9 +266,11 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
                     && classVal == this.binList.get(i).boundaryClass) {
                 // attribute and class values are in a boundary
                 attValClassValCount = this.binList.get(i).boundaryWeight;
-            } else if (((attVal >= this.binList.get(i).lowerBound) && (attVal < this.binList.get(i).upperBound))
+            } else if (((attVal >= this.binList.get(i).lowerBound)
+                            && (attVal < this.binList.get(i).upperBound))
                     || ((i == this.binList.size() - 1)
-                    && (attVal >= this.binList.get(i).lowerBound) && (attVal <= this.binList.get(i).upperBound))) {
+                            && (attVal >= this.binList.get(i).lowerBound)
+                            && (attVal <= this.binList.get(i).upperBound))) {
                 // attribute value is inside a bin
                 attValClassValCount = this.binList.get(i).classWeights.getValue(classVal);
             }
@@ -294,8 +299,9 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
                 i = (min + max) / 2;
                 bin = binList.get(i);
                 if ((attVal >= bin.lowerBound && attVal < bin.upperBound)
-                        || ((i == numBins - 1) && (attVal >= bin.lowerBound)
-                        && (attVal <= bin.upperBound))) {
+                        || ((i == numBins - 1)
+                                && (attVal >= bin.lowerBound)
+                                && (attVal <= bin.upperBound))) {
                     found = true;
                     index = i;
                 } else if (attVal < bin.lowerBound) {
@@ -307,8 +313,8 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
 
             // Reduce counts
             if (!found) {
-                //printf("Value %f not found\n", value );
-                //printBins( ct->bins );
+                // printf("Value %f not found\n", value );
+                // printBins( ct->bins );
                 // HERE UNREPORTED ERROR
 
                 return;
@@ -346,17 +352,18 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
                     Bin newFirstBin = binList.get(1);
                     Bin oldFirstBin = binList.get(0);
                     /*
-                     printf( "removing first bin: %f - %f (%f) bc - %ld\n", oldFirstBin->lowerBound,
-                     oldFirstBin->upperBound, oldFirstBin->exampleCount, oldFirstBin->boundryCount);
-                     */
+                    printf( "removing first bin: %f - %f (%f) bc - %ld\n", oldFirstBin->lowerBound,
+                    oldFirstBin->upperBound, oldFirstBin->exampleCount, oldFirstBin->boundryCount);
+                    */
                     newFirstBin.lowerBound = oldFirstBin.lowerBound;
                     for (j = 0; j < numClasses; j++) {
-                        newFirstBin.classWeights.addToValue(j, oldFirstBin.classWeights.getValue(j));
+                        newFirstBin.classWeights.addToValue(
+                                j, oldFirstBin.classWeights.getValue(j));
                     }
                     /*
-                     printf( "new first bin: %f - %f (%f) bc - %ld\n", newFirstBin->lowerBound,
-                     newFirstBin->upperBound, newFirstBin->exampleCount, newFirstBin->boundryCount);
-                     */
+                    printf( "new first bin: %f - %f (%f) bc - %ld\n", newFirstBin->lowerBound,
+                    newFirstBin->upperBound, newFirstBin->exampleCount, newFirstBin->boundryCount);
+                    */
                     binList.remove(0);
                 }
             }
@@ -406,7 +413,8 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
     }
 
     @Override
-    public void computeClassDistProbabilities(double[][][] cut_value_classDist_lower,
+    public void computeClassDistProbabilities(
+            double[][][] cut_value_classDist_lower,
             double[][][] cut_value_classDist_upper,
             double[][] counts_cut_value,
             boolean withIntervalEstimates) {
@@ -476,7 +484,8 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
                 }
                 double rError = 0.0;
                 if (withIntervalEstimates) {
-                    rError = IademCommonProcedures.getIADEM_HoeffdingBound(rEstimates, numRightInst);
+                    rError =
+                            IademCommonProcedures.getIADEM_HoeffdingBound(rEstimates, numRightInst);
                 }
                 cut_value_classDist_lower[i][1][j] = Math.max(0.0, rEstimates - rError);
                 cut_value_classDist_upper[i][1][j] = Math.min(1.0, rEstimates + rError);
@@ -507,27 +516,25 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
             element = this.binList.get(j);
             double aux = element.upperBound;
             if ((currentBin == cortes.size()) // last bin
-                    || (aux <= cortes.get(currentBin))) {// keeps in the same bin
+                    || (aux <= cortes.get(currentBin))) { // keeps in the same bin
                 for (int i = 0; i < numClasses; i++) {
                     numClassesPerBin[i] += element.classWeights.getValue(i);
                 }
-            } else {// change of bin
+            } else { // change of bin
                 // store the previous data
                 Double[] probCond_intervalo = new Double[numClasses];
                 for (int i = 0; i < numClasses; i++) {
                     if (this.classDist.getValue(i) == 0) {
                         probCond_intervalo[i] = 0.0;
                     } else {
-                        probCond_intervalo[i] = numClassesPerBin[i]
-                                / this.classDist.getValue(i);
+                        probCond_intervalo[i] = numClassesPerBin[i] / this.classDist.getValue(i);
                     }
                 }
                 condProb.add(probCond_intervalo);
 
                 currentBin++;
 
-                while ((currentBin < cortes.size())
-                        && (aux > cortes.get(currentBin))) {
+                while ((currentBin < cortes.size()) && (aux > cortes.get(currentBin))) {
                     currentBin++;
                     condProb.add(null);
                 }
@@ -545,8 +552,7 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
             if (this.classDist.getValue(i) == 0) {
                 probCond_intervalo[i] = 0.0;
             } else {
-                probCond_intervalo[i] = numClassesPerBin[i]
-                        / this.classDist.getValue(i);
+                probCond_intervalo[i] = numClassesPerBin[i] / this.classDist.getValue(i);
             }
         }
         condProb.add(probCond_intervalo);
@@ -593,8 +599,7 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
                     && this.binList.get(keyPos).upperBound <= firstBin) {
                 keyPos++;
             }
-            while (keyPos < this.binList.size()
-                    && this.binList.get(keyPos).upperBound <= lastBin) {
+            while (keyPos < this.binList.size() && this.binList.get(keyPos).upperBound <= lastBin) {
                 for (int i = 0; i < numClasses; i++) {
                     instPerClass[i] += this.binList.get(keyPos).classWeights.getValue(i);
                 }
@@ -621,8 +626,7 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
                 if (classDist.getValue(i) == 0) {
                     classVotes[i] = 0.0;
                 } else {
-                    classVotes[i] = instPerClass[i]
-                            / classDist.getValue(i);
+                    classVotes[i] = instPerClass[i] / classDist.getValue(i);
                 }
             }
         }
@@ -645,6 +649,8 @@ public class IademVFMLNumericAttributeClassObserver extends VFMLNumericAttribute
 
     @Override
     public IademNumericAttributeObserver getCopy() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(
+                "Not supported yet."); // To change body of generated methods, choose Tools |
+        // Templates.
     }
 }

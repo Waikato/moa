@@ -19,26 +19,24 @@
  */
 package moa.streams;
 
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.MOAObject;
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.core.Example;
-import com.yahoo.labs.samoa.instances.InstancesHeader;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
- * Interface representing a data stream of examples. 
+ * Interface representing a data stream of examples.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $ 
+ * @version $Revision: 7 $
  */
-public interface ExampleStream<E extends Example> extends MOAObject,
-                                                          CapabilitiesHandler {
+public interface ExampleStream<E extends Example> extends MOAObject, CapabilitiesHandler {
 
     /**
-     * Gets the header of this stream.
-     * This is useful to know attributes and classes.
+     * Gets the header of this stream. This is useful to know attributes and classes.
      * InstancesHeader is an extension of weka.Instances.
      *
      * @return the header of this stream
@@ -53,8 +51,8 @@ public interface ExampleStream<E extends Example> extends MOAObject,
     public long estimatedRemainingInstances();
 
     /**
-     * Gets whether this stream has more instances to output.
-     * This is useful when reading streams from files.
+     * Gets whether this stream has more instances to output. This is useful when reading streams
+     * from files.
      *
      * @return true if this stream has more instances to output
      */
@@ -74,11 +72,7 @@ public interface ExampleStream<E extends Example> extends MOAObject,
      */
     public boolean isRestartable();
 
-    /**
-     * Restarts this stream. It must be similar to
-     * starting a new stream from scratch.
-     *
-     */
+    /** Restarts this stream. It must be similar to starting a new stream from scratch. */
     public void restart();
 
     default ImmutableCapabilities defineImmutableCapabilities() {

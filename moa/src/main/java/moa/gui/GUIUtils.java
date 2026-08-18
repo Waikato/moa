@@ -15,9 +15,11 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.gui;
+
+import moa.core.MiscUtils;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -25,8 +27,6 @@ import java.awt.Dimension;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-
-import moa.core.MiscUtils;
 
 /**
  * This class offers util methods for displaying dialogs showing errors or exceptions.
@@ -36,18 +36,15 @@ import moa.core.MiscUtils;
  */
 public class GUIUtils {
 
-    public static void showErrorDialog(Component parent, String title,
-            String message) {
+    public static void showErrorDialog(Component parent, String title, String message) {
         JTextArea messagePanel = new JTextArea(message);
         JScrollPane messageScroll = new JScrollPane(messagePanel);
         messageScroll.setPreferredSize(new Dimension(400, 100));
-        JOptionPane.showMessageDialog(parent, messageScroll, title,
-                JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(parent, messageScroll, title, JOptionPane.ERROR_MESSAGE);
     }
 
-    public static void showExceptionDialog(Component parent, String title,
-            Exception ex) {
-        showErrorDialog(parent, title, ex.getMessage() + "\n\n"
-                + MiscUtils.getStackTraceString(ex));
+    public static void showExceptionDialog(Component parent, String title, Exception ex) {
+        showErrorDialog(
+                parent, title, ex.getMessage() + "\n\n" + MiscUtils.getStackTraceString(ex));
     }
 }

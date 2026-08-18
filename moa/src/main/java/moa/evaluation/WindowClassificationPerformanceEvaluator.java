@@ -15,31 +15,28 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
+
+import com.github.javacliparser.IntOption;
 
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 
-import com.github.javacliparser.IntOption;
-
 /**
- * Classification evaluator that updates evaluation results using a sliding
- * window.
+ * Classification evaluator that updates evaluation results using a sliding window.
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @author Jean Paul Barddal (jpbarddal@gmail.com)
  * @version $Revision: 8 $
- *
- *
  */
-public class WindowClassificationPerformanceEvaluator extends BasicClassificationPerformanceEvaluator {
+public class WindowClassificationPerformanceEvaluator
+        extends BasicClassificationPerformanceEvaluator {
 
     private static final long serialVersionUID = 1L;
 
-    public IntOption widthOption = new IntOption("width",
-            'w', "Size of Window", 1000);
+    public IntOption widthOption = new IntOption("width", 'w', "Size of Window", 1000);
 
     @Override
     protected Estimator newEstimator() {
@@ -50,8 +47,7 @@ public class WindowClassificationPerformanceEvaluator extends BasicClassificatio
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == WindowClassificationPerformanceEvaluator.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 
     public class WindowEstimator implements Estimator {
@@ -77,12 +73,12 @@ public class WindowClassificationPerformanceEvaluator extends BasicClassificatio
 
         public void add(double value) {
             double forget = window[posWindow];
-            if(!Double.isNaN(forget)){
+            if (!Double.isNaN(forget)) {
                 sum -= forget;
-            }else qtyNaNs--;
-            if(!Double.isNaN(value)) {
+            } else qtyNaNs--;
+            if (!Double.isNaN(value)) {
                 sum += value;
-            }else qtyNaNs++;
+            } else qtyNaNs++;
             window[posWindow] = value;
             posWindow++;
             if (posWindow == SizeWindow) {
@@ -93,10 +89,8 @@ public class WindowClassificationPerformanceEvaluator extends BasicClassificatio
             }
         }
 
-        public double estimation(){
+        public double estimation() {
             return sum / (lenWindow - qtyNaNs);
         }
-
     }
-
 }

@@ -15,13 +15,20 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.meta;
 
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
+import moa.classifiers.Classifier;
+import moa.classifiers.core.statisticaltests.StatisticalTest;
+import moa.classifiers.drift.SingleClassifierDrift;
+import moa.core.MiscUtils;
+import moa.options.ClassOption;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,29 +39,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import moa.classifiers.Classifier;
-import moa.classifiers.core.statisticaltests.StatisticalTest;
-import moa.classifiers.drift.SingleClassifierDrift;
-import moa.core.MiscUtils;
-import moa.options.ClassOption;
-
 /**
- * Creates a set of classifiers, each one representing a different context.
- * Reuses classifier associating to each one a sample of data and compares new
- * data to old ones using a multivariate non-parametric statistical test. Tests
- * are performed in parallel and classifiers are stored based on their accuracy
- * and stored time.
+ * Creates a set of classifiers, each one representing a different context. Reuses classifier
+ * associating to each one a sample of data and compares new data to old ones using a multivariate
+ * non-parametric statistical test. Tests are performed in parallel and classifiers are stored based
+ * on their accuracy and stored time.
  *
- * 1) Parameterized number of classifiers to store. 2) Classifiers are stored
- * removing the older ones if the set is full. 3) Classifier with higher
- * significance value is selected.
+ * <p>1) Parameterized number of classifiers to store. 2) Classifiers are stored removing the older
+ * ones if the set is full. 3) Classifier with higher significance value is selected.
  *
- * Based on: Gonçalves Jr, Paulo Mauricio, and Roberto Souto Maior De Barros.
- * "RCD: A recurring concept drift framework." Pattern Recognition Letters 34.9
- * (2013): 1018-1025.
+ * <p>Based on: Gonçalves Jr, Paulo Mauricio, and Roberto Souto Maior De Barros. "RCD: A recurring
+ * concept drift framework." Pattern Recognition Letters 34.9 (2013): 1018-1025.
  *
  * @author Paulo Goncalves (paulogoncalves at recife dot ifpe dot edu dot br)
- *
  */
 public class RCD extends SingleClassifierDrift {
 
@@ -79,35 +76,68 @@ public class RCD extends SingleClassifierDrift {
         }
     }
 
-    public ClassOption statisticalTestOption = new ClassOption("statisticalTest",
-            'a', "Non-parametric multivariate statistical test to use.", StatisticalTest.class,
-            "KNN");
+    public ClassOption statisticalTestOption =
+            new ClassOption(
+                    "statisticalTest",
+                    'a',
+                    "Non-parametric multivariate statistical test to use.",
+                    StatisticalTest.class,
+                    "KNN");
 
-    public FloatOption similarityBetweenDistributionsOption = new FloatOption(
-            "similarityBetweenDistributions",
-            's',
-            "The minimum percentual similarity between distributions (p-value).",
-            0.01, 0, 1);
+    public FloatOption similarityBetweenDistributionsOption =
+            new FloatOption(
+                    "similarityBetweenDistributions",
+                    's',
+                    "The minimum percentual similarity between distributions (p-value).",
+                    0.01,
+                    0,
+                    1);
 
-    public IntOption bufferSizeOption = new IntOption("bufferSize", 'b',
-            "The size of the buffer that represents the distributions.", 400,
-            1, Integer.MAX_VALUE);
+    public IntOption bufferSizeOption =
+            new IntOption(
+                    "bufferSize",
+                    'b',
+                    "The size of the buffer that represents the distributions.",
+                    400,
+                    1,
+                    Integer.MAX_VALUE);
 
-    public IntOption testFrequencyOption = new IntOption("testFrequency",
-            't', "In the testing phase, test for best stored classifier after how many instances.",
-            400, 1, Integer.MAX_VALUE);
+    public IntOption testFrequencyOption =
+            new IntOption(
+                    "testFrequency",
+                    't',
+                    "In the testing phase, test for best stored classifier after how many"
+                            + " instances.",
+                    400,
+                    1,
+                    Integer.MAX_VALUE);
 
-    public IntOption classifiersSizeOption = new IntOption("classifiersSize",
-            'c', "The maximum amount of classifiers to store. 0 means unlimited.", 15, 0,
-            Integer.MAX_VALUE);
+    public IntOption classifiersSizeOption =
+            new IntOption(
+                    "classifiersSize",
+                    'c',
+                    "The maximum amount of classifiers to store. 0 means unlimited.",
+                    15,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public IntOption threadSizeOption = new IntOption("threadSize",
-            'm', "The thread pool size, indicating how many simultaneous tests are allowed.", 4, 1,
-            Integer.MAX_VALUE);
+    public IntOption threadSizeOption =
+            new IntOption(
+                    "threadSize",
+                    'm',
+                    "The thread pool size, indicating how many simultaneous tests are allowed.",
+                    4,
+                    1,
+                    Integer.MAX_VALUE);
 
-    public IntOption quantityClassifiersTestOption = new IntOption("quantityClassifiersTest",
-            'q', "Quantity of identified classifiers to check.", 1, 1,
-            Integer.MAX_VALUE);
+    public IntOption quantityClassifiersTestOption =
+            new IntOption(
+                    "quantityClassifiersTest",
+                    'q',
+                    "Quantity of identified classifiers to check.",
+                    1,
+                    1,
+                    Integer.MAX_VALUE);
 
     private List<ClassifierKS> classifiers;
 
@@ -138,8 +168,8 @@ public class RCD extends SingleClassifierDrift {
     @Override
     public void trainOnInstanceImpl(Instance inst) {
         int trueClass = (int) inst.classValue();
-        boolean prediction = MiscUtils.maxIndex(this.classifier
-                .getVotesForInstance(inst)) == trueClass;
+        boolean prediction =
+                MiscUtils.maxIndex(this.classifier.getVotesForInstance(inst)) == trueClass;
         this.driftDetectionMethod.input(prediction ? 0.0 : 1.0);
         this.ddmLevel = DDM_INCONTROL_LEVEL;
         if (this.driftDetectionMethod.getChange()) {
@@ -165,15 +195,15 @@ public class RCD extends SingleClassifierDrift {
                 this.changeDetected++;
                 switch (this.previousState) {
                     case DDM_WARNING_LEVEL:
-                        ClassifierKS cs = this.getPreviousClassifier(
-                                this.classifier, this.currentChunk2);
+                        ClassifierKS cs =
+                                this.getPreviousClassifier(this.classifier, this.currentChunk2);
                         if (cs == null) {
                             this.classifier = this.newclassifier;
-                            this.newclassifier = ((Classifier) getPreparedClassOption(this.baseLearnerOption))
-                                    .copy();
-                            this.classifiers
-                                    .add(new ClassifierKS(
-                                            this.classifier, this.currentChunk2));
+                            this.newclassifier =
+                                    ((Classifier) getPreparedClassOption(this.baseLearnerOption))
+                                            .copy();
+                            this.classifiers.add(
+                                    new ClassifierKS(this.classifier, this.currentChunk2));
                             this.currentChunk = this.currentChunk2;
                             int maxSize = this.classifiersSizeOption.getValue();
                             if (this.classifiers.size() > maxSize && maxSize > 0) {
@@ -198,8 +228,7 @@ public class RCD extends SingleClassifierDrift {
                         break;
                     default:
                         this.currentChunk = new ArrayList();
-                        this.classifiers.add(new ClassifierKS(
-                                this.classifier, this.currentChunk));
+                        this.classifiers.add(new ClassifierKS(this.classifier, this.currentChunk));
                         break;
                 }
                 this.addInstance(this.currentChunk, inst);
@@ -224,8 +253,7 @@ public class RCD extends SingleClassifierDrift {
         this.addInstance(this.testChunk, inst);
         if (this.index++ == testFrequencyOption.getValue()) {
             this.index = 0;
-            ClassifierKS cs = this.getPreviousClassifier(
-                    this.classifier, this.testChunk);
+            ClassifierKS cs = this.getPreviousClassifier(this.classifier, this.testChunk);
             if (cs != null) {
                 this.classifier = cs.getClassifier();
             }
@@ -234,15 +262,14 @@ public class RCD extends SingleClassifierDrift {
     }
 
     /**
-     * Searches for the classifier best suited for actual data. All statistical
-     * tests are performed in parallel.
+     * Searches for the classifier best suited for actual data. All statistical tests are performed
+     * in parallel.
      *
      * @param classifier Classifier to be added
      * @param instances Instances used to build the classifier
      * @return
      */
-    private ClassifierKS getPreviousClassifier(Classifier classifier,
-            List<Instance> instances) {
+    private ClassifierKS getPreviousClassifier(Classifier classifier, List<Instance> instances) {
         ExecutorService threadPool = Executors.newFixedThreadPool(this.threadSizeOption.getValue());
         int SIZE = this.classifiers.size();
         Map<Integer, Future<Double>> futures = new HashMap<>();
@@ -250,7 +277,8 @@ public class RCD extends SingleClassifierDrift {
             ClassifierKS cs = this.classifiers.get(i);
             if (cs != null) {
                 if (cs.getClassifier() != classifier) {
-                    StatisticalTest st = (StatisticalTest) getPreparedClassOption(this.statisticalTestOption);
+                    StatisticalTest st =
+                            (StatisticalTest) getPreparedClassOption(this.statisticalTestOption);
                     StatisticalTest temp = (StatisticalTest) st.copy();
                     temp.set(instances, cs.getInstances());
                     futures.put(i, threadPool.submit(temp));

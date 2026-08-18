@@ -15,22 +15,25 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.github.javacliparser.gui;
 
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.Option;
+
 import moa.gui.FileExtensionFilter;
+
 import nz.ac.waikato.cms.gui.core.BaseFileChooser;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  * An OptionEditComponent that lets the user edit a file option.
@@ -38,8 +41,7 @@ import java.io.File;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class FileOptionEditComponent extends JPanel implements
-        OptionEditComponent {
+public class FileOptionEditComponent extends JPanel implements OptionEditComponent {
 
     private static final long serialVersionUID = 1L;
 
@@ -55,19 +57,21 @@ public class FileOptionEditComponent extends JPanel implements
         setLayout(new BorderLayout());
         add(this.textField, BorderLayout.CENTER);
         add(this.browseButton, BorderLayout.EAST);
-        this.browseButton.addActionListener(new ActionListener() {
+        this.browseButton.addActionListener(
+                new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                browseForFile();
-            }
-        });
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        browseForFile();
+                    }
+                });
         setEditState(this.editedOption.getValueAsCLIString());
     }
 
     @Override
     public void applyState() {
-        this.editedOption.setValueViaCLIString(this.textField.getText().length() > 0 ? this.textField.getText() : null);
+        this.editedOption.setValueViaCLIString(
+                this.textField.getText().length() > 0 ? this.textField.getText() : null);
     }
 
     @Override
@@ -85,8 +89,7 @@ public class FileOptionEditComponent extends JPanel implements
         fileChooser.setAcceptAllFileFilterUsed(true);
         String extension = this.editedOption.getDefaultFileExtension();
         if (extension != null) {
-            fileChooser.addChoosableFileFilter(new FileExtensionFilter(
-                    extension));
+            fileChooser.addChoosableFileFilter(new FileExtensionFilter(extension));
         }
         fileChooser.setSelectedFile(new File(this.textField.getText()));
         if (this.editedOption.isOutputFile()) {

@@ -2,9 +2,7 @@ package moa.tasks.ipynb;
 
 import java.util.Map;
 
-/**
- * Implement a code cell
- */
+/** Implement a code cell */
 public class CodeCellBuilder extends NotebookCellBuilder {
     int executionCount;
 

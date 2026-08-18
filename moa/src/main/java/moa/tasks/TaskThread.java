@@ -15,14 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
-import java.util.concurrent.CopyOnWriteArraySet;
-
 import moa.core.ObjectRepository;
 import moa.core.TimingUtils;
+
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Task Thread.
@@ -33,8 +33,13 @@ import moa.core.TimingUtils;
 public class TaskThread extends Thread {
 
     public static enum Status {
-
-        NOT_STARTED, RUNNING, PAUSED, CANCELLING, CANCELLED, COMPLETED, FAILED
+        NOT_STARTED,
+        RUNNING,
+        PAUSED,
+        CANCELLING,
+        CANCELLED,
+        COMPLETED,
+        FAILED
     }
 
     protected Task runningTask;
@@ -53,7 +58,8 @@ public class TaskThread extends Thread {
 
     protected double latestPreviewGrabTime = 0.0;
 
-    CopyOnWriteArraySet<TaskCompletionListener> completionListeners = new CopyOnWriteArraySet<TaskCompletionListener>();
+    CopyOnWriteArraySet<TaskCompletionListener> completionListeners =
+            new CopyOnWriteArraySet<TaskCompletionListener>();
 
     public TaskThread(Task toRun) {
         this(toRun, null);
@@ -73,10 +79,9 @@ public class TaskThread extends Thread {
         this.taskStartTime = TimingUtils.getNanoCPUTimeOfThread(getId());
         try {
             this.currentStatus = Status.RUNNING;
-            this.finalResult = this.runningTask.doTask(this.taskMonitor,
-                    this.repository);
-            this.currentStatus = this.taskMonitor.isCancelled() ? Status.CANCELLED
-                    : Status.COMPLETED;
+            this.finalResult = this.runningTask.doTask(this.taskMonitor, this.repository);
+            this.currentStatus =
+                    this.taskMonitor.isCancelled() ? Status.CANCELLED : Status.COMPLETED;
         } catch (Throwable ex) {
             this.currentStatus = Status.FAILED;
             this.finalResult = new FailedTaskReport(ex);
@@ -101,8 +106,7 @@ public class TaskThread extends Thread {
     }
 
     public synchronized void cancelTask() {
-        if ((this.currentStatus == Status.RUNNING)
-                || (this.currentStatus == Status.PAUSED)) {
+        if ((this.currentStatus == Status.RUNNING) || (this.currentStatus == Status.PAUSED)) {
             this.taskMonitor.requestCancel();
             this.currentStatus = Status.CANCELLING;
         }
@@ -113,11 +117,11 @@ public class TaskThread extends Thread {
         if (this.currentStatus == Status.NOT_STARTED) {
             secondsElapsed = 0.0;
         } else if (isComplete()) {
-            secondsElapsed = TimingUtils.nanoTimeToSeconds(this.taskEndTime
-                    - this.taskStartTime);
+            secondsElapsed = TimingUtils.nanoTimeToSeconds(this.taskEndTime - this.taskStartTime);
         } else {
-            secondsElapsed = TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfThread(getId())
-                    - this.taskStartTime);
+            secondsElapsed =
+                    TimingUtils.nanoTimeToSeconds(
+                            TimingUtils.getNanoCPUTimeOfThread(getId()) - this.taskStartTime);
         }
         return secondsElapsed > 0.0 ? secondsElapsed : 0.0;
     }
@@ -147,7 +151,8 @@ public class TaskThread extends Thread {
     }
 
     public String getCurrentActivityString() {
-        return (isComplete() || (this.currentStatus == Status.NOT_STARTED)) ? ""
+        return (isComplete() || (this.currentStatus == Status.NOT_STARTED))
+                ? ""
                 : this.taskMonitor.getCurrentActivityDescription();
     }
 
@@ -169,16 +174,17 @@ public class TaskThread extends Thread {
 
     public boolean isComplete() {
         return ((this.currentStatus == Status.CANCELLED)
-                || (this.currentStatus == Status.COMPLETED) || (this.currentStatus == Status.FAILED));
+                || (this.currentStatus == Status.COMPLETED)
+                || (this.currentStatus == Status.FAILED));
     }
 
-	public boolean isFailed() {
-		return currentStatus == Status.FAILED;
-	}
-	
-	public boolean isCancelled() {
-		return currentStatus == Status.CANCELLED;
-	}
+    public boolean isFailed() {
+        return currentStatus == Status.FAILED;
+    }
+
+    public boolean isCancelled() {
+        return currentStatus == Status.CANCELLED;
+    }
 
     public Object getFinalResult() {
         return this.finalResult;

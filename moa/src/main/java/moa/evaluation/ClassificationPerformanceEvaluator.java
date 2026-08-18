@@ -15,15 +15,13 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import moa.MOAObject;
+
 import moa.core.Example;
-import moa.core.Measurement;
 
-public interface ClassificationPerformanceEvaluator extends LearningPerformanceEvaluator<Example<Instance>> {
-
-}
+public interface ClassificationPerformanceEvaluator
+        extends LearningPerformanceEvaluator<Example<Instance>> {}

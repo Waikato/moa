@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.active.budget;
 
@@ -27,53 +27,48 @@ import moa.tasks.TaskMonitor;
 
 public class FixedBM extends AbstractOptionHandler implements BudgetManager {
 
-    
-	@Override
+    @Override
     public String getPurposeString() {
         return "Budget manager with a fixed budget.";
     }
-	
-	public FloatOption budgetOption = new FloatOption("budget",
-    		'b', "The budget that should be used by the BudgetManager.",
-    		0.1, 0.00, 1.00);
-    
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
-	int acquisitionReport = 0;
-	
-	@Override
-	public boolean isAbove(double value) {
-		boolean acquire = false;
-		if (value >= (1-budgetOption.getValue()))
-			acquire = true;
-		if (acquire)
-			this.acquisitionReport++;
-		return acquire;
-	}
+    public FloatOption budgetOption =
+            new FloatOption(
+                    "budget",
+                    'b',
+                    "The budget that should be used by the BudgetManager.",
+                    0.1,
+                    0.00,
+                    1.00);
 
-	@Override
-	public int getLastLabelAcqReport() {
-		int helper = this.acquisitionReport;
-		this.acquisitionReport = 0;
-		return helper;
-	}
+    /** */
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public void resetLearning() {
-		this.acquisitionReport = 0;
-	}
+    int acquisitionReport = 0;
 
-	@Override
-	public void getDescription(StringBuilder sb, int indent) {
-		
-	}
+    @Override
+    public boolean isAbove(double value) {
+        boolean acquire = false;
+        if (value >= (1 - budgetOption.getValue())) acquire = true;
+        if (acquire) this.acquisitionReport++;
+        return acquire;
+    }
 
-	@Override
-	protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
-		
-	}
+    @Override
+    public int getLastLabelAcqReport() {
+        int helper = this.acquisitionReport;
+        this.acquisitionReport = 0;
+        return helper;
+    }
 
+    @Override
+    public void resetLearning() {
+        this.acquisitionReport = 0;
+    }
+
+    @Override
+    public void getDescription(StringBuilder sb, int indent) {}
+
+    @Override
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {}
 }

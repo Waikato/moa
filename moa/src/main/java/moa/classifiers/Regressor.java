@@ -15,16 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers;
 
 /**
- * Regressor interface for incremental regression models. It is used only in the GUI Regression Tab. 
+ * Regressor interface for incremental regression models. It is used only in the GUI Regression Tab.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public interface Regressor {
-    
-}
+public interface Regressor {}

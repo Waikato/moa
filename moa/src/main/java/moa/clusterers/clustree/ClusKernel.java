@@ -14,42 +14,38 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.clusterers.clustree;
 
-import moa.clusterers.clustree.util.*;
-import java.util.Arrays;
-import moa.cluster.CFCluster;
-import moa.cluster.Cluster;
 import com.yahoo.labs.samoa.instances.Instance;
 
-/**
- * Representation of an Entry in the tree
- */
-public class ClusKernel extends CFCluster{
-    /**
-     * Numeric epsilon.
-     */
+import moa.cluster.CFCluster;
+import moa.clusterers.clustree.util.*;
+
+import java.util.Arrays;
+
+/** Representation of an Entry in the tree */
+public class ClusKernel extends CFCluster {
+    /** Numeric epsilon. */
     public static final double EPSILON = 0.00000001;
+
     public static final double MIN_VARIANCE = 1e-50; // 1e-100; // 0.0000001;
 
-
     /**
-     * Counting of the number of N as normal N is weighted by how much time passes between
-     * updates. If weighted N is under a threshhold, we may consider
-     * the cluster irrelevant and we can delete it.
+     * Counting of the number of N as normal N is weighted by how much time passes between updates.
+     * If weighted N is under a threshhold, we may consider the cluster irrelevant and we can delete
+     * it.
      */
-
     private double totalN;
 
     /**
      * A constructor that makes a Kernel which just represents the given point.
+     *
      * @param point The point to be converted into a corresponding Kernel.
-     * @param dim The number of classes possible for points in this
-     * experiment(<code>Tree</code>).
+     * @param dim The number of classes possible for points in this experiment(<code>Tree</code>).
      */
     public ClusKernel(double[] point, int dim) {
         super(point, dim);
@@ -58,9 +54,9 @@ public class ClusKernel extends CFCluster{
 
     /**
      * Constructor of the Cluster.
-     * @param numberDimensions Dimensionality of the points added that can be
-     * added to this cluster
-     * experiment(<code>Tree</code>).
+     *
+     * @param numberDimensions Dimensionality of the points added that can be added to this cluster
+     *     experiment(<code>Tree</code>).
      */
     protected ClusKernel(int numberDimensions) {
         super(numberDimensions);
@@ -69,6 +65,7 @@ public class ClusKernel extends CFCluster{
 
     /**
      * Instantiates a copy of the given cluster.
+     *
      * @param other The <code>Cluster</code> of which we make a copy.
      */
     protected ClusKernel(ClusKernel other) {
@@ -77,8 +74,8 @@ public class ClusKernel extends CFCluster{
     }
 
     /**
-     * Adds the given cluster to this cluster, without making this cluster
-     * older.
+     * Adds the given cluster to this cluster, without making this cluster older.
+     *
      * @param other
      */
     public void add(ClusKernel other) {
@@ -87,13 +84,13 @@ public class ClusKernel extends CFCluster{
     }
 
     /**
-     * Make this cluster older bei weighting it and add to this cluster the
-     * given cluster. If we want to add somethin to the cluster, but don't
-     * want to weight it, we should use the function <code>add(Cluster)</code>.
+     * Make this cluster older bei weighting it and add to this cluster the given cluster. If we
+     * want to add somethin to the cluster, but don't want to weight it, we should use the function
+     * <code>add(Cluster)</code>.
+     *
      * @param other The other cluster to be added to this one.
-     * @param timeDifference The time elapsed between the last update of the
-     * <code>Entry</code> to which this cluster belongs and the update that
-     * caused the call to this function.
+     * @param timeDifference The time elapsed between the last update of the <code>Entry</code> to
+     *     which this cluster belongs and the update that caused the call to this function.
      * @param negLambda A parameter needed to weight the cluster.
      * @see #add(ClusKernel)
      */
@@ -103,11 +100,10 @@ public class ClusKernel extends CFCluster{
     }
 
     /**
-     * Make this cluster older. This means multiplying weighted N, LS and SS
-     * with a weight factor given by the time difference and the parameter
-     * negLambda.
-     * @param timeDifference The time elapsed between this current update and
-     * the last one.
+     * Make this cluster older. This means multiplying weighted N, LS and SS with a weight factor
+     * given by the time difference and the parameter negLambda.
+     *
+     * @param timeDifference The time elapsed between this current update and the last one.
      * @param negLambda
      */
     protected void makeOlder(long timeDifference, double negLambda) {
@@ -115,7 +111,7 @@ public class ClusKernel extends CFCluster{
             return;
         }
 
-        //double weightFactor = AuxiliaryFunctions.weight(negLambda, timeDifference);
+        // double weightFactor = AuxiliaryFunctions.weight(negLambda, timeDifference);
         assert (negLambda < 0);
         assert (timeDifference > 0);
         double weightFactor = Math.pow(2.0, negLambda * timeDifference);
@@ -128,8 +124,9 @@ public class ClusKernel extends CFCluster{
     }
 
     /**
-     * Calculate the distance to this other cluster. The other cluster is
-     * normaly just a single data point(i.e. N = 1).
+     * Calculate the distance to this other cluster. The other cluster is normaly just a single data
+     * point(i.e. N = 1).
+     *
      * @param other The other cluster to which the distance is calculated.
      * @return The distance between this cluster and the other.
      */
@@ -148,12 +145,13 @@ public class ClusKernel extends CFCluster{
             res += substracted * substracted;
         }
 
-        // TODO INFO: added sqrt to the computation [PK 10.09.10] 
+        // TODO INFO: added sqrt to the computation [PK 10.09.10]
         return Math.sqrt(res);
     }
 
     /**
      * Returns the weighted number of points in the cluster.
+     *
      * @return The weighted number of points in the cluster.
      */
     private double getTotalN() {
@@ -162,16 +160,14 @@ public class ClusKernel extends CFCluster{
 
     /**
      * Check if this cluster is empty or not.
-     * @return <code>true</code> if the cluster has no data points,
-     * <code>false</code> otherwise.
+     *
+     * @return <code>true</code> if the cluster has no data points, <code>false</code> otherwise.
      */
     protected boolean isEmpty() {
         return this.totalN == 0;
     }
 
-    /**
-     * Remove all points from this cluster.
-     */
+    /** Remove all points from this cluster. */
     protected void clear() {
         this.totalN = 0;
         this.N = 0.0;
@@ -180,17 +176,17 @@ public class ClusKernel extends CFCluster{
     }
 
     /**
-     * Overwrites the LS, SS and weightedN in this cluster to the values of the
-     * given cluster but adds N and classCount of the given cluster to this one.
-     * This function is useful when the weight of an entry becomes to small, and
-     * we want to forget the information of the old points.
+     * Overwrites the LS, SS and weightedN in this cluster to the values of the given cluster but
+     * adds N and classCount of the given cluster to this one. This function is useful when the
+     * weight of an entry becomes to small, and we want to forget the information of the old points.
+     *
      * @param other The cluster that should overwrite the information.
      */
     protected void overwriteOldCluster(ClusKernel other) {
         this.totalN = other.totalN;
         this.N = other.N;
-        //AuxiliaryFunctions.overwriteDoubleArray(this.LS, other.LS);
-        //AuxiliaryFunctions.overwriteDoubleArray(this.SS, other.SS);
+        // AuxiliaryFunctions.overwriteDoubleArray(this.LS, other.LS);
+        // AuxiliaryFunctions.overwriteDoubleArray(this.SS, other.SS);
         assert (LS.length == other.LS.length);
         System.arraycopy(other.LS, 0, LS, 0, LS.length);
         assert (SS.length == other.SS.length);
@@ -202,12 +198,10 @@ public class ClusKernel extends CFCluster{
         return this.N;
     }
 
-
     @Override
-    public CFCluster getCF(){
+    public CFCluster getCF() {
         return this;
     }
-
 
     /**
      * @return this kernels' center
@@ -222,59 +216,56 @@ public class ClusKernel extends CFCluster{
         return res;
     }
 
-//    @Override
-//    public double getInclusionProbability(Instance instance) {
-//
-//        double dist = calcNormalizedDistance(instance.toDoubleArray());
-//        double res = AuxiliaryFunctions.distanceProbabilty(dist, LS.length);
-//        assert (res >= 0.0 && res <= 1.0) : "Bad confidence " + res + " for"
-//                + " distance " + dist;
-//
-//        return res;
-//    }
+    //    @Override
+    //    public double getInclusionProbability(Instance instance) {
+    //
+    //        double dist = calcNormalizedDistance(instance.toDoubleArray());
+    //        double res = AuxiliaryFunctions.distanceProbabilty(dist, LS.length);
+    //        assert (res >= 0.0 && res <= 1.0) : "Bad confidence " + res + " for"
+    //                + " distance " + dist;
+    //
+    //        return res;
+    //    }
 
     @Override
     public double getInclusionProbability(Instance instance) {
-        //trivial cluster
-        if(N == 1){
+        // trivial cluster
+        if (N == 1) {
             double distance = 0.0;
             for (int i = 0; i < LS.length; i++) {
                 double d = LS[i] - instance.value(i);
                 distance += d * d;
             }
             distance = Math.sqrt(distance);
-            if( distance < EPSILON )
-                return 1.0;
+            if (distance < EPSILON) return 1.0;
             return 0.0;
-        }
-        else{
+        } else {
             double dist = calcNormalizedDistance(instance.toDoubleArray());
-            if(dist <= getRadius()){
+            if (dist <= getRadius()) {
                 return 1;
-            }
-            else{
+            } else {
                 return 0;
             }
-//            double res = AuxiliaryFunctions.distanceProbabilty(dist, LS.length);
-//            return res;
+            //            double res = AuxiliaryFunctions.distanceProbabilty(dist, LS.length);
+            //            return res;
         }
     }
 
     /**
      * See interface <code>Cluster</code>
+     *
      * @return The radius of the cluster.
      * @see moa.cluster.SphereCluster#getRadius()
      */
     @Override
     public double getRadius() {
-        //trivial cluster
-        if(N == 1) return 0;
+        // trivial cluster
+        if (N == 1) return 0;
 
-        return getDeviation()*radiusFactor;
+        return getDeviation() * radiusFactor;
     }
 
-
-    private double getDeviation(){
+    private double getDeviation() {
         double[] variance = getVarianceVector();
         double sumOfDeviation = 0.0;
         for (int i = 0; i < variance.length; i++) {
@@ -283,7 +274,6 @@ public class ClusKernel extends CFCluster{
         }
         return sumOfDeviation / variance.length;
     }
-
 
     public double[] getVarianceVector() {
         double[] res = new double[this.LS.length];
@@ -302,24 +292,22 @@ public class ClusKernel extends CFCluster{
                 if (res[i] > -EPSILON) {
                     res[i] = MIN_VARIANCE;
                 }
-            }
-            else{
+            } else {
 
             }
         }
         return res;
     }
 
-
     /**
-     * Calculate the normalized euclidean distance (Mahalanobis distance for
-     * distribution w/o covariances) to a point.
+     * Calculate the normalized euclidean distance (Mahalanobis distance for distribution w/o
+     * covariances) to a point.
+     *
      * @param point The point to which the distance is calculated.
      * @return The normalized distance to the cluster center.
-     *
-     * TODO: check whether WEIGHTING is correctly applied to variances
+     *     <p>TODO: check whether WEIGHTING is correctly applied to variances
      */
-    //???????
+    // ???????
     private double calcNormalizedDistance(double[] point) {
         double[] variance = getVarianceVector();
         double[] center = getCenter();
@@ -327,10 +315,8 @@ public class ClusKernel extends CFCluster{
 
         for (int i = 0; i < center.length; i++) {
             double diff = center[i] - point[i];
-            res += (diff * diff);// variance[i];
+            res += (diff * diff); // variance[i];
         }
         return Math.sqrt(res);
     }
-
-
 }

@@ -15,13 +15,13 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.github.javacliparser.gui;
 
-import javax.swing.JTextField;
-
 import com.github.javacliparser.Option;
+
+import javax.swing.JTextField;
 
 /**
  * An OptionEditComponent that lets the user edit a string option.
@@ -29,8 +29,7 @@ import com.github.javacliparser.Option;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class StringOptionEditComponent extends JTextField implements
-        OptionEditComponent {
+public class StringOptionEditComponent extends JTextField implements OptionEditComponent {
 
     private static final long serialVersionUID = 1L;
 

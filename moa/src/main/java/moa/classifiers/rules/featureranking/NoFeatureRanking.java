@@ -22,32 +22,20 @@ package moa.classifiers.rules.featureranking;
 import moa.classifiers.rules.multilabel.core.ObservableMOAObject;
 import moa.core.DoubleVector;
 
-/**
- * No feature ranking is performed
- */
+/** No feature ranking is performed */
+public class NoFeatureRanking extends AbstractFeatureRanking {
 
+    /** */
+    private static final long serialVersionUID = 1L;
 
-public class NoFeatureRanking extends AbstractFeatureRanking{
+    public NoFeatureRanking() {
+        super();
+    }
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	public NoFeatureRanking() {
-		super();
-	}
+    public void update(ObservableMOAObject o, Object arg) {}
 
-	public void update(ObservableMOAObject o, Object arg) {
-		
-	}
-
-
-	
-
-	@Override
-	public DoubleVector getFeatureRankings() {
-		return null;
-	}
-	
+    @Override
+    public DoubleVector getFeatureRankings() {
+        return null;
+    }
 }

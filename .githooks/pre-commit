@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -exuo pipefail
+
+mvn -B -q spotless:check

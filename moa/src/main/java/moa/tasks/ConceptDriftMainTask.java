@@ -15,12 +15,13 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
-import java.util.ArrayList;
 import moa.streams.clustering.ClusterEvent;
+
+import java.util.ArrayList;
 
 public abstract class ConceptDriftMainTask extends MainTask {
 
@@ -29,9 +30,8 @@ public abstract class ConceptDriftMainTask extends MainTask {
     protected void setEventsList(ArrayList<ClusterEvent> events) {
         this.events = events;
     }
-    
+
     public ArrayList<ClusterEvent> getEventsList() {
         return this.events;
     }
-    
 }

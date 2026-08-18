@@ -16,20 +16,21 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.meta;
+
+import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.core.Measurement;
-import com.github.javacliparser.IntOption;
 import moa.options.WEKAClassOption;
+
 import weka.classifiers.Classifier;
 import weka.classifiers.UpdateableClassifier;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
-import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
 
 /**
  * Class for using a classifier from WEKA.
@@ -38,8 +39,7 @@ import com.yahoo.labs.samoa.instances.SamoaToWekaInstanceConverter;
  * @author FracPete (fracpete at waikato dot ac dot nz)
  * @version $Revision$
  */
-public class WEKAClassifier
-        extends AbstractClassifier implements MultiClassClassifier {
+public class WEKAClassifier extends AbstractClassifier implements MultiClassClassifier {
 
     private static final long serialVersionUID = 1L;
 
@@ -49,20 +49,36 @@ public class WEKAClassifier
     public String getPurposeString() {
         return "Classifier from Weka";
     }
-    
-    public WEKAClassOption baseLearnerOption = new WEKAClassOption("baseLearner", 'l',
-            "Classifier to train.", weka.classifiers.Classifier.class, "weka.classifiers.bayes.NaiveBayesUpdateable");
 
-    public IntOption widthOption = new IntOption("width",
-            'w', "Size of Window for training learner.", 0, 0, Integer.MAX_VALUE);
+    public WEKAClassOption baseLearnerOption =
+            new WEKAClassOption(
+                    "baseLearner",
+                    'l',
+                    "Classifier to train.",
+                    weka.classifiers.Classifier.class,
+                    "weka.classifiers.bayes.NaiveBayesUpdateable");
 
-    public IntOption widthInitOption = new IntOption("widthInit",
-            'i', "Size of first Window for training learner.", 1000, 0, Integer.MAX_VALUE);
+    public IntOption widthOption =
+            new IntOption(
+                    "width", 'w', "Size of Window for training learner.", 0, 0, Integer.MAX_VALUE);
 
-    public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
-            'f',
-            "How many instances between samples of the learning performance.",
-            0, 0, Integer.MAX_VALUE);
+    public IntOption widthInitOption =
+            new IntOption(
+                    "widthInit",
+                    'i',
+                    "Size of first Window for training learner.",
+                    1000,
+                    0,
+                    Integer.MAX_VALUE);
+
+    public IntOption sampleFrequencyOption =
+            new IntOption(
+                    "sampleFrequency",
+                    'f',
+                    "How many instances between samples of the learning performance.",
+                    0,
+                    0,
+                    Integer.MAX_VALUE);
 
     protected Classifier classifier;
 
@@ -78,8 +94,9 @@ public class WEKAClassifier
     public void resetLearningImpl() {
 
         try {
-            //System.out.println(baseLearnerOption.getValue());
-            String[] options = weka.core.Utils.splitOptions(baseLearnerOption.getValueAsCLIString());
+            // System.out.println(baseLearnerOption.getValue());
+            String[] options =
+                    weka.core.Utils.splitOptions(baseLearnerOption.getValueAsCLIString());
             createWekaClassifier(options);
         } catch (Exception e) {
             System.err.println("Creating a new classifier: " + e.getMessage());
@@ -111,35 +128,35 @@ public class WEKAClassifier
                 }
             } else {
                 if (numberInstances == widthInitOption.getValue()) {
-                    //Build first time Classifier
+                    // Build first time Classifier
                     buildClassifier();
                     isClassificationEnabled = true;
-                    //Continue to store instances
+                    // Continue to store instances
                     if (sampleFrequencyOption.getValue() != 0) {
                         isBufferStoring = true;
                     }
                 }
                 if (widthOption.getValue() == 0) {
-                    //Used from SingleClassifierDrift
+                    // Used from SingleClassifierDrift
                     if (isBufferStoring == true) {
                         instancesBuffer.add(inst);
                     }
                 } else {
-                    //Used form WekaClassifier without using SingleClassifierDrift
+                    // Used form WekaClassifier without using SingleClassifierDrift
                     int numInstances = numberInstances % sampleFrequencyOption.getValue();
                     if (sampleFrequencyOption.getValue() == 0) {
                         numInstances = numberInstances;
                     }
                     if (numInstances == 0) {
-                        //Begin to store instances
+                        // Begin to store instances
                         isBufferStoring = true;
                     }
                     if (isBufferStoring == true && numInstances <= widthOption.getValue()) {
-                        //Store instances
+                        // Store instances
                         instancesBuffer.add(inst);
                     }
                     if (numInstances == widthOption.getValue()) {
-                        //Build Classifier
+                        // Build Classifier
                         buildClassifier();
                         isClassificationEnabled = true;
                         this.instancesBuffer = new weka.core.Instances(inst.dataset());
@@ -172,15 +189,15 @@ public class WEKAClassifier
             for (int i = 0; i < inst.numClasses(); i++) {
                 votes[i] = 1.0 / inst.numClasses();
             }
-		} else {
-			try {
-				votes = this.classifier.distributionForInstance(inst);
-			} catch (Exception e) {
-				System.err.println(e.getMessage());
-			}
-		}
-		return votes;
-	}
+        } else {
+            try {
+                votes = this.classifier.distributionForInstance(inst);
+            } catch (Exception e) {
+                System.err.println(e.getMessage());
+            }
+        }
+        return votes;
+    }
 
     @Override
     public boolean isRandomizable() {

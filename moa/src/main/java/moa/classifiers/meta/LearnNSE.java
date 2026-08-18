@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.meta;
 
@@ -24,8 +24,6 @@ import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Instances;
-import java.util.ArrayList;
-import java.util.List;
 
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
@@ -34,54 +32,66 @@ import moa.core.DoubleVector;
 import moa.core.Measurement;
 import moa.options.ClassOption;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * <p>Ensemble of classifiers-based approach for incremental learning of concept 
- * drift, characterized by nonstationary environments (NSEs), where the 
- * underlying data distributions change over time. It learns from consecutive 
- * batches of data that experience constant or variable rate of drift, 
- * addition or deletion of concept classes, as well as cyclical drift.</p>
+ * Ensemble of classifiers-based approach for incremental learning of concept drift, characterized
+ * by nonstationary environments (NSEs), where the underlying data distributions change over time.
+ * It learns from consecutive batches of data that experience constant or variable rate of drift,
+ * addition or deletion of concept classes, as well as cyclical drift.
  *
- * <p>Based on:
- * Ryan Elwell and Robi Polikar. Incremental learning of concept drift in
- * non-stationary environments. IEEE Transactions on Neural Networks,
- * 22(10):1517-1531, October 2011. ISSN 1045-9227. URL
- * http://dx.doi.org/10.1109/TNN.2011.2160459
- * </p>
+ * <p>Based on: Ryan Elwell and Robi Polikar. Incremental learning of concept drift in
+ * non-stationary environments. IEEE Transactions on Neural Networks, 22(10):1517-1531, October
+ * 2011. ISSN 1045-9227. URL http://dx.doi.org/10.1109/TNN.2011.2160459
  *
  * @author Paulo Gonçalves (paulogoncalves@recife.ifpe.edu.br)
  * @author Dariusz Brzezinski
- *
- *
  */
 public class LearnNSE extends AbstractClassifier implements MultiClassClassifier {
 
-    public ClassOption baseLearnerOption = new ClassOption("baseLearner", 'l',
-            "Classifier to train.", Classifier.class, "bayes.NaiveBayes");
+    public ClassOption baseLearnerOption =
+            new ClassOption(
+                    "baseLearner",
+                    'l',
+                    "Classifier to train.",
+                    Classifier.class,
+                    "bayes.NaiveBayes");
 
-    public IntOption periodOption = new IntOption("period", 'p',
-            "Size of the environments.", 250, 1, Integer.MAX_VALUE);
+    public IntOption periodOption =
+            new IntOption("period", 'p', "Size of the environments.", 250, 1, Integer.MAX_VALUE);
 
-    public FloatOption sigmoidSlopeOption = new FloatOption(
-            "sigmoidSlope",
-            'a',
-            "Slope of the sigmoid function controlling the number "
-            + "of previous periods taken into account during weighting.",
-            0.5, 0, Float.MAX_VALUE);
+    public FloatOption sigmoidSlopeOption =
+            new FloatOption(
+                    "sigmoidSlope",
+                    'a',
+                    "Slope of the sigmoid function controlling the number "
+                            + "of previous periods taken into account during weighting.",
+                    0.5,
+                    0,
+                    Float.MAX_VALUE);
 
-    public FloatOption sigmoidCrossingPointOption = new FloatOption(
-            "sigmoidCrossingPoint",
-            'b',
-            "Halfway crossing point of the sigmoid function controlling the number of previous "
-            + "periods taken into account during weighting.", 10, 0,
-            Float.MAX_VALUE);
+    public FloatOption sigmoidCrossingPointOption =
+            new FloatOption(
+                    "sigmoidCrossingPoint",
+                    'b',
+                    "Halfway crossing point of the sigmoid function controlling the number of"
+                            + " previous periods taken into account during weighting.",
+                    10,
+                    0,
+                    Float.MAX_VALUE);
 
-    public IntOption ensembleSizeOption = new IntOption("ensembleSize", 'e',
-            "Ensemble size.", 15, 1, Integer.MAX_VALUE);
+    public IntOption ensembleSizeOption =
+            new IntOption("ensembleSize", 'e', "Ensemble size.", 15, 1, Integer.MAX_VALUE);
 
-    public MultiChoiceOption pruningStrategyOption = new MultiChoiceOption(
-            "pruningStrategy", 's', "Classifiers pruning strategy to be used.",
-            new String[]{"NO", "AGE", "ERROR"}, new String[]{
-                "Don't prune classifiers", "Age-based", "Error-based"}, 0);
+    public MultiChoiceOption pruningStrategyOption =
+            new MultiChoiceOption(
+                    "pruningStrategy",
+                    's',
+                    "Classifiers pruning strategy to be used.",
+                    new String[] {"NO", "AGE", "ERROR"},
+                    new String[] {"Don't prune classifiers", "Age-based", "Error-based"},
+                    0);
 
     protected List<Classifier> ensemble;
     protected List<Double> ensembleWeights;
@@ -125,8 +135,7 @@ public class LearnNSE extends AbstractClassifier implements MultiClassClassifier
                 // Reading all data chunk instances
                 for (int i = 0; i < mt; i++) {
                     // Compute error of the existing ensemble on new data
-                    boolean vote = this.correctlyClassifies(this.buffer
-                            .instance(i));
+                    boolean vote = this.correctlyClassifies(this.buffer.instance(i));
                     if (!vote) {
                         et += 1.0 / mt;
                     }
@@ -194,7 +203,7 @@ public class LearnNSE extends AbstractClassifier implements MultiClassClassifier
                     // Remove voting power of this classifier
                     ekt = 0.5;
                 }
-				// Storing the index of the classifier with higher error in case
+                // Storing the index of the classifier with higher error in case
                 // of error-based pruning
                 if (ekt > maxError) {
                     maxError = ekt;
@@ -205,10 +214,9 @@ public class LearnNSE extends AbstractClassifier implements MultiClassClassifier
                 // Retrieving normalized errors for this classifier
                 ArrayList<Double> nbkt = this.bkts.get(k - 1);
                 nbkt.add(bkt);
-				// Compute the weighted average of all normalized errors for kth
+                // Compute the weighted average of all normalized errors for kth
                 // classifier h_k
-                double wkt = 1.0 / (1.0 + Math.exp(-this.slope
-                        * (t - k - this.crossingPoint)));
+                double wkt = 1.0 / (1.0 + Math.exp(-this.slope * (t - k - this.crossingPoint)));
                 List<Double> weights = this.wkts.get(k - 1);
                 double sum = 0;
                 for (Double weight : weights) {
@@ -222,7 +230,7 @@ public class LearnNSE extends AbstractClassifier implements MultiClassClassifier
                 // Calculate classifier voting weights
                 this.ensembleWeights.add(Math.log(1.0 / sbkt));
             }
-            // Ensemble pruning strategy				
+            // Ensemble pruning strategy
             if (pruning == 1 && t > ensembleSize) { // Age-based
                 this.ensemble.remove(0);
                 this.ensembleWeights.remove(0);
@@ -249,8 +257,8 @@ public class LearnNSE extends AbstractClassifier implements MultiClassClassifier
         if (this.trainingWeightSeenByModel > 0.0) {
             for (int i = 0; i < this.ensemble.size(); i++) {
                 if (this.ensembleWeights.get(i) > 0.0) {
-                    DoubleVector vote = new DoubleVector(this.ensemble.get(i)
-                            .getVotesForInstance(inst));
+                    DoubleVector vote =
+                            new DoubleVector(this.ensemble.get(i).getVotesForInstance(inst));
                     if (vote.sumOfValues() > 0.0) {
                         vote.normalize();
                         vote.scaleValues(this.ensembleWeights.get(i));
@@ -263,8 +271,7 @@ public class LearnNSE extends AbstractClassifier implements MultiClassClassifier
     }
 
     @Override
-    public void getModelDescription(StringBuilder out, int indent) {
-    }
+    public void getModelDescription(StringBuilder out, int indent) {}
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
@@ -272,8 +279,8 @@ public class LearnNSE extends AbstractClassifier implements MultiClassClassifier
         if (this.ensembleWeights != null) {
             measurements = new Measurement[this.ensembleWeights.size()];
             for (int i = 0; i < this.ensembleWeights.size(); i++) {
-                measurements[i] = new Measurement("member weight " + (i + 1),
-                        this.ensembleWeights.get(i));
+                measurements[i] =
+                        new Measurement("member weight " + (i + 1), this.ensembleWeights.get(i));
             }
         }
         return measurements;

@@ -20,31 +20,33 @@
 package moa.gui.featureanalysis;
 
 import moa.gui.AbstractTabPanel;
-import javax.swing.*;
+
 import java.awt.*;
 
+import javax.swing.*;
+
 /**
- * FeatureAnalysis module panel.
- * When user clicks module menu FeatureAnalysis in MOA, it shows VisualizeFeatures tab and FeatureImportance tab.
+ * FeatureAnalysis module panel. When user clicks module menu FeatureAnalysis in MOA, it shows
+ * VisualizeFeatures tab and FeatureImportance tab.
  */
 public class FeatureAnalysisTabPanel extends AbstractTabPanel {
 
     private static final long serialVersionUID = 1L;
 
-    protected VisualizeFeaturesPanel visualizeFeaturesPanel =new VisualizeFeaturesPanel();
+    protected VisualizeFeaturesPanel visualizeFeaturesPanel = new VisualizeFeaturesPanel();
 
     /**
-     * Use Singleton design pattern to ensure the object created here and
-     * the object created in DataAnalysisPanel.java are the same object in memory.
+     * Use Singleton design pattern to ensure the object created here and the object created in
+     * DataAnalysisPanel.java are the same object in memory.
      */
-    protected FeatureImportancePanel fip=FeatureImportancePanel.getInstance();
+    protected FeatureImportancePanel fip = FeatureImportancePanel.getInstance();
 
     protected JTabbedPane tabs = new JTabbedPane();
 
     public FeatureAnalysisTabPanel() {
 
         tabs.addTab("VisualizeFeatures", visualizeFeaturesPanel);
-        tabs.addTab("FeatureImportance",fip);
+        tabs.addTab("FeatureImportance", fip);
         setLayout(new BorderLayout());
         add(tabs);
     }

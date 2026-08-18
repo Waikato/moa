@@ -15,9 +15,12 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package com.github.javacliparser.gui;
+
+import com.github.javacliparser.IntOption;
+import com.github.javacliparser.Option;
 
 import java.awt.GridLayout;
 
@@ -28,17 +31,13 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.github.javacliparser.IntOption;
-import com.github.javacliparser.Option;
-
 /**
  * An OptionEditComponent that lets the user edit an integer option.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class IntOptionEditComponent extends JPanel implements
-        OptionEditComponent {
+public class IntOptionEditComponent extends JPanel implements OptionEditComponent {
 
     private static final long serialVersionUID = 1L;
 
@@ -54,26 +53,30 @@ public class IntOptionEditComponent extends JPanel implements
         int minVal = option.getMinValue();
         int maxVal = option.getMaxValue();
         setLayout(new GridLayout(1, 0));
-        this.spinner = new JSpinner(new SpinnerNumberModel(option.getValue(),
-                minVal, maxVal, 1));
+        this.spinner = new JSpinner(new SpinnerNumberModel(option.getValue(), minVal, maxVal, 1));
         add(this.spinner);
         if ((minVal > Integer.MIN_VALUE) && (maxVal < Integer.MAX_VALUE)) {
             this.slider = new JSlider(minVal, maxVal, option.getValue());
             add(this.slider);
-            this.slider.addChangeListener(new ChangeListener() {
+            this.slider.addChangeListener(
+                    new ChangeListener() {
 
-                @Override
-                public void stateChanged(ChangeEvent e) {
-                    IntOptionEditComponent.this.spinner.setValue(IntOptionEditComponent.this.slider.getValue());
-                }
-            });
-            this.spinner.addChangeListener(new ChangeListener() {
+                        @Override
+                        public void stateChanged(ChangeEvent e) {
+                            IntOptionEditComponent.this.spinner.setValue(
+                                    IntOptionEditComponent.this.slider.getValue());
+                        }
+                    });
+            this.spinner.addChangeListener(
+                    new ChangeListener() {
 
-                @Override
-                public void stateChanged(ChangeEvent e) {
-                    IntOptionEditComponent.this.slider.setValue(((Integer) IntOptionEditComponent.this.spinner.getValue()).intValue());
-                }
-            });
+                        @Override
+                        public void stateChanged(ChangeEvent e) {
+                            IntOptionEditComponent.this.slider.setValue(
+                                    ((Integer) IntOptionEditComponent.this.spinner.getValue())
+                                            .intValue());
+                        }
+                    });
         }
     }
 

@@ -14,8 +14,8 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 package moa.classifiers;
 
@@ -23,15 +23,13 @@ import com.yahoo.labs.samoa.instances.MultiLabelInstance;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 /**
-* @author RSousa
-*/
-
-
+ * @author RSousa
+ */
 public interface MultiTargetLearnerSemiSupervised extends MultiLabelLearner {
-    
+
     public Prediction getTrainingPrediction();
-    
+
     public void trainOnInstanceImpl(MultiLabelInstance instance);
-	
+
     public Prediction getPredictionForInstance(MultiLabelInstance instance);
 }

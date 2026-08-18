@@ -15,13 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.trees;
 
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.bayes.NaiveBayes;
 import moa.core.Utils;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Adaptive decision option tree for streaming data with adaptive Naive
@@ -40,14 +41,15 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @version $Revision: 7 $
  */
 public class AdaHoeffdingOptionTree extends HoeffdingOptionTree {
-    
+
     private static final long serialVersionUID = 1L;
 
     @Override
     public String getPurposeString() {
-        return "Adaptive decision option tree for streaming data with adaptive Naive Bayes classification at leaves.";
+        return "Adaptive decision option tree for streaming data with adaptive Naive Bayes"
+                + " classification at leaves.";
     }
-     
+
     public static class AdaLearningNode extends LearningNodeNB {
 
         private static final long serialVersionUID = 1L;
@@ -74,17 +76,19 @@ public class AdaHoeffdingOptionTree extends HoeffdingOptionTree {
                     blCorrect = true;
                 }
             }
-            if (Utils.maxIndex(NaiveBayes.doNaiveBayesPrediction(inst,
-                    this.observedClassDistribution, this.attributeObservers)) == trueClass) {
+            if (Utils.maxIndex(
+                            NaiveBayes.doNaiveBayesPrediction(
+                                    inst, this.observedClassDistribution, this.attributeObservers))
+                    == trueClass) {
                 this.nbCorrectWeight += inst.weight();
                 if (this.mcCorrectWeight <= this.nbCorrectWeight) {
                     blCorrect = true;
                 }
             }
             if (blCorrect == true) {
-                this.CorrectWeight += alpha * (1.0 - this.CorrectWeight); //EWMA
+                this.CorrectWeight += alpha * (1.0 - this.CorrectWeight); // EWMA
             } else {
-                this.CorrectWeight -= alpha * this.CorrectWeight; //EWMA
+                this.CorrectWeight -= alpha * this.CorrectWeight; // EWMA
             }
             super.learnFromInstance(inst, hot);
         }
@@ -95,12 +99,17 @@ public class AdaHoeffdingOptionTree extends HoeffdingOptionTree {
             if (this.mcCorrectWeight > this.nbCorrectWeight) {
                 dist = this.observedClassDistribution.getArrayCopy();
             } else {
-                dist = NaiveBayes.doNaiveBayesPrediction(inst,
-                        this.observedClassDistribution, this.attributeObservers);
+                dist =
+                        NaiveBayes.doNaiveBayesPrediction(
+                                inst, this.observedClassDistribution, this.attributeObservers);
             }
             double distSum = Utils.sum(dist);
             if (distSum * (1.0 - this.CorrectWeight) * (1.0 - this.CorrectWeight) > 0.0) {
-                Utils.normalize(dist, distSum * (1.0 - this.CorrectWeight) * (1.0 - this.CorrectWeight)); //Adding weight
+                Utils.normalize(
+                        dist,
+                        distSum
+                                * (1.0 - this.CorrectWeight)
+                                * (1.0 - this.CorrectWeight)); // Adding weight
             }
             return dist;
         }

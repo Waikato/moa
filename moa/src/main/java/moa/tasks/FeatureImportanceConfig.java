@@ -19,45 +19,45 @@
  */
 package moa.tasks;
 
-
 import com.github.javacliparser.FloatOption;
 import com.yahoo.labs.samoa.instances.Instances;
+
 import moa.capabilities.CapabilitiesHandler;
 import moa.core.ObjectRepository;
 import moa.learners.featureanalysis.ClassifierWithFeatureImportance;
 import moa.options.ClassOption;
 
 import javax.swing.*;
-import java.util.Arrays;
 
 /**
- * This class Provides GUI to user so that they can configure parameters for feature importance algorithm.
- * After user clicks Run button, this class executes task to compute scores of feature importance.
+ * This class Provides GUI to user so that they can configure parameters for feature importance
+ * algorithm. After user clicks Run button, this class executes task to compute scores of feature
+ * importance.
  */
 public class FeatureImportanceConfig extends ClassificationMainTask implements CapabilitiesHandler {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * This holds the current set of instances
-     */
+    /** This holds the current set of instances */
     protected Instances m_instances;
 
     /** Scores produced by feature importance algorithm. */
     protected double[][] scores;
 
-    /** When scores of feature importance are NaNs, NaNs will be replaced by NaNSubstitute
-     * shown in feature importance line graph.*/
-    protected double m_NaNSubstitute=0.0;//default value is 0.0
+    /**
+     * When scores of feature importance are NaNs, NaNs will be replaced by NaNSubstitute shown in
+     * feature importance line graph.
+     */
+    protected double m_NaNSubstitute = 0.0; // default value is 0.0
 
     /** The default windowSize parameter for feature importance algorithm. */
-    protected int m_windowSize=500;
+    protected int m_windowSize = 500;
 
-    /** The default doNotNormalizeFeatureScore parameter for feature importance algorithm.*/
-    protected boolean m_doNotNormalizeFeatureScore=false;
+    /** The default doNotNormalizeFeatureScore parameter for feature importance algorithm. */
+    protected boolean m_doNotNormalizeFeatureScore = false;
 
     /** Use progress bar to show the progress of computing scores of feature importance. */
-    protected JProgressBar progressBar=new JProgressBar();
+    protected JProgressBar progressBar = new JProgressBar();
 
     public double getNaNSubstitute() {
         return m_NaNSubstitute;
@@ -90,24 +90,36 @@ public class FeatureImportanceConfig extends ClassificationMainTask implements C
     /**
      * Provides GUI to user so that they can configure parameters for feature importance algorithm.
      */
-    public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Classifier with feature importance Learner to train.", ClassifierWithFeatureImportance.class,
-            "moa.learners.featureanalysis.ClassifierWithFeatureImportance");
+    public ClassOption learnerOption =
+            new ClassOption(
+                    "learner",
+                    'l',
+                    "Classifier with feature importance Learner to train.",
+                    ClassifierWithFeatureImportance.class,
+                    "moa.learners.featureanalysis.ClassifierWithFeatureImportance");
 
-    public FloatOption nanSubstitute = new FloatOption(
-            "NaNSubstitute", 'u',
-            "When scores of feature importance are NaN, NaN will be replaced by NaNSubstitute shown in line graph.", 0,
-            Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY);
+    public FloatOption nanSubstitute =
+            new FloatOption(
+                    "NaNSubstitute",
+                    'u',
+                    "When scores of feature importance are NaN, NaN will be replaced by"
+                            + " NaNSubstitute shown in line graph.",
+                    0,
+                    Double.NEGATIVE_INFINITY,
+                    Double.POSITIVE_INFINITY);
 
     /**
-     * After user clicks Run button, this method executes task to compute scores of feature importance and return.
+     * After user clicks Run button, this method executes task to compute scores of feature
+     * importance and return.
+     *
      * @param monitor the TaskMonitor to use
-     * @param repository  the ObjectRepository to use
+     * @param repository the ObjectRepository to use
      * @return scores of features' importance
      */
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
-        ClassifierWithFeatureImportance cwfi = (ClassifierWithFeatureImportance) getPreparedClassOption(learnerOption);
+        ClassifierWithFeatureImportance cwfi =
+                (ClassifierWithFeatureImportance) getPreparedClassOption(learnerOption);
         cwfi.resetLearningImpl();
 
         int windowSize = cwfi.windowSizeOption.getValue();
@@ -123,8 +135,8 @@ public class FeatureImportanceConfig extends ClassificationMainTask implements C
         int instanceSeen = 0;
 
         int numInstances = m_instances.numInstances();
-        int rows = numInstances / windowSize; //neglect remainder
-        int columns = m_instances.numAttributes() - 1;// There is no feature importance for class
+        int rows = numInstances / windowSize; // neglect remainder
+        int columns = m_instances.numAttributes() - 1; // There is no feature importance for class
         double[][] scores = new double[rows][columns];
 
         progressBar.setValue(0);
@@ -132,23 +144,21 @@ public class FeatureImportanceConfig extends ClassificationMainTask implements C
 
         if (m_instances != null) {
 
-                for (int i = 0; i < numInstances; i++) {
-                    instanceSeen++;
+            for (int i = 0; i < numInstances; i++) {
+                instanceSeen++;
 
-                    /** First train, then get scores. */
-                    cwfi.trainOnInstance(m_instances.get(i));//train
+                /** First train, then get scores. */
+                cwfi.trainOnInstance(m_instances.get(i)); // train
 
-                    if (instanceSeen % windowSize == 0) {
-                        double[] currentScore = cwfi.getCurrentFeatureImportances();//get scores
-                        for (int j = 0; j < columns; j++) {
-                            scores[row][j] = currentScore[j];
-                        }
-                        row++;
-                        progressBar.setValue(row);
+                if (instanceSeen % windowSize == 0) {
+                    double[] currentScore = cwfi.getCurrentFeatureImportances(); // get scores
+                    for (int j = 0; j < columns; j++) {
+                        scores[row][j] = currentScore[j];
                     }
-
+                    row++;
+                    progressBar.setValue(row);
                 }
-
+            }
         }
         return scores;
     }

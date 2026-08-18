@@ -1,17 +1,17 @@
 /*
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * 	        http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
  * either express or implied. See the License for the specific
  * language governing permissions and limitations under the
- * License.  
+ * License.
  */
 package com.yahoo.labs.samoa.instances;
 
@@ -53,7 +53,7 @@ public interface Instance extends Serializable {
      * @return the index of an attribute
      */
     public int indexOfAttribute(Attribute attribute);
-    
+
     /**
      * Delete attribute at.
      *
@@ -118,18 +118,17 @@ public interface Instance extends Serializable {
     /**
      * Sets an attribute as missing
      *
-     * @param instAttIndex, the attribute's index     
+     * @param instAttIndex, the attribute's index
      */
-    public void setMissing(int instAttIndex);        
-    
-    
+    public void setMissing(int instAttIndex);
+
     /**
      * Sets an attribute as missing
      *
      * @param attribute, the Attribute
      */
     public void setMissing(Attribute attribute);
-    
+
     /**
      * Sets the value of an attribute.
      *
@@ -138,7 +137,6 @@ public interface Instance extends Serializable {
      */
     public void setValue(int instAttIndex, double value);
 
-    
     /**
      * Sets the value of an attribute.
      *
@@ -146,7 +144,7 @@ public interface Instance extends Serializable {
      * @param value the value
      */
     public void setValue(Attribute attribute, double value);
-    
+
     /**
      * Checks if an attribute is missing.
      *
@@ -162,10 +160,9 @@ public interface Instance extends Serializable {
      * @return true, if is missing
      */
     public boolean isMissing(Attribute attribute);
-    
+
     /**
-     * Gets the index of the attribute given the index of the array in a sparse
-     * representation.
+     * Gets the index of the attribute given the index of the array in a sparse representation.
      *
      * @param arrayIndex the index of the array
      * @return the index
@@ -173,8 +170,7 @@ public interface Instance extends Serializable {
     public int index(int arrayIndex);
 
     /**
-     * Gets the value of an attribute in a sparse representation of the
-     * instance.
+     * Gets the value of an attribute in a sparse representation of the instance.
      *
      * @param i the i
      * @return the value
@@ -327,5 +323,4 @@ public interface Instance extends Serializable {
      * @return the value
      */
     public double valueOutputAttribute(int attributeIndex);
-
 }

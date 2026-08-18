@@ -3,61 +3,60 @@ package moa.cluster;
 import java.util.ArrayList;
 
 /**
-* Java Porting of the Miniball.h code of <B>Bernd Gaertner</B>.
-* Look at http://www.inf.ethz.ch/personal/gaertner/miniball.html<br>
-* and related work at
-* http://www.inf.ethz.ch/personal/gaertner/texts/own_work/esa99_final.pdf<br>
-* for reading about the algorithm and the implementation of it.<p>
-* <p>
-* If interested in Bounding Sphere algorithms read also published work of 
-* <B>Emo Welzl</B> "Smallest enclosing disks (balls and Ellipsoid)" and
-* the work of <B>Jack Ritter</B> on "Efficient Bounding Spheres"  at<br>
-* http://tog.acm.org/GraphicsGems/gems/BoundSphere.c?searchterm=calc<p>
-* <p><p>
-* For Licencing Info report to Bernd Gaertner's one reported below:<p>
-*
-* Copright (C) 1999-2006, Bernd Gaertner<br>
-*   $Revision: 1.3 $<br>
-*   $Date: 2006/11/16 08:01:52 $<br>
-*<br>
-*This program is free software; you can redistribute it and/or modify<br>
-*it under the terms of the GNU General Public License as published by<br>
-*the Free Software Foundation; either version 3 of the License, or<br>
-*(at your option) any later version.<br>
-*<br>
-*This program is distributed in the hope that it will be useful,<br>
-*but WITHOUT ANY WARRANTY; without even the implied warranty of<br>
-*MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<br>
-*GNU General Public License for more details.<br>
-*<br>
-*You should have received a copy of the GNU General Public License<br>
-*along with this program. If not, see <a href="http://www.gnu.org/licenses/">{@literal <http://www.gnu.org/licenses/>}</a>.<br>
-*Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA,<br>
-*or download the License terms from prep.ai.mit.edu/pub/gnu/COPYING-2.0.<br>
-*<br>
-*Contact:<br>
-*--------<br>
-*Bernd Gaertner<br>
-*Institute of Theoretical Computer Science<br>
-*ETH Zuerich<br>
-*CAB G32.2<br>
-*CH-8092 Zuerich, Switzerland<br>
-*http://www.inf.ethz.ch/personal/gaertner<br>
-
-* Original Java port from Paolo Perissinotto for Jpatch Project by Sascha Ledinsky
-* found at {@literal http://forum.jpatch.com/viewtopic.php?f=3&t=919}
-*
-* @author Paolo Perissinotto for Jpatch Project by <B>Sascha Ledinsky</B>
-*
-* @version 1.0
-* {@literal Date: 2007/11/18 21:57}
-*
-* used for moa for calculating most compact sphere cluster
-* modified by Timm Jansen (moa@cs.rwth-aachen.de) to be used with high 
-* dimensional points
-*
-*/
-
+ * Java Porting of the Miniball.h code of <B>Bernd Gaertner</B>. Look at
+ * http://www.inf.ethz.ch/personal/gaertner/miniball.html<br>
+ * and related work at http://www.inf.ethz.ch/personal/gaertner/texts/own_work/esa99_final.pdf<br>
+ * for reading about the algorithm and the implementation of it.
+ *
+ * <p>
+ *
+ * <p>If interested in Bounding Sphere algorithms read also published work of <B>Emo Welzl</B>
+ * "Smallest enclosing disks (balls and Ellipsoid)" and the work of <B>Jack Ritter</B> on "Efficient
+ * Bounding Spheres" at<br>
+ * http://tog.acm.org/GraphicsGems/gems/BoundSphere.c?searchterm=calc
+ *
+ * <p>
+ *
+ * <p>
+ *
+ * <p>For Licencing Info report to Bernd Gaertner's one reported below:
+ *
+ * <p>Copright (C) 1999-2006, Bernd Gaertner<br>
+ * $Revision: 1.3 $<br>
+ * $Date: 2006/11/16 08:01:52 $<br>
+ * <br>
+ * This program is free software; you can redistribute it and/or modify<br>
+ * it under the terms of the GNU General Public License as published by<br>
+ * the Free Software Foundation; either version 3 of the License, or<br>
+ * (at your option) any later version.<br>
+ * <br>
+ * This program is distributed in the hope that it will be useful,<br>
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of<br>
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the<br>
+ * GNU General Public License for more details.<br>
+ * <br>
+ * You should have received a copy of the GNU General Public License<br>
+ * along with this program. If not, see <a href="http://www.gnu.org/licenses/">{@literal
+ * <http://www.gnu.org/licenses/>}</a>.<br>
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA,<br>
+ * or download the License terms from prep.ai.mit.edu/pub/gnu/COPYING-2.0.<br>
+ * <br>
+ * Contact:<br>
+ * --------<br>
+ * Bernd Gaertner<br>
+ * Institute of Theoretical Computer Science<br>
+ * ETH Zuerich<br>
+ * CAB G32.2<br>
+ * CH-8092 Zuerich, Switzerland<br>
+ * http://www.inf.ethz.ch/personal/gaertner<br>
+ * Original Java port from Paolo Perissinotto for Jpatch Project by Sascha Ledinsky found at
+ * {@literal http://forum.jpatch.com/viewtopic.php?f=3&t=919}
+ *
+ * @author Paolo Perissinotto for Jpatch Project by <B>Sascha Ledinsky</B>
+ * @version 1.0 {@literal Date: 2007/11/18 21:57}
+ *     <p>used for moa for calculating most compact sphere cluster modified by Timm Jansen
+ *     (moa@cs.rwth-aachen.de) to be used with high dimensional points
+ */
 public class Miniball {
 
     int d;
@@ -89,7 +88,7 @@ public class Miniball {
 
     class Miniball_b {
 
-        int m, s;   // size and number of support points
+        int m, s; // size and number of support points
         double[] q0 = new double[d];
         double[] z = new double[d + 1];
         double[] f = new double[d + 1];
@@ -99,7 +98,6 @@ public class Miniball {
         double[] sqr_r = new double[d + 1];
         double[] current_c = new double[d]; // refers to some c[j]
         double current_sqr_r;
-
 
         double[] getCenter() {
             return (current_c);
@@ -141,7 +139,7 @@ public class Miniball {
         }
 
         boolean push(double[] p) {
-            //System.out.println("Miniball_b:push");
+            // System.out.println("Miniball_b:push");
             int i, j;
             double eps = 1e-32;
 
@@ -227,11 +225,10 @@ public class Miniball {
     }
 
     /**
-     *   Method clear: clears the ArrayList of the selection points.<br>
-     *   Use it for starting a new selection list to calculate Bounding Sphere on<br>
-     *   or to clear memory references to the list of objects.<br>
-     *   Always use at the end of a Miniball use if you want to reuse later the Miniball object
-     *
+     * Method clear: clears the ArrayList of the selection points.<br>
+     * Use it for starting a new selection list to calculate Bounding Sphere on<br>
+     * or to clear memory references to the list of objects.<br>
+     * Always use at the end of a Miniball use if you want to reuse later the Miniball object
      */
     public void clear() {
         L.clear();
@@ -240,6 +237,7 @@ public class Miniball {
     /**
      * Adds a point to the list.<br>
      * Skip action on null parameter.<br>
+     *
      * @param p The object to be added to the list
      */
     public void check_in(double[] p) {
@@ -250,11 +248,7 @@ public class Miniball {
         }
     }
 
-
-    /**
-     * Recalculate Miniball parameter Center and Radius
-     *
-     */
+    /** Recalculate Miniball parameter Center and Radius */
     public void build() {
         B.reset();
         support_end = 0;
@@ -267,7 +261,7 @@ public class Miniball {
         if ((B.size()) == d + 1) {
             return;
         }
-        for (int k = points_begin(); k != i;) {
+        for (int k = points_begin(); k != i; ) {
             pj = pj + 1;
             int j = k++;
             double[] sp = (double[]) L.get(j);
@@ -335,6 +329,7 @@ public class Miniball {
 
     /**
      * Return the center of the Miniball
+     *
      * @return The center (double[])
      */
     public double[] center() {
@@ -343,6 +338,7 @@ public class Miniball {
 
     /**
      * Return the sqaured Radius of the miniball
+     *
      * @return The square radius
      */
     public double squared_radius() {
@@ -351,6 +347,7 @@ public class Miniball {
 
     /**
      * Return the Radius of the miniball
+     *
      * @return The radius
      */
     public double radius() {
@@ -359,6 +356,7 @@ public class Miniball {
 
     /**
      * Return the actual number of points in the list
+     *
      * @return the actual number of points
      */
     public int nr_points() {
@@ -376,6 +374,7 @@ public class Miniball {
     /**
      * Return the number of support points (used to calculate the miniball).<br>
      * It's and internal info
+     *
      * @return the number of support points
      */
     public int nr_support_points() {

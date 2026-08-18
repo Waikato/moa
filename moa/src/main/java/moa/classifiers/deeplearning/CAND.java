@@ -22,6 +22,7 @@ package moa.classifiers.deeplearning;
 
 import com.github.javacliparser.*;
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
@@ -43,38 +44,43 @@ import java.util.concurrent.*;
 /**
  * Continuously Adaptive Neural networks for Data streams
  *
- * <p>Continuously Adaptive Neural networks for Data streams (CAND). For every prediction, CAND chooses the current best
- * network from a pool of candidates by continuously monitoring the performance of all candidate networks. The candidates
- * are trained using different optimizers and hyperparameters. There are two orthogonal heuristics (skip back propagation,
- * smaller training pool) for accelerating CAND, which trade-off small amounts of accuracy for significant runtime gains.
- * When training, small mini-batches yields similar accuracy to single-instance fully incremental training, even on
- * evolving data streams.</p>
+ * <p>Continuously Adaptive Neural networks for Data streams (CAND). For every prediction, CAND
+ * chooses the current best network from a pool of candidates by continuously monitoring the
+ * performance of all candidate networks. The candidates are trained using different optimizers and
+ * hyperparameters. There are two orthogonal heuristics (skip back propagation, smaller training
+ * pool) for accelerating CAND, which trade-off small amounts of accuracy for significant runtime
+ * gains. When training, small mini-batches yields similar accuracy to single-instance fully
+ * incremental training, even on evolving data streams.
  *
- * <p>See details in:<br> Nuwan Gunasekara, Heitor Murilo Gomes, Bernhard Pfahringer, Albert Bifet.
- * Online Hyperparameter Optimization for Streaming Neural Networks.
- * International Joint Conference on Neural Networks (IJCNN), 2022.</p>
+ * <p>See details in:<br>
+ * Nuwan Gunasekara, Heitor Murilo Gomes, Bernhard Pfahringer, Albert Bifet. Online Hyperparameter
+ * Optimization for Streaming Neural Networks. International Joint Conference on Neural Networks
+ * (IJCNN), 2022.
  *
- * <p>Parameters:</p> <ul>
- * <li>-P : The larger pool type.
- * P10 = { learning rates: 5.0E-(1 to 5), optimizes: SGD,Adam, neurons in 1st layer:  2^(8 to 10) },
- * P30 = { learning rates: 5.0E-(1 to 5), optimizes: Adam, neurons in 1st layer:  2^9 }</li>
- * <li>-o : Number of MLPs to train at a given time (after -s numberOfInstancesToTrainAllMLPsAtStart instances).</li>
- * <li>-L : Number of layers in each MLP.</li>
- * <li>-s : Number of instances to train all MLPs at start.</li>
- * <li>-B : Mini Batch Size.</li>
- * <li>-h : Use one hot encoding.</li>
- * <li>-n : Normalize data.</li>
- * <li>-b : Skip back propagation loss threshold.</li>
- * <li>-d : Choose device to run the model(For GPU, needs CUDA installed on the system. Use CPU if GPUs are not available)</li>
- * <li>-t : Do NOT train each MLP using a separate thread.</li>
- * <li>-f : Votes dump file name.</li>
- * <li>-F : Stats dump file name.</li>
+ * <p>Parameters:
+ *
+ * <ul>
+ *   <li>-P : The larger pool type. P10 = { learning rates: 5.0E-(1 to 5), optimizes: SGD,Adam,
+ *       neurons in 1st layer: 2^(8 to 10) }, P30 = { learning rates: 5.0E-(1 to 5), optimizes:
+ *       Adam, neurons in 1st layer: 2^9 }
+ *   <li>-o : Number of MLPs to train at a given time (after -s
+ *       numberOfInstancesToTrainAllMLPsAtStart instances).
+ *   <li>-L : Number of layers in each MLP.
+ *   <li>-s : Number of instances to train all MLPs at start.
+ *   <li>-B : Mini Batch Size.
+ *   <li>-h : Use one hot encoding.
+ *   <li>-n : Normalize data.
+ *   <li>-b : Skip back propagation loss threshold.
+ *   <li>-d : Choose device to run the model(For GPU, needs CUDA installed on the system. Use CPU if
+ *       GPUs are not available)
+ *   <li>-t : Do NOT train each MLP using a separate thread.
+ *   <li>-f : Votes dump file name.
+ *   <li>-F : Stats dump file name.
  * </ul>
  *
  * @author Nuwan Gunasekara (ng98 at students dot waikato dot ac dot nz)
  * @version $Revision: 1 $
  */
-
 public class CAND extends AbstractClassifier implements MultiClassClassifier, CapabilitiesHandler {
 
     private static final long serialVersionUID = 1L;
@@ -83,15 +89,16 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
     protected long samplesSeen = 0;
     protected MLP.NormalizeInfo[] normalizeInfo = null;
     private double[] featureValues = null;
-    private double [] class_value = null;
+    private double[] class_value = null;
     private ExecutorService exService = null;
     private FileWriter statsDumpFile = null;
     private FileWriter votesDumpFile = null;
-    private BasicClassificationPerformanceEvaluator performanceEvaluator = new BasicClassificationPerformanceEvaluator();
+    private BasicClassificationPerformanceEvaluator performanceEvaluator =
+            new BasicClassificationPerformanceEvaluator();
     private long driftsDetectedPerSampleFrequency = 0;
     private long totalDriftsDetected = 0;
     private long avgMLPsPerSampleFrequency = 0;
-    private long lastGetModelMeasurementsImplCalledAt=0;
+    private long lastGetModelMeasurementsImplCalledAt = 0;
 
     private MiniBatch miniBatch = null;
 
@@ -100,71 +107,84 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
     public static final int LARGER_P_POOL_10 = 0;
     public static final int LARGER_P_POOL_30 = 1;
 
-    public MultiChoiceOption largerPool = new MultiChoiceOption("largerPool", 'P',
-            "The larger pool type",
-            new String[]{"P10", "P30"},
-            new String[]{
-                    "P10 = { learning rates: 5.0E-(1 to 5), optimizes: SGD,Adam, neurons in 1st layer:  2^(8 to 10) }",
-                    "P30 = { learning rates: 5.0E-(1 to 5), optimizes: Adam, neurons in 1st layer:  2^9 }"},
-            LARGER_P_POOL_30);
+    public MultiChoiceOption largerPool =
+            new MultiChoiceOption(
+                    "largerPool",
+                    'P',
+                    "The larger pool type",
+                    new String[] {"P10", "P30"},
+                    new String[] {
+                        "P10 = { learning rates: 5.0E-(1 to 5), optimizes: SGD,Adam, neurons in 1st"
+                                + " layer:  2^(8 to 10) }",
+                        "P30 = { learning rates: 5.0E-(1 to 5), optimizes: Adam, neurons in 1st"
+                                + " layer:  2^9 }"
+                    },
+                    LARGER_P_POOL_30);
 
-    public IntOption numberOfMLPsToTrainOption = new IntOption(
-            "numberOfMLPsToTrain",
-            'o',
-            "Number of MLPs to train at a given time (after numberOfInstancesToTrainAllMLPsAtStart instances)",
-            10, 2, Integer.MAX_VALUE);
+    public IntOption numberOfMLPsToTrainOption =
+            new IntOption(
+                    "numberOfMLPsToTrain",
+                    'o',
+                    "Number of MLPs to train at a given time (after"
+                            + " numberOfInstancesToTrainAllMLPsAtStart instances)",
+                    10,
+                    2,
+                    Integer.MAX_VALUE);
 
-    public IntOption numberOfLayersInEachMLP = new IntOption(
-            "numberOfLayersInEachMLP",
-            'L',
-            "Number of layers in each MLP",
-            1, 1, 4);
+    public IntOption numberOfLayersInEachMLP =
+            new IntOption("numberOfLayersInEachMLP", 'L', "Number of layers in each MLP", 1, 1, 4);
 
-    public IntOption numberOfInstancesToTrainAllMLPsAtStartOption = new IntOption(
-            "numberOfInstancesToTrainAllMLPsAtStart",
-            's',
-            "Number of instances to train all MLPs at start",
-            100, 0, Integer.MAX_VALUE);
+    public IntOption numberOfInstancesToTrainAllMLPsAtStartOption =
+            new IntOption(
+                    "numberOfInstancesToTrainAllMLPsAtStart",
+                    's',
+                    "Number of instances to train all MLPs at start",
+                    100,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public IntOption miniBatchSize = new IntOption(
-            "miniBatchSize",
-            'B',
-            "Mini Batch Size",
-            1, 1, 2048);
+    public IntOption miniBatchSize =
+            new IntOption("miniBatchSize", 'B', "Mini Batch Size", 1, 1, 2048);
 
+    public FlagOption useOneHotEncode =
+            new FlagOption("useOneHotEncode", 'h', "use one hot encoding");
 
-    public FlagOption useOneHotEncode = new FlagOption("useOneHotEncode", 'h',
-            "use one hot encoding");
+    public FlagOption useNormalization = new FlagOption("useNormalization", 'n', "Normalize data");
 
-    public FlagOption useNormalization = new FlagOption("useNormalization", 'n',
-            "Normalize data");
+    public FloatOption backPropLossThreshold =
+            new FloatOption(
+                    "backPropLossThreshold",
+                    'b',
+                    "Skip back propagation loss threshold",
+                    0.3,
+                    0.0,
+                    Math.pow(10, 10));
 
-    public FloatOption backPropLossThreshold = new FloatOption(
-            "backPropLossThreshold",
-            'b',
-            "Skip back propagation loss threshold",
-            0.3, 0.0, Math.pow(10,10));
+    public MultiChoiceOption deviceTypeOption =
+            new MultiChoiceOption(
+                    "deviceType",
+                    'd',
+                    "Choose device to run the model(For GPU, needs CUDA installed on the system."
+                            + " Use CPU if GPUs are not available)",
+                    new String[] {"GPU", "CPU"},
+                    new String[] {
+                        "GPU (Needs CUDA installed on the system. Use CPU if not available)", "CPU"
+                    },
+                    MLP.deviceTypeOptionCPU);
 
-    public MultiChoiceOption deviceTypeOption = new MultiChoiceOption("deviceType", 'd',
-            "Choose device to run the model(For GPU, needs CUDA installed on the system. Use CPU if GPUs are not available)",
-            new String[]{"GPU","CPU"},
-            new String[]{"GPU (Needs CUDA installed on the system. Use CPU if not available)", "CPU"},
-            MLP.deviceTypeOptionCPU);
+    public FlagOption doNotTrainEachMLPUsingASeparateThread =
+            new FlagOption(
+                    "doNotTrainEachMLPUsingASeparateThread",
+                    't',
+                    "Do NOT train each MLP using a separate thread");
+    public StringOption votesDumpFileName =
+            new StringOption("votesDumpFileName", 'f', "Votes dump file name", "");
+    public StringOption statsDumpFileName =
+            new StringOption("statsDumpFileName", 'F', "Stats dump file name", "");
 
-    public FlagOption doNotTrainEachMLPUsingASeparateThread = new FlagOption("doNotTrainEachMLPUsingASeparateThread", 't',
-            "Do NOT train each MLP using a separate thread");
-    public StringOption votesDumpFileName = new StringOption("votesDumpFileName", 'f',
-            "Votes dump file name",
-            "" );
-    public StringOption statsDumpFileName = new StringOption("statsDumpFileName", 'F',
-            "Stats dump file name",
-            "" );
-
-    public IntOption djlRandomSeed = new IntOption(
-            "djlRandomSeed",
-            'S',
-            "Random seed for DJL Engine",
-            10, 0, Integer.MAX_VALUE);
+    public IntOption djlRandomSeed =
+            new IntOption(
+                    "djlRandomSeed", 'S', "Random seed for DJL Engine", 10, 0, Integer.MAX_VALUE);
 
     @Override
     public void resetLearningImpl() {
@@ -185,43 +205,50 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
 
     @Override
     public void trainOnInstanceImpl(Instance instance) {
-        if(this.nn == null){
+        if (this.nn == null) {
             initNNs(instance);
         }
 
         class_value[0] = instance.classValue();
 
-        if (miniBatch == null){
-            miniBatch = new MiniBatch(this.nn[0].nnmodel.getNDManager().getDevice(), miniBatchSize.getValue());
-//            System.out.println("For training mini batch using device: " + trainingNDManager.getDevice());
+        if (miniBatch == null) {
+            miniBatch =
+                    new MiniBatch(
+                            this.nn[0].nnmodel.getNDManager().getDevice(),
+                            miniBatchSize.getValue());
+            //            System.out.println("For training mini batch using device: " +
+            // trainingNDManager.getDevice());
         }
 
         miniBatch.addToMiniBatch(featureValues, class_value);
-        if (miniBatch.miniBatchFull() ){
+        if (miniBatch.miniBatchFull()) {
             int numberOfMLPsToTrain = numberOfMLPsToTrainOption.getValue();
-            int numberOfTopMLPsToTrain = numberOfMLPsToTrain /2;
-            if (samplesSeen < numberOfInstancesToTrainAllMLPsAtStartOption.getValue()){
+            int numberOfTopMLPsToTrain = numberOfMLPsToTrain / 2;
+            if (samplesSeen < numberOfInstancesToTrainAllMLPsAtStartOption.getValue()) {
                 numberOfMLPsToTrain = nn.length;
                 numberOfTopMLPsToTrain = nn.length;
             }
             avgMLPsPerSampleFrequency += numberOfMLPsToTrain;
 
-            Arrays.sort(this.nn, new Comparator<MLP>() {
-                @Override
-                public int compare(MLP o1, MLP o2) {
-                    return Double.compare(o1.getLossEstimation(), o2.getLossEstimation());
-                }
-            });
+            Arrays.sort(
+                    this.nn,
+                    new Comparator<MLP>() {
+                        @Override
+                        public int compare(MLP o1, MLP o2) {
+                            return Double.compare(o1.getLossEstimation(), o2.getLossEstimation());
+                        }
+                    });
 
-            boolean [] trainNetwork = new boolean[this.nn.length];
-            for (int i =0; i < numberOfMLPsToTrain; i++) {
+            boolean[] trainNetwork = new boolean[this.nn.length];
+            for (int i = 0; i < numberOfMLPsToTrain; i++) {
                 int nnIndex;
-                if (i < numberOfTopMLPsToTrain){
+                if (i < numberOfTopMLPsToTrain) {
                     // top most train
                     nnIndex = i;
-                }else {
+                } else {
                     // Random train
-                    int offSet = (int) ((samplesSeen + i) % (this.nn.length  - numberOfTopMLPsToTrain));
+                    int offSet =
+                            (int) ((samplesSeen + i) % (this.nn.length - numberOfTopMLPsToTrain));
                     nnIndex = numberOfTopMLPsToTrain + offSet;
                 }
                 trainNetwork[nnIndex] = true;
@@ -242,7 +269,7 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
                 public Boolean call() {
                     try {
                         this.mlp.trainOnMiniBatch(this.miniBatch, this.trainNet);
-                    } catch (NullPointerException e){
+                    } catch (NullPointerException e) {
                         e.printStackTrace();
                         System.exit(1);
                     }
@@ -250,27 +277,29 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
                 }
             }
 
-            final Future<Boolean> [] runFuture = new Future[this.nn.length];
+            final Future<Boolean>[] runFuture = new Future[this.nn.length];
 
-            for (int i =0; i < this.nn.length; i++) {
-                if (! this.doNotTrainEachMLPUsingASeparateThread.isSet()){
-                    //start thread
-                    runFuture[i] = exService.submit(new TrainThread(this.nn[i], this.miniBatch, trainNetwork[i]));
-                }else{
+            for (int i = 0; i < this.nn.length; i++) {
+                if (!this.doNotTrainEachMLPUsingASeparateThread.isSet()) {
+                    // start thread
+                    runFuture[i] =
+                            exService.submit(
+                                    new TrainThread(this.nn[i], this.miniBatch, trainNetwork[i]));
+                } else {
                     this.nn[i].initializeNetwork(instance);
                     this.nn[i].trainOnMiniBatch(miniBatch, trainNetwork[i]);
                 }
             }
 
-            if (! this.doNotTrainEachMLPUsingASeparateThread.isSet()){
+            if (!this.doNotTrainEachMLPUsingASeparateThread.isSet()) {
                 // wait for threads to complete
                 int runningCount = this.nn.length;
-                while (runningCount != 0){
+                while (runningCount != 0) {
                     runningCount = 0;
-                    for (int i =0; i < this.nn.length; i++) {
+                    for (int i = 0; i < this.nn.length; i++) {
                         try {
                             final Boolean returnedValue = runFuture[i].get();
-                            if (!returnedValue.equals(Boolean.TRUE)){
+                            if (!returnedValue.equals(Boolean.TRUE)) {
                                 runningCount++;
                             }
                         } catch (InterruptedException | ExecutionException e) {
@@ -284,21 +313,33 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
         }
     }
 
-    private void printStats(){
+    private void printStats() {
         long sampleFrequency = samplesSeen - lastGetModelMeasurementsImplCalledAt;
         if (statsDumpFile != null) {
             for (int i = 0; i < this.nn.length; i++) {
                 try {
-                    statsDumpFile.write(samplesSeen + ","
-                            + this.nn[i].samplesSeen + ","
-                            + this.nn[i].trainedCount + ","
-                            + this.nn[i].modelName + ","
-                            + performanceEvaluator.getPerformanceMeasurements()[1].getValue() + ","
-                            + this.nn[i].lossEstimator.getEstimation() + ","
-                            + totalDriftsDetected + ","
-                            + sampleFrequency + ","
-                            + driftsDetectedPerSampleFrequency + ","
-                            + avgMLPsPerSampleFrequency / sampleFrequency + "\n");
+                    statsDumpFile.write(
+                            samplesSeen
+                                    + ","
+                                    + this.nn[i].samplesSeen
+                                    + ","
+                                    + this.nn[i].trainedCount
+                                    + ","
+                                    + this.nn[i].modelName
+                                    + ","
+                                    + performanceEvaluator.getPerformanceMeasurements()[1]
+                                            .getValue()
+                                    + ","
+                                    + this.nn[i].lossEstimator.getEstimation()
+                                    + ","
+                                    + totalDriftsDetected
+                                    + ","
+                                    + sampleFrequency
+                                    + ","
+                                    + driftsDetectedPerSampleFrequency
+                                    + ","
+                                    + avgMLPsPerSampleFrequency / sampleFrequency
+                                    + "\n");
                     statsDumpFile.flush();
                 } catch (IOException e) {
                     System.out.println("An error occurred.");
@@ -308,17 +349,25 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
         }
     }
 
-    private void printVotes(Instance instance){
+    private void printVotes(Instance instance) {
         if (votesDumpFile != null) {
             for (int i = 0; i < this.nn.length; i++) {
                 try {
-                    votesDumpFile.write(samplesSeen + ","
-                            + this.nn[i].modelName + ","
-                            + this.nn[i].lossEstimator.getEstimation() + ","
-                            + instance.classValue() + ","
-                            + instance.classIndex() + ","
-                            + Arrays.toString(this.nn[i].getVotesForFeatureValues(instance, featureValues))
-                            + "\n");
+                    votesDumpFile.write(
+                            samplesSeen
+                                    + ","
+                                    + this.nn[i].modelName
+                                    + ","
+                                    + this.nn[i].lossEstimator.getEstimation()
+                                    + ","
+                                    + instance.classValue()
+                                    + ","
+                                    + instance.classIndex()
+                                    + ","
+                                    + Arrays.toString(
+                                            this.nn[i].getVotesForFeatureValues(
+                                                    instance, featureValues))
+                                    + "\n");
                 } catch (IOException e) {
                     System.out.println("An error occurred.");
                     e.printStackTrace();
@@ -330,27 +379,28 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
     @Override
     public double[] getVotesForInstance(Instance instance) {
         int chosenIndex = 0;
-        double [] votes;
-        samplesSeen ++;
+        double[] votes;
+        samplesSeen++;
 
-        if(this.nn == null) {
+        if (this.nn == null) {
             initNNs(instance);
-        }else {
+        } else {
             double minEstimation = Double.MAX_VALUE;
-            for (int i = 0 ; i < this.nn.length ; i++) {
-                if (this.nn[i].getLossEstimation() < minEstimation){
+            for (int i = 0; i < this.nn.length; i++) {
+                if (this.nn[i].getLossEstimation() < minEstimation) {
                     minEstimation = this.nn[i].getLossEstimation();
                     chosenIndex = i;
                 }
             }
         }
-        MLP.setFeatureValuesArray(instance, featureValues, useOneHotEncode.isSet(), true, normalizeInfo, samplesSeen);
+        MLP.setFeatureValuesArray(
+                instance, featureValues, useOneHotEncode.isSet(), true, normalizeInfo, samplesSeen);
 
         votes = this.nn[chosenIndex].getVotesForFeatureValues(instance, featureValues);
         performanceEvaluator.addResult(new InstanceExample(instance), votes);
         double lastAcc = accEstimator.getEstimation();
         accEstimator.setInput(performanceEvaluator.getPerformanceMeasurements()[1].getValue());
-        if (accEstimator.getChange() && (accEstimator.getEstimation() < lastAcc)){
+        if (accEstimator.getChange() && (accEstimator.getEstimation() < lastAcc)) {
             totalDriftsDetected++;
             driftsDetectedPerSampleFrequency++;
         }
@@ -364,8 +414,7 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
     }
 
     @Override
-    public void getModelDescription(StringBuilder arg0, int arg1) {
-    }
+    public void getModelDescription(StringBuilder arg0, int arg1) {}
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
@@ -373,11 +422,11 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
         driftsDetectedPerSampleFrequency = 0;
         avgMLPsPerSampleFrequency = 0;
         lastGetModelMeasurementsImplCalledAt = samplesSeen;
-        try{
+        try {
             if (votesDumpFile != null) {
                 votesDumpFile.flush();
             }
-        }catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
@@ -385,13 +434,17 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
     }
 
     protected void initNNs(Instance instance) {
-        class MLPConfigs{
+        class MLPConfigs {
             private final int numberOfNeuronsInL1InLog2;
             private final int optimizerType;
             private final float learningRate;
             private final double deltaForADWIN;
 
-            MLPConfigs(int numberOfNeuronsInL1InLog2, int optimizerType, float learningRate, double deltaForADWIN){
+            MLPConfigs(
+                    int numberOfNeuronsInL1InLog2,
+                    int optimizerType,
+                    float learningRate,
+                    double deltaForADWIN) {
                 this.numberOfNeuronsInL1InLog2 = numberOfNeuronsInL1InLog2;
                 this.optimizerType = optimizerType;
                 this.learningRate = learningRate;
@@ -399,38 +452,45 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
             }
         }
 
-        MLPConfigs [] nnConfigs = {};
+        MLPConfigs[] nnConfigs = {};
         List<MLPConfigs> nnConfigsArrayList = new ArrayList<MLPConfigs>(Arrays.asList(nnConfigs));
-        float [] denominator = {10.0f, 100.0f, 1000.0f, 10000.0f, 100000.0f};
-        float [] numerator = new float [] {5.0f};
-        for (int n=0; n < numerator.length; n++){
-            for (int d=0; d < denominator.length; d++){
-                float lr = numerator[n]/denominator[d];
-                for (int numberOfNeuronsInL1InLog2 = 8; numberOfNeuronsInL1InLog2 < 11; numberOfNeuronsInL1InLog2++){
+        float[] denominator = {10.0f, 100.0f, 1000.0f, 10000.0f, 100000.0f};
+        float[] numerator = new float[] {5.0f};
+        for (int n = 0; n < numerator.length; n++) {
+            for (int d = 0; d < denominator.length; d++) {
+                float lr = numerator[n] / denominator[d];
+                for (int numberOfNeuronsInL1InLog2 = 8;
+                        numberOfNeuronsInL1InLog2 < 11;
+                        numberOfNeuronsInL1InLog2++) {
 
                     if (largerPool.getChosenIndex() == LARGER_P_POOL_30) {
-                        nnConfigsArrayList.add(new MLPConfigs(numberOfNeuronsInL1InLog2, MLP.OPTIMIZER_SGD, lr, 1.0E-3));
-                    }else{ // LARGER_P_POOL_10
-                        if ( numberOfNeuronsInL1InLog2 == 9){
+                        nnConfigsArrayList.add(
+                                new MLPConfigs(
+                                        numberOfNeuronsInL1InLog2, MLP.OPTIMIZER_SGD, lr, 1.0E-3));
+                    } else { // LARGER_P_POOL_10
+                        if (numberOfNeuronsInL1InLog2 == 9) {
                             continue;
-                        }else{
+                        } else {
                             // numberOfNeuronsInL1InLog2 = 8 or 10
                         }
                     }
-                    nnConfigsArrayList.add(new MLPConfigs(numberOfNeuronsInL1InLog2, MLP.OPTIMIZER_ADAM, lr, 1.0E-3));
+                    nnConfigsArrayList.add(
+                            new MLPConfigs(
+                                    numberOfNeuronsInL1InLog2, MLP.OPTIMIZER_ADAM, lr, 1.0E-3));
                 }
             }
         }
         nnConfigs = nnConfigsArrayList.toArray(nnConfigs);
 
         this.nn = new MLP[nnConfigs.length];
-        for(int i=0; i < nnConfigs.length; i++){
+        for (int i = 0; i < nnConfigs.length; i++) {
             this.nn[i] = new MLP();
             this.nn[i].optimizerTypeOption.setChosenIndex(nnConfigs[i].optimizerType);
             this.nn[i].learningRateOption.setValue(nnConfigs[i].learningRate);
             this.nn[i].useOneHotEncode.setValue(useOneHotEncode.isSet());
             this.nn[i].deviceTypeOption.setChosenIndex(deviceTypeOption.getChosenIndex());
-            this.nn[i].numberOfNeuronsInEachLayerInLog2.setValue(nnConfigs[i].numberOfNeuronsInL1InLog2);
+            this.nn[i].numberOfNeuronsInEachLayerInLog2.setValue(
+                    nnConfigs[i].numberOfNeuronsInL1InLog2);
             this.nn[i].numberOfLayers.setValue(numberOfLayersInEachMLP.getValue());
             this.nn[i].deltaForADWIN = nnConfigs[i].deltaForADWIN;
             this.nn[i].backPropLossThreshold.setValue(backPropLossThreshold.getValue());
@@ -441,28 +501,30 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
         try {
             if (statsDumpFileName.getValue().length() > 0) {
                 statsDumpFile = new FileWriter(statsDumpFileName.getValue());
-                statsDumpFile.write("id," +
-                        "samplesSeenAtTrain," +
-                        "trainedCount," +
-                        "optimizer_type_learning_rate_delta," +
-                        "acc," +
-                        "estimated_loss," +
-                        "totalDriftsDetected," +
-                        "sampleFrequency," +
-                        "driftsDetectedPerSampleFrequency," +
-                        "avgMLPsPerSampleFrequency" +
-                        "\n");
+                statsDumpFile.write(
+                        "id,"
+                                + "samplesSeenAtTrain,"
+                                + "trainedCount,"
+                                + "optimizer_type_learning_rate_delta,"
+                                + "acc,"
+                                + "estimated_loss,"
+                                + "totalDriftsDetected,"
+                                + "sampleFrequency,"
+                                + "driftsDetectedPerSampleFrequency,"
+                                + "avgMLPsPerSampleFrequency"
+                                + "\n");
                 statsDumpFile.flush();
             }
-            if (votesDumpFileName.getValue().length() > 0 ) {
+            if (votesDumpFileName.getValue().length() > 0) {
                 votesDumpFile = new FileWriter(votesDumpFileName.getValue());
-                votesDumpFile.write("id," +
-                        "modelName," +
-                        "estimated_loss," +
-                        "classValue," +
-                        "classIndex," +
-                        "votes," +
-                        "\n");
+                votesDumpFile.write(
+                        "id,"
+                                + "modelName,"
+                                + "estimated_loss,"
+                                + "classValue,"
+                                + "classIndex,"
+                                + "votes,"
+                                + "\n");
                 votesDumpFile.flush();
             }
         } catch (IOException e) {
@@ -474,11 +536,15 @@ public class CAND extends AbstractClassifier implements MultiClassClassifier, Ca
 
         class_value = new double[1];
         featureValuesArraySize = MLP.getFeatureValuesArraySize(instance, useOneHotEncode.isSet());
-        System.out.println("Number of features before one-hot encode: " + instance.numInputAttributes() + " : Number of features after one-hot encode: " + featureValuesArraySize);
-        featureValues = new double [featureValuesArraySize];
+        System.out.println(
+                "Number of features before one-hot encode: "
+                        + instance.numInputAttributes()
+                        + " : Number of features after one-hot encode: "
+                        + featureValuesArraySize);
+        featureValues = new double[featureValuesArraySize];
         if (useNormalization.isSet()) {
             normalizeInfo = new MLP.NormalizeInfo[featureValuesArraySize];
-            for(int i=0; i < normalizeInfo.length; i++){
+            for (int i = 0; i < normalizeInfo.length; i++) {
                 normalizeInfo[i] = new MLP.NormalizeInfo();
             }
         }

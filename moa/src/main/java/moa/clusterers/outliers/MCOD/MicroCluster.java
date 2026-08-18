@@ -14,15 +14,16 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.clusterers.outliers.MCOD;
 
-import java.util.ArrayList;
 import moa.clusterers.outliers.MCOD.ISBIndex.ISBNode;
 import moa.clusterers.outliers.utils.mtree.DistanceFunctions.EuclideanCoordinate;
+
+import java.util.ArrayList;
 
 public class MicroCluster implements EuclideanCoordinate, Comparable<MicroCluster> {
     public ISBNode mcc;
@@ -33,17 +34,15 @@ public class MicroCluster implements EuclideanCoordinate, Comparable<MicroCluste
         nodes = new ArrayList<ISBNode>();
         AddNode(mcc);
     }
-    
+
     public void AddNode(ISBNode node) {
-        if (node != null)
-            nodes.add(node);
+        if (node != null) nodes.add(node);
     }
-    
+
     public void RemoveNode(ISBNode node) {
-        if (node != null)
-            nodes.remove(node);
+        if (node != null) nodes.remove(node);
     }
-    
+
     public int GetNodesCount() {
         return nodes.size();
     }

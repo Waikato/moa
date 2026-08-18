@@ -15,46 +15,44 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.generators;
 
+import com.github.javacliparser.FlagOption;
+import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.DenseInstance;
+import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.Instances;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.capabilities.CapabilitiesHandler;
 import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 import moa.core.FastVector;
-import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.Instances;
-
-import java.util.Random;
 import moa.core.InstanceExample;
-
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
-import com.github.javacliparser.FlagOption;
-import com.github.javacliparser.IntOption;
 import moa.streams.InstanceStream;
 import moa.tasks.TaskMonitor;
 
+import java.util.Random;
+
 /**
- * Stream generator for SEA concepts functions.
- * Generator described in the paper:<br/>
- * W. Nick Street and YongSeog Kim
- *    "A streaming ensemble algorithm (SEA) for large-scale classification",
- *     KDD '01: Proceedings of the seventh ACM SIGKDD international conference on Knowledge discovery and data mining
- *     377-382 2001.<br/><br/>
- *
- * Notes:<br/>
+ * Stream generator for SEA concepts functions. Generator described in the paper:<br>
+ * W. Nick Street and YongSeog Kim "A streaming ensemble algorithm (SEA) for large-scale
+ * classification", KDD '01: Proceedings of the seventh ACM SIGKDD international conference on
+ * Knowledge discovery and data mining 377-382 2001.<br>
+ * <br>
+ * Notes:<br>
  * The built in functions are based on the paper.
  *
  * @author Albert Bifet (abifet at cs dot waikato dot ac dot nz)
  * @version $Revision: 7 $
  */
-public class SEAGenerator extends AbstractOptionHandler implements
-        InstanceStream, CapabilitiesHandler {
+public class SEAGenerator extends AbstractOptionHandler
+        implements InstanceStream, CapabilitiesHandler {
 
     @Override
     public String getPurposeString() {
@@ -63,22 +61,33 @@ public class SEAGenerator extends AbstractOptionHandler implements
 
     private static final long serialVersionUID = 1L;
 
-    public IntOption functionOption = new IntOption("function", 'f',
-            "Classification function used, as defined in the original paper.",
-            1, 1, 4);
+    public IntOption functionOption =
+            new IntOption(
+                    "function",
+                    'f',
+                    "Classification function used, as defined in the original paper.",
+                    1,
+                    1,
+                    4);
 
-    public IntOption instanceRandomSeedOption = new IntOption(
-            "instanceRandomSeed", 'i',
-            "Seed for random generation of instances.", 1);
+    public IntOption instanceRandomSeedOption =
+            new IntOption("instanceRandomSeed", 'i', "Seed for random generation of instances.", 1);
 
-    public FlagOption balanceClassesOption = new FlagOption("balanceClasses",
-            'b', "Balance the number of instances of each class.");
+    public FlagOption balanceClassesOption =
+            new FlagOption("balanceClasses", 'b', "Balance the number of instances of each class.");
 
-    public IntOption numInstancesConcept = new IntOption("numInstancesConcept", 'n',
-            "The number of instances for each concept.", 0, 0, Integer.MAX_VALUE);
+    public IntOption numInstancesConcept =
+            new IntOption(
+                    "numInstancesConcept",
+                    'n',
+                    "The number of instances for each concept.",
+                    0,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public IntOption noisePercentageOption = new IntOption("noisePercentage",
-            'p', "Percentage of noise to add to the data.", 10, 0, 100);
+    public IntOption noisePercentageOption =
+            new IntOption(
+                    "noisePercentage", 'p', "Percentage of noise to add to the data.", 10, 0, 100);
 
     protected interface ClassFunction {
 
@@ -89,34 +98,34 @@ public class SEAGenerator extends AbstractOptionHandler implements
         // function 1
         new ClassFunction() {
 
-    @Override
-    public int determineClass(double attrib1, double attrib2, double attrib3) {
-        return (attrib1 + attrib2 <= 8) ? 0 : 1;
-    }
-},
+            @Override
+            public int determineClass(double attrib1, double attrib2, double attrib3) {
+                return (attrib1 + attrib2 <= 8) ? 0 : 1;
+            }
+        },
         // function 2
         new ClassFunction() {
 
-    @Override
-    public int determineClass(double attrib1, double attrib2, double attrib3) {
-        return (attrib1 + attrib2 <= 9) ? 0 : 1;
-    }
-},
+            @Override
+            public int determineClass(double attrib1, double attrib2, double attrib3) {
+                return (attrib1 + attrib2 <= 9) ? 0 : 1;
+            }
+        },
         // function 3
         new ClassFunction() {
 
-    public int determineClass(double attrib1, double attrib2, double attrib3) {
-        return (attrib1 + attrib2 <= 7) ? 0 : 1;
-    }
-},
+            public int determineClass(double attrib1, double attrib2, double attrib3) {
+                return (attrib1 + attrib2 <= 7) ? 0 : 1;
+            }
+        },
         // function 4
         new ClassFunction() {
 
-    @Override
-    public int determineClass(double attrib1, double attrib2, double attrib3) {
-        return (attrib1 + attrib2 <= 9.5) ? 0 : 1;
-    }
-}
+            @Override
+            public int determineClass(double attrib1, double attrib2, double attrib3) {
+                return (attrib1 + attrib2 <= 9.5) ? 0 : 1;
+            }
+        }
     };
 
     protected InstancesHeader streamHeader;
@@ -126,8 +135,7 @@ public class SEAGenerator extends AbstractOptionHandler implements
     protected boolean nextClassShouldBeZero;
 
     @Override
-    protected void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    protected void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         // generate header
         FastVector attributes = new FastVector();
         attributes.addElement(new Attribute("attrib1"));
@@ -138,8 +146,9 @@ public class SEAGenerator extends AbstractOptionHandler implements
         classLabels.addElement("groupA");
         classLabels.addElement("groupB");
         attributes.addElement(new Attribute("class", classLabels));
-        this.streamHeader = new InstancesHeader(new Instances(
-                getCLICreationString(InstanceStream.class), attributes, 0));
+        this.streamHeader =
+                new InstancesHeader(
+                        new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
         this.streamHeader.setClassIndex(this.streamHeader.numAttributes() - 1);
         restart();
     }
@@ -176,7 +185,9 @@ public class SEAGenerator extends AbstractOptionHandler implements
             attrib3 = 10 * this.instanceRandom.nextDouble();
 
             // determine class
-            group = classificationFunctions[this.functionOption.getValue() - 1].determineClass(attrib1, attrib2, attrib3);
+            group =
+                    classificationFunctions[this.functionOption.getValue() - 1].determineClass(
+                            attrib1, attrib2, attrib3);
             if (!this.balanceClassesOption.isSet()) {
                 desiredClassFound = true;
             } else {
@@ -188,7 +199,7 @@ public class SEAGenerator extends AbstractOptionHandler implements
                 } // else keep searching
             }
         }
-        //Add Noise
+        // Add Noise
         if ((1 + (this.instanceRandom.nextInt(100))) <= this.noisePercentageOption.getValue()) {
             group = (group == 0 ? 1 : 0);
         }
@@ -219,7 +230,6 @@ public class SEAGenerator extends AbstractOptionHandler implements
     public ImmutableCapabilities defineImmutableCapabilities() {
         if (this.getClass() == SEAGenerator.class)
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
-        else
-            return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+        else return new ImmutableCapabilities(Capability.VIEW_STANDARD);
     }
 }

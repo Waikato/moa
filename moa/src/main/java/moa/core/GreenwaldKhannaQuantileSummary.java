@@ -15,14 +15,14 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
+import moa.AbstractMOAObject;
+
 import java.io.Serializable;
 import java.util.ArrayList;
-
-import moa.AbstractMOAObject;
 
 /**
  * Class for representing summaries of Greenwald and Khanna quantiles.
@@ -93,18 +93,19 @@ public class GreenwaldKhannaQuantileSummary extends AbstractMOAObject {
     }
 
     protected void insertTuple(Tuple t, int index) {
-        System.arraycopy(this.summary, index, this.summary, index + 1,
-                this.numTuples - index);
+        System.arraycopy(this.summary, index, this.summary, index + 1, this.numTuples - index);
         this.summary[index] = t;
         this.numTuples++;
     }
 
     protected void deleteTuple(int index) {
-        this.summary[index] = new Tuple(this.summary[index + 1].v,
-                this.summary[index].g + this.summary[index + 1].g,
-                this.summary[index + 1].delta);
-        System.arraycopy(this.summary, index + 2, this.summary, index + 1,
-                this.numTuples - index - 2);
+        this.summary[index] =
+                new Tuple(
+                        this.summary[index + 1].v,
+                        this.summary[index].g + this.summary[index + 1].g,
+                        this.summary[index + 1].delta);
+        System.arraycopy(
+                this.summary, index + 2, this.summary, index + 1, this.numTuples - index - 2);
         this.summary[this.numTuples - 1] = null;
         this.numTuples--;
     }
@@ -113,8 +114,7 @@ public class GreenwaldKhannaQuantileSummary extends AbstractMOAObject {
         long leastFullness = Long.MAX_VALUE;
         int leastFullIndex = 0;
         for (int i = 1; i < this.numTuples - 1; i++) {
-            long fullness = this.summary[i].g + this.summary[i + 1].g
-                    + this.summary[i + 1].delta;
+            long fullness = this.summary[i].g + this.summary[i + 1].g + this.summary[i + 1].delta;
             if (fullness < leastFullness) {
                 leastFullness = fullness;
                 leastFullIndex = i;
@@ -129,8 +129,7 @@ public class GreenwaldKhannaQuantileSummary extends AbstractMOAObject {
         long leastFullness = Long.MAX_VALUE;
         int leastFullIndex = 0;
         for (int i = 1; i < this.numTuples - 1; i++) {
-            long fullness = this.summary[i].g + this.summary[i + 1].g
-                    + this.summary[i + 1].delta;
+            long fullness = this.summary[i].g + this.summary[i + 1].g + this.summary[i + 1].delta;
             if ((this.summary[i].delta >= this.summary[i + 1].delta)
                     && (fullness < leastFullness)) {
                 leastFullness = fullness;
@@ -186,11 +185,15 @@ public class GreenwaldKhannaQuantileSummary extends AbstractMOAObject {
                 if (mergeG + this.summary[i + 1].delta < maxDelta) {
                     // merge
                     int numDeleted = i - childI;
-                    this.summary[childI + 1] = new Tuple(this.summary[i + 1].v,
-                            mergeG, this.summary[i + 1].delta);
+                    this.summary[childI + 1] =
+                            new Tuple(this.summary[i + 1].v, mergeG, this.summary[i + 1].delta);
                     // todo complete & test this multiple delete
-                    System.arraycopy(this.summary, i + 2, this.summary,
-                            childI + 2, this.numTuples - (i + 2));
+                    System.arraycopy(
+                            this.summary,
+                            i + 2,
+                            this.summary,
+                            childI + 2,
+                            this.numTuples - (i + 2));
                     for (int j = this.numTuples - numDeleted; j < this.numTuples; j++) {
                         this.summary[j] = null;
                     }

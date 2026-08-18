@@ -19,6 +19,4 @@
  */
 package moa.classifiers.rules.multilabel.errormeasurers;
 
-public interface MultiTargetErrorMeasurer extends MultiLabelErrorMeasurer {
-
-}
+public interface MultiTargetErrorMeasurer extends MultiLabelErrorMeasurer {}

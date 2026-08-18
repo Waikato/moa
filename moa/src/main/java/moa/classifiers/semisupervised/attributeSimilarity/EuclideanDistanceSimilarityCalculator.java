@@ -4,8 +4,8 @@ import com.yahoo.labs.samoa.instances.Attribute;
 import com.yahoo.labs.samoa.instances.Instance;
 
 /**
- * Computes the per-attribute similarity of categorical attributes with Euclidean distance,
- * i.e. to consider them as numeric attributes
+ * Computes the per-attribute similarity of categorical attributes with Euclidean distance, i.e. to
+ * consider them as numeric attributes
  */
 public class EuclideanDistanceSimilarityCalculator extends AttributeSimilarityCalculator {
 
@@ -19,5 +19,4 @@ public class EuclideanDistanceSimilarityCalculator extends AttributeSimilarityCa
     public double computeWeightOfAttribute(Attribute attr, Instance X, Instance Y) {
         return 1;
     }
-
 }

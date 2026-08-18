@@ -15,12 +15,13 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.Prediction;
+
 import moa.AbstractMOAObject;
 import moa.capabilities.Capabilities;
 import moa.capabilities.ImmutableCapabilities;
@@ -51,7 +52,6 @@ public class BasicPredictionIntervalEvaluator extends AbstractMOAObject
     private double averageTargetError;
     private double sumTarget;
 
-
     @Override
     public void reset() {
         this.weightObserved = 0.0;
@@ -70,51 +70,45 @@ public class BasicPredictionIntervalEvaluator extends AbstractMOAObject
 
     @Override
     public void addResult(Example<Instance> example, double[] prediction) {
-	Instance inst = example.getData();
+        Instance inst = example.getData();
         if (inst.weight() > 0.0) {
             if (prediction.length == 3) {
-                double meanTarget = this.weightObserved != 0 ?
-                            this.sumTarget / this.weightObserved : 0.0;
+                double meanTarget =
+                        this.weightObserved != 0 ? this.sumTarget / this.weightObserved : 0.0;
                 this.weightObserved += inst.weight();
-                this.counter ++;
-                if (prediction[0] <= inst.classValue() && inst.classValue() <= prediction[2]) this.innerCounter++;
-                this.SSE += (inst.classValue() - prediction[1]) * (inst.classValue() - prediction[1]);
+                this.counter++;
+                if (prediction[0] <= inst.classValue() && inst.classValue() <= prediction[2])
+                    this.innerCounter++;
+                this.SSE +=
+                        (inst.classValue() - prediction[1]) * (inst.classValue() - prediction[1]);
                 if (inst.classValue() > this.maxTruth) this.maxTruth = inst.classValue();
                 if (inst.classValue() < this.minTruth) this.minTruth = inst.classValue();
                 this.sumWidth += prediction[2] - prediction[0];
 
-                this.squareError += (inst.classValue() - prediction[0]) * (inst.classValue() - prediction[0]);
+                this.squareError +=
+                        (inst.classValue() - prediction[0]) * (inst.classValue() - prediction[0]);
                 this.averageError += Math.abs(inst.classValue() - prediction[0]);
-                this.squareTargetError += (inst.classValue() - meanTarget) * (inst.classValue() - meanTarget);
+                this.squareTargetError +=
+                        (inst.classValue() - meanTarget) * (inst.classValue() - meanTarget);
                 this.averageTargetError += Math.abs(inst.classValue() - meanTarget);
                 this.sumTarget += inst.classValue();
                 this.weightObserved += inst.weight();
-
             }
-           //System.out.println(inst.classValue()+", "+prediction[0]);
+            // System.out.println(inst.classValue()+", "+prediction[0]);
         }
     }
 
-
     @Override
     public Measurement[] getPerformanceMeasurements() {
-        return new Measurement[]{
-                    new Measurement("classified instances",
-                    getTotalWeightObserved()),
-                new Measurement("mean absolute error",
-                        getMeanError()),
-                new Measurement("root mean squared error",
-                        getSquareError()),
-                new Measurement("coverage",
-                        getCoverage()),
-                new Measurement("average length",
-                        getAverageLength()),
-                new Measurement("NMPIW",
-                        getNMPIW()),
-                new Measurement("relative mean absolute error",
-                        getRelativeMeanError()),
-                new Measurement("relative root mean squared error",
-                        getRelativeSquareError())
+        return new Measurement[] {
+            new Measurement("classified instances", getTotalWeightObserved()),
+            new Measurement("mean absolute error", getMeanError()),
+            new Measurement("root mean squared error", getSquareError()),
+            new Measurement("coverage", getCoverage()),
+            new Measurement("average length", getAverageLength()),
+            new Measurement("NMPIW", getNMPIW()),
+            new Measurement("relative mean absolute error", getRelativeMeanError()),
+            new Measurement("relative root mean squared error", getRelativeSquareError())
         };
     }
 
@@ -122,7 +116,8 @@ public class BasicPredictionIntervalEvaluator extends AbstractMOAObject
         return Math.sqrt(this.weightObserved > 0 ? this.SSE / this.weightObserved : 0);
     }
 
-    private double getNMPIW() { return Math.round( 10000.0 * getAverageLength() / (this.maxTruth - this.minTruth)) / 100.0;
+    private double getNMPIW() {
+        return Math.round(10000.0 * getAverageLength() / (this.maxTruth - this.minTruth)) / 100.0;
     }
 
     @Override
@@ -131,11 +126,11 @@ public class BasicPredictionIntervalEvaluator extends AbstractMOAObject
     }
 
     private double getAverageLength() {
-        return this.sumWidth/this.counter;
+        return this.sumWidth / this.counter;
     }
 
     public double getCoverage() {
-        return Math.round((0.0 + this.innerCounter)/(0.0+counter) * 10000.0) / 100.0;
+        return Math.round((0.0 + this.innerCounter) / (0.0 + counter) * 10000.0) / 100.0;
     }
 
     public double getTotalWeightObserved() {
@@ -143,48 +138,44 @@ public class BasicPredictionIntervalEvaluator extends AbstractMOAObject
     }
 
     public double getMeanError() {
-        return this.weightObserved > 0.0 ? this.averageError
-                / this.weightObserved : 0.0;
+        return this.weightObserved > 0.0 ? this.averageError / this.weightObserved : 0.0;
     }
 
-//    public double getSquareError() {
-//        return Math.sqrt(this.weightObserved > 0.0 ? this.squareError
-//                / this.weightObserved : 0.0);
-//    }
+    //    public double getSquareError() {
+    //        return Math.sqrt(this.weightObserved > 0.0 ? this.squareError
+    //                / this.weightObserved : 0.0);
+    //    }
 
     public double getTargetMeanError() {
-        return this.weightObserved > 0.0 ? this.averageTargetError
-                / this.weightObserved : 0.0;
+        return this.weightObserved > 0.0 ? this.averageTargetError / this.weightObserved : 0.0;
     }
 
     public double getTargetSquareError() {
-        return Math.sqrt(this.weightObserved > 0.0 ? this.squareTargetError
-                / this.weightObserved : 0.0);
+        return Math.sqrt(
+                this.weightObserved > 0.0 ? this.squareTargetError / this.weightObserved : 0.0);
     }
 
     @Override
     public void getDescription(StringBuilder sb, int indent) {
-        Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
-                sb, indent);
+        Measurement.getMeasurementsDescription(getPerformanceMeasurements(), sb, indent);
     }
 
     private double getRelativeMeanError() {
-        //double targetMeanError = getTargetMeanError();
-        //return targetMeanError > 0 ? getMeanError()/targetMeanError : 0.0;
-        return this.averageTargetError> 0 ?
-                this.averageError/this.averageTargetError : 0.0;
-}
+        // double targetMeanError = getTargetMeanError();
+        // return targetMeanError > 0 ? getMeanError()/targetMeanError : 0.0;
+        return this.averageTargetError > 0 ? this.averageError / this.averageTargetError : 0.0;
+    }
 
     private double getRelativeSquareError() {
-        //double targetSquareError = getTargetSquareError();
-        //return targetSquareError > 0 ? getSquareError()/targetSquareError : 0.0;
-    return Math.sqrt(this.squareTargetError> 0 ?
-                this.squareError/this.squareTargetError : 0.0);
+        // double targetSquareError = getTargetSquareError();
+        // return targetSquareError > 0 ? getSquareError()/targetSquareError : 0.0;
+        return Math.sqrt(
+                this.squareTargetError > 0 ? this.squareError / this.squareTargetError : 0.0);
     }
-    
+
     @Override
     public void addResult(Example<Instance> example, Prediction interval) {
-    	if(interval!=null) {
+        if (interval != null) {
             addResult(example, interval.getVotes());
         }
     }
@@ -193,5 +184,4 @@ public class BasicPredictionIntervalEvaluator extends AbstractMOAObject
     public Capabilities getCapabilities() {
         return PredictionIntervalPerformanceEvaluator.super.getCapabilities();
     }
-
 }

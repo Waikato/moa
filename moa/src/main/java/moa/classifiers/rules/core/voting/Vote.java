@@ -14,58 +14,52 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.classifiers.rules.core.voting;
 
 /**
- * Vote class for weighted votes based on estimates of errors. 
+ * Vote class for weighted votes based on estimates of errors.
  *
  * @author João Duarte (jmduarte@inescporto.pt)
  * @version $Revision: 1 $
  */
 public class Vote {
-	double [] vote;
-	double error;
-	
-	
-	public Vote(double[] vote, double error) {
-		super();
-		this.vote = vote;
-		this.error = error;
-	}
-	
-	public double[] getVote() {
-		return vote;
-	}
-	
-	public void setVote(double[] vote) {
-		this.vote = vote;
-	}
-	
-	public double getError() {
-		return error;
-	}
-	
-	public void setError(double error) {
-		this.error = error;
-	}
-	
-	public double sumVoteDistrib()
-	{
-		double sum=0;
-		for (int i=0; i<vote.length; ++i)
-			sum+=vote[i];
-		return sum;		
-	}
-	
-	public void normalize()
-	{
-		double sum=sumVoteDistrib();
-		for (int i=0; i<vote.length; ++i)
-			vote[i]/=sum;	
-	}
-	
+    double[] vote;
+    double error;
+
+    public Vote(double[] vote, double error) {
+        super();
+        this.vote = vote;
+        this.error = error;
+    }
+
+    public double[] getVote() {
+        return vote;
+    }
+
+    public void setVote(double[] vote) {
+        this.vote = vote;
+    }
+
+    public double getError() {
+        return error;
+    }
+
+    public void setError(double error) {
+        this.error = error;
+    }
+
+    public double sumVoteDistrib() {
+        double sum = 0;
+        for (int i = 0; i < vote.length; ++i) sum += vote[i];
+        return sum;
+    }
+
+    public void normalize() {
+        double sum = sumVoteDistrib();
+        for (int i = 0; i < vote.length; ++i) vote[i] /= sum;
+    }
 }

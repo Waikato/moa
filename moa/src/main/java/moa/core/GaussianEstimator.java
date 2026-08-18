@@ -15,15 +15,16 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
 import moa.AbstractMOAObject;
 
 /**
- * Gaussian incremental estimator that uses incremental method that is more resistant to floating point imprecision.
- * for more info see Donald Knuth's "The Art of Computer Programming, Volume 2: Seminumerical Algorithms", section 4.2.2.
+ * Gaussian incremental estimator that uses incremental method that is more resistant to floating
+ * point imprecision. for more info see Donald Knuth's "The Art of Computer Programming, Volume 2:
+ * Seminumerical Algorithms", section 4.2.2.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
@@ -47,7 +48,7 @@ public class GaussianEstimator extends AbstractMOAObject {
         if (this.weightSum > 0.0) {
             this.weightSum += weight;
             double lastMean = this.mean;
-            this.mean += weight * (value - lastMean) / this.weightSum; 
+            this.mean += weight * (value - lastMean) / this.weightSum;
             this.varianceSum += weight * (value - lastMean) * (value - this.mean);
         } else {
             this.mean = value;
@@ -62,10 +63,15 @@ public class GaussianEstimator extends AbstractMOAObject {
         //
         if ((this.weightSum > 0.0) && (obs.weightSum > 0.0)) {
             double oldMean = this.mean;
-            this.mean = (this.mean * (this.weightSum / (this.weightSum + obs.weightSum)))
-                    + (obs.mean * (obs.weightSum / (this.weightSum + obs.weightSum)));
-            this.varianceSum += obs.varianceSum + (this.weightSum * obs.weightSum / (this.weightSum + obs.weightSum) *
-                                 Math.pow(obs.mean-oldMean, 2));
+            this.mean =
+                    (this.mean * (this.weightSum / (this.weightSum + obs.weightSum)))
+                            + (obs.mean * (obs.weightSum / (this.weightSum + obs.weightSum)));
+            this.varianceSum +=
+                    obs.varianceSum
+                            + (this.weightSum
+                                    * obs.weightSum
+                                    / (this.weightSum + obs.weightSum)
+                                    * Math.pow(obs.mean - oldMean, 2));
             this.weightSum += obs.weightSum;
         }
     }
@@ -83,8 +89,7 @@ public class GaussianEstimator extends AbstractMOAObject {
     }
 
     public double getVariance() {
-        return this.weightSum > 1.0 ? this.varianceSum / (this.weightSum - 1.0)
-                : 0.0;
+        return this.weightSum > 1.0 ? this.varianceSum / (this.weightSum - 1.0) : 0.0;
     }
 
     public double probabilityDensity(double value) {
@@ -100,19 +105,20 @@ public class GaussianEstimator extends AbstractMOAObject {
         return 0.0;
     }
 
-    public double[] estimatedWeight_LessThan_EqualTo_GreaterThan_Value(
-            double value) {
+    public double[] estimatedWeight_LessThan_EqualTo_GreaterThan_Value(double value) {
         double equalToWeight = probabilityDensity(value) * this.weightSum;
         double stdDev = getStdDev();
-        double lessThanWeight = stdDev > 0.0 ? moa.core.Statistics.normalProbability((value - getMean()) / stdDev)
-                * this.weightSum - equalToWeight
-                : (value < getMean() ? this.weightSum - equalToWeight : 0.0);
-        double greaterThanWeight = this.weightSum - equalToWeight
-                - lessThanWeight;
+        double lessThanWeight =
+                stdDev > 0.0
+                        ? moa.core.Statistics.normalProbability((value - getMean()) / stdDev)
+                                        * this.weightSum
+                                - equalToWeight
+                        : (value < getMean() ? this.weightSum - equalToWeight : 0.0);
+        double greaterThanWeight = this.weightSum - equalToWeight - lessThanWeight;
         if (greaterThanWeight < 0.0) {
             greaterThanWeight = 0.0;
         }
-        return new double[]{lessThanWeight, equalToWeight, greaterThanWeight};
+        return new double[] {lessThanWeight, equalToWeight, greaterThanWeight};
     }
 
     @Override

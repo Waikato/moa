@@ -323,10 +323,42 @@
           </executions>
         </plugin>
 
+        <plugin>
+          <groupId>com.diffplug.spotless</groupId>
+          <artifactId>spotless-maven-plugin</artifactId>
+          <version>3.10.0</version>
+          <configuration>
+            <java>
+              <googleJavaFormat>
+                <version>1.36.1</version>
+                <!-- Android Open Source Project (AOSP) style -->
+                <style>AOSP</style> 
+                <reflowLongStrings>true</reflowLongStrings>
+                <formatJavadoc>true</formatJavadoc>
+                <reorderImports>true</reorderImports>
+              </googleJavaFormat>
+
+            </java>
+            </configuration>
+            <executions>
+              <!-- Binds spotless to auto-fix code during the compile phase -->
+              <execution>
+                <id>apply</id>
+                <goals><goal>apply</goal></goals>
+                <phase>compile</phase>
+              </execution>
+            </executions>
+        </plugin>
+
       </plugins>
     </pluginManagement>
 
     <plugins>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>

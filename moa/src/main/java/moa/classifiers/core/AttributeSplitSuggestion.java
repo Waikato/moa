@@ -15,12 +15,12 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.classifiers.core;
 
-import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 import moa.AbstractMOAObject;
+import moa.classifiers.core.conditionaltests.InstanceConditionalTest;
 
 /**
  * Class for computing attribute split suggestions given a split test.
@@ -28,8 +28,8 @@ import moa.AbstractMOAObject;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class AttributeSplitSuggestion extends AbstractMOAObject implements
-        Comparable<AttributeSplitSuggestion> {
+public class AttributeSplitSuggestion extends AbstractMOAObject
+        implements Comparable<AttributeSplitSuggestion> {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,8 +39,10 @@ public class AttributeSplitSuggestion extends AbstractMOAObject implements
 
     public double merit;
 
-    public AttributeSplitSuggestion(InstanceConditionalTest splitTest,
-            double[][] resultingClassDistributions, double merit) {
+    public AttributeSplitSuggestion(
+            InstanceConditionalTest splitTest,
+            double[][] resultingClassDistributions,
+            double merit) {
         this.splitTest = splitTest;
         this.resultingClassDistributions = resultingClassDistributions.clone();
         this.merit = merit;

@@ -15,7 +15,7 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.core;
 
@@ -30,8 +30,9 @@ import com.yahoo.labs.samoa.instances.InstanceImpl;
 public class MultilabelInstance extends InstanceImpl {
 
     public MultilabelInstance(double d, double[] res) {
-         super(d,res);
+        super(d, res);
     }
+
     public MultilabelInstance(InstanceImpl inst) {
         super(inst);
     }

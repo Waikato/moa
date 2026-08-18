@@ -15,19 +15,17 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.evaluation;
+
+import moa.AbstractMOAObject;
+import moa.core.Measurement;
+import moa.learners.Learner;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
-import moa.AbstractMOAObject;
-import moa.classifiers.Classifier;
-import moa.clusterers.Clusterer;
-import moa.learners.Learner;
-import moa.core.Measurement;
 
 /**
  * Class that stores an array of evaluation measurements.
@@ -45,22 +43,20 @@ public class LearningEvaluation extends AbstractMOAObject {
         this.measurements = measurements.clone();
     }
 
-    public LearningEvaluation(Measurement[] evaluationMeasurements,
-            LearningPerformanceEvaluator cpe, Learner model) {
+    public LearningEvaluation(
+            Measurement[] evaluationMeasurements, LearningPerformanceEvaluator cpe, Learner model) {
         List<Measurement> measurementList = new LinkedList<Measurement>();
-        if (evaluationMeasurements != null){
-        measurementList.addAll(Arrays.asList(evaluationMeasurements));
+        if (evaluationMeasurements != null) {
+            measurementList.addAll(Arrays.asList(evaluationMeasurements));
         }
         measurementList.addAll(Arrays.asList(cpe.getPerformanceMeasurements()));
         measurementList.addAll(Arrays.asList(model.getModelMeasurements()));
         this.measurements = measurementList.toArray(new Measurement[measurementList.size()]);
     }
 
-    public LearningEvaluation(
-            LearningPerformanceEvaluator cpe, Learner model) {
-        this(null,cpe,model);
+    public LearningEvaluation(LearningPerformanceEvaluator cpe, Learner model) {
+        this(null, cpe, model);
     }
-
 
     public Measurement[] getMeasurements() {
         return this.measurements.clone();

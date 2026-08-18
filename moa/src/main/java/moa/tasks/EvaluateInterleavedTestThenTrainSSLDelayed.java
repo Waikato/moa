@@ -5,6 +5,7 @@ import com.github.javacliparser.FlagOption;
 import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.SemiSupervisedLearner;
 import moa.core.*;
@@ -15,6 +16,11 @@ import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.math3.random.MersenneTwister;
+import org.apache.commons.math3.random.RandomGenerator;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,96 +28,156 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.math3.random.MersenneTwister;
-import org.apache.commons.math3.random.RandomGenerator;
-
 /**
- * An evaluation task that relies on the mechanism of Interleaved Test Then
- * Train,
- * applied on semi-supervised data streams
+ * An evaluation task that relies on the mechanism of Interleaved Test Then Train, applied on
+ * semi-supervised data streams
  */
 public class EvaluateInterleavedTestThenTrainSSLDelayed extends SemiSupervisedMainTask {
 
     @Override
     public String getPurposeString() {
-        return "Evaluates a classifier on a semi-supervised stream by testing only the labeled data, " +
-                "then training with each example in sequence.";
+        return "Evaluates a classifier on a semi-supervised stream by testing only the labeled"
+                + " data, then training with each example in sequence.";
     }
 
     private static final long serialVersionUID = 1L;
 
-    public IntOption randomSeedOption = new IntOption(
-            "instanceRandomSeed", 'r',
-            "Seed for random generation of instances.", 1);
+    public IntOption randomSeedOption =
+            new IntOption("instanceRandomSeed", 'r', "Seed for random generation of instances.", 1);
 
-    public FlagOption onlyLabeledDataOption = new FlagOption("labeledDataOnly", 'a',
-            "Learner only trained on labeled data");
+    public FlagOption onlyLabeledDataOption =
+            new FlagOption("labeledDataOnly", 'a', "Learner only trained on labeled data");
 
-    public ClassOption standardLearnerOption = new ClassOption("standardLearner", 'b',
-            "A standard learner to train. This will be ignored if labeledDataOnly flag is not set.",
-            MultiClassClassifier.class, "moa.classifiers.trees.HoeffdingTree");
+    public ClassOption standardLearnerOption =
+            new ClassOption(
+                    "standardLearner",
+                    'b',
+                    "A standard learner to train. This will be ignored if labeledDataOnly flag is"
+                            + " not set.",
+                    MultiClassClassifier.class,
+                    "moa.classifiers.trees.HoeffdingTree");
 
-    public ClassOption sslLearnerOption = new ClassOption("sslLearner", 'l',
-            "A semi-supervised learner to train.", SemiSupervisedLearner.class,
-            "moa.classifiers.semisupervised.ClusterAndLabelClassifier");
+    public ClassOption sslLearnerOption =
+            new ClassOption(
+                    "sslLearner",
+                    'l',
+                    "A semi-supervised learner to train.",
+                    SemiSupervisedLearner.class,
+                    "moa.classifiers.semisupervised.ClusterAndLabelClassifier");
 
-    public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to learn from.", ExampleStream.class,
-            "moa.streams.ArffFileStream");
+    public ClassOption streamOption =
+            new ClassOption(
+                    "stream",
+                    's',
+                    "Stream to learn from.",
+                    ExampleStream.class,
+                    "moa.streams.ArffFileStream");
 
-    public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
-            "Classification performance evaluation method.",
-            LearningPerformanceEvaluator.class,
-            "BasicClassificationPerformanceEvaluator");
+    public ClassOption evaluatorOption =
+            new ClassOption(
+                    "evaluator",
+                    'e',
+                    "Classification performance evaluation method.",
+                    LearningPerformanceEvaluator.class,
+                    "BasicClassificationPerformanceEvaluator");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /** Option: Probability of instance being unlabeled */
-    public FloatOption labelProbabilityOption = new FloatOption("labelProbability", 'j',
-            "The ratio of labeled data",
-            0.01);
+    public FloatOption labelProbabilityOption =
+            new FloatOption("labelProbability", 'j', "The ratio of labeled data", 0.01);
 
-    public IntOption delayLengthOption = new IntOption("delay", 'k',
-            "Number of instances before test instance is used for training. -1 = no delayed labeling.",
-            -1, -1, Integer.MAX_VALUE);
+    public IntOption delayLengthOption =
+            new IntOption(
+                    "delay",
+                    'k',
+                    "Number of instances before test instance is used for training. -1 = no delayed"
+                            + " labeling.",
+                    -1,
+                    -1,
+                    Integer.MAX_VALUE);
 
-    public IntOption initialWindowSizeOption = new IntOption("initialTrainingWindow", 'p',
-            "Number of instances used for training in the beginning of the stream (-1 = no initialWindow).",
-            -1, -1, Integer.MAX_VALUE);
+    public IntOption initialWindowSizeOption =
+            new IntOption(
+                    "initialTrainingWindow",
+                    'p',
+                    "Number of instances used for training in the beginning of the stream (-1 = no"
+                            + " initialWindow).",
+                    -1,
+                    -1,
+                    Integer.MAX_VALUE);
 
-    public FlagOption debugPseudoLabelsOption = new FlagOption("debugPseudoLabels", 'w',
-            "Learner also receives the labeled data, but it is not used for training (just for statistics)");
+    public FlagOption debugPseudoLabelsOption =
+            new FlagOption(
+                    "debugPseudoLabels",
+                    'w',
+                    "Learner also receives the labeled data, but it is not used for training (just"
+                            + " for statistics)");
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
-            "Maximum number of instances to test/train on  (-1 = no limit).",
-            100000000, -1, Integer.MAX_VALUE);
+    public IntOption instanceLimitOption =
+            new IntOption(
+                    "instanceLimit",
+                    'i',
+                    "Maximum number of instances to test/train on  (-1 = no limit).",
+                    100000000,
+                    -1,
+                    Integer.MAX_VALUE);
 
-    public IntOption timeLimitOption = new IntOption("timeLimit", 't',
-            "Maximum number of seconds to test/train for (-1 = no limit).", -1,
-            -1, Integer.MAX_VALUE);
+    public IntOption timeLimitOption =
+            new IntOption(
+                    "timeLimit",
+                    't',
+                    "Maximum number of seconds to test/train for (-1 = no limit).",
+                    -1,
+                    -1,
+                    Integer.MAX_VALUE);
 
-    public IntOption sampleFrequencyOption = new IntOption("sampleFrequency",
-            'f',
-            "How many instances between samples of the learning performance.",
-            100000, 0, Integer.MAX_VALUE);
+    public IntOption sampleFrequencyOption =
+            new IntOption(
+                    "sampleFrequency",
+                    'f',
+                    "How many instances between samples of the learning performance.",
+                    100000,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public IntOption memCheckFrequencyOption = new IntOption(
-            "memCheckFrequency", 'q',
-            "How many instances between memory bound checks.", 100000, 0,
-            Integer.MAX_VALUE);
+    public IntOption memCheckFrequencyOption =
+            new IntOption(
+                    "memCheckFrequency",
+                    'q',
+                    "How many instances between memory bound checks.",
+                    100000,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public FileOption dumpFileOption = new FileOption("dumpFile", 'd',
-            "File to append intermediate csv results to.", null, "csv", true);
+    public FileOption dumpFileOption =
+            new FileOption(
+                    "dumpFile",
+                    'd',
+                    "File to append intermediate csv results to.",
+                    null,
+                    "csv",
+                    true);
 
-    public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
-            "File to append output predictions to.", null, "pred", true);
+    public FileOption outputPredictionFileOption =
+            new FileOption(
+                    "outputPredictionFile",
+                    'o',
+                    "File to append output predictions to.",
+                    null,
+                    "pred",
+                    true);
 
-    public FileOption debugOutputUnlabeledClassInformation = new FileOption("debugOutputUnlabeledClassInformation", 'h',
-            "Single column containing the class label or -999 indicating missing labels.", null, "csv", true);
+    public FileOption debugOutputUnlabeledClassInformation =
+            new FileOption(
+                    "debugOutputUnlabeledClassInformation",
+                    'h',
+                    "Single column containing the class label or -999 indicating missing labels.",
+                    null,
+                    "csv",
+                    true);
 
     private int numUnlabeledData = 0;
 
@@ -140,8 +206,7 @@ public class EvaluateInterleavedTestThenTrainSSLDelayed extends SemiSupervisedMa
     }
 
     private PrintStream newPrintStream(File f, String err_msg) {
-        if (f == null)
-            return null;
+        if (f == null) return null;
         try {
             return new PrintStream(new FileOutputStream(f, f.exists()), true);
         } catch (FileNotFoundException e) {
@@ -149,8 +214,10 @@ public class EvaluateInterleavedTestThenTrainSSLDelayed extends SemiSupervisedMa
         }
     }
 
-    private Object internalDoMainTask(TaskMonitor monitor, ObjectRepository repository, LearningPerformanceEvaluator evaluator)
-    {
+    private Object internalDoMainTask(
+            TaskMonitor monitor,
+            ObjectRepository repository,
+            LearningPerformanceEvaluator evaluator) {
         int maxInstances = this.instanceLimitOption.getValue();
         int maxSeconds = this.timeLimitOption.getValue();
         int delayLength = this.delayLengthOption.getValue();
@@ -162,13 +229,17 @@ public class EvaluateInterleavedTestThenTrainSSLDelayed extends SemiSupervisedMa
         String learnerString = getLearnerString();
 
         // A number of output files used for debugging and manual evaluation
-        PrintStream dumpStream = newPrintStream(this.dumpFileOption.getFile(), "Failed to create dump file");
-        PrintStream predStream = newPrintStream(this.outputPredictionFileOption.getFile(),
-                "Failed to create prediction file");
-        PrintStream labelStream = newPrintStream(this.debugOutputUnlabeledClassInformation.getFile(),
-                "Failed to create unlabeled class information file");
-        if (labelStream != null)
-            labelStream.println("class");
+        PrintStream dumpStream =
+                newPrintStream(this.dumpFileOption.getFile(), "Failed to create dump file");
+        PrintStream predStream =
+                newPrintStream(
+                        this.outputPredictionFileOption.getFile(),
+                        "Failed to create prediction file");
+        PrintStream labelStream =
+                newPrintStream(
+                        this.debugOutputUnlabeledClassInformation.getFile(),
+                        "Failed to create unlabeled class information file");
+        if (labelStream != null) labelStream.println("class");
 
         // Setup evaluation
         monitor.setCurrentActivity("Evaluating learner...", -1.0);
@@ -192,8 +263,7 @@ public class EvaluateInterleavedTestThenTrainSSLDelayed extends SemiSupervisedMa
             instancesProcessed++;
 
             // TRAIN on delayed instances
-            while (delayBuffer.size() > 0
-                    && delayBuffer.get(0).getKey() == instancesProcessed) {
+            while (delayBuffer.size() > 0 && delayBuffer.get(0).getKey() == instancesProcessed) {
                 Example delayedExample = delayBuffer.remove(0).getValue();
                 learner.trainOnInstance(delayedExample);
             }
@@ -205,7 +275,8 @@ public class EvaluateInterleavedTestThenTrainSSLDelayed extends SemiSupervisedMa
             int trueClass = (int) ((Instance) originalExample.getData()).classValue();
 
             // In case it is set, then the label is not removed. We want to pass the
-            // labelled data to the learner even in trainOnUnlabeled data to generate statistics such as number
+            // labelled data to the learner even in trainOnUnlabeled data to generate statistics
+            // such as number
             // of correctly pseudo-labeled instances.
             if (!debugPseudoLabelsOption.isSet()) {
                 // Remove the label of the unlabeledExample indirectly through
@@ -226,11 +297,9 @@ public class EvaluateInterleavedTestThenTrainSSLDelayed extends SemiSupervisedMa
             Boolean is_labeled = labelProbability > taskRandom.nextDouble();
             if (!is_labeled) {
                 this.numUnlabeledData++;
-                if (labelStream != null)
-                    labelStream.println(-999);
+                if (labelStream != null) labelStream.println(-999);
             } else {
-                if (labelStream != null)
-                    labelStream.println((int) trueClass);
+                if (labelStream != null) labelStream.println((int) trueClass);
             }
 
             // TEST
@@ -247,56 +316,62 @@ public class EvaluateInterleavedTestThenTrainSSLDelayed extends SemiSupervisedMa
             // TRAIN
             if (is_labeled && delayLength >= 0) {
                 // The instance will be labeled but has been delayed
-                if (learner instanceof SemiSupervisedLearner)
-                {
-                    ((SemiSupervisedLearner) learner).trainOnUnlabeledInstance((Instance) unlabeledExample.getData());
+                if (learner instanceof SemiSupervisedLearner) {
+                    ((SemiSupervisedLearner) learner)
+                            .trainOnUnlabeledInstance((Instance) unlabeledExample.getData());
                 }
                 delayBuffer.add(
-                        new MutablePair<Long, Example>(1 + instancesProcessed + delayLength, originalExample));
+                        new MutablePair<Long, Example>(
+                                1 + instancesProcessed + delayLength, originalExample));
             } else if (is_labeled) {
                 // The instance will be labeled and is not delayed e.g delayLength = -1
                 learner.trainOnInstance(originalExample);
             } else {
                 // The instance will never be labeled
                 if (learner instanceof SemiSupervisedLearner)
-                    ((SemiSupervisedLearner) learner).trainOnUnlabeledInstance((Instance) unlabeledExample.getData());
+                    ((SemiSupervisedLearner) learner)
+                            .trainOnUnlabeledInstance((Instance) unlabeledExample.getData());
             }
 
-            if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0 || !stream.hasMoreInstances()) {
+            if (instancesProcessed % this.sampleFrequencyOption.getValue() == 0
+                    || !stream.hasMoreInstances()) {
                 long evaluateTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
                 double time = TimingUtils.nanoTimeToSeconds(evaluateTime - evaluateStartTime);
-                double timeIncrement = TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);
-                double RAMHoursIncrement = learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); // GBs
+                double timeIncrement =
+                        TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);
+                double RAMHoursIncrement =
+                        learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); // GBs
                 RAMHoursIncrement *= (timeIncrement / 3600.0); // Hours
                 RAMHours += RAMHoursIncrement;
                 lastEvaluateStartTime = evaluateTime;
-                learningCurve.insertEntry(new LearningEvaluation(
-                        new Measurement[] {
-                                new Measurement(
-                                        "learning evaluation instances",
-                                        instancesProcessed),
-                                new Measurement(
-                                        "evaluation time ("
-                                                + (preciseCPUTiming ? "cpu "
-                                                : "")
-                                                + "seconds)",
-                                        time),
-                                new Measurement(
-                                        "model cost (RAM-Hours)",
-                                        RAMHours),
-                                new Measurement(
-                                        "Unlabeled instances",
-                                        this.numUnlabeledData)
-                        },
-                        evaluator, learner));
+                learningCurve.insertEntry(
+                        new LearningEvaluation(
+                                new Measurement[] {
+                                    new Measurement(
+                                            "learning evaluation instances", instancesProcessed),
+                                    new Measurement(
+                                            "evaluation time ("
+                                                    + (preciseCPUTiming ? "cpu " : "")
+                                                    + "seconds)",
+                                            time),
+                                    new Measurement("model cost (RAM-Hours)", RAMHours),
+                                    new Measurement("Unlabeled instances", this.numUnlabeledData)
+                                },
+                                evaluator,
+                                learner));
                 if (dumpStream != null) {
                     if (firstDump) {
                         dumpStream.print("Learner,stream,randomSeed,");
                         dumpStream.println(learningCurve.headerToString());
                         firstDump = false;
                     }
-                    dumpStream.print(learnerString + "," + streamString + ","
-                            + this.randomSeedOption.getValueAsCLIString() + ",");
+                    dumpStream.print(
+                            learnerString
+                                    + ","
+                                    + streamString
+                                    + ","
+                                    + this.randomSeedOption.getValueAsCLIString()
+                                    + ",");
                     dumpStream.println(learningCurve.entryToString(learningCurve.numEntries() - 1));
                     dumpStream.flush();
                 }
@@ -313,13 +388,20 @@ public class EvaluateInterleavedTestThenTrainSSLDelayed extends SemiSupervisedMa
                         estimatedRemainingInstances = maxRemaining;
                     }
                 }
-                monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
-                        : (double) instancesProcessed / (double) (instancesProcessed + estimatedRemainingInstances));
+                monitor.setCurrentActivityFractionComplete(
+                        estimatedRemainingInstances < 0
+                                ? -1.0
+                                : (double) instancesProcessed
+                                        / (double)
+                                                (instancesProcessed + estimatedRemainingInstances));
                 if (monitor.resultPreviewRequested()) {
                     monitor.setLatestResultPreview(learningCurve.copy());
                 }
-                secondsElapsed = (int) TimingUtils.nanoTimeToSeconds(TimingUtils.getNanoCPUTimeOfCurrentThread()
-                        - evaluateStartTime);
+                secondsElapsed =
+                        (int)
+                                TimingUtils.nanoTimeToSeconds(
+                                        TimingUtils.getNanoCPUTimeOfCurrentThread()
+                                                - evaluateStartTime);
             }
         }
         if (dumpStream != null) {
@@ -334,14 +416,12 @@ public class EvaluateInterleavedTestThenTrainSSLDelayed extends SemiSupervisedMa
     @Override
     protected Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         // Some resource must be closed at the end of the task
-        try (
-                LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption)
-        ) {
+        try (LearningPerformanceEvaluator evaluator =
+                (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption)) {
             return internalDoMainTask(monitor, repository, evaluator);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override

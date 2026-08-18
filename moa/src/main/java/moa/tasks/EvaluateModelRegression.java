@@ -15,20 +15,18 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.tasks;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
+import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.Classifier;
 import moa.classifiers.Regressor;
 import moa.core.Example;
 import moa.core.ObjectRepository;
-import moa.core.Utils;
 import moa.evaluation.LearningEvaluation;
 import moa.evaluation.LearningPerformanceEvaluator;
 import moa.evaluation.RegressionPerformanceEvaluator;
@@ -36,7 +34,10 @@ import moa.learners.Learner;
 import moa.options.ClassOption;
 import moa.streams.ExampleStream;
 import moa.streams.InstanceStream;
-import com.yahoo.labs.samoa.instances.Instance;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 /**
  * Task for evaluating a static model on a stream.
@@ -53,31 +54,51 @@ public class EvaluateModelRegression extends RegressionMainTask {
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption modelOption = new ClassOption("model", 'm',
-            "Learner to evaluate.", Regressor.class, "LearnModelRegression");
+    public ClassOption modelOption =
+            new ClassOption(
+                    "model", 'm', "Learner to evaluate.", Regressor.class, "LearnModelRegression");
 
-    public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to evaluate on.", ExampleStream.class,
-            "generators.RandomTreeGenerator");
+    public ClassOption streamOption =
+            new ClassOption(
+                    "stream",
+                    's',
+                    "Stream to evaluate on.",
+                    ExampleStream.class,
+                    "generators.RandomTreeGenerator");
 
-    public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
-            "Classification performance evaluation method.",
-            RegressionPerformanceEvaluator.class,
-            "BasicRegressionPerformanceEvaluator");
+    public ClassOption evaluatorOption =
+            new ClassOption(
+                    "evaluator",
+                    'e',
+                    "Classification performance evaluation method.",
+                    RegressionPerformanceEvaluator.class,
+                    "BasicRegressionPerformanceEvaluator");
 
+    public IntOption maxInstancesOption =
+            new IntOption(
+                    "maxInstances",
+                    'i',
+                    "Maximum number of instances to test.",
+                    1000000,
+                    0,
+                    Integer.MAX_VALUE);
 
-    public IntOption maxInstancesOption = new IntOption("maxInstances", 'i',
-            "Maximum number of instances to test.", 1000000, 0,
-            Integer.MAX_VALUE);
+    public FileOption outputPredictionFileOption =
+            new FileOption(
+                    "outputPredictionFile",
+                    'o',
+                    "File to append output predictions to.",
+                    null,
+                    "pred",
+                    true);
 
-    public FileOption outputPredictionFileOption = new FileOption("outputPredictionFile", 'o',
-            "File to append output predictions to.", null, "pred", true);
+    public EvaluateModelRegression() {}
 
-    public EvaluateModelRegression() {
-    }
-
-    public EvaluateModelRegression(Classifier model, InstanceStream stream,
-            LearningPerformanceEvaluator evaluator, int maxInstances) {
+    public EvaluateModelRegression(
+            Classifier model,
+            InstanceStream stream,
+            LearningPerformanceEvaluator evaluator,
+            int maxInstances) {
         this.modelOption.setCurrentObject(model);
         this.streamOption.setCurrentObject(stream);
         this.evaluatorOption.setCurrentObject(evaluator);
@@ -93,22 +114,23 @@ public class EvaluateModelRegression extends RegressionMainTask {
     public Object doMainTask(TaskMonitor monitor, ObjectRepository repository) {
         Learner model = (Learner) getPreparedClassOption(this.modelOption);
         ExampleStream stream = (ExampleStream) getPreparedClassOption(this.streamOption);
-        LearningPerformanceEvaluator evaluator = (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
+        LearningPerformanceEvaluator evaluator =
+                (LearningPerformanceEvaluator) getPreparedClassOption(this.evaluatorOption);
         int maxInstances = this.maxInstancesOption.getValue();
         long instancesProcessed = 0;
         monitor.setCurrentActivity("Evaluating model...", -1.0);
 
-        //File for output predictions
+        // File for output predictions
         File outputPredictionFile = this.outputPredictionFileOption.getFile();
         PrintStream outputPredictionResultStream = null;
         if (outputPredictionFile != null) {
             try {
                 if (outputPredictionFile.exists()) {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile, true), true);
+                    outputPredictionResultStream =
+                            new PrintStream(new FileOutputStream(outputPredictionFile, true), true);
                 } else {
-                    outputPredictionResultStream = new PrintStream(
-                            new FileOutputStream(outputPredictionFile), true);
+                    outputPredictionResultStream =
+                            new PrintStream(new FileOutputStream(outputPredictionFile), true);
                 }
             } catch (Exception ex) {
                 throw new RuntimeException(
@@ -117,11 +139,11 @@ public class EvaluateModelRegression extends RegressionMainTask {
         }
         while (stream.hasMoreInstances()
                 && ((maxInstances < 0) || (instancesProcessed < maxInstances))) {
-            Example testInst = (Example) stream.nextInstance();//.copy();
+            Example testInst = (Example) stream.nextInstance(); // .copy();
             double trueClass = ((Instance) testInst.getData()).classValue();
-            //testInst.setClassMissing();
+            // testInst.setClassMissing();
             double[] prediction = model.getVotesForInstance(testInst);
-            //evaluator.addClassificationAttempt(trueClass, prediction, testInst
+            // evaluator.addClassificationAttempt(trueClass, prediction, testInst
             //		.weight());
             if (outputPredictionFile != null) {
                 outputPredictionResultStream.println(prediction[0] + "," + trueClass);
@@ -140,12 +162,14 @@ public class EvaluateModelRegression extends RegressionMainTask {
                         estimatedRemainingInstances = maxRemaining;
                     }
                 }
-                monitor.setCurrentActivityFractionComplete(estimatedRemainingInstances < 0 ? -1.0
-                        : (double) instancesProcessed
-                        / (double) (instancesProcessed + estimatedRemainingInstances));
+                monitor.setCurrentActivityFractionComplete(
+                        estimatedRemainingInstances < 0
+                                ? -1.0
+                                : (double) instancesProcessed
+                                        / (double)
+                                                (instancesProcessed + estimatedRemainingInstances));
                 if (monitor.resultPreviewRequested()) {
-                    monitor.setLatestResultPreview(new LearningEvaluation(
-                            evaluator, model));
+                    monitor.setLatestResultPreview(new LearningEvaluation(evaluator, model));
                 }
             }
         }

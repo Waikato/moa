@@ -14,47 +14,46 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.clusterers.outliers.Angiulli;
 
-import moa.streams.clustering.RandomRBFGeneratorEvents;
 import com.yahoo.labs.samoa.instances.Instance;
 
+import moa.streams.clustering.RandomRBFGeneratorEvents;
 
-public class Test {    
-    public static void main(String[] args) throws Exception 
-    {
-        //if (true) return;
-        
+public class Test {
+    public static void main(String[] args) throws Exception {
+        // if (true) return;
+
         int numInstances = 10000;
-        
+
         RandomRBFGeneratorEvents stream = new RandomRBFGeneratorEvents();
         stream.prepareForUse();
-        
-        //DistanceOutliersAppr myOutlierDetector= new DistanceOutliersAppr();
-        ExactSTORM myOutlierDetector= new ExactSTORM();
+
+        // DistanceOutliersAppr myOutlierDetector= new DistanceOutliersAppr();
+        ExactSTORM myOutlierDetector = new ExactSTORM();
         myOutlierDetector.queryFreqOption.setValue(1);
         myOutlierDetector.setModelContext(stream.getHeader());
-        myOutlierDetector.prepareForUse();  
-        
+        myOutlierDetector.prepareForUse();
+
         Long tmStart = System.currentTimeMillis();
-        
-        int numberSamples = 0;  
-        int w = myOutlierDetector.windowSizeOption.getValue();      
+
+        int numberSamples = 0;
+        int w = myOutlierDetector.windowSizeOption.getValue();
         while (stream.hasMoreInstances() && (numberSamples < numInstances)) {
             Instance newInst = stream.nextInstance().getData();
-            myOutlierDetector.processNewInstanceImpl(newInst);            
+            myOutlierDetector.processNewInstanceImpl(newInst);
             numberSamples++;
             if (numberSamples % 100 == 0) {
-                //System.out.println("Processed " + numberSamples + " stream objects.");  
+                // System.out.println("Processed " + numberSamples + " stream objects.");
             }
             if ((numberSamples % (w / 2)) == 0) {
-                //myOutlierDetector.PrintOutliers();
+                // myOutlierDetector.PrintOutliers();
             }
-        }        
+        }
         // myOutlierDetector.PrintOutliers();
         System.out.println("Total time = " + (System.currentTimeMillis() - tmStart) + " ms");
     }

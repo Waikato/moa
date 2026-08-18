@@ -15,18 +15,19 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams.filters;
 
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.streams.ExampleStream;
 
 /**
- * Interface representing a stream filter. 
+ * Interface representing a stream filter.
  *
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
- * @version $Revision: 7 $ 
+ * @version $Revision: 7 $
  */
 public interface StreamFilter extends ExampleStream {
 
@@ -36,6 +37,6 @@ public interface StreamFilter extends ExampleStream {
      * @param stream the input stream to the filter
      */
     public void setInputStream(ExampleStream stream);
-    
+
     public Instance filterInstance(Instance inst);
 }

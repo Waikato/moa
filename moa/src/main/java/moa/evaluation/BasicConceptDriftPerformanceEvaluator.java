@@ -20,7 +20,6 @@
 package moa.evaluation;
 
 import com.yahoo.labs.samoa.instances.Instance;
-import com.yahoo.labs.samoa.instances.InstanceData;
 import com.yahoo.labs.samoa.instances.Prediction;
 
 import moa.AbstractMOAObject;
@@ -35,7 +34,7 @@ public class BasicConceptDriftPerformanceEvaluator extends AbstractMOAObject
     protected double weightObserved;
 
     protected double numberDetections;
-    
+
     protected double numberDetectionsOccurred;
 
     protected double numberChanges;
@@ -47,9 +46,9 @@ public class BasicConceptDriftPerformanceEvaluator extends AbstractMOAObject
     protected double errorPrediction;
 
     protected double totalDelay;
-    
+
     protected boolean isWarningZone;
-    
+
     protected double inputValues;
 
     @Override
@@ -68,51 +67,51 @@ public class BasicConceptDriftPerformanceEvaluator extends AbstractMOAObject
     }
 
     private boolean hasChangeOccurred = false;
-    
+
     @Override
     public void addResult(Example<Instance> example, double[] classVotes) {
         Instance inst = example.getData();
-        //classVotes[0] -> is Change
-        //classVotes[1] -> is in Warning Zone
-        //classVotes[2] -> delay
-        //classVotes[3] -> estimation
+        // classVotes[0] -> is Change
+        // classVotes[1] -> is in Warning Zone
+        // classVotes[2] -> delay
+        // classVotes[3] -> estimation
 
         this.inputValues = inst.value(2);
         if (inst.weight() > 0.0 && classVotes.length == 4) {
             if (inst.numAttributes() > 1) {
-                //if there is ground truth we monitor delay
+                // if there is ground truth we monitor delay
                 this.delay++;
             }
             this.weightObserved += inst.weight();
-            if ( classVotes[0] == 1.0) {
-                //Change detected
-                //System.out.println("Change detected with delay "+ this.delay );
+            if (classVotes[0] == 1.0) {
+                // Change detected
+                // System.out.println("Change detected with delay "+ this.delay );
                 this.numberDetections += inst.weight();
-                if (this.hasChangeOccurred == true) { 
+                if (this.hasChangeOccurred == true) {
                     this.totalDelay += this.delay - classVotes[2];
                     this.numberDetectionsOccurred += inst.weight();
                     this.hasChangeOccurred = false;
                 }
             }
             if (this.hasChangeOccurred && classVotes[1] == 1.0) {
-                //Warning detected
-                //System.out.println("Warning detected at "+getTotalWeightObserved());
+                // Warning detected
+                // System.out.println("Warning detected at "+getTotalWeightObserved());
                 if (this.isWarningZone == false) {
                     this.numberWarnings += inst.weight();
                     this.isWarningZone = true;
-                } 
+                }
             } else {
                 this.isWarningZone = false;
             }
             if (inst.numAttributes() > 1) {
-                if (inst.value(inst.numAttributes() - 2) == 1.0) {//Attribute 1
-                    //Ground truth Change
+                if (inst.value(inst.numAttributes() - 2) == 1.0) { // Attribute 1
+                    // Ground truth Change
                     this.numberChanges += inst.weight();
                     this.delay = 0;
                     this.hasChangeOccurred = true;
                 }
             }
-            //Compute error prediction
+            // Compute error prediction
             if (classVotes.length > 1) {
                 this.errorPrediction += Math.abs(classVotes[3] - inst.value(0));
             }
@@ -122,26 +121,22 @@ public class BasicConceptDriftPerformanceEvaluator extends AbstractMOAObject
     @Override
     public Measurement[] getPerformanceMeasurements() {
         Measurement[] measurement;
-        //if (totalDelay == 0.0) { //No Ground Truth
-            measurement = new Measurement[]{
-                new Measurement("learned instances",
-                getTotalWeightObserved()),
-                new Measurement("detected changes",
-                getNumberDetections()),
-                new Measurement("detected warnings",
-                getNumberWarnings()),
-                new Measurement("prediction error (average)",
-                getPredictionError() / getTotalWeightObserved()),
-                new Measurement("true changes",
-                getNumberChanges()),
-                new Measurement("delay detection (average)",
-                getTotalDelay() / getNumberChanges()),
-                new Measurement("true changes detected",
-                getNumberChangesOccurred()),
-                new Measurement("input values",
-                getInputValues())
-            };
-       /* } else {
+        // if (totalDelay == 0.0) { //No Ground Truth
+        measurement =
+                new Measurement[] {
+                    new Measurement("learned instances", getTotalWeightObserved()),
+                    new Measurement("detected changes", getNumberDetections()),
+                    new Measurement("detected warnings", getNumberWarnings()),
+                    new Measurement(
+                            "prediction error (average)",
+                            getPredictionError() / getTotalWeightObserved()),
+                    new Measurement("true changes", getNumberChanges()),
+                    new Measurement(
+                            "delay detection (average)", getTotalDelay() / getNumberChanges()),
+                    new Measurement("true changes detected", getNumberChangesOccurred()),
+                    new Measurement("input values", getInputValues())
+                };
+        /* } else {
             measurement = new Measurement[]{
                 new Measurement("learned instances",
                 getTotalWeightObserved()),
@@ -171,7 +166,7 @@ public class BasicConceptDriftPerformanceEvaluator extends AbstractMOAObject
     public double getNumberDetections() {
         return this.numberDetections;
     }
-    
+
     public double getInputValues() {
         return this.inputValues;
     }
@@ -183,9 +178,9 @@ public class BasicConceptDriftPerformanceEvaluator extends AbstractMOAObject
     public double getNumberChanges() {
         return this.numberChanges;
     }
-    
+
     public double getNumberChangesOccurred() {
-        return  this.numberDetectionsOccurred;
+        return this.numberDetectionsOccurred;
     }
 
     public double getNumberWarnings() {
@@ -198,14 +193,12 @@ public class BasicConceptDriftPerformanceEvaluator extends AbstractMOAObject
 
     @Override
     public void getDescription(StringBuilder sb, int indent) {
-        Measurement.getMeasurementsDescription(getPerformanceMeasurements(),
-                sb, indent);
+        Measurement.getMeasurementsDescription(getPerformanceMeasurements(), sb, indent);
     }
 
-	@Override
-	public void addResult(Example<Instance> testInst, Prediction prediction) {
-		// TODO Auto-generated method stub
-		
-	}
-    
+    @Override
+    public void addResult(Example<Instance> testInst, Prediction prediction) {
+        // TODO Auto-generated method stub
+
+    }
 }

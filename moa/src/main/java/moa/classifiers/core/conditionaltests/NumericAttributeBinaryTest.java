@@ -19,8 +19,8 @@
  */
 package moa.classifiers.core.conditionaltests;
 
-import com.yahoo.labs.samoa.instances.InstancesHeader;
 import com.yahoo.labs.samoa.instances.Instance;
+import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 /**
  * Numeric binary conditional test for instances to use to split nodes in Hoeffding trees.
@@ -38,8 +38,7 @@ public class NumericAttributeBinaryTest extends InstanceConditionalBinaryTest {
 
     protected boolean equalsPassesTest;
 
-    public NumericAttributeBinaryTest(int attIndex, double attValue,
-                                      boolean equalsPassesTest) {
+    public NumericAttributeBinaryTest(int attIndex, double attValue, boolean equalsPassesTest) {
         this.attIndex = attIndex;
         this.attValue = attValue;
         this.equalsPassesTest = equalsPassesTest;
@@ -51,12 +50,15 @@ public class NumericAttributeBinaryTest extends InstanceConditionalBinaryTest {
 
     @Override
     public int branchForInstance(Instance inst) {
-        int instAttIndex = this.attIndex ; // < inst.classIndex() ? this.attIndex
+        int instAttIndex = this.attIndex; // < inst.classIndex() ? this.attIndex
         // : this.attIndex + 1;
         if (inst.isMissing(instAttIndex)) {
             return -1;
         }
-        double v = inst.valueInputAttribute(instAttIndex); // if the attIndex is not calculated above this is the correct method call
+        double v =
+                inst.valueInputAttribute(
+                        instAttIndex); // if the attIndex is not calculated above this is the
+        // correct method call
         if (v == this.attValue) {
             return this.equalsPassesTest ? 0 : 1;
         }
@@ -68,13 +70,11 @@ public class NumericAttributeBinaryTest extends InstanceConditionalBinaryTest {
         if ((branch == 0) || (branch == 1)) {
             char compareChar = branch == 0 ? '<' : '>';
             int equalsBranch = this.equalsPassesTest ? 0 : 1;
-            return InstancesHeader.getInputAttributeNameString(context,
-                    this.attIndex)
+            return InstancesHeader.getInputAttributeNameString(context, this.attIndex)
                     + ' '
                     + compareChar
                     + (branch == equalsBranch ? "= " : " ")
-                    + InstancesHeader.getNumericValueString(context,
-                    this.attIndex, this.attValue);
+                    + InstancesHeader.getNumericValueString(context, this.attIndex, this.attValue);
         }
         throw new IndexOutOfBoundsException();
     }
@@ -86,7 +86,7 @@ public class NumericAttributeBinaryTest extends InstanceConditionalBinaryTest {
 
     @Override
     public int[] getAttsTestDependsOn() {
-        return new int[]{this.attIndex};
+        return new int[] {this.attIndex};
     }
 
     public double getSplitValue() {

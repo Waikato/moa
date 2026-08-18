@@ -15,22 +15,21 @@
  *
  *    You should have received a copy of the GNU General Public License
  *    along with this program. If not, see <http://www.gnu.org/licenses/>.
- *    
+ *
  */
 package moa.streams;
 
-import moa.core.Example;
-import moa.core.InstanceExample;
+import com.github.javacliparser.ListOption;
+import com.github.javacliparser.Option;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
+import moa.core.Example;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
 import moa.options.ClassOption;
-import com.github.javacliparser.ListOption;
-import com.github.javacliparser.Option;
 import moa.options.OptionHandler;
 import moa.streams.filters.StreamFilter;
 import moa.tasks.TaskMonitor;
-import com.yahoo.labs.samoa.instances.Instance;
 
 /**
  * Class for representing a stream that is filtered.
@@ -38,8 +37,7 @@ import com.yahoo.labs.samoa.instances.Instance;
  * @author Richard Kirkby (rkirkby@cs.waikato.ac.nz)
  * @version $Revision: 7 $
  */
-public class MultiFilteredStream extends AbstractOptionHandler implements
-        ExampleStream {
+public class MultiFilteredStream extends AbstractOptionHandler implements ExampleStream {
 
     @Override
     public String getPurposeString() {
@@ -48,32 +46,40 @@ public class MultiFilteredStream extends AbstractOptionHandler implements
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption streamOption = new ClassOption("stream", 's',
-            "Stream to filter.", ExampleStream.class,
-            "generators.RandomTreeGenerator");
+    public ClassOption streamOption =
+            new ClassOption(
+                    "stream",
+                    's',
+                    "Stream to filter.",
+                    ExampleStream.class,
+                    "generators.RandomTreeGenerator");
 
-    public ListOption filtersOption = new ListOption("filters", 'f',
-            "Filters to apply.", new ClassOption("filter", ' ',
-            "Stream filter.", StreamFilter.class, "AddNoiseFilter"),
-            new Option[0], ',');
+    public ListOption filtersOption =
+            new ListOption(
+                    "filters",
+                    'f',
+                    "Filters to apply.",
+                    new ClassOption(
+                            "filter", ' ', "Stream filter.", StreamFilter.class, "AddNoiseFilter"),
+                    new Option[0],
+                    ',');
 
     protected ExampleStream filterChain;
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-            ObjectRepository repository) {
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         Option[] filterOptions = this.filtersOption.getList();
         StreamFilter[] filters = new StreamFilter[filterOptions.length];
         for (int i = 0; i < filters.length; i++) {
-            monitor.setCurrentActivity("Materializing filter " + (i + 1)
-                    + "...", -1.0);
-            filters[i] = (StreamFilter) ((ClassOption) filterOptions[i]).materializeObject(monitor, repository);
+            monitor.setCurrentActivity("Materializing filter " + (i + 1) + "...", -1.0);
+            filters[i] =
+                    (StreamFilter)
+                            ((ClassOption) filterOptions[i]).materializeObject(monitor, repository);
             if (monitor.taskShouldAbort()) {
                 return;
             }
             if (filters[i] instanceof OptionHandler) {
-                monitor.setCurrentActivity("Preparing filter " + (i + 1)
-                        + "...", -1.0);
+                monitor.setCurrentActivity("Preparing filter " + (i + 1) + "...", -1.0);
                 ((OptionHandler) filters[i]).prepareForUse(monitor, repository);
                 if (monitor.taskShouldAbort()) {
                     return;

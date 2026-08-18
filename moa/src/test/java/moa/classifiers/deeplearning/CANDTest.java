@@ -15,32 +15,30 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- *
- */
+/** */
 package moa.classifiers.deeplearning;
-
-import org.junit.Ignore;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import moa.classifiers.AbstractMultipleClassifierTestCase;
 import moa.classifiers.Classifier;
+
+import org.junit.Ignore;
 
 /**
  * Tests the CAND classifier.
  *
- * @author  Nuwan Gunasekara (ng98 at students dot waikato dot ac dot nz)
+ * @author Nuwan Gunasekara (ng98 at students dot waikato dot ac dot nz)
  * @version $Revision$
  */
 @Ignore("TODO test is platform specific and fails on GitHub due to DJL.")
-public class CANDTest
-        extends AbstractMultipleClassifierTestCase {
+public class CANDTest extends AbstractMultipleClassifierTestCase {
 
     /**
      * Constructs the test case. Called by subclasses.
      *
-     * @param name 	the name of the test
+     * @param name the name of the test
      */
     public CANDTest(String name) {
         super(name);
@@ -50,7 +48,7 @@ public class CANDTest
     /**
      * Returns the classifier setups to use in the regression test.
      *
-     * @return		the setups
+     * @return the setups
      */
     @Override
     protected Classifier[] getRegressionClassifierSetups() {
@@ -65,16 +63,15 @@ public class CANDTest
         CANDtest.backPropLossThreshold.setValue(0.3);
         CANDtest.deviceTypeOption.setChosenIndex(1);
 
-
-        return new Classifier[]{
-                CANDtest,
+        return new Classifier[] {
+            CANDtest,
         };
     }
 
     /**
      * Returns a test suite.
      *
-     * @return		the test suite
+     * @return the test suite
      */
     public static Test suite() {
         return new TestSuite(CANDTest.class);
@@ -83,7 +80,7 @@ public class CANDTest
     /**
      * Runs the test from commandline.
      *
-     * @param args	ignored
+     * @param args ignored
      */
     public static void main(String[] args) {
         runTest(suite());

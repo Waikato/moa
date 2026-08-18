@@ -4,6 +4,7 @@ import com.github.javacliparser.FloatOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.MultiChoiceOption;
 import com.yahoo.labs.samoa.instances.Instance;
+
 import moa.classifiers.AbstractClassifier;
 import moa.classifiers.Classifier;
 import moa.classifiers.SemiSupervisedLearner;
@@ -14,35 +15,56 @@ import moa.options.ClassOption;
 import moa.tasks.TaskMonitor;
 
 /**
- * Self-training classifier: Incremental version.
- * Instead of using a batch, the model will be update with every instance that arrives.
+ * Self-training classifier: Incremental version. Instead of using a batch, the model will be update
+ * with every instance that arrives.
  */
-public class SelfTrainingIncrementalClassifier extends AbstractClassifier implements SemiSupervisedLearner {
+public class SelfTrainingIncrementalClassifier extends AbstractClassifier
+        implements SemiSupervisedLearner {
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption learnerOption = new ClassOption("learner", 'l',
-            "Any learner to be self-trained", AbstractClassifier.class,
-            "moa.classifiers.trees.HoeffdingTree");
+    public ClassOption learnerOption =
+            new ClassOption(
+                    "learner",
+                    'l',
+                    "Any learner to be self-trained",
+                    AbstractClassifier.class,
+                    "moa.classifiers.trees.HoeffdingTree");
 
-    public MultiChoiceOption thresholdChoiceOption = new MultiChoiceOption("thresholdValue", 't',
-            "Ways to define the confidence threshold",
-            new String[] { "Fixed", "AdaptiveWindowing", "AdaptiveVariance" },
-            new String[] {
-                    "The threshold is input once and remains unchanged",
-                    "The threshold is updated every h-interval of time",
-                    "The threshold is updated if the confidence score drifts off from the average"
-            }, 0);
+    public MultiChoiceOption thresholdChoiceOption =
+            new MultiChoiceOption(
+                    "thresholdValue",
+                    't',
+                    "Ways to define the confidence threshold",
+                    new String[] {"Fixed", "AdaptiveWindowing", "AdaptiveVariance"},
+                    new String[] {
+                        "The threshold is input once and remains unchanged",
+                        "The threshold is updated every h-interval of time",
+                        "The threshold is updated if the confidence score drifts off from the"
+                                + " average"
+                    },
+                    0);
 
-    public FloatOption thresholdOption = new FloatOption("confidenceThreshold", 'c',
-            "Threshold to evaluate the confidence of a prediction", 0.9, 0.0, 1.0);
+    public FloatOption thresholdOption =
+            new FloatOption(
+                    "confidenceThreshold",
+                    'c',
+                    "Threshold to evaluate the confidence of a prediction",
+                    0.9,
+                    0.0,
+                    1.0);
 
-    public IntOption horizonOption = new IntOption("horizon", 'h',
-            "The interval of time to update the threshold", 1000);
+    public IntOption horizonOption =
+            new IntOption("horizon", 'h', "The interval of time to update the threshold", 1000);
 
-    public FloatOption ratioThresholdOption = new FloatOption("ratioThreshold", 'r',
-            "How large should the threshold be wrt to the average confidence score",
-            0.95, 0.0, Double.MAX_VALUE);
+    public FloatOption ratioThresholdOption =
+            new FloatOption(
+                    "ratioThreshold",
+                    'r',
+                    "How large should the threshold be wrt to the average confidence score",
+                    0.95,
+                    0.0,
+                    Double.MAX_VALUE);
 
     /* -------------------
      * Attributes
@@ -50,10 +72,12 @@ public class SelfTrainingIncrementalClassifier extends AbstractClassifier implem
     /** A learner to be self-trained */
     private Classifier learner;
 
-    /** The confidence threshold to decide which predictions to include in the next training batch */
+    /**
+     * The confidence threshold to decide which predictions to include in the next training batch
+     */
     private double threshold;
 
-    /** Whether the threshold is to be adaptive or fixed*/
+    /** Whether the threshold is to be adaptive or fixed */
     private boolean adaptiveThreshold;
 
     /** Interval of time to update the threshold */
@@ -62,7 +86,7 @@ public class SelfTrainingIncrementalClassifier extends AbstractClassifier implem
     /** Keep track of time */
     private int t;
 
-    /** Ratio of the threshold wrt the average confidence score*/
+    /** Ratio of the threshold wrt the average confidence score */
     private double ratio;
 
     // statistics needed to update the confidence threshold
@@ -120,7 +144,8 @@ public class SelfTrainingIncrementalClassifier extends AbstractClassifier implem
 
         ++this.instancesSeen;
 
-        if (/*!inst.classIsMasked() &&*/ !inst.classIsMissing()) {
+        if (
+        /*!inst.classIsMasked() &&*/ !inst.classIsMissing()) {
             learner.trainOnInstance(inst);
         } else {
             double pseudoLabel = getPrediction(inst);
@@ -136,9 +161,9 @@ public class SelfTrainingIncrementalClassifier extends AbstractClassifier implem
             N++;
             lastConfidenceScore = confidenceScore;
 
-//            if(pseudoLabel == inst.maskedClassValue()) {
-//                ++this.instancesCorrectPseudoLabeled;
-//            }
+            //            if(pseudoLabel == inst.maskedClassValue()) {
+            //                ++this.instancesCorrectPseudoLabeled;
+            //            }
             ++this.instancesPseudoLabeled;
         }
 
@@ -162,9 +187,7 @@ public class SelfTrainingIncrementalClassifier extends AbstractClassifier implem
         return -1;
     }
 
-    /**
-     * Updates the threshold after each labeledInstancesBuffer horizon
-     */
+    /** Updates the threshold after each labeledInstancesBuffer horizon */
     private void updateThresholdWindowing() {
         if (t % horizon == 0) {
             if (N == 0 || LS == 0 || SS == 0) return;
@@ -176,9 +199,8 @@ public class SelfTrainingIncrementalClassifier extends AbstractClassifier implem
     }
 
     /**
-     * Update the thresholds based on the variance:
-     * if the z-score of the last confidence score wrt the mean is more than 1.0,
-     * update the confidence threshold
+     * Update the thresholds based on the variance: if the z-score of the last confidence score wrt
+     * the mean is more than 1.0, update the confidence threshold
      */
     private void updateThresholdVariance() {
         if (N == 0 || LS == 0 || SS == 0) return;
@@ -193,8 +215,10 @@ public class SelfTrainingIncrementalClassifier extends AbstractClassifier implem
 
     /**
      * Gets the prediction from an instance (a shortcut to pass getVotesForInstance)
+     *
      * @param inst the instance
-     * @return the most likely prediction (the label with the highest probability in <code>getVotesForInstance</code>)
+     * @return the most likely prediction (the label with the highest probability in <code>
+     *     getVotesForInstance</code>)
      */
     private double getPrediction(Instance inst) {
         return Utils.maxIndex(this.getVotesForInstance(inst));
@@ -203,17 +227,18 @@ public class SelfTrainingIncrementalClassifier extends AbstractClassifier implem
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
         // instances seen * the number of ensemble members
-        return new Measurement[]{
-                new Measurement("#pseudo-labeled", -1), // this.instancesPseudoLabeled),
-                new Measurement("#correct pseudo-labeled", -1), //this.instancesCorrectPseudoLabeled),
-                new Measurement("accuracy pseudo-labeled", -1) //this.instancesCorrectPseudoLabeled / (double) this.instancesPseudoLabeled * 100)
+        return new Measurement[] {
+            new Measurement("#pseudo-labeled", -1), // this.instancesPseudoLabeled),
+            new Measurement("#correct pseudo-labeled", -1), // this.instancesCorrectPseudoLabeled),
+            new Measurement(
+                    "accuracy pseudo-labeled",
+                    -1) // this.instancesCorrectPseudoLabeled / (double) this.instancesPseudoLabeled
+            // * 100)
         };
     }
 
     @Override
-    public void getModelDescription(StringBuilder out, int indent) {
-
-    }
+    public void getModelDescription(StringBuilder out, int indent) {}
 
     @Override
     public boolean isRandomizable() {

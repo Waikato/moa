@@ -14,14 +14,15 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *    
- *    
+ *
+ *
  */
 
 package moa.clusterers.denstream;
 
 import moa.AbstractMOAObject;
-public class Timestamp extends AbstractMOAObject{
+
+public class Timestamp extends AbstractMOAObject {
 
     private long timestamp;
 
@@ -45,6 +46,5 @@ public class Timestamp extends AbstractMOAObject{
         this.timestamp = timestamp;
     }
 
-    public void getDescription(StringBuilder sb, int i) {
-    }
+    public void getDescription(StringBuilder sb, int i) {}
 }

@@ -21,6 +21,7 @@ package moa.streams;
 
 import com.yahoo.labs.samoa.instances.Instance;
 import com.yahoo.labs.samoa.instances.InstancesHeader;
+
 import moa.core.Example;
 import moa.core.ObjectRepository;
 import moa.options.AbstractOptionHandler;
@@ -30,15 +31,14 @@ import moa.streams.filters.StreamFilter;
 import moa.tasks.TaskMonitor;
 
 /**
- * Helper class for pipelines in CapyMOA.
- * Implements the stream interface, acts as a queue by supporting `addToQueue`.
- * In comparison to QueueStream, this class allows specifying a filter that is applied to the queued instances.
+ * Helper class for pipelines in CapyMOA. Implements the stream interface, acts as a queue by
+ * supporting `addToQueue`. In comparison to QueueStream, this class allows specifying a filter that
+ * is applied to the queued instances.
  *
  * @author Marco Heyden (marco.heyden@kit.edu)
  * @version $Revision: 1 $
  */
-public class FilteredQueueStream extends AbstractOptionHandler implements
-        ExampleStream {
+public class FilteredQueueStream extends AbstractOptionHandler implements ExampleStream {
 
     @Override
     public String getPurposeString() {
@@ -47,9 +47,9 @@ public class FilteredQueueStream extends AbstractOptionHandler implements
 
     private static final long serialVersionUID = 1L;
 
-    public ClassOption filtersOption = new ClassOption("filters", 'f',
-            "Filters to apply.", StreamFilter.class,
-            "AddNoiseFilter");
+    public ClassOption filtersOption =
+            new ClassOption(
+                    "filters", 'f', "Filters to apply.", StreamFilter.class, "AddNoiseFilter");
 
     private QueueStream queue = new QueueStream();
     private ExampleStream filterChain;
@@ -59,18 +59,21 @@ public class FilteredQueueStream extends AbstractOptionHandler implements
     }
 
     @Override
-    public void prepareForUseImpl(TaskMonitor monitor,
-                                  ObjectRepository repository) {
+    public void prepareForUseImpl(TaskMonitor monitor, ObjectRepository repository) {
         StreamFilter filters;
-        monitor.setCurrentActivity("Materializing filter " //+ (i + 1)
-                + "...", -1.0);
+        monitor.setCurrentActivity(
+                "Materializing filter " // + (i + 1)
+                        + "...",
+                -1.0);
         filters = (StreamFilter) getPreparedClassOption(this.filtersOption);
         if (monitor.taskShouldAbort()) {
             return;
         }
         if (filters instanceof OptionHandler) {
-            monitor.setCurrentActivity("Preparing filter " //+ (i + 1)
-                    + "...", -1.0);
+            monitor.setCurrentActivity(
+                    "Preparing filter " // + (i + 1)
+                            + "...",
+                    -1.0);
             ((OptionHandler) filters).prepareForUse(monitor, repository);
             if (monitor.taskShouldAbort()) {
                 return;
