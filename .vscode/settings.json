@@ -1,0 +1,7 @@
+{
+  "[java]": {
+    "editor.defaultFormatter": "josevseb.google-java-format-for-vs-code",
+    "editor.formatOnSave": true,
+  },
+  "java.format.settings.google.extra": "--aosp" // Android Open Source Project (AOSP) style
+}
