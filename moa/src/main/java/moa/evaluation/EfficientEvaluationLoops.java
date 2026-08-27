@@ -68,6 +68,7 @@ public class EfficientEvaluationLoops {
      * It can also be used just to calculate the test-then-train metrics (set windowed_evaluator to null)
      * Finally, it can also be used to calculate test-then-train metrics and sample them over time,
      * just set basic_evaluator to null and specify a BasicClassificationPerformanceEvaluator as the windowed_evaluator.
+     * Use {@link HookableEvaluationLoop} directly if you also need to observe the loop as it runs.
      * @param stream
      * @param learner
      * @param basicEvaluator
@@ -83,70 +84,10 @@ public class EfficientEvaluationLoops {
                                                           LearningPerformanceEvaluator<Example<Instance>> windowedEvaluator,
                                                           long maxInstances, long windowSize,
                                                           boolean storeY, boolean storePredictions) {
-        int instancesProcessed = 0;
-
-        if (!stream.hasMoreInstances())
-            stream.restart();
-
-        ArrayList<double[]> windowed_results = new ArrayList<>();
-        ArrayList<Integer> targetValues = new ArrayList<>();
-        ArrayList<Integer> predictions = new ArrayList<>();
-
-
-        while (stream.hasMoreInstances() &&
-                (maxInstances == -1 || instancesProcessed < maxInstances)) {
-
-            Example<Instance> instance = stream.nextInstance();
-
-            double[] prediction = learner.getVotesForInstance(instance);
-
-            // Update evaluators and store predictions if requested
-            if (basicEvaluator != null)
-                basicEvaluator.addResult(instance, prediction);
-            if (windowedEvaluator != null)
-                windowedEvaluator.addResult(instance, prediction);
-            if (storePredictions)
-                predictions.add(Utils.maxIndex(prediction));
-            if (storeY)
-                targetValues.add((int)Math.round(instance.getData().classValue()));
-
-            learner.trainOnInstance(instance);
-            instancesProcessed++;
-
-            // Store windowed results if requested
-            if (windowedEvaluator != null)
-                if (instancesProcessed % windowSize == 0) {
-                    Measurement[] measurements = windowedEvaluator.getPerformanceMeasurements();
-                    double[] values = new double[measurements.length];
-                    for (int i = 0; i < values.length; ++i)
-                        values[i] = measurements[i].getValue();
-                    windowed_results.add(values);
-                }
-        }
-        if (windowedEvaluator != null)
-            if (instancesProcessed % windowSize != 0) {
-                Measurement[] measurements = windowedEvaluator.getPerformanceMeasurements();
-                double[] values = new double[measurements.length];
-                for (int i = 0; i < values.length; ++i)
-                    values[i] = measurements[i].getValue();
-                windowed_results.add(values);
-            }
-
-        double[] cumulative_results = null;
-
-        if (basicEvaluator != null) {
-            Measurement[] measurements = basicEvaluator.getPerformanceMeasurements();
-            cumulative_results = new double[measurements.length];
-            for (int i = 0; i < cumulative_results.length; ++i)
-                cumulative_results[i] = measurements[i].getValue();
-        }
-
-        return new PrequentialResult(
-            windowed_results,
-            cumulative_results,
-            targetValues,
-            predictions
-        );
+        return new HookableEvaluationLoop()
+                .registerBasic(basicEvaluator)
+                .registerWindowed(windowedEvaluator)
+                .run(stream, learner, maxInstances, windowSize, storeY, storePredictions);
     }
 
     public static PrequentialResult PrequentialSSLEvaluation(
