@@ -45,7 +45,6 @@ public class BasicPredictionIntervalEvaluator extends AbstractMOAObject
     private int counter;
     private int innerCounter;
 
-    private double squareError;
     private double averageError;
     private double squareTargetError;
     private double averageTargetError;
@@ -61,7 +60,6 @@ public class BasicPredictionIntervalEvaluator extends AbstractMOAObject
         this.minTruth = Double.MAX_VALUE;
         this.counter = 0;
         this.innerCounter = 0;
-        this.squareError = 0;
         this.averageError = 0;
         this.squareTargetError = 0;
         this.averageTargetError = 0;
@@ -83,12 +81,10 @@ public class BasicPredictionIntervalEvaluator extends AbstractMOAObject
                 if (inst.classValue() < this.minTruth) this.minTruth = inst.classValue();
                 this.sumWidth += prediction[2] - prediction[0];
 
-                this.squareError += (inst.classValue() - prediction[0]) * (inst.classValue() - prediction[0]);
-                this.averageError += Math.abs(inst.classValue() - prediction[0]);
+                this.averageError += Math.abs(inst.classValue() - prediction[1]);
                 this.squareTargetError += (inst.classValue() - meanTarget) * (inst.classValue() - meanTarget);
                 this.averageTargetError += Math.abs(inst.classValue() - meanTarget);
                 this.sumTarget += inst.classValue();
-                this.weightObserved += inst.weight();
 
             }
            //System.out.println(inst.classValue()+", "+prediction[0]);
@@ -179,7 +175,7 @@ public class BasicPredictionIntervalEvaluator extends AbstractMOAObject
         //double targetSquareError = getTargetSquareError();
         //return targetSquareError > 0 ? getSquareError()/targetSquareError : 0.0;
     return Math.sqrt(this.squareTargetError> 0 ?
-                this.squareError/this.squareTargetError : 0.0);
+                this.SSE / this.squareTargetError : 0.0);
     }
     
     @Override
