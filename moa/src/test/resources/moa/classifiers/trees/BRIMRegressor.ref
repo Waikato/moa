@@ -1,0 +1,265 @@
+--> regression-out0.arff
+moa.classifiers.trees.BRIMRegressor -s VarianceReductionSplitCriterion -w (ADWINChangeDetector -a 0.01) -x (ADWINChangeDetector -a 0.001)
+
+Index
+  100
+Votes
+  0: 55948.38383838
+Measurements
+  classified instances: 99
+  mean absolute error: 35203.58833735
+  root mean squared error: 65275.79378599
+  relative mean absolute error: 1.01197927
+  relative root mean squared error: 1.0041377
+  coefficient of determination: -0.00829253
+  adjusted coefficient of determination: -0.11025469
+Model measurements
+  model training instances: 99
+  tree size (nodes): 1
+  active learning leaves: 1
+  inactive learning leaves: 0
+  inactive inner nodes: 0
+  leaves predicting with the perceptron: 0
+  background tree size (nodes): 0
+  warnings detected: 0
+  drifts detected: 0
+  background tree replacements: 0
+  nodes pruned to save memory: 0
+  byte size estimate: 26588
+
+Index
+  200
+Votes
+  0: 47263.67336683
+Measurements
+  classified instances: 199
+  mean absolute error: 32047.70700406
+  root mean squared error: 52125.86345795
+  relative mean absolute error: 1.00424641
+  relative root mean squared error: 1.00262806
+  coefficient of determination: -0.00526303
+  adjusted coefficient of determination: -0.0531327
+Model measurements
+  model training instances: 199
+  tree size (nodes): 1
+  active learning leaves: 1
+  inactive learning leaves: 0
+  inactive inner nodes: 0
+  leaves predicting with the perceptron: 0
+  background tree size (nodes): 0
+  warnings detected: 0
+  drifts detected: 0
+  background tree replacements: 0
+  nodes pruned to save memory: 0
+  byte size estimate: 9852
+
+Index
+  300
+Votes
+  0: 44973.75932203
+Measurements
+  classified instances: 299
+  mean absolute error: 30481.46994906
+  root mean squared error: 50522.38892688
+  relative mean absolute error: 0.99166423
+  relative root mean squared error: 1.00425701
+  coefficient of determination: -0.00853215
+  adjusted coefficient of determination: -0.03993973
+Model measurements
+  model training instances: 299
+  tree size (nodes): 3
+  active learning leaves: 2
+  inactive learning leaves: 0
+  inactive inner nodes: 0
+  leaves predicting with the perceptron: 0
+  background tree size (nodes): 0
+  warnings detected: 0
+  drifts detected: 0
+  background tree replacements: 0
+  nodes pruned to save memory: 0
+  byte size estimate: 16754
+
+Index
+  400
+Votes
+  0: 48277.08860759
+Measurements
+  classified instances: 399
+  mean absolute error: 32099.92881331
+  root mean squared error: 53901.99946608
+  relative mean absolute error: 0.98751113
+  relative root mean squared error: 1.00526302
+  coefficient of determination: -0.01055373
+  adjusted coefficient of determination: -0.03393415
+Model measurements
+  model training instances: 399
+  tree size (nodes): 3
+  active learning leaves: 2
+  inactive learning leaves: 0
+  inactive inner nodes: 0
+  leaves predicting with the perceptron: 0
+  background tree size (nodes): 0
+  warnings detected: 0
+  drifts detected: 0
+  background tree replacements: 0
+  nodes pruned to save memory: 0
+  byte size estimate: 18602
+
+Index
+  500
+Votes
+  0: 47954.12955466
+Measurements
+  classified instances: 499
+  mean absolute error: 31426.39454266
+  root mean squared error: 51697.76467823
+  relative mean absolute error: 0.98629104
+  relative root mean squared error: 1.00712505
+  coefficient of determination: -0.01430087
+  adjusted coefficient of determination: -0.03296899
+Model measurements
+  model training instances: 499
+  tree size (nodes): 3
+  active learning leaves: 2
+  inactive learning leaves: 0
+  inactive inner nodes: 0
+  leaves predicting with the perceptron: 0
+  background tree size (nodes): 0
+  warnings detected: 0
+  drifts detected: 0
+  background tree replacements: 0
+  nodes pruned to save memory: 0
+  byte size estimate: 20546
+
+Index
+  600
+Votes
+  0: 48049.53535354
+Measurements
+  classified instances: 599
+  mean absolute error: 31226.41568662
+  root mean squared error: 52725.8314268
+  relative mean absolute error: 0.98363351
+  relative root mean squared error: 1.00565209
+  coefficient of determination: -0.01133613
+  adjusted coefficient of determination: -0.02678948
+Model measurements
+  model training instances: 599
+  tree size (nodes): 3
+  active learning leaves: 2
+  inactive learning leaves: 0
+  inactive inner nodes: 0
+  leaves predicting with the perceptron: 0
+  background tree size (nodes): 0
+  warnings detected: 0
+  drifts detected: 0
+  background tree replacements: 0
+  nodes pruned to save memory: 0
+  byte size estimate: 21050
+
+Index
+  700
+Votes
+  0: 46923.77419355
+Measurements
+  classified instances: 699
+  mean absolute error: 30724.68417667
+  root mean squared error: 51002.92392099
+  relative mean absolute error: 0.97696775
+  relative root mean squared error: 1.00396425
+  coefficient of determination: -0.00794422
+  adjusted coefficient of determination: -0.0211104
+Model measurements
+  model training instances: 699
+  tree size (nodes): 3
+  active learning leaves: 2
+  inactive learning leaves: 0
+  inactive inner nodes: 0
+  leaves predicting with the perceptron: 0
+  background tree size (nodes): 0
+  warnings detected: 0
+  drifts detected: 0
+  background tree replacements: 0
+  nodes pruned to save memory: 0
+  byte size estimate: 24242
+
+Index
+  800
+Votes
+  0: 46752.18508997
+Measurements
+  classified instances: 799
+  mean absolute error: 30682.15751166
+  root mean squared error: 50318.03156841
+  relative mean absolute error: 0.9735511
+  relative root mean squared error: 0.99983801
+  coefficient of determination: 0.00032394
+  adjusted coefficient of determination: -0.0110792
+Model measurements
+  model training instances: 799
+  tree size (nodes): 3
+  active learning leaves: 2
+  inactive learning leaves: 0
+  inactive inner nodes: 0
+  leaves predicting with the perceptron: 0
+  background tree size (nodes): 0
+  warnings detected: 0
+  drifts detected: 0
+  background tree replacements: 0
+  nodes pruned to save memory: 0
+  byte size estimate: 25026
+
+Index
+  900
+Votes
+  0: 45843.31954023
+Measurements
+  classified instances: 899
+  mean absolute error: 29994.25961628
+  root mean squared error: 48601.05386261
+  relative mean absolute error: 0.96823652
+  relative root mean squared error: 0.99569311
+  coefficient of determination: 0.00859524
+  adjusted coefficient of determination: -0.00144148
+Model measurements
+  model training instances: 899
+  tree size (nodes): 3
+  active learning leaves: 2
+  inactive learning leaves: 0
+  inactive inner nodes: 0
+  leaves predicting with the perceptron: 0
+  background tree size (nodes): 0
+  warnings detected: 0
+  drifts detected: 0
+  background tree replacements: 0
+  nodes pruned to save memory: 0
+  byte size estimate: 26314
+
+Index
+  1000
+Votes
+  0: 45138.23253389
+Measurements
+  classified instances: 999
+  mean absolute error: 29822.49019464
+  root mean squared error: 47771.32379919
+  relative mean absolute error: 0.96013554
+  relative root mean squared error: 0.98393007
+  coefficient of determination: 0.03188163
+  adjusted coefficient of determination: 0.02307165
+Model measurements
+  model training instances: 999
+  tree size (nodes): 3
+  active learning leaves: 2
+  inactive learning leaves: 0
+  inactive inner nodes: 0
+  leaves predicting with the perceptron: 0
+  background tree size (nodes): 0
+  warnings detected: 0
+  drifts detected: 0
+  background tree replacements: 0
+  nodes pruned to save memory: 0
+  byte size estimate: 27490
+
+
+
