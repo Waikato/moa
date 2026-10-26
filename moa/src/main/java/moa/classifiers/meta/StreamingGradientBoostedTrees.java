@@ -328,8 +328,8 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
         base.percentageOfAttributesForEachBoostingIteration.setValue(percentageOfAttributesForEachBoostingIteration.getValue());
         base.learningRateOption.setValue(learningRateOption.getValue());
         if (this.disableOneHotEncoding.isSet()){
-            if (this.baseLearnerOption.getDefaultCLIString().contains("trees.FIMTDD")){
-                System.out.println("WARNING: One-hot encoding is DISABLED for baseLearner '" +this.baseLearnerOption.getDefaultCLIString() + "' which does NOT support nominal attributes.");
+            if (this.baseLearnerOption.getValueAsCLIString().contains("trees.FIMTDD")){
+                System.out.println("WARNING: One-hot encoding is DISABLED for baseLearner '" +this.baseLearnerOption.getValueAsCLIString() + "' which does NOT support nominal attributes.");
             }
         }
         base.useOneHotEncoding.setValue(!disableOneHotEncoding.isSet());
@@ -400,9 +400,6 @@ public class StreamingGradientBoostedTrees extends AbstractClassifier implements
                 this.baseLearner = baseLearner;
             }
             public void trainOnInstance(Instance inst) {
-                if ((this.instancesSeenAtTrain % 1000) == 0) {
-                    System.gc();
-                }
                 if ((this.randomlySkip1SthOfInstancesAtTraining.getValue() > 1) && (this.classifierRandom.nextInt(this.randomlySkip1SthOfInstancesAtTraining.getValue()) == 0)) {
                     // skip training
                     return;
