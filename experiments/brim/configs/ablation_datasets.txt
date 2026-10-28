@@ -1,0 +1,11 @@
+abalone
+ailerons
+bike
+DemandF
+elevators
+fried
+FriedmanGra
+FriedmanGsg
+FriedmanLea
+House8L
+hyperA

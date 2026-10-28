@@ -1,0 +1,5 @@
+# name<TAB>MOA learner CLI (resource traces of the motivating experiment)
+FIMTDD	trees.FIMTDD
+Initial attempt (PLASTIC + variance reduction + E-BST)	trees.BRIMRegressor -O -m 0 -u -N -C -k 0
+Initial attempt + QO	trees.BRIMRegressor -m 0 -u -N -C -k 0
+BRIM	trees.BRIMRegressor

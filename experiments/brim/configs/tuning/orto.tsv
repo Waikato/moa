@@ -1,0 +1,19 @@
+# name<TAB>MOA learner CLI (tuning grid)
+ORTO_g50_perc0.02_average	trees.ORTO -g 50 -o average
+ORTO_g50_perc0.02_bestTree	trees.ORTO -g 50 -o bestTree
+ORTO_g50_perc0.002_average	trees.ORTO -g 50 -l 0.002 -o average
+ORTO_g50_perc0.002_bestTree	trees.ORTO -g 50 -l 0.002 -o bestTree
+ORTO_g50_mean_average	trees.ORTO -g 50 -e -o average
+ORTO_g50_mean_bestTree	trees.ORTO -g 50 -e -o bestTree
+ORTO_g200_perc0.02_average	trees.ORTO -g 200 -o average
+ORTO_g200_perc0.02_bestTree	trees.ORTO -g 200 -o bestTree
+ORTO_g200_perc0.002_average	trees.ORTO -g 200 -l 0.002 -o average
+ORTO_g200_perc0.002_bestTree	trees.ORTO -g 200 -l 0.002 -o bestTree
+ORTO_g200_mean_average	trees.ORTO -g 200 -e -o average
+ORTO_g200_mean_bestTree	trees.ORTO -g 200 -e -o bestTree
+ORTO_g500_perc0.02_average	trees.ORTO -g 500 -o average
+ORTO_g500_perc0.02_bestTree	trees.ORTO -g 500 -o bestTree
+ORTO_g500_perc0.002_average	trees.ORTO -g 500 -l 0.002 -o average
+ORTO_g500_perc0.002_bestTree	trees.ORTO -g 500 -l 0.002 -o bestTree
+ORTO_g500_mean_average	trees.ORTO -g 500 -e -o average
+ORTO_g500_mean_bestTree	trees.ORTO -g 500 -e -o bestTree

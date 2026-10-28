@@ -1,0 +1,28 @@
+# name<TAB>MOA learner CLI (tuning grid)
+FIMTDD_g50_c0.01_perc0.02	trees.FIMTDD -g 50 -c 0.01
+FIMTDD_g50_c0.01_perc0.002	trees.FIMTDD -g 50 -c 0.01 -l 0.002
+FIMTDD_g50_c0.01_mean	trees.FIMTDD -g 50 -c 0.01 -e
+FIMTDD_g50_c0.0001_perc0.02	trees.FIMTDD -g 50 -c 0.0001
+FIMTDD_g50_c0.0001_perc0.002	trees.FIMTDD -g 50 -c 0.0001 -l 0.002
+FIMTDD_g50_c0.0001_mean	trees.FIMTDD -g 50 -c 0.0001 -e
+FIMTDD_g50_c0.0000001_perc0.02	trees.FIMTDD -g 50 -c 0.0000001
+FIMTDD_g50_c0.0000001_perc0.002	trees.FIMTDD -g 50 -c 0.0000001 -l 0.002
+FIMTDD_g50_c0.0000001_mean	trees.FIMTDD -g 50 -c 0.0000001 -e
+FIMTDD_g200_c0.01_perc0.02	trees.FIMTDD -g 200 -c 0.01
+FIMTDD_g200_c0.01_perc0.002	trees.FIMTDD -g 200 -c 0.01 -l 0.002
+FIMTDD_g200_c0.01_mean	trees.FIMTDD -g 200 -c 0.01 -e
+FIMTDD_g200_c0.0001_perc0.02	trees.FIMTDD -g 200 -c 0.0001
+FIMTDD_g200_c0.0001_perc0.002	trees.FIMTDD -g 200 -c 0.0001 -l 0.002
+FIMTDD_g200_c0.0001_mean	trees.FIMTDD -g 200 -c 0.0001 -e
+FIMTDD_g200_c0.0000001_perc0.02	trees.FIMTDD -g 200 -c 0.0000001
+FIMTDD_g200_c0.0000001_perc0.002	trees.FIMTDD -g 200 -c 0.0000001 -l 0.002
+FIMTDD_g200_c0.0000001_mean	trees.FIMTDD -g 200 -c 0.0000001 -e
+FIMTDD_g500_c0.01_perc0.02	trees.FIMTDD -g 500 -c 0.01
+FIMTDD_g500_c0.01_perc0.002	trees.FIMTDD -g 500 -c 0.01 -l 0.002
+FIMTDD_g500_c0.01_mean	trees.FIMTDD -g 500 -c 0.01 -e
+FIMTDD_g500_c0.0001_perc0.02	trees.FIMTDD -g 500 -c 0.0001
+FIMTDD_g500_c0.0001_perc0.002	trees.FIMTDD -g 500 -c 0.0001 -l 0.002
+FIMTDD_g500_c0.0001_mean	trees.FIMTDD -g 500 -c 0.0001 -e
+FIMTDD_g500_c0.0000001_perc0.02	trees.FIMTDD -g 500 -c 0.0000001
+FIMTDD_g500_c0.0000001_perc0.002	trees.FIMTDD -g 500 -c 0.0000001 -l 0.002
+FIMTDD_g500_c0.0000001_mean	trees.FIMTDD -g 500 -c 0.0000001 -e

@@ -1,0 +1,8 @@
+# name<TAB>MOA learner CLI (baselines with the configurations selected by analysis/select_baselines.py)
+FIMTDD	trees.FIMTDD -g 200 -c 0.01 -e
+ORTO	trees.ORTO -g 500 -e -o average
+AMRules	rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor
+SGT	trees.StochasticGradientTree -G 50 -C 0.01 -W 100
+BRIM	trees.BRIMRegressor
+BRIM-1MB	trees.BRIMRegressor -m 1000000
+BRIM-100KB	trees.BRIMRegressor -m 100000

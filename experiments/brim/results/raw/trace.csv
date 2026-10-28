@@ -1,0 +1,201 @@
+dataset,config,seed,instances,learner_wall_s,mem_bytes
+FriedmanGra,FIMTDD,1,2000,0.035445,1687808
+FriedmanGra,FIMTDD,1,4000,0.045092,3091648
+FriedmanGra,FIMTDD,1,6000,0.053065,1977128
+FriedmanGra,FIMTDD,1,8000,0.059448,3937488
+FriedmanGra,FIMTDD,1,10000,0.067777,3947504
+FriedmanGra,FIMTDD,1,12000,0.076163,4233400
+FriedmanGra,FIMTDD,1,14000,0.084008,6475096
+FriedmanGra,FIMTDD,1,16000,0.090333,7604440
+FriedmanGra,FIMTDD,1,18000,0.098791,7889376
+FriedmanGra,FIMTDD,1,20000,0.104917,8454096
+FriedmanGra,FIMTDD,1,22000,0.110472,6779184
+FriedmanGra,FIMTDD,1,24000,0.115337,8742416
+FriedmanGra,FIMTDD,1,26000,0.122793,9305600
+FriedmanGra,FIMTDD,1,28000,0.130694,10710960
+FriedmanGra,FIMTDD,1,30000,0.139585,12117640
+FriedmanGra,FIMTDD,1,32000,0.149906,13241712
+FriedmanGra,FIMTDD,1,34000,0.155880,14923688
+FriedmanGra,FIMTDD,1,36000,0.166688,15163584
+FriedmanGra,FIMTDD,1,38000,0.174604,1078888
+FriedmanGra,FIMTDD,1,40000,0.179156,2762784
+FriedmanGra,FIMTDD,1,42000,0.184357,4167744
+FriedmanGra,FIMTDD,1,44000,0.189204,6130336
+FriedmanGra,FIMTDD,1,46000,0.195205,4736552
+FriedmanGra,FIMTDD,1,48000,0.200665,7256152
+FriedmanGra,FIMTDD,1,50000,0.206911,7824112
+FriedmanGra,FIMTDD,1,52000,0.214160,6993800
+FriedmanGra,FIMTDD,1,54000,0.223095,7001624
+FriedmanGra,FIMTDD,1,56000,0.228314,5888696
+FriedmanGra,FIMTDD,1,58000,0.233420,7293864
+FriedmanGra,FIMTDD,1,60000,0.239596,8701392
+FriedmanGra,FIMTDD,1,62000,0.245746,10942320
+FriedmanGra,FIMTDD,1,64000,0.256746,12064568
+FriedmanGra,FIMTDD,1,66000,0.265838,11237808
+FriedmanGra,FIMTDD,1,68000,0.273434,13760576
+FriedmanGra,FIMTDD,1,70000,0.282631,15161584
+FriedmanGra,FIMTDD,1,72000,0.292334,16562832
+FriedmanGra,FIMTDD,1,74000,0.303401,16291096
+FriedmanGra,FIMTDD,1,76000,0.315616,17437096
+FriedmanGra,FIMTDD,1,78000,0.323773,864664
+FriedmanGra,FIMTDD,1,80000,0.328697,1712096
+FriedmanGra,FIMTDD,1,82000,0.334282,2836352
+FriedmanGra,FIMTDD,1,84000,0.341461,4518440
+FriedmanGra,FIMTDD,1,86000,0.349340,5361456
+FriedmanGra,FIMTDD,1,88000,0.361477,5930872
+FriedmanGra,FIMTDD,1,90000,0.370958,7335080
+FriedmanGra,FIMTDD,1,92000,0.378448,9299568
+FriedmanGra,FIMTDD,1,94000,0.385665,10983344
+FriedmanGra,FIMTDD,1,96000,0.392470,12947696
+FriedmanGra,FIMTDD,1,98000,0.401563,12111272
+FriedmanGra,FIMTDD,1,100000,0.411321,11835168
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,2000,0.058599,6905600
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,4000,0.121118,17040376
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,6000,0.192240,28036720
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,8000,0.327008,40221176
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,10000,0.452113,52388336
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,12000,0.660463,58888856
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,14000,0.891067,71825008
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,16000,1.108824,85687128
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,18000,1.325571,99692672
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,20000,1.562020,114090280
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,22000,1.841629,129078672
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,24000,2.217190,144210552
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,26000,2.645598,159341384
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,28000,3.107795,174459216
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,30000,3.682687,189707392
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,32000,4.335257,204922104
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,34000,5.119531,220397360
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,36000,6.069313,230541576
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,38000,7.032810,210418512
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,40000,8.042129,221013792
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,42000,9.156555,237440528
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,44000,10.407647,246144264
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,46000,11.811439,263043576
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,48000,13.363599,273238304
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,50000,14.943462,292426960
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,52000,16.574430,311019120
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,54000,18.538334,262788592
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,56000,20.319603,277893816
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,58000,22.169149,299865816
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,60000,24.033935,313728224
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,62000,25.956685,335024096
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,64000,28.015955,334902824
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,66000,30.079982,350756496
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,68000,32.241966,373407584
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,70000,34.523890,393305624
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,72000,36.837094,415360976
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,74000,39.179459,438872944
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,76000,41.737256,461843088
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,78000,44.346082,460117912
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,80000,46.984595,470995016
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,82000,49.827733,489569816
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,84000,52.661139,508015352
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,86000,55.794999,502917912
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,88000,58.928854,523137536
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,90000,62.115779,537198448
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,92000,65.385091,550796176
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,94000,68.886042,574833080
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,96000,72.453615,590662024
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,98000,76.023935,616394616
+FriedmanGra,Initial attempt (PLASTIC + variance reduction + E-BST),1,100000,79.708091,637448408
+FriedmanGra,Initial attempt + QO,1,2000,0.042067,72456
+FriedmanGra,Initial attempt + QO,1,4000,0.049307,112864
+FriedmanGra,Initial attempt + QO,1,6000,0.054568,127088
+FriedmanGra,Initial attempt + QO,1,8000,0.058872,145504
+FriedmanGra,Initial attempt + QO,1,10000,0.073305,207392
+FriedmanGra,Initial attempt + QO,1,12000,0.078411,228104
+FriedmanGra,Initial attempt + QO,1,14000,0.082990,255416
+FriedmanGra,Initial attempt + QO,1,16000,0.087694,264712
+FriedmanGra,Initial attempt + QO,1,18000,0.091803,277136
+FriedmanGra,Initial attempt + QO,1,20000,0.096504,299752
+FriedmanGra,Initial attempt + QO,1,22000,0.100661,317328
+FriedmanGra,Initial attempt + QO,1,24000,0.104988,329976
+FriedmanGra,Initial attempt + QO,1,26000,0.112155,355008
+FriedmanGra,Initial attempt + QO,1,28000,0.117678,399056
+FriedmanGra,Initial attempt + QO,1,30000,0.128662,457640
+FriedmanGra,Initial attempt + QO,1,32000,0.133965,486144
+FriedmanGra,Initial attempt + QO,1,34000,0.139412,509600
+FriedmanGra,Initial attempt + QO,1,36000,0.144847,525384
+FriedmanGra,Initial attempt + QO,1,38000,0.153462,524368
+FriedmanGra,Initial attempt + QO,1,40000,0.160974,572984
+FriedmanGra,Initial attempt + QO,1,42000,0.170448,681000
+FriedmanGra,Initial attempt + QO,1,44000,0.183488,790616
+FriedmanGra,Initial attempt + QO,1,46000,0.190897,984800
+FriedmanGra,Initial attempt + QO,1,48000,0.198231,1107536
+FriedmanGra,Initial attempt + QO,1,50000,0.204837,1131136
+FriedmanGra,Initial attempt + QO,1,52000,0.213396,1290216
+FriedmanGra,Initial attempt + QO,1,54000,0.219319,1379952
+FriedmanGra,Initial attempt + QO,1,56000,0.227418,1462496
+FriedmanGra,Initial attempt + QO,1,58000,0.234541,1575200
+FriedmanGra,Initial attempt + QO,1,60000,0.244896,1624008
+FriedmanGra,Initial attempt + QO,1,62000,0.252449,1714464
+FriedmanGra,Initial attempt + QO,1,64000,0.262534,1910448
+FriedmanGra,Initial attempt + QO,1,66000,0.271069,2081232
+FriedmanGra,Initial attempt + QO,1,68000,0.278664,2198248
+FriedmanGra,Initial attempt + QO,1,70000,0.287508,2326512
+FriedmanGra,Initial attempt + QO,1,72000,0.294951,2420872
+FriedmanGra,Initial attempt + QO,1,74000,0.301939,2470280
+FriedmanGra,Initial attempt + QO,1,76000,0.309632,2462856
+FriedmanGra,Initial attempt + QO,1,78000,0.316750,2592712
+FriedmanGra,Initial attempt + QO,1,80000,0.324296,2619528
+FriedmanGra,Initial attempt + QO,1,82000,0.331848,2722424
+FriedmanGra,Initial attempt + QO,1,84000,0.339072,2804056
+FriedmanGra,Initial attempt + QO,1,86000,0.347108,2840128
+FriedmanGra,Initial attempt + QO,1,88000,0.354084,2903296
+FriedmanGra,Initial attempt + QO,1,90000,0.364148,2712048
+FriedmanGra,Initial attempt + QO,1,92000,0.371724,2883720
+FriedmanGra,Initial attempt + QO,1,94000,0.380376,2962200
+FriedmanGra,Initial attempt + QO,1,96000,0.388775,3106320
+FriedmanGra,Initial attempt + QO,1,98000,0.400559,3178056
+FriedmanGra,Initial attempt + QO,1,100000,0.409583,3289488
+FriedmanGra,BRIM,1,2000,0.043647,62120
+FriedmanGra,BRIM,1,4000,0.052541,94040
+FriedmanGra,BRIM,1,6000,0.058674,112296
+FriedmanGra,BRIM,1,8000,0.063706,118632
+FriedmanGra,BRIM,1,10000,0.076468,176416
+FriedmanGra,BRIM,1,12000,0.081853,197240
+FriedmanGra,BRIM,1,14000,0.087140,208216
+FriedmanGra,BRIM,1,16000,0.092205,222000
+FriedmanGra,BRIM,1,18000,0.097000,219480
+FriedmanGra,BRIM,1,20000,0.101690,235056
+FriedmanGra,BRIM,1,22000,0.106552,248536
+FriedmanGra,BRIM,1,24000,0.111338,262336
+FriedmanGra,BRIM,1,26000,0.117499,295592
+FriedmanGra,BRIM,1,28000,0.123803,314992
+FriedmanGra,BRIM,1,30000,0.134884,383000
+FriedmanGra,BRIM,1,32000,0.140766,405432
+FriedmanGra,BRIM,1,34000,0.153571,393320
+FriedmanGra,BRIM,1,36000,0.167838,505088
+FriedmanGra,BRIM,1,38000,0.174504,89144
+FriedmanGra,BRIM,1,40000,0.177777,105104
+FriedmanGra,BRIM,1,42000,0.181575,122008
+FriedmanGra,BRIM,1,44000,0.185334,130136
+FriedmanGra,BRIM,1,46000,0.189762,153728
+FriedmanGra,BRIM,1,48000,0.193692,182512
+FriedmanGra,BRIM,1,50000,0.197813,196848
+FriedmanGra,BRIM,1,52000,0.201901,191640
+FriedmanGra,BRIM,1,54000,0.205946,190968
+FriedmanGra,BRIM,1,56000,0.210099,212584
+FriedmanGra,BRIM,1,58000,0.214246,216960
+FriedmanGra,BRIM,1,60000,0.218406,221992
+FriedmanGra,BRIM,1,62000,0.223031,230120
+FriedmanGra,BRIM,1,64000,0.227426,244288
+FriedmanGra,BRIM,1,66000,0.231972,305792
+FriedmanGra,BRIM,1,68000,0.237744,348136
+FriedmanGra,BRIM,1,70000,0.242249,354464
+FriedmanGra,BRIM,1,72000,0.247307,367048
+FriedmanGra,BRIM,1,74000,0.252136,393648
+FriedmanGra,BRIM,1,76000,0.259383,98136
+FriedmanGra,BRIM,1,78000,0.262022,89616
+FriedmanGra,BRIM,1,80000,0.265310,141040
+FriedmanGra,BRIM,1,82000,0.269003,165160
+FriedmanGra,BRIM,1,84000,0.273130,169600
+FriedmanGra,BRIM,1,86000,0.277416,203472
+FriedmanGra,BRIM,1,88000,0.281619,219104
+FriedmanGra,BRIM,1,90000,0.286066,248448
+FriedmanGra,BRIM,1,92000,0.290669,279192
+FriedmanGra,BRIM,1,94000,0.295158,295152
+FriedmanGra,BRIM,1,96000,0.299648,305200
+FriedmanGra,BRIM,1,98000,0.304788,331168
+FriedmanGra,BRIM,1,100000,0.309772,377256

@@ -1,0 +1,9 @@
+build/
+results/logs/
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+__pycache__/
+RDatasets/

@@ -1,0 +1,8 @@
+# name<TAB>MOA learner CLI
+FIMTDD	trees.FIMTDD
+ORTO	trees.ORTO
+AMRules	rules.AMRulesRegressor
+BRIM	trees.BRIMRegressor
+BRIM-1MB	trees.BRIMRegressor -m 1000000
+BRIM-100KB	trees.BRIMRegressor -m 100000
+SGT	trees.StochasticGradientTree

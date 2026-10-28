@@ -1,0 +1,19 @@
+# name<TAB>MOA learner CLI (tuning grid)
+SGT_g50_c0.01_w100	trees.StochasticGradientTree -G 50 -C 0.01 -W 100
+SGT_g50_c0.01_w1000	trees.StochasticGradientTree -G 50 -C 0.01 -W 1000
+SGT_g50_c0.0001_w100	trees.StochasticGradientTree -G 50 -C 0.0001 -W 100
+SGT_g50_c0.0001_w1000	trees.StochasticGradientTree -G 50 -C 0.0001 -W 1000
+SGT_g50_c1e-6_w100	trees.StochasticGradientTree -G 50 -C 0.000001 -W 100
+SGT_g50_c1e-6_w1000	trees.StochasticGradientTree -G 50 -C 0.000001 -W 1000
+SGT_g200_c0.01_w100	trees.StochasticGradientTree -G 200 -C 0.01 -W 100
+SGT_g200_c0.01_w1000	trees.StochasticGradientTree -G 200 -C 0.01 -W 1000
+SGT_g200_c0.0001_w100	trees.StochasticGradientTree -G 200 -C 0.0001 -W 100
+SGT_g200_c0.0001_w1000	trees.StochasticGradientTree -G 200 -C 0.0001 -W 1000
+SGT_g200_c1e-6_w100	trees.StochasticGradientTree -G 200 -C 0.000001 -W 100
+SGT_g200_c1e-6_w1000	trees.StochasticGradientTree -G 200 -C 0.000001 -W 1000
+SGT_g500_c0.01_w100	trees.StochasticGradientTree -G 500 -C 0.01 -W 100
+SGT_g500_c0.01_w1000	trees.StochasticGradientTree -G 500 -C 0.01 -W 1000
+SGT_g500_c0.0001_w100	trees.StochasticGradientTree -G 500 -C 0.0001 -W 100
+SGT_g500_c0.0001_w1000	trees.StochasticGradientTree -G 500 -C 0.0001 -W 1000
+SGT_g500_c1e-6_w100	trees.StochasticGradientTree -G 500 -C 0.000001 -W 100
+SGT_g500_c1e-6_w1000	trees.StochasticGradientTree -G 500 -C 0.000001 -W 1000

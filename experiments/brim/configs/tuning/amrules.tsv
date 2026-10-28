@@ -1,0 +1,19 @@
+# name<TAB>MOA learner CLI (tuning grid)
+AMRules_g50_adaptive_ordered	rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor
+AMRules_g50_adaptive_unordered	rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor -U
+AMRules_g50_mean_ordered	rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor
+AMRules_g50_mean_unordered	rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor -U
+AMRules_g50_perceptron_ordered	rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor
+AMRules_g50_perceptron_unordered	rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor -U
+AMRules_g200_adaptive_ordered	rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor
+AMRules_g200_adaptive_unordered	rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor -U
+AMRules_g200_mean_ordered	rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor
+AMRules_g200_mean_unordered	rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor -U
+AMRules_g200_perceptron_ordered	rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor
+AMRules_g200_perceptron_unordered	rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor -U
+AMRules_g500_adaptive_ordered	rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor
+AMRules_g500_adaptive_unordered	rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor -U
+AMRules_g500_mean_ordered	rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor
+AMRules_g500_mean_unordered	rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor -U
+AMRules_g500_perceptron_ordered	rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor
+AMRules_g500_perceptron_unordered	rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor -U
