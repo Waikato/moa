@@ -1,19 +1,19 @@
 config,avg_rank,median_adj_r2,num_datasets,cli
-AMRules_g50_adaptive_ordered,3.5,0.5252071773333333,11,rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor
-AMRules_g200_adaptive_ordered,3.8636363636363638,0.5241730870666667,11,rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor
-AMRules_g500_adaptive_ordered,6.681818181818182,0.5234477471666666,11,rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor
-AMRules_g50_adaptive_unordered,6.863636363636363,0.5252071773333333,11,rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor -U
-AMRules_g200_adaptive_unordered,7.136363636363637,0.5241730870666667,11,rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor -U
-AMRules_g500_adaptive_unordered,7.5,0.5234477471666666,11,rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor -U
-AMRules_g50_perceptron_ordered,7.7727272727272725,0.5255969146333334,11,rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor
-AMRules_g200_perceptron_ordered,8.590909090909092,0.5244622681000001,11,rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor
-AMRules_g500_perceptron_ordered,10.045454545454545,0.5236624188666666,11,rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor
-AMRules_g200_perceptron_unordered,10.318181818181818,0.5244622681000001,11,rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor -U
-AMRules_g500_perceptron_unordered,10.863636363636363,0.5236624188666666,11,rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor -U
-AMRules_g200_mean_ordered,11.045454545454545,0.296734424,11,rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor
-AMRules_g50_perceptron_unordered,11.227272727272727,0.5255969146333334,11,rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor -U
-AMRules_g50_mean_ordered,11.772727272727273,0.3086820591,11,rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor
-AMRules_g500_mean_ordered,12.681818181818182,0.2778874758,11,rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor
-AMRules_g50_mean_unordered,12.954545454545455,0.2848268094,11,rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor -U
-AMRules_g200_mean_unordered,13.863636363636363,0.2276246787,11,rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor -U
-AMRules_g500_mean_unordered,14.318181818181818,0.273165546,11,rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor -U
+AMRules_g200_adaptive_ordered,3.65,0.49111721625,10,rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor
+AMRules_g50_adaptive_ordered,3.75,0.5000506773166666,10,rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor
+AMRules_g50_adaptive_unordered,6.55,0.5222473719666667,10,rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor -U
+AMRules_g500_adaptive_ordered,6.55,0.4828458436333333,10,rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor
+AMRules_g200_adaptive_unordered,7.15,0.5203436789833333,10,rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor -U
+AMRules_g500_adaptive_unordered,7.75,0.5030493048166667,10,rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor -U
+AMRules_g200_perceptron_ordered,8.25,0.4569176386,10,rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor
+AMRules_g50_perceptron_ordered,8.35,0.46250601075,10,rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor
+AMRules_g500_perceptron_ordered,10.15,0.44677783671666665,10,rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor
+AMRules_g200_mean_ordered,10.75,0.22765993735,10,rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor
+AMRules_g200_perceptron_unordered,10.95,0.4468007725833334,10,rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor -U
+AMRules_g50_perceptron_unordered,11.25,0.44381414706666666,10,rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor -U
+AMRules_g50_mean_ordered,11.45,0.24024804755,10,rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor
+AMRules_g500_perceptron_unordered,11.65,0.44250395313333335,10,rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.MultiTargetPerceptronRegressor -U
+AMRules_g50_mean_unordered,12.55,0.20391009155,10,rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor -U
+AMRules_g500_mean_ordered,12.65,0.2071233814,10,rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor
+AMRules_g200_mean_unordered,13.65,0.17812400885000002,10,rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor -U
+AMRules_g500_mean_unordered,13.95,0.1998327005,10,rules.AMRulesRegressor -g 500 -L moa.classifiers.rules.multilabel.functions.MultiTargetMeanRegressor -U

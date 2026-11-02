@@ -1,0 +1,11 @@
+# Tuning streams of the single trees: the ablation streams without hyperA (the longest, 500,000 instances; it stays in the main experiments)
+abalone
+ailerons
+bike
+DemandF
+elevators
+fried
+FriedmanGra
+FriedmanGsg
+FriedmanLea
+House8L

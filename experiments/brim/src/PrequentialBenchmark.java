@@ -50,7 +50,7 @@ import java.util.Set;
 public class PrequentialBenchmark {
 
     public static final String HEADER = "dataset,config,seed,instances,mae,rmse,r2,adj_r2,learner_wall_s,"
-            + "mem_peak_bytes,mem_mean_bytes,mem_final_bytes,est_peak_bytes,est_final_bytes";
+            + "mem_peak_bytes,mem_mean_bytes,mem_final_bytes,est_peak_bytes,est_final_bytes,warnings,drifts";
 
     public static void main(String[] args) throws Exception {
         if (args.length == 1 && args[0].equals("--header")) {
@@ -114,9 +114,12 @@ public class PrequentialBenchmark {
         double rmse = measurement(evaluator, "root mean squared error");
         double r2 = measurement(evaluator, "coefficient of determination");
         double adjR2 = measurement(evaluator, "adjusted coefficient of determination");
-        System.out.println(String.format(Locale.ROOT, "%s,%s,%d,%d,%.10g,%.10g,%.10g,%.10g,%.6f,%d,%d,%d,%d,%d",
+        // Drift warnings and drifts detected by BRIM (-1 for other learners)
+        int warnings = learner instanceof BRIMRegressor ? ((BRIMRegressor) learner).getNumWarnings() : -1;
+        int drifts = learner instanceof BRIMRegressor ? ((BRIMRegressor) learner).getNumDrifts() : -1;
+        System.out.println(String.format(Locale.ROOT, "%s,%s,%d,%d,%.10g,%.10g,%.10g,%.10g,%.6f,%d,%d,%d,%d,%d,%d,%d",
                 dataset, config, seed, i, mae, rmse, r2, adjR2, learnerNanos / 1e9,
-                memPeak, memCount > 0 ? memSum / memCount : -1, memFinal, estPeak, estFinal));
+                memPeak, memCount > 0 ? memSum / memCount : -1, memFinal, estPeak, estFinal, warnings, drifts));
     }
 
     /** Set once the agent has failed on this model, so that later samples go straight to the parts. */

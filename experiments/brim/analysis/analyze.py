@@ -2,8 +2,6 @@
 """Analysis of the BRIM experiments: per-dataset results, ranks, Friedman test, Shaffer post-hoc test and
 critical difference (CD) diagrams.
 
-Usage: python3 analysis/analyze.py [--alpha 0.05]
-
 Reads results/raw/main.csv, results/raw/ablation.csv and results/raw/ensemble.csv (written by scripts/run_*.sh) and
 writes
   results/summary/*.csv          per-dataset means over seeds, ranks, average ranks, adjusted p-values
@@ -11,8 +9,11 @@ writes
   paper/tables/*.tex             LaTeX tables used by the paper
 
 Evaluation measures (means over the seeds of each dataset):
-  adjusted R^2 (adj_r2, higher is better), peak memory measured with the SizeOf agent (mem_peak_bytes, lower is
-  better) and the wall time spent in the learner (learner_wall_s, lower is better).
+  adjusted R^2 (adj_r2, higher is better), memory measured with the SizeOf agent (lower is better; at the end of the
+  stream, mem_final_bytes, for the main experiments and the largest of 20 measurements, mem_peak_bytes, for the others)
+  and the wall time spent in the learner (learner_wall_s, lower is better).
+
+Usage: python3 analysis/analyze.py [--alpha 0.05] [--only main ablation ensemble]
 """
 import argparse
 import itertools
@@ -29,11 +30,12 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 EXP_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-METRICS = [  # column, label, higher is better, short name
-    ("adj_r2", r"Adjusted $R^2$", True, "adjr2"),
-    ("mem_peak_bytes", "Peak memory", False, "memory"),
-    ("learner_wall_s", "Wall time", False, "time"),
-]
+PEAK_MEMORY = ("mem_peak_bytes", "Peak memory", False, "memory")
+FINAL_MEMORY = ("mem_final_bytes", "Final memory", False, "memory")
+
+
+def metrics(memory):  # column, label, higher is better, short name
+    return [("adj_r2", r"Adjusted $R^2$", True, "adjr2"), memory, ("learner_wall_s", "Wall time", False, "time")]
 
 
 # --------------------------------------------------------------------------------------------- statistics
@@ -162,7 +164,7 @@ def fmt_value(column, v, unit=None):
     """Formats a mean or a standard deviation. For memory, unit is "K" or "M" (the unit of the mean)."""
     if column == "adj_r2":
         return f"{v:.3f}" if abs(v) < 10 else (r"$<\!-10$" if v < 0 else r"$>\!10$")
-    if column == "mem_peak_bytes":
+    if column.startswith("mem_"):
         unit = unit or ("K" if v < 1e6 else "M")
         return f"{v / 1e3:.0f}" if unit == "K" else f"{v / 1e6:.1f}M"
     return f"{v:.2f}" if v < 100 else f"{v:.0f}"
@@ -174,7 +176,7 @@ def fmt_cell(column, mean, sd):
     cell = fmt_value(column, mean)
     if column == "adj_r2" and abs(mean) >= 10:
         return cell
-    unit = None if column != "mem_peak_bytes" else ("K" if mean < 1e6 else "M")
+    unit = None if not column.startswith("mem_") else ("K" if mean < 1e6 else "M")
     sd_text = fmt_value(column, sd, unit) if not (column == "adj_r2" and abs(sd) >= 10) else r"$>\!10$"
     return cell + r"\,{\scriptsize$\pm$" + sd_text.replace("M", "") + "}"
 
@@ -203,7 +205,7 @@ def latex_table(means, sds, ranks, methods, column, label, caption, path, best_h
         f.write("\n".join(lines) + "\n")
 
 
-def analyze(name, csv, alpha, cd, method_order):
+def analyze(name, csv, alpha, cd, method_order, memory=PEAK_MEMORY):
     if not os.path.exists(csv):
         print(f"[{name}] {csv} not found, skipped")
         return None
@@ -217,7 +219,7 @@ def analyze(name, csv, alpha, cd, method_order):
     methods = [m for m in method_order if m in set(means["config"])]
     out = {}
     avg_rank_rows = []
-    for column, label, higher, short in METRICS:
+    for column, label, higher, short in metrics(memory):
         table = means.pivot(index="dataset", columns="config", values=column)[methods].dropna()
         ranks = rank_matrix(table.values, higher)
         avg = ranks.mean(axis=0)
@@ -262,6 +264,8 @@ def analyze(name, csv, alpha, cd, method_order):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--alpha", type=float, default=0.05)
+    parser.add_argument("--only", nargs="+", choices=["main", "ablation", "ensemble"],
+                        default=["main", "ablation", "ensemble"])
     args = parser.parse_args()
     os.makedirs(os.path.join(EXP_DIR, "paper", "figures"), exist_ok=True)
     os.makedirs(os.path.join(EXP_DIR, "paper", "tables"), exist_ok=True)
@@ -269,10 +273,13 @@ def main():
                     if l.strip() and not l.startswith("#")]
     ablation_methods = [l.split("\t")[0] for l in open(os.path.join(EXP_DIR, "configs", "ablation_variants.tsv"))
                         if l.strip() and not l.startswith("#")]
-    analyze("main", os.path.join(EXP_DIR, "results", "raw", "main.csv"), args.alpha, True, main_methods)
-    analyze("ablation", os.path.join(EXP_DIR, "results", "raw", "ablation.csv"), args.alpha, False, ablation_methods)
+    if "main" in args.only:
+        analyze("main", os.path.join(EXP_DIR, "results", "raw", "main.csv"), args.alpha, True, main_methods,
+                FINAL_MEMORY)
+    if "ablation" in args.only:
+        analyze("ablation", os.path.join(EXP_DIR, "results", "raw", "ablation.csv"), args.alpha, False, ablation_methods)
     ensemble_config = os.path.join(EXP_DIR, "configs", "ensemble_methods.tsv")
-    if os.path.exists(ensemble_config):
+    if "ensemble" in args.only and os.path.exists(ensemble_config):
         ensemble_methods = [l.split("\t")[0] for l in open(ensemble_config) if l.strip() and not l.startswith("#")]
         analyze("ensemble", os.path.join(EXP_DIR, "results", "raw", "ensemble.csv"), args.alpha, True, ensemble_methods)
 

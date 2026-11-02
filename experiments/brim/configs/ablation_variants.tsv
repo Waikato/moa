@@ -1,12 +1,13 @@
-# name<TAB>MOA learner CLI (BRIM with one component removed)
-BRIM	trees.BRIMRegressor
-no-QO	trees.BRIMRegressor -O
-no-adaptive-leaf	trees.BRIMRegressor -N
-mean-leaf	trees.BRIMRegressor -e
-no-clipping	trees.BRIMRegressor -C
-no-drift-detection	trees.BRIMRegressor -u
-no-guarded-replacement	trees.BRIMRegressor -I
-no-attribute-subset	trees.BRIMRegressor -k 0
-no-restructuring	trees.BRIMRegressor -B 1
-no-reevaluation	trees.BRIMRegressor -R 2000000000
-multiway-nominal	trees.BRIMRegressor -M
+# name<TAB>MOA learner CLI (the selected BRIM with one component removed; written by analysis/select_baselines.py)
+BRIM	trees.BRIMRegressor -g 500 -c 0.01 -R 200 -k 5 -q 0.125 -D 20 -B 3 -V
+no-QO	trees.BRIMRegressor -g 500 -c 0.01 -R 200 -k 5 -q 0.125 -D 20 -B 3 -V -O
+no-adaptive-leaf	trees.BRIMRegressor -g 500 -c 0.01 -R 200 -k 5 -q 0.125 -D 20 -B 3 -V -N
+mean-leaf	trees.BRIMRegressor -g 500 -c 0.01 -R 200 -k 5 -q 0.125 -D 20 -B 3 -V -e
+no-clipping	trees.BRIMRegressor -g 500 -c 0.01 -R 200 -k 5 -q 0.125 -D 20 -B 3 -V -C
+no-drift-detection	trees.BRIMRegressor -g 500 -c 0.01 -R 200 -k 5 -q 0.125 -D 20 -B 3 -V -u
+no-guarded-replacement	trees.BRIMRegressor -g 500 -c 0.01 -R 200 -k 5 -q 0.125 -D 20 -B 3 -V -I
+no-drift-reevaluation	trees.BRIMRegressor -g 500 -c 0.01 -R 200 -k 5 -q 0.125 -D 20 -B 3
+no-attribute-subset	trees.BRIMRegressor -g 500 -c 0.01 -R 200 -k 0 -q 0.125 -D 20 -B 3 -V
+no-restructuring	trees.BRIMRegressor -g 500 -c 0.01 -R 200 -k 5 -q 0.125 -D 20 -B 1 -V
+no-reevaluation	trees.BRIMRegressor -g 500 -c 0.01 -R 2000000000 -k 5 -q 0.125 -D 20 -B 3
+multiway-nominal	trees.BRIMRegressor -g 500 -c 0.01 -R 200 -k 5 -q 0.125 -D 20 -B 3 -V -M

@@ -1,8 +1,11 @@
-# name<TAB>MOA learner CLI (baselines with the configurations selected by analysis/select_baselines.py)
+# name<TAB>MOA learner CLI (baselines and BRIM with the configurations selected by analysis/select_baselines.py; the budgeted BRIM variants add -m)
 FIMTDD	trees.FIMTDD -g 200 -c 0.01 -e
 ORTO	trees.ORTO -g 500 -e -o average
-AMRules	rules.AMRulesRegressor -g 50 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor
+AMRules	rules.AMRulesRegressor -g 200 -L moa.classifiers.rules.multilabel.functions.AdaptiveMultiTargetRegressor
 SGT	trees.StochasticGradientTree -G 50 -C 0.01 -W 100
-BRIM	trees.BRIMRegressor
-BRIM-1MB	trees.BRIMRegressor -m 1000000
-BRIM-100KB	trees.BRIMRegressor -m 100000
+BRIM	trees.BRIMRegressor -g 500 -c 0.01 -R 200 -k 5 -q 0.125 -D 20 -B 3 -V
+BRIM-1MB	trees.BRIMRegressor -g 500 -c 0.01 -R 200 -k 5 -q 0.125 -D 20 -B 3 -V -m 1000000
+BRIM-100KB	trees.BRIMRegressor -g 500 -c 0.01 -R 200 -k 5 -q 0.125 -D 20 -B 3 -V -m 100000
+BRIM-fast	trees.BRIMRegressor -g 500 -c 0.0000001 -R 2000 -k 2 -q 0.5 -D 20 -B 5 -V
+BRIM-fast-1MB	trees.BRIMRegressor -g 500 -c 0.0000001 -R 2000 -k 2 -q 0.5 -D 20 -B 5 -V -m 1000000
+BRIM-fast-100KB	trees.BRIMRegressor -g 500 -c 0.0000001 -R 2000 -k 2 -q 0.5 -D 20 -B 5 -V -m 100000
