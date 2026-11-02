@@ -96,14 +96,15 @@ better), ranks the methods on each dataset, and applies the Friedman test (Iman-
 procedure for all pairwise comparisons (α = 0.05). CD diagrams link the methods that are not significantly different.
 
 Wall times depend on the machine and its load; each run uses its own JVM and the runs of an experiment are sequential.
-The results in `results/raw/` were produced on an Apple M5 Pro (15 cores, 24 GB RAM, macOS) with the main experiments and the
-ablation running as two concurrent sequential streams.
+The results in `results/raw/` were produced on an Apple M5 Pro (15 cores, 24 GB RAM, macOS), 29 Oct to 1 Nov 2026: the
+tuning with 16 parallel jobs, then the main experiments and the ablation one run at a time, at different times.
 
 ## Methods
 
 Main experiments (`configs/main_methods.tsv`): FIMT-DD, ORTO, AMRules, SGT (StochasticGradientTree) and BRIM with the
-configurations selected by tuning, and the selected BRIM with budgets of 1 MB and 100 KB (`-m`; tuned with its default
-32 MB budget).
+configurations selected by tuning; BRIM-fast, the BRIM configuration with the best average rank in learner wall time
+in the tuning (ties: higher median adjusted R²; `-g 500 -c 1e-7 -R 2000 -k 2 -q 0.5 -D 20 -B 5 -V`); and both BRIMs with
+budgets of 1 MB and 100 KB (`-m`; tuned with the default 32 MB budget).
 
 Tuning: each configuration of a grid (`configs/tuning/`) is run on the 10 tuning streams (`configs/tuning_datasets.txt`: the ablation streams without hyperA, the longest, which stays in the main experiments) with seeds 1–3; the
 configurations are ranked on each stream by their mean adjusted R² and the best average rank is selected. A run is
@@ -208,38 +209,41 @@ All experiments use the same JVM settings (`scripts/env.sh`):
 
 ## Results at a glance
 
-`results/raw/main.csv` (336 runs, baselines with tuned parameters), `results/raw/ablation.csv` (363 runs) and
-`results/raw/tuning/` (2,673 runs); see `results/summary/analysis_output.txt`:
+`results/raw/main.csv` (480 runs: 10 methods × 16 datasets × seeds 1–3), `results/raw/ablation.csv` (396 runs: 12
+variants × 11 datasets × 3 seeds) and `results/raw/tuning/` (68,040 runs, none stopped at the time limit: 65,610 of
+BRIM's grid, 810 of FIMT-DD's and 540 each of ORTO's, AMRules' and SGT's), all with the [run settings](#run-settings)
+above; summaries in `results/summary/` (`python3 analysis/analyze.py`). The memory is the final model size in the main
+experiments and the peak over 20 measurements in the ablation. In total, the learners trained for 58 hours in the
+tuning, 44 minutes in the main experiments and 9 minutes in the ablation.
 
-| Measure (average rank, 16 datasets) | FIMTDD | ORTO | AMRules | SGT | BRIM | BRIM-1MB | BRIM-100KB |
-|---|---|---|---|---|---|---|---|
-| Adjusted R² (higher is better) | 4.44 | 6.25 | 3.94 | 5.31 | **2.22** | **2.22** | 3.62 |
-| Peak memory | 5.75 | 5.06 | 3.88 | 6.25 | 3.38 | 2.69 | **1.00** |
-| Learner wall time | **1.94** | 2.38 | 6.25 | 6.56 | 4.12 | 3.94 | 2.81 |
+| Measure (average rank, 16 datasets) | FIMTDD | ORTO | AMRules | SGT | BRIM | BRIM-1MB | BRIM-100KB | BRIM-fast | BRIM-fast-1MB | BRIM-fast-100KB |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Adjusted R² (higher is better) | 7.50 | 9.25 | 6.56 | 7.88 | **2.53** | 2.84 | 5.41 | 4.31 | 4.25 | 4.47 |
+| Final memory | 8.56 | 7.38 | 7.25 | 9.25 | 6.28 | 4.91 | 1.84 | 4.53 | 3.59 | **1.41** |
+| Learner wall time | 3.31 | 3.69 | 9.06 | 9.38 | 7.25 | 6.62 | 3.19 | 5.06 | 4.69 | **2.75** |
 
-Geometric mean of the peak memory relative to tuned FIMTDD: BRIM 10%, BRIM-1MB 4.7%, BRIM-100KB 0.8%; wall time: BRIM
-3.1×, BRIM-100KB 1.9× (tuned FIMTDD uses mean leaves). BRIM's structural size estimate exceeded its budget in one case
-(ailerons, 100 KB budget, +7% at its peak, transiently after a drift warning). On an Apple M5 Pro, tuning takes about
-5 minutes and each of the main and ablation experiments about 20 minutes.
+The Friedman test rejects equal ranks for all three measures (p < 10⁻¹⁰). Shaffer's post-hoc test (α = 0.05):
 
-### Single trees on a server, memory at the end of the stream
+- Adjusted R²: BRIM and BRIM-1MB are significantly more accurate than all four baselines; BRIM-fast, BRIM-fast-1MB
+  and BRIM-fast-100KB than ORTO and SGT; BRIM-100KB than ORTO. No two BRIM variants differ significantly (BRIM vs.
+  BRIM-100KB: p = 0.17).
+- Final memory: BRIM-100KB and BRIM-fast-100KB are significantly smaller than all baselines and than BRIM.
+- Wall time: FIMT-DD is significantly faster than BRIM and BRIM-1MB, and ORTO than BRIM; BRIM-100KB and BRIM-fast-100KB
+  are significantly faster than BRIM, AMRules and SGT.
 
-`results/single_end_memory/` holds a second run of the tuning (2,673 runs) and the main experiments (336 runs) on a
-10-core Xeon W-2255 (lyon, OpenJDK 21), made with `scripts/run_all_single.sh` (4 parallel tuning jobs with a 4 GB heap,
-then the main runs one at a time with an 8 GB heap). Memory is measured once, at the end of each stream
-(`MEMORY_SAMPLES=1`), so `mem_final_bytes` is the final model size. The selected baseline configurations and all
-adjusted R² values are identical to those of `results/raw/`; wall times are about three times those on the M5 Pro.
-Ensemble reruns were using other cores of the server at the same time.
+Geometric means over the datasets of the final memory: BRIM 569 KB (9.6% of FIMT-DD's), BRIM-1MB 293 KB (4.9%),
+BRIM-100KB 43 KB (0.7%), BRIM-fast 320 KB (5.4%), BRIM-fast-1MB 167 KB (2.8%), BRIM-fast-100KB 43 KB (0.7%), FIMT-DD
+5.9 MB, ORTO 3.3 MB, AMRules 1.4 MB, SGT 27.4 MB; of the learner wall time: BRIM 1.61 s (2.5 times FIMT-DD's), BRIM-1MB
+1.49 s, BRIM-100KB 0.85 s (1.3 times), BRIM-fast 1.17 s (1.8 times), BRIM-fast-100KB 0.82 s (1.3 times), FIMT-DD 0.64 s,
+ORTO 0.68 s, AMRules 3.09 s, SGT 4.81 s (tuned FIMT-DD uses mean leaves). At the end of every main run, both BRIM's
+structural size estimate and the measured model size are within the budget (the main runs measure both only at the
+end).
 
-| Measure (average rank, 16 datasets) | FIMTDD | ORTO | AMRules | SGT | BRIM | BRIM-1MB | BRIM-100KB |
-|---|---|---|---|---|---|---|---|
-| Adjusted R² (higher is better) | 4.44 | 6.25 | 3.94 | 5.31 | **2.22** | **2.22** | 3.62 |
-| Final memory | 5.62 | 4.62 | 4.25 | 6.31 | 3.47 | 2.72 | **1.00** |
-| Learner wall time | **2.19** | 2.62 | 6.25 | 6.44 | 4.25 | 3.88 | 2.38 |
-
-Geometric mean of the final memory: BRIM 575 KB, BRIM-1MB 280 KB, BRIM-100KB 55 KB, FIMTDD 5.8 MB, ORTO 3.2 MB,
-AMRules 1.4 MB, SGT 26.8 MB; of the wall time: BRIM 1.64 s, BRIM-100KB 1.01 s, FIMTDD 0.68 s, ORTO 0.76 s, AMRules 3.63 s,
-SGT 4.97 s.
+Ablation (average ranks over 11 datasets; Friedman p < 10⁻⁶ for all three measures): the selected BRIM has the best
+average rank in adjusted R² (3.95; multiway-nominal 4.05, no-attribute-subset 4.91, no-reevaluation 5.18, no-QO 5.73,
+no-drift-reevaluation 5.95), and only mean-leaf is significantly less accurate (11.45). In peak memory, no-QO is
+significantly larger (11.91) and no-restructuring significantly smaller (1.27) than BRIM (6.59); in wall time,
+no-restructuring (2.36), mean-leaf (3.09) and no-reevaluation (3.27) are significantly faster than BRIM (8.55).
 
 ## SGBT classification experiment
 
