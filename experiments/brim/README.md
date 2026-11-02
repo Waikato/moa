@@ -15,13 +15,14 @@ before the class was renamed from `PLASTICRegressor`.
 | `src/PrequentialBenchmark.java` | Prequential runner: accuracy, learner wall time and memory (SizeOf agent) of one run |
 | `src/TraceBenchmark.java` | Traces memory and cumulative wall time along the stream (motivating experiment) |
 | `scripts/env.sh` | Paths and JVM options (override with environment variables) |
-| `scripts/build.sh` | Compiles MOA and the runner, writes `build/cp.txt` |
+| `scripts/build.sh` | Compiles MOA and the runners, writes `build/cp.txt` |
 | `scripts/run.sh` | Runs all (dataset, method, seed) combinations sequentially, resumable |
 | `scripts/run_main.sh`, `scripts/run_ablation.sh` | Main experiments and ablation study |
-| `scripts/run_tuning.sh`, `scripts/tune_job.sh` | Hyperparameter tuning of the baselines on the 11 ablation streams |
+| `scripts/run_tuning.sh`, `scripts/tune_job.sh` | Hyperparameter tuning of BRIM and the baselines on the 10 streams of `configs/tuning_datasets.txt` (the ablation streams without hyperA) |
 | `scripts/run_all_single.sh` | Tuning, selection and main experiments in one unattended, resumable run (memory measured at the end of each stream) |
-| `configs/tuning/*.tsv` | Tuning grids of FIMT-DD (27 configurations), ORTO (18), AMRules (18) and SGT (18) |
-| `analysis/select_baselines.py` | Selects each baseline's best configuration (average rank of adjusted R²), writes `configs/main_methods.tsv` |
+| `configs/tuning/*.tsv` | Tuning grids of BRIM (2,187 configurations), FIMT-DD (27), ORTO (18), AMRules (18) and SGT (18) |
+| `analysis/select_baselines.py` | Selects the best configuration of BRIM and each baseline (average rank of adjusted R²), writes `configs/main_methods.tsv` and `configs/ablation_variants.tsv` |
+| `analysis/tuning_tables.py` | Per tuning stream: adjusted R² and wall time, with ranks, of the most accurate, the fastest and the selected configuration of each method (`paper/tables/tuning_{best_r2,best_time,selected}.tex`, `results/summary/tuning_*.csv`) |
 | `scripts/run_ensemble_tuning.sh`, `scripts/ensemble_tune_job.sh` | Tuning of the base learners (FIMT-DD, BRIM) inside OzaBag and SGBR on the 10 streams of `configs/ensemble_tuning_datasets.txt` |
 | `configs/ensemble_tuning/*.tsv` | Ensemble tuning grids: OzaBag and SGBR × FIMT-DD (27 configurations) and BRIM (18) |
 | `analysis/select_ensembles.py` | Selects the base learner of each ensemble, writes `configs/ensemble_methods.tsv` |
@@ -30,7 +31,7 @@ before the class was renamed from `PLASTICRegressor`.
 | `scripts/*sgbt*.sh`, `configs/sgbt_*`, `analysis/select_sgbt.py`, `analysis/analyze_sgbt.py` | BRIM as the base learner of SGBT for classification (see [SGBT classification experiment](#sgbt-classification-experiment)) |
 | `scripts/run_trace.sh` | Motivating experiment (initial attempt vs. QO vs. BRIM vs. FIMT-DD on FriedmanGra) |
 | `configs/main_methods.tsv`, `configs/ablation_variants.tsv` | Methods: `name<TAB>MOA learner CLI` |
-| `configs/main_datasets.txt`, `configs/ablation_datasets.txt` | Datasets (ARFF names without extension) |
+| `configs/main_datasets.txt`, `configs/tuning_datasets.txt`, `configs/ablation_datasets.txt` | Datasets (ARFF names without extension) |
 | `analysis/analyze.py` | Ranks, Friedman and Shaffer tests, CD diagrams, LaTeX tables |
 | `analysis/plot_trace.py` | Figure of the motivating experiment (`paper/figures/trace.pdf`) |
 | `results/raw/*.csv` | One line per run (see below) |
@@ -56,7 +57,7 @@ cd experiments/brim
 export DATA_DIR=/path/to/RDatasets               # default: experiments/brim/RDatasets
 export SIZEOF_AGENT=/path/to/sizeofag-1.1.0.jar   # default: ~/Desktop/CODE/sizeofag-1.1.0.jar
 scripts/build.sh
-scripts/run_tuning.sh      # baseline tuning on the 11 ablation streams -> results/raw/tuning/ (about 5 minutes, 8 parallel jobs)
+scripts/run_tuning.sh      # tuning of BRIM and the baselines on the 10 tuning streams -> results/raw/tuning/
 python3 analysis/select_baselines.py   # writes configs/main_methods.tsv with the selected baseline configurations
 scripts/run_main.sh        # 16 datasets x 7 methods x 3 seeds -> results/raw/main.csv
 scripts/run_ablation.sh    # 11 datasets x 11 variants x 3 seeds -> results/raw/ablation.csv
@@ -86,10 +87,11 @@ java "${JVM_OPTS[@]}" -cp "$(classpath)" PrequentialBenchmark "$DATA_DIR/hyperA.
 | `dataset, config, seed, instances` | Run identification; the seed is set with `setRandomSeed` (it initializes the perceptrons) |
 | `mae, rmse, r2, adj_r2` | Final prequential measures of MOA's `BasicRegressionPerformanceEvaluator` |
 | `learner_wall_s` | Wall time spent in `getVotesForInstance` and `trainOnInstance` only (no reading or evaluation) |
-| `mem_peak_bytes, mem_mean_bytes, mem_final_bytes` | Size of the learner (SizeOf agent) at 20 evenly spaced points and at the end |
+| `mem_peak_bytes, mem_mean_bytes, mem_final_bytes` | Size of the learner (SizeOf agent): largest and mean over the `MEMORY_SAMPLES` measurements, and at the end (all three equal with the default of one measurement, at the end) |
 | `est_peak_bytes, est_final_bytes` | BRIM's own structural size estimate (−1 for other learners) |
 
-The analysis uses the mean over the seeds of `adj_r2` (higher is better), `mem_peak_bytes` and `learner_wall_s` (lower is
+The analysis uses the mean over the seeds of `adj_r2` (higher is better), the memory (`mem_final_bytes` for the main
+experiments and `mem_peak_bytes` for the ablation) and `learner_wall_s` (lower is
 better), ranks the methods on each dataset, and applies the Friedman test (Iman-Davenport) and Shaffer's static post-hoc
 procedure for all pairwise comparisons (α = 0.05). CD diagrams link the methods that are not significantly different.
 
@@ -99,15 +101,19 @@ ablation running as two concurrent sequential streams.
 
 ## Methods
 
-Main experiments (`configs/main_methods.tsv`): FIMT-DD, ORTO, AMRules and SGT (StochasticGradientTree) with the
-configurations selected by tuning,
-and BRIM (default parameters, not tuned) with its default 32 MB budget, 1 MB and 100 KB (`-m`).
+Main experiments (`configs/main_methods.tsv`): FIMT-DD, ORTO, AMRules, SGT (StochasticGradientTree) and BRIM with the
+configurations selected by tuning, and the selected BRIM with budgets of 1 MB and 100 KB (`-m`; tuned with its default
+32 MB budget).
 
-Baseline tuning: each configuration of a grid (`configs/tuning/`) is run on the 11 ablation streams with seeds 1–3; the
-configurations are ranked on each stream by their mean adjusted R² and the best average rank is selected:
+Tuning: each configuration of a grid (`configs/tuning/`) is run on the 10 tuning streams (`configs/tuning_datasets.txt`: the ablation streams without hyperA, the longest, which stays in the main experiments) with seeds 1–3; the
+configurations are ranked on each stream by their mean adjusted R² and the best average rank is selected. A run is
+stopped after 10 minutes (`TUNING_TIME_LIMIT`; runs take seconds on these streams) and, like a diverged run, ranks last
+on its stream. `scripts/run_tuning.sh` splits the BRIM grid into `BRIM_PARTS` (12) jobs per
+stream. The selection also writes `configs/ablation_variants.tsv` from the selected BRIM.
 
 | Method | Grid | Selected |
 |---|---|---|
+| BRIM | `-g` {50, 200, 500} × `-c` {1e-2, 1e-4, 1e-7} × re-evaluation period `-R` {200, 2000, 20000} × attributes per inner node `-k` {2, 3, 5} × quantization radius `-q` {0.125, 0.25, 0.5} × maximum depth `-D` {5, 10, 20} × maximum branch length `-B` {2, 3, 5} (2,187 configurations, all with re-evaluation after a drift, `-V`; adaptive leaves, drift detection and the 32 MB budget at their defaults) | `trees.BRIMRegressor -g 500 -c 0.01 -R 200 -k 5 -q 0.125 -D 20 -B 3 -V` |
 | FIMT-DD | `-g` {50, 200, 500} × `-c` {1e-2, 1e-4, 1e-7} × leaves {perceptron `-l 0.02`, perceptron `-l 0.002`, mean `-e`} | `trees.FIMTDD -g 200 -c 0.01 -e` |
 | ORTO | `-g` {50, 200, 500} × the same leaves × `-o` {average, bestTree} | `trees.ORTO -g 500 -e -o average` |
 | AMRules | `-g` {50, 200, 500} × `-L` {Adaptive, Mean, Perceptron}MultiTargetRegressor × ordered/unordered (`-U`) | `rules.AMRulesRegressor -g 50` |
@@ -151,7 +157,8 @@ them before the class was renamed, `scripts/rename_class_in_results.sh` replaces
 `results/`, `configs/` and `paper/tables/` (or in the given paths; `--dry-run` only lists the files). No file is removed. Then `python3 analysis/analyze.py` also writes
 `paper/tables/ensemble_*.tex` and `paper/figures/cd_ensemble_*`.
 
-Ablation (`configs/ablation_variants.tsv`), BRIM with one component removed:
+Ablation (`configs/ablation_variants.tsv`), the selected BRIM with one component removed (an option of the variant
+replaces the tuned one, e.g., `-k 0`):
 
 | Variant | Option | Component removed |
 |---|---|---|
@@ -172,10 +179,32 @@ Ablation (`configs/ablation_variants.tsv`), BRIM with one component removed:
 `-c` split confidence [1e-7], `-t`/`-T` tie thresholds [0.05], `-G` relative minimum merit difference [0.5], `-D` maximum
 depth [20], `-B` maximum branch length for restructuring [5], `-q` QO radius relative to the attribute's standard deviation
 [0.25], `-k` attributes monitored by inner nodes [5], `-m` memory budget in bytes [33554432, 0 = none], `-E` memory check
-period [100], `-u` disable drift detection, `-w`/`-x` warning/drift detectors [ADWIN 1e-2/1e-3], `-F` fraction of the budget
+period [100], `-u` disable drift detection, `-V` re-evaluate the inner nodes' splits after a drift, `-w`/`-x` warning/drift detectors [ADWIN 1e-2/1e-3], `-F` fraction of the budget
 for the background tree [0.5], `-f` fading factor [0.995], `-N` no adaptive leaves, `-e` mean leaves, `-M` multiway
 nominal splits, `-l`/`-d`/`-p` perceptron learning rate, decay and constant rate, `-Z` random seed, and the ablation
 switches `-O`, `-C`, `-I`.
+
+## Run settings
+
+All experiments use the same JVM settings (`scripts/env.sh`):
+
+- Maximum heap `HEAP=30g`: enough for the largest ensembles and for measuring them with the SizeOf agent, which needs
+  about as much heap again as the model, and below 32 GB, so that the JVM keeps compressed object pointers and model
+  sizes stay comparable. A server must have room for the jobs that actually grow large: four 30 GB JVMs plus their
+  overhead exceeded the 125 GB of marseille, and the Linux OOM killer stopped runs.
+- Memory is measured once, at the end of the stream (`MEMORY_SAMPLES=1`; `mem_final_bytes` is the final model size).
+  Only the ablation (`scripts/run_ablation.sh`) keeps the peak over 20 evenly spaced points, as reported in the paper.
+- `TIME_LIMIT` stops a run with GNU `timeout` (0 = none, the default); the tuning scripts of the ensembles use 20 minutes
+  and their final runs 3 hours (`TUNING_TIME_LIMIT`, `FINAL_TIME_LIMIT`). A stopped run is recorded with its dataset,
+  method and seed and empty measures (`instances` empty, unlike a diverged run), so it is not retried on resume and a
+  selection script ranks it last; its log is `results/logs/<dataset>.<method>.<seed>.timeout`. A failed run (no result
+  line) is not recorded; its log `.err` ends with the JVM's exit code (above 128 for a death by signal, e.g., 137 =
+  SIGKILL from the OOM killer).
+- When the SizeOf agent cannot measure a large model at once (out of memory, or `IllegalStateException: Capacity
+  exhausted` when its identity map of visited objects reaches about 2^29 objects), both runners measure it in parts:
+  the full sizes of the sub-learners plus the shallow sizes of the objects outside them (within 0.01% of the full
+  measurement on a smaller SGBR-FIMTDD; objects shared by the trees, e.g., the header, are counted once per tree, a few
+  KB each). The runner notes it on stderr, kept as `results/logs/<dataset>.<method>.<seed>.notes`.
 
 ## Results at a glance
 
