@@ -355,6 +355,25 @@ public class PlasticRegressionNode extends PlasticNode {
     }
 
     /**
+     * Makes the active inner nodes of this subtree re-evaluate their splits after a drift. Each discards its target
+     * statistics and observers, as restructuring does, and re-evaluates after a grace period, so that the decision
+     * rests on the instances after the drift. Leaves are unchanged.
+     */
+    public void scheduleReevaluation() {
+        if (isLeaf())
+            return;
+        if (active) {
+            resetObservedClassDistribution();
+            resetObservers();
+            seenWeight = 0.0;
+            nodeTime = 0;
+            forcedReevaluationTime = gracePeriod;
+        }
+        for (CustomEFDTNode successor : successors.getAllSuccessors())
+            ((PlasticRegressionNode) successor).scheduleReevaluation();
+    }
+
+    /**
      * Deactivates the node to save memory: its observers are discarded. A leaf stops attempting to split, as in
      * {@link moa.classifiers.trees.HoeffdingTree}, and an inner node stops re-evaluating its split, which freezes it.
      * The node still updates its statistics and its perceptron, so its predictions keep improving.

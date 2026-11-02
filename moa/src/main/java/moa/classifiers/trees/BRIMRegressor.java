@@ -42,7 +42,8 @@ import java.util.Random;
  * grace periods after the drift (as FIMTDD does for its alternate trees). If there is no background tree, one is
  * started. A background tree that does not replace the tree within that window, or that no drift follows within
  * that window after a warning, is discarded. Both trees share
- * the memory limit.</p>
+ * the memory limit. With {@code -V}, a drift also makes the inner nodes of the tree re-evaluate their splits on
+ * fresh statistics after a grace period.</p>
  *
  * <p>See details in:<br> Marco Heyden, Heitor Murilo Gomes, Edouard Fouché, Bernhard Pfahringer, Klemens Böhm:
  * Leveraging Plasticity in Incremental Decision Trees. ECML/PKDD (5) 2024: 38-54</p>
@@ -201,6 +202,9 @@ public class BRIMRegressor extends AbstractClassifier implements Regressor, Perf
     public IntOption maxInnerNodeAttributesOption = new IntOption("maxInnerNodeAttributes", 'k',
             "Maximum number of attributes monitored by an inner node to re-evaluate its split: the split attribute and the best ones in the last evaluation. The others are monitored again every 10 re-evaluations. 0 for all attributes.",
             5, 0, Integer.MAX_VALUE);
+
+    public FlagOption reevaluationOnDriftOption = new FlagOption("reevaluationOnDrift", 'V',
+            "When a drift is detected, the inner nodes of the tree discard their statistics and observers and re-evaluate their splits after a grace period, in addition to the periodic re-evaluation.");
 
     // Ablation switches: each disables one component of the method
     public FlagOption ebstObserverOption = new FlagOption("ebstObserver", 'O',
@@ -379,6 +383,8 @@ public class BRIMRegressor extends AbstractClassifier implements Regressor, Perf
             driftDetector = newChangeDetector(driftDetectionMethodOption);
         } else if (driftDetector.getChange()) {
             numDrifts++;
+            if (reevaluationOnDriftOption.isSet())
+                root.scheduleReevaluation();
             // Further drifts while a replacement is pending do not extend the comparison window: otherwise, frequent
             // drift signals keep a background tree that never becomes better (and grows) forever
             if (!replacementPending) {
@@ -573,6 +579,20 @@ public class BRIMRegressor extends AbstractClassifier implements Regressor, Perf
                     return;
             }
         }
+    }
+
+    /**
+     * @return the number of drift warnings detected since the last reset
+     */
+    public int getNumWarnings() {
+        return numWarnings;
+    }
+
+    /**
+     * @return the number of drifts detected since the last reset
+     */
+    public int getNumDrifts() {
+        return numDrifts;
     }
 
     /**

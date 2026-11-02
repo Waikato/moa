@@ -49,6 +49,8 @@ class CustomEFDTNode extends AbstractMOAObject implements PerformsTreeRevision, 
     protected AutoExpandVector<AttributeClassObserver> attributeObservers = new AutoExpandVector<>();
     protected Double seenWeight = 0.0;
     protected int nodeTime = 0;
+    // An inner node also re-evaluates its split when its node time reaches this value (-1 for none), e.g., after a drift
+    protected int forcedReevaluationTime = -1;
     protected Successors successors;
     protected Attribute splitAttribute;
     protected final boolean noPrePrune;
@@ -215,7 +217,8 @@ class CustomEFDTNode extends AbstractMOAObject implements PerformsTreeRevision, 
         if (isLeaf() && nodeTime % gracePeriod == 0) {
             attemptInitialSplit(instance);
         }
-        if (!isLeaf() && nodeTime % minSamplesReevaluate == 0) {
+        if (!isLeaf() && (nodeTime % minSamplesReevaluate == 0 || nodeTime == forcedReevaluationTime)) {
+            forcedReevaluationTime = -1;
             reevaluateSplit(instance);
         }
         if (!isLeaf()) {
