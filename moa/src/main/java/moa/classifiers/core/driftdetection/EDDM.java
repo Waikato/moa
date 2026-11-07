@@ -18,6 +18,8 @@
  */
 package moa.classifiers.core.driftdetection;
 
+import com.github.javacliparser.FloatOption;
+import com.github.javacliparser.IntOption;
 import moa.core.ObjectRepository;
 import moa.tasks.TaskMonitor;
 
@@ -38,15 +40,37 @@ public class EDDM extends AbstractChangeDetector {
      */
     private static final long serialVersionUID = 140980267062162000L;
 
-    private static final double FDDM_OUTCONTROL = 0.9;
+    public IntOption minNumInstancesOption = new IntOption(
+            "minNumInstances",
+            'n',
+            "The minimum number of instances before permitting detecting change.",
+            30, 0, Integer.MAX_VALUE);
 
-    private static final double FDDM_WARNING = 0.95;
+    public FloatOption warningLevelOption = new FloatOption(
+            "warningLevel", 'w',
+            "Warning level (alpha). Must be greater than or equal to outcontrolLevel.",
+            0.95, 0.0, 1.0);
 
-    private static final double FDDM_MINNUMINSTANCES = 30;
+    public FloatOption outcontrolLevelOption = new FloatOption(
+            "outcontrolLevel", 'o',
+            "Outcontrol level (beta). Must be less than or equal to warningLevel.",
+            0.9, 0.0, 1.0);
+
+    public IntOption minNumErrorsOption = new IntOption(
+            "minNumErrors",
+            'e',
+            "The minimum number of errors before permitting detecting change or warning.",
+            30, 0, Integer.MAX_VALUE);
+
+    private int minNumInstances;
+
+    private double warningLevel;
+
+    private double outcontrolLevel;
 
     private double m_numErrors;
 
-    private int m_minNumErrors = 30;
+    private int m_minNumErrors;
 
     private int m_n;
 
@@ -77,6 +101,10 @@ public class EDDM extends AbstractChangeDetector {
         m_m2smax = 0.0;
         //m_lastLevel = DDM_INCONTROL_LEVEL;
         this.estimation = 0.0;
+        minNumInstances = this.minNumInstancesOption.getValue();
+        warningLevel = this.warningLevelOption.getValue();
+        outcontrolLevel = this.outcontrolLevelOption.getValue();
+        m_minNumErrors = this.minNumErrorsOption.getValue();
     }
 
     @Override
@@ -110,7 +138,7 @@ public class EDDM extends AbstractChangeDetector {
             // m2s + " " + m_m2smax + " ");
 
             if (m2s > m_m2smax) {
-                if (m_n > FDDM_MINNUMINSTANCES) {
+                if (m_n > minNumInstances) {
                     m_m2smax = m2s;
                 }
                 //m_lastLevel = DDM_INCONTROL_LEVEL;
@@ -118,14 +146,14 @@ public class EDDM extends AbstractChangeDetector {
             } else {
                 double p = m2s / m_m2smax;
                 // System.out.print(p + " ");
-                if (m_n > FDDM_MINNUMINSTANCES && m_numErrors > m_minNumErrors
-                        && p < FDDM_OUTCONTROL) {
+                if (m_n > minNumInstances && m_numErrors > m_minNumErrors
+                        && p < outcontrolLevel) {
                     //System.out.println(m_mean + ",D");
                     this.isChangeDetected = true;
                     //resetLearning();
                     //return DDM_OUTCONTROL_LEVEL;
-                } else if (m_n > FDDM_MINNUMINSTANCES
-                        && m_numErrors > m_minNumErrors && p < FDDM_WARNING) {
+                } else if (m_n > minNumInstances
+                        && m_numErrors > m_minNumErrors && p < warningLevel) {
                     //System.out.println(m_mean + ",W");
                     //m_lastLevel = DDM_WARNING_LEVEL;
                     this.isWarningZone = true;
