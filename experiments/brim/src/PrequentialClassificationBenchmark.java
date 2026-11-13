@@ -121,8 +121,13 @@ public class PrequentialClassificationBenchmark {
                 memPeak, memCount > 0 ? memSum / memCount : -1, memFinal));
     }
 
-    /** Set once the agent has failed on this model, so that later samples go straight to the parts. */
-    private static boolean measureInParts = false;
+    /**
+     * Set once the agent has failed on this model, so that later samples go straight to the parts. The system property
+     * {@code -DmeasureInParts=true} sets it from the start, which skips the first attempt on the whole model: on a model
+     * of hundreds of millions of objects (e.g., SGBT with its default FIMT-DD on RBF5_100K), that attempt takes hours
+     * before the agent's set of visited objects reaches its maximum capacity.
+     */
+    private static boolean measureInParts = Boolean.getBoolean("measureInParts");
 
     /**
      * The size of a learner: {@link SizeOf#fullSizeOf}, or, if the agent fails (it runs out of memory, or its identity

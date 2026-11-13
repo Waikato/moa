@@ -1,7 +1,7 @@
 # BRIM experiments
 
 Experiments of the paper *BRIM: Memory-Budgeted, Fast and Plastic Model Trees for Data Stream Regression*
-(`paper/main.tex`). BRIM (Budgeted Restructuring Incremental Model tree) is implemented in MOA as
+(`paper/brim_paper.tex`). BRIM (Budgeted Restructuring Incremental Model tree) is implemented in MOA as
 `moa.classifiers.trees.BRIMRegressor` (module `moa/` of this repository, classes in
 `moa/src/main/java/moa/classifiers/trees/BRIMRegressor.java` and `.../trees/brim_util/`). BRIM grew out of the initial
 attempt to adapt the PLASTIC classifier to regression (variance reduction and E-BST observers), described in Section 3 of
@@ -37,7 +37,7 @@ before the class was renamed from `PLASTICRegressor`.
 | `analysis/plot_trace.py` | Figure of the motivating experiment (`paper/figures/trace.pdf`) |
 | `results/raw/*.csv` | One line per run (see below) |
 | `results/summary/*.csv` | Means and standard deviations over seeds, ranks, average ranks, Shaffer adjusted p-values, tuning rankings |
-| `paper/` | LaTeX sources, generated figures (`figures/`) and tables (`tables/`) |
+| `paper/` | The paper's Overleaf project (a git submodule): `brim_paper.tex`, generated figures (`figures/`) and tables (`tables/`) |
 
 ## Requirements
 
@@ -68,8 +68,8 @@ python3 analysis/select_ensembles.py   # writes configs/ensemble_methods.tsv
 scripts/run_ensemble.sh    # 16 datasets x 6 ensembles x 3 seeds -> results/raw/ensemble.csv (see below)
 python3 analysis/analyze.py
 python3 analysis/plot_trace.py
-cd paper && pdflatex main && bibtex main && pdflatex main && pdflatex main
-python3 flatten.py          # optional: brim_paper.tex, a single-file version with the tables inlined
+cd paper && pdflatex brim_paper && bibtex brim_paper && pdflatex brim_paper && pdflatex brim_paper
+# brim_paper.tex has the tables inlined (no \input): copy regenerated tables from paper/tables/ into it
 ```
 
 `run.sh` skips the runs that are already in the output file, so an interrupted experiment can be resumed with the same
@@ -249,15 +249,19 @@ Two changes to `StreamingGradientBoostedTrees` (module `moa/`) were made for thi
 - With `-H` (disable one-hot encoding), the warning about FIMT-DD not supporting nominal attributes checked the default
   base learner instead of the configured one, so it was printed for every base learner.
 
-Base learners: FIMT-DD gets nominal attributes one-hot encoded by SGBT (it does not support nominal attributes) and keeps
-SGBT's default mean leaves with a constant learning rate (`-e -p`). BRIM gets the nominal attributes as they are (`-H`;
+Base learners: FIMT-DD gets nominal attributes one-hot encoded by SGBT (it does not support nominal attributes); its
+tuned configuration (`-g 50 -c 0.01 -e`) differs from SGBT's default (`-g 25 -c 0.05 -e -p`), which runs as `SGBT-default`.
+All 18 FIMT-DD configurations with perceptron leaves diverged on every tuning stream. BRIM gets the nominal attributes as they are (`-H`;
 on RTG with eager splits, 83.5% accuracy instead of 75.7% with one-hot encoding), with drift detection and its default
-32 MB budget per tree. BRIM is tuned with its adaptive leaves; the final runs add mean leaves (`-e`) to the selected
+32 MB budget per tree. BRIM is tuned with its adaptive leaves; the final runs add mean leaves (`-e`) to every BRIM
 configuration, since a timing test (LED_a_100K, RBF5_f_100K and RTG_50K) showed them 22–24% faster at the same or better accuracy (73.15 vs. 73.09, 68.54 vs. 67.75, 83.53 vs. 83.57),
 whereas disabling drift detection (`-u`) saved only 4–11% and cost up to 1 point. `SGBT-BRIM-1MB`, `-500KB` and `-100KB`
 limit each tree to 1 MB, 500 KB and 100 KB (`-m 1000000`, `500000`, `100000`); the budget is not tuned. A budget test
 on the same streams: 100 KB costs nothing on LED_a (73.08 vs. 73.09) but 6–7 points on RTG_50K
-and RBF5_f_100K, 1 MB at most 0.9 points.
+and RBF5_f_100K, 1 MB at most 0.9 points. Two fast BRIM configurations run next to the best one: `SGBT-BRIM-fastgood`,
+the fastest of the best 10% by average rank (`-g 50 -c 0.01 -R 200 -k 2 -q 0.125 -D 5 -B 2 -V`; 1,493 s in total on the
+tuning streams vs. 2,506 s of the best, 3 points less mean accuracy), and `SGBT-BRIM-fast`, the fastest of all
+(`-g 500 -c 1e-7 -R 200 -k 2 -q 0.5 -D 10 -B 2 -V`; 1,196 s, 8 points less).
 
 | Step | Script | Content |
 |---|---|---|
@@ -266,8 +270,8 @@ and RBF5_f_100K, 1 MB at most 0.9 points.
 | Deploy | `scripts/deploy.sh <user@host> <dir> CDatasets CDatasets_tuning` | Copies the MOA classes, the dependency jars and the SizeOf agent (`lib/`), the runners, scripts, configs and data to a server without Maven, and writes a `build/cp.txt` with the server paths |
 | Grids | `scripts/gen_sgbt_grids.py` | Writes `configs/sgbt_tuning/sgbt_{fimtdd,brim}.tsv`: the single-tree grids (`configs/tuning/`: FIMT-DD 27 configurations, BRIM 2,187) inside SGBT with its default structure (100 boosting steps), as `gen_ensemble_grids.py` does for SGBR; BRIM gets nominal attributes as they are (`-H`), FIMT-DD one-hot encoded |
 | Tuning | `scripts/run_sgbt_tuning.sh` | The 2,214 configurations of `configs/sgbt_tuning/`, on the 7 streams of `configs/sgbt_tuning_datasets.txt` (`CDatasets_tuning/`, 20K instances each), seed 1, at most 1 hour per run -> `results/raw/sgbt_tuning/` |
-| Selection | `analysis/select_sgbt.py` | Best average rank of accuracy; diverged or failed runs rank last. Writes `configs/sgbt_methods.tsv` (tuned SGBT-FIMTDD, tuned SGBT-BRIM, SGBT-BRIM-1MB, -500KB and -100KB, and `SGBT-default`, SGBT with its default FIMT-DD, unless tuning selects that configuration, as it did: then the runs would be identical and `SGBT-default` is left out) and `paper/tables/sgbt_tuning.tex` |
-| Final runs | `scripts/run_sgbt_final.sh` | `configs/sgbt_methods.tsv` on all 14 streams of `CDatasets/` (`configs/sgbt_datasets.txt`), seeds 1–3, at most 3 hours per run -> `results/raw/sgbt.csv` |
+| Selection | `analysis/select_sgbt.py` | Best average rank of accuracy; diverged or failed runs rank last. Writes `configs/sgbt_methods.tsv` (tuned SGBT-FIMTDD, tuned SGBT-BRIM, SGBT-BRIM-1MB, -500KB and -100KB, `SGBT-BRIM-fastgood` and `SGBT-BRIM-fast` (the fastest BRIM configurations of the best 10% and of all, by total wall time), and `SGBT-default`, SGBT with its default FIMT-DD, unless tuning selects that configuration: then the runs would be identical and `SGBT-default` is left out) and `paper/tables/sgbt_tuning.tex` |
+| Final runs | `scripts/run_sgbt_final.sh` | `configs/sgbt_methods.tsv` on all 14 streams of `CDatasets/` (`configs/sgbt_datasets.txt`), seeds 1–3, at most 10 hours per run (`FINAL_TIME_LIMIT`; a 100K-instance test of the best BRIM on LED_g_1M extrapolates to about 3 hours alone and up to about 6.5 hours with 8 jobs on LED_a_1M and LED_g_1M) -> `results/raw/sgbt.csv` |
 | Analysis | `analysis/analyze_sgbt.py` | Accuracy and wall time of the selected configurations on the tuning streams (`paper/tables/sgbt_tuning_streams.tex`); accuracy, final memory and wall time of the final runs per stream, mean ± sd over the completed seeds, with the runs stopped at the time limit (TO) or failed (OOM: out of heap; killed: by a signal) (`results/summary/sgbt_final*.csv`, `paper/tables/sgbt_final.tex`); average ranks (a method without a completed seed on a stream ranks last there), Friedman and Shaffer tests and CD diagrams (`paper/tables/sgbt_avg_ranks.tex`, `paper/figures/cd_sgbt_*`) |
 
 `scripts/run_all_sgbt.sh` runs tuning, selection and final runs unattended, e.g., on marseille.hh.se (20 cores, 125 GB,
@@ -295,17 +299,40 @@ one every `RECOVER_MIN` minutes (default 30) without a stop. On a restart, the j
 once. `run_all_sgbt.sh` gives the tuning and the final runs their own settings (`TUNING_*`, `FINAL_*`), with 6 GB for
 the emergency stop in both:
 
-| Setting | Tuning (15,498 runs on 20K instances) | Final runs (210 runs on up to 1M instances) |
+| Setting | Tuning (15,498 runs on 20K instances) | Final runs (336 runs on up to 1M instances) |
 |---|---|---|
 | Jobs at a time (`*_PARALLEL`) | 16 | 8 |
 | Heap per job (`*_HEAP`) | 8 GB | 30 GB |
 | Memory available to start a job (`*_MIN_FREE_GB`) | 10 GB | 32 GB (16 GB for the budgeted BRIM variants, `SMALL_MIN_FREE_GB`) |
 | Seconds between starts (`*_START_GAP`) | 15 | 240 |
-| Jobs at a time of the methods that can fill the heap (`*_LARGE_PARALLEL`, `*_LARGE_METHODS`) | 3 FIMT-DD | 3 FIMT-DD or unbudgeted BRIM (up to 32 MB for each of up to 1,000 trees) |
+| Jobs at a time of the methods that can fill the heap (`*_LARGE_PARALLEL`, `*_LARGE_METHODS`) | 3 FIMT-DD | 3 FIMT-DD or unbudgeted BRIM, the fast configurations included (up to 32 MB for each of up to 1,000 trees) |
 
 The tuning streams are five times shorter than the 100K streams on which FIMT-DD reached 9 GB, so an 8 GB heap is
 expected to suffice; a run that runs out of heap is not recorded, and the selection waits until it is rerun (or
 `ALLOW_MISSING=1`). With the full grids, the tuning is estimated at roughly 1,300 CPU hours (3–4 days on marseille).
+
+The final runs were split across two servers with the same CPU (Xeon W-2255, 20 cores, 125 GB), with the same code,
+data and settings. marseille ran covtypeNorm, LED_a_1M, LED_g_1M, RBF2_f_1M, RBF5_f_1M and RBF5_m_1M. The 8 streams
+it had not started by 11 Nov (AGR_a_1M, AGR_g_1M, LED_100K, RBF2_m_1M, RBF5_100K, RTG_100K, airlines and elecNormNew,
+192 runs) ran on lyon.hh.se (`/data2/home/nuwgun/brim_sgbt_lyon`), 8 jobs at a time like marseille. marseille skipped
+them through emptied stream lists in `results/raw/sgbt/lists/`, and lyon's parts replace marseille's header-only parts
+of those streams when the results are merged.
+
+SGBT-default (1,000 trees on LED) builds models of hundreds of millions of objects. On them, the end-of-stream memory
+measurement first tries the whole model, which runs for hours before the SizeOf agent's set of visited objects fills
+and the runner measures the model tree by tree (RBF5_100K: about 8 hours after 22 minutes of learning). On marseille,
+SGBT-default on LED_g_1M seed 1 therefore reached the 10-hour limit. All 9 SGBT-default runs on LED_g_1M, LED_a_1M
+and RBF2_f_1M (seeds 1–3; on 12 Nov, LED_g_1M seed 2 was stopped after 7.7 hours and the others had not started) ran on
+lyon instead, with
+`-DmeasureInParts=true`, which measures tree by tree from the start: on RBF5_100K the memory is the same
+(15,965,388,344 bytes) and the run takes 24 minutes instead of 8.6 hours. They ran 3 at a time, as marseille's runs of
+the large methods on these streams did (`build/start_default_rerun.sh` on lyon, parts in
+`results/raw/sgbt_default/parts/`). The learning time is measured without the memory measurement, but it depends on
+the load: SGBT-default on RBF5_100K learned in 1,307–1,370 s with 8 jobs at a time and in 1,133 s alone.
+
+All 336 final runs completed (none stopped at the time limit, none with non-finite votes). `results/raw/sgbt.csv`
+merges marseille's 135 runs, lyon's 192 and the 9 SGBT-default reruns; the per-server parts are kept in
+`results/raw/sgbt_marseille/`, `results/raw/sgbt_lyon/` and `results/raw/sgbt_default_lyon/`.
 
 The classification runner writes `dataset, config, seed, instances, accuracy, kappa, kappa_t, kappa_m` (percent, from
 MOA's `BasicClassificationPerformanceEvaluator`), `nonfinite_votes` (instances whose votes contain NaN or infinite

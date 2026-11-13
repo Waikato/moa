@@ -2,15 +2,16 @@
 """Analysis of the BRIM experiments: per-dataset results, ranks, Friedman test, Shaffer post-hoc test and
 critical difference (CD) diagrams.
 
-Reads results/raw/main.csv, results/raw/ablation.csv and results/raw/ensemble.csv (written by scripts/run_*.sh) and
-writes
+Reads results/raw/main.csv, results/raw/ablation.csv and results/raw/ensemble.csv (written by scripts/run_*.sh; the
+OzaBag and the SGBR ensembles are analyzed separately, as ensemble_oza and ensemble_sgbr) and writes
   results/summary/*.csv          per-dataset means over seeds, ranks, average ranks, adjusted p-values
   paper/figures/cd_*.pdf|png     CD diagrams (main experiments) annotated with the Shaffer post-hoc test
   paper/tables/*.tex             LaTeX tables used by the paper
 
 Evaluation measures (means over the seeds of each dataset):
   adjusted R^2 (adj_r2, higher is better), memory measured with the SizeOf agent (lower is better; at the end of the
-  stream, mem_final_bytes, for the main experiments and the largest of 20 measurements, mem_peak_bytes, for the others)
+  stream, mem_final_bytes, for the main and ensemble experiments and the largest of 20 measurements, mem_peak_bytes, for
+  the ablation)
   and the wall time spent in the learner (learner_wall_s, lower is better).
 
 Usage: python3 analysis/analyze.py [--alpha 0.05] [--only main ablation ensemble]
@@ -205,7 +206,7 @@ def latex_table(means, sds, ranks, methods, column, label, caption, path, best_h
         f.write("\n".join(lines) + "\n")
 
 
-def analyze(name, csv, alpha, cd, method_order, memory=PEAK_MEMORY):
+def analyze(name, csv, alpha, cd, method_order, memory=PEAK_MEMORY, caption_prefix=""):
     if not os.path.exists(csv):
         print(f"[{name}] {csv} not found, skipped")
         return None
@@ -238,7 +239,7 @@ def analyze(name, csv, alpha, cd, method_order, memory=PEAK_MEMORY):
                        os.path.join(EXP_DIR, "paper", "figures", f"cd_{name}_{short}"))
         sd_table = sds.pivot(index="dataset", columns="config", values=column).reindex(index=table.index, columns=methods)
         latex_table(table, sd_table, ranks, methods, column, f"tab:{name}-{short}",
-                    f"{label} per dataset: mean $\\pm$ standard deviation over three seeds "
+                    f"{caption_prefix}{label} per dataset: mean $\\pm$ standard deviation over three seeds "
                     f"({'higher' if higher else 'lower'} is better; best mean in bold"
                     f"{'; KB unless marked M for MB' if short == 'memory' else '; seconds' if short == 'time' else ''}).",
                     os.path.join(EXP_DIR, "paper", "tables", f"{name}_{short}.tex"), higher)
@@ -281,7 +282,10 @@ def main():
     ensemble_config = os.path.join(EXP_DIR, "configs", "ensemble_methods.tsv")
     if "ensemble" in args.only and os.path.exists(ensemble_config):
         ensemble_methods = [l.split("\t")[0] for l in open(ensemble_config) if l.strip() and not l.startswith("#")]
-        analyze("ensemble", os.path.join(EXP_DIR, "results", "raw", "ensemble.csv"), args.alpha, True, ensemble_methods)
+        # OzaBag and SGBR are compared separately, each on the datasets on which all of its methods completed
+        for key, label in [("oza", "OzaBag"), ("sgbr", "SGBR")]:
+            analyze(f"ensemble_{key}", os.path.join(EXP_DIR, "results", "raw", "ensemble.csv"), args.alpha, True,
+                    [m for m in ensemble_methods if m.startswith(label + "-")], FINAL_MEMORY, f"{label} ensembles: ")
 
 
 if __name__ == "__main__":
