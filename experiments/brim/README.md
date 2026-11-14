@@ -35,6 +35,7 @@ before the class was renamed from `PLASTICRegressor`.
 | `configs/main_datasets.txt`, `configs/tuning_datasets.txt`, `configs/ablation_datasets.txt` | Datasets (ARFF names without extension) |
 | `analysis/analyze.py` | Ranks, Friedman and Shaffer tests, CD diagrams, LaTeX tables |
 | `analysis/plot_trace.py` | Figure of the motivating experiment (`paper/figures/trace.pdf`) |
+| `analysis/check_paper_tables.py` | Checks that `paper/brim_paper.tex` contains every generated table it uses, as generated |
 | `results/raw/*.csv` | One line per run (see below) |
 | `results/summary/*.csv` | Means and standard deviations over seeds, ranks, average ranks, Shaffer adjusted p-values, tuning rankings |
 | `paper/` | The paper's Overleaf project (a git submodule): `brim_paper.tex`, generated figures (`figures/`) and tables (`tables/`) |
@@ -60,17 +61,57 @@ export SIZEOF_AGENT=/path/to/sizeofag-1.1.0.jar   # default: ~/Desktop/CODE/size
 scripts/build.sh
 scripts/run_tuning.sh      # tuning of BRIM and the baselines on the 10 tuning streams -> results/raw/tuning/
 python3 analysis/select_baselines.py   # writes configs/main_methods.tsv with the selected baseline configurations
-scripts/run_main.sh        # 16 datasets x 7 methods x 3 seeds -> results/raw/main.csv
-scripts/run_ablation.sh    # 11 datasets x 11 variants x 3 seeds -> results/raw/ablation.csv
+scripts/run_main.sh        # 16 datasets x 10 methods x 3 seeds -> results/raw/main.csv
+scripts/run_ablation.sh    # 11 datasets x 12 variants x 3 seeds -> results/raw/ablation.csv
 scripts/run_trace.sh       # motivating experiment -> results/raw/trace.csv (about 3 minutes)
 scripts/run_ensemble_tuning.sh         # base learners inside OzaBag and SGBR -> results/raw/ensemble_tuning/ (see below)
 python3 analysis/select_ensembles.py   # writes configs/ensemble_methods.tsv
-scripts/run_ensemble.sh    # 16 datasets x 6 ensembles x 3 seeds -> results/raw/ensemble.csv (see below)
-python3 analysis/analyze.py
-python3 analysis/plot_trace.py
-cd paper && pdflatex brim_paper && bibtex brim_paper && pdflatex brim_paper && pdflatex brim_paper
-# brim_paper.tex has the tables inlined (no \input): copy regenerated tables from paper/tables/ into it
+scripts/run_ensemble.sh    # 16 datasets x 10 ensembles (5 OzaBag, 5 SGBR) x 3 seeds -> results/raw/ensemble.csv (see below)
+scripts/run_all_sgbt.sh    # SGBT classification: tuning, selection, final runs -> results/raw/sgbt*.csv (see below)
 ```
+
+Then run the analysis and build the paper as described next.
+
+### Analysis and paper
+
+All raw results that the analysis needs are in git (`results/raw/`), so the analysis and the paper can be redone
+without rerunning any experiment. Requirements: Python 3 with pandas, scipy and matplotlib (tested with 3.0.3, 1.17.1
+and 3.11.0), and a TeX distribution with `pdflatex` and `bibtex`. All commands run in `experiments/brim`; every step
+takes seconds.
+
+```bash
+cd experiments/brim
+
+# 1. Selection from the tuning runs (deterministic: rewrites the selected configurations and the tuning tables)
+python3 analysis/select_baselines.py   # results/raw/tuning/          -> configs/{main_methods,ablation_variants}.tsv, tuning table
+python3 analysis/tuning_tables.py      # per tuning stream: most accurate, fastest and selected configurations
+python3 analysis/select_ensembles.py   # results/raw/ensemble_tuning/ -> configs/ensemble_methods.tsv, tuning table
+python3 analysis/select_sgbt.py        # results/raw/sgbt_tuning.csv  -> configs/sgbt_methods.tsv, tuning table
+
+# 2. Results: per-dataset tables, average ranks, Friedman and Shaffer tests, CD diagrams, figures
+python3 analysis/analyze.py            # main, ablation, OzaBag and SGBR ensembles (results/raw/{main,ablation,ensemble}.csv)
+python3 analysis/analyze_sgbt.py       # SGBT classification (results/raw/sgbt.csv)
+python3 analysis/plot_trace.py         # motivating experiment (results/raw/trace.csv)
+
+# 3. Check: nothing changed unless the raw results did; the paper uses the current tables
+git status --short . && git -C paper status --short
+python3 analysis/check_paper_tables.py
+
+# 4. Build the PDF outside the paper repository (build/ is ignored) -> build/paper/brim_paper.pdf
+rm -rf build/paper && mkdir -p build/paper
+cp -R paper/brim_paper.tex paper/refs.bib paper/figures build/paper/
+cd build/paper
+pdflatex brim_paper && bibtex brim_paper && pdflatex brim_paper && pdflatex brim_paper
+```
+
+The scripts write `results/summary/*.csv`, `paper/tables/*.tex` and `paper/figures/*.pdf|png`; their console output
+gives the numbers quoted in the text (e.g., Wilcoxon tests and geometric-mean ratios). The selection and analysis are
+deterministic and the figure PDFs carry no creation date, so on unchanged raw results step 3 shows no change.
+`paper/brim_paper.tex` is a single file with the tables inlined (no `\input`), as Overleaf uses it: when a table
+changes, `check_paper_tables.py` names it (exit code 1), and the new `paper/tables/<name>.tex` has to be copied over
+the old one in `brim_paper.tex` by hand, together with any number quoted in the text. Three generated tables are not
+used as they are (`sgbt_final.tex`, `sgbt_tuning.tex`, `sgbt_tuning_old.tex`; see the script). In the LaTeX log, the
+only warnings are LaTeX's notes that the appendix tables placed with `[h]` became `[ht]`.
 
 `run.sh` skips the runs that are already in the output file, so an interrupted experiment can be resumed with the same
 command. Delete the CSV file to start from scratch. A single run can be reproduced with, e.g.,

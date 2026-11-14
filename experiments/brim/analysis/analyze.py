@@ -155,7 +155,7 @@ def cd_diagram(avg_ranks, names, posthoc, alpha, title, path):
         ax.plot([x_of(ranks_sorted[s]) - 0.005, x_of(ranks_sorted[e]) + 0.005], [y, y], color="black", lw=2.5)
     ax.text(0.5, 0.01, f"Bars: no significant difference (Friedman + Shaffer post-hoc, $\\alpha$={alpha})",
             ha="center", va="bottom", fontsize=7)
-    fig.savefig(path + ".pdf", bbox_inches="tight")
+    fig.savefig(path + ".pdf", bbox_inches="tight", metadata={"CreationDate": None})  # no date: reruns give identical files
     fig.savefig(path + ".png", bbox_inches="tight", dpi=200)
     plt.close(fig)
 

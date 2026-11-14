@@ -33,6 +33,6 @@ handles, labels = axes[0].get_legend_handles_labels()
 fig.legend(handles, labels, loc="upper center", ncol=2, fontsize=7.5, frameon=False, bbox_to_anchor=(0.5, 1.08))
 fig.tight_layout()
 out = os.path.join(EXP_DIR, "paper", "figures", "trace")
-fig.savefig(out + ".pdf", bbox_inches="tight")
+fig.savefig(out + ".pdf", bbox_inches="tight", metadata={"CreationDate": None})  # no date: reruns give identical files
 fig.savefig(out + ".png", bbox_inches="tight", dpi=200)
 print("wrote", out + ".pdf")
