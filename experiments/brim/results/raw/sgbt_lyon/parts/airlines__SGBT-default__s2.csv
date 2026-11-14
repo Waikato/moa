@@ -1,0 +1,2 @@
+dataset,config,seed,instances,accuracy,kappa,kappa_t,kappa_m,nonfinite_votes,learner_wall_s,mem_peak_bytes,mem_mean_bytes,mem_final_bytes
+airlines,SGBT-default,2,539383,67.86606178,33.59655375,23.39734382,27.86030308,0,7759.221286,10124697648,10124697648,10124697648

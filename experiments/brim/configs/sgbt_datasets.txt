@@ -1,0 +1,15 @@
+# Streams of the SGBT classification experiment: all streams of CDatasets
+AGR_a_1M
+AGR_g_1M
+LED_100K
+LED_a_1M
+LED_g_1M
+RBF2_f_1M
+RBF2_m_1M
+RBF5_100K
+RBF5_f_1M
+RBF5_m_1M
+RTG_100K
+airlines
+covtypeNorm
+elecNormNew

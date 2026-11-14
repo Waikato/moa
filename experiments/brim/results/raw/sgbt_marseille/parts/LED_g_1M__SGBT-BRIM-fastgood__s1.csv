@@ -1,0 +1,2 @@
+dataset,config,seed,instances,accuracy,kappa,kappa_t,kappa_m,nonfinite_votes,learner_wall_s,mem_peak_bytes,mem_mean_bytes,mem_final_bytes
+LED_g_1M,SGBT-BRIM-fastgood,1,1000000,73.22870000,70.25443900,70.23605432,70.20286003,0,13760.715658,284909816,284909816,284909816

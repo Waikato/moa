@@ -1,0 +1,9 @@
+# name<TAB>MOA learner CLI (base learners selected by analysis/select_sgbt.py; BRIM adds mean leaves (-e) to its tuned configurations; -fastgood and -fast are the fastest BRIM configurations of the best 10% by average rank and of all; the -1MB, -500KB and -100KB variants limit each BRIM tree to that budget (-m, bytes); SGBT-default is SGBT with its default base learner)
+SGBT-FIMTDD	meta.StreamingGradientBoostedTrees -l (trees.FIMTDD -g 50 -c 0.01 -e)
+SGBT-BRIM	meta.StreamingGradientBoostedTrees -H -l (trees.BRIMRegressor -g 50 -c 0.01 -R 200 -k 2 -q 0.125 -D 10 -B 5 -V -e)
+SGBT-BRIM-1MB	meta.StreamingGradientBoostedTrees -H -l (trees.BRIMRegressor -g 50 -c 0.01 -R 200 -k 2 -q 0.125 -D 10 -B 5 -V -e -m 1000000)
+SGBT-BRIM-500KB	meta.StreamingGradientBoostedTrees -H -l (trees.BRIMRegressor -g 50 -c 0.01 -R 200 -k 2 -q 0.125 -D 10 -B 5 -V -e -m 500000)
+SGBT-BRIM-100KB	meta.StreamingGradientBoostedTrees -H -l (trees.BRIMRegressor -g 50 -c 0.01 -R 200 -k 2 -q 0.125 -D 10 -B 5 -V -e -m 100000)
+SGBT-BRIM-fastgood	meta.StreamingGradientBoostedTrees -H -l (trees.BRIMRegressor -g 50 -c 0.01 -R 200 -k 2 -q 0.125 -D 5 -B 2 -V -e)
+SGBT-BRIM-fast	meta.StreamingGradientBoostedTrees -H -l (trees.BRIMRegressor -g 500 -c 0.0000001 -R 200 -k 2 -q 0.5 -D 10 -B 2 -V -e)
+SGBT-default	meta.StreamingGradientBoostedTrees

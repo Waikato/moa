@@ -1,0 +1,2 @@
+dataset,config,seed,instances,accuracy,kappa,kappa_t,kappa_m,nonfinite_votes,learner_wall_s,mem_peak_bytes,mem_mean_bytes,mem_final_bytes
+RBF5_100K,SGBT-BRIM-fastgood,3,100000,67.77500000,57.13264592,58.33117824,53.91293155,0,715.591405,85401856,85401856,85401856

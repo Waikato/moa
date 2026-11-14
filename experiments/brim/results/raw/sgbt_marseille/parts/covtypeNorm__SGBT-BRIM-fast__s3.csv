@@ -1,0 +1,2 @@
+dataset,config,seed,instances,accuracy,kappa,kappa_t,kappa_m,nonfinite_votes,learner_wall_s,mem_peak_bytes,mem_mean_bytes,mem_final_bytes
+covtypeNorm,SGBT-BRIM-fast,3,581012,83.77761561,73.47292237,-228.4683743,68.33969312,0,10358.976179,158148872,158148872,158148872

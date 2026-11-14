@@ -1,0 +1,9 @@
+# Tuning streams of the SGBT classification experiment (CDatasets_tuning: the CDatasets streams scaled to 20K instances,
+# SCALE=0.02 for the 1M streams and 0.2 for the 100K streams of scripts/gen_cdatasets.sh)
+AGR_g_20K
+LED_20K
+LED_g_20K
+RBF5_20K
+RBF5_f_20K
+RBF5_m_20K
+RTG_20K

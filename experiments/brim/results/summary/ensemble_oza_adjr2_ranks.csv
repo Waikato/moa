@@ -1,0 +1,17 @@
+dataset,OzaBag-FIMTDD,OzaBag-BRIM,OzaBag-BRIM-1MB,OzaBag-BRIM-100KB,OzaBag-BRIM-noV
+DemandF,1.0,3.0,4.0,5.0,2.0
+FriedmanGra,4.0,1.0,2.0,5.0,3.0
+FriedmanGsg,5.0,1.0,2.0,4.0,3.0
+FriedmanLea,4.0,1.0,2.0,5.0,3.0
+House8L,4.0,1.0,2.0,5.0,3.0
+MetroTraffic,1.0,2.5,2.5,5.0,4.0
+NZEnergy,5.0,1.0,2.0,4.0,3.0
+SUP2I,5.0,2.0,3.0,4.0,1.0
+SUP3A,4.0,2.0,3.0,5.0,1.0
+SUP3G,4.0,1.0,3.0,5.0,2.0
+abalone,5.0,1.5,1.5,4.0,3.0
+ailerons,4.0,2.0,1.0,5.0,3.0
+bike,1.0,2.0,3.0,5.0,4.0
+elevators,3.0,2.0,1.0,4.0,5.0
+fried,1.0,2.5,4.0,5.0,2.5
+hyperA,5.0,2.0,1.0,3.0,4.0

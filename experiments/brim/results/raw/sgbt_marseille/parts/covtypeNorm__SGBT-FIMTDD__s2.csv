@@ -1,0 +1,2 @@
+dataset,config,seed,instances,accuracy,kappa,kappa_t,kappa_m,nonfinite_votes,learner_wall_s,mem_peak_bytes,mem_mean_bytes,mem_final_bytes
+covtypeNorm,SGBT-FIMTDD,2,581012,93.36846743,89.26710103,-34.27426381,87.05761427,0,11643.708880,4942891224,4942891224,4942891224

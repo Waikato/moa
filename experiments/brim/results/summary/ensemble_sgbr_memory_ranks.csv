@@ -1,0 +1,15 @@
+dataset,SGBR-FIMTDD,SGBR-BRIM,SGBR-BRIM-1MB,SGBR-BRIM-100KB,SGBR-BRIM-noV
+DemandF,5.0,3.0,2.0,1.0,4.0
+FriedmanGra,5.0,4.0,2.0,1.0,3.0
+FriedmanGsg,5.0,4.0,2.0,1.0,3.0
+FriedmanLea,5.0,4.0,2.0,1.0,3.0
+House8L,5.0,3.0,2.0,1.0,4.0
+MetroTraffic,5.0,2.0,3.0,1.0,4.0
+NZEnergy,5.0,3.0,2.0,1.0,4.0
+SUP2I,5.0,3.0,2.0,1.0,4.0
+abalone,5.0,3.0,4.0,1.0,2.0
+ailerons,5.0,3.0,2.0,1.0,4.0
+bike,4.0,3.0,2.0,1.0,5.0
+elevators,5.0,3.0,2.0,1.0,4.0
+fried,5.0,3.0,2.0,1.0,4.0
+hyperA,5.0,3.0,2.0,1.0,4.0

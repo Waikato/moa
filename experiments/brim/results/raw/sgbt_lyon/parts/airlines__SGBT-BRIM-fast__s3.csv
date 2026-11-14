@@ -1,0 +1,2 @@
+dataset,config,seed,instances,accuracy,kappa,kappa_t,kappa_m,nonfinite_votes,learner_wall_s,mem_peak_bytes,mem_mean_bytes,mem_final_bytes
+airlines,SGBT-BRIM-fast,3,539383,66.24587723,29.43388662,19.53505845,24.22303892,0,1768.741350,12226488,12226488,12226488

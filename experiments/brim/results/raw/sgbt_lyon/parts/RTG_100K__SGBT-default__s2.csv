@@ -1,0 +1,2 @@
+dataset,config,seed,instances,accuracy,kappa,kappa_t,kappa_m,nonfinite_votes,learner_wall_s,mem_peak_bytes,mem_mean_bytes,mem_final_bytes
+RTG_100K,SGBT-default,2,100000,90.80500000,80.84828066,81.05842123,78.20160258,0,172.688764,2656452080,2656452080,2656452080
