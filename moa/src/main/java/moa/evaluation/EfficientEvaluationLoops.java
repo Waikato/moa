@@ -61,6 +61,7 @@ public class EfficientEvaluationLoops {
      * @param windowSize the size of the prequential evaluation window
      * @param storeY whether to store the true class labels
      * @param storePredictions whether to store the predicted class labels
+     * @param warmup number of initial instances to train on without testing
      * @param loop the hookable evaluation loop to use for running the evaluation
      * @return a list of evaluation results produced across the windowed evaluation
      */
@@ -73,6 +74,7 @@ public class EfficientEvaluationLoops {
             long windowSize,
             boolean storeY,
             boolean storePredictions,
+            long warmup,
             HookableEvaluationLoop loop) {
         if (!stream.getHeader().outputAttribute(1).isNominal()) {
             throw new IllegalArgumentException(
@@ -96,35 +98,10 @@ public class EfficientEvaluationLoops {
                     (u, votes, labels) -> windowedResults.add(flatten(windowedEvaluator)));
         }
 
-        loop.runClassifier(stream, learner, maxInstances, (int) windowSize);
+        loop.runClassifier(stream, learner, maxInstances, (int) windowSize, warmup);
 
         double[] cumulativeResults = basicEvaluator != null ? flatten(basicEvaluator) : null;
         return new PrequentialResult(windowedResults, cumulativeResults, targetValues, predictions);
-    }
-
-    /**
-     * Variant of {@link prequentialEvaluationClassification} that uses a default {@link
-     * HookableEvaluationLoop}.
-     */
-    public static PrequentialResult prequentialEvaluationClassification(
-            ExampleStream stream,
-            Learner learner,
-            LearningPerformanceEvaluator<Example<Instance>> basicEvaluator,
-            LearningPerformanceEvaluator<Example<Instance>> windowedEvaluator,
-            long maxInstances,
-            long windowSize,
-            boolean storeY,
-            boolean storePredictions) {
-        return prequentialEvaluationClassification(
-                stream,
-                learner,
-                basicEvaluator,
-                windowedEvaluator,
-                maxInstances,
-                windowSize,
-                storeY,
-                storePredictions,
-                new HookableEvaluationLoop());
     }
 
     /**
@@ -142,6 +119,7 @@ public class EfficientEvaluationLoops {
      * @param storeY whether to store the true target values
      * @param storePredictions whether to store the predicted values; instances the learner had no
      *     prediction for yet are stored as {@link Double#NaN}
+     * @param warmup number of initial instances to train on without testing
      * @param loop the hookable evaluation loop to use for running the evaluation
      * @return a list of evaluation results produced across the windowed evaluation
      */
@@ -154,6 +132,7 @@ public class EfficientEvaluationLoops {
             long windowSize,
             boolean storeY,
             boolean storePredictions,
+            long warmup,
             HookableEvaluationLoop loop) {
         if (!stream.getHeader().outputAttribute(1).isNumeric()) {
             throw new IllegalArgumentException(
@@ -179,35 +158,10 @@ public class EfficientEvaluationLoops {
                     (u, votes, labels) -> windowedResults.add(flatten(windowedEvaluator)));
         }
 
-        loop.runRegressor(stream, learner, maxInstances, (int) windowSize);
+        loop.runRegressor(stream, learner, maxInstances, (int) windowSize, warmup);
 
         double[] cumulativeResults = basicEvaluator != null ? flatten(basicEvaluator) : null;
         return new PrequentialResult(windowedResults, cumulativeResults, targetValues, predictions);
-    }
-
-    /**
-     * Variant of {@link prequentialEvaluationRegression} that uses a default {@link
-     * HookableEvaluationLoop}.
-     */
-    public static PrequentialResult prequentialEvaluationRegression(
-            ExampleStream<Example<Instance>> stream,
-            Learner learner,
-            LearningPerformanceEvaluator<Example<Instance>> basicEvaluator,
-            LearningPerformanceEvaluator<Example<Instance>> windowedEvaluator,
-            long maxInstances,
-            long windowSize,
-            boolean storeY,
-            boolean storePredictions) {
-        return prequentialEvaluationRegression(
-                stream,
-                learner,
-                basicEvaluator,
-                windowedEvaluator,
-                maxInstances,
-                windowSize,
-                storeY,
-                storePredictions,
-                new HookableEvaluationLoop());
     }
 
     /**
@@ -375,7 +329,9 @@ public class EfficientEvaluationLoops {
                     maxInstances,
                     windowSize,
                     storeY,
-                    storePredictions);
+                    storePredictions,
+                    0,
+                    new HookableEvaluationLoop());
         else
             return prequentialEvaluationRegression(
                     stream,
@@ -385,7 +341,9 @@ public class EfficientEvaluationLoops {
                     maxInstances,
                     windowSize,
                     storeY,
-                    storePredictions);
+                    storePredictions,
+                    0,
+                    new HookableEvaluationLoop());
     }
 
     /**
