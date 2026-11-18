@@ -59,6 +59,18 @@ public class HookableEvaluationLoop {
         void onRegressorWindow(long i, double[] predictions, double[] targets);
     }
 
+    private final int randomSeed;
+
+    /** Creates a loop whose random number generator uses {@code randomSeed}. */
+    public HookableEvaluationLoop(int randomSeed) {
+        this.randomSeed = randomSeed;
+    }
+
+    /** A new random number generator seeded from this loop. Call once per run. */
+    public RandomGenerator newTieBreakGenerator() {
+        return new MersenneTwister(this.randomSeed);
+    }
+
     private final List<OnPrediction> onPredictionHooks = new ArrayList<>();
     private final List<OnClassifierWindow> onClassifierWindowHooks = new ArrayList<>();
     private final List<OnClassifierPseudoLabel> onClassifierPseudoLabelHooks = new ArrayList<>();

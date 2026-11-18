@@ -7,6 +7,8 @@ import moa.core.Measurement;
 import moa.learners.Learner;
 import moa.streams.ExampleStream;
 
+import org.apache.commons.math3.random.RandomGenerator;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -83,12 +85,14 @@ public class EfficientEvaluationLoops {
         ArrayList<Number> predictions = new ArrayList<>();
         ArrayList<double[]> windowedResults = new ArrayList<>();
 
+        RandomGenerator tieBreakGenerator = loop.newTieBreakGenerator();
         loop.onPrediction(
                 (i, instance, votes) -> {
                     if (storeY) targetValues.add((int) Math.round(instance.getData().classValue()));
-                    if (storePredictions) predictions.add(moa.core.Utils.maxIndex(votes));
-                    if (basicEvaluator != null) basicEvaluator.addResult(instance, votes);
-                    if (windowedEvaluator != null) windowedEvaluator.addResult(instance, votes);
+                    int label = randMaxIndex(votes, instance.getData().numClasses(), tieBreakGenerator);
+                    if (storePredictions) predictions.add(label);
+                    if (basicEvaluator != null) basicEvaluator.addResult(instance, votes, label);
+                    if (windowedEvaluator != null) windowedEvaluator.addResult(instance, votes, label);
                 });
 
         if (windowedEvaluator != null) {
@@ -124,7 +128,7 @@ public class EfficientEvaluationLoops {
                 windowSize,
                 storeY,
                 storePredictions,
-                new HookableEvaluationLoop());
+                new HookableEvaluationLoop(1));
     }
 
     /**
@@ -207,7 +211,7 @@ public class EfficientEvaluationLoops {
                 windowSize,
                 storeY,
                 storePredictions,
-                new HookableEvaluationLoop());
+                new HookableEvaluationLoop(1));
     }
 
     /**
@@ -259,13 +263,15 @@ public class EfficientEvaluationLoops {
         ArrayList<Number> predictions = new ArrayList<>();
         ArrayList<double[]> windowedResults = new ArrayList<>();
 
+        RandomGenerator tieBreakGenerator = loop.newTieBreakGenerator();
         loop.onPrediction(
                 (i, instance, votes) -> {
                     numInstancesTested[0]++;
                     if (storeY) targetValues.add((int) Math.round(instance.getData().classValue()));
-                    if (storePredictions) predictions.add(moa.core.Utils.maxIndex(votes));
-                    if (basicEvaluator != null) basicEvaluator.addResult(instance, votes);
-                    if (windowedEvaluator != null) windowedEvaluator.addResult(instance, votes);
+                    int label = randMaxIndex(votes, instance.getData().numClasses(), tieBreakGenerator);
+                    if (storePredictions) predictions.add(label);
+                    if (basicEvaluator != null) basicEvaluator.addResult(instance, votes, label);
+                    if (windowedEvaluator != null) windowedEvaluator.addResult(instance, votes, label);
                 });
         loop.onClassifierPseudoLabel(
                 (long i, Instance instance, int pseudoLabel, int trueLabel, boolean isLabeled) -> {
@@ -338,7 +344,41 @@ public class EfficientEvaluationLoops {
                 debugPseudoLabels,
                 storeY,
                 storePredictions,
-                new HookableEvaluationLoop());
+                new HookableEvaluationLoop(randomSeed));
+    }
+
+    /**
+     * Index of the largest vote. NaN never wins. A tie is broken at random with one {@code
+     * generator.nextInt(k)} call, which picks the k-th tied index in index order. Empty or all-NaN
+     * votes tie every one of {@code numClasses} labels. Does not change {@code votes} and does not
+     * allocate.
+     */
+    private static int randMaxIndex(double[] votes, int numClasses, RandomGenerator generator) {
+        double max = Double.NEGATIVE_INFINITY;
+        int first = -1;
+        int count = 0;
+        for (int i = 0; i < votes.length; i++) {
+            double v = votes[i];
+            // NaN fails both tests, so it is skipped without an isNaN call.
+            if (v > max) {
+                max = v;
+                first = i;
+                count = 1;
+            } else if (v == max) {
+                // Only -Infinity can match before any vote is seen.
+                if (count++ == 0) first = i;
+            }
+        }
+        if (count == 1) return first;
+        if (count == 0) return numClasses < 2 ? 0 : generator.nextInt(numClasses);
+        int skip = generator.nextInt(count);
+        // All votes equal: the k-th tied index is index k, so no second pass.
+        if (count == votes.length) return skip;
+        if (skip == 0) return first;
+        for (int i = first + 1; i < votes.length; i++) {
+            if (votes[i] == max && --skip == 0) return i;
+        }
+        return first;
     }
 
     /** The current value of every measurement the evaluator reports, in its own order. */

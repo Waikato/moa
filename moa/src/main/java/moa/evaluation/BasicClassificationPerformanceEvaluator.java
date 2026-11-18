@@ -150,11 +150,19 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
 
     @Override
     public void addResult(Example<Instance> example, double[] classVotes) {
+        addResult(example, classVotes, Utils.maxIndex(classVotes));
+    }
+
+    /**
+     * Scores {@code predictedClass} instead of the class with the highest vote.
+     * The votes still feed the probability based measures (log loss and AUC).
+     */
+    @Override
+    public void addResult(Example<Instance> example, double[] classVotes, int predictedClass) {
         Instance inst = example.getData();
         double weight = inst.weight();
         if (inst.classIsMissing() == false) {
             int trueClass = (int) inst.classValue();
-            int predictedClass = Utils.maxIndex(classVotes);
             if (weight > 0.0) {
                 if (this.totalWeightObserved == 0) {
                     reset(inst.dataset().numClasses());

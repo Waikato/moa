@@ -52,6 +52,19 @@ public interface LearningPerformanceEvaluator<E extends Example> extends MOAObje
 	 * probabilities of the test instance in each class
 	 */
 	public void addResult(E example, double[] classVotes);
+
+	/**
+	 * Adds a learning result with a predicted class chosen by the caller.
+	 * Evaluators that do not take a label use the votes alone.
+	 *
+	 * @param example the example to be classified
+	 * @param classVotes an array containing the estimated membership
+	 * probabilities of the test instance in each class
+	 * @param predictedLabel the predicted class
+	 */
+	default void addResult(E example, double[] classVotes, int predictedLabel) {
+		addResult(example, classVotes);
+	}
 	public void addResult(E testInst, Prediction prediction);
 
 	/**
