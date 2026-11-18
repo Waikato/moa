@@ -131,28 +131,43 @@ public class HookableEvaluationLoop {
 
     // Runners
 
+    private static boolean hasNext(ExampleStream<?> stream, long i, long maxInstances) {
+        return stream.hasMoreInstances() && (maxInstances == -1 || i < maxInstances);
+    }
+
     /** Runs prequential classification: predict, notify hooks, then train, per instance. */
     public void runClassifier(
             ExampleStream<?> stream,
             Learner<Example<Instance>> learner,
             long maxInstances,
-            int windowSize) {
+            int windowSize,
+            long warmup) {
+        if (warmup < 0) throw new IllegalArgumentException("warmup must be >= 0, got " + warmup);
         if (!stream.hasMoreInstances()) stream.restart();
 
         double[][] windowVotes = new double[windowSize][];
         int[] windowLabels = new int[windowSize];
 
-        long i = 0; // Use long to prevent integer overflow on large streams
-        for (; stream.hasMoreInstances() && (maxInstances == -1 || i < maxInstances); i++) {
-            // Prediction
+        long i = 0;
+
+        // Warmup loop: train only
+        for (; i < warmup && hasNext(stream, i, maxInstances); i++) {
+            learner.trainOnInstance(stream.nextInstance());
+        }
+
+        // Test-then-train loop
+        long tested = 0;
+        for (; hasNext(stream, i, maxInstances); i++, tested++) {
             Example<Instance> instance = stream.nextInstance();
+
+            // Prediction
             double[] votes = learner.getVotesForInstance(instance);
 
             // Instance Hook
             notifyPrediction(i, instance, votes);
 
             // Window Hook
-            int windowIndex = (int) (i % windowSize);
+            int windowIndex = (int) (tested % windowSize);
             windowVotes[windowIndex] = votes;
             windowLabels[windowIndex] = (int) Math.round(instance.getData().classValue());
 
@@ -163,7 +178,7 @@ public class HookableEvaluationLoop {
         }
 
         // Handle last window
-        int remainder = (int) (i % windowSize);
+        int remainder = (int) (tested % windowSize);
         if (remainder > 0) {
             notifyClassifierWindow(
                     i - 1,
@@ -177,16 +192,27 @@ public class HookableEvaluationLoop {
             ExampleStream<?> stream,
             Learner<Example<Instance>> learner,
             long maxInstances,
-            int windowSize) {
+            int windowSize,
+            long warmup) {
+        if (warmup < 0) throw new IllegalArgumentException("warmup must be >= 0, got " + warmup);
         if (!stream.hasMoreInstances()) stream.restart();
 
         double[] windowPredictions = new double[windowSize];
         double[] windowTargets = new double[windowSize];
 
         long i = 0;
-        for (; stream.hasMoreInstances() && (maxInstances == -1 || i < maxInstances); i++) {
-            // Prediction
+
+        // Warmup loop: train only
+        for (; i < warmup && hasNext(stream, i, maxInstances); i++) {
+            learner.trainOnInstance(stream.nextInstance());
+        }
+
+        // Test-then-train loop
+        long tested = 0;
+        for (; hasNext(stream, i, maxInstances); i++, tested++) {
             Example<Instance> instance = stream.nextInstance();
+
+            // Prediction
             double[] votes = learner.getVotesForInstance(instance);
 
             // Instance Hook
@@ -194,7 +220,7 @@ public class HookableEvaluationLoop {
 
             // Window Hook — some regressors return an empty array when they have no
             // prediction yet; represent that as NaN rather than a made-up 0.0.
-            int windowIndex = (int) (i % windowSize);
+            int windowIndex = (int) (tested % windowSize);
             windowPredictions[windowIndex] = votes.length > 0 ? votes[0] : Double.NaN;
             windowTargets[windowIndex] = instance.getData().classValue();
 
@@ -206,7 +232,7 @@ public class HookableEvaluationLoop {
         }
 
         // Handle last window
-        int remainder = (int) (i % windowSize);
+        int remainder = (int) (tested % windowSize);
         if (remainder > 0) {
             notifyRegressorWindow(
                     i - 1,
