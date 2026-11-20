@@ -54,7 +54,8 @@ public class HSTrees extends AbstractClassifier implements Classifier, OneClassC
 	public IntOption numTreesOption = new IntOption("numberOfTrees", 't', "The number of trees in the ensemble.", 25);
 	public IntOption maxDepthOption = new IntOption("maxDepth", 'h', "The maximum depth of the trees", 15);
 	public FloatOption anomalyThresholdOption = new FloatOption("anomalyThreshold", 'a',
-			"Threshold (as a fraction of the maximum mass value) below which an instance is declared an anomaly.",
+			"Anomaly score threshold: an instance is declared an anomaly when its anomaly score "
+			+ "(1 minus its mass as a fraction of the maximum mass value) exceeds this value.",
 			0.5, Double.MIN_VALUE, 1.0);
 	public FloatOption sizeLimitOption = new FloatOption("sizeLimit", 's', "The minimum mass required in a node (as a "
 			+ "fraction of the window size) to calculate the anomaly score.", 0.1, Double.MIN_VALUE, 1.0);
@@ -197,7 +198,10 @@ public class HSTrees extends AbstractClassifier implements Classifier, OneClassC
 
 		if(!referenceWindow)
 		{
-			votes[1] = this.getAnomalyScore(inst) + 0.5 - this.anomalyThreshold;
+			// Map the anomaly score in [0, 1] onto [0, 1] so that the threshold lands on 0.5.
+			double score = this.getAnomalyScore(inst);
+			double t = this.anomalyThreshold;
+			votes[1] = (score <= t) ? 0.5 * score / t : 0.5 + 0.5 * (score - t) / (1.0 - t);
 			votes[0] = 1.0 - votes[1];
 		}
 
@@ -228,7 +232,7 @@ public class HSTrees extends AbstractClassifier implements Classifier, OneClassC
 
 			accumulatedScore = accumulatedScore / (((double) this.numTrees));
 
-			return 0.5 - accumulatedScore + this.anomalyThreshold;
+			return 1.0 - accumulatedScore;
 		}
 	}
 
