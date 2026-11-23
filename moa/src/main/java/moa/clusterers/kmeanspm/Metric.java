@@ -65,7 +65,7 @@ public class Metric {
 	 */
 	public static double distanceSquared(double[] pointA, double[] pointB,
 			int offsetB) {
-		assert (pointA.length == pointB.length + offsetB);
+		assert (pointA.length + offsetB == pointB.length);
 		double distance = 0.0;
 		for (int i = 0; i < pointA.length; i++) {
 			double d = pointA[i] - pointB[i + offsetB];
