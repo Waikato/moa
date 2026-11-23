@@ -101,13 +101,14 @@ public class SAMkNN extends AbstractClassifier implements MultiClassClassifier,
     	//store calculated STM distances in a matrix to avoid recalculation, are reused in the STM adaption phase
 		this.distanceMatrixSTM = new double[limitOption.getValue()+1][limitOption.getValue()+1];
 		this.predictionHistories = new HashMap<>();
-		this.random = new Random();
+		this.random = new Random(this.randomSeed);
 
     }
 
 	@Override
 	public void setModelContext(InstancesHeader context) {
 		try {
+			super.setModelContext(context);
 			this.stm = new Instances(context,0);
 			this.stm.setClassIndex(context.classIndex());
 			this.ltm = new Instances(context,0); 
@@ -129,6 +130,10 @@ public class SAMkNN extends AbstractClassifier implements MultiClassClassifier,
 		this.cmHistory = null;
 		this.distanceMatrixSTM = null;
 		this.predictionHistories = null;
+		if (this.modelContext != null) {
+			// Rebuild state, and reseed the random generator.
+			this.setModelContext(this.modelContext);
+		}
     }
 
     @Override
@@ -234,8 +239,9 @@ public class SAMkNN extends AbstractClassifier implements MultiClassClassifier,
     public void getModelDescription(StringBuilder out, int indent) {
     }
 
+    @Override
     public boolean isRandomizable() {
-        return false;
+        return true;
     }
 
 
