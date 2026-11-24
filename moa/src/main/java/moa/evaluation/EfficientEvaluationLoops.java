@@ -104,6 +104,14 @@ public class EfficientEvaluationLoops {
         return new PrequentialResult(windowedResults, cumulativeResults, targetValues, predictions);
     }
 
+    private static void setAbstainValue(
+            LearningPerformanceEvaluator<Example<Instance>> evaluator, double abstainValue) {
+        if (evaluator instanceof BasicRegressionPerformanceEvaluator)
+            ((BasicRegressionPerformanceEvaluator) evaluator).setFillAbstain(abstainValue);
+        else if (evaluator instanceof WindowRegressionPerformanceEvaluator)
+            ((WindowRegressionPerformanceEvaluator) evaluator).setFillAbstain(abstainValue);
+    }
+
     /**
      * Calculates the test-then-train metrics and prequential windowed metrics at once for
      * regression tasks.
@@ -117,9 +125,12 @@ public class EfficientEvaluationLoops {
      * @param maxInstances stop evaluation after this many instances
      * @param windowSize the size of the prequential evaluation window
      * @param storeY whether to store the true target values
-     * @param storePredictions whether to store the predicted values; instances the learner had no
-     *     prediction for yet are stored as {@link Double#NaN}
+     * @param storePredictions whether to store the predicted values; abstentions are stored as
+     *     {@code abstainValue}
      * @param warmup number of initial instances to train on without testing
+     * @param abstainValue the value predicted when the learner abstains (NaN or no vote); it is
+     *     set on the regression evaluators and used for the stored predictions. Use {@link
+     *     Double#NaN} to keep the NaN
      * @param loop the hookable evaluation loop to use for running the evaluation
      * @return a list of evaluation results produced across the windowed evaluation
      */
@@ -133,12 +144,16 @@ public class EfficientEvaluationLoops {
             boolean storeY,
             boolean storePredictions,
             long warmup,
+            double abstainValue,
             HookableEvaluationLoop loop) {
         if (!stream.getHeader().outputAttribute(1).isNumeric()) {
             throw new IllegalArgumentException(
                     "Stream class attribute is not numeric. Use the classification variant"
                             + " instead.");
         }
+
+        setAbstainValue(basicEvaluator, abstainValue);
+        setAbstainValue(windowedEvaluator, abstainValue);
 
         ArrayList<Number> targetValues = new ArrayList<>();
         ArrayList<Number> predictions = new ArrayList<>();
@@ -148,7 +163,10 @@ public class EfficientEvaluationLoops {
                 (i, instance, votes) -> {
                     if (storeY) targetValues.add(instance.getData().classValue());
                     if (storePredictions)
-                        predictions.add(votes.length > 0 ? votes[0] : Double.NaN);
+                        predictions.add(
+                                votes.length > 0 && !Double.isNaN(votes[0])
+                                        ? votes[0]
+                                        : abstainValue);
                     if (basicEvaluator != null) basicEvaluator.addResult(instance, votes);
                     if (windowedEvaluator != null) windowedEvaluator.addResult(instance, votes);
                 });
@@ -343,6 +361,7 @@ public class EfficientEvaluationLoops {
                     storeY,
                     storePredictions,
                     0,
+                    0.0,
                     new HookableEvaluationLoop());
     }
 

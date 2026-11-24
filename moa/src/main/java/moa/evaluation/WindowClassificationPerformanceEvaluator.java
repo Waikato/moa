@@ -23,6 +23,9 @@ import moa.capabilities.Capability;
 import moa.capabilities.ImmutableCapabilities;
 
 import com.github.javacliparser.IntOption;
+import moa.core.Measurement;
+
+import java.util.ArrayList;
 
 /**
  * Classification evaluator that updates evaluation results using a sliding
@@ -52,6 +55,17 @@ public class WindowClassificationPerformanceEvaluator extends BasicClassificatio
             return new ImmutableCapabilities(Capability.VIEW_STANDARD, Capability.VIEW_LITE);
         else
             return new ImmutableCapabilities(Capability.VIEW_STANDARD);
+    }
+
+    @Override
+    protected void addAbstentionMeasurements(ArrayList<Measurement> measurements) {
+        super.addAbstentionMeasurements(measurements);
+        measurements.add(new Measurement("abstentions (window)", this.getWindowAbstentions()));
+    }
+
+    /** Weight of abstentions inside the current window. */
+    public double getWindowAbstentions() {
+        return this.abstained instanceof WindowEstimator ? ((WindowEstimator) this.abstained).sum : 0.0;
     }
 
     public class WindowEstimator implements Estimator {

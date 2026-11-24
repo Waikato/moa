@@ -70,6 +70,11 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
 
     protected Estimator logLoss;
 
+    /** Weight of abstentions, tracked with the same estimator type as the other measures. */
+    protected Estimator abstained;
+
+    private double totalAbstentions;
+
     /** Prequential AUC; null while it is not being reported. */
     protected AucEstimator auc;
 
@@ -110,6 +115,9 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
                     + "setting this option for large streams can cause substantial "
                     + "memory usage.");
 
+    public FlagOption abstentionsOption = new FlagOption("abstentions", 'x',
+            "Report the number of abstentions. A learner abstains when every class has the same vote.");
+
     public IntOption positiveClassOption = new IntOption("positiveClass", 'c',
             "Index of the class treated as positive by the ROC AUC.",
             1, 0, 1);
@@ -142,6 +150,8 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
         this.auc = this.rocAucOption.isSet() ? new AucEstimator() : null;
         this.weightCorrect = newEstimator();
         this.logLoss = newEstimator();
+        this.abstained = newEstimator();
+        this.totalAbstentions = 0;
         this.weightCorrectNoChangeClassifier = newEstimator();
         this.weightMajorityClassifier = newEstimator();
         this.lastSeenClass = 0;
@@ -160,6 +170,11 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
                     reset(inst.dataset().numClasses());
                 }
                 this.totalWeightObserved += weight;
+                if (this.abstentionsOption.isSet()) {
+                    double abstention = isAbstention(classVotes, this.numClasses) ? weight : 0.0;
+                    this.totalAbstentions += abstention;
+                    this.abstained.add(abstention);
+                }
                 this.weightCorrect.add(predictedClass == trueClass ? weight : 0);
                 this.logLoss.add(weight * -Math.log(getProbabilityOfTrueClass(classVotes, trueClass)));
                 for (int i = 0; i < this.numClasses; i++) {
@@ -180,6 +195,25 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
             this.weightMajorityClassifier.add(getMajorityClass() == trueClass ? weight : 0);
             this.lastSeenClass = trueClass;
         }
+    }
+
+    /**
+     * A learner abstains when every class has the same vote (an empty or
+     * all-zero array included). Its confidence is then at or below chance.
+     * A vote array shorter than {@code numClasses} is padded with zeros first,
+     * so a learner that only knows class 0 and returns {@code [n]} does not
+     * abstain. An abstention still counts as a prediction (class 0) in accuracy.
+     */
+    public static boolean isAbstention(double[] classVotes, int numClasses) {
+        int length = Math.max(classVotes.length, numClasses);
+        double first = classVotes.length > 0 ? classVotes[0] : 0.0;
+        for (int i = 1; i < length; i++) {
+            double vote = i < classVotes.length ? classVotes[i] : 0.0;
+            if (vote != first) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -288,10 +322,23 @@ public class BasicClassificationPerformanceEvaluator extends AbstractOptionHandl
         if (rocAucOption.isSet())
             measurements.add(new Measurement("ROC AUC (cumulative)", this.getROCAUC()));
 
+        if (abstentionsOption.isSet())
+            addAbstentionMeasurements(measurements);
+
         Measurement[] result = new Measurement[measurements.size()];
 
         return measurements.toArray(result);
 
+    }
+
+    /** Adds the abstention measurements. Windowed subclasses add a per window count. */
+    protected void addAbstentionMeasurements(ArrayList<Measurement> measurements) {
+        measurements.add(new Measurement("abstentions", this.getAbstentions()));
+    }
+
+    /** Total weight of abstentions over the whole stream. */
+    public double getAbstentions() {
+        return this.totalAbstentions;
     }
 
     public double getTotalWeightObserved() {
