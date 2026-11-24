@@ -141,6 +141,7 @@ public class SAMkNN extends AbstractClassifier implements MultiClassClassifier,
         //this.trainStepCount++;
 		if (inst.classValue() > maxClassValue)
 			maxClassValue = (int)inst.classValue();
+		this.updateHistories(inst);
 		this.stm.add(inst);
 		memorySizeCheck();
 		clean(this.stm, this.ltm, true);
@@ -182,53 +183,66 @@ public class SAMkNN extends AbstractClassifier implements MultiClassClassifier,
      */
     @Override
     public double[] getVotesForInstance(Instance inst) {
-
-		double vSTM[];
-		double vLTM[];
-		double vCM[];
-		double v[];
-		double distancesSTM[];
-		double distancesLTM[];
-        int predClassSTM = 0;
-        int predClassLTM = 0;
-        int predClassCM = 0;
 		try {
-			if (this.stm.numInstances()>0) {
-				distancesSTM = get1ToNDistances(inst, this.stm);
-				int nnIndicesSTM[] = nArgMin(Math.min(distancesSTM.length, this.kOption.getValue()), distancesSTM);
-				vSTM = getDistanceWeightedVotes(distancesSTM, nnIndicesSTM, this.stm);
-                predClassSTM = this.getClassFromVotes(vSTM);
-                distancesLTM = get1ToNDistances(inst, this.ltm);
-                vCM = getCMVotes(distancesSTM, this.stm, distancesLTM, this.ltm);
-                predClassCM = this.getClassFromVotes(vCM);
-				if (this.ltm.numInstances() >= 0) {
-                    int nnIndicesLTM[] = nArgMin(Math.min(distancesLTM.length, this.kOption.getValue()), distancesLTM);
-                    vLTM = getDistanceWeightedVotes(distancesLTM, nnIndicesLTM, this.ltm);
-                    predClassLTM = this.getClassFromVotes(vLTM);
-                }else{
-                    vLTM = new double[inst.numClasses()];
-                }
-                int correctSTM = historySum(this.stmHistory);
-                int correctLTM = historySum(this.ltmHistory);
-                int correctCM = historySum(this.cmHistory);
-                if(correctSTM>=correctLTM && correctSTM>=correctCM){
-                    v=vSTM;
-                }else if(correctLTM>correctSTM && correctLTM>=correctCM){
-                    v=vLTM;
-                }else{
-                    v=vCM;
-                }
-            }else {
-                v = new double[inst.numClasses()];
-            }
-            this.stmHistory.add((predClassSTM==inst.classValue()) ? 1 : 0);
-            this.ltmHistory.add((predClassLTM==inst.classValue()) ? 1 : 0);
-            this.cmHistory.add((predClassCM==inst.classValue()) ? 1 : 0);
+			double[][] votes = this.getMemoryVotes(inst);
+			if (votes == null) {
+				return new double[inst.numClasses()];
+			}
+			int correctSTM = historySum(this.stmHistory);
+			int correctLTM = historySum(this.ltmHistory);
+			int correctCM = historySum(this.cmHistory);
+			if (correctSTM>=correctLTM && correctSTM>=correctCM){
+				return votes[0];
+			}else if(correctLTM>correctSTM && correctLTM>=correctCM){
+				return votes[1];
+			}else{
+				return votes[2];
+			}
 		} catch(Exception e) {
 			return new double[inst.numClasses()];
 		}
-		return v;
     }
+
+	/**
+	 * Votes of the STM, LTM and CM for an instance, or null if the STM is empty.
+	 * Does not read the label or change the model.
+	 */
+	private double[][] getMemoryVotes(Instance inst) {
+		if (this.stm.numInstances() == 0) {
+			return null;
+		}
+		double[] distancesSTM = get1ToNDistances(inst, this.stm);
+		int[] nnIndicesSTM = nArgMin(Math.min(distancesSTM.length, this.kOption.getValue()), distancesSTM);
+		double[] vSTM = getDistanceWeightedVotes(distancesSTM, nnIndicesSTM, this.stm);
+		double[] distancesLTM = get1ToNDistances(inst, this.ltm);
+		double[] vCM = getCMVotes(distancesSTM, this.stm, distancesLTM, this.ltm);
+		int[] nnIndicesLTM = nArgMin(Math.min(distancesLTM.length, this.kOption.getValue()), distancesLTM);
+		double[] vLTM = getDistanceWeightedVotes(distancesLTM, nnIndicesLTM, this.ltm);
+		return new double[][]{vSTM, vLTM, vCM};
+	}
+
+	/**
+	 * Records if each memory predicts the label of an instance. Used to
+	 * choose a memory. Must run before the instance is added to the STM.
+	 */
+	private void updateHistories(Instance inst) {
+		int predClassSTM = 0;
+		int predClassLTM = 0;
+		int predClassCM = 0;
+		try {
+			double[][] votes = this.getMemoryVotes(inst);
+			if (votes != null) {
+				predClassSTM = this.getClassFromVotes(votes[0]);
+				predClassLTM = this.getClassFromVotes(votes[1]);
+				predClassCM = this.getClassFromVotes(votes[2]);
+			}
+		} catch(Exception e) {
+			// Keep the default class 0, as before.
+		}
+		this.stmHistory.add((predClassSTM==inst.classValue()) ? 1 : 0);
+		this.ltmHistory.add((predClassLTM==inst.classValue()) ? 1 : 0);
+		this.cmHistory.add((predClassCM==inst.classValue()) ? 1 : 0);
+	}
 
     @Override
     protected Measurement[] getModelMeasurementsImpl() {
