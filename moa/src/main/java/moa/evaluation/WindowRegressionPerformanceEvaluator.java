@@ -19,6 +19,8 @@
  */
 package moa.evaluation;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
@@ -45,7 +47,29 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
     public IntOption widthOption = new IntOption("width",
             'w', "Size of Window", 1000);
 
+    /** Value predicted when the learner abstains (NaN or no vote). NaN keeps the NaN. */
+    protected double fillAbstain = 0.0;
+
+    public void setFillAbstain(double constant) {
+        this.fillAbstain = constant;
+    }
+
+    public double getFillAbstain() {
+        return this.fillAbstain;
+    }
+
     protected double TotalweightObserved = 0;
+
+    protected boolean countAbstentions = false;
+
+    /** Turns the abstention count on or off. It is off by default. */
+    public void setCountAbstentions(boolean count) {
+        this.countAbstentions = count;
+    }
+
+    protected double totalAbstentions = 0;
+
+    protected Estimator abstained;
 
     protected Estimator weightObserved;
 
@@ -107,6 +131,8 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
 
     public void reset(int numClasses) {
         this.numClasses = numClasses;
+        this.abstained = new Estimator(this.widthOption.getValue());
+        this.totalAbstentions = 0;
         this.weightObserved = new Estimator(this.widthOption.getValue());
         this.squareError = new Estimator(this.widthOption.getValue());
         this.averageError = new Estimator(this.widthOption.getValue());
@@ -126,28 +152,37 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
             }
             this.TotalweightObserved += weight;
             this.weightObserved.add(weight);
-
-            if (prediction.length > 0) {
-                double meanTarget = this.weightObserved.total() != 0 ?
-                        this.sumTarget.total() / this.weightObserved.total() : 0.0;
-
-                this.squareError.add((inst.classValue() - prediction[0]) * (inst.classValue() - prediction[0]));
-
-                this.squareTargetError.add((inst.classValue() - meanTarget) * (inst.classValue() - meanTarget));
-                this.sumTarget.add(inst.classValue());
-                this.numAttributes = inst.numAttributes();
-
-                this.averageTargetError.add(Math.abs(inst.classValue() - meanTarget));
-
-                this.averageError.add(Math.abs(inst.classValue() - prediction[0]));
+            double predicted = prediction.length > 0 ? prediction[0] : Double.NaN;
+            boolean abstention = Double.isNaN(predicted);
+            if (this.countAbstentions) {
+                this.abstained.add(abstention ? weight : 0.0);
+                if (abstention) {
+                    this.totalAbstentions += weight;
+                }
             }
+            if (abstention) {
+                predicted = this.fillAbstain;
+            }
+
+            double meanTarget = this.weightObserved.total() != 0 ?
+                    this.sumTarget.total() / this.weightObserved.total() : 0.0;
+
+            this.squareError.add((inst.classValue() - predicted) * (inst.classValue() - predicted));
+
+            this.squareTargetError.add((inst.classValue() - meanTarget) * (inst.classValue() - meanTarget));
+            this.sumTarget.add(inst.classValue());
+            this.numAttributes = inst.numAttributes();
+
+            this.averageTargetError.add(Math.abs(inst.classValue() - meanTarget));
+
+            this.averageError.add(Math.abs(inst.classValue() - predicted));
             //System.out.println(inst.classValue()+", "+prediction[0]);
         }
     }
 
     @Override
     public Measurement[] getPerformanceMeasurements() {
-        return new Measurement[]{
+        ArrayList<Measurement> measurements = new ArrayList<Measurement>(Arrays.asList(
                 new Measurement("classified instances",
                         getTotalWeightObserved()),
                 new Measurement("mean absolute error",
@@ -162,7 +197,12 @@ public class WindowRegressionPerformanceEvaluator extends AbstractOptionHandler
                         getCoefficientOfDetermination()),
                 new Measurement("adjusted coefficient of determination",
                         getAdjustedCoefficientOfDetermination())
-        };
+        ));
+        if (this.countAbstentions) {
+            measurements.add(new Measurement("abstentions", this.totalAbstentions));
+            measurements.add(new Measurement("abstentions (window)", this.abstained.total()));
+        }
+        return measurements.toArray(new Measurement[0]);
     }
 
     public double getCoefficientOfDetermination() {
