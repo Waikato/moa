@@ -154,7 +154,6 @@ public class SelfOptimisingKNearestLeaves extends AbstractClassifier implements 
 
         // Activate Self-Optimising K-Nearest Leaves
         if (!this.disableSelfOptimisingOption.isSet()) {
-            InstanceExample example = new InstanceExample(instance);
             int n = selfOptimisingEvaluators.length;
             double[] performances = new double[n];
 
@@ -162,7 +161,6 @@ public class SelfOptimisingKNearestLeaves extends AbstractClassifier implements 
 
             for (int i = 0; i < n; i++) {
                 double[] temporaryPrediction = {getKNLPrediction(instance, i + 1, candidates, distances)};
-                this.selfOptimisingEvaluators[i].addResult(example, temporaryPrediction);
                 performances[i] = this.selfOptimisingEvaluators[i].getSquareError();
                 this.previousPrediction[i] = temporaryPrediction[0];
             }
