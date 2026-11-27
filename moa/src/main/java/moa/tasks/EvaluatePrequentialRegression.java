@@ -27,6 +27,7 @@ import java.io.PrintStream;
 import moa.core.Example;
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
+import moa.core.SizeOf;
 import moa.core.TimingUtils;
 import moa.evaluation.WindowClassificationPerformanceEvaluator;
 import moa.evaluation.preview.LearningCurve;
@@ -220,10 +221,13 @@ public class EvaluatePrequentialRegression extends RegressionMainTask {
                 // Both the learning curve and RAM-hours use the same size sample.
                 Measurement size = Measurement.getMeasurementNamed(
                         Learner.MODEL_SIZE_MEASUREMENT_NAME, modelMeasurements);
-                double modelBytes = size == null ? learner.measureByteSize() : size.getValue();
-                double RAMHoursIncrement = modelBytes / (1024.0 * 1024.0 * 1024.0); //GBs
-                RAMHoursIncrement *= (timeIncrement / 3600.0); //Hours
-                RAMHours += RAMHoursIncrement;
+                double modelBytes = size == null
+                        ? SizeOf.measureForReporting(learner::measureByteSize) : size.getValue();
+                if (modelBytes < 0) {
+                    RAMHours = Double.NaN;
+                } else {
+                    RAMHours += (modelBytes / (1024.0 * 1024.0 * 1024.0)) * (timeIncrement / 3600.0);
+                }
                 lastEvaluateStartTime = evaluateTime;
                 learningCurve.insertEntry(LearningEvaluation.fromMeasurements(
                         new Measurement[]{

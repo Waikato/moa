@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import moa.classifiers.AbstractClassifier;
+import moa.classifiers.Classifier;
 import moa.classifiers.MultiClassClassifier;
 import moa.classifiers.Regressor;
 import moa.core.Measurement;
@@ -53,6 +54,50 @@ public class EvaluatePrequentialModelSizeTest {
         int ramHours = measurementIndex(curve, "model cost (RAM-Hours)");
         assertEquals(curve.getMeasurement(2, 1) / 3600.0,
                 curve.getMeasurement(2, ramHours), 1e-12);
+    }
+
+    @Test
+    public void savesCheckpointsWhenModelSizeIsUnavailable() throws Exception {
+        CountingRegressor learner = new CountingRegressor() {
+            @Override
+            public long measureByteSize() {
+                return -1;
+            }
+        };
+        LearningCurve curve = evaluate(learner);
+
+        assertEquals(3, curve.numEntries());
+        assertEquals(5.0, curve.getMeasurement(2, 0), 0.0);
+        int bytes = measurementIndex(curve, "model serialized size (bytes)");
+        int ramHours = measurementIndex(curve, "model cost (RAM-Hours)");
+        for (int index = 0; index < curve.numEntries(); index++) {
+            assertEquals(-1.0, curve.getMeasurement(index, bytes), 0.0);
+            assertTrue(Double.isNaN(curve.getMeasurement(index, ramHours)));
+        }
+    }
+
+    @Test
+    public void marksMixedSubmodelSizesUnavailable() throws Exception {
+        CountingRegressor first = new CountingRegressor();
+        CountingRegressor second = new CountingRegressor() {
+            @Override
+            public long measureByteSize() {
+                return -1;
+            }
+        };
+        CountingRegressor learner = new CountingRegressor() {
+            @Override
+            public Classifier[] getSubClassifiers() {
+                return new Classifier[] {first, second};
+            }
+        };
+        LearningCurve curve = evaluate(learner);
+        int bytes = measurementIndex(curve, "model serialized size (bytes)");
+        int avgBytes = measurementIndex(curve, "[avg] model serialized size (bytes)");
+        int errBytes = measurementIndex(curve, "[err] model serialized size (bytes)");
+        assertEquals(MODEL_BYTES, curve.getMeasurement(2, bytes), 0.0);
+        assertEquals(-1.0, curve.getMeasurement(2, avgBytes), 0.0);
+        assertEquals(-1.0, curve.getMeasurement(2, errBytes), 0.0);
     }
 
     @Test
