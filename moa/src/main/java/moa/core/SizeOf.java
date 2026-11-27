@@ -51,8 +51,8 @@ public class SizeOf {
     protected static synchronized boolean isPresent() {
         if (m_Present == null) {
             try {
-                SizeOfAgent.fullSizeOf(new Integer(1));
-                m_Present = true;
+                // An instrumented Java object has a positive shallow size.
+                m_Present = SizeOfAgent.sizeOf(new Object()) > 0;
             } catch (Throwable t) {
                 m_Present = false;
             }

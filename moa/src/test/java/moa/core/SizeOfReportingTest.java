@@ -3,12 +3,24 @@ package moa.core;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
+import sizeof.agent.SizeOfAgent;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
 public class SizeOfReportingTest {
+    @Test
+    public void detectsWhetherInstrumentationIsAvailable() {
+        boolean instrumented = SizeOfAgent.sizeOf(new Object()) > 0;
+        assertEquals(instrumented, SizeOf.isPresent());
+        if (!instrumented) {
+            Object graph = new Object[] {new Object(), new Object()};
+            assertEquals(-1L, SizeOf.fullSizeOf(graph));
+            assertEquals(-1L, SizeOf.measureForReporting(() -> SizeOf.fullSizeOf(graph)));
+        }
+    }
+
     @Test
     public void reportsSameSizeAsUnboundedTraversalForSharedObjects() {
         assumeTrue(SizeOf.isPresent());
