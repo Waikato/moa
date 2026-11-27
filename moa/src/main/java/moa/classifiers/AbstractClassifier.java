@@ -203,7 +203,7 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
         List<Measurement> measurementList = new LinkedList<Measurement>();
         measurementList.add(new Measurement("model training instances",
                 trainingWeightSeenByModel()));
-        measurementList.add(new Measurement("model serialized size (bytes)",
+        measurementList.add(new Measurement(MODEL_SIZE_MEASUREMENT_NAME,
                 measureByteSize()));
         Measurement[] modelMeasurements = getModelMeasurementsImpl();
         if (modelMeasurements != null) {

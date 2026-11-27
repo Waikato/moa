@@ -213,11 +213,17 @@ public class EvaluatePrequential extends ClassificationMainTask implements Capab
                 long evaluateTime = TimingUtils.getNanoCPUTimeOfCurrentThread();
                 double time = TimingUtils.nanoTimeToSeconds(evaluateTime - evaluateStartTime);
                 double timeIncrement = TimingUtils.nanoTimeToSeconds(evaluateTime - lastEvaluateStartTime);
-                double RAMHoursIncrement = learner.measureByteSize() / (1024.0 * 1024.0 * 1024.0); //GBs
+                Measurement[] evaluatorMeasurements = evaluator.getPerformanceMeasurements();
+                Measurement[] modelMeasurements = learner.getModelMeasurements();
+                // Both the learning curve and RAM-hours use the same size sample.
+                Measurement size = Measurement.getMeasurementNamed(
+                        Learner.MODEL_SIZE_MEASUREMENT_NAME, modelMeasurements);
+                double modelBytes = size == null ? learner.measureByteSize() : size.getValue();
+                double RAMHoursIncrement = modelBytes / (1024.0 * 1024.0 * 1024.0); //GBs
                 RAMHoursIncrement *= (timeIncrement / 3600.0); //Hours
                 RAMHours += RAMHoursIncrement;
                 lastEvaluateStartTime = evaluateTime;
-                learningCurve.insertEntry(new LearningEvaluation(
+                learningCurve.insertEntry(LearningEvaluation.fromMeasurements(
                         new Measurement[]{
                             new Measurement(
                             "learning evaluation instances",
@@ -231,7 +237,7 @@ public class EvaluatePrequential extends ClassificationMainTask implements Capab
                             "model cost (RAM-Hours)",
                             RAMHours)
                         },
-                        evaluator, learner));
+                        evaluatorMeasurements, modelMeasurements));
 
                 if (immediateResultStream != null) {
                     if (firstDump) {
