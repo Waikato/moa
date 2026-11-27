@@ -47,12 +47,23 @@ public class LearningEvaluation extends AbstractMOAObject {
 
     public LearningEvaluation(Measurement[] evaluationMeasurements,
             LearningPerformanceEvaluator cpe, Learner model) {
+        this(evaluationMeasurements, cpe.getPerformanceMeasurements(), model.getModelMeasurements());
+    }
+
+    /** Creates an evaluation from measurements already collected at this checkpoint. */
+    public static LearningEvaluation fromMeasurements(Measurement[] evaluationMeasurements,
+            Measurement[] evaluatorMeasurements, Measurement[] modelMeasurements) {
+        return new LearningEvaluation(evaluationMeasurements, evaluatorMeasurements, modelMeasurements);
+    }
+
+    private LearningEvaluation(Measurement[] evaluationMeasurements,
+            Measurement[] evaluatorMeasurements, Measurement[] modelMeasurements) {
         List<Measurement> measurementList = new LinkedList<Measurement>();
-        if (evaluationMeasurements != null){
-        measurementList.addAll(Arrays.asList(evaluationMeasurements));
+        if (evaluationMeasurements != null) {
+            measurementList.addAll(Arrays.asList(evaluationMeasurements));
         }
-        measurementList.addAll(Arrays.asList(cpe.getPerformanceMeasurements()));
-        measurementList.addAll(Arrays.asList(model.getModelMeasurements()));
+        measurementList.addAll(Arrays.asList(evaluatorMeasurements));
+        measurementList.addAll(Arrays.asList(modelMeasurements));
         this.measurements = measurementList.toArray(new Measurement[measurementList.size()]);
     }
 

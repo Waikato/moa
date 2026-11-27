@@ -35,6 +35,7 @@ import com.yahoo.labs.samoa.instances.InstancesHeader;
 
 import moa.core.Measurement;
 import moa.core.ObjectRepository;
+import moa.core.SizeOf;
 import moa.core.StringUtils;
 import moa.gui.AWTRenderer;
 import moa.learners.Learner;
@@ -200,11 +201,15 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
 
     @Override
     public Measurement[] getModelMeasurements() {
+        return SizeOf.withReportingBudget(this::collectModelMeasurements);
+    }
+
+    private Measurement[] collectModelMeasurements() {
         List<Measurement> measurementList = new LinkedList<Measurement>();
         measurementList.add(new Measurement("model training instances",
                 trainingWeightSeenByModel()));
-        measurementList.add(new Measurement("model serialized size (bytes)",
-                measureByteSize()));
+        measurementList.add(new Measurement(MODEL_SIZE_MEASUREMENT_NAME,
+                SizeOf.measureForReporting(this::measureByteSize)));
         Measurement[] modelMeasurements = getModelMeasurementsImpl();
         if (modelMeasurements != null) {
             measurementList.addAll(Arrays.asList(modelMeasurements));
@@ -213,13 +218,25 @@ public abstract class AbstractClassifier extends AbstractOptionHandler
         Learner[] subModels = getSublearners();
         if ((subModels != null) && (subModels.length > 0)) {
             List<Measurement[]> subMeasurements = new LinkedList<Measurement[]>();
+            boolean missingSubmodelSize = false;
             for (Learner subModel : subModels) {
                 if (subModel != null) {
-                    subMeasurements.add(subModel.getModelMeasurements());
+                    Measurement[] measurements = subModel.getModelMeasurements();
+                    subMeasurements.add(measurements);
+                    Measurement size = Measurement.getMeasurementNamed(
+                            MODEL_SIZE_MEASUREMENT_NAME, measurements);
+                    missingSubmodelSize |= size != null && size.getValue() < 0;
                 }
             }
             Measurement[] avgMeasurements = Measurement.averageMeasurements(subMeasurements.toArray(new Measurement[subMeasurements.size()][]));
-            measurementList.addAll(Arrays.asList(avgMeasurements));
+            for (Measurement measurement : avgMeasurements) {
+                String name = measurement.getName();
+                if (missingSubmodelSize && (name.equals("[avg] " + MODEL_SIZE_MEASUREMENT_NAME)
+                        || name.equals("[err] " + MODEL_SIZE_MEASUREMENT_NAME))) {
+                    measurement = new Measurement(name, -1);
+                }
+                measurementList.add(measurement);
+            }
         }
         return measurementList.toArray(new Measurement[measurementList.size()]);
     }

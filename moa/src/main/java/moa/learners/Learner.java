@@ -106,6 +106,9 @@ public interface Learner<E extends Example> extends MOAObject, OptionHandler, AW
      */
     public Measurement[] getModelMeasurements();
 
+    /** Name of the standard model-size measurement in bytes. */
+    String MODEL_SIZE_MEASUREMENT_NAME = "model serialized size (bytes)";
+
     /**
      * Gets the learners of this ensemble.
      * Returns null if this learner is a single learner.
