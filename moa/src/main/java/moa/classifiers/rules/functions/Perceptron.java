@@ -204,7 +204,7 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 
 		for(int j = 0; j < numericAttributesIndex.length; j++)
 		{
-			int instAttIndex = modelAttIndexToInstanceAttIndex(numericAttributesIndex[j], inst);
+			int instAttIndex = numericAttributesIndex[j];
 			double value=inst.value(instAttIndex);
 			perceptronattributeStatistics.addToValue(j, value*inst.weight());	
 			squaredperceptronattributeStatistics.addToValue(j, value*value*inst.weight());
@@ -277,7 +277,7 @@ public class Perceptron extends AbstractClassifier implements AMRulesRegressorFu
 		// Normalize Instance
 		double[] normalizedInstance = new double[numericAttributesIndex.length+1];
 		for(int j = 0; j < numericAttributesIndex.length; j++) {
-			int instAttIndex = modelAttIndexToInstanceAttIndex(numericAttributesIndex[j], inst);
+			int instAttIndex = numericAttributesIndex[j];
 			double mean = perceptronattributeStatistics.getValue(j) / perceptronYSeen;
 			double sd = computeSD(squaredperceptronattributeStatistics.getValue(j), perceptronattributeStatistics.getValue(j), perceptronYSeen);
 			if (sd > SD_THRESHOLD) 
